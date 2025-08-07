@@ -1,10 +1,10 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import type { Job } from 'bull';
-import { 
-  TranscriptionJob, 
+import {
+  TranscriptionJob,
   TranscriptionStatus,
-  QUEUE_NAMES 
+  QUEUE_NAMES,
 } from '@transcribe/shared';
 import { TranscriptionService } from './transcription.service';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -23,9 +23,9 @@ export class TranscriptionProcessor {
   @Process('transcribe')
   async handleTranscription(job: Job<TranscriptionJob>) {
     const { transcriptionId, userId, fileUrl, context } = job.data;
-    
+
     this.logger.log(`Processing transcription job ${transcriptionId}`);
-    
+
     try {
       // Update status to processing
       await this.firebaseService.updateTranscription(transcriptionId, {
@@ -42,19 +42,20 @@ export class TranscriptionProcessor {
       });
 
       // Transcribe audio (with progress updates handled internally for chunks)
-      const transcriptText = await this.transcriptionService.transcribeAudioWithProgress(
-        fileUrl,
-        context,
-        (progress: number, message: string) => {
-          this.websocketGateway.sendTranscriptionProgress(userId, {
-            transcriptionId,
-            status: TranscriptionStatus.PROCESSING,
-            progress,
-            message,
-          });
-        }
-      );
-      
+      const transcriptText =
+        await this.transcriptionService.transcribeAudioWithProgress(
+          fileUrl,
+          context,
+          (progress: number, message: string) => {
+            this.websocketGateway.sendTranscriptionProgress(userId, {
+              transcriptionId,
+              status: TranscriptionStatus.PROCESSING,
+              progress,
+              message,
+            });
+          },
+        );
+
       // Update progress
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
@@ -64,8 +65,11 @@ export class TranscriptionProcessor {
       });
 
       // Generate summary
-      const summary = await this.transcriptionService.generateSummary(transcriptText, context);
-      
+      const summary = await this.transcriptionService.generateSummary(
+        transcriptText,
+        context,
+      );
+
       // Update progress
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
@@ -79,7 +83,7 @@ export class TranscriptionProcessor {
         transcriptText,
         `transcriptions/${userId}/${transcriptionId}/transcript.txt`,
       );
-      
+
       const summaryUrl = await this.firebaseService.uploadText(
         summary,
         `transcriptions/${userId}/${transcriptionId}/summary.md`,
@@ -94,6 +98,23 @@ export class TranscriptionProcessor {
         updatedAt: new Date(),
       });
 
+      // Delete original uploaded file for security and privacy
+      try {
+        this.logger.log(
+          `Deleting original audio file for transcription ${transcriptionId}`,
+        );
+        await this.firebaseService.deleteFile(fileUrl);
+        this.logger.log(
+          `Successfully deleted original audio file for transcription ${transcriptionId}`,
+        );
+      } catch (deleteError) {
+        // Log but don't fail the entire job if file deletion fails
+        this.logger.warn(
+          `Failed to delete original audio file for transcription ${transcriptionId}:`,
+          deleteError,
+        );
+      }
+
       // Send completion notification
       this.websocketGateway.sendTranscriptionComplete(userId, {
         transcriptionId,
@@ -102,10 +123,31 @@ export class TranscriptionProcessor {
         message: 'Transcription completed successfully!',
       });
 
-      this.logger.log(`Transcription job ${transcriptionId} completed successfully`);
+      this.logger.log(
+        `Transcription job ${transcriptionId} completed successfully`,
+      );
     } catch (error) {
-      this.logger.error(`Error processing transcription job ${transcriptionId}:`, error);
-      
+      this.logger.error(
+        `Error processing transcription job ${transcriptionId}:`,
+        error,
+      );
+
+      // Delete original uploaded file even on failure for security and privacy
+      try {
+        this.logger.log(
+          `Deleting original audio file for failed transcription ${transcriptionId}`,
+        );
+        await this.firebaseService.deleteFile(fileUrl);
+        this.logger.log(
+          `Successfully deleted original audio file for failed transcription ${transcriptionId}`,
+        );
+      } catch (deleteError) {
+        this.logger.warn(
+          `Failed to delete original audio file for failed transcription ${transcriptionId}:`,
+          deleteError,
+        );
+      }
+
       // Update status to failed
       await this.firebaseService.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.FAILED,
