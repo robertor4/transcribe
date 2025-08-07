@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: transcribe-redis-dev
+    ports:
+      - "6379:6379"
+    networks:
+      - transcribe-network-dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # For development, we'll run the API with hot reload
+  api-dev:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.dev
+    container_name: transcribe-api-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - .env
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages/shared/src:/app/packages/shared/src
+      - ./apps/api/temp:/app/apps/api/temp
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - transcribe-network-dev
+
+networks:
+  transcribe-network-dev:
+    driver: bridge

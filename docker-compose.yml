@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: transcribe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - transcribe-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: transcribe-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api/temp:/app/apps/api/temp
+    networks:
+      - transcribe-network
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: transcribe-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - apps/web/.env.local
+    depends_on:
+      - api
+    networks:
+      - transcribe-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  transcribe-network:
+    driver: bridge
