@@ -6,8 +6,12 @@ import { AuthProvider } from "@/contexts/AuthContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Transcribe App - Audio Transcription & Summarization",
-  description: "Upload audio files for AI-powered transcription and summarization",
+  title: "Neural Notes - AI-Powered Audio Transcription",
+  description: "Transform your audio recordings into intelligent notes with AI-powered transcription and summarization",
+  icons: {
+    icon: '/assets/OT-symbol.webp',
+    apple: '/assets/OT-symbol.webp',
+  },
 };
 
 export default function RootLayout({

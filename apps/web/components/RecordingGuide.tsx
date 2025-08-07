@@ -32,7 +32,7 @@ export const RecordingGuide: React.FC = () => {
       id: 'ios',
       name: 'iPhone / iPad',
       icon: <Smartphone className="h-5 w-5" />,
-      color: 'bg-blue-100 text-blue-600',
+      color: 'bg-pink-100 text-[#cc3399]',
       steps: [
         'Open the Voice Memos app (pre-installed on all iOS devices)',
         'Tap the red record button to start recording',
@@ -49,7 +49,7 @@ export const RecordingGuide: React.FC = () => {
       apps: [
         { name: 'Voice Memos', description: 'Built-in, simple, and reliable' },
         { name: 'Just Press Record', description: 'Cloud sync across Apple devices' },
-        { name: 'Otter.ai', description: 'Real-time transcription preview' }
+        { name: 'Recorder', description: 'Simple and easy to use' }
       ]
     },
     {
@@ -71,9 +71,9 @@ export const RecordingGuide: React.FC = () => {
         'Use a tripod or stand for stability during long recordings'
       ],
       apps: [
-        { name: 'Google Recorder', description: 'Free with offline transcription' },
+        { name: 'Google Recorder', description: 'Free with automatic backup' },
         { name: 'Easy Voice Recorder', description: 'High-quality with cloud backup' },
-        { name: 'Rev Voice Recorder', description: 'Optimized for transcription' }
+        { name: 'Smart Recorder', description: 'Simple and reliable recording' }
       ]
     },
     {
@@ -104,7 +104,7 @@ export const RecordingGuide: React.FC = () => {
       id: 'windows',
       name: 'Windows PC',
       icon: <Monitor className="h-5 w-5" />,
-      color: 'bg-blue-100 text-blue-700',
+      color: 'bg-pink-100 text-[#cc3399]',
       steps: [
         'Open Voice Recorder app (search in Start Menu)',
         'Click the microphone button to start recording',
@@ -163,7 +163,7 @@ export const RecordingGuide: React.FC = () => {
 
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Mic className="h-5 w-5 mr-2 text-gray-600" />
+          <Mic className="h-5 w-5 mr-2 text-[#cc3399]" />
           Recording instructions by device
         </h3>
         
@@ -172,7 +172,7 @@ export const RecordingGuide: React.FC = () => {
             <div key={platform.id} className="border border-gray-200 rounded-lg overflow-hidden">
               <button
                 onClick={() => togglePlatform(platform.id)}
-                className="w-full px-4 py-3 bg-white hover:bg-gray-50 transition-colors flex items-center justify-between"
+                className="w-full px-4 py-3 bg-white hover:bg-pink-50/30 transition-colors flex items-center justify-between"
               >
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${platform.color}`}>
@@ -181,7 +181,7 @@ export const RecordingGuide: React.FC = () => {
                   <span className="font-medium text-gray-900">{platform.name}</span>
                 </div>
                 {expandedPlatform === platform.id ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
+                  <ChevronUp className="h-5 w-5 text-[#cc3399]" />
                 ) : (
                   <ChevronDown className="h-5 w-5 text-gray-400" />
                 )}
@@ -194,7 +194,7 @@ export const RecordingGuide: React.FC = () => {
                     <ol className="space-y-1 text-sm text-gray-700">
                       {platform.steps.map((step, index) => (
                         <li key={index} className="flex">
-                          <span className="font-medium text-blue-600 mr-2">{index + 1}.</span>
+                          <span className="font-medium text-[#cc3399] mr-2">{index + 1}.</span>
                           <span>{step}</span>
                         </li>
                       ))}
@@ -206,7 +206,7 @@ export const RecordingGuide: React.FC = () => {
                     <ul className="space-y-1 text-sm text-gray-700">
                       {platform.tips.map((tip, index) => (
                         <li key={index} className="flex items-start">
-                          <span className="text-green-500 mr-2">✓</span>
+                          <span className="text-[#cc3399] mr-2">✓</span>
                           <span>{tip}</span>
                         </li>
                       ))}
@@ -231,7 +231,7 @@ export const RecordingGuide: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+      <div className="bg-pink-50 border border-pink-200 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h4 className="font-semibold text-gray-900 mb-1">

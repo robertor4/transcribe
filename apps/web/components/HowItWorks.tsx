@@ -40,7 +40,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStartTranscribing }) =
         
         <h1 className="text-3xl font-bold text-gray-900">
           Transform your conversations into 
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600"> actionable insights</span>
+          <span className="text-[#cc3399] font-bold"> actionable insights</span>
         </h1>
         
         <p className="text-lg text-gray-700 max-w-2xl mx-auto">
@@ -68,7 +68,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStartTranscribing }) =
           <div className="pt-4">
             <button
               onClick={onStartTranscribing}
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="inline-flex items-center px-6 py-3 bg-[#cc3399] text-white font-semibold rounded-lg shadow-lg hover:bg-[#b82d89] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
             >
               <Upload className="h-5 w-5 mr-2" />
               Start Transcribing Now
@@ -198,7 +198,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStartTranscribing }) =
       </div>
 
       {/* Call to Action */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-center text-white">
+      <div className="bg-[#cc3399] rounded-xl p-6 text-center text-white">
         <Lock className="h-8 w-8 mx-auto mb-3 text-white/90" />
         <h3 className="text-xl font-bold mb-2">
           Start your first transcription in under 60 seconds
@@ -211,7 +211,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStartTranscribing }) =
         {onStartTranscribing && (
           <button
             onClick={onStartTranscribing}
-            className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 mb-4"
+            className="inline-flex items-center px-6 py-3 bg-white text-[#cc3399] font-semibold rounded-lg shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] mb-4"
           >
             <Upload className="h-5 w-5 mr-2" />
             Upload your first recording

@@ -93,7 +93,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
     try {
       for (const file of files) {
         const response = await transcriptionApi.upload(file, context);
-        if (response.success && onUploadComplete) {
+        if (response?.success && onUploadComplete) {
           onUploadComplete(response.data.id, file.name);
         }
       }
@@ -119,20 +119,20 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer
             transition-all duration-200 transform
             ${isDragActive 
-              ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-xl' 
-              : 'border-blue-400 hover:border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg hover:scale-[1.01]'
+              ? 'border-[#cc3399] bg-pink-50 scale-[1.02] shadow-xl' 
+              : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20 hover:shadow-lg hover:scale-[1.01]'
             }
           `}
         >
           <input {...getInputProps()} />
           <div className="flex justify-center mb-4">
             <div className="p-4 bg-white rounded-full shadow-md">
-              <Upload className="h-12 w-12 text-blue-600" />
+              <Upload className="h-12 w-12 text-[#cc3399]" />
             </div>
           </div>
           {isDragActive ? (
             <>
-              <p className="text-2xl font-bold text-blue-600 mb-2">Release to upload!</p>
+              <p className="text-2xl font-bold text-[#cc3399] mb-2">Release to upload!</p>
               <p className="text-sm text-gray-600">Your transcription will start immediately</p>
             </>
           ) : (
@@ -143,7 +143,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               <p className="text-base text-gray-600 mb-4">
                 or click to browse from your device
               </p>
-              <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+              <button className="inline-flex items-center px-6 py-3 bg-[#cc3399] text-white font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
                 <Upload className="h-5 w-5 mr-2" />
                 Select Audio File
               </button>
@@ -153,7 +153,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   <span>Instant processing</span>
                 </div>
                 <div className="flex items-center">
-                  <Lock className="h-4 w-4 text-blue-500 mr-1" />
+                  <Lock className="h-4 w-4 text-[#cc3399] mr-1" />
                   <span>100% secure</span>
                 </div>
                 <div className="flex items-center">
@@ -183,7 +183,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder="What's this recording about? Any technical terms or speaker names we should know?"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-transparent text-gray-900 placeholder-gray-400 text-sm"
               rows={2}
             />
           </div>
@@ -242,7 +242,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               w-full py-3 px-4 rounded-lg font-medium transition-colors
               ${uploading
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
               }
             `}
           >
@@ -290,19 +290,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             <h4 className="font-medium text-gray-900 mb-2 text-sm">Security</h4>
             <div className="space-y-2 text-xs text-gray-600">
               <div className="flex items-start">
-                <Shield className="h-3 w-3 text-blue-500 mr-1.5 mt-0.5 flex-shrink-0" />
+                <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>256-bit SSL encryption</span>
               </div>
               <div className="flex items-start">
-                <Lock className="h-3 w-3 text-blue-500 mr-1.5 mt-0.5 flex-shrink-0" />
+                <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>GDPR & CCPA compliant</span>
               </div>
               <div className="flex items-start">
-                <Shield className="h-3 w-3 text-blue-500 mr-1.5 mt-0.5 flex-shrink-0" />
+                <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>Auto-delete after processing</span>
               </div>
               <div className="flex items-start">
-                <Lock className="h-3 w-3 text-blue-500 mr-1.5 mt-0.5 flex-shrink-0" />
+                <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>No data sharing</span>
               </div>
             </div>

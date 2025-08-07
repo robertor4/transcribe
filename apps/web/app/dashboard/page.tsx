@@ -31,16 +31,22 @@ export default function DashboardPage() {
     const unsubscribe = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       (progress: TranscriptionProgress) => {
+        console.log('Transcription completed event received:', progress);
         setRefreshKey(prev => prev + 1);
         
         // Get the file name from our stored map
         const fileName = activeTranscriptions.get(progress.transcriptionId) || 'your file';
+        console.log('File name for notification:', fileName);
+        console.log('Active transcriptions map:', activeTranscriptions);
         
         // Send browser notification if enabled
         if (progress.status === 'completed') {
+          console.log('Sending completion notification for:', fileName);
+          // Force notification for testing (third parameter = true)
           notificationService.sendTranscriptionComplete(
             fileName,
-            progress.transcriptionId
+            progress.transcriptionId,
+            true // Force notification even if tab is focused
           );
           // Clean up the stored file name
           setActiveTranscriptions(prev => {
@@ -49,6 +55,7 @@ export default function DashboardPage() {
             return newMap;
           });
         } else if (progress.status === 'failed') {
+          console.log('Sending failure notification for:', fileName);
           notificationService.sendTranscriptionFailed(
             fileName,
             progress.transcriptionId
@@ -100,9 +107,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <FileAudio className="h-8 w-8 text-blue-600 mr-3" />
+              <img 
+                src="/assets/OT-symbol.webp" 
+                alt="OT Logo" 
+                className="h-8 w-auto mr-3"
+              />
               <h1 className="text-xl font-semibold text-gray-900">
-                Transcribe app
+                Neural Notes
               </h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -129,7 +140,7 @@ export default function DashboardPage() {
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'how-it-works'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }
               `}
@@ -144,7 +155,7 @@ export default function DashboardPage() {
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'upload'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }
               `}
@@ -159,7 +170,7 @@ export default function DashboardPage() {
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'history'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }
               `}
@@ -174,7 +185,7 @@ export default function DashboardPage() {
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'recording-guide'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }
               `}

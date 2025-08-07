@@ -71,7 +71,7 @@ export const TranscriptionList: React.FC = () => {
   const loadTranscriptions = async () => {
     try {
       const response = await transcriptionApi.list();
-      if (response.success) {
+      if (response?.success) {
         setTranscriptions(response.data.items);
       }
     } catch (error) {
@@ -168,7 +168,7 @@ export const TranscriptionList: React.FC = () => {
       case TranscriptionStatus.COMPLETED:
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case TranscriptionStatus.PROCESSING:
-        return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />;
+        return <Loader2 className="h-5 w-5 text-[#cc3399] animate-spin" />;
       case TranscriptionStatus.FAILED:
         return <XCircle className="h-5 w-5 text-red-500" />;
       default:
@@ -191,7 +191,7 @@ export const TranscriptionList: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+        <Loader2 className="h-8 w-8 text-[#cc3399] animate-spin" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export const TranscriptionList: React.FC = () => {
             <div className="p-4 bg-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3 flex-1">
-                  <FileAudio className="h-8 w-8 text-gray-400 flex-shrink-0" />
+                  <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">
                       {transcription.fileName}
@@ -252,7 +252,7 @@ export const TranscriptionList: React.FC = () => {
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : transcription.id)}
-                      className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      className="p-2 text-gray-400 hover:text-[#cc3399] transition-colors"
                       title="View details"
                     >
                       {isExpanded ? <ChevronUp /> : <ChevronDown />}
@@ -276,7 +276,7 @@ export const TranscriptionList: React.FC = () => {
                 <div className="mt-3">
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      className="bg-[#cc3399] h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progress.progress}%` }}
                     />
                   </div>
@@ -322,12 +322,12 @@ export const TranscriptionList: React.FC = () => {
                       </h4>
                       <button
                         onClick={() => handleCopy(transcription.summary || '', `summary-${transcription.id}`)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
                         title="Copy summary"
                       >
                         {copiedId === `summary-${transcription.id}` ? (
                           <>
-                            <Check className="h-3 w-3" />
+                            <Check className="h-3 w-3 text-[#cc3399]" />
                             Copied!
                           </>
                         ) : (
@@ -345,7 +345,7 @@ export const TranscriptionList: React.FC = () => {
                         prose-h3:text-sm prose-h3:mt-3 prose-h3:mb-1
                         prose-p:my-2 prose-ul:my-2 prose-li:my-1
                         prose-strong:text-gray-900 prose-strong:font-semibold
-                        prose-code:text-blue-600 prose-code:bg-blue-50 prose-code:px-1 prose-code:rounded">
+                        prose-code:text-[#cc3399] prose-code:bg-pink-50 prose-code:px-1 prose-code:rounded">
                         <ReactMarkdown 
                           remarkPlugins={[remarkGfm, remarkBreaks]}
                           components={{
@@ -376,7 +376,7 @@ export const TranscriptionList: React.FC = () => {
                           onClick={() => toggleFormat(transcription.id)}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                             !unformattedTranscripts.has(transcription.id)
-                              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                              ? 'bg-pink-100 text-[#cc3399] hover:bg-pink-200'
                               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                           }`}
                           title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
@@ -391,12 +391,12 @@ export const TranscriptionList: React.FC = () => {
                               : transcription.transcriptText || '', 
                             `transcript-${transcription.id}`
                           )}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
                           title="Copy transcript"
                         >
                           {copiedId === `transcript-${transcription.id}` ? (
                             <>
-                              <Check className="h-3 w-3" />
+                              <Check className="h-3 w-3 text-[#cc3399]" />
                               Copied!
                             </>
                           ) : (
