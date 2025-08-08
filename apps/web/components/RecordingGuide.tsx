@@ -28,103 +28,51 @@ interface PlatformGuide {
 export const RecordingGuide: React.FC = () => {
   const t = useTranslations('recordingGuide');
   const [expandedPlatform, setExpandedPlatform] = useState<string | null>(null);
+  
+  // Get platform data directly from translations
+  const platformsData = {
+    ios: t.raw('platforms.ios'),
+    android: t.raw('platforms.android'),
+    mac: t.raw('platforms.mac'),
+    windows: t.raw('platforms.windows')
+  };
 
   const platforms: PlatformGuide[] = [
     {
       id: 'ios',
-      name: t('platforms.ios.name'),
+      name: platformsData.ios?.name || 'iPhone / iPad',
       icon: <Smartphone className="h-5 w-5" />,
       color: 'bg-pink-100 text-[#cc3399]',
-      steps: [
-        t('platforms.ios.steps.0'),
-        t('platforms.ios.steps.1'),
-        t('platforms.ios.steps.2'),
-        t('platforms.ios.steps.3'),
-        t('platforms.ios.steps.4'),
-        t('platforms.ios.steps.5')
-      ],
-      tips: [
-        t('platforms.ios.tips.0'),
-        t('platforms.ios.tips.1'),
-        t('platforms.ios.tips.2')
-      ],
-      apps: [
-        { name: t('platforms.ios.apps.0.name'), description: t('platforms.ios.apps.0.description') },
-        { name: t('platforms.ios.apps.1.name'), description: t('platforms.ios.apps.1.description') },
-        { name: t('platforms.ios.apps.2.name'), description: t('platforms.ios.apps.2.description') }
-      ]
+      steps: platformsData.ios?.steps || [],
+      tips: platformsData.ios?.tips || [],
+      apps: platformsData.ios?.apps || []
     },
     {
       id: 'android',
-      name: t('platforms.android.name'),
+      name: platformsData.android?.name || 'Android',
       icon: <Smartphone className="h-5 w-5" />,
       color: 'bg-green-100 text-green-600',
-      steps: [
-        t('platforms.android.steps.0'),
-        t('platforms.android.steps.1'),
-        t('platforms.android.steps.2'),
-        t('platforms.android.steps.3'),
-        t('platforms.android.steps.4'),
-        t('platforms.android.steps.5')
-      ],
-      tips: [
-        t('platforms.android.tips.0'),
-        t('platforms.android.tips.1'),
-        t('platforms.android.tips.2')
-      ],
-      apps: [
-        { name: t('platforms.android.apps.0.name'), description: t('platforms.android.apps.0.description') },
-        { name: t('platforms.android.apps.1.name'), description: t('platforms.android.apps.1.description') },
-        { name: t('platforms.android.apps.2.name'), description: t('platforms.android.apps.2.description') }
-      ]
+      steps: platformsData.android?.steps || [],
+      tips: platformsData.android?.tips || [],
+      apps: platformsData.android?.apps || []
     },
     {
       id: 'mac',
-      name: t('platforms.mac.name'),
+      name: platformsData.mac?.name || 'Mac',
       icon: <Monitor className="h-5 w-5" />,
       color: 'bg-gray-100 text-gray-600',
-      steps: [
-        t('platforms.mac.steps.0'),
-        t('platforms.mac.steps.1'),
-        t('platforms.mac.steps.2'),
-        t('platforms.mac.steps.3'),
-        t('platforms.mac.steps.4'),
-        t('platforms.mac.steps.5')
-      ],
-      tips: [
-        t('platforms.mac.tips.0'),
-        t('platforms.mac.tips.1'),
-        t('platforms.mac.tips.2')
-      ],
-      apps: [
-        { name: t('platforms.mac.apps.0.name'), description: t('platforms.mac.apps.0.description') },
-        { name: t('platforms.mac.apps.1.name'), description: t('platforms.mac.apps.1.description') },
-        { name: t('platforms.mac.apps.2.name'), description: t('platforms.mac.apps.2.description') }
-      ]
+      steps: platformsData.mac?.steps || [],
+      tips: platformsData.mac?.tips || [],
+      apps: platformsData.mac?.apps || []
     },
     {
       id: 'windows',
-      name: t('platforms.windows.name'),
+      name: platformsData.windows?.name || 'Windows PC',
       icon: <Monitor className="h-5 w-5" />,
       color: 'bg-pink-100 text-[#cc3399]',
-      steps: [
-        t('platforms.windows.steps.0'),
-        t('platforms.windows.steps.1'),
-        t('platforms.windows.steps.2'),
-        t('platforms.windows.steps.3'),
-        t('platforms.windows.steps.4'),
-        t('platforms.windows.steps.5')
-      ],
-      tips: [
-        t('platforms.windows.tips.0'),
-        t('platforms.windows.tips.1'),
-        t('platforms.windows.tips.2')
-      ],
-      apps: [
-        { name: t('platforms.windows.apps.0.name'), description: t('platforms.windows.apps.0.description') },
-        { name: t('platforms.windows.apps.1.name'), description: t('platforms.windows.apps.1.description') },
-        { name: t('platforms.windows.apps.2.name'), description: t('platforms.windows.apps.2.description') }
-      ]
+      steps: platformsData.windows?.steps || [],
+      tips: platformsData.windows?.tips || [],
+      apps: platformsData.windows?.apps || []
     }
   ];
 
