@@ -16,6 +16,7 @@ export interface User {
   displayName?: string;
   photoURL?: string;
   role: UserRole;
+  preferredLanguage?: string; // User's preferred language for the UI
   createdAt: Date;
   updatedAt: Date;
   subscription?: {
@@ -50,6 +51,8 @@ export interface Transcription {
   summary?: string;
   summaryVersion?: number;
   comments?: SummaryComment[];
+  detectedLanguage?: string; // Language detected from the audio (e.g., 'english', 'dutch', 'german')
+  summaryLanguage?: string; // Language used for the summary
   error?: string;
   createdAt: Date;
   updatedAt: Date;

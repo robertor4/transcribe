@@ -1,26 +1,28 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import { locales, defaultLocale } from '@/i18n.config';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-
-export default function HomePage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading) {
-      if (user) {
-        router.push('/dashboard');
-      } else {
-        router.push('/login');
-      }
+export default function RootPage() {
+  // Get the Accept-Language header to detect user's preferred language
+  const headersList = headers();
+  const acceptLanguage = headersList.get('accept-language') || '';
+  
+  // Parse the Accept-Language header
+  const languages = acceptLanguage.split(',').map(lang => {
+    const [code] = lang.trim().split(';');
+    return code.toLowerCase();
+  });
+  
+  // Find the first matching locale
+  let detectedLocale = defaultLocale;
+  for (const lang of languages) {
+    const langCode = lang.split('-')[0];
+    if (locales.includes(langCode as any)) {
+      detectedLocale = langCode as typeof defaultLocale;
+      break;
     }
-  }, [user, loading, router]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-    </div>
-  );
+  }
+  
+  // Redirect to the detected locale
+  redirect(`/${detectedLocale}`);
 }

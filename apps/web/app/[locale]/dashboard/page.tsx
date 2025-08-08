@@ -8,23 +8,27 @@ import { TranscriptionList } from '@/components/TranscriptionList';
 import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { NotificationToggle } from '@/components/NotificationToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { LogOut, FileAudio, Upload, Info, Mic } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function DashboardPage() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations();
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('how-it-works');
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push(`/${locale}/login`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, locale]);
 
   useEffect(() => {
     // Listen for transcription completion to refresh the list
@@ -75,7 +79,7 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/login');
+    router.push(`/${locale}/login`);
   };
 
   const handleUploadComplete = (transcriptionId: string, fileName?: string) => {
@@ -114,17 +118,19 @@ export default function DashboardPage() {
               />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  Neural Notes
+                  {t('common.appName')}
                 </h1>
                 <p className="text-xs text-gray-500">By Olympia Tech</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">{user.email}</span>
+              <LanguageSwitcher />
               <NotificationToggle />
               <button
                 onClick={handleLogout}
                 className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                title={t('auth.signOut')}
               >
                 <LogOut className="h-5 w-5" />
               </button>
@@ -150,7 +156,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <Info className="h-5 w-5 mr-2" />
-                How it works
+                {t('dashboard.howItWorks')}
               </div>
             </button>
             <button
@@ -165,7 +171,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <Upload className="h-5 w-5 mr-2" />
-                Upload files
+                {t('dashboard.uploadAudio')}
               </div>
             </button>
             <button
@@ -180,7 +186,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <FileAudio className="h-5 w-5 mr-2" />
-                Transcriptions
+                {t('dashboard.transcriptionHistory')}
               </div>
             </button>
             <button
@@ -195,7 +201,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <Mic className="h-5 w-5 mr-2" />
-                Recording guide
+                {t('dashboard.recordingGuide')}
               </div>
             </button>
           </nav>

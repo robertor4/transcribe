@@ -1,0 +1,215 @@
+{
+  "common": {
+    "appName": "Neural Notes",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "download": "Download",
+    "upload": "Upload",
+    "edit": "Edit",
+    "view": "View",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "share": "Share",
+    "export": "Export",
+    "import": "Import",
+    "language": "Language"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "signInWithGoogle": "Sign in with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "welcomeBack": "Welcome back!",
+    "signInToContinue": "Sign in to continue to Neural Notes",
+    "invalidCredentials": "Invalid email or password",
+    "accountCreated": "Account created successfully",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "emailAlreadyInUse": "Email already in use",
+    "weakPassword": "Password should be at least 6 characters",
+    "userNotFound": "User not found",
+    "tooManyRequests": "Too many requests. Please try again later."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}!",
+    "recentTranscriptions": "Recent Transcriptions",
+    "uploadAudio": "Upload Audio",
+    "transcriptionHistory": "Transcription History",
+    "howItWorks": "How It Works",
+    "recordingGuide": "Recording Guide",
+    "noTranscriptions": "No transcriptions yet",
+    "uploadYourFirst": "Upload your first audio file to get started"
+  },
+  "upload": {
+    "title": "Upload Audio File",
+    "dragDrop": "Drag & drop your audio file here, or click to browse",
+    "dragDropActive": "Drop the file here...",
+    "supportedFormats": "Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "maxFileSize": "Maximum file size: 500MB",
+    "selectFile": "Select Audio File",
+    "addContext": "Add Context (Optional)",
+    "contextPlaceholder": "Provide any context about the audio (e.g., meeting topic, participants, technical terms)...",
+    "contextHelp": "Context helps improve transcription accuracy and summary quality",
+    "uploading": "Uploading...",
+    "processing": "Processing...",
+    "uploadProgress": "Upload Progress: {progress}%",
+    "processingProgress": "Processing: {progress}%",
+    "uploadComplete": "Upload complete! Processing transcription...",
+    "transcriptionComplete": "Transcription complete!",
+    "error": {
+      "fileSize": "File size exceeds 500MB limit",
+      "fileType": "Unsupported file type",
+      "uploadFailed": "Upload failed. Please try again.",
+      "processingFailed": "Processing failed. Please try again."
+    }
+  },
+  "transcription": {
+    "title": "Transcription",
+    "summary": "Summary",
+    "transcript": "Transcript",
+    "details": "Details",
+    "fileName": "File Name",
+    "uploadDate": "Upload Date",
+    "duration": "Duration",
+    "status": "Status",
+    "language": "Language",
+    "detectedLanguage": "Detected Language",
+    "actions": "Actions",
+    "viewTranscription": "View Transcription",
+    "downloadTranscript": "Download Transcript",
+    "downloadSummary": "Download Summary",
+    "regenerateSummary": "Regenerate Summary",
+    "addComment": "Add Comment",
+    "deleteTranscription": "Delete Transcription",
+    "confirmDelete": "Are you sure you want to delete this transcription?",
+    "deleteSuccess": "Transcription deleted successfully",
+    "status_pending": "Pending",
+    "status_processing": "Processing",
+    "status_completed": "Completed",
+    "status_failed": "Failed",
+    "noTranscriptAvailable": "No transcript available",
+    "noSummaryAvailable": "No summary available",
+    "copyToClipboard": "Copy to Clipboard",
+    "shareTranscription": "Share Transcription"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Transform your audio into actionable insights in three simple steps",
+    "step1": {
+      "title": "Upload Your Audio",
+      "description": "Drag and drop or select any audio file up to 500MB. We support all common formats including M4A, MP3, WAV, and more."
+    },
+    "step2": {
+      "title": "AI Transcription",
+      "description": "Our advanced AI powered by OpenAI Whisper transcribes your audio with high accuracy, automatically handling multiple languages."
+    },
+    "step3": {
+      "title": "Smart Summary",
+      "description": "Get an intelligent summary with key points, action items, decisions, and behavioral insights - all formatted for easy reading."
+    },
+    "features": {
+      "title": "Key Features",
+      "realTime": "Real-time Progress Tracking",
+      "largFiles": "Large File Support (up to 500MB)",
+      "multiLanguage": "Multi-language Detection",
+      "contextAware": "Context-aware Processing",
+      "secureStorage": "Secure Cloud Storage",
+      "exportOptions": "Multiple Export Options"
+    }
+  },
+  "recordingGuide": {
+    "title": "Recording Guide",
+    "subtitle": "Get the best transcription results with these recording tips",
+    "tips": {
+      "environment": {
+        "title": "Choose a Quiet Environment",
+        "description": "Record in a quiet room with minimal background noise for best results."
+      },
+      "microphone": {
+        "title": "Use a Good Microphone",
+        "description": "Built-in phone mics work well, but external microphones provide better quality."
+      },
+      "speaking": {
+        "title": "Speak Clearly",
+        "description": "Speak at a normal pace and articulate clearly. Avoid talking over others."
+      },
+      "format": {
+        "title": "Audio Format",
+        "description": "We support M4A, MP3, WAV, and other common formats. Higher quality formats yield better results."
+      }
+    },
+    "recommendedApps": {
+      "title": "Recommended Recording Apps",
+      "ios": "iOS: Voice Memos, Just Press Record",
+      "android": "Android: Voice Recorder, Easy Voice Recorder",
+      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "enable": "Enable Notifications",
+    "disable": "Disable Notifications",
+    "browserNotifications": "Browser Notifications",
+    "emailNotifications": "Email Notifications",
+    "transcriptionComplete": "Your transcription for \"{fileName}\" is complete!",
+    "transcriptionFailed": "Transcription failed for \"{fileName}\"",
+    "permissionDenied": "Notification permission denied",
+    "permissionGranted": "Notifications enabled",
+    "notSupported": "Notifications not supported in this browser"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "security": "Security",
+    "account": "Account",
+    "subscription": "Subscription",
+    "billing": "Billing",
+    "usage": "Usage",
+    "apiKeys": "API Keys",
+    "integrations": "Integrations",
+    "export": "Export Data",
+    "deleteAccount": "Delete Account",
+    "saveChanges": "Save Changes",
+    "changesSaved": "Changes saved successfully"
+  },
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "footer": {
+    "copyright": "© 2024 Neural Notes. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us",
+    "about": "About"
+  }
+}

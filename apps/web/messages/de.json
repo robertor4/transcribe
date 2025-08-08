@@ -1,0 +1,215 @@
+{
+  "common": {
+    "appName": "Neural Notes",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Absenden",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "refresh": "Aktualisieren",
+    "download": "Herunterladen",
+    "upload": "Hochladen",
+    "edit": "Bearbeiten",
+    "view": "Ansehen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "share": "Teilen",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "language": "Sprache"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "signOut": "Abmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "forgotPassword": "Passwort vergessen?",
+    "resetPassword": "Passwort zurücksetzen",
+    "signInWithGoogle": "Mit Google anmelden",
+    "signUpWithGoogle": "Mit Google registrieren",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "dontHaveAccount": "Haben Sie noch kein Konto?",
+    "createAccount": "Konto erstellen",
+    "welcomeBack": "Willkommen zurück!",
+    "signInToContinue": "Melden Sie sich an, um zu Neural Notes fortzufahren",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "accountCreated": "Konto erfolgreich erstellt",
+    "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+    "emailAlreadyInUse": "E-Mail wird bereits verwendet",
+    "weakPassword": "Passwort sollte mindestens 6 Zeichen lang sein",
+    "userNotFound": "Benutzer nicht gefunden",
+    "tooManyRequests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen, {name}!",
+    "recentTranscriptions": "Neueste Transkriptionen",
+    "uploadAudio": "Audio hochladen",
+    "transcriptionHistory": "Transkriptionsverlauf",
+    "howItWorks": "So funktioniert's",
+    "recordingGuide": "Aufnahmeanleitung",
+    "noTranscriptions": "Noch keine Transkriptionen",
+    "uploadYourFirst": "Laden Sie Ihre erste Audiodatei hoch, um zu beginnen"
+  },
+  "upload": {
+    "title": "Audiodatei hochladen",
+    "dragDrop": "Ziehen Sie Ihre Audiodatei hierher oder klicken Sie zum Durchsuchen",
+    "dragDropActive": "Datei hier ablegen...",
+    "supportedFormats": "Unterstützte Formate: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "maxFileSize": "Maximale Dateigröße: 500MB",
+    "selectFile": "Audiodatei auswählen",
+    "addContext": "Kontext hinzufügen (Optional)",
+    "contextPlaceholder": "Geben Sie Kontext zur Audiodatei an (z.B. Besprechungsthema, Teilnehmer, technische Begriffe)...",
+    "contextHelp": "Kontext hilft, die Transkriptionsgenauigkeit und Zusammenfassungsqualität zu verbessern",
+    "uploading": "Hochladen...",
+    "processing": "Verarbeiten...",
+    "uploadProgress": "Upload-Fortschritt: {progress}%",
+    "processingProgress": "Verarbeitung: {progress}%",
+    "uploadComplete": "Upload abgeschlossen! Transkription wird verarbeitet...",
+    "transcriptionComplete": "Transkription abgeschlossen!",
+    "error": {
+      "fileSize": "Dateigröße überschreitet 500MB-Limit",
+      "fileType": "Nicht unterstützter Dateityp",
+      "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "processingFailed": "Verarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    }
+  },
+  "transcription": {
+    "title": "Transkription",
+    "summary": "Zusammenfassung",
+    "transcript": "Transkript",
+    "details": "Details",
+    "fileName": "Dateiname",
+    "uploadDate": "Upload-Datum",
+    "duration": "Dauer",
+    "status": "Status",
+    "language": "Sprache",
+    "detectedLanguage": "Erkannte Sprache",
+    "actions": "Aktionen",
+    "viewTranscription": "Transkription anzeigen",
+    "downloadTranscript": "Transkript herunterladen",
+    "downloadSummary": "Zusammenfassung herunterladen",
+    "regenerateSummary": "Zusammenfassung neu generieren",
+    "addComment": "Kommentar hinzufügen",
+    "deleteTranscription": "Transkription löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie diese Transkription löschen möchten?",
+    "deleteSuccess": "Transkription erfolgreich gelöscht",
+    "status_pending": "Ausstehend",
+    "status_processing": "Verarbeitung",
+    "status_completed": "Abgeschlossen",
+    "status_failed": "Fehlgeschlagen",
+    "noTranscriptAvailable": "Kein Transkript verfügbar",
+    "noSummaryAvailable": "Keine Zusammenfassung verfügbar",
+    "copyToClipboard": "In Zwischenablage kopieren",
+    "shareTranscription": "Transkription teilen"
+  },
+  "howItWorks": {
+    "title": "So funktioniert's",
+    "subtitle": "Verwandeln Sie Ihre Audiodateien in drei einfachen Schritten in umsetzbare Erkenntnisse",
+    "step1": {
+      "title": "Audio hochladen",
+      "description": "Ziehen Sie eine Audiodatei bis zu 500MB per Drag & Drop oder wählen Sie sie aus. Wir unterstützen alle gängigen Formate einschließlich M4A, MP3, WAV und mehr."
+    },
+    "step2": {
+      "title": "KI-Transkription",
+      "description": "Unsere fortschrittliche KI, angetrieben von OpenAI Whisper, transkribiert Ihre Audiodateien mit hoher Genauigkeit und erkennt automatisch mehrere Sprachen."
+    },
+    "step3": {
+      "title": "Intelligente Zusammenfassung",
+      "description": "Erhalten Sie eine intelligente Zusammenfassung mit wichtigen Punkten, Aktionspunkten, Entscheidungen und Verhaltenseinblicken - alles für einfaches Lesen formatiert."
+    },
+    "features": {
+      "title": "Hauptfunktionen",
+      "realTime": "Echtzeit-Fortschrittsverfolgung",
+      "largFiles": "Unterstützung großer Dateien (bis 500MB)",
+      "multiLanguage": "Mehrsprachige Erkennung",
+      "contextAware": "Kontextbewusste Verarbeitung",
+      "secureStorage": "Sichere Cloud-Speicherung",
+      "exportOptions": "Mehrere Exportoptionen"
+    }
+  },
+  "recordingGuide": {
+    "title": "Aufnahmeanleitung",
+    "subtitle": "Erzielen Sie die besten Transkriptionsergebnisse mit diesen Aufnahmetipps",
+    "tips": {
+      "environment": {
+        "title": "Wählen Sie eine ruhige Umgebung",
+        "description": "Nehmen Sie in einem ruhigen Raum mit minimalen Hintergrundgeräuschen auf, um beste Ergebnisse zu erzielen."
+      },
+      "microphone": {
+        "title": "Verwenden Sie ein gutes Mikrofon",
+        "description": "Eingebaute Telefonmikrofone funktionieren gut, aber externe Mikrofone bieten bessere Qualität."
+      },
+      "speaking": {
+        "title": "Sprechen Sie deutlich",
+        "description": "Sprechen Sie in normalem Tempo und artikulieren Sie klar. Vermeiden Sie gleichzeitiges Sprechen."
+      },
+      "format": {
+        "title": "Audioformat",
+        "description": "Wir unterstützen M4A, MP3, WAV und andere gängige Formate. Höhere Qualitätsformate liefern bessere Ergebnisse."
+      }
+    },
+    "recommendedApps": {
+      "title": "Empfohlene Aufnahme-Apps",
+      "ios": "iOS: Sprachmemos, Just Press Record",
+      "android": "Android: Voice Recorder, Easy Voice Recorder",
+      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    }
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "enable": "Benachrichtigungen aktivieren",
+    "disable": "Benachrichtigungen deaktivieren",
+    "browserNotifications": "Browser-Benachrichtigungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "transcriptionComplete": "Ihre Transkription für \"{fileName}\" ist abgeschlossen!",
+    "transcriptionFailed": "Transkription für \"{fileName}\" fehlgeschlagen",
+    "permissionDenied": "Benachrichtigungsberechtigung verweigert",
+    "permissionGranted": "Benachrichtigungen aktiviert",
+    "notSupported": "Benachrichtigungen werden in diesem Browser nicht unterstützt"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "profile": "Profil",
+    "preferences": "Einstellungen",
+    "language": "Sprache",
+    "theme": "Design",
+    "notifications": "Benachrichtigungen",
+    "privacy": "Datenschutz",
+    "security": "Sicherheit",
+    "account": "Konto",
+    "subscription": "Abonnement",
+    "billing": "Abrechnung",
+    "usage": "Nutzung",
+    "apiKeys": "API-Schlüssel",
+    "integrations": "Integrationen",
+    "export": "Daten exportieren",
+    "deleteAccount": "Konto löschen",
+    "saveChanges": "Änderungen speichern",
+    "changesSaved": "Änderungen erfolgreich gespeichert"
+  },
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "footer": {
+    "copyright": "© 2024 Neural Notes. Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontakt",
+    "about": "Über uns"
+  }
+}

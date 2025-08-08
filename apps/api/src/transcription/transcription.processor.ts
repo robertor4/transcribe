@@ -42,7 +42,7 @@ export class TranscriptionProcessor {
       });
 
       // Transcribe audio (with progress updates handled internally for chunks)
-      const transcriptText =
+      const transcriptionResult =
         await this.transcriptionService.transcribeAudioWithProgress(
           fileUrl,
           context,
@@ -55,6 +55,13 @@ export class TranscriptionProcessor {
             });
           },
         );
+      
+      const transcriptText = transcriptionResult.text;
+      const detectedLanguage = transcriptionResult.language;
+      
+      if (detectedLanguage) {
+        this.logger.log(`Detected language for transcription ${transcriptionId}: ${detectedLanguage}`);
+      }
 
       // Update progress
       this.websocketGateway.sendTranscriptionProgress(userId, {
@@ -64,10 +71,11 @@ export class TranscriptionProcessor {
         message: 'Transcription complete, generating summary...',
       });
 
-      // Generate summary
+      // Generate summary in the detected language
       const summary = await this.transcriptionService.generateSummary(
         transcriptText,
         context,
+        detectedLanguage,
       );
 
       // Update progress
@@ -89,14 +97,21 @@ export class TranscriptionProcessor {
         `transcriptions/${userId}/${transcriptionId}/summary.md`,
       );
 
-      // Update transcription document
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      // Update transcription document with language information
+      const updateData: any = {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
         summary,
         completedAt: new Date(),
         updatedAt: new Date(),
-      });
+      };
+      
+      if (detectedLanguage) {
+        updateData.detectedLanguage = detectedLanguage;
+        updateData.summaryLanguage = detectedLanguage;
+      }
+      
+      await this.firebaseService.updateTranscription(transcriptionId, updateData);
 
       // Delete original uploaded file for security and privacy
       try {

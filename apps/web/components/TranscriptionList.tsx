@@ -341,10 +341,14 @@ export const TranscriptionList: React.FC = () => {
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : transcription.id)}
-                      className="p-2 text-gray-400 hover:text-[#cc3399] transition-colors"
-                      title="View details"
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        isExpanded 
+                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
+                          : 'bg-[#cc3399] text-white hover:bg-[#b82e86] shadow-md hover:shadow-lg'
+                      }`}
+                      title={isExpanded ? "Close details" : "Open to view summary and transcript"}
                     >
-                      {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                      {isExpanded ? 'Close' : 'Open'}
                     </button>
                   )}
                   

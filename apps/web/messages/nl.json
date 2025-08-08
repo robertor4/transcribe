@@ -1,0 +1,215 @@
+{
+  "common": {
+    "appName": "Neural Notes",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "confirm": "Bevestigen",
+    "close": "Sluiten",
+    "back": "Terug",
+    "next": "Volgende",
+    "submit": "Verzenden",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "refresh": "Vernieuwen",
+    "download": "Downloaden",
+    "upload": "Uploaden",
+    "edit": "Bewerken",
+    "view": "Bekijken",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "share": "Delen",
+    "export": "Exporteren",
+    "import": "Importeren",
+    "language": "Taal"
+  },
+  "auth": {
+    "signIn": "Inloggen",
+    "signUp": "Registreren",
+    "signOut": "Uitloggen",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "resetPassword": "Wachtwoord resetten",
+    "signInWithGoogle": "Inloggen met Google",
+    "signUpWithGoogle": "Registreren met Google",
+    "alreadyHaveAccount": "Heb je al een account?",
+    "dontHaveAccount": "Heb je nog geen account?",
+    "createAccount": "Account aanmaken",
+    "welcomeBack": "Welkom terug!",
+    "signInToContinue": "Log in om door te gaan naar Neural Notes",
+    "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
+    "accountCreated": "Account succesvol aangemaakt",
+    "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
+    "emailAlreadyInUse": "E-mailadres is al in gebruik",
+    "weakPassword": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "userNotFound": "Gebruiker niet gevonden",
+    "tooManyRequests": "Te veel verzoeken. Probeer het later opnieuw."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welkom, {name}!",
+    "recentTranscriptions": "Recente transcripties",
+    "uploadAudio": "Audio uploaden",
+    "transcriptionHistory": "Transcriptiegeschiedenis",
+    "howItWorks": "Hoe het werkt",
+    "recordingGuide": "Opnamegids",
+    "noTranscriptions": "Nog geen transcripties",
+    "uploadYourFirst": "Upload je eerste audiobestand om te beginnen"
+  },
+  "upload": {
+    "title": "Audiobestand uploaden",
+    "dragDrop": "Sleep je audiobestand hierheen of klik om te bladeren",
+    "dragDropActive": "Laat het bestand hier vallen...",
+    "supportedFormats": "Ondersteunde formaten: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "maxFileSize": "Maximale bestandsgrootte: 500MB",
+    "selectFile": "Selecteer audiobestand",
+    "addContext": "Context toevoegen (optioneel)",
+    "contextPlaceholder": "Geef context over de audio (bijv. onderwerp van vergadering, deelnemers, technische termen)...",
+    "contextHelp": "Context helpt de nauwkeurigheid van transcriptie en de kwaliteit van de samenvatting te verbeteren",
+    "uploading": "Uploaden...",
+    "processing": "Verwerken...",
+    "uploadProgress": "Upload voortgang: {progress}%",
+    "processingProgress": "Verwerken: {progress}%",
+    "uploadComplete": "Upload voltooid! Transcriptie wordt verwerkt...",
+    "transcriptionComplete": "Transcriptie voltooid!",
+    "error": {
+      "fileSize": "Bestandsgrootte overschrijdt limiet van 500MB",
+      "fileType": "Niet-ondersteund bestandstype",
+      "uploadFailed": "Upload mislukt. Probeer het opnieuw.",
+      "processingFailed": "Verwerking mislukt. Probeer het opnieuw."
+    }
+  },
+  "transcription": {
+    "title": "Transcriptie",
+    "summary": "Samenvatting",
+    "transcript": "Transcript",
+    "details": "Details",
+    "fileName": "Bestandsnaam",
+    "uploadDate": "Uploaddatum",
+    "duration": "Duur",
+    "status": "Status",
+    "language": "Taal",
+    "detectedLanguage": "Gedetecteerde taal",
+    "actions": "Acties",
+    "viewTranscription": "Transcriptie bekijken",
+    "downloadTranscript": "Transcript downloaden",
+    "downloadSummary": "Samenvatting downloaden",
+    "regenerateSummary": "Samenvatting opnieuw genereren",
+    "addComment": "Opmerking toevoegen",
+    "deleteTranscription": "Transcriptie verwijderen",
+    "confirmDelete": "Weet je zeker dat je deze transcriptie wilt verwijderen?",
+    "deleteSuccess": "Transcriptie succesvol verwijderd",
+    "status_pending": "In wachtrij",
+    "status_processing": "Verwerken",
+    "status_completed": "Voltooid",
+    "status_failed": "Mislukt",
+    "noTranscriptAvailable": "Geen transcript beschikbaar",
+    "noSummaryAvailable": "Geen samenvatting beschikbaar",
+    "copyToClipboard": "Kopiëren naar klembord",
+    "shareTranscription": "Transcriptie delen"
+  },
+  "howItWorks": {
+    "title": "Hoe het werkt",
+    "subtitle": "Transformeer je audio naar bruikbare inzichten in drie eenvoudige stappen",
+    "step1": {
+      "title": "Upload je audio",
+      "description": "Sleep en zet neer of selecteer een audiobestand tot 500MB. We ondersteunen alle gangbare formaten waaronder M4A, MP3, WAV en meer."
+    },
+    "step2": {
+      "title": "AI-transcriptie",
+      "description": "Onze geavanceerde AI aangedreven door OpenAI Whisper transcribeert je audio met hoge nauwkeurigheid en detecteert automatisch meerdere talen."
+    },
+    "step3": {
+      "title": "Slimme samenvatting",
+      "description": "Krijg een intelligente samenvatting met belangrijke punten, actiepunten, beslissingen en gedragsinzichten - allemaal geformatteerd voor gemakkelijk lezen."
+    },
+    "features": {
+      "title": "Belangrijkste functies",
+      "realTime": "Real-time voortgang volgen",
+      "largFiles": "Ondersteuning voor grote bestanden (tot 500MB)",
+      "multiLanguage": "Meertalige detectie",
+      "contextAware": "Contextbewuste verwerking",
+      "secureStorage": "Veilige cloudopslag",
+      "exportOptions": "Meerdere exportopties"
+    }
+  },
+  "recordingGuide": {
+    "title": "Opnamegids",
+    "subtitle": "Krijg de beste transcriptieresultaten met deze opnametips",
+    "tips": {
+      "environment": {
+        "title": "Kies een stille omgeving",
+        "description": "Neem op in een stille ruimte met minimaal achtergrondgeluid voor de beste resultaten."
+      },
+      "microphone": {
+        "title": "Gebruik een goede microfoon",
+        "description": "Ingebouwde telefoonmicrofoons werken goed, maar externe microfoons leveren betere kwaliteit."
+      },
+      "speaking": {
+        "title": "Spreek duidelijk",
+        "description": "Spreek in een normaal tempo en articuleer duidelijk. Vermijd door elkaar praten."
+      },
+      "format": {
+        "title": "Audioformaat",
+        "description": "We ondersteunen M4A, MP3, WAV en andere gangbare formaten. Hogere kwaliteitsformaten geven betere resultaten."
+      }
+    },
+    "recommendedApps": {
+      "title": "Aanbevolen opname-apps",
+      "ios": "iOS: Dictafoon, Just Press Record",
+      "android": "Android: Voice Recorder, Easy Voice Recorder",
+      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    }
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "enable": "Meldingen inschakelen",
+    "disable": "Meldingen uitschakelen",
+    "browserNotifications": "Browsermeldingen",
+    "emailNotifications": "E-mailmeldingen",
+    "transcriptionComplete": "Je transcriptie voor \"{fileName}\" is voltooid!",
+    "transcriptionFailed": "Transcriptie mislukt voor \"{fileName}\"",
+    "permissionDenied": "Toestemming voor meldingen geweigerd",
+    "permissionGranted": "Meldingen ingeschakeld",
+    "notSupported": "Meldingen worden niet ondersteund in deze browser"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "profile": "Profiel",
+    "preferences": "Voorkeuren",
+    "language": "Taal",
+    "theme": "Thema",
+    "notifications": "Meldingen",
+    "privacy": "Privacy",
+    "security": "Beveiliging",
+    "account": "Account",
+    "subscription": "Abonnement",
+    "billing": "Facturering",
+    "usage": "Gebruik",
+    "apiKeys": "API-sleutels",
+    "integrations": "Integraties",
+    "export": "Gegevens exporteren",
+    "deleteAccount": "Account verwijderen",
+    "saveChanges": "Wijzigingen opslaan",
+    "changesSaved": "Wijzigingen succesvol opgeslagen"
+  },
+  "languages": {
+    "en": "English",
+    "nl": "Nederlands",
+    "de": "Deutsch",
+    "fr": "Français",
+    "es": "Español"
+  },
+  "footer": {
+    "copyright": "© 2024 Neural Notes. Alle rechten voorbehouden.",
+    "privacy": "Privacybeleid",
+    "terms": "Servicevoorwaarden",
+    "contact": "Contact",
+    "about": "Over ons"
+  }
+}

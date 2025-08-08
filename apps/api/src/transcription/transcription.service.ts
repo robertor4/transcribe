@@ -101,7 +101,7 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<string> {
+  ): Promise<{ text: string; language?: string }> {
     return this.transcribeAudio(fileUrl, context, onProgress);
   }
 
@@ -109,7 +109,7 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<string> {
+  ): Promise<{ text: string; language?: string }> {
     let tempFilePath: string | null = null;
     let chunks: AudioChunk[] = [];
 
@@ -174,6 +174,7 @@ export class TranscriptionService {
 
         // Transcribe each chunk
         const transcriptions: { text: string; chunk: AudioChunk }[] = [];
+        let detectedLanguage: string | undefined;
 
         for (const chunk of chunks) {
           this.logger.log(
@@ -199,7 +200,14 @@ export class TranscriptionService {
             file: fs.createReadStream(chunk.path),
             model: 'whisper-1',
             prompt: chunkContext,
-          });
+            response_format: 'verbose_json',
+          }) as any;
+
+          // Extract language from first chunk only
+          if (!detectedLanguage && transcription.language) {
+            detectedLanguage = transcription.language;
+            this.logger.log(`Detected language: ${detectedLanguage}`);
+          }
 
           transcriptions.push({
             text: transcription.text,
@@ -221,7 +229,7 @@ export class TranscriptionService {
         // Clean up original temp file
         fs.unlinkSync(tempFilePath);
 
-        return mergedText;
+        return { text: mergedText, language: detectedLanguage };
       } else {
         // File is small enough, transcribe normally
         this.logger.log('File within size limits, transcribing directly...');
@@ -230,12 +238,19 @@ export class TranscriptionService {
           file: fs.createReadStream(tempFilePath),
           model: 'whisper-1',
           prompt: context,
-        });
+          response_format: 'verbose_json',
+        }) as any;
+
+        // Extract language
+        const detectedLanguage = transcription.language;
+        if (detectedLanguage) {
+          this.logger.log(`Detected language: ${detectedLanguage}`);
+        }
 
         // Clean up temp file
         fs.unlinkSync(tempFilePath);
 
-        return transcription.text;
+        return { text: transcription.text, language: detectedLanguage };
       }
     } catch (error) {
       this.logger.error('Error transcribing audio:', error);
@@ -256,11 +271,16 @@ export class TranscriptionService {
   async generateSummary(
     transcriptionText: string,
     context?: string,
+    language?: string,
   ): Promise<string> {
     try {
-      const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.`;
+      const languageInstruction = language ? 
+        `\n\nIMPORTANT: The transcription is in ${language}. Please generate the summary in ${language} as well. Use appropriate formatting and conventions for ${language}.` : 
+        '';
+      
+      const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction}`;
 
-      const userPrompt = this.buildSummaryPrompt(transcriptionText, context);
+      const userPrompt = this.buildSummaryPrompt(transcriptionText, context, language);
 
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini', // Note: Consider upgrading to gpt-4-turbo or gpt-4o for better performance
@@ -279,8 +299,37 @@ export class TranscriptionService {
     }
   }
 
-  private buildSummaryPrompt(transcription: string, context?: string): string {
-    const basePrompt = `Please analyze this conversation transcript and provide a comprehensive summary.
+  private getLanguageSpecificInstructions(language?: string): string {
+    if (!language) return '';
+    
+    const languageMap: Record<string, string> = {
+      'dutch': `
+
+LANGUAGE: Generate the entire summary in Dutch (Nederlands).
+Use Dutch conventions for formatting and writing style.`,
+      'german': `
+
+LANGUAGE: Generate the entire summary in German (Deutsch).
+Use German conventions for formatting and writing style.`,
+      'french': `
+
+LANGUAGE: Generate the entire summary in French (Français).
+Use French conventions for formatting and writing style.`,
+      'spanish': `
+
+LANGUAGE: Generate the entire summary in Spanish (Español).
+Use Spanish conventions for formatting and writing style.`,
+      'english': '',
+    };
+    
+    return languageMap[language.toLowerCase()] || '';
+  }
+
+  private buildSummaryPrompt(transcription: string, context?: string, language?: string): string {
+    // Language-specific instructions
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    
+    const basePrompt = `Please analyze this conversation transcript and provide a comprehensive summary.${languageInstructions}
 
 **CRITICAL FORMATTING RULES:**
 1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title showing what this conversation was about. This should be the specific subject matter and context (e.g., "# Technical Discussion: Implementing OAuth2 Authentication in React App" or "# Team Meeting: Q3 Product Roadmap and Resource Allocation"). Do NOT use a generic label like "Conversation Topic" - make the heading itself BE the topic.
@@ -565,12 +614,13 @@ ${basePrompt}`;
       transcriptionId,
     );
 
-    // Generate new summary with feedback
+    // Generate new summary with feedback in the same language
     const newSummary = await this.generateSummaryWithFeedback(
       transcription.transcriptText,
       transcription.context,
       comments,
       instructions,
+      transcription.detectedLanguage,
     );
 
     // Update transcription with new summary and increment version
@@ -590,19 +640,25 @@ ${basePrompt}`;
     context?: string,
     comments: any[] = [],
     instructions?: string,
+    language?: string,
   ): Promise<string> {
     try {
+      const languageInstruction = language ? 
+        `\n\nIMPORTANT: The transcription is in ${language}. Please generate the summary in ${language} as well. Use appropriate formatting and conventions for ${language}.` : 
+        '';
+      
       const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You excel at analyzing communication patterns and group dynamics. 
 
 You are being asked to regenerate a summary based on user feedback and comments. Pay special attention to the user's comments and incorporate their feedback to improve the summary.
 
-Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.`;
+Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction}`;
 
       const userPrompt = this.buildSummaryPromptWithFeedback(
         transcriptionText,
         context,
         comments,
         instructions,
+        language,
       );
 
       const completion = await this.openai.chat.completions.create({
@@ -627,8 +683,12 @@ Important: Do NOT attempt to guess or identify specific individuals by name - in
     context?: string,
     comments: any[] = [],
     instructions?: string,
+    language?: string,
   ): string {
-    let prompt = `Please regenerate the summary for this conversation transcript, taking into account the user feedback provided below.
+    // Language-specific instructions
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    
+    let prompt = `Please regenerate the summary for this conversation transcript, taking into account the user feedback provided below.${languageInstructions}
 
 ## User Feedback and Comments:
 `;
