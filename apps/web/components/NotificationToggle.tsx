@@ -38,7 +38,7 @@ export const NotificationToggle: React.FC = () => {
   const getButtonColor = () => {
     switch (status) {
       case 'enabled':
-        return 'text-blue-600 hover:text-blue-700';
+        return 'text-[#cc3399] hover:text-[#b82d89]';
       case 'denied':
         return 'text-red-500 hover:text-red-600';
       default:
@@ -82,7 +82,7 @@ export const NotificationToggle: React.FC = () => {
         
         {/* Status indicator dot */}
         {status === 'enabled' && (
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-[#cc3399] rounded-full animate-pulse" />
         )}
         {status === 'denied' && (
           <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full" />

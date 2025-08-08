@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import websocketService from '@/lib/websocket';
 import { 
@@ -34,6 +35,8 @@ import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 
 export const TranscriptionList: React.FC = () => {
+  const t = useTranslations('transcription');
+  const tCommon = useTranslations('common');
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -80,20 +83,20 @@ export const TranscriptionList: React.FC = () => {
         setTranscriptions(response.data.items);
       }
     } catch (error) {
-      console.error('Failed to load transcriptions:', error);
+      console.error(t('failedToLoad'), error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this transcription?')) return;
+    if (!confirm(t('confirmDelete'))) return;
 
     try {
       await transcriptionApi.delete(id);
       setTranscriptions(prev => prev.filter(t => t.id !== id));
     } catch (error) {
-      console.error('Failed to delete transcription:', error);
+      console.error(t('failedToDelete'), error);
     }
   };
 
@@ -199,7 +202,7 @@ export const TranscriptionList: React.FC = () => {
         console.error('Failed to update title - API returned error:', response.error || response.message);
       }
     } catch (error) {
-      console.error('Failed to update title - Network/API error:', error);
+      console.error(t('failedToUpdateTitle'), error);
       console.error('Error details:', JSON.stringify(error, null, 2));
     }
   };
@@ -249,8 +252,8 @@ export const TranscriptionList: React.FC = () => {
     return (
       <div className="text-center py-12">
         <FileAudio className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500">No transcriptions yet</p>
-        <p className="text-sm text-gray-400 mt-2">Upload an audio file to get started</p>
+        <p className="text-gray-500">{t('noTranscriptAvailable')}</p>
+        <p className="text-sm text-gray-400 mt-2">{t('noSummaryAvailable')}</p>
       </div>
     );
   }
@@ -280,21 +283,21 @@ export const TranscriptionList: React.FC = () => {
                             onChange={(e) => setEditingTitleValue(e.target.value)}
                             onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
                             className="text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 min-w-0"
-                            placeholder="Enter title..."
+                            placeholder={t('editTitle')}
                             autoFocus
                             style={{ width: '200px' }}
                           />
                           <button
                             onClick={() => saveTitle(transcription.id)}
                             className="p-1 text-green-600 hover:text-green-800 flex-shrink-0"
-                            title="Save title"
+                            title={tCommon('save')}
                           >
                             <Check className="h-4 w-4" />
                           </button>
                           <button
                             onClick={cancelEditingTitle}
                             className="p-1 text-red-600 hover:text-red-800 flex-shrink-0"
-                            title="Cancel"
+                            title={tCommon('cancel')}
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -307,7 +310,7 @@ export const TranscriptionList: React.FC = () => {
                           <button
                             onClick={() => startEditingTitle(transcription)}
                             className="p-1 text-gray-400 hover:text-[#cc3399] transition-colors flex-shrink-0"
-                            title="Edit title"
+                            title={t('editTitle')}
                           >
                             <Edit3 className="h-4 w-4" />
                           </button>
@@ -346,9 +349,9 @@ export const TranscriptionList: React.FC = () => {
                           ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
                           : 'bg-[#cc3399] text-white hover:bg-[#b82e86] shadow-md hover:shadow-lg'
                       }`}
-                      title={isExpanded ? "Close details" : "Open to view summary and transcript"}
+                      title={isExpanded ? t('hideTranscript') : t('viewTranscription')}
                     >
-                      {isExpanded ? 'Close' : 'Open'}
+                      {isExpanded ? t('close') : t('view')}
                     </button>
                   )}
                   
@@ -357,7 +360,7 @@ export const TranscriptionList: React.FC = () => {
                     <button
                       onClick={() => handleDelete(transcription.id)}
                       className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                      title="Delete"
+                      title={t('delete')}
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
@@ -382,7 +385,7 @@ export const TranscriptionList: React.FC = () => {
                 <div className="flex items-start space-x-2">
                   <XCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800 mb-1">Transcription failed</p>
+                    <p className="text-sm font-medium text-red-800 mb-1">{t('status_failed')}</p>
                     <p className="text-sm text-red-700">
                       {getFriendlyErrorMessage(transcription.error)}
                     </p>
@@ -390,7 +393,7 @@ export const TranscriptionList: React.FC = () => {
                       onClick={() => toggleTechnicalError(transcription.id)}
                       className="text-xs text-red-600 hover:text-red-800 underline mt-2 inline-block"
                     >
-                      {showTechnicalError.has(transcription.id) ? 'Hide' : 'Show'} technical details
+                      {showTechnicalError.has(transcription.id) ? t('hideTechnicalDetails') : t('showTechnicalDetails')}
                     </button>
                     {showTechnicalError.has(transcription.id) && (
                       <div className="mt-2 p-2 bg-red-100 rounded">

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Neural Notes",
+    "appName": "Neural Summary",
     "loading": "Cargando...",
     "error": "Error",
     "success": "Éxito",
@@ -24,6 +24,7 @@
     "share": "Compartir",
     "export": "Exportar",
     "import": "Importar",
+    "open": "Abrir",
     "language": "Idioma"
   },
   "auth": {
@@ -41,7 +42,7 @@
     "dontHaveAccount": "¿No tienes una cuenta?",
     "createAccount": "Crear cuenta",
     "welcomeBack": "¡Bienvenido de nuevo!",
-    "signInToContinue": "Inicia sesión para continuar a Neural Notes",
+    "signInToContinue": "Inicia sesión para continuar a Neural Summary",
     "invalidCredentials": "Correo electrónico o contraseña inválidos",
     "accountCreated": "Cuenta creada exitosamente",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
@@ -55,9 +56,12 @@
     "welcome": "¡Bienvenido, {name}!",
     "recentTranscriptions": "Transcripciones recientes",
     "uploadAudio": "Subir audio",
+    "uploadAudioFiles": "Subir archivos de audio",
     "transcriptionHistory": "Historial de transcripciones",
+    "yourTranscriptions": "Tus transcripciones",
     "howItWorks": "Cómo funciona",
     "recordingGuide": "Guía de grabación",
+    "howToRecord": "Cómo grabar audio en cualquier dispositivo",
     "noTranscriptions": "Aún no hay transcripciones",
     "uploadYourFirst": "Sube tu primer archivo de audio para comenzar"
   },
@@ -65,21 +69,59 @@
     "title": "Subir archivo de audio",
     "dragDrop": "Arrastra y suelta tu archivo de audio aquí, o haz clic para explorar",
     "dragDropActive": "Suelta el archivo aquí...",
+    "releaseToUpload": "¡Suelta para subir!",
+    "transcriptionStartsImmediately": "Tu transcripción comenzará inmediatamente",
+    "dropAudioHere": "Suelta tu archivo de audio aquí",
+    "orClickToBrowse": "o haz clic para explorar desde tu dispositivo",
+    "selectAudioFile": "Seleccionar archivo de audio",
+    "instantProcessing": "Procesamiento instantáneo",
+    "secure": "100% seguro",
+    "aiPowered": "Impulsado por IA",
     "supportedFormats": "Formatos soportados: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "supportedFormatsShort": "Soporta: {formats} • Máx {size} • Múltiples archivos",
     "maxFileSize": "Tamaño máximo del archivo: 500MB",
     "selectFile": "Seleccionar archivo de audio",
     "addContext": "Agregar contexto (Opcional)",
-    "contextPlaceholder": "Proporciona cualquier contexto sobre el audio (ej: tema de la reunión, participantes, términos técnicos)...",
+    "boostAccuracy": "🎯 Mejora la precisión en un 40% con solo una línea de contexto",
+    "contextStats": "El 93% de los usuarios que agregan contexto reportan mejores resultados • Solo toma 10 segundos",
+    "contextPlaceholder": "Ejemplo: 'Reunión de marketing con John y Sarah sobre la estrategia del Q4' o 'Consulta médica sobre tratamiento de diabetes'",
     "contextHelp": "El contexto ayuda a mejorar la precisión de la transcripción y la calidad del resumen",
+    "improvesTechnicalTerms": "Mejora los términos técnicos",
+    "betterSpeakerRecognition": "Mejor reconocimiento de hablantes",
+    "smarterSummaries": "Resúmenes más inteligentes",
+    "greatThisWillHelp": "✨ ¡Genial! Esto ayudará mucho",
+    "selectedFiles": "Archivos seleccionados:",
+    "uploadFiles": "Subir {count} archivo(s)",
     "uploading": "Subiendo...",
     "processing": "Procesando...",
     "uploadProgress": "Progreso de carga: {progress}%",
     "processingProgress": "Procesando: {progress}%",
     "uploadComplete": "¡Carga completa! Procesando transcripción...",
     "transcriptionComplete": "¡Transcripción completa!",
+    "uploadErrors": "Errores de carga:",
+    "howItWorksAndTips": "Cómo funciona y consejos",
+    "features": "Características",
+    "instantProcessingOnUpload": "El procesamiento instantáneo comienza al subir",
+    "multipleSpeakerDetection": "Detección de múltiples hablantes",
+    "languagesSupported": "50+ idiomas soportados",
+    "accuracyRate": "99.5% de precisión",
+    "security": "Seguridad",
+    "encryption": "Cifrado SSL de 256-bit",
+    "gdprCompliant": "Compatible con GDPR y CCPA",
+    "autoDeleteAfterProcessing": "Eliminación automática después del procesamiento",
+    "noDataSharing": "Sin compartir datos",
+    "proTips": "Consejos pro",
+    "recordQuietEnvironment": "Graba en un entorno silencioso",
+    "speakClearlyNormalPace": "Habla claramente y a ritmo normal",
+    "addContextForTechnicalTerms": "Agrega contexto para términos técnicos",
+    "uploadMultipleFilesAtOnce": "Sube múltiples archivos a la vez",
     "error": {
       "fileSize": "El tamaño del archivo excede el límite de 500MB",
+      "fileTooLarge": "Archivo demasiado grande (máx 100MB)",
+      "fileTooLargeWhisper": "El archivo es demasiado grande. El tamaño máximo es 25MB debido al límite de la API de OpenAI Whisper. Para archivos más grandes, considera dividirlos.",
       "fileType": "Tipo de archivo no soportado",
+      "unsupportedFormat": "Formato no soportado (tipo: {type})",
+      "invalidFileType": "Tipo de archivo inválido. Formatos soportados: {formats}",
       "uploadFailed": "Fallo en la carga. Por favor, inténtalo de nuevo.",
       "processingFailed": "Fallo en el procesamiento. Por favor, inténtalo de nuevo."
     }
@@ -88,6 +130,13 @@
     "title": "Transcripción",
     "summary": "Resumen",
     "transcript": "Transcripción",
+    "fullTranscript": "Transcripción completa",
+    "hideTranscript": "Ocultar transcripción",
+    "showTranscript": "Mostrar transcripción",
+    "showFormatted": "Mostrar formateado",
+    "showRaw": "Mostrar sin formato",
+    "untitled": "Sin título",
+    "editTitle": "Editar título",
     "details": "Detalles",
     "fileName": "Nombre del archivo",
     "uploadDate": "Fecha de carga",
@@ -99,6 +148,7 @@
     "viewTranscription": "Ver transcripción",
     "downloadTranscript": "Descargar transcripción",
     "downloadSummary": "Descargar resumen",
+    "downloadAsText": "Descargar como texto",
     "regenerateSummary": "Regenerar resumen",
     "addComment": "Agregar comentario",
     "deleteTranscription": "Eliminar transcripción",
@@ -108,10 +158,25 @@
     "status_processing": "Procesando",
     "status_completed": "Completado",
     "status_failed": "Fallido",
+    "processingAudio": "Procesando audio...",
+    "analyzingContent": "Analizando contenido...",
+    "generatingSummary": "Generando resumen...",
+    "almostDone": "Casi terminado...",
     "noTranscriptAvailable": "No hay transcripción disponible",
     "noSummaryAvailable": "No hay resumen disponible",
+    "errorOccurred": "Ocurrió un error",
+    "showTechnicalDetails": "Mostrar detalles técnicos",
+    "hideTechnicalDetails": "Ocultar detalles técnicos",
     "copyToClipboard": "Copiar al portapapeles",
-    "shareTranscription": "Compartir transcripción"
+    "copyTranscript": "Copiar transcripción",
+    "copySummary": "Copiar resumen",
+    "shareTranscription": "Compartir transcripción",
+    "failedToLoad": "Error al cargar transcripciones",
+    "failedToDelete": "Error al eliminar transcripción",
+    "failedToUpdateTitle": "Error al actualizar título",
+    "close": "Cerrar",
+    "view": "Ver",
+    "delete": "Eliminar"
   },
   "howItWorks": {
     "title": "Cómo funciona",
@@ -164,6 +229,111 @@
       "ios": "iOS: Notas de Voz, Just Press Record",
       "android": "Android: Voice Recorder, Easy Voice Recorder",
       "desktop": "Escritorio: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    },
+    "proTips": {
+      "title": "Consejos profesionales de grabación para mejores resultados",
+      "audioQuality": "Calidad de audio:",
+      "audioQualityDesc": "Graba en un entorno silencioso, habla claramente y mantén una distancia consistente del micrófono",
+      "useHeadphones": "Usa auriculares:",
+      "useHeadphonesDesc": "Si grabas una videollamada, usa auriculares para prevenir el eco",
+      "fileSize": "Tamaño del archivo:",
+      "fileSizeDesc": "Para archivos mayores a 25MB, asegúrate de tener una conexión a internet estable durante la subida",
+      "format": "Formato:",
+      "formatDesc": "Soportamos formatos M4A, MP3, WAV, MP4, WEBM y MPEG hasta 100MB"
+    },
+    "recordingInstructions": "Instrucciones de grabación por dispositivo",
+    "stepByStep": "Instrucciones paso a paso:",
+    "quickTips": "Consejos rápidos:",
+    "recommendedApps": "Aplicaciones recomendadas:",
+    "platforms": {
+      "ios": {
+        "name": "iPhone / iPad",
+        "steps": [
+          "Abre la aplicación Notas de Voz (preinstalada en todos los dispositivos iOS)",
+          "Toca el botón rojo de grabación para empezar a grabar",
+          "Coloca tu dispositivo a 15-30 cm del hablante para calidad óptima",
+          "Toca detener cuando hayas terminado",
+          "Toca la grabación para renombrarla",
+          "Toca el botón compartir y selecciona 'Guardar en Archivos' o sube directamente a nuestro sitio"
+        ],
+        "tips": [
+          "Activa el 'Modo Avión' para prevenir interrupciones",
+          "Usa una habitación silenciosa con mínimo eco",
+          "Considera usar AirPods o un micrófono externo para mejor calidad"
+        ],
+        "apps": [
+          { "name": "Notas de Voz", "description": "Integrada, simple y confiable" },
+          { "name": "Just Press Record", "description": "Sincronización en la nube entre dispositivos Apple" },
+          { "name": "Recorder", "description": "Simple y fácil de usar" }
+        ]
+      },
+      "android": {
+        "name": "Android",
+        "steps": [
+          "Abre tu aplicación Voice Recorder predeterminada (o descarga una de Play Store)",
+          "Toca el botón de grabar para empezar",
+          "Mantén tu teléfono a 15-30 cm del hablante",
+          "Toca detener cuando hayas terminado",
+          "Guarda la grabación con un nombre descriptivo",
+          "Comparte vía email, almacenamiento en la nube o sube directamente a nuestro sitio"
+        ],
+        "tips": [
+          "Activa el modo 'No Molestar' para evitar interrupciones",
+          "Usa el micrófono inferior del teléfono para mejor captación",
+          "Mantén el dispositivo estable durante la grabación"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Simple y efectiva" },
+          { "name": "Easy Voice Recorder", "description": "Alta calidad con respaldo en la nube" },
+          { "name": "Smart Recorder", "description": "Reducción automática de ruido" }
+        ]
+      },
+      "mac": {
+        "name": "Mac",
+        "steps": [
+          "Abre QuickTime Player (encontrado en la carpeta Aplicaciones)",
+          "Ve a Archivo > Nueva Grabación de Audio",
+          "Haz clic en el botón rojo de grabar",
+          "Posiciónate a 30-60 cm del micrófono integrado",
+          "Haz clic en detener cuando hayas terminado",
+          "Guarda el archivo (Archivo > Guardar) y súbelo a nuestro sitio"
+        ],
+        "tips": [
+          "Usa un micrófono USB externo para calidad profesional",
+          "Cierra otras aplicaciones para evitar sonidos de notificación",
+          "Graba en una habitación con muebles suaves para reducir el eco"
+        ],
+        "apps": [
+          { "name": "QuickTime Player", "description": "Integrado y confiable" },
+          { "name": "Audacity", "description": "Gratis, edición de audio profesional" },
+          { "name": "GarageBand", "description": "Características avanzadas para música y podcasting" }
+        ]
+      },
+      "windows": {
+        "name": "PC Windows",
+        "steps": [
+          "Abre la aplicación Voice Recorder (búscala en el menú Inicio)",
+          "Haz clic en el botón del micrófono para empezar a grabar",
+          "Habla claramente al micrófono de tu computadora",
+          "Haz clic en detener cuando hayas terminado",
+          "La grabación se guardará automáticamente",
+          "Haz clic derecho en la grabación para encontrar la ubicación del archivo y subirlo"
+        ],
+        "tips": [
+          "Usa auriculares USB para mejor calidad de audio",
+          "Cierra pestañas del navegador y otras aplicaciones para reducir ruido de fondo",
+          "Posiciona el micrófono lejos del teclado y ratón"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Aplicación integrada de Windows" },
+          { "name": "Audacity", "description": "Editor de audio gratuito, multiplataforma" },
+          { "name": "OBS Studio", "description": "Grabación avanzada con múltiples fuentes" }
+        ]
+      }
+    },
+    "videoCall": {
+      "title": "¿Grabando una videollamada o reunión?",
+      "description": "La mayoría de herramientas de videoconferencia (Zoom, Teams, Google Meet) tienen funciones de grabación integradas. ¡Simplemente graba tu reunión y sube el archivo de video directamente - extraeremos y transcribiremos el audio!"
     }
   },
   "notifications": {
@@ -211,5 +381,148 @@
     "terms": "Términos de servicio",
     "contact": "Contáctanos",
     "about": "Acerca de"
+  },
+  "landing": {
+    "hero": {
+      "byline": "Por Olympia Tech",
+      "trustIndicators": {
+        "users": "10,000+ usuarios",
+        "rating": "4.9/5 calificación",
+        "certified": "Certificado SOC 2"
+      },
+      "title": "Transforma audio en",
+      "titleHighlight": "información accionable",
+      "subtitle": "Transcripción impulsada por IA que convierte tus reuniones, entrevistas y notas de voz en transcripciones perfectas y resúmenes inteligentes en segundos.",
+      "cta": {
+        "primary": "Iniciar prueba gratuita",
+        "secondary": "Ver cómo funciona"
+      },
+      "guarantee": "Sin tarjeta de crédito • 3 transcripciones gratis • Cancela cuando quieras",
+      "features": {
+        "saveTime": "Ahorra 10+ horas/semana",
+        "accuracy": "99.5% de precisión",
+        "languages": "50+ idiomas"
+      }
+    },
+    "features": {
+      "title": "Funciones poderosas para cada profesional",
+      "ai": {
+        "title": "Resúmenes impulsados por IA",
+        "description": "Obtén resúmenes ejecutivos con puntos clave, tareas pendientes e insights"
+      },
+      "largeFiles": {
+        "title": "Soporte para archivos grandes",
+        "description": "Maneja archivos de hasta 500MB con división inteligente automática"
+      },
+      "security": {
+        "title": "Seguridad empresarial",
+        "description": "Cifrado de nivel bancario, cumple con GDPR, eliminación automática de archivos"
+      },
+      "demo": {
+        "dragDrop": "Arrastra y suelta tu archivo de audio aquí",
+        "record": "O graba directamente desde cualquier dispositivo"
+      }
+    },
+    "howItWorks": {
+      "title": "3 pasos simples para transcripciones perfectas",
+      "subtitle": "Comienza en menos de 60 segundos",
+      "step1": {
+        "title": "Graba en cualquier lugar",
+        "description": "Usa tu teléfono, Zoom o cualquier app de grabación. Soportamos todos los formatos principales incluyendo M4A, MP3, WAV y más."
+      },
+      "step2": {
+        "title": "IA procesa al instante",
+        "description": "Nuestra IA avanzada (OpenAI Whisper) transcribe con 99.5% de precisión, manejando términos técnicos y múltiples hablantes."
+      },
+      "step3": {
+        "title": "Obtén resultados perfectos",
+        "description": "Recibe una transcripción completa y resumen ejecutivo con puntos clave. Exporta, comparte o integra con tu flujo de trabajo."
+      }
+    },
+    "security": {
+      "title": "Tu privacidad es nuestra prioridad",
+      "encryption": {
+        "title": "Cifrado de nivel bancario",
+        "description": "Cifrado AES-256 para todas las transferencias y almacenamiento de datos"
+      },
+      "retention": {
+        "title": "Cero retención de datos",
+        "description": "Los archivos de audio se eliminan automáticamente después del procesamiento"
+      },
+      "compliance": {
+        "title": "Compatible con GDPR y CCPA",
+        "description": "Tus datos nunca se usan para entrenamiento ni se comparten"
+      },
+      "audit": {
+        "title": "Certificado SOC 2 Tipo II",
+        "description": "Prácticas de seguridad auditadas independientemente"
+      },
+      "badges": {
+        "ssl": "SSL de 256 bits",
+        "soc2": "SOC 2",
+        "gdpr": "GDPR",
+        "iso": "ISO 27001"
+      }
+    },
+    "testimonials": {
+      "title": "Amado por profesionales en todo el mundo",
+      "rating": "4.9/5 de más de 2,000 reseñas",
+      "testimonial1": {
+        "quote": "Esta herramienta ha revolucionado mi flujo de trabajo en reuniones. Puedo concentrarme en la conversación en lugar de tomar notas. Los resúmenes son increíblemente precisos.",
+        "author": "Sarah Martinez",
+        "role": "Gerente de Producto en TechCorp"
+      },
+      "testimonial2": {
+        "quote": "La precisión es increíble. Maneja perfectamente términos técnicos y múltiples hablantes. Me ahorra horas de trabajo de transcripción cada semana.",
+        "author": "Dr. James Liu",
+        "role": "Director de Investigación"
+      },
+      "testimonial3": {
+        "quote": "Como periodista, esta herramienta es invaluable. Puedo realizar entrevistas naturalmente y obtener transcripciones perfectas en minutos. ¡Un cambio radical!",
+        "author": "Emily Chen",
+        "role": "Periodista Senior"
+      }
+    },
+    "cta": {
+      "title": "¿Listo para ahorrar horas cada semana?",
+      "subtitle": "Únete a más de 10,000 profesionales que han transformado su flujo de trabajo con Neural Notes. Comienza tu prueba gratuita hoy - sin tarjeta de crédito.",
+      "button": "Iniciar prueba gratuita",
+      "benefits": {
+        "free": "3 transcripciones gratis",
+        "noCard": "Sin tarjeta de crédito",
+        "cancel": "Cancela cuando quieras"
+      }
+    },
+    "nav": {
+      "login": "Iniciar sesión",
+      "getStarted": "Comenzar"
+    },
+    "footer": {
+      "product": {
+        "title": "Producto",
+        "features": "Características",
+        "pricing": "Precios",
+        "api": "API"
+      },
+      "company": {
+        "title": "Empresa",
+        "about": "Acerca de",
+        "blog": "Blog",
+        "careers": "Carreras"
+      },
+      "support": {
+        "title": "Soporte",
+        "help": "Centro de ayuda",
+        "contact": "Contacto",
+        "status": "Estado"
+      },
+      "legal": {
+        "title": "Legal",
+        "privacy": "Privacidad",
+        "terms": "Términos",
+        "security": "Seguridad"
+      },
+      "copyright": "© 2024 Neural Notes por Olympia Tech. Todos los derechos reservados."
+    }
   }
 }

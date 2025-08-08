@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Neural Notes",
+    "appName": "Neural Summary",
     "loading": "Laden...",
     "error": "Fout",
     "success": "Succes",
@@ -24,6 +24,7 @@
     "share": "Delen",
     "export": "Exporteren",
     "import": "Importeren",
+    "open": "Openen",
     "language": "Taal"
   },
   "auth": {
@@ -41,7 +42,7 @@
     "dontHaveAccount": "Heb je nog geen account?",
     "createAccount": "Account aanmaken",
     "welcomeBack": "Welkom terug!",
-    "signInToContinue": "Log in om door te gaan naar Neural Notes",
+    "signInToContinue": "Log in om door te gaan naar Neural Summary",
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
     "accountCreated": "Account succesvol aangemaakt",
     "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
@@ -55,9 +56,12 @@
     "welcome": "Welkom, {name}!",
     "recentTranscriptions": "Recente transcripties",
     "uploadAudio": "Audio uploaden",
+    "uploadAudioFiles": "Audiobestanden uploaden",
     "transcriptionHistory": "Transcriptiegeschiedenis",
+    "yourTranscriptions": "Jouw transcripties",
     "howItWorks": "Hoe het werkt",
     "recordingGuide": "Opnamegids",
+    "howToRecord": "Hoe je audio opneemt op elk apparaat",
     "noTranscriptions": "Nog geen transcripties",
     "uploadYourFirst": "Upload je eerste audiobestand om te beginnen"
   },
@@ -65,21 +69,59 @@
     "title": "Audiobestand uploaden",
     "dragDrop": "Sleep je audiobestand hierheen of klik om te bladeren",
     "dragDropActive": "Laat het bestand hier vallen...",
+    "releaseToUpload": "Loslaten om te uploaden!",
+    "transcriptionStartsImmediately": "Je transcriptie begint direct",
+    "dropAudioHere": "Laat je audiobestand hier vallen",
+    "orClickToBrowse": "of klik om te bladeren vanaf je apparaat",
+    "selectAudioFile": "Selecteer audiobestand",
+    "instantProcessing": "Directe verwerking",
+    "secure": "100% veilig",
+    "aiPowered": "AI-aangedreven",
     "supportedFormats": "Ondersteunde formaten: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "supportedFormatsShort": "Ondersteunt: {formats} • Max {size} • Meerdere bestanden",
     "maxFileSize": "Maximale bestandsgrootte: 500MB",
     "selectFile": "Selecteer audiobestand",
     "addContext": "Context toevoegen (optioneel)",
-    "contextPlaceholder": "Geef context over de audio (bijv. onderwerp van vergadering, deelnemers, technische termen)...",
+    "boostAccuracy": "🎯 Verbeter de nauwkeurigheid met 40% met slechts één regel context",
+    "contextStats": "93% van de gebruikers die context toevoegen rapporteren betere resultaten • Duurt slechts 10 seconden",
+    "contextPlaceholder": "Voorbeeld: 'Marketingvergadering met John en Sarah over Q4-strategie' of 'Medische consultatie over diabetesbehandeling'",
     "contextHelp": "Context helpt de nauwkeurigheid van transcriptie en de kwaliteit van de samenvatting te verbeteren",
+    "improvesTechnicalTerms": "Verbetert technische termen",
+    "betterSpeakerRecognition": "Betere sprekerherkenning",
+    "smarterSummaries": "Slimmere samenvattingen",
+    "greatThisWillHelp": "✨ Geweldig! Dit zal veel helpen",
+    "selectedFiles": "Geselecteerde bestanden:",
+    "uploadFiles": "Upload {count} bestand(en)",
     "uploading": "Uploaden...",
     "processing": "Verwerken...",
     "uploadProgress": "Upload voortgang: {progress}%",
     "processingProgress": "Verwerken: {progress}%",
     "uploadComplete": "Upload voltooid! Transcriptie wordt verwerkt...",
     "transcriptionComplete": "Transcriptie voltooid!",
+    "uploadErrors": "Upload fouten:",
+    "howItWorksAndTips": "Hoe het werkt & tips",
+    "features": "Kenmerken",
+    "instantProcessingOnUpload": "Directe verwerking start bij upload",
+    "multipleSpeakerDetection": "Meerdere sprekers detectie",
+    "languagesSupported": "50+ talen ondersteund",
+    "accuracyRate": "99,5% nauwkeurigheid",
+    "security": "Beveiliging",
+    "encryption": "256-bit SSL encryptie",
+    "gdprCompliant": "GDPR & CCPA conform",
+    "autoDeleteAfterProcessing": "Auto-verwijderen na verwerking",
+    "noDataSharing": "Geen gegevensdeling",
+    "proTips": "Pro tips",
+    "recordQuietEnvironment": "Neem op in een stille omgeving",
+    "speakClearlyNormalPace": "Spreek duidelijk en in normaal tempo",
+    "addContextForTechnicalTerms": "Voeg context toe voor technische termen",
+    "uploadMultipleFilesAtOnce": "Upload meerdere bestanden tegelijk",
     "error": {
       "fileSize": "Bestandsgrootte overschrijdt limiet van 500MB",
+      "fileTooLarge": "Bestand te groot (max 100MB)",
+      "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege OpenAI Whisper API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
       "fileType": "Niet-ondersteund bestandstype",
+      "unsupportedFormat": "Niet-ondersteund formaat (type: {type})",
+      "invalidFileType": "Ongeldig bestandstype. Ondersteunde formaten: {formats}",
       "uploadFailed": "Upload mislukt. Probeer het opnieuw.",
       "processingFailed": "Verwerking mislukt. Probeer het opnieuw."
     }
@@ -88,6 +130,13 @@
     "title": "Transcriptie",
     "summary": "Samenvatting",
     "transcript": "Transcript",
+    "fullTranscript": "Volledig transcript",
+    "hideTranscript": "Transcript verbergen",
+    "showTranscript": "Transcript tonen",
+    "showFormatted": "Geformatteerd tonen",
+    "showRaw": "Onbewerkt tonen",
+    "untitled": "Naamloos",
+    "editTitle": "Titel bewerken",
     "details": "Details",
     "fileName": "Bestandsnaam",
     "uploadDate": "Uploaddatum",
@@ -99,6 +148,7 @@
     "viewTranscription": "Transcriptie bekijken",
     "downloadTranscript": "Transcript downloaden",
     "downloadSummary": "Samenvatting downloaden",
+    "downloadAsText": "Downloaden als tekst",
     "regenerateSummary": "Samenvatting opnieuw genereren",
     "addComment": "Opmerking toevoegen",
     "deleteTranscription": "Transcriptie verwijderen",
@@ -108,10 +158,25 @@
     "status_processing": "Verwerken",
     "status_completed": "Voltooid",
     "status_failed": "Mislukt",
+    "processingAudio": "Audio verwerken...",
+    "analyzingContent": "Inhoud analyseren...",
+    "generatingSummary": "Samenvatting genereren...",
+    "almostDone": "Bijna klaar...",
     "noTranscriptAvailable": "Geen transcript beschikbaar",
     "noSummaryAvailable": "Geen samenvatting beschikbaar",
+    "errorOccurred": "Er is een fout opgetreden",
+    "showTechnicalDetails": "Technische details tonen",
+    "hideTechnicalDetails": "Technische details verbergen",
     "copyToClipboard": "Kopiëren naar klembord",
-    "shareTranscription": "Transcriptie delen"
+    "copyTranscript": "Transcript kopiëren",
+    "copySummary": "Samenvatting kopiëren",
+    "shareTranscription": "Transcriptie delen",
+    "failedToLoad": "Laden van transcripties mislukt",
+    "failedToDelete": "Verwijderen van transcriptie mislukt",
+    "failedToUpdateTitle": "Bijwerken van titel mislukt",
+    "close": "Sluiten",
+    "view": "Bekijken",
+    "delete": "Verwijderen"
   },
   "howItWorks": {
     "title": "Hoe het werkt",
@@ -164,6 +229,111 @@
       "ios": "iOS: Dictafoon, Just Press Record",
       "android": "Android: Voice Recorder, Easy Voice Recorder",
       "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    },
+    "proTips": {
+      "title": "Pro opnametips voor de beste resultaten",
+      "audioQuality": "Audiokwaliteit:",
+      "audioQualityDesc": "Neem op in een stille omgeving, spreek duidelijk en houd een constante afstand tot de microfoon",
+      "useHeadphones": "Gebruik koptelefoon:",
+      "useHeadphonesDesc": "Als je een videogesprek opneemt, gebruik dan een koptelefoon om echo te voorkomen",
+      "fileSize": "Bestandsgrootte:",
+      "fileSizeDesc": "Voor bestanden groter dan 25MB, zorg voor een stabiele internetverbinding tijdens het uploaden",
+      "format": "Formaat:",
+      "formatDesc": "We ondersteunen M4A, MP3, WAV, MP4, WEBM en MPEG formaten tot 100MB"
+    },
+    "recordingInstructions": "Opname-instructies per apparaat",
+    "stepByStep": "Stap-voor-stap instructies:",
+    "quickTips": "Snelle tips:",
+    "recommendedApps": "Aanbevolen apps:",
+    "platforms": {
+      "ios": {
+        "name": "iPhone / iPad",
+        "steps": [
+          "Open de Dictafoon-app (voorgeïnstalleerd op alle iOS-apparaten)",
+          "Tik op de rode opnameknop om te beginnen met opnemen",
+          "Plaats je apparaat 15-30 cm van de spreker voor optimale kwaliteit",
+          "Tik op stop wanneer je klaar bent",
+          "Tik op de opname om deze te hernoemen",
+          "Tik op de deel-knop en selecteer 'Bewaar naar Bestanden' of upload direct naar onze site"
+        ],
+        "tips": [
+          "Schakel 'Vliegtuigmodus' in om onderbrekingen te voorkomen",
+          "Gebruik een stille kamer met minimale echo",
+          "Overweeg het gebruik van AirPods of een externe microfoon voor betere kwaliteit"
+        ],
+        "apps": [
+          { "name": "Dictafoon", "description": "Ingebouwd, eenvoudig en betrouwbaar" },
+          { "name": "Just Press Record", "description": "Cloud-sync tussen Apple-apparaten" },
+          { "name": "Recorder", "description": "Eenvoudig en gebruiksvriendelijk" }
+        ]
+      },
+      "android": {
+        "name": "Android",
+        "steps": [
+          "Open je standaard Voice Recorder-app (of download er een uit de Play Store)",
+          "Tik op de opnameknop om te beginnen",
+          "Houd je telefoon 15-30 cm van de spreker",
+          "Tik op stop wanneer je klaar bent",
+          "Sla de opname op met een beschrijvende naam",
+          "Deel via e-mail, cloudopslag of upload direct naar onze site"
+        ],
+        "tips": [
+          "Zet 'Niet storen'-modus aan om onderbrekingen te vermijden",
+          "Gebruik de onderkant microfoon van de telefoon voor betere opname",
+          "Houd het apparaat stil tijdens het opnemen"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Eenvoudig en effectief" },
+          { "name": "Easy Voice Recorder", "description": "Hoge kwaliteit met cloud backup" },
+          { "name": "Smart Recorder", "description": "Automatische ruisonderdrukking" }
+        ]
+      },
+      "mac": {
+        "name": "Mac",
+        "steps": [
+          "Open QuickTime Player (te vinden in de Applicaties map)",
+          "Ga naar Bestand > Nieuwe audio-opname",
+          "Klik op de rode opnameknop",
+          "Positioneer jezelf 30-60 cm van de ingebouwde microfoon",
+          "Klik op stop wanneer je klaar bent",
+          "Sla het bestand op (Bestand > Bewaar) en upload naar onze site"
+        ],
+        "tips": [
+          "Gebruik een externe USB-microfoon voor professionele kwaliteit",
+          "Sluit andere applicaties om meldingsgeluiden te vermijden",
+          "Neem op in een kamer met zachte meubels om echo te verminderen"
+        ],
+        "apps": [
+          { "name": "QuickTime Player", "description": "Ingebouwd en betrouwbaar" },
+          { "name": "Audacity", "description": "Gratis, professionele audiobewerking" },
+          { "name": "GarageBand", "description": "Geavanceerde functies voor muziek en podcasting" }
+        ]
+      },
+      "windows": {
+        "name": "Windows PC",
+        "steps": [
+          "Open de Voice Recorder-app (zoek ernaar in het Start-menu)",
+          "Klik op de microfoon-knop om te beginnen met opnemen",
+          "Spreek duidelijk in de microfoon van je computer",
+          "Klik op stop wanneer je klaar bent",
+          "De opname wordt automatisch opgeslagen",
+          "Rechtsklik op de opname om de bestandslocatie te vinden en te uploaden"
+        ],
+        "tips": [
+          "Gebruik een USB-headset voor betere audiokwaliteit",
+          "Sluit browsertabbladen en andere apps om achtergrondgeluid te verminderen",
+          "Positioneer de microfoon weg van toetsenbord en muis"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Ingebouwde Windows-app" },
+          { "name": "Audacity", "description": "Gratis, cross-platform audio-editor" },
+          { "name": "OBS Studio", "description": "Geavanceerde opname met meerdere bronnen" }
+        ]
+      }
+    },
+    "videoCall": {
+      "title": "Een videogesprek of vergadering opnemen?",
+      "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij extraheren en transcriberen de audio!"
     }
   },
   "notifications": {
@@ -206,10 +376,153 @@
     "es": "Español"
   },
   "footer": {
-    "copyright": "© 2024 Neural Notes. Alle rechten voorbehouden.",
+    "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden.",
     "privacy": "Privacybeleid",
     "terms": "Servicevoorwaarden",
     "contact": "Contact",
     "about": "Over ons"
+  },
+  "landing": {
+    "hero": {
+      "byline": "Door Olympia Tech",
+      "trustIndicators": {
+        "users": "10.000+ gebruikers",
+        "rating": "4.9/5 beoordeling",
+        "certified": "SOC 2 gecertificeerd"
+      },
+      "title": "Transformeer audio naar",
+      "titleHighlight": "bruikbare inzichten",
+      "subtitle": "AI-gestuurde transcriptie die je vergaderingen, interviews en spraaknotities omzet in perfecte transcripties en slimme samenvattingen in seconden.",
+      "cta": {
+        "primary": "Start gratis proef",
+        "secondary": "Zie hoe het werkt"
+      },
+      "guarantee": "Geen creditcard vereist • 3 gratis transcripties • Altijd opzegbaar",
+      "features": {
+        "saveTime": "Bespaar 10+ uur/week",
+        "accuracy": "99.5% nauwkeurigheid",
+        "languages": "50+ talen"
+      }
+    },
+    "features": {
+      "title": "Krachtige functies voor elke professional",
+      "ai": {
+        "title": "AI-gestuurde samenvattingen",
+        "description": "Krijg executive samenvattingen met kernpunten, actiepunten en inzichten"
+      },
+      "largeFiles": {
+        "title": "Ondersteuning voor grote bestanden",
+        "description": "Verwerk bestanden tot 500MB met automatische intelligente splitsing"
+      },
+      "security": {
+        "title": "Enterprise beveiliging",
+        "description": "Bankniveau encryptie, GDPR-compliant, automatische bestandsverwijdering"
+      },
+      "demo": {
+        "dragDrop": "Sleep je audiobestand hier",
+        "record": "Of neem direct op vanaf elk apparaat"
+      }
+    },
+    "howItWorks": {
+      "title": "3 eenvoudige stappen naar perfecte transcripties",
+      "subtitle": "Begin in minder dan 60 seconden",
+      "step1": {
+        "title": "Neem overal op",
+        "description": "Gebruik je telefoon, Zoom of elke opname-app. We ondersteunen alle grote audioformaten inclusief M4A, MP3, WAV en meer."
+      },
+      "step2": {
+        "title": "AI verwerkt direct",
+        "description": "Onze geavanceerde AI (OpenAI Whisper) transcribeert met 99.5% nauwkeurigheid, verwerkt technische termen en meerdere sprekers."
+      },
+      "step3": {
+        "title": "Krijg perfecte resultaten",
+        "description": "Ontvang een volledige transcriptie en executive samenvatting met kernpunten. Exporteer, deel of integreer met je workflow."
+      }
+    },
+    "security": {
+      "title": "Jouw privacy is onze prioriteit",
+      "encryption": {
+        "title": "Bankniveau encryptie",
+        "description": "AES-256 encryptie voor alle gegevensoverdrachten en opslag"
+      },
+      "retention": {
+        "title": "Geen gegevensbehoud",
+        "description": "Audiobestanden worden automatisch verwijderd na verwerking"
+      },
+      "compliance": {
+        "title": "GDPR & CCPA compliant",
+        "description": "Je gegevens worden nooit gebruikt voor training of gedeeld"
+      },
+      "audit": {
+        "title": "SOC 2 Type II gecertificeerd",
+        "description": "Onafhankelijk gecontroleerde beveiligingspraktijken"
+      },
+      "badges": {
+        "ssl": "256-bit SSL",
+        "soc2": "SOC 2",
+        "gdpr": "GDPR",
+        "iso": "ISO 27001"
+      }
+    },
+    "testimonials": {
+      "title": "Geliefd door professionals wereldwijd",
+      "rating": "4.9/5 uit meer dan 2.000 beoordelingen",
+      "testimonial1": {
+        "quote": "Deze tool heeft mijn vergaderworkflow gerevolutioneerd. Ik kan me concentreren op het gesprek in plaats van notities te maken. De samenvattingen zijn ongelooflijk nauwkeurig.",
+        "author": "Sarah Martinez",
+        "role": "Product Manager bij TechCorp"
+      },
+      "testimonial2": {
+        "quote": "De nauwkeurigheid is ongelooflijk. Het verwerkt technische termen en meerdere sprekers perfect. Bespaart me uren transcriptiewerk elke week.",
+        "author": "Dr. James Liu",
+        "role": "Onderzoeksdirecteur"
+      },
+      "testimonial3": {
+        "quote": "Als journalist is deze tool onmisbaar. Ik kan natuurlijk interviews afnemen en binnen enkele minuten perfecte transcripties krijgen. Een gamechanger!",
+        "author": "Emily Chen",
+        "role": "Senior Journalist"
+      }
+    },
+    "cta": {
+      "title": "Klaar om uren per week te besparen?",
+      "subtitle": "Sluit je aan bij 10.000+ professionals die hun workflow hebben getransformeerd met Neural Summary. Start vandaag je gratis proef - geen creditcard vereist.",
+      "button": "Start gratis proef",
+      "benefits": {
+        "free": "3 gratis transcripties",
+        "noCard": "Geen creditcard",
+        "cancel": "Altijd opzegbaar"
+      }
+    },
+    "nav": {
+      "login": "Inloggen",
+      "getStarted": "Aan de slag"
+    },
+    "footer": {
+      "product": {
+        "title": "Product",
+        "features": "Functies",
+        "pricing": "Prijzen",
+        "api": "API"
+      },
+      "company": {
+        "title": "Bedrijf",
+        "about": "Over ons",
+        "blog": "Blog",
+        "careers": "Carrières"
+      },
+      "support": {
+        "title": "Ondersteuning",
+        "help": "Helpcentrum",
+        "contact": "Contact",
+        "status": "Status"
+      },
+      "legal": {
+        "title": "Juridisch",
+        "privacy": "Privacy",
+        "terms": "Voorwaarden",
+        "security": "Beveiliging"
+      },
+      "copyright": "© 2024 Neural Summary door Olympia Tech. Alle rechten voorbehouden."
+    }
   }
 }

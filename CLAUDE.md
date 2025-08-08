@@ -1,4 +1,4 @@
-# Transcribe Web Application
+# Neural Summary Web Application
 
 ## Project Overview
 A production-ready web application for audio transcription and summarization using OpenAI's Whisper API and GPT-4. Features automatic audio splitting for large files (up to 500MB), real-time progress tracking via WebSockets, and intelligent context-aware summarization. Originally a CLI tool, now a full-stack monorepo application with enterprise-grade features.
@@ -283,6 +283,78 @@ If you encounter an index error, click the link in the error message to create i
 - Service account keys never committed to repository
 - Redis password protection in production
 - HTTPS enforcement in production deployment
+
+## SEO Guidelines for Landing Page
+
+### IMPORTANT: All changes to the landing page MUST follow these SEO best practices:
+
+#### 1. **Page Structure Requirements**
+- Landing page MUST be a server component (not 'use client') for optimal SEO
+- Use Next.js Metadata API for all meta tags
+- Include JSON-LD structured data for Organization, SoftwareApplication, and FAQ schemas
+- Maintain proper HTML semantic structure (header, nav, main, section, article, footer)
+
+#### 2. **Meta Tags Checklist**
+- Title: 50-60 characters, include primary keywords
+- Description: 150-155 characters, compelling call-to-action
+- Keywords: Include relevant search terms (audio transcription, AI transcription, speech to text)
+- Open Graph tags for social media sharing
+- Twitter Card metadata
+- Canonical URLs and hreflang tags for all supported languages
+
+#### 3. **Content Optimization**
+- H1 tag: Single, descriptive, includes main keyword
+- H2/H3 tags: Logical hierarchy for sections
+- Alt text: Descriptive alt text for ALL images
+- ARIA labels: For interactive elements and navigation
+- Focus keywords naturally integrated in content
+
+#### 4. **Technical SEO Files**
+- robots.txt: Must exist in /public with proper directives
+- sitemap.ts: Dynamic sitemap generation for all locales
+- Structured data: JSON-LD scripts with proper schema.org markup
+
+#### 5. **Performance & Accessibility**
+- Image optimization: Width/height attributes, lazy loading for below-fold images
+- Semantic HTML: Use proper elements (nav, section, article, blockquote, cite)
+- ARIA attributes: aria-label, aria-labelledby, aria-hidden for decorative elements
+- Mobile-first responsive design
+
+#### 6. **Landing Page File Locations**
+- Main landing: `/apps/web/app/[locale]/landing/page.tsx`
+- Layout metadata: `/apps/web/app/[locale]/layout.tsx`
+- Sitemap: `/apps/web/app/sitemap.ts`
+- Robots: `/apps/web/public/robots.txt`
+
+### Example Landing Page Structure:
+```tsx
+// Server component with metadata
+export const metadata: Metadata = {
+  title: 'Neural Notes - AI-Powered Audio Transcription',
+  description: 'Transform audio into accurate transcripts...',
+  // ... comprehensive metadata
+};
+
+// JSON-LD structured data component
+function JsonLd() {
+  return <script type="application/ld+json">...</script>;
+}
+
+// Main component with semantic HTML
+export default function LandingPage() {
+  return (
+    <>
+      <JsonLd />
+      <header>...</header>
+      <main>
+        <section aria-label="Hero">...</section>
+        <section aria-labelledby="features-heading">...</section>
+      </main>
+      <footer>...</footer>
+    </>
+  );
+}
+```
 
 ## Original CLI Functionality
 The original CLI transcription tool is preserved in the `cli/` directory. It accepts audio files, optional context, and generates transcripts and summaries using the same OpenAI services.

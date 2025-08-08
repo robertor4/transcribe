@@ -6,7 +6,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { UserService } from './user.service';
 import { ApiResponse, User } from '@transcribe/shared';
@@ -23,7 +23,7 @@ export class UserController {
     
     return {
       success: true,
-      data: user,
+      data: user || undefined,
     };
   }
 

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Neural Notes",
+    "appName": "Neural Summary",
     "loading": "Laden...",
     "error": "Fehler",
     "success": "Erfolg",
@@ -24,6 +24,7 @@
     "share": "Teilen",
     "export": "Exportieren",
     "import": "Importieren",
+    "open": "Öffnen",
     "language": "Sprache"
   },
   "auth": {
@@ -41,7 +42,7 @@
     "dontHaveAccount": "Haben Sie noch kein Konto?",
     "createAccount": "Konto erstellen",
     "welcomeBack": "Willkommen zurück!",
-    "signInToContinue": "Melden Sie sich an, um zu Neural Notes fortzufahren",
+    "signInToContinue": "Melden Sie sich an, um zu Neural Summary fortzufahren",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
     "accountCreated": "Konto erfolgreich erstellt",
     "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
@@ -55,9 +56,12 @@
     "welcome": "Willkommen, {name}!",
     "recentTranscriptions": "Neueste Transkriptionen",
     "uploadAudio": "Audio hochladen",
+    "uploadAudioFiles": "Audiodateien hochladen",
     "transcriptionHistory": "Transkriptionsverlauf",
+    "yourTranscriptions": "Ihre Transkriptionen",
     "howItWorks": "So funktioniert's",
     "recordingGuide": "Aufnahmeanleitung",
+    "howToRecord": "Wie Sie Audio auf jedem Gerät aufnehmen",
     "noTranscriptions": "Noch keine Transkriptionen",
     "uploadYourFirst": "Laden Sie Ihre erste Audiodatei hoch, um zu beginnen"
   },
@@ -65,21 +69,59 @@
     "title": "Audiodatei hochladen",
     "dragDrop": "Ziehen Sie Ihre Audiodatei hierher oder klicken Sie zum Durchsuchen",
     "dragDropActive": "Datei hier ablegen...",
+    "releaseToUpload": "Loslassen zum Hochladen!",
+    "transcriptionStartsImmediately": "Ihre Transkription beginnt sofort",
+    "dropAudioHere": "Lassen Sie Ihre Audiodatei hier fallen",
+    "orClickToBrowse": "oder klicken Sie, um von Ihrem Gerät zu durchsuchen",
+    "selectAudioFile": "Audiodatei auswählen",
+    "instantProcessing": "Sofortige Verarbeitung",
+    "secure": "100% sicher",
+    "aiPowered": "KI-gestützt",
     "supportedFormats": "Unterstützte Formate: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
+    "supportedFormatsShort": "Unterstützt: {formats} • Max {size} • Mehrere Dateien",
     "maxFileSize": "Maximale Dateigröße: 500MB",
     "selectFile": "Audiodatei auswählen",
     "addContext": "Kontext hinzufügen (Optional)",
-    "contextPlaceholder": "Geben Sie Kontext zur Audiodatei an (z.B. Besprechungsthema, Teilnehmer, technische Begriffe)...",
+    "boostAccuracy": "🎯 Steigern Sie die Genauigkeit um 40% mit nur einer Zeile Kontext",
+    "contextStats": "93% der Nutzer, die Kontext hinzufügen, berichten von besseren Ergebnissen • Dauert nur 10 Sekunden",
+    "contextPlaceholder": "Beispiel: 'Marketing-Meeting mit John und Sarah über Q4-Strategie' oder 'Medizinische Beratung zur Diabetes-Behandlung'",
     "contextHelp": "Kontext hilft, die Transkriptionsgenauigkeit und Zusammenfassungsqualität zu verbessern",
+    "improvesTechnicalTerms": "Verbessert technische Begriffe",
+    "betterSpeakerRecognition": "Bessere Sprechererkennung",
+    "smarterSummaries": "Intelligentere Zusammenfassungen",
+    "greatThisWillHelp": "✨ Großartig! Das wird sehr helfen",
+    "selectedFiles": "Ausgewählte Dateien:",
+    "uploadFiles": "{count} Datei(en) hochladen",
     "uploading": "Hochladen...",
     "processing": "Verarbeiten...",
     "uploadProgress": "Upload-Fortschritt: {progress}%",
     "processingProgress": "Verarbeitung: {progress}%",
     "uploadComplete": "Upload abgeschlossen! Transkription wird verarbeitet...",
     "transcriptionComplete": "Transkription abgeschlossen!",
+    "uploadErrors": "Upload-Fehler:",
+    "howItWorksAndTips": "Wie es funktioniert & Tipps",
+    "features": "Funktionen",
+    "instantProcessingOnUpload": "Sofortige Verarbeitung beginnt beim Upload",
+    "multipleSpeakerDetection": "Erkennung mehrerer Sprecher",
+    "languagesSupported": "50+ Sprachen unterstützt",
+    "accuracyRate": "99,5% Genauigkeit",
+    "security": "Sicherheit",
+    "encryption": "256-Bit SSL-Verschlüsselung",
+    "gdprCompliant": "DSGVO & CCPA konform",
+    "autoDeleteAfterProcessing": "Automatisches Löschen nach Verarbeitung",
+    "noDataSharing": "Keine Datenweitergabe",
+    "proTips": "Profi-Tipps",
+    "recordQuietEnvironment": "In ruhiger Umgebung aufnehmen",
+    "speakClearlyNormalPace": "Klar und in normalem Tempo sprechen",
+    "addContextForTechnicalTerms": "Kontext für technische Begriffe hinzufügen",
+    "uploadMultipleFilesAtOnce": "Mehrere Dateien gleichzeitig hochladen",
     "error": {
       "fileSize": "Dateigröße überschreitet 500MB-Limit",
+      "fileTooLarge": "Datei zu groß (max 100MB)",
+      "fileTooLargeWhisper": "Datei ist zu groß. Maximale Größe ist 25MB aufgrund der OpenAI Whisper API-Begrenzung. Für größere Dateien sollten Sie diese aufteilen.",
       "fileType": "Nicht unterstützter Dateityp",
+      "unsupportedFormat": "Nicht unterstütztes Format (Typ: {type})",
+      "invalidFileType": "Ungültiger Dateityp. Unterstützte Formate: {formats}",
       "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "processingFailed": "Verarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut."
     }
@@ -88,6 +130,13 @@
     "title": "Transkription",
     "summary": "Zusammenfassung",
     "transcript": "Transkript",
+    "fullTranscript": "Vollständiges Transkript",
+    "hideTranscript": "Transkript ausblenden",
+    "showTranscript": "Transkript anzeigen",
+    "showFormatted": "Formatiert anzeigen",
+    "showRaw": "Roh anzeigen",
+    "untitled": "Ohne Titel",
+    "editTitle": "Titel bearbeiten",
     "details": "Details",
     "fileName": "Dateiname",
     "uploadDate": "Upload-Datum",
@@ -99,6 +148,7 @@
     "viewTranscription": "Transkription anzeigen",
     "downloadTranscript": "Transkript herunterladen",
     "downloadSummary": "Zusammenfassung herunterladen",
+    "downloadAsText": "Als Text herunterladen",
     "regenerateSummary": "Zusammenfassung neu generieren",
     "addComment": "Kommentar hinzufügen",
     "deleteTranscription": "Transkription löschen",
@@ -108,10 +158,25 @@
     "status_processing": "Verarbeitung",
     "status_completed": "Abgeschlossen",
     "status_failed": "Fehlgeschlagen",
+    "processingAudio": "Audio verarbeiten...",
+    "analyzingContent": "Inhalt analysieren...",
+    "generatingSummary": "Zusammenfassung generieren...",
+    "almostDone": "Fast fertig...",
     "noTranscriptAvailable": "Kein Transkript verfügbar",
     "noSummaryAvailable": "Keine Zusammenfassung verfügbar",
+    "errorOccurred": "Ein Fehler ist aufgetreten",
+    "showTechnicalDetails": "Technische Details anzeigen",
+    "hideTechnicalDetails": "Technische Details ausblenden",
     "copyToClipboard": "In Zwischenablage kopieren",
-    "shareTranscription": "Transkription teilen"
+    "copyTranscript": "Transkript kopieren",
+    "copySummary": "Zusammenfassung kopieren",
+    "shareTranscription": "Transkription teilen",
+    "failedToLoad": "Laden der Transkriptionen fehlgeschlagen",
+    "failedToDelete": "Löschen der Transkription fehlgeschlagen",
+    "failedToUpdateTitle": "Aktualisierung des Titels fehlgeschlagen",
+    "close": "Schließen",
+    "view": "Ansehen",
+    "delete": "Löschen"
   },
   "howItWorks": {
     "title": "So funktioniert's",
@@ -164,6 +229,111 @@
       "ios": "iOS: Sprachmemos, Just Press Record",
       "android": "Android: Voice Recorder, Easy Voice Recorder",
       "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    },
+    "proTips": {
+      "title": "Profi-Aufnahmetipps für beste Ergebnisse",
+      "audioQuality": "Audioqualität:",
+      "audioQualityDesc": "Nehmen Sie in einer ruhigen Umgebung auf, sprechen Sie deutlich und halten Sie einen konstanten Abstand zum Mikrofon",
+      "useHeadphones": "Kopfhörer verwenden:",
+      "useHeadphonesDesc": "Wenn Sie einen Videoanruf aufnehmen, verwenden Sie Kopfhörer, um Echo zu vermeiden",
+      "fileSize": "Dateigröße:",
+      "fileSizeDesc": "Für Dateien über 25MB stellen Sie eine stabile Internetverbindung während des Uploads sicher",
+      "format": "Format:",
+      "formatDesc": "Wir unterstützen M4A, MP3, WAV, MP4, WEBM und MPEG Formate bis zu 100MB"
+    },
+    "recordingInstructions": "Aufnahmeanweisungen nach Gerät",
+    "stepByStep": "Schritt-für-Schritt Anleitung:",
+    "quickTips": "Schnelle Tipps:",
+    "recommendedApps": "Empfohlene Apps:",
+    "platforms": {
+      "ios": {
+        "name": "iPhone / iPad",
+        "steps": [
+          "Öffnen Sie die Sprachmemos-App (vorinstalliert auf allen iOS-Geräten)",
+          "Tippen Sie auf den roten Aufnahmeknopf, um mit der Aufnahme zu beginnen",
+          "Platzieren Sie Ihr Gerät 15-30 cm vom Sprecher entfernt für optimale Qualität",
+          "Tippen Sie auf Stopp, wenn Sie fertig sind",
+          "Tippen Sie auf die Aufnahme, um sie umzubenennen",
+          "Tippen Sie auf den Teilen-Button und wählen Sie 'In Dateien sichern' oder laden Sie direkt auf unsere Seite hoch"
+        ],
+        "tips": [
+          "Aktivieren Sie den 'Flugmodus', um Unterbrechungen zu vermeiden",
+          "Nutzen Sie einen ruhigen Raum mit minimaler Echowirkung",
+          "Verwenden Sie AirPods oder ein externes Mikrofon für bessere Qualität"
+        ],
+        "apps": [
+          { "name": "Sprachmemos", "description": "Eingebaut, einfach und zuverlässig" },
+          { "name": "Just Press Record", "description": "Cloud-Sync zwischen Apple-Geräten" },
+          { "name": "Recorder", "description": "Einfach und benutzerfreundlich" }
+        ]
+      },
+      "android": {
+        "name": "Android",
+        "steps": [
+          "Öffnen Sie Ihre Standard-Voice Recorder App (oder laden Sie eine aus dem Play Store herunter)",
+          "Tippen Sie auf den Aufnahmeknopf, um zu starten",
+          "Halten Sie Ihr Telefon 15-30 cm vom Sprecher entfernt",
+          "Tippen Sie auf Stopp, wenn Sie fertig sind",
+          "Speichern Sie die Aufnahme mit einem beschreibenden Namen",
+          "Teilen Sie per E-Mail, Cloud-Speicher oder laden Sie direkt auf unsere Seite hoch"
+        ],
+        "tips": [
+          "Aktivieren Sie den 'Nicht stören'-Modus, um Unterbrechungen zu vermeiden",
+          "Nutzen Sie das untere Mikrofon des Telefons für bessere Aufnahmen",
+          "Halten Sie das Gerät während der Aufnahme ruhig"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Einfach und effektiv" },
+          { "name": "Easy Voice Recorder", "description": "Hohe Qualität mit Cloud-Backup" },
+          { "name": "Smart Recorder", "description": "Automatische Geräuschreduzierung" }
+        ]
+      },
+      "mac": {
+        "name": "Mac",
+        "steps": [
+          "Öffnen Sie QuickTime Player (zu finden im Programme-Ordner)",
+          "Gehen Sie zu Datei > Neue Audioaufnahme",
+          "Klicken Sie auf den roten Aufnahmeknopf",
+          "Positionieren Sie sich 30-60 cm vom eingebauten Mikrofon entfernt",
+          "Klicken Sie auf Stopp, wenn Sie fertig sind",
+          "Speichern Sie die Datei (Datei > Sichern) und laden Sie sie auf unsere Seite hoch"
+        ],
+        "tips": [
+          "Verwenden Sie ein externes USB-Mikrofon für professionelle Qualität",
+          "Schließen Sie andere Anwendungen, um Benachrichtigungstöne zu vermeiden",
+          "Nehmen Sie in einem Raum mit weichen Möbeln auf, um Echo zu reduzieren"
+        ],
+        "apps": [
+          { "name": "QuickTime Player", "description": "Eingebaut und zuverlässig" },
+          { "name": "Audacity", "description": "Kostenlose, professionelle Audiobearbeitung" },
+          { "name": "GarageBand", "description": "Erweiterte Funktionen für Musik und Podcasting" }
+        ]
+      },
+      "windows": {
+        "name": "Windows PC",
+        "steps": [
+          "Öffnen Sie die Voice Recorder App (suchen Sie im Startmenü danach)",
+          "Klicken Sie auf den Mikrofon-Button, um mit der Aufnahme zu beginnen",
+          "Sprechen Sie deutlich in das Mikrofon Ihres Computers",
+          "Klicken Sie auf Stopp, wenn Sie fertig sind",
+          "Die Aufnahme wird automatisch gespeichert",
+          "Rechtsklicken Sie auf die Aufnahme, um den Dateispeicherort zu finden und hochzuladen"
+        ],
+        "tips": [
+          "Verwenden Sie ein USB-Headset für bessere Audioqualität",
+          "Schließen Sie Browser-Tabs und andere Apps, um Hintergrundgeräusche zu reduzieren",
+          "Positionieren Sie das Mikrofon weg von Tastatur und Maus"
+        ],
+        "apps": [
+          { "name": "Voice Recorder", "description": "Eingebaute Windows-App" },
+          { "name": "Audacity", "description": "Kostenloser, plattformübergreifender Audio-Editor" },
+          { "name": "OBS Studio", "description": "Erweiterte Aufnahme mit mehreren Quellen" }
+        ]
+      }
+    },
+    "videoCall": {
+      "title": "Einen Videoanruf oder eine Besprechung aufnehmen?",
+      "description": "Die meisten Videokonferenz-Tools (Zoom, Teams, Google Meet) haben eingebaute Aufnahmefunktionen. Nehmen Sie einfach Ihr Meeting auf und laden Sie die Videodatei direkt hoch - wir extrahieren und transkribieren das Audio!"
     }
   },
   "notifications": {
@@ -206,10 +376,153 @@
     "es": "Español"
   },
   "footer": {
-    "copyright": "© 2024 Neural Notes. Alle Rechte vorbehalten.",
+    "copyright": "© 2024 Neural Summary. Alle Rechte vorbehalten.",
     "privacy": "Datenschutzrichtlinie",
     "terms": "Nutzungsbedingungen",
     "contact": "Kontakt",
     "about": "Über uns"
+  },
+  "landing": {
+    "hero": {
+      "byline": "Von Olympia Tech",
+      "trustIndicators": {
+        "users": "10.000+ Nutzer",
+        "rating": "4,9/5 Bewertung",
+        "certified": "SOC 2 zertifiziert"
+      },
+      "title": "Verwandeln Sie Audio in",
+      "titleHighlight": "verwertbare Erkenntnisse",
+      "subtitle": "KI-gestützte Transkription, die Ihre Meetings, Interviews und Sprachnotizen in perfekte Transkripte und intelligente Zusammenfassungen in Sekunden verwandelt.",
+      "cta": {
+        "primary": "Kostenlose Testversion starten",
+        "secondary": "So funktioniert's"
+      },
+      "guarantee": "Keine Kreditkarte erforderlich • 3 kostenlose Transkriptionen • Jederzeit kündbar",
+      "features": {
+        "saveTime": "Sparen Sie 10+ Stunden/Woche",
+        "accuracy": "99,5% Genauigkeit",
+        "languages": "50+ Sprachen"
+      }
+    },
+    "features": {
+      "title": "Leistungsstarke Funktionen für jeden Profi",
+      "ai": {
+        "title": "KI-gestützte Zusammenfassungen",
+        "description": "Erhalten Sie Executive-Zusammenfassungen mit Kernpunkten, Aktionspunkten und Einblicken"
+      },
+      "largeFiles": {
+        "title": "Unterstützung großer Dateien",
+        "description": "Verarbeiten Sie Dateien bis zu 500 MB mit automatischer intelligenter Aufteilung"
+      },
+      "security": {
+        "title": "Enterprise-Sicherheit",
+        "description": "Verschlüsselung auf Bankniveau, DSGVO-konform, automatische Dateilöschung"
+      },
+      "demo": {
+        "dragDrop": "Ziehen Sie Ihre Audiodatei hierher",
+        "record": "Oder nehmen Sie direkt von jedem Gerät auf"
+      }
+    },
+    "howItWorks": {
+      "title": "3 einfache Schritte zu perfekten Transkriptionen",
+      "subtitle": "Beginnen Sie in weniger als 60 Sekunden",
+      "step1": {
+        "title": "Überall aufnehmen",
+        "description": "Verwenden Sie Ihr Telefon, Zoom oder jede Aufnahme-App. Wir unterstützen alle wichtigen Audioformate einschließlich M4A, MP3, WAV und mehr."
+      },
+      "step2": {
+        "title": "KI verarbeitet sofort",
+        "description": "Unsere fortschrittliche KI (OpenAI Whisper) transkribiert mit 99,5% Genauigkeit und verarbeitet technische Begriffe und mehrere Sprecher."
+      },
+      "step3": {
+        "title": "Perfekte Ergebnisse erhalten",
+        "description": "Erhalten Sie eine vollständige Transkription und Executive-Zusammenfassung mit Kernpunkten. Exportieren, teilen oder in Ihren Workflow integrieren."
+      }
+    },
+    "security": {
+      "title": "Ihre Privatsphäre ist unsere Priorität",
+      "encryption": {
+        "title": "Verschlüsselung auf Bankniveau",
+        "description": "AES-256-Verschlüsselung für alle Datenübertragungen und Speicherung"
+      },
+      "retention": {
+        "title": "Keine Datenspeicherung",
+        "description": "Audiodateien werden nach der Verarbeitung automatisch gelöscht"
+      },
+      "compliance": {
+        "title": "DSGVO & CCPA konform",
+        "description": "Ihre Daten werden niemals für Training verwendet oder geteilt"
+      },
+      "audit": {
+        "title": "SOC 2 Typ II zertifiziert",
+        "description": "Unabhängig geprüfte Sicherheitspraktiken"
+      },
+      "badges": {
+        "ssl": "256-bit SSL",
+        "soc2": "SOC 2",
+        "gdpr": "DSGVO",
+        "iso": "ISO 27001"
+      }
+    },
+    "testimonials": {
+      "title": "Geschätzt von Profis weltweit",
+      "rating": "4,9/5 aus über 2.000 Bewertungen",
+      "testimonial1": {
+        "quote": "Dieses Tool hat meinen Meeting-Workflow revolutioniert. Ich kann mich auf das Gespräch konzentrieren, anstatt Notizen zu machen. Die Zusammenfassungen sind unglaublich genau.",
+        "author": "Sarah Martinez",
+        "role": "Produktmanagerin bei TechCorp"
+      },
+      "testimonial2": {
+        "quote": "Die Genauigkeit ist unglaublich. Es verarbeitet technische Begriffe und mehrere Sprecher perfekt. Spart mir jede Woche Stunden an Transkriptionsarbeit.",
+        "author": "Dr. James Liu",
+        "role": "Forschungsdirektor"
+      },
+      "testimonial3": {
+        "quote": "Als Journalist ist dieses Tool unbezahlbar. Ich kann natürlich Interviews führen und innerhalb von Minuten perfekte Transkriptionen erhalten. Ein Gamechanger!",
+        "author": "Emily Chen",
+        "role": "Senior Journalistin"
+      }
+    },
+    "cta": {
+      "title": "Bereit, jede Woche Stunden zu sparen?",
+      "subtitle": "Schließen Sie sich über 10.000 Profis an, die ihren Workflow mit Neural Summary transformiert haben. Starten Sie noch heute Ihre kostenlose Testversion - keine Kreditkarte erforderlich.",
+      "button": "Kostenlose Testversion starten",
+      "benefits": {
+        "free": "3 kostenlose Transkriptionen",
+        "noCard": "Keine Kreditkarte",
+        "cancel": "Jederzeit kündbar"
+      }
+    },
+    "nav": {
+      "login": "Anmelden",
+      "getStarted": "Loslegen"
+    },
+    "footer": {
+      "product": {
+        "title": "Produkt",
+        "features": "Funktionen",
+        "pricing": "Preise",
+        "api": "API"
+      },
+      "company": {
+        "title": "Unternehmen",
+        "about": "Über uns",
+        "blog": "Blog",
+        "careers": "Karriere"
+      },
+      "support": {
+        "title": "Support",
+        "help": "Hilfezentrum",
+        "contact": "Kontakt",
+        "status": "Status"
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "privacy": "Datenschutz",
+        "terms": "Bedingungen",
+        "security": "Sicherheit"
+      },
+      "copyright": "© 2024 Neural Summary von Olympia Tech. Alle Rechte vorbehalten."
+    }
   }
 }

@@ -2,9 +2,9 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { locales, defaultLocale } from '@/i18n.config';
 
-export default function RootPage() {
+export default async function RootPage() {
   // Get the Accept-Language header to detect user's preferred language
-  const headersList = headers();
+  const headersList = await headers();
   const acceptLanguage = headersList.get('accept-language') || '';
   
   // Parse the Accept-Language header

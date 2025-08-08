@@ -16,6 +16,14 @@ export class FirebaseService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {}
 
+  get firestore(): admin.firestore.Firestore {
+    return this.db;
+  }
+
+  get auth(): admin.auth.Auth {
+    return admin.auth();
+  }
+
   onModuleInit() {
     if (!admin.apps.length) {
       // Use the storage bucket from env, which should be transcribe-52b6f.firebasestorage.app

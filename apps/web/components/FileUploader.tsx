@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useTranslations } from 'next-intl';
 import { 
   Upload, 
   X, 
@@ -28,6 +29,7 @@ interface FileUploaderProps {
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
+  const t = useTranslations('upload');
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
@@ -39,11 +41,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       console.log('File:', file.name, 'Type:', file.type, 'Size:', file.size);
       
       if (!isValidAudioFile(file.name, file.type)) {
-        setErrors(prev => [...prev, `${file.name}: Unsupported format (type: ${file.type})`]);
+        setErrors(prev => [...prev, `${file.name}: ${t('error.unsupportedFormat', { type: file.type })}`]);
         return false;
       }
       if (file.size > MAX_FILE_SIZE) {
-        setErrors(prev => [...prev, `${file.name}: File too large (max 100MB)`]);
+        setErrors(prev => [...prev, `${file.name}: ${t('error.fileTooLarge')}`]);
         return false;
       }
       return true;
@@ -58,9 +60,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         let errorMessage = '';
         
         if (error.code === 'file-too-large') {
-          errorMessage = `${file.name}: File is too large. Maximum size is 25MB due to OpenAI Whisper API limit. For larger files, consider splitting them.`;
+          errorMessage = `${file.name}: ${t('error.fileTooLargeWhisper')}`;
         } else if (error.code === 'file-invalid-type') {
-          errorMessage = `${file.name}: Invalid file type. Supported formats: ${SUPPORTED_AUDIO_FORMATS.join(', ')}`;
+          errorMessage = `${file.name}: ${t('error.invalidFileType', { formats: SUPPORTED_AUDIO_FORMATS.join(', ') })}`;
         } else {
           errorMessage = `${file.name}: ${error.message}`;
         }
@@ -132,32 +134,32 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           </div>
           {isDragActive ? (
             <>
-              <p className="text-2xl font-bold text-[#cc3399] mb-2">Release to upload!</p>
-              <p className="text-sm text-gray-600">Your transcription will start immediately</p>
+              <p className="text-2xl font-bold text-[#cc3399] mb-2">{t('releaseToUpload')}</p>
+              <p className="text-sm text-gray-600">{t('transcriptionStartsImmediately')}</p>
             </>
           ) : (
             <>
               <p className="text-2xl font-bold text-gray-900 mb-2">
-                Drop your audio file here
+                {t('dropAudioHere')}
               </p>
               <p className="text-base text-gray-600 mb-4">
-                or click to browse from your device
+                {t('orClickToBrowse')}
               </p>
               <button className="inline-flex items-center px-6 py-3 bg-[#cc3399] text-white font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
-                Select audio file
+                {t('selectAudioFile')}
               </button>
               <div className="mt-6 flex items-center justify-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  <span>Instant processing</span>
+                  <span>{t('instantProcessing')}</span>
                 </div>
                 <div className="flex items-center">
                   <Lock className="h-4 w-4 text-[#cc3399] mr-1" />
-                  <span>100% secure</span>
+                  <span>{t('secure')}</span>
                 </div>
                 <div className="flex items-center">
                   <Zap className="h-4 w-4 text-yellow-500 mr-1" />
-                  <span>AI-powered</span>
+                  <span>{t('aiPowered')}</span>
                 </div>
               </div>
             </>
@@ -167,7 +169,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         {/* Supported Formats - Small, Non-distracting */}
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            Supports: {SUPPORTED_AUDIO_FORMATS.join(', ')} • Max 100MB • Multiple files
+            {t('supportedFormatsShort', { 
+              formats: SUPPORTED_AUDIO_FORMATS.join(', '),
+              size: '100MB'
+            })}
           </p>
         </div>
 
@@ -182,16 +187,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               </div>
               <div className="flex-1">
                 <label htmlFor="context" className="block text-base font-semibold text-gray-900 mb-1">
-                  🎯 Boost accuracy by 40% with just one line of context
+                  {t('boostAccuracy')}
                 </label>
                 <p className="text-sm text-gray-600 mb-3">
-                  <span className="font-medium text-green-600">93% of users</span> who add context report better results • Takes just 10 seconds
+                  {t('contextStats')}
                 </p>
                 <textarea
                   id="context"
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
-                  placeholder="Example: 'Marketing meeting with John and Sarah about Q4 strategy' or 'Medical consultation about diabetes treatment'"
+                  placeholder={t('contextPlaceholder')}
                   className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-900 placeholder-gray-500 text-sm bg-white transition-all duration-200 hover:border-[#cc3399]"
                   rows={2}
                 />
@@ -199,20 +204,20 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   <div className="flex items-center space-x-4 text-xs">
                     <span className="flex items-center text-gray-600">
                       <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      Improves technical terms
+                      {t('improvesTechnicalTerms')}
                     </span>
                     <span className="flex items-center text-gray-600">
                       <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      Better speaker recognition
+                      {t('betterSpeakerRecognition')}
                     </span>
                     <span className="flex items-center text-gray-600">
                       <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      Smarter summaries
+                      {t('smarterSummaries')}
                     </span>
                   </div>
                   {context.length > 0 && (
                     <span className="text-xs font-medium text-green-600 animate-pulse">
-                      ✨ Great! This will help a lot
+                      {t('greatThisWillHelp')}
                     </span>
                   )}
                 </div>
@@ -227,7 +232,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             <div className="flex items-start">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-red-800">Upload errors:</h3>
+                <h3 className="text-sm font-medium text-red-800">{t('uploadErrors')}</h3>
                 <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
                   {errors.map((error, index) => (
                     <li key={index}>{error}</li>
@@ -241,7 +246,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         {/* File List */}
         {files.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-700">Selected files:</h3>
+            <h3 className="text-sm font-medium text-gray-700">{t('selectedFiles')}</h3>
             {files.map((file, index) => (
               <div
                 key={index}
@@ -278,7 +283,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               }
             `}
           >
-            {uploading ? 'Uploading...' : `Upload ${files.length} file(s)`}
+            {uploading ? t('uploading') : t('uploadFiles', { count: files.length })}
           </button>
         )}
       </div>
@@ -288,7 +293,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         <summary className="cursor-pointer flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
           <span className="text-sm font-medium text-gray-700 flex items-center">
             <Info className="h-4 w-4 mr-2" />
-            How it works & tips
+            {t('howItWorksAndTips')}
           </span>
           <ChevronDown className="h-4 w-4 text-gray-500 group-open:rotate-180 transition-transform" />
         </summary>
@@ -296,58 +301,58 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Quick Features */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">Features</h4>
+            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('features')}</h4>
             <div className="space-y-2 text-xs text-gray-600">
               <div className="flex items-start">
                 <CheckCircle className="h-3 w-3 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>Instant processing starts on upload</span>
+                <span>{t('instantProcessingOnUpload')}</span>
               </div>
               <div className="flex items-start">
                 <CheckCircle className="h-3 w-3 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>Multiple speaker detection</span>
+                <span>{t('multipleSpeakerDetection')}</span>
               </div>
               <div className="flex items-start">
                 <CheckCircle className="h-3 w-3 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>50+ languages supported</span>
+                <span>{t('languagesSupported')}</span>
               </div>
               <div className="flex items-start">
                 <CheckCircle className="h-3 w-3 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>99.5% accuracy rate</span>
+                <span>{t('accuracyRate')}</span>
               </div>
             </div>
           </div>
 
           {/* Security */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">Security</h4>
+            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('security')}</h4>
             <div className="space-y-2 text-xs text-gray-600">
               <div className="flex items-start">
                 <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>256-bit SSL encryption</span>
+                <span>{t('encryption')}</span>
               </div>
               <div className="flex items-start">
                 <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>GDPR & CCPA compliant</span>
+                <span>{t('gdprCompliant')}</span>
               </div>
               <div className="flex items-start">
                 <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>Auto-delete after processing</span>
+                <span>{t('autoDeleteAfterProcessing')}</span>
               </div>
               <div className="flex items-start">
                 <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
-                <span>No data sharing</span>
+                <span>{t('noDataSharing')}</span>
               </div>
             </div>
           </div>
 
           {/* Pro Tips */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">Pro tips</h4>
+            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('proTips')}</h4>
             <ul className="space-y-1 text-xs text-gray-600">
-              <li>• Record in a quiet environment</li>
-              <li>• Speak clearly and at normal pace</li>
-              <li>• Add context for technical terms</li>
-              <li>• Upload multiple files at once</li>
+              <li>• {t('recordQuietEnvironment')}</li>
+              <li>• {t('speakClearlyNormalPace')}</li>
+              <li>• {t('addContextForTechnicalTerms')}</li>
+              <li>• {t('uploadMultipleFilesAtOnce')}</li>
             </ul>
           </div>
         </div>

@@ -1,7 +1,7 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { 
   Shield, 
   Zap, 
@@ -22,484 +22,516 @@ import {
   Play
 } from 'lucide-react';
 
-export default function LandingPage() {
+export default async function LandingPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <img 
-                src="/assets/OT-symbol.webp" 
-                alt="OT Logo" 
-                className="h-8 w-auto mr-3"
-              />
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Neural Notes
-                </h1>
-                <p className="text-xs text-gray-500">By Olympia Tech</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/login"
-                className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-8">
-            {/* Trust Indicators */}
-            <div className="flex justify-center items-center space-x-8 text-sm text-gray-600">
+    <>
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+            <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
-                <Users className="h-4 w-4 mr-1 text-[#cc3399]" />
-                <span>10,000+ users</span>
-              </div>
-              <div className="flex items-center">
-                <Star className="h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" />
-                <span>4.9/5 rating</span>
-              </div>
-              <div className="flex items-center">
-                <Shield className="h-4 w-4 mr-1 text-green-500" />
-                <span>SOC 2 certified</span>
-              </div>
-            </div>
-
-            {/* Main Headline */}
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                Transform audio into
-                <span className="block text-[#cc3399] mt-2">
-                  actionable insights
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                AI-powered transcription that turns your meetings, interviews, and voice notes 
-                into perfect transcripts and smart summaries in seconds.
-              </p>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/login"
-                className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#b82d89] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
-              >
-                Start free trial
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Link>
-              <a
-                href="#how-it-works"
-                className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-semibold text-lg rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
-              >
-                <Play className="h-5 w-5 mr-2" />
-                See how it works
-              </a>
-            </div>
-
-            <p className="text-sm text-gray-500">
-              No credit card required • 3 free transcriptions • Cancel anytime
-            </p>
-
-            {/* Feature Pills */}
-            <div className="flex flex-wrap justify-center gap-3 pt-4">
-              <div className="flex items-center bg-green-50 px-4 py-2 rounded-full border border-green-200">
-                <Clock className="h-4 w-4 text-green-600 mr-2" />
-                <span className="text-sm font-medium text-green-900">Save 10+ hours/week</span>
-              </div>
-              <div className="flex items-center bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
-                <TrendingUp className="h-4 w-4 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-blue-900">99.5% accuracy</span>
-              </div>
-              <div className="flex items-center bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
-                <Globe className="h-4 w-4 text-purple-600 mr-2" />
-                <span className="text-sm font-medium text-purple-900">50+ languages</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Visual Demo Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Powerful features for every professional
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                        <Sparkles className="h-5 w-5 text-[#cc3399]" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-gray-900">AI-Powered Summaries</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Get executive summaries with key points, action items, and insights
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                        <FileAudio className="h-5 w-5 text-[#cc3399]" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-gray-900">Large File Support</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Handle files up to 500MB with automatic intelligent splitting
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                        <Lock className="h-5 w-5 text-[#cc3399]" />
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="font-semibold text-gray-900">Enterprise Security</h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Bank-level encryption, GDPR compliant, automatic file deletion
-                      </p>
-                    </div>
-                  </div>
+                <img 
+                  src="/assets/OT-symbol.webp" 
+                  alt="Neural Summary by Olympia Tech" 
+                  className="h-8 w-auto mr-3"
+                  width={32}
+                  height={32}
+                />
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    {t('common.appName')}
+                  </h1>
+                  <p className="text-xs text-gray-500">{t('landing.hero.byline')}</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-100 rounded-xl p-8 flex items-center justify-center min-h-[400px]">
-                <div className="text-center space-y-4">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg">
-                    <Upload className="h-10 w-10 text-[#cc3399]" />
-                  </div>
-                  <p className="text-lg font-semibold text-gray-800">
-                    Drag & drop your audio file here
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Or record directly from any device
-                  </p>
-                </div>
+              <div className="flex items-center space-x-4">
+                <LanguageSwitcher />
+                <Link
+                  href={`/${locale}/login`}
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                  aria-label="Log in to Neural Summary"
+                >
+                  {t('landing.nav.login')}
+                </Link>
+                <Link
+                  href={`/${locale}/login`}
+                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
+                  aria-label="Get started with Neural Summary"
+                >
+                  {t('landing.nav.getStarted')}
+                </Link>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </nav>
+        </header>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              3 simple steps to perfect transcriptions
-            </h2>
-            <p className="text-lg text-gray-600">
-              Get started in under 60 seconds
-            </p>
-          </div>
+        {/* Hero Section with Video Background */}
+        <section className="relative pt-32 pb-20 overflow-hidden" aria-label="Hero section">
+          {/* Video Background */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            aria-hidden="true"
+          >
+            <source src="/assets/videos/neuralnotes-videobg.webm" type="video/webm" />
+          </video>
           
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors">
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  1
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/60" aria-hidden="true"></div>
+          
+          {/* Content */}
+          <div className="relative z-10 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center space-y-8">
+                {/* Trust Indicators */}
+                <div className="flex justify-center items-center space-x-8 text-sm text-gray-200 animate-fadeIn animation-delay-200">
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-1 text-[#ff66cc]" aria-hidden="true" />
+                    <span>{t('landing.hero.trustIndicators.users')}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Star className="h-4 w-4 mr-1 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                    <span>{t('landing.hero.trustIndicators.rating')}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Shield className="h-4 w-4 mr-1 text-green-400" aria-hidden="true" />
+                    <span>{t('landing.hero.trustIndicators.certified')}</span>
+                  </div>
                 </div>
-                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                  <Mic className="h-7 w-7 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Record anywhere
-                </h3>
-                <p className="text-gray-600">
-                  Use your phone, Zoom, or any recording app. We support all major audio formats including M4A, MP3, WAV, and more.
-                </p>
-              </div>
-            </div>
 
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors">
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  2
-                </div>
-                <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                  <Brain className="h-7 w-7 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  AI processes instantly
-                </h3>
-                <p className="text-gray-600">
-                  Our advanced AI (OpenAI Whisper) transcribes with 99.5% accuracy, handling technical terms and multiple speakers.
-                </p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors">
-                <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg">
-                  3
-                </div>
-                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                  <Award className="h-7 w-7 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  Get perfect results
-                </h3>
-                <p className="text-gray-600">
-                  Receive a full transcript and executive summary with key points. Export, share, or integrate with your workflow.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust & Security Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <div className="flex items-center mb-6">
-                  <Shield className="h-8 w-8 text-green-600 mr-3" />
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Your privacy is our priority
+                {/* Main Headline */}
+                <div className="space-y-4 animate-fadeUp animation-delay-300">
+                  <h2 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                    {t('landing.hero.title')}
+                    <span className="block text-[#ff66cc] mt-2">
+                      {t('landing.hero.titleHighlight')}
+                    </span>
                   </h2>
+                  <p className="text-xl text-gray-100 max-w-3xl mx-auto">
+                    {t('landing.hero.subtitle')}
+                  </p>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-gray-900">Bank-level encryption</p>
-                      <p className="text-sm text-gray-600">AES-256 encryption for all data transfers and storage</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-gray-900">Zero data retention</p>
-                      <p className="text-sm text-gray-600">Audio files automatically deleted after processing</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-gray-900">GDPR & CCPA compliant</p>
-                      <p className="text-sm text-gray-600">Your data is never used for training or shared</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-semibold text-gray-900">SOC 2 Type II certified</p>
-                      <p className="text-sm text-gray-600">Independently audited security practices</p>
-                    </div>
-                  </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeUp animation-delay-400">
+                  <Link
+                    href={`/${locale}/login`}
+                    className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow shimmer"
+                    aria-label="Start your free trial of Neural Summary"
+                  >
+                    {t('landing.hero.cta.primary')}
+                    <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
+                  </Link>
+                  <a
+                    href="#how-it-works"
+                    className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
+                    aria-label="Learn how Neural Summary works"
+                  >
+                    <Play className="h-5 w-5 mr-2" aria-hidden="true" />
+                    {t('landing.hero.cta.secondary')}
+                  </a>
                 </div>
-              </div>
-              <div className="flex justify-center">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                    <Lock className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-600 font-medium">256-bit SSL</p>
+
+                <p className="text-sm text-gray-300">
+                  {t('landing.hero.guarantee')}
+                </p>
+
+                {/* Feature Pills */}
+                <div className="flex flex-wrap justify-center gap-3 pt-4 animate-fadeUp animation-delay-500">
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn animation-delay-600">
+                    <Clock className="h-4 w-4 text-green-400 mr-2 animate-pulse" aria-hidden="true" />
+                    <span className="text-sm font-medium text-white">{t('landing.hero.features.saveTime')}</span>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                    <Shield className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-600 font-medium">SOC 2</p>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn" style={{animationDelay: '700ms'}}>
+                    <TrendingUp className="h-4 w-4 text-blue-400 mr-2" aria-hidden="true" />
+                    <span className="text-sm font-medium text-white">{t('landing.hero.features.accuracy')}</span>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                    <Award className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-600 font-medium">GDPR</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                    <CheckCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-600 font-medium">ISO 27001</p>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn" style={{animationDelay: '800ms'}}>
+                    <Globe className="h-4 w-4 text-purple-400 mr-2" aria-hidden="true" />
+                    <span className="text-sm font-medium text-white">{t('landing.hero.features.languages')}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Loved by professionals worldwide
+        {/* Visual Demo Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="features-heading">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 animate-fadeUp">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <h2 id="features-heading" className="text-3xl font-bold text-gray-900">
+                    {t('landing.features.title')}
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
+                          <Sparkles className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" />
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="font-semibold text-gray-900">{t('landing.features.ai.title')}</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {t('landing.features.ai.description')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
+                          <FileAudio className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" style={{animationDelay: '0.5s'}} />
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="font-semibold text-gray-900">{t('landing.features.largeFiles.title')}</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {t('landing.features.largeFiles.description')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
+                          <Lock className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" style={{animationDelay: '1s'}} />
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="font-semibold text-gray-900">{t('landing.features.security.title')}</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {t('landing.features.security.description')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-100 rounded-xl p-8 flex items-center justify-center min-h-[400px]">
+                  <div className="text-center space-y-4">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg animate-bounceIn hover-scale">
+                      <Upload className="h-10 w-10 text-[#cc3399] animate-pulse" aria-hidden="true" />
+                    </div>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {t('landing.features.demo.dragDrop')}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {t('landing.features.demo.record')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="how-it-works-heading">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 id="how-it-works-heading" className="text-3xl font-bold text-gray-900 mb-4">
+                {t('landing.howItWorks.title')}
+              </h2>
+              <p className="text-lg text-gray-600">
+                {t('landing.howItWorks.subtitle')}
+              </p>
+            </div>
+            
+            <div className="grid gap-8 md:grid-cols-3 animate-fadeIn">
+              <article className="relative">
+                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-slideInLeft">
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                    1
+                  </div>
+                  <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                    <Mic className="h-7 w-7 text-blue-600 animate-float" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {t('landing.howItWorks.step1.title')}
+                  </h3>
+                  <p className="text-gray-600">
+                    {t('landing.howItWorks.step1.description')}
+                  </p>
+                </div>
+              </article>
+
+              <article className="relative">
+                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-fadeUp animation-delay-200">
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                    2
+                  </div>
+                  <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                    <Brain className="h-7 w-7 text-purple-600 animate-float" aria-hidden="true" style={{animationDelay: '0.5s'}} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {t('landing.howItWorks.step2.title')}
+                  </h3>
+                  <p className="text-gray-600">
+                    {t('landing.howItWorks.step2.description')}
+                  </p>
+                </div>
+              </article>
+
+              <article className="relative">
+                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-slideInRight animation-delay-400">
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                    3
+                  </div>
+                  <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                    <Award className="h-7 w-7 text-green-600 animate-float" aria-hidden="true" style={{animationDelay: '1s'}} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {t('landing.howItWorks.step3.title')}
+                  </h3>
+                  <p className="text-gray-600">
+                    {t('landing.howItWorks.step3.description')}
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        {/* Trust & Security Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="security-heading">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12 animate-fadeUp">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <div className="flex items-center mb-6">
+                    <Shield className="h-8 w-8 text-green-600 mr-3 animate-pulse" aria-hidden="true" />
+                    <h2 id="security-heading" className="text-2xl font-bold text-gray-900">
+                      {t('landing.security.title')}
+                    </h2>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div>
+                        <p className="font-semibold text-gray-900">{t('landing.security.encryption.title')}</p>
+                        <p className="text-sm text-gray-600">{t('landing.security.encryption.description')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div>
+                        <p className="font-semibold text-gray-900">{t('landing.security.retention.title')}</p>
+                        <p className="text-sm text-gray-600">{t('landing.security.retention.description')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div>
+                        <p className="font-semibold text-gray-900">{t('landing.security.compliance.title')}</p>
+                        <p className="text-sm text-gray-600">{t('landing.security.compliance.description')}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <div>
+                        <p className="font-semibold text-gray-900">{t('landing.security.audit.title')}</p>
+                        <p className="text-sm text-gray-600">{t('landing.security.audit.description')}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-center">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Lock className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
+                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.ssl')}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Shield className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
+                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.soc2')}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Award className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
+                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.gdpr')}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
+                      <CheckCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
+                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.iso')}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="testimonials-heading">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 id="testimonials-heading" className="text-3xl font-bold text-gray-900 mb-4">
+                {t('landing.testimonials.title')}
+              </h2>
+              <div className="flex justify-center items-center space-x-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-6 w-6 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                ))}
+              </div>
+              <p className="text-gray-600">{t('landing.testimonials.rating')}</p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3 animate-fadeIn">
+              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-slideInLeft">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4 italic">
+                  "{t('landing.testimonials.testimonial1.quote')}"
+                </p>
+                <footer className="flex items-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <div>
+                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial1.author')}</cite>
+                    <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial1.role')}</p>
+                  </div>
+                </footer>
+              </blockquote>
+
+              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-fadeUp animation-delay-200">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4 italic">
+                  "{t('landing.testimonials.testimonial2.quote')}"
+                </p>
+                <footer className="flex items-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <div>
+                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial2.author')}</cite>
+                    <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial2.role')}</p>
+                  </div>
+                </footer>
+              </blockquote>
+
+              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-slideInRight animation-delay-400">
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-4 italic">
+                  "{t('landing.testimonials.testimonial3.quote')}"
+                </p>
+                <footer className="flex items-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <div>
+                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial3.author')}</cite>
+                    <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial3.role')}</p>
+                  </div>
+                </footer>
+              </blockquote>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600 animate-gradientShift" aria-labelledby="cta-heading">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 id="cta-heading" className="text-4xl font-bold text-white mb-6 animate-fadeUp">
+              {t('landing.cta.title')}
             </h2>
-            <div className="flex justify-center items-center space-x-1 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-6 w-6 text-yellow-400 fill-yellow-400" />
-              ))}
+            <p className="text-xl text-white/90 mb-8 animate-fadeUp animation-delay-200">
+              {t('landing.cta.subtitle')}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <Link
+                href={`/${locale}/login`}
+                className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] animate-bounceIn animation-delay-400 hover-glow"
+                aria-label="Start your free trial now"
+              >
+                <Sparkles className="h-5 w-5 mr-2 animate-float" aria-hidden="true" />
+                {t('landing.cta.button')}
+                <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
+              </Link>
             </div>
-            <p className="text-gray-600">4.9/5 from 2,000+ reviews</p>
+            <div className="flex justify-center items-center space-x-4 text-sm text-white/80 animate-fadeIn animation-delay-600">
+              <span>✓ {t('landing.cta.benefits.free')}</span>
+              <span>✓ {t('landing.cta.benefits.noCard')}</span>
+              <span>✓ {t('landing.cta.benefits.cancel')}</span>
+            </div>
           </div>
+        </section>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                ))}
+        {/* Footer */}
+        <footer className="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8" aria-label="Footer">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+              <div>
+                <h3 className="text-white font-semibold mb-4">{t('landing.footer.product.title')}</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/features" className="hover:text-white transition-colors">{t('landing.footer.product.features')}</a></li>
+                  <li><a href="/pricing" className="hover:text-white transition-colors">{t('landing.footer.product.pricing')}</a></li>
+                  <li><a href="/api" className="hover:text-white transition-colors">{t('landing.footer.product.api')}</a></li>
+                </ul>
               </div>
-              <p className="text-gray-700 mb-4 italic">
-                "This tool has revolutionized my meeting workflow. I can focus on the conversation 
-                instead of taking notes. The summaries are incredibly accurate."
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Sarah Martinez</p>
-                  <p className="text-xs text-gray-500">Product Manager at TechCorp</p>
-                </div>
+              <div>
+                <h3 className="text-white font-semibold mb-4">{t('landing.footer.company.title')}</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/about" className="hover:text-white transition-colors">{t('landing.footer.company.about')}</a></li>
+                  <li><a href="/blog" className="hover:text-white transition-colors">{t('landing.footer.company.blog')}</a></li>
+                  <li><a href="/careers" className="hover:text-white transition-colors">{t('landing.footer.company.careers')}</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold mb-4">{t('landing.footer.support.title')}</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/help" className="hover:text-white transition-colors">{t('landing.footer.support.help')}</a></li>
+                  <li><a href="/contact" className="hover:text-white transition-colors">{t('landing.footer.support.contact')}</a></li>
+                  <li><a href="/status" className="hover:text-white transition-colors">{t('landing.footer.support.status')}</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold mb-4">{t('landing.footer.legal.title')}</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/privacy" className="hover:text-white transition-colors">{t('landing.footer.legal.privacy')}</a></li>
+                  <li><a href="/terms" className="hover:text-white transition-colors">{t('landing.footer.legal.terms')}</a></li>
+                  <li><a href="/security" className="hover:text-white transition-colors">{t('landing.footer.legal.security')}</a></li>
+                </ul>
               </div>
             </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                ))}
+            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
+              <div className="flex items-center mb-4 md:mb-0">
+                <img 
+                  src="/assets/OT-symbol.webp" 
+                  alt="Olympia Tech" 
+                  className="h-6 w-auto mr-2"
+                  width={24}
+                  height={24}
+                />
+                <span className="text-sm">{t('landing.footer.copyright')}</span>
               </div>
-              <p className="text-gray-700 mb-4 italic">
-                "The accuracy is incredible. It even handles technical terms and multiple speakers 
-                perfectly. Saves me hours of transcription work every week."
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Dr. James Liu</p>
-                  <p className="text-xs text-gray-500">Research Director</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-4 italic">
-                "As a journalist, this tool is invaluable. I can conduct interviews naturally 
-                and get perfect transcripts within minutes. Game changer!"
-              </p>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Emily Chen</p>
-                  <p className="text-xs text-gray-500">Senior Journalist</p>
-                </div>
+              <div className="flex items-center space-x-2 text-xs">
+                <Shield className="h-4 w-4" aria-hidden="true" />
+                <span>{t('landing.security.badges.soc2')}</span>
+                <span>•</span>
+                <span>{t('landing.security.badges.gdpr')}</span>
+                <span>•</span>
+                <span>{t('landing.security.badges.iso')}</span>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to save hours every week?
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Join 10,000+ professionals who've transformed their workflow with Neural Notes.
-            Start your free trial today - no credit card required.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <Link
-              href="/login"
-              className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399]"
-            >
-              <Sparkles className="h-5 w-5 mr-2" />
-              Start free trial
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Link>
-          </div>
-          <div className="flex justify-center items-center space-x-4 text-sm text-white/80">
-            <span>✓ 3 free transcriptions</span>
-            <span>✓ No credit card</span>
-            <span>✓ Cancel anytime</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="text-white font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center mb-4 md:mb-0">
-              <img 
-                src="/assets/OT-symbol.webp" 
-                alt="OT Logo" 
-                className="h-6 w-auto mr-2"
-              />
-              <span className="text-sm">© 2024 Neural Notes by Olympia Tech. All rights reserved.</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs">
-              <Shield className="h-4 w-4" />
-              <span>SOC 2</span>
-              <span>•</span>
-              <span>GDPR</span>
-              <span>•</span>
-              <span>ISO 27001</span>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }

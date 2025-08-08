@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { FileUploader } from '@/components/FileUploader';
 import { TranscriptionList } from '@/components/TranscriptionList';
@@ -19,16 +19,18 @@ export default function DashboardPage() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations();
-  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('how-it-works');
+  const tDashboard = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const tAuth = useTranslations('auth');
+  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push(`/${locale}/login`);
+      router.push('/login');
     }
-  }, [user, loading, router, locale]);
+  }, [user, loading, router]);
 
   useEffect(() => {
     // Listen for transcription completion to refresh the list
@@ -79,7 +81,7 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await logout();
-    router.push(`/${locale}/login`);
+    router.push('/login');
   };
 
   const handleUploadComplete = (transcriptionId: string, fileName?: string) => {
@@ -118,7 +120,7 @@ export default function DashboardPage() {
               />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {t('common.appName')}
+                  {tCommon('appName')}
                 </h1>
                 <p className="text-xs text-gray-500">By Olympia Tech</p>
               </div>
@@ -130,7 +132,7 @@ export default function DashboardPage() {
               <button
                 onClick={handleLogout}
                 className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-                title={t('auth.signOut')}
+                title={tAuth('signOut')}
               >
                 <LogOut className="h-5 w-5" />
               </button>
@@ -145,21 +147,6 @@ export default function DashboardPage() {
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex flex-wrap gap-x-8">
             <button
-              onClick={() => setActiveTab('how-it-works')}
-              className={`
-                py-2 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'how-it-works'
-                  ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }
-              `}
-            >
-              <div className="flex items-center">
-                <Info className="h-5 w-5 mr-2" />
-                {t('dashboard.howItWorks')}
-              </div>
-            </button>
-            <button
               onClick={() => setActiveTab('upload')}
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
@@ -171,7 +158,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <Upload className="h-5 w-5 mr-2" />
-                {t('dashboard.uploadAudio')}
+                {tDashboard('uploadAudio')}
               </div>
             </button>
             <button
@@ -186,7 +173,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <FileAudio className="h-5 w-5 mr-2" />
-                {t('dashboard.transcriptionHistory')}
+                {tDashboard('transcriptionHistory')}
               </div>
             </button>
             <button
@@ -201,7 +188,22 @@ export default function DashboardPage() {
             >
               <div className="flex items-center">
                 <Mic className="h-5 w-5 mr-2" />
-                {t('dashboard.recordingGuide')}
+                {tDashboard('recordingGuide')}
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('how-it-works')}
+              className={`
+                py-2 px-1 border-b-2 font-medium text-sm
+                ${activeTab === 'how-it-works'
+                  ? 'border-[#cc3399] text-[#cc3399]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }
+              `}
+            >
+              <div className="flex items-center">
+                <Info className="h-5 w-5 mr-2" />
+                {tDashboard('howItWorks')}
               </div>
             </button>
           </nav>
@@ -212,14 +214,14 @@ export default function DashboardPage() {
           {activeTab === 'upload' ? (
             <div>
               <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Upload audio files
+                {tDashboard('uploadAudioFiles')}
               </h2>
               <FileUploader onUploadComplete={handleUploadComplete} />
             </div>
           ) : activeTab === 'history' ? (
             <div>
               <h2 className="text-lg font-medium text-gray-900 mb-4">
-                Your transcriptions
+                {tDashboard('yourTranscriptions')}
               </h2>
               <TranscriptionList key={refreshKey} />
             </div>
@@ -230,7 +232,7 @@ export default function DashboardPage() {
           ) : activeTab === 'recording-guide' ? (
             <div>
               <h2 className="text-lg font-medium text-gray-900 mb-6">
-                How to record audio on any device
+                {tDashboard('howToRecord')}
               </h2>
               <RecordingGuide />
             </div>
