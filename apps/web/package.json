@@ -12,6 +12,7 @@
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-toast": "^1.2.14",
+    "@tailwindcss/typography": "^0.5.16",
     "@transcribe/shared": "file:../../packages/shared",
     "axios": "^1.11.0",
     "firebase": "^12.0.0",

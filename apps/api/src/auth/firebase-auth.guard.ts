@@ -23,7 +23,7 @@ export class FirebaseAuthGuard implements CanActivate {
     try {
       const decodedToken = await this.firebaseService.verifyIdToken(token);
       request.user = decodedToken;
-      
+
       // Ensure user exists in database
       const user = await this.firebaseService.getUser(decodedToken.uid);
       if (!user) {
@@ -34,7 +34,7 @@ export class FirebaseAuthGuard implements CanActivate {
           photoURL: decodedToken.picture,
         });
       }
-      
+
       return true;
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');

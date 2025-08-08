@@ -24,11 +24,14 @@ import {
   FileText,
   Copy,
   Check,
-  AlignLeft
+  AlignLeft,
+  Edit3,
+  X
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import { SummaryWithComments } from './SummaryWithComments';
 
 export const TranscriptionList: React.FC = () => {
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
@@ -38,6 +41,8 @@ export const TranscriptionList: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [unformattedTranscripts, setUnformattedTranscripts] = useState<Set<string>>(new Set());
   const [showTechnicalError, setShowTechnicalError] = useState<Set<string>>(new Set());
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [editingTitleValue, setEditingTitleValue] = useState<string>('');
 
   useEffect(() => {
     loadTranscriptions();
@@ -163,6 +168,50 @@ export const TranscriptionList: React.FC = () => {
     });
   };
 
+  const startEditingTitle = (transcription: Transcription) => {
+    setEditingTitleId(transcription.id);
+    setEditingTitleValue(transcription.title || transcription.fileName);
+  };
+
+  const cancelEditingTitle = () => {
+    setEditingTitleId(null);
+    setEditingTitleValue('');
+  };
+
+  const saveTitle = async (id: string) => {
+    const trimmedTitle = editingTitleValue.trim();
+    if (!trimmedTitle) {
+      // Don't save empty title, keep editing mode open
+      return;
+    }
+
+    try {
+      const response = await transcriptionApi.updateTitle(id, trimmedTitle);
+      if (response.success) {
+        setTranscriptions(prev =>
+          prev.map(t =>
+            t.id === id ? { ...t, title: trimmedTitle } : t
+          )
+        );
+        setEditingTitleId(null);
+        setEditingTitleValue('');
+      } else {
+        console.error('Failed to update title - API returned error:', response.error || response.message);
+      }
+    } catch (error) {
+      console.error('Failed to update title - Network/API error:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
+    }
+  };
+
+  const handleTitleKeyPress = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') {
+      saveTitle(id);
+    } else if (e.key === 'Escape') {
+      cancelEditingTitle();
+    }
+  };
+
   const getStatusIcon = (status: TranscriptionStatus) => {
     switch (status) {
       case TranscriptionStatus.COMPLETED:
@@ -222,9 +271,49 @@ export const TranscriptionList: React.FC = () => {
                 <div className="flex items-center space-x-3 flex-1">
                   <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {transcription.fileName}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {editingTitleId === transcription.id ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editingTitleValue}
+                            onChange={(e) => setEditingTitleValue(e.target.value)}
+                            onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
+                            className="text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 min-w-0"
+                            placeholder="Enter title..."
+                            autoFocus
+                            style={{ width: '200px' }}
+                          />
+                          <button
+                            onClick={() => saveTitle(transcription.id)}
+                            className="p-1 text-green-600 hover:text-green-800 flex-shrink-0"
+                            title="Save title"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={cancelEditingTitle}
+                            className="p-1 text-red-600 hover:text-red-800 flex-shrink-0"
+                            title="Cancel"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {transcription.title || transcription.fileName}
+                          </p>
+                          <button
+                            onClick={() => startEditingTitle(transcription)}
+                            className="p-1 text-gray-400 hover:text-[#cc3399] transition-colors flex-shrink-0"
+                            title="Edit title"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <div className="flex items-center space-x-4 mt-1">
                       <span className="text-xs text-gray-500">
                         {formatFileSize(transcription.fileSize)}
@@ -319,6 +408,11 @@ export const TranscriptionList: React.FC = () => {
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
                         <FileText className="h-4 w-4 mr-2" />
                         Summary
+                        {transcription.summaryVersion && transcription.summaryVersion > 1 && (
+                          <span className="ml-2 px-2 py-1 text-xs bg-[#cc3399] text-white rounded">
+                            v{transcription.summaryVersion}
+                          </span>
+                        )}
                       </h4>
                       <button
                         onClick={() => handleCopy(transcription.summary || '', `summary-${transcription.id}`)}
@@ -339,27 +433,19 @@ export const TranscriptionList: React.FC = () => {
                       </button>
                     </div>
                     <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <div className="prose prose-sm max-w-none text-gray-700
-                        prose-headings:text-gray-900 prose-headings:font-semibold
-                        prose-h2:text-base prose-h2:mt-4 prose-h2:mb-2
-                        prose-h3:text-sm prose-h3:mt-3 prose-h3:mb-1
-                        prose-p:my-2 prose-ul:my-2 prose-li:my-1
-                        prose-strong:text-gray-900 prose-strong:font-semibold
-                        prose-code:text-[#cc3399] prose-code:bg-pink-50 prose-code:px-1 prose-code:rounded">
-                        <ReactMarkdown 
-                          remarkPlugins={[remarkGfm, remarkBreaks]}
-                          components={{
-                            p: ({children}: any) => <p className="mb-3">{children}</p>,
-                            ul: ({children}: any) => <ul className="mb-3 list-disc pl-5">{children}</ul>,
-                            ol: ({children}: any) => <ol className="mb-3 list-decimal pl-5">{children}</ol>,
-                            h2: ({children}: any) => <h2 className="text-base font-semibold text-gray-900 mt-4 mb-2">{children}</h2>,
-                            h3: ({children}: any) => <h3 className="text-sm font-semibold text-gray-800 mt-3 mb-1">{children}</h3>,
-                            li: ({children}: any) => <li className="mb-1">{children}</li>,
-                          }}
-                        >
-                          {transcription.summary}
-                        </ReactMarkdown>
-                      </div>
+                      <SummaryWithComments
+                        transcriptionId={transcription.id}
+                        summary={transcription.summary}
+                        onSummaryRegenerated={(newSummary) => {
+                          setTranscriptions(prev => 
+                            prev.map(t => 
+                              t.id === transcription.id 
+                                ? { ...t, summary: newSummary, summaryVersion: (t.summaryVersion || 1) + 1 }
+                                : t
+                            )
+                          );
+                        }}
+                      />
                     </div>
                   </div>
                 )}

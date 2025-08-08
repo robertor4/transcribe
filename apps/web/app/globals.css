@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #ffffff;
@@ -23,4 +24,54 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom prose styling to fix color and spacing issues */
+.prose {
+  color: #374151 !important; /* gray-700 */
+}
+
+.prose p {
+  color: #1f2937 !important; /* gray-800 - darker text */
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #111827 !important; /* gray-900 - darkest for headings */
+}
+
+.prose strong {
+  color: #111827 !important; /* gray-900 */
+}
+
+.prose ul, .prose ol {
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+.prose li {
+  color: #1f2937 !important; /* gray-800 */
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+/* Mobile and tablet responsive improvements */
+@media (max-width: 768px) {
+  .prose {
+    font-size: 16px; /* Prevent iOS zoom on input focus */
+  }
+  
+  .prose p {
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+  }
+}
+
+/* Ensure touch targets are at least 44px */
+@media (pointer: coarse) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

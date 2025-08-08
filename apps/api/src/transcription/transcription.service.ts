@@ -1,19 +1,20 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
-import { 
-  Transcription, 
-  TranscriptionStatus, 
+import {
+  Transcription,
+  TranscriptionStatus,
   TranscriptionJob,
   QUEUE_NAMES,
-  generateJobId 
+  generateJobId,
 } from '@transcribe/shared';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
+import { WebSocketGateway } from '../websocket/websocket.gateway';
 
 @Injectable()
 export class TranscriptionService {
@@ -26,6 +27,8 @@ export class TranscriptionService {
     @InjectQueue(QUEUE_NAMES.SUMMARY) private summaryQueue: Queue,
     private configService: ConfigService,
     private firebaseService: FirebaseService,
+    @Inject(forwardRef(() => WebSocketGateway))
+    private websocketGateway: WebSocketGateway,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
@@ -39,7 +42,9 @@ export class TranscriptionService {
     context?: string,
     contextId?: string,
   ): Promise<Transcription> {
-    this.logger.log(`Creating transcription for user ${userId}, file: ${file.originalname}`);
+    this.logger.log(
+      `Creating transcription for user ${userId}, file: ${file.originalname}`,
+    );
 
     // Upload file to Firebase Storage
     const fileUrl = await this.firebaseService.uploadFile(
@@ -68,7 +73,8 @@ export class TranscriptionService {
       transcription.contextId = contextId;
     }
 
-    const transcriptionId = await this.firebaseService.createTranscription(transcription);
+    const transcriptionId =
+      await this.firebaseService.createTranscription(transcription);
 
     // Create job and add to queue
     const job: TranscriptionJob = {
@@ -106,11 +112,11 @@ export class TranscriptionService {
   ): Promise<string> {
     let tempFilePath: string | null = null;
     let chunks: AudioChunk[] = [];
-    
+
     try {
       // Download file from Firebase Storage
       const fileBuffer = await this.firebaseService.downloadFile(fileUrl);
-      
+
       // Extract file extension from URL
       let fileExtension = '.mp4'; // default
       try {
@@ -122,92 +128,104 @@ export class TranscriptionService {
           this.logger.log(`Detected file extension: ${fileExtension}`);
         }
       } catch (e) {
-        this.logger.warn('Could not extract file extension from URL, using .mp4');
+        this.logger.warn(
+          'Could not extract file extension from URL, using .mp4',
+        );
       }
-      
+
       // Create temporary file
       const tempDir = path.join(__dirname, '../../temp');
       if (!fs.existsSync(tempDir)) {
         fs.mkdirSync(tempDir, { recursive: true });
       }
-      
+
       tempFilePath = path.join(tempDir, `${Date.now()}_audio${fileExtension}`);
       fs.writeFileSync(tempFilePath, fileBuffer);
-      this.logger.log(`Created temp file: ${tempFilePath}, size: ${fileBuffer.length} bytes`);
+      this.logger.log(
+        `Created temp file: ${tempFilePath}, size: ${fileBuffer.length} bytes`,
+      );
 
       // Check if file needs to be split
-      const shouldSplit = await this.audioSplitter.shouldSplitFile(tempFilePath);
-      
+      const shouldSplit =
+        await this.audioSplitter.shouldSplitFile(tempFilePath);
+
       if (shouldSplit) {
         this.logger.log('File exceeds size limit, splitting into chunks...');
-        
+
         if (onProgress) {
           onProgress(15, 'Large file detected, splitting into chunks...');
         }
-        
+
         // Split the audio file
         chunks = await this.audioSplitter.splitAudioFile(tempFilePath, {
           outputDir: tempDir,
           format: 'mp3',
           maxDurationSeconds: 600, // 10 minutes per chunk
         });
-        
+
         this.logger.log(`Split audio into ${chunks.length} chunks`);
-        
+
         if (onProgress) {
-          onProgress(20, `Split into ${chunks.length} chunks, starting transcription...`);
+          onProgress(
+            20,
+            `Split into ${chunks.length} chunks, starting transcription...`,
+          );
         }
-        
+
         // Transcribe each chunk
         const transcriptions: { text: string; chunk: AudioChunk }[] = [];
-        
+
         for (const chunk of chunks) {
-          this.logger.log(`Transcribing chunk ${chunk.index + 1}/${chunks.length}`);
-          
+          this.logger.log(
+            `Transcribing chunk ${chunk.index + 1}/${chunks.length}`,
+          );
+
           if (onProgress) {
-            const progressPercentage = 20 + Math.floor((chunk.index / chunks.length) * 35);
+            const progressPercentage =
+              20 + Math.floor((chunk.index / chunks.length) * 35);
             onProgress(
               progressPercentage,
-              `Transcribing chunk ${chunk.index + 1} of ${chunks.length}...`
+              `Transcribing chunk ${chunk.index + 1} of ${chunks.length}...`,
             );
           }
-          
+
           const chunkContext = this.audioSplitter.createChunkContext(
             chunk,
             chunks.length,
             context,
           );
-          
+
           const transcription = await this.openai.audio.transcriptions.create({
             file: fs.createReadStream(chunk.path),
             model: 'whisper-1',
             prompt: chunkContext,
           });
-          
+
           transcriptions.push({
             text: transcription.text,
             chunk,
           });
         }
-        
+
         // Merge transcriptions
-        const mergedText = await this.audioSplitter.mergeTranscriptions(transcriptions);
-        
+        const mergedText =
+          await this.audioSplitter.mergeTranscriptions(transcriptions);
+
         if (onProgress) {
           onProgress(55, 'Merging transcriptions...');
         }
-        
+
         // Clean up chunk files
         await this.audioSplitter.cleanupChunks(chunks);
-        
+
         // Clean up original temp file
         fs.unlinkSync(tempFilePath);
-        
+
         return mergedText;
       } else {
         // File is small enough, transcribe normally
         this.logger.log('File within size limits, transcribing directly...');
-        
+
         const transcription = await this.openai.audio.transcriptions.create({
           file: fs.createReadStream(tempFilePath),
           model: 'whisper-1',
@@ -221,24 +239,27 @@ export class TranscriptionService {
       }
     } catch (error) {
       this.logger.error('Error transcribing audio:', error);
-      
+
       // Clean up any remaining files
       if (tempFilePath && fs.existsSync(tempFilePath)) {
         fs.unlinkSync(tempFilePath);
       }
-      
+
       if (chunks.length > 0) {
         await this.audioSplitter.cleanupChunks(chunks);
       }
-      
+
       throw error;
     }
   }
 
-  async generateSummary(transcriptionText: string, context?: string): Promise<string> {
+  async generateSummary(
+    transcriptionText: string,
+    context?: string,
+  ): Promise<string> {
     try {
       const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.`;
-      
+
       const userPrompt = this.buildSummaryPrompt(transcriptionText, context);
 
       const completion = await this.openai.chat.completions.create({
@@ -259,65 +280,74 @@ export class TranscriptionService {
   }
 
   private buildSummaryPrompt(transcription: string, context?: string): string {
-    const basePrompt = `Please analyze this conversation transcript and provide a comprehensive summary with the following structure:
+    const basePrompt = `Please analyze this conversation transcript and provide a comprehensive summary.
 
-## Executive Summary
-Provide a 2-3 sentence overview of the entire conversation, highlighting the main purpose and outcome.
+**CRITICAL FORMATTING RULES:**
+1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title showing what this conversation was about. This should be the specific subject matter and context (e.g., "# Technical Discussion: Implementing OAuth2 Authentication in React App" or "# Team Meeting: Q3 Product Roadmap and Resource Allocation"). Do NOT use a generic label like "Conversation Topic" - make the heading itself BE the topic.
 
-## Key Discussion Topics
+2. Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns:
+   - CORRECT: "## Key discussion topics"
+   - WRONG: "## Key Discussion Topics"
+   - CORRECT: "## Technical issues and bugs discussed"
+   - WRONG: "## Technical Issues and Bugs Discussed"
+
+Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome.
+
+## Key discussion topics
 List the main topics discussed in bullet points, with brief explanations for each.
 
-## Participants and Roles
+## Participants and roles
 Note the number of participants and their general roles or areas of expertise based on the discussion. Do NOT attempt to identify specific names unless explicitly stated - use generic descriptors like "technical lead", "project manager", "developer", "stakeholder", etc.
 
-## Technical Issues and Bugs Discussed
+## Technical issues and bugs discussed
 - List any bugs, issues, or problems mentioned
 - Include any error descriptions or symptoms
 - Note the proposed solutions or workarounds
 
-## Decisions Made
+## Decisions made
 List any concrete decisions or agreements reached during the conversation.
 
-## Action Items
+## Action items
 Extract all action items mentioned, including:
 - What needs to be done
 - Who is responsible (if mentioned)
 - Timeline or deadline (if specified)
 
-## Important Details
+## Important details
 - Any critical dates, deadlines, or milestones mentioned
 - Any tools, systems, or technologies discussed
 - Any dependencies or blockers identified
 
-## Next Steps
+## Next steps
 Summarize the immediate next steps and future plans discussed.
 
-## Behavioral Insights
+## Behavioral insights
 Analyze the conversation dynamics without attempting to identify specific individuals by name:
-- **Communication Style**: Describe the overall communication patterns (formal/informal, direct/indirect, technical/layman)
-- **Engagement Patterns**: Note the distribution of participation (balanced discussion, single dominant speaker, few active contributors, etc.)
-- **Emotional Tone**: Identify the overall mood and any emotional shifts during the conversation
-- **Problem-Solving Approach**: How the group approaches challenges (analytical, creative, collaborative, etc.)
-- **Participant Dynamics**: General characterization of participant types (e.g., "one participant was very technical", "another focused on timeline concerns")
-- **Team Dynamics**: Describe how the group works together, any tensions or particularly good collaboration moments
-- **Decision-Making Style**: How decisions were reached (consensus, authority-driven, through debate, etc.)
+- **Communication style**: Describe the overall communication patterns (formal/informal, direct/indirect, technical/layman)
+- **Engagement patterns**: Note the distribution of participation (balanced discussion, single dominant speaker, few active contributors, etc.)
+- **Emotional tone**: Identify the overall mood and any emotional shifts during the conversation
+- **Problem-solving approach**: How the group approaches challenges (analytical, creative, collaborative, etc.)
+- **Participant dynamics**: General characterization of participant types (e.g., "one participant was very technical", "another focused on timeline concerns")
+- **Team dynamics**: Describe how the group works together, any tensions or particularly good collaboration moments
+- **Decision-making style**: How decisions were reached (consensus, authority-driven, through debate, etc.)
 - **Note**: Keep observations generic and role-based rather than trying to identify specific individuals
 
 ---
 
 **IMPORTANT FORMATTING REQUIREMENTS:**
 - You MUST format your entire response in proper Markdown syntax
-- Use ## for main section headers, ### for subsections if needed
+- Use ## for main section headers (in sentence case), ### for subsections if needed
 - Use - or * for bullet points
 - Use **bold** for emphasis on important items
 - Use \`backticks\` for technical terms, code, or system names
 - Ensure proper line breaks between sections
 - Keep formatting clean and consistent throughout
+- REMEMBER: All headers must be in sentence case!
 
 Format your response in clean, well-structured Markdown with proper headers and bullet points. Be specific and include relevant details while keeping each section concise.`;
 
     let fullPrompt = basePrompt;
-    
+
     if (context) {
       fullPrompt = `## Context
 The following context information is provided about this conversation:
@@ -329,15 +359,11 @@ Please use this context to better understand references, participants, technical
 
 ${basePrompt}`;
     }
-    
+
     return `${fullPrompt}\n\n---\nTRANSCRIPT:\n${transcription}`;
   }
 
-  async getTranscriptions(
-    userId: string,
-    page = 1,
-    pageSize = 20,
-  ) {
+  async getTranscriptions(userId: string, page = 1, pageSize = 20) {
     return this.firebaseService.getTranscriptions(userId, page, pageSize);
   }
 
@@ -345,17 +371,344 @@ ${basePrompt}`;
     return this.firebaseService.getTranscription(userId, transcriptionId);
   }
 
+  async updateTitle(
+    userId: string,
+    transcriptionId: string,
+    title: string,
+  ): Promise<Transcription> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // Update the title
+    const updates = {
+      title,
+      updatedAt: new Date(),
+    };
+
+    await this.firebaseService.updateTranscription(transcriptionId, updates);
+
+    const updatedTranscription = await this.firebaseService.getTranscription(userId, transcriptionId);
+    if (!updatedTranscription) {
+      throw new Error('Failed to retrieve updated transcription');
+    }
+
+    return updatedTranscription;
+  }
+
   async deleteTranscription(userId: string, transcriptionId: string) {
-    const transcription = await this.firebaseService.getTranscription(userId, transcriptionId);
-    
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+
     if (transcription) {
       // Delete file from storage
       await this.firebaseService.deleteFile(transcription.fileUrl);
-      
+
       // Delete transcription document
       await this.firebaseService.deleteTranscription(transcriptionId);
     }
-    
+
     return { success: true };
+  }
+
+  // Summary Comment Methods
+  async addSummaryComment(
+    transcriptionId: string,
+    userId: string,
+    position: any,
+    content: string,
+  ): Promise<any> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    const commentData = {
+      transcriptionId,
+      userId,
+      position,
+      content,
+    };
+
+    const commentId = await this.firebaseService.addSummaryComment(
+      transcriptionId,
+      commentData,
+    );
+
+    const comment = await this.firebaseService.getSummaryComment(transcriptionId, commentId);
+    
+    // Notify via WebSocket
+    if (comment) {
+      this.websocketGateway.notifyCommentAdded(transcriptionId, comment);
+    }
+
+    return comment;
+  }
+
+  async getSummaryComments(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<any[]> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    return this.firebaseService.getSummaryComments(transcriptionId);
+  }
+
+  async updateSummaryComment(
+    transcriptionId: string,
+    commentId: string,
+    userId: string,
+    updates: any,
+  ): Promise<any> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // Verify user owns this comment
+    const existingComment = await this.firebaseService.getSummaryComment(
+      transcriptionId,
+      commentId,
+    );
+    if (!existingComment || existingComment.userId !== userId) {
+      throw new Error('Comment not found or access denied');
+    }
+
+    await this.firebaseService.updateSummaryComment(
+      transcriptionId,
+      commentId,
+      updates,
+    );
+
+    const updatedComment = await this.firebaseService.getSummaryComment(transcriptionId, commentId);
+    
+    // Notify via WebSocket
+    if (updatedComment) {
+      this.websocketGateway.notifyCommentUpdated(transcriptionId, updatedComment);
+    }
+
+    return updatedComment;
+  }
+
+  async deleteSummaryComment(
+    transcriptionId: string,
+    commentId: string,
+    userId: string,
+  ): Promise<void> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // Verify user owns this comment
+    const commentToDelete = await this.firebaseService.getSummaryComment(
+      transcriptionId,
+      commentId,
+    );
+    if (!commentToDelete || commentToDelete.userId !== userId) {
+      throw new Error('Comment not found or access denied');
+    }
+
+    await this.firebaseService.deleteSummaryComment(transcriptionId, commentId);
+    
+    // Notify via WebSocket
+    this.websocketGateway.notifyCommentDeleted(transcriptionId, commentId);
+  }
+
+  async regenerateSummary(
+    transcriptionId: string,
+    userId: string,
+    instructions?: string,
+  ): Promise<any> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    if (!transcription.transcriptText) {
+      throw new Error('No transcript available for this transcription');
+    }
+
+    // Get all comments for this transcription
+    const comments = await this.firebaseService.getSummaryComments(
+      transcriptionId,
+    );
+
+    // Generate new summary with feedback
+    const newSummary = await this.generateSummaryWithFeedback(
+      transcription.transcriptText,
+      transcription.context,
+      comments,
+      instructions,
+    );
+
+    // Update transcription with new summary and increment version
+    const updates = {
+      summary: newSummary,
+      summaryVersion: (transcription.summaryVersion || 1) + 1,
+      updatedAt: new Date(),
+    };
+
+    await this.firebaseService.updateTranscription(transcriptionId, updates);
+
+    return this.firebaseService.getTranscription(userId, transcriptionId);
+  }
+
+  async generateSummaryWithFeedback(
+    transcriptionText: string,
+    context?: string,
+    comments: any[] = [],
+    instructions?: string,
+  ): Promise<string> {
+    try {
+      const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You excel at analyzing communication patterns and group dynamics. 
+
+You are being asked to regenerate a summary based on user feedback and comments. Pay special attention to the user's comments and incorporate their feedback to improve the summary.
+
+Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.`;
+
+      const userPrompt = this.buildSummaryPromptWithFeedback(
+        transcriptionText,
+        context,
+        comments,
+        instructions,
+      );
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 4000,
+      });
+
+      return completion.choices[0].message.content || '';
+    } catch (error) {
+      this.logger.error('Error generating summary with feedback:', error);
+      throw error;
+    }
+  }
+
+  private buildSummaryPromptWithFeedback(
+    transcription: string,
+    context?: string,
+    comments: any[] = [],
+    instructions?: string,
+  ): string {
+    let prompt = `Please regenerate the summary for this conversation transcript, taking into account the user feedback provided below.
+
+## User Feedback and Comments:
+`;
+
+    if (comments.length > 0) {
+      comments.forEach((comment, index) => {
+        prompt += `
+**Comment ${index + 1}** (Section: ${comment.position?.section || 'General'}):
+${comment.content}
+`;
+      });
+    } else {
+      prompt += 'No specific comments provided.\n';
+    }
+
+    if (instructions) {
+      prompt += `
+## Additional Instructions:
+${instructions}
+`;
+    }
+
+    prompt += `
+## Requirements:
+Please create a comprehensive summary, addressing the feedback above.
+
+**CRITICAL FORMATTING RULES:**
+1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title showing what this conversation was about. This should be the specific subject matter and context (e.g., "# Technical Discussion: Implementing OAuth2 Authentication in React App" or "# Team Meeting: Q3 Product Roadmap and Resource Allocation"). Do NOT use a generic label like "Conversation Topic" - make the heading itself BE the topic.
+
+2. Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns:
+   - CORRECT: "## Key discussion topics"
+   - WRONG: "## Key Discussion Topics"
+   - CORRECT: "## Technical issues and bugs discussed"
+   - WRONG: "## Technical Issues and Bugs Discussed"
+
+Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome.
+
+## Key discussion topics
+List the main topics discussed in bullet points, with brief explanations for each.
+
+## Participants and roles
+Note the number of participants and their general roles or areas of expertise based on the discussion. Use generic descriptors.
+
+## Technical issues and bugs discussed
+- List any bugs, issues, or problems mentioned
+- Include any error descriptions or symptoms
+- Note the proposed solutions or workarounds
+
+## Decisions made
+List any concrete decisions or agreements reached during the conversation.
+
+## Action items
+List specific tasks, assignments, or follow-ups mentioned.
+
+## Next steps
+Outline any planned future activities or meetings.
+
+## Key insights and observations
+- **Communication patterns**: How information flows, who asks questions vs provides answers
+- **Team dynamics**: How the group works together
+- **Decision-making style**: How decisions were reached
+
+**IMPORTANT FORMATTING REQUIREMENTS:**
+- Format response in proper Markdown syntax
+- Use ## for main section headers (in sentence case), ### for subsections if needed
+- Use - or * for bullet points
+- Use **bold** for emphasis
+- Use \`backticks\` for technical terms
+- REMEMBER: All headers must be in sentence case!`;
+
+    if (context) {
+      prompt = `## Context
+The following context information is provided about this conversation:
+${context}
+
+---
+
+${prompt}`;
+    }
+
+    return `${prompt}\n\n---\nTRANSCRIPT:\n${transcription}`;
   }
 }

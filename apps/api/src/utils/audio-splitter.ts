@@ -37,7 +37,7 @@ export class AudioSplitter {
       // Check if ffmpeg is available
       const { stdout } = await execAsync('which ffmpeg');
       this.ffmpegPath = stdout.trim();
-      
+
       if (this.ffmpegPath) {
         ffmpeg.setFfmpegPath(this.ffmpegPath);
         this.logger.log(`FFmpeg found at: ${this.ffmpegPath}`);
@@ -49,7 +49,7 @@ export class AudioSplitter {
         '/usr/local/bin/ffmpeg',
         '/opt/homebrew/bin/ffmpeg',
       ];
-      
+
       for (const path of commonPaths) {
         if (fs.existsSync(path)) {
           this.ffmpegPath = path;
@@ -58,9 +58,11 @@ export class AudioSplitter {
           break;
         }
       }
-      
+
       if (!this.ffmpegPath) {
-        this.logger.warn('FFmpeg not found in PATH. Audio splitting may not work.');
+        this.logger.warn(
+          'FFmpeg not found in PATH. Audio splitting may not work.',
+        );
       }
     }
   }
@@ -114,57 +116,55 @@ export class AudioSplitter {
 
     const fileSize = await this.getFileSize(inputPath);
     const duration = await this.getAudioDuration(inputPath);
-    
+
     if (fileSize <= this.MAX_WHISPER_SIZE) {
       this.logger.log('File size is within limits, no splitting needed');
-      return [{
-        path: inputPath,
-        startTime: 0,
-        endTime: duration,
-        duration: duration,
-        index: 0,
-      }];
+      return [
+        {
+          path: inputPath,
+          startTime: 0,
+          endTime: duration,
+          duration: duration,
+          index: 0,
+        },
+      ];
     }
 
     const baseFileName = path.basename(inputPath, path.extname(inputPath));
     const chunks: AudioChunk[] = [];
-    
+
     const estimatedChunks = Math.ceil(fileSize / this.MAX_WHISPER_SIZE);
     const chunkDuration = Math.min(
       maxDurationSeconds,
       Math.ceil(duration / estimatedChunks),
     );
-    
+
     const totalChunks = Math.ceil(duration / chunkDuration);
-    
-    this.logger.log(`Splitting into ${totalChunks} chunks of ~${chunkDuration}s each`);
+
+    this.logger.log(
+      `Splitting into ${totalChunks} chunks of ~${chunkDuration}s each`,
+    );
 
     const promises: Promise<AudioChunk>[] = [];
-    
+
     for (let i = 0; i < totalChunks; i++) {
       const startTime = i * chunkDuration;
       const endTime = Math.min((i + 1) * chunkDuration, duration);
       const actualDuration = endTime - startTime;
-      
+
       const outputPath = path.join(
         outputDir,
         `${baseFileName}_chunk_${i + 1}.${format}`,
       );
-      
+
       promises.push(
-        this.extractChunk(
-          inputPath,
-          outputPath,
-          startTime,
-          actualDuration,
-          i,
-        ),
+        this.extractChunk(inputPath, outputPath, startTime, actualDuration, i),
       );
     }
-    
+
     const results = await Promise.all(promises);
     chunks.push(...results);
-    
+
     this.logger.log(`Successfully split audio into ${chunks.length} chunks`);
     return chunks;
   }
@@ -186,7 +186,9 @@ export class AudioSplitter {
           this.logger.debug(`Starting chunk ${index + 1}: ${commandLine}`);
         })
         .on('progress', (progress) => {
-          this.logger.debug(`Processing chunk ${index + 1}: ${progress.percent}%`);
+          this.logger.debug(
+            `Processing chunk ${index + 1}: ${progress.percent}%`,
+          );
         })
         .on('end', () => {
           this.logger.log(`Chunk ${index + 1} created: ${outputPath}`);
@@ -221,12 +223,12 @@ export class AudioSplitter {
     transcriptions: { text: string; chunk: AudioChunk }[],
   ): Promise<string> {
     transcriptions.sort((a, b) => a.chunk.index - b.chunk.index);
-    
+
     const mergedText = transcriptions
       .map((t) => t.text.trim())
       .filter((text) => text.length > 0)
       .join(' ');
-    
+
     return mergedText;
   }
 
@@ -234,7 +236,7 @@ export class AudioSplitter {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m ${secs}s`;
     } else if (minutes > 0) {
@@ -249,13 +251,14 @@ export class AudioSplitter {
     totalChunks: number,
     originalContext?: string,
   ): string {
-    const chunkInfo = `[Audio chunk ${chunk.index + 1} of ${totalChunks}, ` +
+    const chunkInfo =
+      `[Audio chunk ${chunk.index + 1} of ${totalChunks}, ` +
       `time ${this.formatTimeForContext(chunk.startTime)} - ${this.formatTimeForContext(chunk.endTime)}]`;
-    
+
     if (originalContext) {
       return `${chunkInfo} ${originalContext}`;
     }
-    
+
     return chunkInfo;
   }
 }

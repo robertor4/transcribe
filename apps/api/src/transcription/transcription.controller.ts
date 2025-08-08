@@ -3,6 +3,7 @@ import {
   Post,
   Get,
   Delete,
+  Put,
   Param,
   Query,
   Body,
@@ -17,12 +18,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { 
-  isValidAudioFile, 
+import {
+  isValidAudioFile,
   validateFileSize,
   ApiResponse,
   PaginatedResponse,
-  Transcription 
+  Transcription,
+  SummaryComment,
+  RegenerateSummaryRequest,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -31,11 +34,13 @@ export class TranscriptionController {
   constructor(private readonly transcriptionService: TranscriptionService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    limits: {
-      fileSize: 500 * 1024 * 1024, // 500MB - We can now handle larger files with splitting
-    },
-  }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 500 * 1024 * 1024, // 500MB - We can now handle larger files with splitting
+      },
+    }),
+  )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('context') context: string,
@@ -53,8 +58,15 @@ export class TranscriptionController {
     });
 
     if (!isValidAudioFile(file.originalname, file.mimetype)) {
-      console.log('Validation failed for file:', file.originalname, 'with mimetype:', file.mimetype);
-      throw new BadRequestException(`Invalid audio file format (${file.mimetype})`);
+      console.log(
+        'Validation failed for file:',
+        file.originalname,
+        'with mimetype:',
+        file.mimetype,
+      );
+      throw new BadRequestException(
+        `Invalid audio file format (${file.mimetype})`,
+      );
     }
 
     if (!validateFileSize(file.size)) {
@@ -113,6 +125,29 @@ export class TranscriptionController {
     };
   }
 
+  @Put(':id/title')
+  async updateTitle(
+    @Param('id') id: string,
+    @Body('title') title: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    if (!title || title.trim() === '') {
+      throw new BadRequestException('Title cannot be empty');
+    }
+
+    const transcription = await this.transcriptionService.updateTitle(
+      req.user.uid,
+      id,
+      title.trim(),
+    );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'Title updated successfully',
+    };
+  }
+
   @Delete(':id')
   async deleteTranscription(
     @Param('id') id: string,
@@ -123,6 +158,101 @@ export class TranscriptionController {
     return {
       success: true,
       message: 'Transcription deleted successfully',
+    };
+  }
+
+  // Comment endpoints
+  @Post(':id/comments')
+  async addComment(
+    @Param('id') transcriptionId: string,
+    @Body() commentData: { position: any; content: string },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<SummaryComment>> {
+    const comment = await this.transcriptionService.addSummaryComment(
+      transcriptionId,
+      req.user.uid,
+      commentData.position,
+      commentData.content,
+    );
+
+    return {
+      success: true,
+      data: comment,
+      message: 'Comment added successfully',
+    };
+  }
+
+  @Get(':id/comments')
+  async getComments(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<SummaryComment[]>> {
+    const comments = await this.transcriptionService.getSummaryComments(
+      transcriptionId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: comments,
+    };
+  }
+
+  @Put(':id/comments/:commentId')
+  async updateComment(
+    @Param('id') transcriptionId: string,
+    @Param('commentId') commentId: string,
+    @Body() updates: { content?: string; resolved?: boolean },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<SummaryComment>> {
+    const comment = await this.transcriptionService.updateSummaryComment(
+      transcriptionId,
+      commentId,
+      req.user.uid,
+      updates,
+    );
+
+    return {
+      success: true,
+      data: comment,
+      message: 'Comment updated successfully',
+    };
+  }
+
+  @Delete(':id/comments/:commentId')
+  async deleteComment(
+    @Param('id') transcriptionId: string,
+    @Param('commentId') commentId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.transcriptionService.deleteSummaryComment(
+      transcriptionId,
+      commentId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      message: 'Comment deleted successfully',
+    };
+  }
+
+  @Post(':id/regenerate-summary')
+  async regenerateSummary(
+    @Param('id') transcriptionId: string,
+    @Body() request: { instructions?: string },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    const transcription = await this.transcriptionService.regenerateSummary(
+      transcriptionId,
+      req.user.uid,
+      request.instructions,
+    );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'Summary regeneration started',
     };
   }
 }

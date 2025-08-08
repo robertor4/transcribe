@@ -1,35 +1,48 @@
 # Transcribe App - Web Application
 
-A modern web application for audio transcription and summarization using OpenAI's Whisper and GPT models, built with Next.js, NestJS, and Firebase.
+A modern web application for audio transcription and summarization using OpenAI's Whisper and GPT models. Features automatic audio splitting for large files, real-time progress tracking, and intelligent summarization.
+
+## 🚀 Key Features
+
+- **Large File Support**: Automatically splits audio files up to 500MB into chunks for processing
+- **Multiple Formats**: Supports M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, and OGG
+- **Real-time Updates**: WebSocket-based progress tracking
+- **Smart Summarization**: Context-aware transcription with GPT-4 powered summaries
+- **Batch Processing**: Queue-based architecture for handling multiple files
+- **Secure Storage**: Firebase-based authentication and file storage
 
 ## Architecture
 
-- **Frontend**: Next.js 14 with TypeScript, Tailwind CSS
+- **Frontend**: Next.js 14 (App Router) with TypeScript, Tailwind CSS
 - **Backend**: NestJS with TypeScript, Bull Queue, WebSockets
 - **Database**: Firebase Firestore
-- **Storage**: Firebase Storage
-- **Authentication**: Firebase Auth
-- **Real-time**: Socket.io for live progress updates
+- **Storage**: Firebase Storage (new .firebasestorage.app format)
+- **Authentication**: Firebase Auth (Email/Password + Google OAuth)
+- **Queue**: Redis with Bull for job processing
+- **AI Services**: OpenAI Whisper API + GPT-4
+- **Monorepo**: Turborepo for workspace management
 
 ## Prerequisites
 
 - Node.js 18+ and npm
 - Redis server (for job queue)
-- Firebase project
-- OpenAI API key
+- Firebase project with Auth, Firestore, and Storage enabled
+- OpenAI API key with Whisper and GPT-4 access
+- FFmpeg (optional, for audio splitting of large files)
 
 ## Setup Instructions
 
 ### 1. Clone and Install Dependencies
 
 ```bash
-# Install dependencies
-npm install
+# Quick setup (recommended)
+npm run setup
 
-# Install dependencies for all workspaces
+# Or manual installation
+npm install
 cd apps/web && npm install && cd ../..
 cd apps/api && npm install && cd ../..
-cd packages/shared && npm install && cd ../..
+cd packages/shared && npm install && npm run build && cd ../..
 ```
 
 ### 2. Configure Environment Variables
@@ -61,43 +74,36 @@ firebase deploy --only firestore:rules
 firebase deploy --only storage:rules
 ```
 
-### 5. Start Redis
+### 5. Start the Application
 
+#### Quick Start (Recommended)
 ```bash
-# Using Docker
-docker run -d -p 6379:6379 redis
-
-# Or install locally
-brew install redis  # macOS
-brew services start redis
+# Start everything (Redis + all services)
+npm run dev:all
 ```
 
-### 6. Build Shared Package
-
+#### Manual Start
 ```bash
-cd packages/shared
-npm run build
-cd ../..
-```
+# Start Redis
+npm run redis:start
 
-### 7. Run the Application
+# Build shared package
+npm run build:shared
 
-Development mode:
-```bash
 # Start all services
 npm run dev
-
-# Or start individually:
-# Terminal 1 - Backend API
-cd apps/api
-npm run start:dev
-
-# Terminal 2 - Frontend
-cd apps/web
-npm run dev
 ```
 
-Production build:
+#### Individual Services
+```bash
+# Terminal 1 - Backend API (port 3001)
+cd apps/api && npm run start:dev
+
+# Terminal 2 - Frontend (port 3000)
+cd apps/web && npm run dev
+```
+
+#### Production Build
 ```bash
 npm run build
 npm run start
@@ -107,20 +113,30 @@ npm run start
 
 1. Navigate to http://localhost:3000
 2. Sign up or sign in with Google/Email
-3. Upload audio files (supports .m4a, .mp3, .wav, .mp4, etc.)
+3. Upload audio files (supports M4A, MP3, WAV, MP4, MPEG, WebM, FLAC, OGG)
 4. Provide optional context for better transcription accuracy
-5. Monitor real-time progress
-6. View and download transcriptions and summaries
+5. Monitor real-time progress with WebSocket updates
+6. View, search, and download transcriptions and summaries
 
 ## Features
 
-- **Multi-file Upload**: Drag-and-drop interface for batch uploads
-- **Context Support**: Improve accuracy with meeting context
-- **Real-time Progress**: Live updates via WebSocket
-- **Queue Management**: Robust job processing with retry logic
-- **Authentication**: Secure user accounts with Firebase Auth
-- **Responsive Design**: Works on desktop and mobile
-- **Export Options**: Download transcripts and summaries
+### File Processing
+- **Large File Support**: Automatically splits files up to 500MB into 10-minute chunks
+- **Smart Chunking**: Maintains context across split segments
+- **Multiple Formats**: Supports 9+ audio/video formats including MP4
+- **Batch Upload**: Process multiple files simultaneously
+
+### AI Capabilities
+- **Whisper Transcription**: High-accuracy speech-to-text using OpenAI Whisper
+- **GPT-4 Summaries**: Intelligent summarization with context awareness
+- **Context Support**: Provide meeting context for improved accuracy
+
+### User Experience
+- **Real-time Progress**: Live WebSocket updates during processing
+- **Drag & Drop**: Intuitive file upload interface
+- **Transcription History**: Paginated view of all past transcriptions
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Error Recovery**: Automatic retry logic for failed jobs
 
 ## API Endpoints
 
@@ -178,13 +194,41 @@ cd apps/api
 ## Troubleshooting
 
 ### Redis Connection Error
-Ensure Redis is running: `redis-cli ping`
+```bash
+# Check Redis status
+npm run redis:check
+
+# Restart Redis
+npm run redis:stop && npm run redis:start
+```
 
 ### Firebase Auth Error
-Check Firebase project settings and service account permissions
+- Verify Firebase project settings
+- Check service account permissions
+- Ensure authentication providers are enabled
 
 ### File Upload Issues
-Verify Firebase Storage rules and CORS configuration
+- Verify Firebase Storage rules allow authenticated uploads
+- Check CORS configuration in `cors.json`
+- Ensure file size is within limits (500MB max)
+
+### Large File Processing
+- Install FFmpeg for automatic audio splitting:
+  ```bash
+  # macOS
+  brew install ffmpeg
+  
+  # Ubuntu/Debian
+  sudo apt-get install ffmpeg
+  
+  # Windows
+  choco install ffmpeg
+  ```
+
+### Port Conflicts
+- API runs on port 3001 (configurable via PORT env)
+- Frontend runs on port 3000 (Next.js default)
+- Redis runs on port 6379 (Docker container)
 
 ## License
 

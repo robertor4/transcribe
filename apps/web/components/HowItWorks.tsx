@@ -70,8 +70,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onStartTranscribing }) =
               onClick={onStartTranscribing}
               className="inline-flex items-center px-6 py-3 bg-[#cc3399] text-white font-semibold rounded-lg shadow-lg hover:bg-[#b82d89] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
             >
-              <Upload className="h-5 w-5 mr-2" />
-              Start Transcribing Now
+              Get started now!
               <ArrowRight className="h-5 w-5 ml-2" />
             </button>
             <p className="text-sm text-gray-600 mt-2">

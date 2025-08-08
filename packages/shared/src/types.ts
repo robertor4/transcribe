@@ -38,6 +38,7 @@ export interface Transcription {
   id: string;
   userId: string;
   fileName: string;
+  title?: string; // Custom user-defined title, defaults to fileName
   fileUrl: string;
   fileSize: number;
   mimeType: string;
@@ -47,6 +48,8 @@ export interface Transcription {
   contextId?: string;
   transcriptText?: string;
   summary?: string;
+  summaryVersion?: number;
+  comments?: SummaryComment[];
   error?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -108,4 +111,36 @@ export interface TranscriptionFilter {
   sortOrder?: 'asc' | 'desc';
   page?: number;
   pageSize?: number;
+}
+
+export interface SummaryComment {
+  id: string;
+  transcriptionId: string;
+  userId: string;
+  position: CommentPosition;
+  content: string;
+  resolved?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CommentPosition {
+  section: string; // e.g., 'executive-summary', 'key-topics', 'decisions'
+  paragraphIndex?: number;
+  characterOffset?: number;
+  selectedText?: string; // Text that was highlighted when comment was added
+}
+
+export interface RegenerateSummaryRequest {
+  transcriptionId: string;
+  comments: SummaryComment[];
+  instructions?: string; // Additional user instructions
+}
+
+export interface SummaryRegenerationProgress {
+  transcriptionId: string;
+  status: 'analyzing' | 'generating' | 'completed' | 'failed';
+  progress: number;
+  message?: string;
+  error?: string;
 }

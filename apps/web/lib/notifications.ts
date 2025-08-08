@@ -145,7 +145,6 @@ class NotificationService {
         tag: options.tag,
         data: options.data,
         requireInteraction: options.requireInteraction || false,
-        timestamp: Date.now(),
       });
 
       // Handle notification click
@@ -219,7 +218,6 @@ class NotificationService {
         tag: options.tag,
         data: options.data,
         requireInteraction: options.requireInteraction || false,
-        timestamp: Date.now(),
       });
 
       // Handle notification click

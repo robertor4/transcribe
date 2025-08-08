@@ -53,11 +53,19 @@ export const WEBSOCKET_EVENTS = {
   // Client to Server
   SUBSCRIBE_TRANSCRIPTION: 'subscribe_transcription',
   UNSUBSCRIBE_TRANSCRIPTION: 'unsubscribe_transcription',
+  SUBSCRIBE_COMMENTS: 'subscribe_comments',
+  UNSUBSCRIBE_COMMENTS: 'unsubscribe_comments',
   
   // Server to Client
   TRANSCRIPTION_PROGRESS: 'transcription_progress',
   TRANSCRIPTION_COMPLETED: 'transcription_completed',
   TRANSCRIPTION_FAILED: 'transcription_failed',
+  SUMMARY_REGENERATION_PROGRESS: 'summary_regeneration_progress',
+  SUMMARY_REGENERATION_COMPLETED: 'summary_regeneration_completed',
+  SUMMARY_REGENERATION_FAILED: 'summary_regeneration_failed',
+  COMMENT_ADDED: 'comment_added',
+  COMMENT_UPDATED: 'comment_updated',
+  COMMENT_DELETED: 'comment_deleted',
   
   // Connection
   CONNECTION: 'connection',

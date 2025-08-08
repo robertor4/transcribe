@@ -1,49 +1,74 @@
 # Transcribe Web Application
 
 ## Project Overview
-This is a web-based audio transcription application that converts audio files to text using OpenAI's Whisper API and generates summaries using GPT-4. Originally a CLI tool, it has been transformed into a full-stack web application.
+A production-ready web application for audio transcription and summarization using OpenAI's Whisper API and GPT-4. Features automatic audio splitting for large files (up to 500MB), real-time progress tracking via WebSockets, and intelligent context-aware summarization. Originally a CLI tool, now a full-stack monorepo application with enterprise-grade features.
 
 ## Tech Stack
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, React Dropzone
 - **Backend**: NestJS, TypeScript, Bull queues for job processing
 - **Database**: Firebase Firestore for metadata storage
-- **Storage**: Firebase Storage for audio files
-- **Authentication**: Firebase Auth (Email/Password and Google providers)
-- **Real-time Updates**: Socket.io WebSockets
-- **AI Services**: OpenAI Whisper for transcription, GPT-4 for summarization
-- **Queue Management**: Redis with Bull
+- **Storage**: Firebase Storage for audio files (new .firebasestorage.app format)
+- **Authentication**: Firebase Auth (Email/Password and Google OAuth)
+- **Real-time Updates**: Socket.io WebSockets for progress tracking
+- **AI Services**: OpenAI Whisper API for transcription, GPT-4 for summarization
+- **Queue Management**: Redis with Bull for scalable job processing
+- **Audio Processing**: FFmpeg for automatic file splitting (files > 25MB)
 - **Monorepo**: Turborepo for workspace management
+- **Models**: whisper-1 for transcription, gpt-4o-mini/gpt-4o for summaries
 
 ## Project Structure
 ```
 transcribe/
 ├── apps/
-│   ├── api/                 # NestJS backend API
+│   ├── api/                     # NestJS backend API
 │   │   ├── src/
-│   │   │   ├── transcription/  # Transcription service and controllers
-│   │   │   ├── firebase/       # Firebase integration
-│   │   │   ├── auth/           # Authentication guards
-│   │   │   └── websocket/      # WebSocket gateway
-│   │   └── .env              # Backend environment variables
-│   └── web/                 # Next.js frontend
-│       ├── app/              # App router pages
-│       ├── components/       # React components
-│       ├── contexts/         # React contexts (Auth)
-│       └── .env.local        # Frontend environment variables
+│   │   │   ├── transcription/   # Transcription service, controller, processor
+│   │   │   ├── firebase/        # Firebase admin integration
+│   │   │   ├── auth/            # Firebase authentication guards
+│   │   │   ├── websocket/       # Socket.io gateway
+│   │   │   └── utils/
+│   │   │       └── audio-splitter.ts  # FFmpeg audio chunking
+│   │   └── .env                 # Backend environment variables
+│   └── web/                     # Next.js frontend
+│       ├── app/                 # App router pages
+│       ├── components/          # React components
+│       ├── contexts/            # React contexts (Auth)
+│       ├── lib/                 # API client, WebSocket, Firebase
+│       └── .env.local           # Frontend environment variables
 ├── packages/
-│   └── shared/              # Shared types and utilities
-├── completed/               # Original CLI files (preserved)
-└── .env                     # Root environment configuration
+│   └── shared/                  # Shared types, constants, utilities
+│       ├── src/
+│       │   ├── types.ts         # TypeScript interfaces
+│       │   ├── constants.ts     # Shared constants
+│       │   └── utils.ts         # Validation utilities
+│       └── dist/                # Built package
+├── cli/                         # Original CLI tool (maintained)
+├── firebase/                    # Firebase configuration files
+└── .env                         # Root environment configuration
 ```
 
 ## Key Features
-1. **File Upload**: Drag-and-drop interface for audio files (.m4a, .mp3, .wav, .mp4, .mpeg, .webm)
-2. **Context Support**: Users can provide context for better transcription accuracy
-3. **Real-time Progress**: WebSocket updates during transcription processing
-4. **Transcription History**: View all past transcriptions with pagination
-5. **Async Processing**: Queue-based architecture for scalable transcription
-6. **Authentication**: Secure user authentication with Firebase Auth
-7. **File Storage**: Secure file storage with Firebase Storage (uses new .firebasestorage.app format)
+
+### Core Functionality
+1. **Large File Support**: Handles files up to 500MB with automatic splitting into 10-minute chunks
+2. **Multi-Format Support**: Accepts M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
+3. **Smart Audio Splitting**: FFmpeg-based chunking for files exceeding Whisper's 25MB limit
+4. **Context-Aware Processing**: Optional context for improved transcription accuracy
+5. **Batch Processing**: Queue-based architecture supporting multiple concurrent jobs
+
+### User Experience
+6. **Drag-and-Drop Upload**: Intuitive file upload with react-dropzone
+7. **Real-time Progress**: WebSocket updates showing processing status
+8. **Transcription History**: Paginated view with Firestore composite indexing
+9. **Authentication**: Firebase Auth with Email/Password and Google OAuth
+10. **Responsive Design**: Mobile-first design with Tailwind CSS
+
+### Technical Features
+11. **Error Recovery**: Automatic retry logic with exponential backoff
+12. **File Validation**: Client and server-side validation for format and size
+13. **Secure Storage**: Firebase Storage with signed URLs (5-hour expiration)
+14. **Type Safety**: Shared TypeScript types across frontend/backend
+15. **Subscription Tiers**: Support for free/pro/enterprise limits (configurable)
 
 ## Environment Configuration
 
@@ -83,22 +108,32 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 
 ## Development Commands
 
-### Start Everything
+### Quick Start
 ```bash
-npm run dev:all  # Starts Redis, builds shared package, and runs all services
+npm run fresh         # Clean install and start everything
+npm run dev:all       # Start Redis, build shared, run all services
 ```
 
-### Individual Services
+### Service Management
 ```bash
 npm run dev           # Run all services (without Redis)
-npm run redis:start   # Start Redis container
+npm run redis:start   # Start Redis Docker container
+npm run redis:stop    # Stop Redis container
+npm run redis:check   # Verify Redis connectivity
 npm run build:shared  # Build shared types package
 ```
 
-### Testing
+### Development Workflow
 ```bash
-npm run lint      # Run linting
-npm run typecheck # Run TypeScript checks
+npm run setup         # Install all dependencies and build shared
+npm run clean         # Clean all build artifacts and stop Redis
+npm run build         # Production build for all services
+npm run lint          # Run ESLint across monorepo
+```
+
+### CLI Tool (Legacy)
+```bash
+npm run cli           # Run original CLI transcription tool
 ```
 
 ## API Endpoints
@@ -113,20 +148,40 @@ npm run typecheck # Run TypeScript checks
 - `subscribe_transcription` - Subscribe to transcription updates
 - `unsubscribe_transcription` - Unsubscribe from updates
 - `transcription_progress` - Progress updates during processing
-- `transcription_complete` - Completion notification
+- `transcription_completed` - Completion notification
+- `transcription_failed` - Error notification
 
 ## Processing Flow
-1. User uploads audio file through web interface
-2. File is validated (format and size checks)
-3. File is uploaded to Firebase Storage
-4. Transcription job is queued in Redis/Bull
-5. Backend processes the job:
+
+### Standard Files (< 25MB)
+1. User uploads audio file through drag-and-drop interface
+2. Client-side validation (format, size, MIME type)
+3. File uploaded to Firebase Storage with progress tracking
+4. Transcription job queued in Redis/Bull with metadata
+5. Backend processor:
    - Downloads file from Firebase Storage
-   - Sends to OpenAI Whisper API for transcription
+   - Sends directly to OpenAI Whisper API
    - Generates summary using GPT-4
    - Stores results in Firestore
-6. Real-time updates sent via WebSocket
-7. User sees completed transcription and summary
+6. WebSocket emits real-time progress updates
+7. User receives notification and views results
+
+### Large Files (> 25MB, up to 500MB)
+1. User uploads large audio file
+2. Client validates file (up to 500MB limit)
+3. File uploaded to Firebase Storage
+4. Job queued with 'requires_splitting' flag
+5. Backend processor with AudioSplitter:
+   - Downloads file from Firebase Storage
+   - Checks FFmpeg availability
+   - Splits audio into 10-minute chunks (max 25MB each)
+   - Processes each chunk through Whisper API
+   - Merges transcriptions maintaining chronological order
+   - Generates unified summary with full context
+   - Cleans up temporary chunk files
+   - Stores complete results in Firestore
+6. WebSocket emits progress for each chunk
+7. User sees consolidated transcription
 
 ## Firebase Setup Notes
 
@@ -151,29 +206,95 @@ If you encounter an index error, click the link in the error message to create i
 
 ## Common Issues and Solutions
 
-1. **M4a File Upload Issues**: The system accepts multiple MIME types for M4a files including `audio/x-m4a`, `audio/m4a`, `audio/mp4`, and `application/octet-stream`
+### File Upload Issues
+1. **M4A MIME Type Variations**: System handles `audio/x-m4a`, `audio/m4a`, `audio/mp4`, and `application/octet-stream`
+2. **Large File Failures**: Ensure FFmpeg is installed for files > 25MB
+3. **MP4 Video Files**: Whisper extracts audio track automatically
 
-2. **Redis Port Conflicts**: If port 6379 is in use, the system will use existing Redis instance
+### Infrastructure Issues
+4. **Redis Port Conflicts**: Script checks for existing Redis on 6379 before starting Docker container
+5. **FFmpeg Not Found**: AudioSplitter checks multiple paths (/usr/bin, /usr/local/bin, /opt/homebrew/bin)
+6. **Port Conflicts**: Frontend falls back to 3002 if 3000 is busy
 
-3. **Firestore Undefined Values**: Optional fields (context, contextId) are conditionally added to avoid Firestore errors
+### Firebase Issues
+7. **Firestore Undefined Values**: Optional fields (context, contextId) conditionally added
+8. **Storage Bucket Format**: Must use new `.firebasestorage.app` format (not `.appspot.com`)
+9. **Composite Index Error**: Click error link to auto-create required index
+10. **CORS Configuration**: Deploy `cors.json` for cross-origin uploads
 
-4. **Port Conflicts**: The app will use alternative ports if defaults are occupied (e.g., 3002 for frontend if 3000 is busy)
+### Processing Issues
+11. **Whisper API Timeout**: Large chunks may timeout - system retries with exponential backoff
+12. **Memory Issues**: FFmpeg streaming prevents loading entire file into memory
+13. **Chunk Synchronization**: Chunks processed in parallel but merged in order
 
 ## Architecture Decisions
 
-1. **Monorepo with Turborepo**: Enables shared types and parallel development
-2. **Queue-based Processing**: Scalable async processing with retry logic
-3. **WebSockets for Real-time**: Immediate feedback during long-running operations
-4. **Firebase Integration**: Managed auth, storage, and database services
-5. **TypeScript Throughout**: Type safety across frontend, backend, and shared packages
+### Monorepo Structure
+1. **Turborepo**: Enables parallel builds, shared dependencies, and unified tooling
+2. **Shared Package**: Single source of truth for types, constants, and utilities
+3. **Independent Services**: Frontend and backend can be deployed separately
+
+### Processing Architecture
+4. **Queue-based Processing**: Bull/Redis for scalable async job handling
+5. **Audio Splitting**: FFmpeg integration for handling files beyond API limits
+6. **Chunk Processing**: Parallel processing with ordered merging
+7. **Retry Logic**: Exponential backoff for transient failures
+
+### Real-time Communication
+8. **WebSockets**: Socket.io for bidirectional real-time updates
+9. **Event-driven Updates**: Progress events for each processing stage
+10. **Connection Management**: Automatic reconnection with state recovery
+
+### Storage & Data
+11. **Firebase Suite**: Managed services reduce operational overhead
+12. **Firestore**: NoSQL for flexible schema evolution
+13. **Composite Indexing**: Optimized queries for user transcriptions
+14. **Signed URLs**: Temporary access without permanent public links
+
+### Development Experience
+15. **TypeScript**: End-to-end type safety with shared types
+16. **Hot Reload**: Fast development iteration
+17. **Docker**: Containerized Redis for consistent development
+18. **Environment Configuration**: Separate configs for dev/staging/prod
 
 ## Security Considerations
 
+### Authentication & Authorization
 - Firebase Auth tokens required for all API endpoints
-- File size limits enforced (100MB max)
-- Audio file format validation
-- User isolation (users can only access their own transcriptions)
-- Signed URLs for secure file access with expiration
+- FirebaseAuthGuard validates tokens on each request
+- User isolation enforced at database query level
+- JWT tokens for WebSocket authentication
+
+### File Security
+- Client and server-side format validation
+- File size limits enforced (500MB max, configurable by tier)
+- MIME type verification against whitelist
+- Signed Firebase Storage URLs with 5-hour expiration
+- Temporary chunk files deleted after processing
+
+### API Security
+- Rate limiting on upload endpoints
+- Input sanitization for context fields
+- Error messages don't expose system internals
+- Queue job isolation by user ID
+
+### Infrastructure
+- Environment variables for sensitive configuration
+- Service account keys never committed to repository
+- Redis password protection in production
+- HTTPS enforcement in production deployment
 
 ## Original CLI Functionality
-The original CLI transcription tool is preserved in the `completed/` directory. It accepts audio files, optional context, and generates transcripts and summaries using the same OpenAI services.
+The original CLI transcription tool is preserved in the `cli/` directory. It accepts audio files, optional context, and generates transcripts and summaries using the same OpenAI services.
+
+## Future Enhancements (Planned)
+- Speaker diarization for multi-speaker audio
+- Real-time transcription via streaming
+- Export to multiple formats (PDF, DOCX, SRT)
+- Webhook notifications for completion
+- Team collaboration features
+- Custom vocabulary and terminology support
+- Integration with cloud storage providers (Dropbox, Google Drive)
+- Batch file processing UI improvements
+- Translation capabilities
+- Audio enhancement preprocessing

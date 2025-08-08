@@ -37,7 +37,7 @@ class WebSocketService {
 
     // Forward events to listeners
     Object.values(WEBSOCKET_EVENTS).forEach(event => {
-      this.socket?.on(event, (data) => {
+      this.socket?.on(event, (data: any) => {
         this.emit(event, data);
       });
     });
