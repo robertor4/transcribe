@@ -13,6 +13,7 @@ import {
   generateJobId,
   AnalysisType,
 } from '@transcribe/shared';
+import * as prompts from '../../../../cli/prompts';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
@@ -307,30 +308,8 @@ export class TranscriptionService {
 
   private getSystemPromptForAnalysis(analysisType?: AnalysisType, languageInstruction?: string): string {
     const baseInstruction = `Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction || ''}`;
-    
-    switch (analysisType) {
-      case AnalysisType.COMMUNICATION_STYLES:
-        return `You are an expert communication analyst who identifies and analyzes communication patterns, speaking styles, and interaction dynamics in conversations. ${baseInstruction}`;
-      
-      case AnalysisType.ACTION_ITEMS:
-        return `You are a project management expert who extracts, organizes, and prioritizes action items, tasks, and deliverables from conversations. ${baseInstruction}`;
-      
-      case AnalysisType.EMOTIONAL_INTELLIGENCE:
-        return `You are an emotional intelligence expert who analyzes emotional tone, empathy levels, conflict handling, and interpersonal dynamics in conversations. ${baseInstruction}`;
-      
-      case AnalysisType.INFLUENCE_PERSUASION:
-        return `You are a persuasion and influence expert who identifies persuasion techniques, argumentation patterns, and influence strategies used in conversations. ${baseInstruction}`;
-      
-      case AnalysisType.PERSONAL_DEVELOPMENT:
-        return `You are a professional development coach who identifies areas for improvement, learning opportunities, and provides constructive feedback based on conversation analysis. ${baseInstruction}`;
-      
-      case AnalysisType.CUSTOM:
-        return `You are a versatile AI assistant who can analyze conversations based on specific user instructions. ${baseInstruction}`;
-      
-      case AnalysisType.SUMMARY:
-      default:
-        return `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. ${baseInstruction}`;
-    }
+    const systemPrompt = prompts.getSystemPromptByType(analysisType || AnalysisType.SUMMARY);
+    return `${systemPrompt} ${baseInstruction}`;
   }
 
   private buildPromptForAnalysis(
@@ -339,44 +318,67 @@ export class TranscriptionService {
     context?: string,
     language?: string,
   ): string {
-    switch (analysisType) {
-      case AnalysisType.COMMUNICATION_STYLES:
-        return this.buildCommunicationStylesPrompt(transcription, context, language);
-      
-      case AnalysisType.ACTION_ITEMS:
-        return this.buildActionItemsPrompt(transcription, context, language);
-      
-      case AnalysisType.EMOTIONAL_INTELLIGENCE:
-        return this.buildEmotionalIntelligencePrompt(transcription, context, language);
-      
-      case AnalysisType.INFLUENCE_PERSUASION:
-        return this.buildInfluencePersuasionPrompt(transcription, context, language);
-      
-      case AnalysisType.PERSONAL_DEVELOPMENT:
-        return this.buildPersonalDevelopmentPrompt(transcription, context, language);
-      
-      case AnalysisType.CUSTOM:
-        return this.buildCustomPrompt(transcription, context, language);
-      
-      case AnalysisType.SUMMARY:
-      default:
-        return this.buildSummaryPrompt(transcription, context, language);
-    }
+    return prompts.buildAnalysisPrompt(transcription, analysisType || AnalysisType.SUMMARY, context, language);
   }
 
-  private buildCommunicationStylesPrompt(transcription: string, context?: string, language?: string): string {
-    const languageInstructions = this.getLanguageSpecificInstructions(language);
-    return `Please analyze the communication styles and patterns in this conversation.${languageInstructions}
+  async getTranscriptions(userId: string, page = 1, pageSize = 20) {
+    return this.firebaseService.getTranscriptions(userId, page, pageSize);
+  }
 
-# Communication Styles Analysis
+  async getTranscription(userId: string, transcriptionId: string) {
+    return this.firebaseService.getTranscription(userId, transcriptionId);
+  }
 
-## Speaking patterns
-- Identify dominant vs. passive speakers
-- Note interruption patterns
-- Analyze turn-taking dynamics
-- Identify speaking pace and style variations
+  async updateTitle(
+    userId: string,
+    transcriptionId: string,
+    title: string,
+  ): Promise<Transcription> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
 
-## Communication effectiveness
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // Update the title
+    const updates = {
+      title,
+      updatedAt: new Date(),
+    };
+
+    await this.firebaseService.updateTranscription(transcriptionId, updates);
+
+    const updatedTranscription = await this.firebaseService.getTranscription(userId, transcriptionId);
+    if (!updatedTranscription) {
+      throw new Error('Failed to retrieve updated transcription');
+    }
+
+    return updatedTranscription;
+  }
+
+  async deleteTranscription(userId: string, transcriptionId: string) {
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+
+    if (transcription) {
+      // Delete file from storage
+      await this.firebaseService.deleteFile(transcription.fileUrl);
+
+      // Delete transcription document
+      await this.firebaseService.deleteTranscription(transcriptionId);
+    }
+
+    return { success: true };
+  }
+
+  // Summary Comment Methods
+  async addSummaryComment(
 - Clarity of message delivery
 - Active listening indicators
 - Question-asking patterns
