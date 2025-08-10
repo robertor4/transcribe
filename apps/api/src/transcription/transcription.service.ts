@@ -12,11 +12,14 @@ import {
   QUEUE_NAMES,
   generateJobId,
   AnalysisType,
+  Speaker,
+  SpeakerSegment,
 } from '@transcribe/shared';
 import * as prompts from '../../../../cli/prompts';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
+import { GoogleSpeechService } from '../google-speech/google-speech.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -31,6 +34,8 @@ export class TranscriptionService {
     private firebaseService: FirebaseService,
     @Inject(forwardRef(() => WebSocketGateway))
     private websocketGateway: WebSocketGateway,
+    @Inject(forwardRef(() => GoogleSpeechService))
+    private googleSpeechService: GoogleSpeechService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
@@ -108,8 +113,199 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<{ text: string; language?: string }> {
-    return this.transcribeAudio(fileUrl, context, onProgress);
+  ): Promise<{ 
+    text: string; 
+    language?: string;
+    speakers?: Speaker[];
+    speakerSegments?: SpeakerSegment[];
+    transcriptWithSpeakers?: string;
+    speakerCount?: number;
+  }> {
+    // Check if we should use Google Speech for speaker diarization
+    const useGoogleSpeech = this.configService.get('USE_GOOGLE_SPEECH') === 'true';
+    
+    if (useGoogleSpeech) {
+      return this.transcribeWithGoogleSpeech(fileUrl, context, onProgress);
+    } else {
+      return this.transcribeAudio(fileUrl, context, onProgress);
+    }
+  }
+
+  async transcribeWithGoogleSpeech(
+    fileUrl: string,
+    context?: string,
+    onProgress?: (progress: number, message: string) => void,
+  ): Promise<{
+    text: string;
+    language?: string;
+    speakers?: Speaker[];
+    speakerSegments?: SpeakerSegment[];
+    transcriptWithSpeakers?: string;
+    speakerCount?: number;
+  }> {
+    try {
+      // Download file from Firebase Storage
+      const fileBuffer = await this.firebaseService.downloadFile(fileUrl);
+      
+      // Extract file extension from URL
+      let fileExtension = '.m4a'; // default
+      try {
+        const urlPath = new URL(fileUrl).pathname;
+        const decodedPath = decodeURIComponent(urlPath);
+        const match = decodedPath.match(/\.([^.]+)$/);
+        if (match) {
+          fileExtension = `.${match[1]}`;
+          this.logger.log(`Detected file extension: ${fileExtension}`);
+        }
+      } catch (e) {
+        this.logger.warn('Could not extract file extension from URL, using .m4a');
+      }
+      
+      const tempFilePath = path.join('/tmp', `audio_${Date.now()}${fileExtension}`);
+      fs.writeFileSync(tempFilePath, fileBuffer);
+
+      if (onProgress) {
+        onProgress(10, 'Converting audio to optimal format for speech recognition...');
+      }
+
+      // Convert to FLAC for optimal Google Speech recognition
+      const flacPath = await this.audioSplitter.convertToFlac(tempFilePath);
+      
+      // Check if we need to split the file
+      const stats = fs.statSync(flacPath);
+      const fileSizeInMB = stats.size / (1024 * 1024);
+      
+      let result: any;
+
+      if (fileSizeInMB > 100) {
+        // Split large files for reliability
+        this.logger.log(`File size ${fileSizeInMB}MB is large. Splitting for Google Speech...`);
+        
+        if (onProgress) {
+          onProgress(20, 'Splitting audio into chunks for processing...');
+        }
+
+        const chunks = await this.audioSplitter.splitForGoogleSpeech(flacPath);
+        const results = [];
+        
+        for (let i = 0; i < chunks.length; i++) {
+          if (onProgress) {
+            const progress = 30 + (i / chunks.length) * 40;
+            onProgress(progress, `Processing chunk ${i + 1} of ${chunks.length} with speaker diarization...`);
+          }
+          
+          const chunkResult = await this.googleSpeechService.transcribeWithDiarization(
+            chunks[i].path,
+            context,
+          );
+          results.push(chunkResult);
+          
+          // Clean up chunk
+          fs.unlinkSync(chunks[i].path);
+        }
+        
+        // Merge results
+        result = this.mergeGoogleSpeechResults(results);
+      } else {
+        if (onProgress) {
+          onProgress(30, 'Processing audio with speaker diarization...');
+        }
+        
+        result = await this.googleSpeechService.transcribeWithDiarization(
+          flacPath,
+          context,
+        );
+      }
+
+      // Clean up temp files
+      if (tempFilePath !== flacPath) {
+        fs.unlinkSync(tempFilePath);
+      }
+      fs.unlinkSync(flacPath);
+
+      if (onProgress) {
+        onProgress(70, 'Speaker identification complete');
+      }
+
+      return {
+        text: result.text,
+        language: result.language,
+        speakers: result.speakers,
+        speakerSegments: result.speakerSegments,
+        transcriptWithSpeakers: result.transcriptWithSpeakers,
+        speakerCount: result.speakerCount,
+      };
+    } catch (error) {
+      this.logger.error('Error transcribing with Google Speech:', error);
+      throw error;
+    }
+  }
+
+  private mergeGoogleSpeechResults(results: any[]): any {
+    if (results.length === 0) {
+      return {
+        text: '',
+        speakers: [],
+        speakerSegments: [],
+        transcriptWithSpeakers: '',
+        speakerCount: 0,
+      };
+    }
+
+    // Merge text
+    const fullText = results.map(r => r.text).join(' ');
+    
+    // Merge speaker segments with time offset adjustment
+    let timeOffset = 0;
+    const allSegments: SpeakerSegment[] = [];
+    
+    for (const result of results) {
+      for (const segment of result.speakerSegments || []) {
+        allSegments.push({
+          ...segment,
+          startTime: segment.startTime + timeOffset,
+          endTime: segment.endTime + timeOffset,
+        });
+      }
+      // Assume each chunk adds to the total time
+      if (result.speakerSegments && result.speakerSegments.length > 0) {
+        const lastSegment = result.speakerSegments[result.speakerSegments.length - 1];
+        timeOffset += lastSegment.endTime;
+      }
+    }
+
+    // Recalculate speaker statistics from merged segments
+    const speakerMap = new Map<string, Speaker>();
+    
+    for (const segment of allSegments) {
+      if (!speakerMap.has(segment.speakerTag)) {
+        speakerMap.set(segment.speakerTag, {
+          speakerId: parseInt(segment.speakerTag.replace('Speaker ', '')),
+          speakerTag: segment.speakerTag,
+          totalSpeakingTime: 0,
+          wordCount: 0,
+          firstAppearance: segment.startTime,
+        });
+      }
+      
+      const speaker = speakerMap.get(segment.speakerTag)!;
+      speaker.totalSpeakingTime += segment.endTime - segment.startTime;
+      speaker.wordCount += segment.text.split(' ').length;
+    }
+
+    const speakers = Array.from(speakerMap.values());
+    const transcriptWithSpeakers = allSegments
+      .map(s => `[${s.speakerTag}]: ${s.text}`)
+      .join('\n\n');
+
+    return {
+      text: fullText,
+      language: results[0].language,
+      speakers,
+      speakerSegments: allSegments,
+      transcriptWithSpeakers,
+      speakerCount: speakers.length,
+    };
   }
 
   async transcribeAudio(

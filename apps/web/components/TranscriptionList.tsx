@@ -27,12 +27,17 @@ import {
   Check,
   AlignLeft,
   Edit3,
-  X
+  X,
+  Users,
+  User
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
+import SpeakerSummary from './SpeakerSummary';
+import TranscriptWithSpeakers from './TranscriptWithSpeakers';
+import SpeakerTimeline from './SpeakerTimeline';
 
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
@@ -46,6 +51,8 @@ export const TranscriptionList: React.FC = () => {
   const [showTechnicalError, setShowTechnicalError] = useState<Set<string>>(new Set());
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
+  const [showSpeakerView, setShowSpeakerView] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState<{ [key: string]: 'summary' | 'transcript' | 'speakers' }>({});
 
   useEffect(() => {
     loadTranscriptions();
@@ -329,6 +336,12 @@ export const TranscriptionList: React.FC = () => {
                       <span className="text-xs text-gray-500">
                         {new Date(transcription.createdAt).toLocaleDateString()}
                       </span>
+                      {transcription.speakerCount && transcription.speakerCount > 0 && (
+                        <span className="text-xs text-[#cc3399] flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {transcription.speakerCount} {transcription.speakerCount === 1 ? 'speaker' : 'speakers'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -408,8 +421,49 @@ export const TranscriptionList: React.FC = () => {
             )}
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
-              <div className="border-t border-gray-200 p-4 bg-gray-50">
-                {transcription.summary && (
+              <div className="border-t border-gray-200 bg-gray-50">
+                {/* Tab navigation for expanded view */}
+                {transcription.speakers && transcription.speakers.length > 0 && (
+                  <div className="border-b border-gray-200 bg-white px-4">
+                    <nav className="-mb-px flex space-x-4">
+                      <button
+                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'summary' }))}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                          (!activeTab[transcription.id] || activeTab[transcription.id] === 'summary')
+                            ? 'border-[#cc3399] text-[#cc3399]'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        Summary
+                      </button>
+                      <button
+                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'transcript' }))}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                          activeTab[transcription.id] === 'transcript'
+                            ? 'border-[#cc3399] text-[#cc3399]'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        Transcript
+                      </button>
+                      <button
+                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'speakers' }))}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
+                          activeTab[transcription.id] === 'speakers'
+                            ? 'border-[#cc3399] text-[#cc3399]'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        <Users className="h-4 w-4" />
+                        Speakers ({transcription.speakerCount})
+                      </button>
+                    </nav>
+                  </div>
+                )}
+                
+                <div className="p-4">
+                {/* Show content based on active tab */}
+                {(!activeTab[transcription.id] || activeTab[transcription.id] === 'summary') && transcription.summary && (
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
@@ -457,7 +511,76 @@ export const TranscriptionList: React.FC = () => {
                   </div>
                 )}
                 
-                {transcription.transcriptText && (
+                {activeTab[transcription.id] === 'transcript' && transcription.transcriptText && (
+                  transcription.speakers && transcription.speakers.length > 0 ? (
+                    <TranscriptWithSpeakers
+                      segments={transcription.speakerSegments}
+                      transcriptWithSpeakers={transcription.transcriptWithSpeakers}
+                    />
+                  ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+                        <FileAudio className="h-4 w-4 mr-2" />
+                        Full Transcript
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleFormat(transcription.id)}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
+                            !unformattedTranscripts.has(transcription.id)
+                              ? 'bg-pink-100 text-[#cc3399] hover:bg-pink-200'
+                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                          title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
+                        >
+                          <AlignLeft className="h-3 w-3" />
+                          {!unformattedTranscripts.has(transcription.id) ? 'Formatted' : 'Original'}
+                        </button>
+                        <button
+                          onClick={() => handleCopy(
+                            !unformattedTranscripts.has(transcription.id) 
+                              ? formatTranscript(transcription.transcriptText || '')
+                              : transcription.transcriptText || '', 
+                            `transcript-${transcription.id}`
+                          )}
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
+                          title="Copy transcript"
+                        >
+                          {copiedId === `transcript-${transcription.id}` ? (
+                            <>
+                              <Check className="h-3 w-3 text-[#cc3399]" />
+                              Copied!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              Copy
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
+                        {!unformattedTranscripts.has(transcription.id) 
+                          ? formatTranscript(transcription.transcriptText || '')
+                          : transcription.transcriptText}
+                      </p>
+                    </div>
+                  </div>
+                  )
+                )}
+                
+                {activeTab[transcription.id] === 'speakers' && transcription.speakers && (
+                  <div className="space-y-4">
+                    <SpeakerSummary speakers={transcription.speakers} />
+                    <SpeakerTimeline segments={transcription.speakerSegments} />
+                  </div>
+                )}
+                
+                {/* Show regular transcript if no tabs (no speaker data) */}
+                {!transcription.speakers && transcription.transcriptText && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
@@ -510,6 +633,7 @@ export const TranscriptionList: React.FC = () => {
                     </div>
                   </div>
                 )}
+                </div>
               </div>
             )}
           </div>

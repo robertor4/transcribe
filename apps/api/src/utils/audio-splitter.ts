@@ -261,4 +261,154 @@ export class AudioSplitter {
 
     return chunkInfo;
   }
+
+  async convertToFlac(
+    inputPath: string,
+    outputDir?: string,
+    options?: { sampleRate?: number; channels?: number },
+  ): Promise<string> {
+    const dir = outputDir || path.dirname(inputPath);
+    const baseFileName = path.basename(inputPath, path.extname(inputPath));
+    const outputPath = path.join(dir, `${baseFileName}.flac`);
+
+    // Check if already FLAC
+    if (path.extname(inputPath).toLowerCase() === '.flac') {
+      return inputPath;
+    }
+
+    this.logger.log(`Converting ${inputPath} to FLAC format for Google Speech`);
+
+    return new Promise((resolve, reject) => {
+      const ffmpegCommand = ffmpeg(inputPath)
+        .audioCodec('flac')
+        .audioFrequency(options?.sampleRate || 16000)
+        .audioChannels(options?.channels || 1); // Mono for better accuracy
+
+      ffmpegCommand
+        .on('start', (commandLine) => {
+          this.logger.debug(`Starting FLAC conversion: ${commandLine}`);
+        })
+        .on('progress', (progress) => {
+          this.logger.debug(`Converting to FLAC: ${progress.percent}%`);
+        })
+        .on('end', () => {
+          this.logger.log(`Successfully converted to FLAC: ${outputPath}`);
+          resolve(outputPath);
+        })
+        .on('error', (err) => {
+          this.logger.error(`Error converting to FLAC:`, err);
+          reject(err);
+        })
+        .save(outputPath);
+    });
+  }
+
+  async splitForGoogleSpeech(
+    inputPath: string,
+    options: SplitOptions = {},
+  ): Promise<AudioChunk[]> {
+    const {
+      maxDurationSeconds = 1800, // 30 minutes for Google Speech
+      outputDir = path.dirname(inputPath),
+      format = 'flac', // Use FLAC for Google Speech
+    } = options;
+
+    // Check if ffmpeg is available
+    const ffmpegAvailable = await this.checkFfmpegAvailable();
+    if (!ffmpegAvailable) {
+      throw new Error('FFmpeg is not available. Cannot split audio files.');
+    }
+
+    this.logger.log(`Splitting audio file for Google Speech: ${inputPath}`);
+
+    const duration = await this.getAudioDuration(inputPath);
+
+    // For Google Speech, we can handle longer files with async API
+    // But splitting into 30-minute chunks is recommended for reliability
+    if (duration <= maxDurationSeconds) {
+      this.logger.log('File duration is within limits, no splitting needed');
+      // Convert to FLAC if needed
+      const flacPath = await this.convertToFlac(inputPath, outputDir);
+      return [
+        {
+          path: flacPath,
+          startTime: 0,
+          endTime: duration,
+          duration: duration,
+          index: 0,
+        },
+      ];
+    }
+
+    const baseFileName = path.basename(inputPath, path.extname(inputPath));
+    const chunks: AudioChunk[] = [];
+    const totalChunks = Math.ceil(duration / maxDurationSeconds);
+
+    this.logger.log(
+      `Splitting into ${totalChunks} chunks of ~${maxDurationSeconds}s each for Google Speech`,
+    );
+
+    const promises: Promise<AudioChunk>[] = [];
+
+    for (let i = 0; i < totalChunks; i++) {
+      const startTime = i * maxDurationSeconds;
+      const endTime = Math.min((i + 1) * maxDurationSeconds, duration);
+      const actualDuration = endTime - startTime;
+
+      const outputPath = path.join(
+        outputDir,
+        `${baseFileName}_chunk_${i + 1}.${format}`,
+      );
+
+      promises.push(
+        this.extractChunkAsFlac(inputPath, outputPath, startTime, actualDuration, i),
+      );
+    }
+
+    const results = await Promise.all(promises);
+    chunks.push(...results);
+
+    this.logger.log(`Successfully split audio into ${chunks.length} chunks for Google Speech`);
+    return chunks;
+  }
+
+  private extractChunkAsFlac(
+    inputPath: string,
+    outputPath: string,
+    startTime: number,
+    duration: number,
+    index: number,
+  ): Promise<AudioChunk> {
+    return new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .setStartTime(startTime)
+        .setDuration(duration)
+        .audioCodec('flac')
+        .audioFrequency(16000) // Optimal for speech recognition
+        .audioChannels(1) // Mono for better accuracy
+        .on('start', (commandLine) => {
+          this.logger.debug(`Starting FLAC chunk ${index + 1}: ${commandLine}`);
+        })
+        .on('progress', (progress) => {
+          this.logger.debug(
+            `Processing FLAC chunk ${index + 1}: ${progress.percent}%`,
+          );
+        })
+        .on('end', () => {
+          this.logger.log(`FLAC chunk ${index + 1} created: ${outputPath}`);
+          resolve({
+            path: outputPath,
+            startTime,
+            endTime: startTime + duration,
+            duration,
+            index,
+          });
+        })
+        .on('error', (err) => {
+          this.logger.error(`Error creating FLAC chunk ${index + 1}:`, err);
+          reject(err);
+        })
+        .save(outputPath);
+    });
+  }
 }

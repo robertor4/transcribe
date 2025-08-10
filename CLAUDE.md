@@ -10,11 +10,14 @@ A production-ready web application for audio transcription and summarization usi
 - **Storage**: Firebase Storage for audio files (new .firebasestorage.app format)
 - **Authentication**: Firebase Auth (Email/Password and Google OAuth)
 - **Real-time Updates**: Socket.io WebSockets for progress tracking
-- **AI Services**: OpenAI Whisper API for transcription, GPT-4 for summarization
+- **AI Services**: 
+  - OpenAI Whisper API for transcription (default)
+  - Google Cloud Speech-to-Text with speaker diarization (optional, via feature flag)
+  - GPT-4 for summarization
 - **Queue Management**: Redis with Bull for scalable job processing
-- **Audio Processing**: FFmpeg for automatic file splitting (files > 25MB)
+- **Audio Processing**: FFmpeg for automatic file splitting and format conversion
 - **Monorepo**: Turborepo for workspace management
-- **Models**: whisper-1 for transcription, gpt-4o-mini/gpt-4o for summaries
+- **Models**: whisper-1 or Google Speech for transcription, gpt-4o-mini/gpt-4o for summaries
 
 ## Project Structure
 ```
@@ -23,11 +26,12 @@ transcribe/
 │   ├── api/                     # NestJS backend API
 │   │   ├── src/
 │   │   │   ├── transcription/   # Transcription service, controller, processor
+│   │   │   ├── google-speech/   # Google Cloud Speech-to-Text with speaker diarization
 │   │   │   ├── firebase/        # Firebase admin integration
 │   │   │   ├── auth/            # Firebase authentication guards
 │   │   │   ├── websocket/       # Socket.io gateway
 │   │   │   └── utils/
-│   │   │       └── audio-splitter.ts  # FFmpeg audio chunking
+│   │   │       └── audio-splitter.ts  # FFmpeg audio chunking and format conversion
 │   │   └── .env                 # Backend environment variables
 │   └── web/                     # Next.js frontend
 │       ├── app/                 # App router pages
@@ -52,9 +56,10 @@ transcribe/
 ### Core Functionality
 1. **Large File Support**: Handles files up to 500MB with automatic splitting into 10-minute chunks
 2. **Multi-Format Support**: Accepts M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
-3. **Smart Audio Splitting**: FFmpeg-based chunking for files exceeding Whisper's 25MB limit
+3. **Smart Audio Splitting**: FFmpeg-based chunking for files exceeding API limits
 4. **Context-Aware Processing**: Optional context for improved transcription accuracy
 5. **Batch Processing**: Queue-based architecture supporting multiple concurrent jobs
+6. **Speaker Diarization** (NEW): Identify and label different speakers using Google Cloud Speech-to-Text
 
 ### User Experience
 6. **Drag-and-Drop Upload**: Intuitive file upload with react-dropzone
@@ -93,6 +98,9 @@ JWT_SECRET=your_jwt_secret
 # API
 PORT=3001
 NODE_ENV=development
+
+# Feature Flags
+USE_GOOGLE_SPEECH=true  # Enable Google Cloud Speech-to-Text with speaker diarization
 ```
 
 ### apps/web/.env.local

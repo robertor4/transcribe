@@ -58,6 +58,10 @@ export class TranscriptionProcessor {
       
       const transcriptText = transcriptionResult.text;
       const detectedLanguage = transcriptionResult.language;
+      const speakers = transcriptionResult.speakers;
+      const speakerSegments = transcriptionResult.speakerSegments;
+      const transcriptWithSpeakers = transcriptionResult.transcriptWithSpeakers;
+      const speakerCount = transcriptionResult.speakerCount;
       
       if (detectedLanguage) {
         this.logger.log(`Detected language for transcription ${transcriptionId}: ${detectedLanguage}`);
@@ -98,7 +102,7 @@ export class TranscriptionProcessor {
         `transcriptions/${userId}/${transcriptionId}/summary.md`,
       );
 
-      // Update transcription document with language information
+      // Update transcription document with language and speaker information
       const updateData: any = {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
@@ -110,6 +114,15 @@ export class TranscriptionProcessor {
       if (detectedLanguage) {
         updateData.detectedLanguage = detectedLanguage;
         updateData.summaryLanguage = detectedLanguage;
+      }
+      
+      // Add speaker diarization data if available
+      if (speakers && speakers.length > 0) {
+        updateData.speakers = speakers;
+        updateData.speakerSegments = speakerSegments;
+        updateData.transcriptWithSpeakers = transcriptWithSpeakers;
+        updateData.speakerCount = speakerCount;
+        this.logger.log(`Added speaker diarization data: ${speakerCount} speakers identified`);
       }
       
       await this.firebaseService.updateTranscription(transcriptionId, updateData);

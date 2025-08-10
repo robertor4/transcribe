@@ -71,6 +71,12 @@ export interface Transcription {
   completedAt?: Date;
   cost?: number;
   metadata?: Record<string, any>;
+  // Speaker diarization fields
+  speakerCount?: number;
+  speakers?: Speaker[];
+  speakerSegments?: SpeakerSegment[];
+  transcriptWithSpeakers?: string; // Formatted transcript with speaker labels
+  diarizationConfidence?: number;
 }
 
 export interface TranscriptionJob {
@@ -160,4 +166,20 @@ export interface SummaryRegenerationProgress {
   progress: number;
   message?: string;
   error?: string;
+}
+
+export interface Speaker {
+  speakerId: number;
+  speakerTag: string; // e.g., "Speaker 1"
+  totalSpeakingTime: number; // seconds
+  wordCount: number;
+  firstAppearance: number; // timestamp in seconds
+}
+
+export interface SpeakerSegment {
+  speakerTag: string;
+  startTime: number; // seconds
+  endTime: number; // seconds
+  text: string;
+  confidence?: number;
 }

@@ -6,6 +6,7 @@ import { TranscriptionService } from './transcription.service';
 import { TranscriptionProcessor } from './transcription.processor';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
+import { GoogleSpeechModule } from '../google-speech/google-speech.module';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
 @Module({
@@ -13,6 +14,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     ConfigModule,
     FirebaseModule,
     WebSocketModule,
+    GoogleSpeechModule,
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),
