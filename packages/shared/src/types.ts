@@ -10,9 +10,20 @@ export enum UserRole {
   ADMIN = 'admin'
 }
 
+export enum AnalysisType {
+  SUMMARY = 'summary',
+  COMMUNICATION_STYLES = 'communication_styles',
+  ACTION_ITEMS = 'action_items',
+  EMOTIONAL_INTELLIGENCE = 'emotional_intelligence',
+  INFLUENCE_PERSUASION = 'influence_persuasion',
+  PERSONAL_DEVELOPMENT = 'personal_development',
+  CUSTOM = 'custom'
+}
+
 export interface User {
   uid: string;
   email: string;
+  emailVerified?: boolean;
   displayName?: string;
   photoURL?: string;
   role: UserRole;
@@ -45,6 +56,7 @@ export interface Transcription {
   mimeType: string;
   duration?: number;
   status: TranscriptionStatus;
+  analysisType?: AnalysisType; // Type of analysis to perform (defaults to SUMMARY)
   context?: string;
   contextId?: string;
   transcriptText?: string;
@@ -66,6 +78,7 @@ export interface TranscriptionJob {
   transcriptionId: string;
   userId: string;
   fileUrl: string;
+  analysisType?: AnalysisType;
   context?: string;
   priority: number;
   retryCount: number;
@@ -76,6 +89,7 @@ export interface TranscriptionJob {
 
 export interface FileUploadRequest {
   file: File;
+  analysisType?: AnalysisType;
   context?: string;
   contextId?: string;
   priority?: number;

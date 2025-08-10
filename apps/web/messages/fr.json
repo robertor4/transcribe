@@ -41,7 +41,7 @@
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "dontHaveAccount": "Vous n'avez pas de compte ?",
     "createAccount": "Créer un compte",
-    "welcomeBack": "Bon retour !",
+    "welcomeBack": "Neural Summary",
     "signInToContinue": "Connectez-vous pour continuer vers Neural Summary",
     "invalidCredentials": "E-mail ou mot de passe invalide",
     "accountCreated": "Compte créé avec succès",
@@ -49,7 +49,31 @@
     "emailAlreadyInUse": "E-mail déjà utilisé",
     "weakPassword": "Le mot de passe doit contenir au moins 6 caractères",
     "userNotFound": "Utilisateur non trouvé",
-    "tooManyRequests": "Trop de demandes. Veuillez réessayer plus tard."
+    "tooManyRequests": "Trop de demandes. Veuillez réessayer plus tard.",
+    "backToLogin": "Retour à la connexion",
+    "enterEmailForReset": "Entrez votre adresse e-mail pour recevoir un lien de réinitialisation",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "resetLinkSent": "Lien envoyé !",
+    "checkEmailForReset": "Vérifiez votre e-mail pour obtenir un lien de réinitialisation de votre mot de passe.",
+    "checkSpamFolder": "Si vous ne voyez pas l'e-mail, vérifiez votre dossier spam.",
+    "tryDifferentEmail": "Essayer un autre e-mail",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "passwordResetSuccess": "Mot de passe réinitialisé avec succès !",
+    "redirectingToLogin": "Redirection vers la connexion...",
+    "invalidResetLink": "Lien de réinitialisation invalide ou expiré",
+    "resetLinkExpired": "Ce lien a expiré. Veuillez en demander un nouveau.",
+    "resetEmailFailed": "Échec de l'envoi de l'e-mail. Veuillez réessayer.",
+    "verifyingResetLink": "Vérification du lien...",
+    "resetPasswordError": "Erreur de lien",
+    "resetPasswordFailed": "Échec de la réinitialisation du mot de passe. Veuillez réessayer.",
+    "requestNewLink": "Demander un nouveau lien",
+    "createNewPassword": "Créer un nouveau mot de passe",
+    "enterNewPasswordFor": "Entrez un nouveau mot de passe pour",
+    "enterNewPassword": "Entrez votre nouveau mot de passe",
+    "passwordRequirements": "Exigences du mot de passe :",
+    "passwordSpecialChar": "Un caractère spécial",
+    "optional": "optionnel"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -388,7 +412,7 @@
       "trustIndicators": {
         "users": "10 000+ utilisateurs",
         "rating": "4,9/5 évaluation",
-        "certified": "Certifié SOC 2"
+        "certified": "Conforme au RGPD"
       },
       "title": "Transformez l'audio en",
       "titleHighlight": "informations exploitables",
@@ -454,12 +478,12 @@
         "description": "Vos données ne sont jamais utilisées pour l'entraînement ou partagées"
       },
       "audit": {
-        "title": "Certifié SOC 2 Type II",
+        "title": "Conforme au RGPD",
         "description": "Pratiques de sécurité auditées de manière indépendante"
       },
       "badges": {
         "ssl": "SSL 256 bits",
-        "soc2": "SOC 2",
+        "soc2": "RGPD",
         "gdpr": "RGPD",
         "iso": "ISO 27001"
       }

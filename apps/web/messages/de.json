@@ -41,7 +41,7 @@
     "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
     "dontHaveAccount": "Haben Sie noch kein Konto?",
     "createAccount": "Konto erstellen",
-    "welcomeBack": "Willkommen zurück!",
+    "welcomeBack": "Neural Summary",
     "signInToContinue": "Melden Sie sich an, um zu Neural Summary fortzufahren",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
     "accountCreated": "Konto erfolgreich erstellt",
@@ -49,7 +49,31 @@
     "emailAlreadyInUse": "E-Mail wird bereits verwendet",
     "weakPassword": "Passwort sollte mindestens 6 Zeichen lang sein",
     "userNotFound": "Benutzer nicht gefunden",
-    "tooManyRequests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut."
+    "tooManyRequests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
+    "backToLogin": "Zurück zur Anmeldung",
+    "enterEmailForReset": "Geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten",
+    "sendResetLink": "Zurücksetzungslink senden",
+    "resetLinkSent": "Link gesendet!",
+    "checkEmailForReset": "Überprüfen Sie Ihre E-Mails für einen Link zum Zurücksetzen Ihres Passworts.",
+    "checkSpamFolder": "Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner.",
+    "tryDifferentEmail": "Andere E-Mail versuchen",
+    "newPassword": "Neues Passwort",
+    "confirmNewPassword": "Neues Passwort bestätigen",
+    "passwordResetSuccess": "Passwort erfolgreich zurückgesetzt!",
+    "redirectingToLogin": "Weiterleitung zur Anmeldung...",
+    "invalidResetLink": "Ungültiger oder abgelaufener Zurücksetzungslink",
+    "resetLinkExpired": "Dieser Link ist abgelaufen. Bitte fordern Sie einen neuen an.",
+    "resetEmailFailed": "Fehler beim Senden der E-Mail. Bitte versuchen Sie es erneut.",
+    "verifyingResetLink": "Link wird überprüft...",
+    "resetPasswordError": "Link-Fehler",
+    "resetPasswordFailed": "Fehler beim Zurücksetzen des Passworts. Bitte versuchen Sie es erneut.",
+    "requestNewLink": "Neuen Link anfordern",
+    "createNewPassword": "Neues Passwort erstellen",
+    "enterNewPasswordFor": "Geben Sie ein neues Passwort ein für",
+    "enterNewPassword": "Geben Sie Ihr neues Passwort ein",
+    "passwordRequirements": "Passwortanforderungen:",
+    "passwordSpecialChar": "Ein Sonderzeichen",
+    "optional": "optional"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -388,7 +412,7 @@
       "trustIndicators": {
         "users": "10.000+ Nutzer",
         "rating": "4,9/5 Bewertung",
-        "certified": "SOC 2 zertifiziert"
+        "certified": "DSGVO-konform"
       },
       "title": "Verwandeln Sie Audio in",
       "titleHighlight": "verwertbare Erkenntnisse",
@@ -454,12 +478,12 @@
         "description": "Ihre Daten werden niemals für Training verwendet oder geteilt"
       },
       "audit": {
-        "title": "SOC 2 Typ II zertifiziert",
+        "title": "DSGVO-konform",
         "description": "Unabhängig geprüfte Sicherheitspraktiken"
       },
       "badges": {
         "ssl": "256-bit SSL",
-        "soc2": "SOC 2",
+        "soc2": "DSGVO",
         "gdpr": "DSGVO",
         "iso": "ISO 27001"
       }

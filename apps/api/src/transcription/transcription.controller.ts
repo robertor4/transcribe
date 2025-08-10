@@ -26,6 +26,7 @@ import {
   Transcription,
   SummaryComment,
   RegenerateSummaryRequest,
+  AnalysisType,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -43,6 +44,7 @@ export class TranscriptionController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
+    @Body('analysisType') analysisType: AnalysisType,
     @Body('context') context: string,
     @Body('contextId') contextId: string,
     @Req() req: Request & { user: any },
@@ -76,6 +78,7 @@ export class TranscriptionController {
     const transcription = await this.transcriptionService.createTranscription(
       req.user.uid,
       file,
+      analysisType,
       context,
       contextId,
     );

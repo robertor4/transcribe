@@ -1,0 +1,323 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { Lock, AlertCircle, Loader2, CheckCircle, Check, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+interface PasswordStrength {
+  minLength: boolean;
+  hasUppercase: boolean;
+  hasLowercase: boolean;
+  hasNumber: boolean;
+  hasSpecial: boolean;
+}
+
+export default function ResetPasswordForm() {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(true);
+  const [email, setEmail] = useState('');
+  const [oobCode, setOobCode] = useState('');
+  const [resetComplete, setResetComplete] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
+    minLength: false,
+    hasUppercase: false,
+    hasLowercase: false,
+    hasNumber: false,
+    hasSpecial: false,
+  });
+  
+  const { confirmPasswordReset, verifyPasswordResetCode } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tAuth = useTranslations('auth');
+
+  useEffect(() => {
+    const code = searchParams.get('oobCode');
+    
+    if (!code) {
+      setError(tAuth('invalidResetLink'));
+      setVerifying(false);
+      return;
+    }
+
+    setOobCode(code);
+    
+    const verifyCode = async () => {
+      try {
+        const userEmail = await verifyPasswordResetCode(code);
+        setEmail(userEmail);
+        setVerifying(false);
+      } catch (error: any) {
+        const errorMessage = error.message || '';
+        
+        if (errorMessage.includes('expired')) {
+          setError(tAuth('resetLinkExpired'));
+        } else if (errorMessage.includes('invalid')) {
+          setError(tAuth('invalidResetLink'));
+        } else {
+          setError(tAuth('verificationFailed'));
+        }
+        setVerifying(false);
+      }
+    };
+
+    verifyCode();
+  }, [searchParams, verifyPasswordResetCode, tAuth]);
+
+  useEffect(() => {
+    const strength: PasswordStrength = {
+      minLength: password.length >= 8,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    setPasswordStrength(strength);
+  }, [password]);
+
+  const isPasswordValid = () => {
+    return (
+      passwordStrength.minLength &&
+      passwordStrength.hasUppercase &&
+      passwordStrength.hasLowercase &&
+      passwordStrength.hasNumber
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError(tAuth('passwordsDoNotMatch'));
+      return;
+    }
+
+    if (!isPasswordValid()) {
+      setError(tAuth('passwordRequirementsNotMet'));
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await confirmPasswordReset(oobCode, password);
+      setResetComplete(true);
+      
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+    } catch (error: any) {
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('weak-password')) {
+        setError(tAuth('weakPassword'));
+      } else if (errorMessage.includes('expired')) {
+        setError(tAuth('resetLinkExpired'));
+      } else {
+        setError(tAuth('resetPasswordFailed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (verifying) {
+    return (
+      <div className="max-w-md w-full space-y-8 text-center">
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#cc3399]" />
+        <p className="text-gray-600">{tAuth('verifyingResetLink')}</p>
+      </div>
+    );
+  }
+
+  if (resetComplete) {
+    return (
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+            <CheckCircle className="h-8 w-8 text-green-600" />
+          </div>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            {tAuth('passwordResetSuccess')}
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            {tAuth('redirectingToLogin')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && verifying === false && !email) {
+    return (
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
+            <AlertCircle className="h-8 w-8 text-red-600" />
+          </div>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            {tAuth('resetPasswordError')}
+          </h2>
+          <p className="mt-2 text-sm text-red-600">
+            {error}
+          </p>
+        </div>
+        <div className="text-center">
+          <Link 
+            href="/forgot-password"
+            className="text-[#cc3399] hover:text-[#b82d89]"
+          >
+            {tAuth('requestNewLink')}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-md w-full space-y-8">
+      <div>
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          {tAuth('createNewPassword')}
+        </h2>
+        <p className="mt-2 text-sm text-gray-600">
+          {tAuth('enterNewPasswordFor')} <span className="font-medium">{email}</span>
+        </p>
+      </div>
+
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            {tAuth('newPassword')}
+          </label>
+          <div className="mt-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              placeholder={tAuth('enterNewPassword')}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            {tAuth('confirmNewPassword')}
+          </label>
+          <div className="mt-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              placeholder={tAuth('confirmYourPassword')}
+            />
+          </div>
+        </div>
+
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <p className="text-sm font-medium text-gray-700 mb-2">
+            {tAuth('passwordRequirements')}
+          </p>
+          <ul className="space-y-1">
+            <li className="flex items-center text-sm">
+              {passwordStrength.minLength ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-gray-300 mr-2" />
+              )}
+              <span className={passwordStrength.minLength ? 'text-green-700' : 'text-gray-500'}>
+                {tAuth('passwordMinLength')}
+              </span>
+            </li>
+            <li className="flex items-center text-sm">
+              {passwordStrength.hasUppercase ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-gray-300 mr-2" />
+              )}
+              <span className={passwordStrength.hasUppercase ? 'text-green-700' : 'text-gray-500'}>
+                {tAuth('passwordUppercase')}
+              </span>
+            </li>
+            <li className="flex items-center text-sm">
+              {passwordStrength.hasLowercase ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-gray-300 mr-2" />
+              )}
+              <span className={passwordStrength.hasLowercase ? 'text-green-700' : 'text-gray-500'}>
+                {tAuth('passwordLowercase')}
+              </span>
+            </li>
+            <li className="flex items-center text-sm">
+              {passwordStrength.hasNumber ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-gray-300 mr-2" />
+              )}
+              <span className={passwordStrength.hasNumber ? 'text-green-700' : 'text-gray-500'}>
+                {tAuth('passwordNumber')}
+              </span>
+            </li>
+            <li className="flex items-center text-sm">
+              {passwordStrength.hasSpecial ? (
+                <Check className="h-4 w-4 text-green-500 mr-2" />
+              ) : (
+                <X className="h-4 w-4 text-gray-300 mr-2" />
+              )}
+              <span className={passwordStrength.hasSpecial ? 'text-green-700' : 'text-gray-500'}>
+                {tAuth('passwordSpecialChar')} ({tAuth('optional')})
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            disabled={loading || !isPasswordValid() || password !== confirmPassword}
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              tAuth('resetPassword')
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

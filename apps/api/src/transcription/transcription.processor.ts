@@ -22,7 +22,7 @@ export class TranscriptionProcessor {
 
   @Process('transcribe')
   async handleTranscription(job: Job<TranscriptionJob>) {
-    const { transcriptionId, userId, fileUrl, context } = job.data;
+    const { transcriptionId, userId, fileUrl, analysisType, context } = job.data;
 
     this.logger.log(`Processing transcription job ${transcriptionId}`);
 
@@ -71,9 +71,10 @@ export class TranscriptionProcessor {
         message: 'Transcription complete, generating summary...',
       });
 
-      // Generate summary in the detected language
+      // Generate summary/analysis in the detected language
       const summary = await this.transcriptionService.generateSummary(
         transcriptText,
+        analysisType,
         context,
         detectedLanguage,
       );

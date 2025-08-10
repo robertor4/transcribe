@@ -7,6 +7,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { TranscriptionModule } from './transcription/transcription.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     WebSocketModule,
     TranscriptionModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

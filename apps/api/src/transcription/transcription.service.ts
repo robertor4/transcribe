@@ -11,6 +11,7 @@ import {
   TranscriptionJob,
   QUEUE_NAMES,
   generateJobId,
+  AnalysisType,
 } from '@transcribe/shared';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
@@ -39,6 +40,7 @@ export class TranscriptionService {
   async createTranscription(
     userId: string,
     file: Express.Multer.File,
+    analysisType?: AnalysisType,
     context?: string,
     contextId?: string,
   ): Promise<Transcription> {
@@ -66,6 +68,9 @@ export class TranscriptionService {
     };
 
     // Only add optional fields if they have values
+    if (analysisType) {
+      transcription.analysisType = analysisType;
+    }
     if (context) {
       transcription.context = context;
     }
@@ -82,6 +87,7 @@ export class TranscriptionService {
       transcriptionId,
       userId,
       fileUrl,
+      analysisType,
       context,
       priority: 1,
       retryCount: 0,
@@ -270,6 +276,7 @@ export class TranscriptionService {
 
   async generateSummary(
     transcriptionText: string,
+    analysisType?: AnalysisType,
     context?: string,
     language?: string,
   ): Promise<string> {
@@ -278,9 +285,8 @@ export class TranscriptionService {
         `\n\nIMPORTANT: The transcription is in ${language}. Please generate the summary in ${language} as well. Use appropriate formatting and conventions for ${language}.` : 
         '';
       
-      const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction}`;
-
-      const userPrompt = this.buildSummaryPrompt(transcriptionText, context, language);
+      const systemPrompt = this.getSystemPromptForAnalysis(analysisType, languageInstruction);
+      const userPrompt = this.buildPromptForAnalysis(transcriptionText, analysisType, context, language);
 
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4o-mini', // Note: Consider upgrading to gpt-4-turbo or gpt-4o for better performance
@@ -297,6 +303,262 @@ export class TranscriptionService {
       this.logger.error('Error generating summary:', error);
       throw error;
     }
+  }
+
+  private getSystemPromptForAnalysis(analysisType?: AnalysisType, languageInstruction?: string): string {
+    const baseInstruction = `Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction || ''}`;
+    
+    switch (analysisType) {
+      case AnalysisType.COMMUNICATION_STYLES:
+        return `You are an expert communication analyst who identifies and analyzes communication patterns, speaking styles, and interaction dynamics in conversations. ${baseInstruction}`;
+      
+      case AnalysisType.ACTION_ITEMS:
+        return `You are a project management expert who extracts, organizes, and prioritizes action items, tasks, and deliverables from conversations. ${baseInstruction}`;
+      
+      case AnalysisType.EMOTIONAL_INTELLIGENCE:
+        return `You are an emotional intelligence expert who analyzes emotional tone, empathy levels, conflict handling, and interpersonal dynamics in conversations. ${baseInstruction}`;
+      
+      case AnalysisType.INFLUENCE_PERSUASION:
+        return `You are a persuasion and influence expert who identifies persuasion techniques, argumentation patterns, and influence strategies used in conversations. ${baseInstruction}`;
+      
+      case AnalysisType.PERSONAL_DEVELOPMENT:
+        return `You are a professional development coach who identifies areas for improvement, learning opportunities, and provides constructive feedback based on conversation analysis. ${baseInstruction}`;
+      
+      case AnalysisType.CUSTOM:
+        return `You are a versatile AI assistant who can analyze conversations based on specific user instructions. ${baseInstruction}`;
+      
+      case AnalysisType.SUMMARY:
+      default:
+        return `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics. ${baseInstruction}`;
+    }
+  }
+
+  private buildPromptForAnalysis(
+    transcription: string,
+    analysisType?: AnalysisType,
+    context?: string,
+    language?: string,
+  ): string {
+    switch (analysisType) {
+      case AnalysisType.COMMUNICATION_STYLES:
+        return this.buildCommunicationStylesPrompt(transcription, context, language);
+      
+      case AnalysisType.ACTION_ITEMS:
+        return this.buildActionItemsPrompt(transcription, context, language);
+      
+      case AnalysisType.EMOTIONAL_INTELLIGENCE:
+        return this.buildEmotionalIntelligencePrompt(transcription, context, language);
+      
+      case AnalysisType.INFLUENCE_PERSUASION:
+        return this.buildInfluencePersuasionPrompt(transcription, context, language);
+      
+      case AnalysisType.PERSONAL_DEVELOPMENT:
+        return this.buildPersonalDevelopmentPrompt(transcription, context, language);
+      
+      case AnalysisType.CUSTOM:
+        return this.buildCustomPrompt(transcription, context, language);
+      
+      case AnalysisType.SUMMARY:
+      default:
+        return this.buildSummaryPrompt(transcription, context, language);
+    }
+  }
+
+  private buildCommunicationStylesPrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    return `Please analyze the communication styles and patterns in this conversation.${languageInstructions}
+
+# Communication Styles Analysis
+
+## Speaking patterns
+- Identify dominant vs. passive speakers
+- Note interruption patterns
+- Analyze turn-taking dynamics
+- Identify speaking pace and style variations
+
+## Communication effectiveness
+- Clarity of message delivery
+- Active listening indicators
+- Question-asking patterns
+- Feedback giving/receiving styles
+
+## Interaction dynamics
+- Power dynamics in the conversation
+- Collaboration vs. competition
+- Support and encouragement patterns
+- Conflict or tension points
+
+## Recommendations for improvement
+- Specific suggestions for each participant type
+- Team communication enhancements
+- Meeting effectiveness improvements
+
+${context ? `Context: ${context}\n\n` : ''}Transcript:\n${transcription}`;
+  }
+
+  private buildActionItemsPrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    return `Please extract and organize all action items from this conversation.${languageInstructions}
+
+# Action Items and Tasks
+
+## Immediate action items (Due within 1 week)
+List each task with:
+- Task description
+- Responsible party (if mentioned)
+- Deadline (if specified)
+- Dependencies
+
+## Short-term tasks (1-4 weeks)
+List each task with the same format
+
+## Long-term initiatives (1+ months)
+List strategic initiatives and projects
+
+## Follow-up items
+- Questions that need answers
+- Decisions pending
+- Information to be gathered
+
+## Blocked items
+- Tasks waiting on dependencies
+- Items needing clarification
+
+## Meeting scheduling
+- Proposed meetings
+- Required participants
+- Suggested timeframes
+
+${context ? `Context: ${context}\n\n` : ''}Transcript:\n${transcription}`;
+  }
+
+  private buildEmotionalIntelligencePrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    return `Please analyze the emotional intelligence aspects of this conversation.${languageInstructions}
+
+# Emotional Intelligence Analysis
+
+## Emotional tone
+- Overall emotional climate
+- Emotional shifts during conversation
+- Stress or tension indicators
+
+## Empathy and understanding
+- Examples of empathetic responses
+- Missed opportunities for empathy
+- Active listening demonstrations
+
+## Conflict handling
+- Points of disagreement
+- Conflict resolution strategies used
+- Effectiveness of conflict management
+
+## Emotional regulation
+- Self-control demonstrations
+- Emotional reactions to challenges
+- Stress management indicators
+
+## Relationship building
+- Rapport-building behaviors
+- Trust indicators
+- Collaborative moments
+
+## Recommendations
+- Areas for emotional intelligence development
+- Strategies for better emotional engagement
+- Team dynamics improvements
+
+${context ? `Context: ${context}\n\n` : ''}Transcript:\n${transcription}`;
+  }
+
+  private buildInfluencePersuasionPrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    return `Please analyze influence and persuasion techniques used in this conversation.${languageInstructions}
+
+# Influence and Persuasion Analysis
+
+## Persuasion techniques identified
+- Logical arguments used
+- Emotional appeals
+- Credibility establishment
+- Social proof references
+
+## Argumentation patterns
+- Claim-evidence structures
+- Counter-argument handling
+- Concession and rebuttal strategies
+
+## Influence dynamics
+- Who influenced whom
+- Successful persuasion moments
+- Resistance points
+
+## Negotiation elements
+- Positions taken
+- Compromises offered
+- Win-win solutions proposed
+
+## Decision-making influence
+- How decisions were shaped
+- Key influencing factors
+- Consensus building efforts
+
+## Effectiveness assessment
+- Most effective techniques
+- Missed opportunities
+- Recommendations for improvement
+
+${context ? `Context: ${context}\n\n` : ''}Transcript:\n${transcription}`;
+  }
+
+  private buildPersonalDevelopmentPrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    return `Please provide personal development insights based on this conversation.${languageInstructions}
+
+# Personal Development Analysis
+
+## Strengths demonstrated
+- Communication strengths
+- Leadership qualities
+- Technical expertise shown
+- Collaborative abilities
+
+## Areas for improvement
+- Communication gaps
+- Knowledge areas to develop
+- Soft skills to enhance
+- Technical skills needed
+
+## Learning opportunities
+- Topics requiring deeper understanding
+- Skills mentioned but not demonstrated
+- Industry knowledge gaps
+
+## Recommended training/development
+- Specific courses or training programs
+- Books or resources to explore
+- Mentoring opportunities
+- Practice exercises
+
+## Professional growth strategies
+- Short-term development goals
+- Long-term career considerations
+- Networking opportunities identified
+
+## Behavioral patterns to address
+- Limiting behaviors observed
+- Opportunities for behavior change
+- Positive patterns to reinforce
+
+${context ? `Context: ${context}\n\n` : ''}Transcript:\n${transcription}`;
+  }
+
+  private buildCustomPrompt(transcription: string, context?: string, language?: string): string {
+    const languageInstructions = this.getLanguageSpecificInstructions(language);
+    if (!context) {
+      return this.buildSummaryPrompt(transcription, context, language);
+    }
+    return `${context}${languageInstructions}\n\nTranscript:\n${transcription}`;
   }
 
   private getLanguageSpecificInstructions(language?: string): string {
@@ -617,6 +879,7 @@ ${basePrompt}`;
     // Generate new summary with feedback in the same language
     const newSummary = await this.generateSummaryWithFeedback(
       transcription.transcriptText,
+      transcription.analysisType,
       transcription.context,
       comments,
       instructions,
@@ -637,6 +900,7 @@ ${basePrompt}`;
 
   async generateSummaryWithFeedback(
     transcriptionText: string,
+    analysisType?: AnalysisType,
     context?: string,
     comments: any[] = [],
     instructions?: string,
@@ -647,14 +911,12 @@ ${basePrompt}`;
         `\n\nIMPORTANT: The transcription is in ${language}. Please generate the summary in ${language} as well. Use appropriate formatting and conventions for ${language}.` : 
         '';
       
-      const systemPrompt = `You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You excel at analyzing communication patterns and group dynamics. 
-
-You are being asked to regenerate a summary based on user feedback and comments. Pay special attention to the user's comments and incorporate their feedback to improve the summary.
-
-Important: Do NOT attempt to guess or identify specific individuals by name - instead use generic role descriptors and focus on behavioral patterns and communication styles.${languageInstruction}`;
+      const baseSystemPrompt = this.getSystemPromptForAnalysis(analysisType, languageInstruction);
+      const systemPrompt = `${baseSystemPrompt}\n\nYou are being asked to regenerate the analysis based on user feedback and comments. Pay special attention to the user's comments and incorporate their feedback to improve the output.`;
 
       const userPrompt = this.buildSummaryPromptWithFeedback(
         transcriptionText,
+        analysisType,
         context,
         comments,
         instructions,
@@ -680,6 +942,7 @@ Important: Do NOT attempt to guess or identify specific individuals by name - in
 
   private buildSummaryPromptWithFeedback(
     transcription: string,
+    analysisType?: AnalysisType,
     context?: string,
     comments: any[] = [],
     instructions?: string,
@@ -688,7 +951,15 @@ Important: Do NOT attempt to guess or identify specific individuals by name - in
     // Language-specific instructions
     const languageInstructions = this.getLanguageSpecificInstructions(language);
     
-    let prompt = `Please regenerate the summary for this conversation transcript, taking into account the user feedback provided below.${languageInstructions}
+    const analysisTypeName = analysisType === AnalysisType.CUSTOM ? 'custom analysis' : 
+                           analysisType === AnalysisType.COMMUNICATION_STYLES ? 'communication styles analysis' :
+                           analysisType === AnalysisType.ACTION_ITEMS ? 'action items extraction' :
+                           analysisType === AnalysisType.EMOTIONAL_INTELLIGENCE ? 'emotional intelligence analysis' :
+                           analysisType === AnalysisType.INFLUENCE_PERSUASION ? 'influence and persuasion analysis' :
+                           analysisType === AnalysisType.PERSONAL_DEVELOPMENT ? 'personal development analysis' :
+                           'summary';
+    
+    let prompt = `Please regenerate the ${analysisTypeName} for this conversation transcript, taking into account the user feedback provided below.${languageInstructions}
 
 ## User Feedback and Comments:
 `;

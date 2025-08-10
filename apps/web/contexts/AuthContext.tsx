@@ -9,6 +9,10 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
+  verifyPasswordResetCode,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import websocketService from '@/lib/websocket';
@@ -18,8 +22,11 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>;
   logout: () => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
+  confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<void>;
+  verifyPasswordResetCode: (oobCode: string) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +36,9 @@ const AuthContext = createContext<AuthContextType>({
   signInWithEmail: async () => {},
   signUpWithEmail: async () => {},
   logout: async () => {},
+  sendPasswordResetEmail: async () => {},
+  confirmPasswordReset: async () => {},
+  verifyPasswordResetCode: async () => '',
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -70,12 +80,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signUpWithEmail = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+  const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Update the user's display name if provided
+    if (displayName && userCredential.user) {
+      await updateProfile(userCredential.user, {
+        displayName: displayName,
+      });
+    }
   };
 
   const logout = async () => {
     await signOut(auth);
+  };
+
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  };
+
+  const confirmPasswordResetHandler = async (oobCode: string, newPassword: string) => {
+    await confirmPasswordReset(auth, oobCode, newPassword);
+  };
+
+  const verifyPasswordResetCodeHandler = async (oobCode: string) => {
+    return await verifyPasswordResetCode(auth, oobCode);
   };
 
   return (
@@ -87,6 +116,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signInWithEmail,
         signUpWithEmail,
         logout,
+        sendPasswordResetEmail: resetPassword,
+        confirmPasswordReset: confirmPasswordResetHandler,
+        verifyPasswordResetCode: verifyPasswordResetCodeHandler,
       }}
     >
       {children}

@@ -162,7 +162,7 @@ To verify the implementation works:
 ### 2024 Security Standards Compliance
 Firebase Storage meets and exceeds current enterprise security requirements:
 
-- **SOC 2 Type II certified** - Independent security audit validation
+- **GDPR compliant** - Full compliance with EU data protection regulations
 - **ISO 27001 compliant** - International information security management standards  
 - **GDPR compliant** - European data protection regulation adherence
 - **HIPAA eligible** - Healthcare data security standards (when configured)
@@ -181,7 +181,7 @@ The combination of **automatic file deletion** + **Firebase's enterprise-grade e
 ### Security Achievement Summary:
 - ✅ **Zero persistent audio storage** - Files deleted immediately after processing
 - ✅ **Enterprise encryption** - AES-256 at rest, TLS 1.3 in transit  
-- ✅ **Compliance ready** - SOC 2, ISO 27001, GDPR compliant infrastructure
+- ✅ **Compliance ready** - GDPR, ISO 27001, data protection compliant infrastructure
 - ✅ **Audit trail** - Comprehensive logging of all security operations
 - ✅ **Fail-safe design** - System continues functioning even if deletion fails
 

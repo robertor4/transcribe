@@ -14,14 +14,21 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
-  Lock
+  Lock,
+  MessageSquare,
+  ListChecks,
+  Brain,
+  Target,
+  TrendingUp,
+  Sparkles
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import { 
   SUPPORTED_AUDIO_FORMATS, 
   MAX_FILE_SIZE,
   formatFileSize,
-  isValidAudioFile 
+  isValidAudioFile,
+  AnalysisType
 } from '@transcribe/shared';
 
 interface FileUploaderProps {
@@ -33,8 +40,30 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
+  const [analysisType, setAnalysisType] = useState<AnalysisType>(AnalysisType.SUMMARY);
   const [errors, setErrors] = useState<string[]>([]);
   const [showQuickTips, setShowQuickTips] = useState(true);
+
+  const getAnalysisIcon = (type: AnalysisType) => {
+    switch (type) {
+      case AnalysisType.SUMMARY:
+        return MessageSquare;
+      case AnalysisType.COMMUNICATION_STYLES:
+        return MessageSquare;
+      case AnalysisType.ACTION_ITEMS:
+        return ListChecks;
+      case AnalysisType.EMOTIONAL_INTELLIGENCE:
+        return Brain;
+      case AnalysisType.INFLUENCE_PERSUASION:
+        return Target;
+      case AnalysisType.PERSONAL_DEVELOPMENT:
+        return TrendingUp;
+      case AnalysisType.CUSTOM:
+        return Sparkles;
+      default:
+        return MessageSquare;
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     const validFiles = acceptedFiles.filter(file => {
@@ -94,7 +123,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
     try {
       for (const file of files) {
-        const response = await transcriptionApi.upload(file, context);
+        const response = await transcriptionApi.upload(file, analysisType, context);
         if (response?.success && onUploadComplete) {
           onUploadComplete(response.data.id, file.name);
         }
@@ -102,6 +131,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       
       setFiles([]);
       setContext('');
+      setAnalysisType(AnalysisType.SUMMARY);
     } catch (error: any) {
       setErrors([error.message || 'Upload failed']);
     } finally {
@@ -176,6 +206,112 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           </p>
         </div>
 
+        {/* Analysis Type Tiles - Appears when files are selected */}
+        {files.length > 0 && (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t('analysisType')}
+              </h3>
+              <span className="text-sm text-gray-500 ml-auto">
+                {t('analysisTypeHelp')}
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                { type: AnalysisType.SUMMARY, icon: MessageSquare, color: 'blue', badge: 'Most Popular' },
+                { type: AnalysisType.COMMUNICATION_STYLES, icon: MessageSquare, color: 'purple' },
+                { type: AnalysisType.ACTION_ITEMS, icon: ListChecks, color: 'green' },
+                { type: AnalysisType.EMOTIONAL_INTELLIGENCE, icon: Brain, color: 'pink' },
+                { type: AnalysisType.INFLUENCE_PERSUASION, icon: Target, color: 'orange' },
+                { type: AnalysisType.PERSONAL_DEVELOPMENT, icon: TrendingUp, color: 'teal' },
+                { type: AnalysisType.CUSTOM, icon: Sparkles, color: 'gradient', badge: 'Advanced' },
+              ].map(({ type, icon: Icon, color, badge }) => (
+                <button
+                  key={type}
+                  onClick={() => setAnalysisType(type)}
+                  className={`
+                    relative group p-4 rounded-xl border-2 transition-all duration-200 text-left
+                    ${analysisType === type 
+                      ? `border-blue-500 bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg scale-[1.02] ring-2 ring-blue-500/20` 
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md hover:scale-[1.01]'
+                    }
+                  `}
+                >
+                  {/* Selection indicator */}
+                  {analysisType === type && (
+                    <div className="absolute -top-2 -right-2 bg-blue-500 rounded-full p-1 shadow-md animate-in zoom-in duration-200">
+                      <CheckCircle className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  
+                  {/* Badge */}
+                  {badge && (
+                    <span className={`
+                      absolute top-2 right-2 px-2 py-0.5 text-xs font-medium rounded-full
+                      ${badge === 'Most Popular' ? 'bg-blue-100 text-blue-700' : 
+                        badge === 'Advanced' ? 'bg-purple-100 text-purple-700' : 
+                        'bg-green-100 text-green-700'}
+                    `}>
+                      {badge}
+                    </span>
+                  )}
+                  
+                  {/* Icon with gradient background */}
+                  <div className={`
+                    mb-3 inline-flex p-2.5 rounded-lg
+                    ${color === 'gradient' ? 'bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500' :
+                      color === 'blue' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                      color === 'purple' ? 'bg-gradient-to-br from-purple-500 to-purple-600' :
+                      color === 'green' ? 'bg-gradient-to-br from-green-500 to-green-600' :
+                      color === 'pink' ? 'bg-gradient-to-br from-pink-500 to-pink-600' :
+                      color === 'orange' ? 'bg-gradient-to-br from-orange-500 to-orange-600' :
+                      color === 'teal' ? 'bg-gradient-to-br from-teal-500 to-teal-600' :
+                      'bg-gradient-to-br from-gray-500 to-gray-600'
+                    }
+                    ${analysisType === type ? 'shadow-lg' : 'group-hover:shadow-md'}
+                    transition-shadow duration-200
+                  `}>
+                    <Icon className="h-5 w-5 text-white" />
+                  </div>
+                  
+                  {/* Title */}
+                  <h4 className={`
+                    font-semibold mb-1 transition-colors duration-200
+                    ${analysisType === type ? 'text-blue-900' : 'text-gray-900 group-hover:text-gray-800'}
+                  `}>
+                    {t(`analysisTypes.${type === AnalysisType.SUMMARY ? 'summary' :
+                      type === AnalysisType.COMMUNICATION_STYLES ? 'communicationStyles' :
+                      type === AnalysisType.ACTION_ITEMS ? 'actionItems' :
+                      type === AnalysisType.EMOTIONAL_INTELLIGENCE ? 'emotionalIntelligence' :
+                      type === AnalysisType.INFLUENCE_PERSUASION ? 'influencePersuasion' :
+                      type === AnalysisType.PERSONAL_DEVELOPMENT ? 'personalDevelopment' :
+                      'custom'}`)}
+                  </h4>
+                  
+                  {/* Description */}
+                  <p className={`
+                    text-xs leading-relaxed transition-colors duration-200 line-clamp-2
+                    ${analysisType === type ? 'text-gray-700' : 'text-gray-600 group-hover:text-gray-700'}
+                  `}>
+                    {t(`analysisTypes.${type === AnalysisType.SUMMARY ? 'summaryDescription' :
+                      type === AnalysisType.COMMUNICATION_STYLES ? 'communication_stylesDescription' :
+                      type === AnalysisType.ACTION_ITEMS ? 'action_itemsDescription' :
+                      type === AnalysisType.EMOTIONAL_INTELLIGENCE ? 'emotional_intelligenceDescription' :
+                      type === AnalysisType.INFLUENCE_PERSUASION ? 'influence_persuasionDescription' :
+                      type === AnalysisType.PERSONAL_DEVELOPMENT ? 'personal_developmentDescription' :
+                      'customDescription'}`)}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Context Input - Enhanced with Persuasive Messaging */}
         {files.length > 0 && (
           <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-5 border border-pink-200 shadow-sm">
@@ -187,10 +323,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               </div>
               <div className="flex-1">
                 <label htmlFor="context" className="block text-base font-semibold text-gray-900 mb-1">
-                  {t('boostAccuracy')}
+                  {analysisType === AnalysisType.CUSTOM ? t('customInstructions') : t('boostAccuracy')}
                 </label>
                 <p className="text-sm text-gray-600 mb-3">
-                  {t('contextStats')}
+                  {analysisType === AnalysisType.CUSTOM ? t('customInstructionsHelp') : t('contextStats')}
                 </p>
                 <textarea
                   id="context"

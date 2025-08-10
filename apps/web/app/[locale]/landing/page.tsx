@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import ScrollAnimation from '@/components/ScrollAnimation';
 import { 
   Shield, 
   Zap, 
@@ -95,7 +96,7 @@ export default async function LandingPage({
             <div className="max-w-7xl mx-auto">
               <div className="text-center space-y-8">
                 {/* Trust Indicators */}
-                <div className="flex justify-center items-center space-x-8 text-sm text-gray-200 animate-fadeIn animation-delay-200">
+                <ScrollAnimation className="flex justify-center items-center space-x-8 text-sm text-gray-200" delay={200}>
                   <div className="flex items-center">
                     <Users className="h-4 w-4 mr-1 text-[#ff66cc]" aria-hidden="true" />
                     <span>{t('landing.hero.trustIndicators.users')}</span>
@@ -108,10 +109,10 @@ export default async function LandingPage({
                     <Shield className="h-4 w-4 mr-1 text-green-400" aria-hidden="true" />
                     <span>{t('landing.hero.trustIndicators.certified')}</span>
                   </div>
-                </div>
+                </ScrollAnimation>
 
                 {/* Main Headline */}
-                <div className="space-y-4 animate-fadeUp animation-delay-300">
+                <ScrollAnimation className="space-y-4" delay={300}>
                   <h2 className="text-5xl md:text-6xl font-bold text-white leading-tight">
                     {t('landing.hero.title')}
                     <span className="block text-[#ff66cc] mt-2">
@@ -121,13 +122,13 @@ export default async function LandingPage({
                   <p className="text-xl text-gray-100 max-w-3xl mx-auto">
                     {t('landing.hero.subtitle')}
                   </p>
-                </div>
+                </ScrollAnimation>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeUp animation-delay-400">
+                <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4" delay={400}>
                   <Link
                     href={`/${locale}/login`}
-                    className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow shimmer"
+                    className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow"
                     aria-label="Start your free trial of Neural Summary"
                   >
                     {t('landing.hero.cta.primary')}
@@ -141,27 +142,27 @@ export default async function LandingPage({
                     <Play className="h-5 w-5 mr-2" aria-hidden="true" />
                     {t('landing.hero.cta.secondary')}
                   </a>
-                </div>
+                </ScrollAnimation>
 
                 <p className="text-sm text-gray-300">
                   {t('landing.hero.guarantee')}
                 </p>
 
                 {/* Feature Pills */}
-                <div className="flex flex-wrap justify-center gap-3 pt-4 animate-fadeUp animation-delay-500">
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn animation-delay-600">
-                    <Clock className="h-4 w-4 text-green-400 mr-2 animate-pulse" aria-hidden="true" />
+                <ScrollAnimation className="flex flex-wrap justify-center gap-3 pt-4" delay={500}>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                    <Clock className="h-4 w-4 text-green-400 mr-2" aria-hidden="true" />
                     <span className="text-sm font-medium text-white">{t('landing.hero.features.saveTime')}</span>
                   </div>
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn" style={{animationDelay: '700ms'}}>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                     <TrendingUp className="h-4 w-4 text-blue-400 mr-2" aria-hidden="true" />
                     <span className="text-sm font-medium text-white">{t('landing.hero.features.accuracy')}</span>
                   </div>
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 animate-bounceIn" style={{animationDelay: '800ms'}}>
+                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                     <Globe className="h-4 w-4 text-purple-400 mr-2" aria-hidden="true" />
                     <span className="text-sm font-medium text-white">{t('landing.hero.features.languages')}</span>
                   </div>
-                </div>
+                </ScrollAnimation>
               </div>
             </div>
           </div>
@@ -170,7 +171,7 @@ export default async function LandingPage({
         {/* Visual Demo Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="features-heading">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 animate-fadeUp">
+            <ScrollAnimation className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-6">
                   <h2 id="features-heading" className="text-3xl font-bold text-gray-900">
@@ -180,7 +181,7 @@ export default async function LandingPage({
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <Sparkles className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" />
+                          <Sparkles className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
                         </div>
                       </div>
                       <div className="ml-4">
@@ -193,7 +194,7 @@ export default async function LandingPage({
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <FileAudio className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" style={{animationDelay: '0.5s'}} />
+                          <FileAudio className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
                         </div>
                       </div>
                       <div className="ml-4">
@@ -206,7 +207,7 @@ export default async function LandingPage({
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <Lock className="h-5 w-5 text-[#cc3399] animate-float" aria-hidden="true" style={{animationDelay: '1s'}} />
+                          <Lock className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
                         </div>
                       </div>
                       <div className="ml-4">
@@ -220,8 +221,8 @@ export default async function LandingPage({
                 </div>
                 <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-100 rounded-xl p-8 flex items-center justify-center min-h-[400px]">
                   <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg animate-bounceIn hover-scale">
-                      <Upload className="h-10 w-10 text-[#cc3399] animate-pulse" aria-hidden="true" />
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg hover-scale">
+                      <Upload className="h-10 w-10 text-[#cc3399]" aria-hidden="true" />
                     </div>
                     <p className="text-lg font-semibold text-gray-800">
                       {t('landing.features.demo.dragDrop')}
@@ -232,7 +233,7 @@ export default async function LandingPage({
                   </div>
                 </div>
               </div>
-            </div>
+            </ScrollAnimation>
           </div>
         </section>
 
@@ -248,14 +249,14 @@ export default async function LandingPage({
               </p>
             </div>
             
-            <div className="grid gap-8 md:grid-cols-3 animate-fadeIn">
-              <article className="relative">
-                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-slideInLeft">
+            <div className="grid gap-8 md:grid-cols-3">
+              <ScrollAnimation className="relative" animation="slideLeft">
+                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     1
                   </div>
                   <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                    <Mic className="h-7 w-7 text-blue-600 animate-float" aria-hidden="true" />
+                    <Mic className="h-7 w-7 text-blue-600" aria-hidden="true" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {t('landing.howItWorks.step1.title')}
@@ -263,16 +264,16 @@ export default async function LandingPage({
                   <p className="text-gray-600">
                     {t('landing.howItWorks.step1.description')}
                   </p>
-                </div>
-              </article>
+                </article>
+              </ScrollAnimation>
 
-              <article className="relative">
-                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-fadeUp animation-delay-200">
+              <ScrollAnimation className="relative" delay={200}>
+                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     2
                   </div>
                   <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                    <Brain className="h-7 w-7 text-purple-600 animate-float" aria-hidden="true" style={{animationDelay: '0.5s'}} />
+                    <Brain className="h-7 w-7 text-purple-600" aria-hidden="true" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {t('landing.howItWorks.step2.title')}
@@ -280,16 +281,16 @@ export default async function LandingPage({
                   <p className="text-gray-600">
                     {t('landing.howItWorks.step2.description')}
                   </p>
-                </div>
-              </article>
+                </article>
+              </ScrollAnimation>
 
-              <article className="relative">
-                <div className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift animate-slideInRight animation-delay-400">
+              <ScrollAnimation className="relative" animation="slideRight" delay={400}>
+                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     3
                   </div>
                   <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                    <Award className="h-7 w-7 text-green-600 animate-float" aria-hidden="true" style={{animationDelay: '1s'}} />
+                    <Award className="h-7 w-7 text-green-600" aria-hidden="true" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {t('landing.howItWorks.step3.title')}
@@ -297,8 +298,8 @@ export default async function LandingPage({
                   <p className="text-gray-600">
                     {t('landing.howItWorks.step3.description')}
                   </p>
-                </div>
-              </article>
+                </article>
+              </ScrollAnimation>
             </div>
           </div>
         </section>
@@ -306,11 +307,11 @@ export default async function LandingPage({
         {/* Trust & Security Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="security-heading">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12 animate-fadeUp">
+            <ScrollAnimation className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <div className="flex items-center mb-6">
-                    <Shield className="h-8 w-8 text-green-600 mr-3 animate-pulse" aria-hidden="true" />
+                    <Shield className="h-8 w-8 text-green-600 mr-3" aria-hidden="true" />
                     <h2 id="security-heading" className="text-2xl font-bold text-gray-900">
                       {t('landing.security.title')}
                     </h2>
@@ -367,7 +368,7 @@ export default async function LandingPage({
                   </div>
                 </div>
               </div>
-            </div>
+            </ScrollAnimation>
           </div>
         </section>
 
@@ -386,8 +387,9 @@ export default async function LandingPage({
               <p className="text-gray-600">{t('landing.testimonials.rating')}</p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3 animate-fadeIn">
-              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-slideInLeft">
+            <div className="grid gap-6 md:grid-cols-3">
+              <ScrollAnimation animation="slideLeft">
+                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
@@ -403,9 +405,11 @@ export default async function LandingPage({
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial1.role')}</p>
                   </div>
                 </footer>
-              </blockquote>
+                </blockquote>
+              </ScrollAnimation>
 
-              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-fadeUp animation-delay-200">
+              <ScrollAnimation delay={200}>
+                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
@@ -421,9 +425,11 @@ export default async function LandingPage({
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial2.role')}</p>
                   </div>
                 </footer>
-              </blockquote>
+                </blockquote>
+              </ScrollAnimation>
 
-              <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift animate-slideInRight animation-delay-400">
+              <ScrollAnimation animation="slideRight" delay={400}>
+                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
                 <div className="flex mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
@@ -439,36 +445,41 @@ export default async function LandingPage({
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial3.role')}</p>
                   </div>
                 </footer>
-              </blockquote>
+                </blockquote>
+              </ScrollAnimation>
             </div>
           </div>
         </section>
 
         {/* Final CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600 animate-gradientShift" aria-labelledby="cta-heading">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600" aria-labelledby="cta-heading">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 id="cta-heading" className="text-4xl font-bold text-white mb-6 animate-fadeUp">
-              {t('landing.cta.title')}
-            </h2>
-            <p className="text-xl text-white/90 mb-8 animate-fadeUp animation-delay-200">
-              {t('landing.cta.subtitle')}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <ScrollAnimation>
+              <h2 id="cta-heading" className="text-4xl font-bold text-white mb-6">
+                {t('landing.cta.title')}
+              </h2>
+            </ScrollAnimation>
+            <ScrollAnimation delay={200}>
+              <p className="text-xl text-white/90 mb-8">
+                {t('landing.cta.subtitle')}
+              </p>
+            </ScrollAnimation>
+            <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8" delay={400}>
               <Link
                 href={`/${locale}/login`}
-                className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] animate-bounceIn animation-delay-400 hover-glow"
+                className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] hover-glow"
                 aria-label="Start your free trial now"
               >
-                <Sparkles className="h-5 w-5 mr-2 animate-float" aria-hidden="true" />
+                <Sparkles className="h-5 w-5 mr-2" aria-hidden="true" />
                 {t('landing.cta.button')}
                 <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
               </Link>
-            </div>
-            <div className="flex justify-center items-center space-x-4 text-sm text-white/80 animate-fadeIn animation-delay-600">
+            </ScrollAnimation>
+            <ScrollAnimation className="flex justify-center items-center space-x-4 text-sm text-white/80" delay={600}>
               <span>✓ {t('landing.cta.benefits.free')}</span>
               <span>✓ {t('landing.cta.benefits.noCard')}</span>
               <span>✓ {t('landing.cta.benefits.cancel')}</span>
-            </div>
+            </ScrollAnimation>
           </div>
         </section>
 

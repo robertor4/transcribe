@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { auth } from './firebase';
-import { ApiResponse } from '@transcribe/shared';
+import { ApiResponse, AnalysisType } from '@transcribe/shared';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -34,9 +34,10 @@ api.interceptors.response.use(
 );
 
 export const transcriptionApi = {
-  upload: async (file: File, context?: string, contextId?: string): Promise<ApiResponse<any>> => {
+  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<any>> => {
     const formData = new FormData();
     formData.append('file', file);
+    if (analysisType) formData.append('analysisType', analysisType);
     if (context) formData.append('context', context);
     if (contextId) formData.append('contextId', contextId);
 

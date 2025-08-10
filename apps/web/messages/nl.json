@@ -41,7 +41,7 @@
     "alreadyHaveAccount": "Heb je al een account?",
     "dontHaveAccount": "Heb je nog geen account?",
     "createAccount": "Account aanmaken",
-    "welcomeBack": "Welkom terug!",
+    "welcomeBack": "Neural Summary",
     "signInToContinue": "Log in om door te gaan naar Neural Summary",
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
     "accountCreated": "Account succesvol aangemaakt",
@@ -49,7 +49,31 @@
     "emailAlreadyInUse": "E-mailadres is al in gebruik",
     "weakPassword": "Wachtwoord moet minimaal 6 tekens bevatten",
     "userNotFound": "Gebruiker niet gevonden",
-    "tooManyRequests": "Te veel verzoeken. Probeer het later opnieuw."
+    "tooManyRequests": "Te veel verzoeken. Probeer het later opnieuw.",
+    "backToLogin": "Terug naar inloggen",
+    "enterEmailForReset": "Voer uw e-mailadres in om een resetlink te ontvangen",
+    "sendResetLink": "Resetlink verzenden",
+    "resetLinkSent": "Link verzonden!",
+    "checkEmailForReset": "Controleer uw e-mail voor een link om uw wachtwoord te resetten.",
+    "checkSpamFolder": "Als u de e-mail niet ziet, controleer dan uw spammap.",
+    "tryDifferentEmail": "Probeer een ander e-mailadres",
+    "newPassword": "Nieuw wachtwoord",
+    "confirmNewPassword": "Nieuw wachtwoord bevestigen",
+    "passwordResetSuccess": "Wachtwoord succesvol gereset!",
+    "redirectingToLogin": "Doorverwijzen naar inloggen...",
+    "invalidResetLink": "Ongeldige of verlopen resetlink",
+    "resetLinkExpired": "Deze link is verlopen. Vraag een nieuwe aan.",
+    "resetEmailFailed": "Fout bij het verzenden van e-mail. Probeer het opnieuw.",
+    "verifyingResetLink": "Link wordt geverifieerd...",
+    "resetPasswordError": "Linkfout",
+    "resetPasswordFailed": "Fout bij het resetten van wachtwoord. Probeer het opnieuw.",
+    "requestNewLink": "Nieuwe link aanvragen",
+    "createNewPassword": "Nieuw wachtwoord maken",
+    "enterNewPasswordFor": "Voer een nieuw wachtwoord in voor",
+    "enterNewPassword": "Voer uw nieuwe wachtwoord in",
+    "passwordRequirements": "Wachtwoordvereisten:",
+    "passwordSpecialChar": "Één speciaal teken",
+    "optional": "optioneel"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -388,7 +412,7 @@
       "trustIndicators": {
         "users": "10.000+ gebruikers",
         "rating": "4.9/5 beoordeling",
-        "certified": "SOC 2 gecertificeerd"
+        "certified": "AVG-compliant"
       },
       "title": "Transformeer audio naar",
       "titleHighlight": "bruikbare inzichten",
@@ -454,12 +478,12 @@
         "description": "Je gegevens worden nooit gebruikt voor training of gedeeld"
       },
       "audit": {
-        "title": "SOC 2 Type II gecertificeerd",
+        "title": "AVG-compliant",
         "description": "Onafhankelijk gecontroleerde beveiligingspraktijken"
       },
       "badges": {
         "ssl": "256-bit SSL",
-        "soc2": "SOC 2",
+        "soc2": "AVG",
         "gdpr": "GDPR",
         "iso": "ISO 27001"
       }

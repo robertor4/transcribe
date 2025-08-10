@@ -300,6 +300,106 @@ body {
   will-change: opacity;
 }
 
+/* ===== Scroll-Triggered Animations ===== */
+
+/* Initial hidden state for scroll animations */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* Scroll animation keyframes */
+@keyframes scrollFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scrollSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scrollSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scrollScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Scroll animation classes */
+.scroll-fade-up {
+  animation: scrollFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.scroll-fade-in {
+  animation: scrollFadeIn 1s ease-out forwards;
+}
+
+.scroll-slide-left {
+  animation: scrollSlideLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.scroll-slide-right {
+  animation: scrollSlideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.scroll-scale {
+  animation: scrollScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Staggered scroll animations for groups */
+.scroll-stagger > * {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.scroll-stagger.in-view > * {
+  animation: scrollFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.scroll-stagger.in-view > *:nth-child(1) { animation-delay: 0ms; }
+.scroll-stagger.in-view > *:nth-child(2) { animation-delay: 100ms; }
+.scroll-stagger.in-view > *:nth-child(3) { animation-delay: 200ms; }
+.scroll-stagger.in-view > *:nth-child(4) { animation-delay: 300ms; }
+.scroll-stagger.in-view > *:nth-child(5) { animation-delay: 400ms; }
+.scroll-stagger.in-view > *:nth-child(6) { animation-delay: 500ms; }
+
 /* Accessibility - Respect User Preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -312,7 +412,17 @@ body {
   
   .animate-float,
   .animate-pulse,
-  .animate-gradientShift {
+  .animate-gradientShift,
+  .scroll-fade-up,
+  .scroll-fade-in,
+  .scroll-slide-left,
+  .scroll-slide-right,
+  .scroll-scale {
     animation: none !important;
+  }
+  
+  .scroll-hidden {
+    opacity: 1;
+    transform: none;
   }
 }

@@ -41,6 +41,7 @@ export class UserService {
       
       const userData: Omit<User, 'uid'> = {
         email: authUser.email || '',
+        emailVerified: authUser.emailVerified || false,
         displayName: authUser.displayName || undefined,
         photoURL: authUser.photoURL || undefined,
         role: UserRole.USER,

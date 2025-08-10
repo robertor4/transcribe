@@ -41,7 +41,7 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "dontHaveAccount": "¿No tienes una cuenta?",
     "createAccount": "Crear cuenta",
-    "welcomeBack": "¡Bienvenido de nuevo!",
+    "welcomeBack": "Neural Summary",
     "signInToContinue": "Inicia sesión para continuar a Neural Summary",
     "invalidCredentials": "Correo electrónico o contraseña inválidos",
     "accountCreated": "Cuenta creada exitosamente",
@@ -49,7 +49,31 @@
     "emailAlreadyInUse": "El correo electrónico ya está en uso",
     "weakPassword": "La contraseña debe tener al menos 6 caracteres",
     "userNotFound": "Usuario no encontrado",
-    "tooManyRequests": "Demasiadas solicitudes. Por favor, inténtalo más tarde."
+    "tooManyRequests": "Demasiadas solicitudes. Por favor, inténtalo más tarde.",
+    "backToLogin": "Volver al inicio de sesión",
+    "enterEmailForReset": "Ingrese su dirección de correo electrónico para recibir un enlace de restablecimiento",
+    "sendResetLink": "Enviar enlace de restablecimiento",
+    "resetLinkSent": "¡Enlace enviado!",
+    "checkEmailForReset": "Revise su correo electrónico para obtener un enlace para restablecer su contraseña.",
+    "checkSpamFolder": "Si no ve el correo, revise su carpeta de spam.",
+    "tryDifferentEmail": "Probar con otro correo",
+    "newPassword": "Nueva contraseña",
+    "confirmNewPassword": "Confirmar nueva contraseña",
+    "passwordResetSuccess": "¡Contraseña restablecida con éxito!",
+    "redirectingToLogin": "Redirigiendo al inicio de sesión...",
+    "invalidResetLink": "Enlace de restablecimiento inválido o expirado",
+    "resetLinkExpired": "Este enlace ha expirado. Por favor solicite uno nuevo.",
+    "resetEmailFailed": "Error al enviar el correo. Por favor intente de nuevo.",
+    "verifyingResetLink": "Verificando enlace...",
+    "resetPasswordError": "Error en el enlace",
+    "resetPasswordFailed": "Error al restablecer la contraseña. Por favor intente de nuevo.",
+    "requestNewLink": "Solicitar un nuevo enlace",
+    "createNewPassword": "Crear una nueva contraseña",
+    "enterNewPasswordFor": "Ingrese una nueva contraseña para",
+    "enterNewPassword": "Ingrese su nueva contraseña",
+    "passwordRequirements": "Requisitos de contraseña:",
+    "passwordSpecialChar": "Un carácter especial",
+    "optional": "opcional"
   },
   "dashboard": {
     "title": "Panel de control",
@@ -82,6 +106,10 @@
     "maxFileSize": "Tamaño máximo del archivo: 500MB",
     "selectFile": "Seleccionar archivo de audio",
     "addContext": "Agregar contexto (Opcional)",
+    "analysisType": "Tipo de análisis (Opcional)",
+    "analysisTypeHelp": "Elige cómo te gustaría que la IA analice tu conversación",
+    "customInstructions": "Instrucciones de análisis personalizado",
+    "customInstructionsHelp": "Proporciona instrucciones específicas sobre cómo quieres que la IA analice tu conversación",
     "boostAccuracy": "🎯 Mejora la precisión en un 40% con solo una línea de contexto",
     "contextStats": "El 93% de los usuarios que agregan contexto reportan mejores resultados • Solo toma 10 segundos",
     "contextPlaceholder": "Ejemplo: 'Reunión de marketing con John y Sarah sobre la estrategia del Q4' o 'Consulta médica sobre tratamiento de diabetes'",
@@ -115,6 +143,22 @@
     "speakClearlyNormalPace": "Habla claramente y a ritmo normal",
     "addContextForTechnicalTerms": "Agrega contexto para términos técnicos",
     "uploadMultipleFilesAtOnce": "Sube múltiples archivos a la vez",
+    "analysisTypes": {
+      "summary": "Resumen (Predeterminado)",
+      "communicationStyles": "Estilos de comunicación y mejoras",
+      "actionItems": "Lista de tareas pendientes",
+      "emotionalIntelligence": "Análisis de inteligencia emocional",
+      "influencePersuasion": "Influencia y persuasión",
+      "personalDevelopment": "Sugerencias de desarrollo personal",
+      "custom": "Análisis personalizado",
+      "summaryDescription": "Resumen completo con temas clave, decisiones y elementos de acción en formato estructurado",
+      "communication_stylesDescription": "Analiza patrones de habla, toma de turnos, efectividad de comunicación y proporciona recomendaciones específicas de mejora",
+      "action_itemsDescription": "Extrae y organiza todas las tareas, acciones y entregables con responsables y plazos",
+      "emotional_intelligenceDescription": "Evalúa el tono emocional, niveles de empatía, manejo de conflictos y dinámicas interpersonales",
+      "influence_persuasionDescription": "Identifica técnicas de persuasión, patrones de argumentación y estrategias de influencia utilizadas",
+      "personal_developmentDescription": "Sugiere oportunidades de capacitación, habilidades a desarrollar y áreas de crecimiento profesional",
+      "customDescription": "Usa el campo de contexto a continuación para proporcionar instrucciones específicas para tu análisis personalizado"
+    },
     "error": {
       "fileSize": "El tamaño del archivo excede el límite de 500MB",
       "fileTooLarge": "Archivo demasiado grande (máx 100MB)",
@@ -388,7 +432,7 @@
       "trustIndicators": {
         "users": "10,000+ usuarios",
         "rating": "4.9/5 calificación",
-        "certified": "Certificado SOC 2"
+        "certified": "Compatible con RGPD"
       },
       "title": "Transforma audio en",
       "titleHighlight": "información accionable",
@@ -454,12 +498,12 @@
         "description": "Tus datos nunca se usan para entrenamiento ni se comparten"
       },
       "audit": {
-        "title": "Certificado SOC 2 Tipo II",
+        "title": "Compatible con RGPD",
         "description": "Prácticas de seguridad auditadas independientemente"
       },
       "badges": {
         "ssl": "SSL de 256 bits",
-        "soc2": "SOC 2",
+        "soc2": "RGPD",
         "gdpr": "GDPR",
         "iso": "ISO 27001"
       }
