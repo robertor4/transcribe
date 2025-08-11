@@ -19,7 +19,7 @@ import * as prompts from '../../../../cli/prompts';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
-import { GoogleSpeechService } from '../google-speech/google-speech.service';
+import { GoogleSpeechService, GoogleSpeechResult } from '../google-speech/google-speech.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -168,25 +168,64 @@ export class TranscriptionService {
         onProgress(10, 'Converting audio to optimal format for speech recognition...');
       }
 
-      // Convert to FLAC for optimal Google Speech recognition
-      const flacPath = await this.audioSplitter.convertToFlac(tempFilePath);
-      
-      // Check if we need to split the file
-      const stats = fs.statSync(flacPath);
-      const fileSizeInMB = stats.size / (1024 * 1024);
-      
+      // Process with Google Speech - will handle chunking if needed
       let result: any;
+      
+      if (onProgress) {
+        onProgress(20, 'Preparing audio for speaker diarization...');
+      }
 
-      if (fileSizeInMB > 100) {
-        // Split large files for reliability
-        this.logger.log(`File size ${fileSizeInMB}MB is large. Splitting for Google Speech...`);
+      // Use splitForGoogleSpeech which handles both conversion and chunking
+      const chunks = await this.audioSplitter.splitForGoogleSpeech(tempFilePath);
+      
+      if (chunks.length === 1) {
+        // File can be processed as a single chunk
+        if (onProgress) {
+          onProgress(30, 'Processing complete audio with speaker diarization...');
+        }
+        
+        // Upload to GCS for processing
+        const chunkBuffer = fs.readFileSync(chunks[0].path);
+        const gcsPath = `speech-chunks/${Date.now()}_full_audio.flac`;
+        const gcsUrl = await this.firebaseService.uploadFile(
+          chunkBuffer,
+          gcsPath,
+          'audio/flac',
+        );
+        
+        // Convert to GCS URI
+        const bucketName = this.configService.get('FIREBASE_STORAGE_BUCKET');
+        const gcsUri = `gs://${bucketName}/${gcsPath}`;
+        
+        this.logger.log(`Uploaded full audio to GCS: ${gcsUri}`);
+        
+        result = await this.googleSpeechService.transcribeWithDiarization(
+          chunks[0].path,
+          context,
+          undefined,
+          gcsUri,
+        );
+        
+        // Clean up GCS file
+        try {
+          await this.firebaseService.deleteFile(gcsUrl);
+        } catch (e) {
+          this.logger.warn(`Failed to delete GCS file: ${e}`);
+        }
+        
+        // Clean up if we created a converted file
+        if (chunks[0].path !== tempFilePath) {
+          fs.unlinkSync(chunks[0].path);
+        }
+      } else {
+        // File was split into multiple chunks
+        this.logger.log(`Processing ${chunks.length} chunks for Google Speech...`);
         
         if (onProgress) {
-          onProgress(20, 'Splitting audio into chunks for processing...');
+          onProgress(25, `Audio split into ${chunks.length} chunks (10 min each) for processing...`);
         }
 
-        const chunks = await this.audioSplitter.splitForGoogleSpeech(flacPath);
-        const results = [];
+        const results: GoogleSpeechResult[] = [];
         
         for (let i = 0; i < chunks.length; i++) {
           if (onProgress) {
@@ -194,34 +233,88 @@ export class TranscriptionService {
             onProgress(progress, `Processing chunk ${i + 1} of ${chunks.length} with speaker diarization...`);
           }
           
-          const chunkResult = await this.googleSpeechService.transcribeWithDiarization(
-            chunks[i].path,
-            context,
-          );
-          results.push(chunkResult);
+          try {
+            // Upload chunk to Firebase Storage for GCS URI
+            const chunkBuffer = fs.readFileSync(chunks[i].path);
+            const gcsPath = `speech-chunks/${Date.now()}_chunk_${i + 1}.flac`;
+            const gcsUrl = await this.firebaseService.uploadFile(
+              chunkBuffer,
+              gcsPath,
+              'audio/flac',
+            );
+            
+            // Convert Firebase Storage URL to GCS URI format
+            // Firebase URL: https://firebasestorage.googleapis.com/v0/b/bucket/o/path
+            // GCS URI: gs://bucket/path
+            const bucketName = this.configService.get('FIREBASE_STORAGE_BUCKET');
+            const gcsUri = `gs://${bucketName}/${gcsPath}`;
+            
+            this.logger.log(`Uploaded chunk ${i + 1} to GCS: ${gcsUri}`);
+            
+            const chunkResult = await this.googleSpeechService.transcribeWithDiarization(
+              chunks[i].path,
+              context,
+              undefined, // language code
+              gcsUri,
+            );
+            
+            // Clean up GCS file after processing
+            try {
+              await this.firebaseService.deleteFile(gcsUrl);
+            } catch (e) {
+              this.logger.warn(`Failed to delete GCS chunk: ${e}`);
+            }
+            
+            results.push(chunkResult);
+          } catch (error) {
+            this.logger.error(`Error processing chunk ${i + 1} with Google Speech:`, error);
+            this.logger.log(`Falling back to Whisper for chunk ${i + 1}`);
+            
+            // Fall back to Whisper API for this chunk
+            try {
+              const whisperResponse: any = await this.openai.audio.transcriptions.create({
+                file: fs.createReadStream(chunks[i].path) as any,
+                model: 'whisper-1',
+                prompt: context,
+                response_format: 'verbose_json',
+              });
+              
+              // Create a result with just the transcript (no speaker info)
+              results.push({
+                text: whisperResponse.text,
+                language: whisperResponse.language,
+                speakers: [],
+                speakerSegments: [],
+                transcriptWithSpeakers: '',
+                speakerCount: 0,
+              });
+            } catch (whisperError) {
+              this.logger.error(`Whisper also failed for chunk ${i + 1}:`, whisperError);
+              // Last resort: empty result for this chunk
+              results.push({
+                text: '',
+                speakers: [],
+                speakerSegments: [],
+                transcriptWithSpeakers: '',
+                speakerCount: 0,
+              });
+            }
+          }
           
           // Clean up chunk
-          fs.unlinkSync(chunks[i].path);
+          try {
+            fs.unlinkSync(chunks[i].path);
+          } catch (e) {
+            this.logger.warn(`Failed to delete chunk ${chunks[i].path}`);
+          }
         }
         
         // Merge results
         result = this.mergeGoogleSpeechResults(results);
-      } else {
-        if (onProgress) {
-          onProgress(30, 'Processing audio with speaker diarization...');
-        }
-        
-        result = await this.googleSpeechService.transcribeWithDiarization(
-          flacPath,
-          context,
-        );
       }
 
-      // Clean up temp files
-      if (tempFilePath !== flacPath) {
-        fs.unlinkSync(tempFilePath);
-      }
-      fs.unlinkSync(flacPath);
+      // Clean up temp file
+      fs.unlinkSync(tempFilePath);
 
       if (onProgress) {
         onProgress(70, 'Speaker identification complete');
@@ -448,6 +541,81 @@ export class TranscriptionService {
     } catch (error) {
       this.logger.error('Error generating summary:', error);
       throw error;
+    }
+  }
+
+  async generateAllAnalyses(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<any> {
+    try {
+      this.logger.log('Generating all analyses in parallel...');
+      
+      // Generate all analyses in parallel for efficiency
+      const analysisPromises = [
+        this.generateSummary(transcriptionText, AnalysisType.SUMMARY, context, language)
+          .catch(err => {
+            this.logger.error('Summary generation failed:', err);
+            return 'Summary generation failed. Please try again.';
+          }),
+        this.generateSummary(transcriptionText, AnalysisType.COMMUNICATION_STYLES, context, language)
+          .catch(err => {
+            this.logger.error('Communication styles analysis failed:', err);
+            return null;
+          }),
+        this.generateSummary(transcriptionText, AnalysisType.ACTION_ITEMS, context, language)
+          .catch(err => {
+            this.logger.error('Action items extraction failed:', err);
+            return null;
+          }),
+        this.generateSummary(transcriptionText, AnalysisType.EMOTIONAL_INTELLIGENCE, context, language)
+          .catch(err => {
+            this.logger.error('Emotional intelligence analysis failed:', err);
+            return null;
+          }),
+        this.generateSummary(transcriptionText, AnalysisType.INFLUENCE_PERSUASION, context, language)
+          .catch(err => {
+            this.logger.error('Influence/persuasion analysis failed:', err);
+            return null;
+          }),
+        this.generateSummary(transcriptionText, AnalysisType.PERSONAL_DEVELOPMENT, context, language)
+          .catch(err => {
+            this.logger.error('Personal development analysis failed:', err);
+            return null;
+          }),
+      ];
+
+      const [
+        summary,
+        communicationStyles,
+        actionItems,
+        emotionalIntelligence,
+        influencePersuasion,
+        personalDevelopment
+      ] = await Promise.all(analysisPromises);
+
+      this.logger.log('All analyses completed (some may have failed individually)');
+
+      return {
+        summary,
+        communicationStyles,
+        actionItems,
+        emotionalIntelligence,
+        influencePersuasion,
+        personalDevelopment,
+      };
+    } catch (error) {
+      this.logger.error('Critical error generating analyses:', error);
+      // Return partial results if some analyses fail
+      return {
+        summary: 'Analysis generation failed. Please try again.',
+        communicationStyles: null,
+        actionItems: null,
+        emotionalIntelligence: null,
+        influencePersuasion: null,
+        personalDevelopment: null,
+      };
     }
   }
 

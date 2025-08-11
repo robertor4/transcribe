@@ -181,6 +181,8 @@
     "speakClearlyNormalPace": "Speak clearly and at normal pace",
     "addContextForTechnicalTerms": "Add context for technical terms",
     "uploadMultipleFilesAtOnce": "Upload multiple files at once",
+    "comprehensiveAnalysis": "Comprehensive Analysis Included",
+    "comprehensiveAnalysisDescription": "Your audio will be automatically analyzed from multiple perspectives to give you complete insights:",
     "analysisTypes": {
       "summary": "Summary (Default)",
       "communicationStyles": "Communication Styles & Improvements",
@@ -463,6 +465,10 @@
     "terms": "Terms of Service",
     "contact": "Contact Us",
     "about": "About"
+  },
+  "analyses": {
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "landing": {
     "hero": {

@@ -308,7 +308,8 @@ export class AudioSplitter {
     options: SplitOptions = {},
   ): Promise<AudioChunk[]> {
     const {
-      maxDurationSeconds = 1800, // 30 minutes for Google Speech
+      maxDurationSeconds = 600, // 10 minutes - optimal balance for reliability and processing speed
+      maxSizeBytes = 9 * 1024 * 1024, // 9MB to leave buffer for 10MB limit
       outputDir = path.dirname(inputPath),
       format = 'flac', // Use FLAC for Google Speech
     } = options;
@@ -321,38 +322,69 @@ export class AudioSplitter {
 
     this.logger.log(`Splitting audio file for Google Speech: ${inputPath}`);
 
+    const fileSize = await this.getFileSize(inputPath);
     const duration = await this.getAudioDuration(inputPath);
+    const fileSizeInMB = fileSize / (1024 * 1024);
 
-    // For Google Speech, we can handle longer files with async API
-    // But splitting into 30-minute chunks is recommended for reliability
-    if (duration <= maxDurationSeconds) {
-      this.logger.log('File duration is within limits, no splitting needed');
+    // Check if file is small enough to process directly
+    if (fileSize <= maxSizeBytes) {
+      this.logger.log(`File size ${fileSizeInMB.toFixed(2)}MB is within 9MB limit, no splitting needed`);
+      // If already FLAC, return as is
+      if (path.extname(inputPath).toLowerCase() === '.flac') {
+        return [
+          {
+            path: inputPath,
+            startTime: 0,
+            endTime: duration,
+            duration: duration,
+            index: 0,
+          },
+        ];
+      }
       // Convert to FLAC if needed
       const flacPath = await this.convertToFlac(inputPath, outputDir);
-      return [
-        {
-          path: flacPath,
-          startTime: 0,
-          endTime: duration,
-          duration: duration,
-          index: 0,
-        },
-      ];
+      const flacSize = await this.getFileSize(flacPath);
+      const flacSizeInMB = flacSize / (1024 * 1024);
+      
+      // Check if FLAC conversion made it too large
+      if (flacSize > maxSizeBytes) {
+        this.logger.log(`FLAC conversion resulted in ${flacSizeInMB.toFixed(2)}MB, need to split`);
+        // Need to split even after conversion
+      } else {
+        return [
+          {
+            path: flacPath,
+            startTime: 0,
+            endTime: duration,
+            duration: duration,
+            index: 0,
+          },
+        ];
+      }
     }
 
     const baseFileName = path.basename(inputPath, path.extname(inputPath));
     const chunks: AudioChunk[] = [];
-    const totalChunks = Math.ceil(duration / maxDurationSeconds);
+    
+    // Calculate optimal chunk duration based on file size
+    // Estimate: FLAC at 16kHz mono is roughly 1-2MB per minute
+    const estimatedBytesPerSecond = (fileSize / duration);
+    const optimalChunkDuration = Math.min(
+      maxDurationSeconds,
+      Math.floor(maxSizeBytes / estimatedBytesPerSecond)
+    );
+    
+    const totalChunks = Math.ceil(duration / optimalChunkDuration);
 
     this.logger.log(
-      `Splitting into ${totalChunks} chunks of ~${maxDurationSeconds}s each for Google Speech`,
+      `Splitting into ${totalChunks} chunks of ~${optimalChunkDuration}s each for Google Speech (est. ${(optimalChunkDuration * estimatedBytesPerSecond / (1024 * 1024)).toFixed(2)}MB per chunk)`,
     );
 
     const promises: Promise<AudioChunk>[] = [];
 
     for (let i = 0; i < totalChunks; i++) {
-      const startTime = i * maxDurationSeconds;
-      const endTime = Math.min((i + 1) * maxDurationSeconds, duration);
+      const startTime = i * optimalChunkDuration;
+      const endTime = Math.min((i + 1) * optimalChunkDuration, duration);
       const actualDuration = endTime - startTime;
 
       const outputPath = path.join(

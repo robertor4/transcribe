@@ -40,27 +40,27 @@ export class GoogleSpeechService {
     audioPath: string,
     context?: string,
     languageCode?: string,
+    gcsUri?: string,
   ): Promise<GoogleSpeechResult> {
     try {
       const fileSize = fs.statSync(audioPath).size;
       const fileSizeInMB = fileSize / (1024 * 1024);
       
-      // Determine if we should use synchronous or asynchronous recognition
-      // Use async for files > 1 minute or > 10MB
-      const useAsync = fileSizeInMB > 10;
-
-      if (useAsync) {
-        this.logger.log(`Using asynchronous recognition for file ${audioPath} (${fileSizeInMB.toFixed(2)}MB)`);
-        return await this.transcribeAsyncWithDiarization(audioPath, context, languageCode);
-      } else {
-        this.logger.log(`Using synchronous recognition for file ${audioPath} (${fileSizeInMB.toFixed(2)}MB)`);
-        return await this.transcribeSyncWithDiarization(audioPath, context, languageCode);
+      // For files over 10MB, we need GCS URI
+      if (fileSizeInMB > 10 && !gcsUri) {
+        this.logger.warn(`File size ${fileSizeInMB.toFixed(2)}MB exceeds Google Speech inline limit of 10MB and no GCS URI provided`);
+        throw new Error(`Audio file too large for inline content (${fileSizeInMB.toFixed(2)}MB). GCS URI required for files over 10MB.`);
       }
+
+      // Always use async longRunningRecognize for better handling
+      this.logger.log(`Using asynchronous longRunningRecognize for file ${audioPath} (${fileSizeInMB.toFixed(2)}MB)`);
+      return await this.transcribeAsyncWithDiarization(audioPath, context, languageCode, gcsUri);
     } catch (error) {
       this.logger.error('Error in Google Speech transcription:', error);
       throw error;
     }
   }
+
 
   private async transcribeSyncWithDiarization(
     audioPath: string,
@@ -76,9 +76,11 @@ export class GoogleSpeechService {
       config: {
         encoding: this.getAudioEncoding(audioPath),
         languageCode: languageCode || 'en-US',
-        enableSpeakerDiarization: true,
-        minSpeakerCount: 2,
-        maxSpeakerCount: 10,
+        diarizationConfig: {
+          enableSpeakerDiarization: true,
+          minSpeakerCount: 2,
+          maxSpeakerCount: 10,
+        },
         model: 'latest_long',
         useEnhanced: true,
         enableWordTimeOffsets: true,
@@ -96,19 +98,23 @@ export class GoogleSpeechService {
     audioPath: string,
     context?: string,
     languageCode?: string,
+    gcsUri?: string,
   ): Promise<GoogleSpeechResult> {
-    const audioBytes = fs.readFileSync(audioPath).toString('base64');
+    // If GCS URI is provided, use it; otherwise read file inline (for files < 60 seconds)
+    const audio = gcsUri 
+      ? { uri: gcsUri }
+      : { content: fs.readFileSync(audioPath).toString('base64') };
 
     const request = {
-      audio: {
-        content: audioBytes,
-      },
+      audio,
       config: {
         encoding: this.getAudioEncoding(audioPath),
         languageCode: languageCode || 'en-US',
-        enableSpeakerDiarization: true,
-        minSpeakerCount: 2,
-        maxSpeakerCount: 10,
+        diarizationConfig: {
+          enableSpeakerDiarization: true,
+          minSpeakerCount: 2,
+          maxSpeakerCount: 10,
+        },
         model: 'latest_long',
         useEnhanced: true,
         enableWordTimeOffsets: true,
@@ -118,13 +124,36 @@ export class GoogleSpeechService {
       },
     };
 
-    this.logger.log('Starting long-running recognition...');
+    this.logger.log(`Starting long-running recognition... (using ${gcsUri ? 'GCS URI' : 'inline audio'})`);
     const [operation] = await this.client.longRunningRecognize(request as any);
     
-    this.logger.log('Waiting for operation to complete...');
-    const [response] = await operation.promise();
+    this.logger.log(`Waiting for operation to complete (operation name: ${operation.name})...`);
     
-    return this.processRecognitionResponse(response);
+    // Add timeout for the operation (5 minutes per 10-minute chunk should be enough)
+    const timeoutMs = 5 * 60 * 1000; // 5 minutes
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Google Speech operation timed out after 5 minutes')), timeoutMs)
+    );
+    
+    try {
+      const [response] = await Promise.race([
+        operation.promise(),
+        timeoutPromise,
+      ]) as [any];
+      
+      return this.processRecognitionResponse(response);
+    } catch (error) {
+      if (error.message?.includes('timed out')) {
+        this.logger.error('Google Speech operation timed out');
+        // Try to cancel the operation if it's still running
+        try {
+          await operation.cancel();
+        } catch (cancelError) {
+          this.logger.warn('Failed to cancel timed-out operation:', cancelError);
+        }
+      }
+      throw error;
+    }
   }
 
   private processRecognitionResponse(
@@ -185,7 +214,35 @@ export class GoogleSpeechService {
 
     // Process speaker data
     const speakerData = this.processSpeakerData(allWords);
-    const speakerSegments = this.createSpeakerSegments(allWords);
+    let speakerSegments = this.createSpeakerSegments(allWords);
+    
+    // Filter out Speaker 0 if it exists - it's often a duplicate/catch-all from Google
+    if (speakerData.speakers.some(s => s.speakerId === 0)) {
+      this.logger.log('Filtering out Speaker 0 (Google Speech catch-all speaker)');
+      
+      // Remove Speaker 0 from speakers array
+      speakerData.speakers = speakerData.speakers.filter(s => s.speakerId !== 0);
+      speakerData.speakerCount = speakerData.speakers.length;
+      
+      // Remove Speaker 0 segments
+      speakerSegments = speakerSegments.filter(seg => seg.speakerTag !== 'Speaker 0');
+      
+      // Renumber remaining speakers to start from 1
+      speakerData.speakers.forEach((speaker, index) => {
+        const oldTag = `Speaker ${speaker.speakerId}`;
+        const newTag = `Speaker ${index + 1}`;
+        speaker.speakerId = index + 1;
+        speaker.speakerTag = newTag;
+        
+        // Update segments with new speaker tags
+        speakerSegments.forEach(seg => {
+          if (seg.speakerTag === oldTag) {
+            seg.speakerTag = newTag;
+          }
+        });
+      });
+    }
+    
     const transcriptWithSpeakers = this.formatTranscriptWithSpeakers(speakerSegments);
 
     // Get detected language from the first result

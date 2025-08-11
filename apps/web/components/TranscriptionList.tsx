@@ -38,6 +38,7 @@ import { SummaryWithComments } from './SummaryWithComments';
 import SpeakerSummary from './SpeakerSummary';
 import TranscriptWithSpeakers from './TranscriptWithSpeakers';
 import SpeakerTimeline from './SpeakerTimeline';
+import { AnalysisTabs } from './AnalysisTabs';
 
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
@@ -57,17 +58,63 @@ export const TranscriptionList: React.FC = () => {
   useEffect(() => {
     loadTranscriptions();
     
+    // Track timeout timers for processing transcriptions
+    const timeoutTimers = new Map<string, NodeJS.Timeout>();
+    
     // Listen for real-time updates
     const unsubscribeProgress = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
       (progress: TranscriptionProgress) => {
-        setProgressMap(prev => new Map(prev).set(progress.transcriptionId, progress));
+        setProgressMap(prev => {
+          const newMap = new Map(prev);
+          const existingProgress = newMap.get(progress.transcriptionId);
+          // Preserve start time if it exists, otherwise set it
+          const startTime = existingProgress?.startTime || Date.now();
+          newMap.set(progress.transcriptionId, { ...progress, startTime });
+          return newMap;
+        });
+        
+        // Set or reset timeout for this transcription (5 minutes)
+        const existingTimer = timeoutTimers.get(progress.transcriptionId);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+        }
+        
+        const newTimer = setTimeout(() => {
+          // Mark as failed after timeout
+          setTranscriptions(prev => 
+            prev.map(t => 
+              t.id === progress.transcriptionId 
+                ? { 
+                    ...t, 
+                    status: TranscriptionStatus.FAILED,
+                    error: 'Transcription timed out. Please try again with a shorter audio file.'
+                  }
+                : t
+            )
+          );
+          setProgressMap(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(progress.transcriptionId);
+            return newMap;
+          });
+          timeoutTimers.delete(progress.transcriptionId);
+        }, 5 * 60 * 1000); // 5 minutes timeout
+        
+        timeoutTimers.set(progress.transcriptionId, newTimer);
       }
     );
 
     const unsubscribeComplete = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       (progress: TranscriptionProgress) => {
+        // Clear timeout timer
+        const timer = timeoutTimers.get(progress.transcriptionId);
+        if (timer) {
+          clearTimeout(timer);
+          timeoutTimers.delete(progress.transcriptionId);
+        }
+        
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
@@ -76,10 +123,47 @@ export const TranscriptionList: React.FC = () => {
         loadTranscriptions();
       }
     );
+    
+    const unsubscribeFailed = websocketService.on(
+      WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
+      (progress: TranscriptionProgress & { error?: string }) => {
+        // Clear timeout timer
+        const timer = timeoutTimers.get(progress.transcriptionId);
+        if (timer) {
+          clearTimeout(timer);
+          timeoutTimers.delete(progress.transcriptionId);
+        }
+        
+        setProgressMap(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(progress.transcriptionId);
+          return newMap;
+        });
+        
+        // Update the transcription status to failed
+        setTranscriptions(prev => 
+          prev.map(t => 
+            t.id === progress.transcriptionId 
+              ? { 
+                  ...t, 
+                  status: TranscriptionStatus.FAILED,
+                  error: progress.error || 'Transcription failed'
+                }
+              : t
+          )
+        );
+        
+        // Reload to get the latest status from server
+        loadTranscriptions();
+      }
+    );
 
     return () => {
       unsubscribeProgress();
       unsubscribeComplete();
+      unsubscribeFailed();
+      // Clear all timeout timers
+      timeoutTimers.forEach(timer => clearTimeout(timer));
     };
   }, []);
 
@@ -235,12 +319,22 @@ export const TranscriptionList: React.FC = () => {
     }
   };
 
-  const getStatusText = (status: TranscriptionStatus) => {
-    const progress = Array.from(progressMap.values()).find(
-      p => transcriptions.some(t => t.id === p.transcriptionId && t.status === status)
-    );
+  const getStatusText = (status: TranscriptionStatus, transcriptionId?: string) => {
+    const progress = transcriptionId 
+      ? progressMap.get(transcriptionId)
+      : Array.from(progressMap.values()).find(
+          p => transcriptions.some(t => t.id === p.transcriptionId && t.status === status)
+        );
     
     if (progress) {
+      // Check if this has been processing for more than 2 minutes
+      const processingTime = progress.startTime 
+        ? (Date.now() - progress.startTime) / 1000 
+        : 0;
+      
+      if (processingTime > 120) {
+        return `${progress.message || status} (${progress.progress}%) - Taking longer than usual...`;
+      }
       return `${progress.message || status} (${progress.progress}%)`;
     }
     
@@ -350,7 +444,7 @@ export const TranscriptionList: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(transcription.status)}
                     <span className="text-sm text-gray-600">
-                      {progress ? progress.message : getStatusText(transcription.status)}
+                      {progress ? progress.message : getStatusText(transcription.status, transcription.id)}
                     </span>
                   </div>
                   
@@ -422,44 +516,90 @@ export const TranscriptionList: React.FC = () => {
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
               <div className="border-t border-gray-200 bg-gray-50">
-                {/* Tab navigation for expanded view */}
-                {transcription.speakers && transcription.speakers.length > 0 && (
-                  <div className="border-b border-gray-200 bg-white px-4">
-                    <nav className="-mb-px flex space-x-4">
-                      <button
-                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'summary' }))}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                          (!activeTab[transcription.id] || activeTab[transcription.id] === 'summary')
-                            ? 'border-[#cc3399] text-[#cc3399]'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                      >
-                        Summary
-                      </button>
-                      <button
-                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'transcript' }))}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                          activeTab[transcription.id] === 'transcript'
-                            ? 'border-[#cc3399] text-[#cc3399]'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                      >
-                        Transcript
-                      </button>
-                      <button
-                        onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'speakers' }))}
-                        className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
-                          activeTab[transcription.id] === 'speakers'
-                            ? 'border-[#cc3399] text-[#cc3399]'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                      >
-                        <Users className="h-4 w-4" />
-                        Speakers ({transcription.speakerCount})
-                      </button>
-                    </nav>
+                {/* Show analysis tabs if we have analyses, otherwise show legacy tabs */}
+                {transcription.analyses ? (
+                  <div className="p-4">
+                    <AnalysisTabs 
+                      analyses={transcription.analyses} 
+                      transcriptionId={transcription.id}
+                    />
+                    
+                    {/* Add transcript section below analyses */}
+                    <div className="mt-6 border-t pt-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <FileAudio className="h-5 w-5 mr-2" />
+                        Full Transcript
+                      </h3>
+                      {transcription.speakers && transcription.speakers.length > 0 ? (
+                        <TranscriptWithSpeakers
+                          segments={transcription.speakerSegments}
+                          transcriptWithSpeakers={transcription.transcriptWithSpeakers}
+                        />
+                      ) : (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                          <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
+                            {!unformattedTranscripts.has(transcription.id) 
+                              ? formatTranscript(transcription.transcriptText || '')
+                              : transcription.transcriptText}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Add speaker summary if available */}
+                    {transcription.speakers && transcription.speakers.length > 0 && (
+                      <div className="mt-6 border-t pt-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                          <Users className="h-5 w-5 mr-2" />
+                          Speaker Analysis
+                        </h3>
+                        <SpeakerSummary speakers={transcription.speakers} />
+                        <div className="mt-4">
+                          <SpeakerTimeline segments={transcription.speakerSegments} />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                ) : (
+                  /* Legacy view for transcriptions without analyses */
+                  <>
+                    {transcription.speakers && transcription.speakers.length > 0 && (
+                      <div className="border-b border-gray-200 bg-white px-4">
+                        <nav className="-mb-px flex space-x-4">
+                          <button
+                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'summary' }))}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                              (!activeTab[transcription.id] || activeTab[transcription.id] === 'summary')
+                                ? 'border-[#cc3399] text-[#cc3399]'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            Summary
+                          </button>
+                          <button
+                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'transcript' }))}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                              activeTab[transcription.id] === 'transcript'
+                                ? 'border-[#cc3399] text-[#cc3399]'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            Transcript
+                          </button>
+                          <button
+                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'speakers' }))}
+                            className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
+                              activeTab[transcription.id] === 'speakers'
+                                ? 'border-[#cc3399] text-[#cc3399]'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                          >
+                            <Users className="h-4 w-4" />
+                            Speakers ({transcription.speakerCount})
+                          </button>
+                        </nav>
+                      </div>
+                    )}
                 
                 <div className="p-4">
                 {/* Show content based on active tab */}
@@ -634,6 +774,8 @@ export const TranscriptionList: React.FC = () => {
                   </div>
                 )}
                 </div>
+                </>
+                )}
               </div>
             )}
           </div>

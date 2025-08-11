@@ -46,6 +46,15 @@ export interface TranscriptionContext {
   updatedAt: Date;
 }
 
+export interface AnalysisResults {
+  summary?: string;
+  communicationStyles?: string;
+  actionItems?: string;
+  emotionalIntelligence?: string;
+  influencePersuasion?: string;
+  personalDevelopment?: string;
+}
+
 export interface Transcription {
   id: string;
   userId: string;
@@ -56,15 +65,16 @@ export interface Transcription {
   mimeType: string;
   duration?: number;
   status: TranscriptionStatus;
-  analysisType?: AnalysisType; // Type of analysis to perform (defaults to SUMMARY)
+  analysisType?: AnalysisType; // DEPRECATED - kept for backward compatibility
   context?: string;
   contextId?: string;
   transcriptText?: string;
-  summary?: string;
+  summary?: string; // DEPRECATED - moved to analyses.summary
   summaryVersion?: number;
   comments?: SummaryComment[];
   detectedLanguage?: string; // Language detected from the audio (e.g., 'english', 'dutch', 'german')
   summaryLanguage?: string; // Language used for the summary
+  analyses?: AnalysisResults; // All analysis results
   error?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -107,6 +117,7 @@ export interface TranscriptionProgress {
   progress: number;
   message?: string;
   error?: string;
+  startTime?: number; // Timestamp when processing started (for timeout tracking)
 }
 
 export interface ApiResponse<T = any> {
@@ -183,3 +194,56 @@ export interface SpeakerSegment {
   text: string;
   confidence?: number;
 }
+
+export interface AnalysisTypeInfo {
+  key: keyof AnalysisResults;
+  label: string;
+  icon: string;
+  color: string;
+  description: string;
+}
+
+export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
+  {
+    key: 'summary',
+    label: 'Summary',
+    icon: 'MessageSquare',
+    color: 'blue',
+    description: 'Comprehensive overview with key topics and decisions'
+  },
+  {
+    key: 'communicationStyles',
+    label: 'Communication',
+    icon: 'Users',
+    color: 'purple',
+    description: 'Speaking patterns and interaction dynamics'
+  },
+  {
+    key: 'actionItems',
+    label: 'Action Items',
+    icon: 'ListChecks',
+    color: 'green',
+    description: 'Tasks, deadlines, and follow-ups'
+  },
+  {
+    key: 'emotionalIntelligence',
+    label: 'Emotional IQ',
+    icon: 'Brain',
+    color: 'pink',
+    description: 'Emotional tone and empathy analysis'
+  },
+  {
+    key: 'influencePersuasion',
+    label: 'Influence',
+    icon: 'Target',
+    color: 'orange',
+    description: 'Persuasion techniques and decision influence'
+  },
+  {
+    key: 'personalDevelopment',
+    label: 'Development',
+    icon: 'TrendingUp',
+    color: 'teal',
+    description: 'Growth opportunities and recommendations'
+  }
+];

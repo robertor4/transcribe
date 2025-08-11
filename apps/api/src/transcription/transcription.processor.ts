@@ -72,23 +72,25 @@ export class TranscriptionProcessor {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 60,
-        message: 'Transcription complete, generating summary...',
+        message: 'Transcription complete, generating comprehensive analyses...',
       });
 
-      // Generate summary/analysis in the detected language
-      const summary = await this.transcriptionService.generateSummary(
+      // Generate ALL analyses in parallel
+      const analyses = await this.transcriptionService.generateAllAnalyses(
         transcriptText,
-        analysisType,
         context,
         detectedLanguage,
       );
+
+      // For backward compatibility, keep the summary field
+      const summary = analyses.summary;
 
       // Update progress
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 90,
-        message: 'Summary generated, saving results...',
+        message: 'All analyses generated, saving results...',
       });
 
       // Save transcription results
@@ -106,7 +108,8 @@ export class TranscriptionProcessor {
       const updateData: any = {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
-        summary,
+        summary, // Keep for backward compatibility
+        analyses, // Add all analyses
         completedAt: new Date(),
         updatedAt: new Date(),
       };
