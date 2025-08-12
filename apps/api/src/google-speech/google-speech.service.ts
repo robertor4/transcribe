@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SpeechClient, protos } from '@google-cloud/speech';
+import { v1p1beta1, protos } from '@google-cloud/speech';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Speaker, SpeakerSegment } from '@transcribe/shared';
 
-type IRecognizeResponse = protos.google.cloud.speech.v1.IRecognizeResponse;
-type ILongRunningRecognizeResponse = protos.google.cloud.speech.v1.ILongRunningRecognizeResponse;
-type ISpeechRecognitionResult = protos.google.cloud.speech.v1.ISpeechRecognitionResult;
-type IWordInfo = protos.google.cloud.speech.v1.IWordInfo;
+// Use v1p1beta1 for better language detection
+type IRecognizeResponse = protos.google.cloud.speech.v1p1beta1.IRecognizeResponse;
+type ILongRunningRecognizeResponse = protos.google.cloud.speech.v1p1beta1.ILongRunningRecognizeResponse;
+type ISpeechRecognitionResult = protos.google.cloud.speech.v1p1beta1.ISpeechRecognitionResult;
+type IWordInfo = protos.google.cloud.speech.v1p1beta1.IWordInfo;
 
 export interface GoogleSpeechResult {
   text: string;
@@ -23,11 +24,11 @@ export interface GoogleSpeechResult {
 @Injectable()
 export class GoogleSpeechService {
   private readonly logger = new Logger(GoogleSpeechService.name);
-  private client: SpeechClient;
+  private client: v1p1beta1.SpeechClient;
 
   constructor(private configService: ConfigService) {
-    // Initialize using existing Firebase credentials
-    this.client = new SpeechClient({
+    // Initialize using v1p1beta1 client for better language detection
+    this.client = new v1p1beta1.SpeechClient({
       projectId: this.configService.get('FIREBASE_PROJECT_ID'),
       credentials: {
         client_email: this.configService.get('FIREBASE_CLIENT_EMAIL'),
@@ -69,6 +70,9 @@ export class GoogleSpeechService {
   ): Promise<GoogleSpeechResult> {
     const audioBytes = fs.readFileSync(audioPath).toString('base64');
 
+    // Always include all supported app languages for better detection
+    const alternativeLanguages = languageCode ? [] : ['nl-NL', 'de-DE', 'fr-FR', 'es-ES'];
+    
     const request = {
       audio: {
         content: audioBytes,
@@ -76,13 +80,17 @@ export class GoogleSpeechService {
       config: {
         encoding: this.getAudioEncoding(audioPath),
         languageCode: languageCode || 'en-US',
+        // Include all app-supported languages for auto-detection
+        alternativeLanguageCodes: alternativeLanguages,
         diarizationConfig: {
           enableSpeakerDiarization: true,
           minSpeakerCount: 2,
           maxSpeakerCount: 10,
         },
+        // Use 'latest_long' model - recommended for long-form content
         model: 'latest_long',
-        useEnhanced: true,
+        // Keep enhanced disabled to reduce English bias
+        useEnhanced: false,
         enableWordTimeOffsets: true,
         enableWordConfidence: true,
         enableAutomaticPunctuation: true,
@@ -90,6 +98,7 @@ export class GoogleSpeechService {
       },
     };
 
+    this.logger.log(`Language config for sync: primary=${languageCode || 'en-US'}, alternatives=${JSON.stringify(alternativeLanguages)}`);
     const [response] = await this.client.recognize(request as any);
     return this.processRecognitionResponse(response);
   }
@@ -105,18 +114,25 @@ export class GoogleSpeechService {
       ? { uri: gcsUri }
       : { content: fs.readFileSync(audioPath).toString('base64') };
 
+    // Always include all supported app languages for better detection
+    const alternativeLanguages = languageCode ? [] : ['nl-NL', 'de-DE', 'fr-FR', 'es-ES'];
+    
     const request = {
       audio,
       config: {
         encoding: this.getAudioEncoding(audioPath),
         languageCode: languageCode || 'en-US',
+        // Include all app-supported languages for auto-detection
+        alternativeLanguageCodes: alternativeLanguages,
         diarizationConfig: {
           enableSpeakerDiarization: true,
           minSpeakerCount: 2,
           maxSpeakerCount: 10,
         },
+        // Use 'latest_long' model - recommended for long-form content
         model: 'latest_long',
-        useEnhanced: true,
+        // Keep enhanced disabled to reduce English bias
+        useEnhanced: false,
         enableWordTimeOffsets: true,
         enableWordConfidence: true,
         enableAutomaticPunctuation: true,
@@ -125,14 +141,16 @@ export class GoogleSpeechService {
     };
 
     this.logger.log(`Starting long-running recognition... (using ${gcsUri ? 'GCS URI' : 'inline audio'})`);
+    this.logger.log(`Language config: primary=${languageCode || 'en-US'}, alternatives=${JSON.stringify(alternativeLanguages)}`);
+    this.logger.log(`Using model: default, enhanced: false for better multi-language support`);
     const [operation] = await this.client.longRunningRecognize(request as any);
     
     this.logger.log(`Waiting for operation to complete (operation name: ${operation.name})...`);
     
-    // Add timeout for the operation (5 minutes per 10-minute chunk should be enough)
-    const timeoutMs = 5 * 60 * 1000; // 5 minutes
+    // Add timeout for the operation (10 minutes per chunk for multi-language detection)
+    const timeoutMs = 10 * 60 * 1000; // 10 minutes
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Google Speech operation timed out after 5 minutes')), timeoutMs)
+      setTimeout(() => reject(new Error('Google Speech operation timed out after 10 minutes')), timeoutMs)
     );
     
     try {
@@ -247,6 +265,12 @@ export class GoogleSpeechService {
 
     // Get detected language from the first result
     const detectedLanguage = results[0]?.languageCode || undefined;
+    
+    if (detectedLanguage) {
+      this.logger.log(`Detected language: ${detectedLanguage}`);
+    } else {
+      this.logger.warn('No language code detected in response');
+    }
 
     return {
       text: fullTranscript.trim(),

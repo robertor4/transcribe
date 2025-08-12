@@ -53,6 +53,7 @@ export interface AnalysisResults {
   emotionalIntelligence?: string;
   influencePersuasion?: string;
   personalDevelopment?: string;
+  transcript?: string;
 }
 
 export interface Transcription {
@@ -245,5 +246,12 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     icon: 'TrendingUp',
     color: 'teal',
     description: 'Growth opportunities and recommendations'
+  },
+  {
+    key: 'transcript',
+    label: 'Full Transcript',
+    icon: 'FileText',
+    color: 'gray',
+    description: 'Complete transcription of the audio'
   }
 ];

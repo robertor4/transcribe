@@ -8,6 +8,7 @@ import {
   Brain, 
   Target, 
   TrendingUp,
+  FileText,
   Copy,
   Check
 } from 'lucide-react';
@@ -45,6 +46,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
       case 'Brain': return Brain;
       case 'Target': return Target;
       case 'TrendingUp': return TrendingUp;
+      case 'FileText': return FileText;
       default: return MessageSquare;
     }
   };
@@ -152,28 +154,36 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
 
               {/* Analysis Content */}
               <div className="p-6">
-                <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm, remarkBreaks]}
-                    components={{
-                      h1: ({children}) => <h1 className="text-2xl font-bold text-gray-900 mb-4">{children}</h1>,
-                      h2: ({children}) => <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-3">{children}</h2>,
-                      h3: ({children}) => <h3 className="text-lg font-medium text-gray-700 mt-4 mb-2">{children}</h3>,
-                      ul: ({children}) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
-                      ol: ({children}) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
-                      li: ({children}) => <li className="text-gray-600">{children}</li>,
-                      p: ({children}) => <p className="text-gray-600 mb-3">{children}</p>,
-                      strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
-                      blockquote: ({children}) => (
-                        <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-600">
-                          {children}
-                        </blockquote>
-                      ),
-                    }}
-                  >
-                    {content}
-                  </ReactMarkdown>
-                </div>
+                {info.key === 'transcript' ? (
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-[600px] overflow-y-auto">
+                    <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed font-mono">
+                      {content}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkBreaks]}
+                      components={{
+                        h1: ({children}) => <h1 className="text-2xl font-bold text-gray-900 mb-4">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-3">{children}</h2>,
+                        h3: ({children}) => <h3 className="text-lg font-medium text-gray-700 mt-4 mb-2">{children}</h3>,
+                        ul: ({children}) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
+                        li: ({children}) => <li className="text-gray-600">{children}</li>,
+                        p: ({children}) => <p className="text-gray-600 mb-3">{children}</p>,
+                        strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
+                        blockquote: ({children}) => (
+                          <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-600">
+                            {children}
+                          </blockquote>
+                        ),
+                      }}
+                    >
+                      {content}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           );

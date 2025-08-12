@@ -20,6 +20,7 @@ import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { GoogleSpeechService, GoogleSpeechResult } from '../google-speech/google-speech.service';
+import { AssemblyAIService, AssemblyAIResult } from '../assembly-ai/assembly-ai.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -36,6 +37,8 @@ export class TranscriptionService {
     private websocketGateway: WebSocketGateway,
     @Inject(forwardRef(() => GoogleSpeechService))
     private googleSpeechService: GoogleSpeechService,
+    @Inject(forwardRef(() => AssemblyAIService))
+    private assemblyAIService: AssemblyAIService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
@@ -121,13 +124,69 @@ export class TranscriptionService {
     transcriptWithSpeakers?: string;
     speakerCount?: number;
   }> {
-    // Check if we should use Google Speech for speaker diarization
-    const useGoogleSpeech = this.configService.get('USE_GOOGLE_SPEECH') === 'true';
+    // Check which service to use for speaker diarization
+    const useAssemblyAI = this.configService.get('USE_ASSEMBLYAI') === 'true';
+    const useGoogleSpeech = !useAssemblyAI && this.configService.get('USE_GOOGLE_SPEECH') === 'true';
     
-    if (useGoogleSpeech) {
+    if (useAssemblyAI) {
+      return this.transcribeWithAssemblyAI(fileUrl, context, onProgress);
+    } else if (useGoogleSpeech) {
       return this.transcribeWithGoogleSpeech(fileUrl, context, onProgress);
     } else {
       return this.transcribeAudio(fileUrl, context, onProgress);
+    }
+  }
+
+  async transcribeWithAssemblyAI(
+    fileUrl: string,
+    context?: string,
+    onProgress?: (progress: number, message: string) => void,
+  ): Promise<{
+    text: string;
+    language?: string;
+    speakers?: Speaker[];
+    speakerSegments?: SpeakerSegment[];
+    transcriptWithSpeakers?: string;
+    speakerCount?: number;
+  }> {
+    try {
+      this.logger.log('Starting transcription with AssemblyAI...');
+      
+      if (onProgress) {
+        onProgress(10, 'Uploading audio to AssemblyAI...');
+      }
+
+      // AssemblyAI needs a publicly accessible URL
+      // Since our Firebase Storage URLs require auth, we need to create a temporary public URL
+      const publicUrl = await this.firebaseService.getPublicUrl(fileUrl);
+      
+      if (onProgress) {
+        onProgress(20, 'Starting transcription with automatic language detection and speaker diarization...');
+      }
+
+      // Use AssemblyAI for transcription with language detection and speaker diarization
+      const result = await this.assemblyAIService.transcribeWithDiarization(
+        publicUrl,
+        context,
+      );
+
+      if (onProgress) {
+        onProgress(70, `Transcription complete. Detected language: ${result.language || 'unknown'}`);
+      }
+
+      this.logger.log(`AssemblyAI transcription complete. Language: ${result.language}, Speakers: ${result.speakerCount}`);
+
+      return {
+        text: result.text,
+        language: result.language,
+        speakers: result.speakers,
+        speakerSegments: result.speakerSegments,
+        transcriptWithSpeakers: result.transcriptWithSpeakers,
+        speakerCount: result.speakerCount,
+      };
+    } catch (error) {
+      this.logger.error('Error transcribing with AssemblyAI:', error);
+      throw error;
     }
   }
 

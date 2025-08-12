@@ -187,6 +187,51 @@ export class FirebaseService implements OnModuleInit {
     return this.uploadFile(buffer, path, 'text/plain');
   }
 
+  async getPublicUrl(url: string): Promise<string> {
+    // Extract file path from the existing URL and create a new signed URL
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+
+      const bucketName = this.configService.get<string>(
+        'FIREBASE_STORAGE_BUCKET',
+      );
+      const bucketIndex = pathParts.findIndex(
+        (part) =>
+          part === bucketName ||
+          part.includes('.firebasestorage.app') ||
+          part.includes('.appspot.com'),
+      );
+
+      let filePath: string;
+      if (bucketIndex !== -1) {
+        filePath = pathParts.slice(bucketIndex + 1).join('/');
+      } else {
+        const nonEmptyParts = pathParts.filter((p) => p);
+        filePath = nonEmptyParts.slice(1).join('/');
+      }
+
+      // Decode the file path
+      filePath = decodeURIComponent(filePath);
+
+      this.logger.log(`Creating public URL for file: ${filePath}`);
+
+      const bucket = this.storage.bucket();
+      const file = bucket.file(filePath);
+
+      // Generate a new signed URL with long expiration for AssemblyAI
+      const [publicUrl] = await file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
+      });
+
+      return publicUrl;
+    } catch (error) {
+      this.logger.error('Error creating public URL:', error);
+      throw error;
+    }
+  }
+
   async downloadFile(url: string): Promise<Buffer> {
     // Extract file path from signed URL
     // The URL format is: https://storage.googleapis.com/bucket-name/path/to/file?signature...

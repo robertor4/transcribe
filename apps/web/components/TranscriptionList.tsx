@@ -520,31 +520,12 @@ export const TranscriptionList: React.FC = () => {
                 {transcription.analyses ? (
                   <div className="p-4">
                     <AnalysisTabs 
-                      analyses={transcription.analyses} 
+                      analyses={{
+                        ...transcription.analyses,
+                        transcript: transcription.transcriptText
+                      }} 
                       transcriptionId={transcription.id}
                     />
-                    
-                    {/* Add transcript section below analyses */}
-                    <div className="mt-6 border-t pt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                        <FileAudio className="h-5 w-5 mr-2" />
-                        Full Transcript
-                      </h3>
-                      {transcription.speakers && transcription.speakers.length > 0 ? (
-                        <TranscriptWithSpeakers
-                          segments={transcription.speakerSegments}
-                          transcriptWithSpeakers={transcription.transcriptWithSpeakers}
-                        />
-                      ) : (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                          <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
-                            {!unformattedTranscripts.has(transcription.id) 
-                              ? formatTranscript(transcription.transcriptText || '')
-                              : transcription.transcriptText}
-                          </p>
-                        </div>
-                      )}
-                    </div>
                     
                     {/* Add speaker summary if available */}
                     {transcription.speakers && transcription.speakers.length > 0 && (
