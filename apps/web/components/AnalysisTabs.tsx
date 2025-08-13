@@ -17,6 +17,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { useTranslations } from 'next-intl';
+import { SummaryWithComments } from './SummaryWithComments';
 
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
@@ -27,6 +28,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
+  const [currentAnalyses, setCurrentAnalyses] = useState<AnalysisResults>(analyses);
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
@@ -84,7 +86,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
         <nav className="-mb-px flex flex-wrap gap-x-4 overflow-x-auto">
           {ANALYSIS_TYPE_INFO.map((info) => {
             const Icon = getIconComponent(info.icon);
-            const hasContent = analyses[info.key];
+            const hasContent = currentAnalyses[info.key];
             
             if (!hasContent) return null;
             
@@ -113,7 +115,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
       {/* Tab Content */}
       <div className="bg-white rounded-lg">
         {ANALYSIS_TYPE_INFO.map((info) => {
-          const content = analyses[info.key];
+          const content = currentAnalyses[info.key];
           if (!content || activeTab !== info.key) return null;
           
           const Icon = getIconComponent(info.icon);
@@ -160,6 +162,18 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                       {content}
                     </p>
                   </div>
+                ) : info.key === 'summary' ? (
+                  <SummaryWithComments
+                    transcriptionId={transcriptionId}
+                    summary={content}
+                    isEditable={true}
+                    onSummaryRegenerated={(newSummary) => {
+                      setCurrentAnalyses(prev => ({
+                        ...prev,
+                        summary: newSummary
+                      }));
+                    }}
+                  />
                 ) : (
                   <div className="prose prose-sm max-w-none">
                     <ReactMarkdown 
