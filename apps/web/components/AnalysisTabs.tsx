@@ -28,7 +28,6 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
-  const [currentAnalyses, setCurrentAnalyses] = useState<AnalysisResults>(analyses);
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
@@ -86,7 +85,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
         <nav className="-mb-px flex flex-wrap gap-x-4 overflow-x-auto">
           {ANALYSIS_TYPE_INFO.map((info) => {
             const Icon = getIconComponent(info.icon);
-            const hasContent = currentAnalyses[info.key];
+            const hasContent = analyses[info.key];
             
             if (!hasContent) return null;
             
@@ -115,7 +114,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
       {/* Tab Content */}
       <div className="bg-white rounded-lg">
         {ANALYSIS_TYPE_INFO.map((info) => {
-          const content = currentAnalyses[info.key];
+          const content = analyses[info.key];
           if (!content || activeTab !== info.key) return null;
           
           const Icon = getIconComponent(info.icon);
@@ -166,13 +165,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                   <SummaryWithComments
                     transcriptionId={transcriptionId}
                     summary={content}
-                    isEditable={true}
-                    onSummaryRegenerated={(newSummary) => {
-                      setCurrentAnalyses(prev => ({
-                        ...prev,
-                        summary: newSummary
-                      }));
-                    }}
+                    isEditable={false}
                   />
                 ) : (
                   <div className="prose prose-sm max-w-none">
