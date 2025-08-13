@@ -8,7 +8,7 @@ const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and pr
 2. Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns.
 3. If the transcript is in a non-English language, ALL headings and content must be in that same language.
 
-Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome.
+Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
 Create sections for:
 - Key discussion points (main points with brief explanations)
