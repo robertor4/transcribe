@@ -12,7 +12,6 @@ Then provide a 1-2 sentence overview directly under the main heading that elabor
 
 Create sections for:
 - Key discussion points (main points with brief explanations)
-- Participants (roles and expertise, using generic descriptors when names are unclear)
 - Conversation summary (pyramid principle: conclusion first, then supporting arguments, evidence, context)
 - Decisions made (if any - concrete agreements reached)
 - Action items (if any - what, who, when)
@@ -24,50 +23,51 @@ Note: Use natural section headings appropriate for the language of the transcrip
 // Communication Styles Analysis Prompt
 const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
 
-Start with a 1-2 sentence overview that captures the overall communication dynamics and effectiveness of this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+# Communication effectiveness score: X/10
 
-COMMUNICATION EFFECTIVENESS SCORE: Rate the overall communication quality (1-10) and provide a one-sentence summary of the primary communication strength and primary weakness.
+Provide a comprehensive explanation of the score, including the primary communication strengths and weaknesses observed in this conversation. Wrap this explanation paragraph in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
-CLARITY & STRUCTURE ANALYSIS:
+## Clarity & structure analysis
 
 Message clarity: Were ideas expressed clearly and unambiguously?
 Logical flow: Did the conversation follow a coherent structure?
 Information density: Was the right amount of detail provided without overwhelming or under-informing?
 
-LISTENING & ENGAGEMENT PATTERNS:
+## Listening & engagement patterns
 
 Active listening indicators: Evidence of participants building on each other's ideas, asking clarifying questions, or acknowledging understanding
 Interruption/overlap patterns: How well did participants manage turn-taking?
 Engagement balance: Did all parties contribute meaningfully, or was it dominated by certain voices?
 
-QUESTIONING & DISCOVERY EFFECTIVENESS:
+## Questioning & discovery effectiveness
 
 Quality of questions asked: Were they open-ended, probing, or clarifying when appropriate?
 Information extraction: How effectively did participants draw out relevant details?
 Assumption checking: Did participants verify understanding rather than making assumptions?
 
-EMOTIONAL INTELLIGENCE & TONE:
+## Emotional intelligence & tone
 
 Tone appropriateness: Was the communication style suitable for the context and relationships?
 Conflict navigation: How were disagreements or tensions handled?
 Empathy and perspective-taking: Evidence of understanding others' viewpoints
 
-DECISION-MAKING & CLOSURE:
+## Decision-making & closure
 
 Path to resolution: How efficiently did the conversation move toward conclusions?
 Consensus building: Were decisions made collaboratively with buy-in?
 Action clarity: Were next steps and responsibilities clearly established?
 
-TOP 3 COMMUNICATION IMPROVEMENTS:
+## Top 3 communication improvements
 Provide specific, actionable recommendations that would most improve future conversations, such as:
 
 Process improvements (e.g., "Start with agenda setting")
 Behavioral changes (e.g., "Use more open-ended questions")
 Structural modifications (e.g., "Summarize key points before moving to next topic")
 
-COMMUNICATION STRENGTHS TO MAINTAIN:
+## Communication strengths to maintain
 Identify 2-3 effective communication behaviors demonstrated that should be continued.
-CONTEXT CONSIDERATIONS:
+
+## Context considerations
 Note any factors (time pressure, relationship dynamics, complexity of topic) that may have influenced communication effectiveness and should be considered when applying improvements.
 
 Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns.
@@ -76,18 +76,13 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Action Items Extraction Prompt
 const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation.
 
-Start with a 1-2 sentence overview that summarizes the key deliverables and action items identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+# Action items overview
 
-Create sections for different time horizons (only if items exist):
-- Immediate actions (next 24-48 hours)
-- Short-term actions (this week/next 1-2 weeks)
-- Medium-term actions (next 2-4 weeks)
-- Long-term actions (1+ months)
-- Follow-up required (unclear items)
-- Decision dependencies
-- Recurring commitments
-- Critical path items (mark with [CRITICAL])
-- Accountability framework
+Provide a comprehensive overview of all action items and deliverables identified in this conversation, organized by timeline. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
+## Short-term actions
+## Mid-term actions
+## Long-term actions
 
 For each action item include: Task description | Owner | Deadline | Dependencies (if any)
 
@@ -96,8 +91,10 @@ Requirements:
 - Be specific about deliverables
 - Include success criteria where mentioned
 - Flag unclear items as [NEEDS CLARIFICATION]
+- Mark critical path items with [CRITICAL] in the item line
 - Note if deadlines are firm vs. targets
 - Identify risks (unrealistic timelines, resource gaps)
+- Include follow-ups, decision dependencies, and recurring commitments within the appropriate time horizon category
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -105,15 +102,27 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Emotional Intelligence Analysis Prompt
 const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence aspects of this conversation.
 
-Start with a 1-2 sentence overview that captures the emotional dynamics and interpersonal effectiveness demonstrated in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+# Emotional intelligence analysis
 
-Analyze the following aspects:
-- Emotional tone (climate, shifts, stress indicators)
-- Empathy and understanding (empathetic responses, active listening)
-- Conflict handling (disagreements, resolution strategies, effectiveness)
-- Emotional regulation (self-control, reactions, stress management)
-- Relationship building (rapport, trust, collaboration)
-- Recommendations (areas for development, engagement strategies, team dynamics)
+Provide a comprehensive overview of the emotional dynamics and interpersonal effectiveness demonstrated in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
+## Emotional tone
+Analyze climate, shifts, and stress indicators
+
+## Empathy and understanding
+Examine empathetic responses and active listening
+
+## Conflict handling
+Assess disagreements, resolution strategies, and effectiveness
+
+## Emotional regulation
+Evaluate self-control, reactions, and stress management
+
+## Relationship building
+Analyze rapport, trust, and collaboration
+
+## Recommendations
+Provide areas for development, engagement strategies, and team dynamics insights
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -121,15 +130,27 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Influence and Persuasion Analysis Prompt
 const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion techniques used in this conversation.
 
-Start with a 1-2 sentence overview that summarizes the key influence dynamics and persuasion strategies employed in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+# Influence and persuasion analysis
 
-Analyze the following aspects:
-- Persuasion techniques (logical arguments, emotional appeals, credibility, social proof)
-- Argumentation patterns (claim-evidence, counter-arguments, rebuttals)
-- Influence dynamics (who influenced whom, successful moments, resistance)
-- Negotiation elements (positions, compromises, win-win solutions)
-- Decision-making influence (how decisions were shaped, key factors, consensus)
-- Effectiveness assessment (successful techniques, missed opportunities, improvements)
+Provide a comprehensive overview of the key influence dynamics and persuasion strategies employed in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
+## Persuasion techniques
+Analyze logical arguments, emotional appeals, credibility, and social proof
+
+## Argumentation patterns
+Examine claim-evidence structures, counter-arguments, and rebuttals
+
+## Influence dynamics
+Identify who influenced whom, successful moments, and resistance
+
+## Negotiation elements
+Assess positions, compromises, and win-win solutions
+
+## Decision-making influence
+Analyze how decisions were shaped, key factors, and consensus building
+
+## Effectiveness assessment
+Evaluate successful techniques, missed opportunities, and improvements
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -137,15 +158,27 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Personal Development Analysis Prompt
 const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insights based on this conversation.
 
-Start with a 1-2 sentence overview that highlights the key growth opportunities and development areas identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+# Personal development insights
 
-Analyze the following aspects:
-- Strengths demonstrated (communication, leadership, technical expertise, collaboration)
-- Areas for improvement (knowledge gaps, skills to develop)
-- Learning opportunities (topics to explore, skills to acquire)
-- Recommended training/development (courses, resources, mentoring)
-- Professional growth strategies (short-term goals, long-term career plans)
-- Behavioral patterns (limiting behaviors, opportunities for change, positive patterns)
+Provide a comprehensive overview of the key growth opportunities and development areas identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
+## Strengths demonstrated
+Analyze communication, leadership, technical expertise, and collaboration
+
+## Areas for improvement
+Identify knowledge gaps and skills to develop
+
+## Learning opportunities
+Highlight topics to explore and skills to acquire
+
+## Recommended training/development
+Suggest courses, resources, and mentoring opportunities
+
+## Professional growth strategies
+Outline short-term goals and long-term career plans
+
+## Behavioral patterns
+Examine limiting behaviors, opportunities for change, and positive patterns
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -220,7 +253,7 @@ ${basePrompt}`;
 - The transcription is in ${language}
 - You MUST generate ALL output text in ${language}
 - This includes ALL section headings, titles, labels, and content
-- Translate every English heading to ${language} (e.g., "Key discussion points" → Dutch: "Belangrijkste discussiepunten", "Participants" → "Deelnemers", "Action items" → "Actiepunten", etc.)
+- Translate every English heading to ${language} (e.g., "Key discussion points" → Dutch: "Belangrijkste discussiepunten", "Action items" → "Actiepunten", etc.)
 - Only keep English for: proper nouns, company names, and technical terms without standard translations
 - Use appropriate formatting and conventions for ${language}
 - DO NOT leave any headings or structural text in English

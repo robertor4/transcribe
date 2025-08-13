@@ -10,7 +10,8 @@ import {
   TrendingUp,
   FileText,
   Copy,
-  Check
+  Check,
+  FileSearch
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
@@ -98,9 +99,24 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
+  const [isFormatted, setIsFormatted] = useState(true);
+
+  const formatTranscript = (text: string): string => {
+    // Add line breaks after sentences (. ! ?)
+    let formatted = text.replace(/([.!?])\s+/g, '$1\n\n');
+    // Add line breaks after colons if followed by a capital letter (likely speaker changes)
+    formatted = formatted.replace(/(:)\s+([A-Z])/g, '$1\n\n$2');
+    // Ensure no excessive line breaks
+    formatted = formatted.replace(/\n{3,}/g, '\n\n');
+    return formatted.trim();
+  };
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
+      // If copying transcript and formatting is enabled, format it
+      if (tabKey === 'transcript' && isFormatted) {
+        content = formatTranscript(content);
+      }
       await navigator.clipboard.writeText(content);
       setCopiedTab(tabKey);
       setTimeout(() => setCopiedTab(null), 2000);
@@ -203,23 +219,39 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                       <p className="text-sm text-gray-600">{info.description}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleCopy(content, info.key)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#cc3399] hover:bg-white rounded-lg transition-colors"
-                    title={`Copy ${info.label}`}
-                  >
-                    {copiedTab === info.key ? (
-                      <>
-                        <Check className="h-4 w-4 text-[#cc3399]" />
-                        <span>Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4" />
-                        <span>Copy</span>
-                      </>
+                  <div className="flex items-center gap-2">
+                    {info.key === 'transcript' && (
+                      <button
+                        onClick={() => setIsFormatted(!isFormatted)}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                          isFormatted 
+                            ? 'text-[#cc3399] bg-white' 
+                            : 'text-gray-400 hover:text-gray-600'
+                        }`}
+                        title={isFormatted ? 'Formatted view' : 'Raw view'}
+                      >
+                        <FileSearch className="h-4 w-4" />
+                        <span>Format</span>
+                      </button>
                     )}
-                  </button>
+                    <button
+                      onClick={() => handleCopy(content, info.key)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#cc3399] hover:bg-white rounded-lg transition-colors"
+                      title={`Copy ${info.label}`}
+                    >
+                      {copiedTab === info.key ? (
+                        <>
+                          <Check className="h-4 w-4 text-[#cc3399]" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -229,7 +261,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-h-[600px] overflow-y-auto">
                       <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
-                        {content}
+                        {isFormatted ? formatTranscript(content) : content}
                       </p>
                     </div>
                   </div>

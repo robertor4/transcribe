@@ -35,9 +35,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
-import SpeakerSummary from './SpeakerSummary';
-import TranscriptWithSpeakers from './TranscriptWithSpeakers';
-import SpeakerTimeline from './SpeakerTimeline';
 import { AnalysisTabs } from './AnalysisTabs';
 
 export const TranscriptionList: React.FC = () => {
@@ -52,8 +49,7 @@ export const TranscriptionList: React.FC = () => {
   const [showTechnicalError, setShowTechnicalError] = useState<Set<string>>(new Set());
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
-  const [showSpeakerView, setShowSpeakerView] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<{ [key: string]: 'summary' | 'transcript' | 'speakers' }>({});
+  const [activeTab, setActiveTab] = useState<{ [key: string]: 'summary' | 'transcript' }>({});
 
   useEffect(() => {
     loadTranscriptions();
@@ -430,12 +426,6 @@ export const TranscriptionList: React.FC = () => {
                       <span className="text-xs text-gray-500">
                         {new Date(transcription.createdAt).toLocaleDateString()}
                       </span>
-                      {transcription.speakerCount && transcription.speakerCount > 0 && (
-                        <span className="text-xs text-[#cc3399] flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {transcription.speakerCount} {transcription.speakerCount === 1 ? 'speaker' : 'speakers'}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -526,61 +516,10 @@ export const TranscriptionList: React.FC = () => {
                       }} 
                       transcriptionId={transcription.id}
                     />
-                    
-                    {/* Add speaker summary if available */}
-                    {transcription.speakers && transcription.speakers.length > 0 && (
-                      <div className="mt-6 border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                          <Users className="h-5 w-5 mr-2" />
-                          Speaker Analysis
-                        </h3>
-                        <SpeakerSummary speakers={transcription.speakers} />
-                        <div className="mt-4">
-                          <SpeakerTimeline segments={transcription.speakerSegments} />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   /* Legacy view for transcriptions without analyses */
                   <>
-                    {transcription.speakers && transcription.speakers.length > 0 && (
-                      <div className="border-b border-gray-200 bg-white px-4">
-                        <nav className="-mb-px flex space-x-4">
-                          <button
-                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'summary' }))}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                              (!activeTab[transcription.id] || activeTab[transcription.id] === 'summary')
-                                ? 'border-[#cc3399] text-[#cc3399]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                          >
-                            Summary
-                          </button>
-                          <button
-                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'transcript' }))}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                              activeTab[transcription.id] === 'transcript'
-                                ? 'border-[#cc3399] text-[#cc3399]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                          >
-                            Transcript
-                          </button>
-                          <button
-                            onClick={() => setActiveTab(prev => ({ ...prev, [transcription.id]: 'speakers' }))}
-                            className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-1 ${
-                              activeTab[transcription.id] === 'speakers'
-                                ? 'border-[#cc3399] text-[#cc3399]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                          >
-                            <Users className="h-4 w-4" />
-                            Speakers ({transcription.speakerCount})
-                          </button>
-                        </nav>
-                      </div>
-                    )}
                 
                 <div className="p-4">
                 {/* Show content based on active tab */}
@@ -633,12 +572,6 @@ export const TranscriptionList: React.FC = () => {
                 )}
                 
                 {activeTab[transcription.id] === 'transcript' && transcription.transcriptText && (
-                  transcription.speakers && transcription.speakers.length > 0 ? (
-                    <TranscriptWithSpeakers
-                      segments={transcription.speakerSegments}
-                      transcriptWithSpeakers={transcription.transcriptWithSpeakers}
-                    />
-                  ) : (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
@@ -690,18 +623,10 @@ export const TranscriptionList: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  )
                 )}
                 
-                {activeTab[transcription.id] === 'speakers' && transcription.speakers && (
-                  <div className="space-y-4">
-                    <SpeakerSummary speakers={transcription.speakers} />
-                    <SpeakerTimeline segments={transcription.speakerSegments} />
-                  </div>
-                )}
-                
-                {/* Show regular transcript if no tabs (no speaker data) */}
-                {!transcription.speakers && transcription.transcriptText && (
+                {/* Show regular transcript if no analyses */}
+                {!transcription.analyses && transcription.transcriptText && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
