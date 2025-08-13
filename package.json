@@ -20,7 +20,6 @@
     "start": "turbo run start --parallel",
     "lint": "turbo run lint",
     "clean": "turbo run clean && npm run redis:stop",
-    "cli": "node cli/transcribe.js",
     "redis:start": "docker start redis-transcribe 2>/dev/null || docker run -d --name redis-transcribe -p 6379:6379 redis 2>/dev/null || echo 'Redis is already running on port 6379'",
     "redis:stop": "docker stop redis-transcribe 2>/dev/null || true",
     "redis:check": "redis-cli ping || docker exec redis-transcribe redis-cli ping || echo 'Redis not responding'",

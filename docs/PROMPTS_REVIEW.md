@@ -77,36 +77,63 @@ const COMMUNICATION_STYLES_PROMPT = `Please analyze the communication styles and
 
 ### 3. Action Items Extraction Prompt
 ```javascript
-const ACTION_ITEMS_PROMPT = `Please extract and organize all action items from this conversation.
+const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation using the following structure. Only include section headers if there are actual action items for that category:
+## Immediate actions (next 24-48 hours):
 
-# Action Items and Tasks
+Task description | Owner | Specific deadline | Dependencies (if any)
 
-## Immediate action items (Due within 1 week)
-List each task with:
-- Task description
-- Responsible party (if mentioned)
-- Deadline (if specified)
-- Dependencies
+## Short-term actions (this week/next 1-2 weeks):
 
-## Short-term tasks (1-4 weeks)
-List each task with the same format
+Task description | Owner | Specific deadline | Dependencies (if any)
 
-## Long-term initiatives (1+ months)
-List strategic initiatives and projects
+## Medium-term actions (next 2-4 weeks):
 
-## Follow-up items
-- Questions that need answers
-- Decisions pending
-- Information to be gathered
+Task description | Owner | Specific deadline | Dependencies (if any)
 
-## Blocked items
-- Tasks waiting on dependencies
-- Items needing clarification
+## Long-term actions (1+ months):
 
-## Meeting scheduling
-- Proposed meetings
-- Required participants
-- Suggested timeframes`
+Task description | Owner | Specific deadline | Dependencies (if any)
+
+## Follow-up required:
+
+Items needing additional clarification or confirmation
+Tasks mentioned but lacking clear ownership assignment
+Deadlines that were discussed but not firmly established
+
+## Decision dependencies:
+
+Actions that cannot proceed until other decisions are made
+Items waiting on external approvals or inputs
+
+## Recurring/ongoing commitments:
+
+Regular check-ins, reporting, or monitoring tasks established
+Process changes or new responsibilities assigned
+
+## Critical path items:
+
+Actions that will block or delay other work if not completed on time
+Mark with [CRITICAL] designation
+
+## Accountability framework:
+
+Who will track overall progress?
+When/how will status be reported?
+What format will updates take?
+
+Formatting requirements:
+
+Use action verbs to start each item (Create, Review, Send, Schedule, etc.)
+Be specific about deliverables (what exactly will be produced?)
+Include success criteria where mentioned
+Flag any items with unclear scope as [NEEDS CLARIFICATION]
+Note if deadlines are firm commitments vs. target dates
+
+Risk flags:
+
+Items with unrealistic timelines
+Tasks assigned to unavailable/overloaded people
+Actions lacking necessary resources or authority`
 ```
 
 ### 4. Emotional Intelligence Analysis Prompt

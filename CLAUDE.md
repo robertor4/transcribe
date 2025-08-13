@@ -62,12 +62,6 @@ npm run clean         # Clean all build artifacts and stop Redis
 npm run setup         # Install all dependencies and build shared package
 ```
 
-### CLI Tool (Legacy)
-```bash
-npm run cli           # Run original CLI transcription tool
-npm run cli -- --batch       # Process multiple files with same context
-npm run cli -- --no-context  # Process without context
-```
 
 ## High-Level Architecture
 
@@ -99,6 +93,13 @@ npm run cli -- --no-context  # Process without context
 - WebSocket authentication via JWT tokens
 
 ## Critical Implementation Details
+
+### Prompts Location
+All AI prompts for transcription analysis are located in:
+```
+apps/api/src/transcription/prompts.ts
+```
+Supported analysis types: Summary, Communication Styles, Action Items, Emotional Intelligence, Influence/Persuasion, Personal Development, Custom
 
 ### Firebase Storage Configuration
 **IMPORTANT**: Use new `.firebasestorage.app` format (not `.appspot.com`):

@@ -15,7 +15,7 @@ import {
   Speaker,
   SpeakerSegment,
 } from '@transcribe/shared';
-import * as prompts from '../../../../cli/prompts';
+import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
