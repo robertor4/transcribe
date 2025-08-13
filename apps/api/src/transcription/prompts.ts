@@ -22,7 +22,9 @@ Create sections for:
 Note: Use natural section headings appropriate for the language of the transcript.`;
 
 // Communication Styles Analysis Prompt
-const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation using the following framework:
+const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
+
+Start with a 1-2 sentence overview that captures the overall communication dynamics and effectiveness of this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
 COMMUNICATION EFFECTIVENESS SCORE: Rate the overall communication quality (1-10) and provide a one-sentence summary of the primary communication strength and primary weakness.
 
@@ -72,7 +74,9 @@ Write ALL section headers in sentence case (European/Dutch style), capitalizing 
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Action Items Extraction Prompt
-const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation. 
+const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation.
+
+Start with a 1-2 sentence overview that summarizes the key deliverables and action items identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
 Create sections for different time horizons (only if items exist):
 - Immediate actions (next 24-48 hours)
@@ -101,6 +105,8 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Emotional Intelligence Analysis Prompt
 const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence aspects of this conversation.
 
+Start with a 1-2 sentence overview that captures the emotional dynamics and interpersonal effectiveness demonstrated in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
 Analyze the following aspects:
 - Emotional tone (climate, shifts, stress indicators)
 - Empathy and understanding (empathetic responses, active listening)
@@ -115,6 +121,8 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Influence and Persuasion Analysis Prompt
 const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion techniques used in this conversation.
 
+Start with a 1-2 sentence overview that summarizes the key influence dynamics and persuasion strategies employed in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+
 Analyze the following aspects:
 - Persuasion techniques (logical arguments, emotional appeals, credibility, social proof)
 - Argumentation patterns (claim-evidence, counter-arguments, rebuttals)
@@ -128,6 +136,8 @@ If the transcript is in a non-English language, ALL headings and content must be
 
 // Personal Development Analysis Prompt
 const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insights based on this conversation.
+
+Start with a 1-2 sentence overview that highlights the key growth opportunities and development areas identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
 Analyze the following aspects:
 - Strengths demonstrated (communication, leadership, technical expertise, collaboration)

@@ -33,8 +33,8 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
   }, [summary]);
 
   return (
-    <div className="space-y-4">
-      <div className="prose prose-gray prose-base max-w-none prose-p:text-base prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg">
+    <div className="max-w-4xl mx-auto px-6 lg:px-8">
+      <div className="prose prose-gray prose-lg max-w-none prose-p:text-base prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-li:text-base">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
           components={{
@@ -42,7 +42,11 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
               // Check if this is the intro paragraph
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
-                return <p className="text-xl leading-relaxed font-medium mb-6">{introText}</p>;
+                return (
+                  <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                    {introText}
+                  </p>
+                );
               }
               
               // Handle arrays of children (mixed content)
@@ -53,12 +57,22 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
                 
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
-                  return <p className="text-xl leading-relaxed font-medium mb-6">{introText}</p>;
+                  return (
+                    <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                      {introText}
+                    </p>
+                  );
                 }
               }
               
-              return <p className="text-base">{children}</p>;
-            }
+              return <p className="text-base leading-relaxed mb-4">{children}</p>;
+            },
+            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
+            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
+            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
+            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6">{children}</ul>,
+            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6">{children}</ol>,
+            li: ({children}) => <li className="text-base leading-relaxed">{children}</li>,
           }}
         >
           {processedSummary}

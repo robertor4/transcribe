@@ -24,6 +24,76 @@ interface AnalysisTabsProps {
   transcriptionId: string;
 }
 
+// Blog-style content component for non-summary analysis tabs
+const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
+  // Process the content to handle HTML-styled intro paragraph
+  const processedContent = React.useMemo(() => {
+    const htmlParagraphRegex = /<p\s+style="font-size:\s*1\.4em;">([^<]+)<\/p>/;
+    const match = content.match(htmlParagraphRegex);
+    
+    if (match) {
+      const introText = match[1];
+      return content.replace(htmlParagraphRegex, `[INTRO]${introText}[/INTRO]`);
+    }
+    return content;
+  }, [content]);
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 lg:px-8">
+      <div className="prose prose-gray prose-lg max-w-none prose-p:text-base prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl">
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          components={{
+            p: ({children}) => {
+              // Check if this is the intro paragraph
+              if (typeof children === 'string' && children.includes('[INTRO]')) {
+                const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
+                return (
+                  <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                    {introText}
+                  </p>
+                );
+              }
+              
+              // Handle arrays of children (mixed content)
+              if (Array.isArray(children)) {
+                const textContent = children.map(child => 
+                  typeof child === 'string' ? child : ''
+                ).join('');
+                
+                if (textContent.includes('[INTRO]')) {
+                  const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
+                  return (
+                    <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                      {introText}
+                    </p>
+                  );
+                }
+              }
+              
+              return <p className="text-base leading-relaxed mb-4 text-gray-600">{children}</p>;
+            },
+            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
+            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
+            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
+            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6">{children}</ul>,
+            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6">{children}</ol>,
+            li: ({children}) => <li className="text-base leading-relaxed text-gray-600">{children}</li>,
+            strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
+            blockquote: ({children}) => (
+              <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-600">
+                {children}
+              </blockquote>
+            ),
+          }}
+        >
+          {processedContent}
+        </ReactMarkdown>
+      </div>
+    </div>
+  );
+};
+
 export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcriptionId }) => {
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
@@ -154,12 +224,14 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
               </div>
 
               {/* Analysis Content */}
-              <div className="p-6">
+              <div className="py-6">
                 {info.key === 'transcript' ? (
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-[600px] overflow-y-auto">
-                    <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed font-mono">
-                      {content}
-                    </p>
+                  <div className="max-w-4xl mx-auto px-6 lg:px-8">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-h-[600px] overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                        {content}
+                      </p>
+                    </div>
                   </div>
                 ) : info.key === 'summary' ? (
                   <SummaryWithComments
@@ -168,28 +240,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                     isEditable={false}
                   />
                 ) : (
-                  <div className="prose prose-sm max-w-none">
-                    <ReactMarkdown 
-                      remarkPlugins={[remarkGfm, remarkBreaks]}
-                      components={{
-                        h1: ({children}) => <h1 className="text-2xl font-bold text-gray-900 mb-4">{children}</h1>,
-                        h2: ({children}) => <h2 className="text-xl font-semibold text-gray-800 mt-6 mb-3">{children}</h2>,
-                        h3: ({children}) => <h3 className="text-lg font-medium text-gray-700 mt-4 mb-2">{children}</h3>,
-                        ul: ({children}) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
-                        ol: ({children}) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
-                        li: ({children}) => <li className="text-gray-600">{children}</li>,
-                        p: ({children}) => <p className="text-gray-600 mb-3">{children}</p>,
-                        strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
-                        blockquote: ({children}) => (
-                          <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-600">
-                            {children}
-                          </blockquote>
-                        ),
-                      }}
-                    >
-                      {content}
-                    </ReactMarkdown>
-                  </div>
+                  <BlogStyleContent content={content} />
                 )}
               </div>
             </div>
