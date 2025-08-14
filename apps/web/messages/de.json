@@ -81,7 +81,7 @@
     "recentTranscriptions": "Neueste Transkriptionen",
     "uploadAudio": "Audio hochladen",
     "uploadAudioFiles": "Audiodateien hochladen",
-    "transcriptionHistory": "Transkriptionsverlauf",
+    "transcriptionHistory": "Transkriptionen",
     "yourTranscriptions": "Ihre Transkriptionen",
     "howItWorks": "So funktioniert's",
     "recordingGuide": "Aufnahmeanleitung",
@@ -103,7 +103,7 @@
     "aiPowered": "KI-gestützt",
     "supportedFormats": "Unterstützte Formate: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
     "supportedFormatsShort": "Unterstützt: {formats} • Max {size} • Mehrere Dateien",
-    "maxFileSize": "Maximale Dateigröße: 500MB",
+    "maxFileSize": "Maximale Dateigröße: 5GB",
     "selectFile": "Audiodatei auswählen",
     "addContext": "Kontext hinzufügen (Optional)",
     "boostAccuracy": "🎯 Steigern Sie die Genauigkeit um 40% mit nur einer Zeile Kontext",
@@ -140,7 +140,7 @@
     "addContextForTechnicalTerms": "Kontext für technische Begriffe hinzufügen",
     "uploadMultipleFilesAtOnce": "Mehrere Dateien gleichzeitig hochladen",
     "error": {
-      "fileSize": "Dateigröße überschreitet 500MB-Limit",
+      "fileSize": "Dateigröße überschreitet 5GB-Limit",
       "fileTooLarge": "Datei zu groß (max 100MB)",
       "fileTooLargeWhisper": "Datei ist zu groß. Maximale Größe ist 25MB aufgrund der OpenAI Whisper API-Begrenzung. Für größere Dateien sollten Sie diese aufteilen.",
       "fileType": "Nicht unterstützter Dateityp",
@@ -207,7 +207,7 @@
     "subtitle": "Verwandeln Sie Ihre Audiodateien in drei einfachen Schritten in umsetzbare Erkenntnisse",
     "step1": {
       "title": "Audio hochladen",
-      "description": "Ziehen Sie eine Audiodatei bis zu 500MB per Drag & Drop oder wählen Sie sie aus. Wir unterstützen alle gängigen Formate einschließlich M4A, MP3, WAV und mehr."
+      "description": "Ziehen Sie eine Audiodatei bis zu 5GB per Drag & Drop oder wählen Sie sie aus. Wir unterstützen alle gängigen Formate einschließlich M4A, MP3, WAV und mehr."
     },
     "step2": {
       "title": "KI-Transkription",
@@ -220,7 +220,7 @@
     "features": {
       "title": "Hauptfunktionen",
       "realTime": "Echtzeit-Fortschrittsverfolgung",
-      "largFiles": "Unterstützung großer Dateien (bis 500MB)",
+      "largFiles": "Unterstützung großer Dateien (bis 5GB)",
       "multiLanguage": "Mehrsprachige Erkennung",
       "contextAware": "Kontextbewusste Verarbeitung",
       "secureStorage": "Sichere Cloud-Speicherung",

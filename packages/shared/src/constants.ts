@@ -26,9 +26,9 @@ export const SUPPORTED_MIME_TYPES = [
   'application/octet-stream' // Sometimes m4a files are reported as this
 ];
 
-// OpenAI Whisper API has a 25MB file size limit per request
-// We now support larger files through automatic audio splitting
-export const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB (with automatic splitting)
+// AssemblyAI supports files up to 5GB, OpenAI Whisper API has a 25MB limit
+// We use AssemblyAI as primary service, Whisper as fallback with automatic splitting
+export const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB (AssemblyAI limit)
 export const WHISPER_MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB (Whisper API limit per chunk)
 export const MAX_DURATION = 240 * 60; // 240 minutes (4 hours)
 
@@ -87,21 +87,21 @@ export const ERROR_CODES = {
 
 export const SUBSCRIPTION_LIMITS = {
   free: {
-    maxFileSize: 100 * 1024 * 1024, // 100MB (with splitting)
+    maxFileSize: 1 * 1024 * 1024 * 1024, // 1GB
     maxDuration: 60 * 60, // 60 minutes
     monthlyMinutes: 300, // 5 hours
     maxConcurrentJobs: 1,
     priority: 1
   },
   pro: {
-    maxFileSize: 250 * 1024 * 1024, // 250MB (with splitting)
+    maxFileSize: 3 * 1024 * 1024 * 1024, // 3GB
     maxDuration: 180 * 60, // 3 hours
     monthlyMinutes: 3000, // 50 hours
     maxConcurrentJobs: 3,
     priority: 5
   },
   enterprise: {
-    maxFileSize: 500 * 1024 * 1024, // 500MB (with splitting)
+    maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB (AssemblyAI max)
     maxDuration: 240 * 60, // 4 hours
     monthlyMinutes: -1, // Unlimited
     maxConcurrentJobs: 10,

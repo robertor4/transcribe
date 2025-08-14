@@ -11,12 +11,15 @@ import {
   Mail,
   Link,
   Calendar,
-  Eye,
   Lock,
   Trash2,
   Loader2,
   QrCode,
   Share2,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Shield,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 
@@ -34,39 +37,35 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   onShareUpdate,
 }) => {
   const t = useTranslations('share');
-  const [activeTab, setActiveTab] = useState<'link' | 'email'>('link');
   const [shareUrl, setShareUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [showQrCode, setShowQrCode] = useState(false);
   
   // Share settings
-  const [expiresAt, setExpiresAt] = useState<string>('');
-  const [maxViews, setMaxViews] = useState<string>('');
+  const [expirationOption, setExpirationOption] = useState<string>('7days');
+  const [enablePassword, setEnablePassword] = useState(false);
   const [password, setPassword] = useState<string>('');
   
   // Email form
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
   const [recipientName, setRecipientName] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [emailSent, setEmailSent] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
     const options: Intl.DateTimeFormatOptions = { 
       year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     };
-    const formatted = d.toLocaleDateString('en-US', options);
-    
-    // Add ordinal suffix to day
-    const day = d.getDate();
-    const suffix = ['th', 'st', 'nd', 'rd'][
-      day % 10 > 3 ? 0 : (day % 100 - day % 10 !== 10) ? day % 10 : 0
-    ];
-    
-    return formatted.replace(/\d+,/, `${day}${suffix},`);
+    return d.toLocaleDateString('en-US', options);
   };
 
   useEffect(() => {
@@ -74,13 +73,18 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       const url = `${window.location.origin}/en/shared/${transcription.shareToken}`;
       setShareUrl(url);
       generateQRCode(url);
+    } else if (!isOpen) {
+      // Reset state when modal closes
+      setShowQrCode(false);
+      setShowEmailForm(false);
+      setEmailSent(false);
     }
   }, [transcription.shareToken, isOpen]);
 
   const generateQRCode = async (url: string) => {
     try {
       const qrDataUrl = await QRCode.toDataURL(url, {
-        width: 200,
+        width: 150,
         margin: 2,
         color: {
           dark: '#1F2937',
@@ -97,13 +101,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setLoading(true);
     try {
       const settings: any = {};
-      if (expiresAt) {
-        settings.expiresAt = new Date(expiresAt);
+      
+      // Calculate expiration date based on selected option
+      const now = new Date();
+      if (expirationOption === '24hours') {
+        settings.expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      } else if (expirationOption === '7days') {
+        settings.expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       }
-      if (maxViews) {
-        settings.maxViews = parseInt(maxViews);
-      }
-      if (password) {
+      // 'never' option doesn't set expiresAt
+      
+      if (enablePassword && password) {
         settings.password = password;
       }
 
@@ -119,7 +127,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         shareSettings: {
           enabled: true,
           ...settings,
-          viewCount: 0,
         },
         sharedAt: new Date(),
       };
@@ -139,6 +146,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       await transcriptionApi.revokeShareLink(transcription.id);
       setShareUrl('');
       setQrCodeUrl('');
+      setShowEmailForm(false);
       
       // Update the transcription object
       const updatedTranscription = {
@@ -166,7 +174,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   const handleSendEmail = async () => {
-    setLoading(true);
+    setEmailLoading(true);
     setEmailSent(false);
     try {
       await transcriptionApi.sendShareEmail(transcription.id, {
@@ -180,11 +188,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         setRecipientName('');
         setMessage('');
         setEmailSent(false);
+        setShowEmailForm(false);
       }, 3000);
     } catch (error) {
       console.error('Error sending email:', error);
+      alert('Failed to send email. Please try again.');
     } finally {
-      setLoading(false);
+      setEmailLoading(false);
     }
   };
 
@@ -192,257 +202,283 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Share2 className="w-6 h-6" />
-              {t('title')}
-            </h2>
+      <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
+        {/* Header */}
+        <div className="p-5 border-b bg-gradient-to-r from-[#cc3399]/5 to-purple-50">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-[#cc3399]" />
+                Share Transcript
+              </h2>
+              <p className="text-sm text-gray-600 mt-1 truncate max-w-[350px]">
+                {transcription.title || transcription.fileName}
+              </p>
+            </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-white/80 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
-          <p className="text-gray-600 mt-2">
-            {transcription.title || transcription.fileName}
-          </p>
         </div>
 
-        <div className="p-6">
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setActiveTab('link')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === 'link'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <Link className="w-4 h-4 inline mr-2" />
-              {t('linkTab')}
-            </button>
-            <button
-              onClick={() => setActiveTab('email')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === 'email'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-              disabled={!shareUrl}
-            >
-              <Mail className="w-4 h-4 inline mr-2" />
-              {t('emailTab')}
-            </button>
-          </div>
-
-          {activeTab === 'link' && (
-            <div className="space-y-6">
-              {!shareUrl ? (
-                <>
-                  {/* Share Settings */}
-                  <div className="space-y-4">
-                    <h3 className="font-medium text-gray-900">{t('settings')}</h3>
-                    
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <Calendar className="w-4 h-4" />
-                        {t('expiresAt')}
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={expiresAt}
-                        onChange={(e) => setExpiresAt(e.target.value)}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <Eye className="w-4 h-4" />
-                        {t('maxViews')}
-                      </label>
-                      <input
-                        type="number"
-                        value={maxViews}
-                        onChange={(e) => setMaxViews(e.target.value)}
-                        placeholder={t('unlimitedViews')}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                        <Lock className="w-4 h-4" />
-                        {t('password')}
-                      </label>
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t('optional')}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
+        <div className="p-5">
+          {!shareUrl ? (
+            // Create Share Link Section
+            <div className="space-y-5">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Share Settings</h3>
+                
+                {/* Expiration Options */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    <span>Link expires in:</span>
                   </div>
-
-                  <button
-                    onClick={handleCreateShareLink}
-                    disabled={loading}
-                    className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Link className="w-5 h-5" />
-                    )}
-                    {t('generateLink')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  {/* Share Link Display */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
-                        {t('shareLink')}
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={shareUrl}
-                          readOnly
-                          className="flex-1 px-3 py-2 border rounded-lg bg-gray-50"
-                        />
-                        <button
-                          onClick={handleCopyLink}
-                          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                          {copied ? (
-                            <Check className="w-4 h-4 text-green-600" />
-                          ) : (
-                            <Copy className="w-4 h-4" />
-                          )}
-                          {copied ? t('copied') : t('copy')}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* QR Code */}
-                    {qrCodeUrl && (
-                      <div className="flex flex-col items-center space-y-2">
-                        <QrCode className="w-5 h-5 text-gray-600" />
-                        <img src={qrCodeUrl} alt="QR Code" className="border p-2 rounded-lg" />
-                        <p className="text-sm text-gray-600">{t('scanQR')}</p>
-                      </div>
-                    )}
-
-                    {/* Share Info */}
-                    {transcription.shareSettings && (
-                      <div className="bg-gray-50 p-4 rounded-lg space-y-2 text-sm">
-                        {transcription.shareSettings.expiresAt && (
-                          <p className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-gray-500" />
-                            {t('expiresOn')}: {formatDate(transcription.shareSettings.expiresAt)}
-                          </p>
-                        )}
-                        {transcription.shareSettings.maxViews && (
-                          <p className="flex items-center gap-2">
-                            <Eye className="w-4 h-4 text-gray-500" />
-                            {t('viewsRemaining')}: {transcription.shareSettings.maxViews - (transcription.shareSettings.viewCount || 0)}
-                          </p>
-                        )}
-                        {transcription.shareSettings.password && (
-                          <p className="flex items-center gap-2">
-                            <Lock className="w-4 h-4 text-gray-500" />
-                            {t('passwordProtected')}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
+                  <div className="flex gap-2">
                     <button
-                      onClick={handleRevokeShareLink}
-                      disabled={loading}
-                      className="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2"
+                      type="button"
+                      onClick={() => setExpirationOption('24hours')}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        expirationOption === '24hours'
+                          ? 'bg-[#cc3399] text-white shadow-sm'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
                     >
-                      {loading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-5 h-5" />
-                      )}
-                      {t('revokeLink')}
+                      24 Hours
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpirationOption('7days')}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        expirationOption === '7days'
+                          ? 'bg-[#cc3399] text-white shadow-sm'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      7 Days
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpirationOption('never')}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        expirationOption === 'never'
+                          ? 'bg-[#cc3399] text-white shadow-sm'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      Never
                     </button>
                   </div>
-                </>
-              )}
+                </div>
+
+                {/* Password Protection */}
+                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={enablePassword}
+                        onChange={(e) => {
+                          setEnablePassword(e.target.checked);
+                          if (!e.target.checked) setPassword('');
+                        }}
+                        className="rounded border-gray-300 text-[#cc3399] focus:ring-[#cc3399]"
+                      />
+                      <Shield className="w-4 h-4 text-gray-500" />
+                      Password protect
+                    </label>
+                  </div>
+                  {enablePassword && (
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter password"
+                      className="mt-2 w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
+                    />
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={handleCreateShareLink}
+                disabled={loading || (enablePassword && !password)}
+                className="w-full bg-[#cc3399] text-white py-2.5 rounded-lg hover:bg-[#b82d89] transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2 font-medium"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Link className="w-4 h-4" />
+                )}
+                Create Share Link
+              </button>
             </div>
-          )}
-
-          {activeTab === 'email' && shareUrl && (
+          ) : (
+            // Share Link Display Section
             <div className="space-y-4">
+              {/* Share Link */}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  {t('recipientEmail')} *
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Share Link
                 </label>
-                <input
-                  type="email"
-                  value={recipientEmail}
-                  onChange={(e) => setRecipientEmail(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="john@example.com"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={shareUrl}
+                    readOnly
+                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                  <button
+                    onClick={handleCopyLink}
+                    className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium ${
+                      copied 
+                        ? 'bg-green-50 text-green-700 border border-green-200' 
+                        : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
+                    }`}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  {t('recipientName')}
-                </label>
-                <input
-                  type="text"
-                  value={recipientName}
-                  onChange={(e) => setRecipientName(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="John Doe"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">
-                  {t('message')}
-                </label>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={4}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={t('messagePlaceholder')}
-                />
-              </div>
-
-              {emailSent && (
-                <div className="bg-green-50 text-green-700 p-3 rounded-lg flex items-center gap-2">
-                  <Check className="w-5 h-5" />
-                  {t('emailSent')}
+              {/* Share Settings Info */}
+              {transcription.shareSettings && (
+                <div className="flex flex-wrap gap-2">
+                  {transcription.shareSettings.expiresAt && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+                      <Calendar className="w-3 h-3" />
+                      Expires {formatDate(transcription.shareSettings.expiresAt)}
+                    </span>
+                  )}
+                  {transcription.shareSettings.password && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+                      <Lock className="w-3 h-3" />
+                      Password protected
+                    </span>
+                  )}
                 </div>
               )}
 
-              <button
-                onClick={handleSendEmail}
-                disabled={loading || !recipientEmail}
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Mail className="w-5 h-5" />
-                )}
-                {t('sendEmail')}
-              </button>
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setShowQrCode(!showQrCode)}
+                  className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  <QrCode className="w-4 h-4" />
+                  QR Code
+                  {showQrCode ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+                <button
+                  onClick={() => setShowEmailForm(!showEmailForm)}
+                  className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  <Mail className="w-4 h-4" />
+                  Email
+                  {showEmailForm ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                </button>
+              </div>
+
+              {/* QR Code Section */}
+              {showQrCode && qrCodeUrl && (
+                <div className="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-2">
+                  <img src={qrCodeUrl} alt="QR Code" className="border-2 border-gray-200 p-2 bg-white rounded-lg" />
+                  <p className="text-xs text-gray-600">Scan to open shared transcript</p>
+                </div>
+              )}
+
+              {/* Email Form Section */}
+              {showEmailForm && (
+                <div className="p-4 bg-gray-50 rounded-lg space-y-3">
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-1 block">
+                      Recipient Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={recipientEmail}
+                      onChange={(e) => setRecipientEmail(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-1 block">
+                      Recipient Name
+                    </label>
+                    <input
+                      type="text"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-gray-700 mb-1 block">
+                      Message
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      rows={3}
+                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500 resize-none"
+                      placeholder="Add a personal message..."
+                    />
+                  </div>
+
+                  {emailSent && (
+                    <div className="bg-green-50 text-green-700 p-2 rounded-lg flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4" />
+                      Email sent successfully!
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={emailLoading || !recipientEmail}
+                    className="w-full bg-[#cc3399] text-white py-2 rounded-lg hover:bg-[#b82d89] transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2 text-sm font-medium"
+                  >
+                    {emailLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Mail className="w-4 h-4" />
+                    )}
+                    Send Email
+                  </button>
+                </div>
+              )}
+
+              {/* Revoke Link */}
+              <div className="pt-3 border-t">
+                <button
+                  onClick={handleRevokeShareLink}
+                  disabled={loading}
+                  className="w-full bg-white text-red-600 py-2 rounded-lg hover:bg-red-50 transition-colors disabled:bg-gray-100 flex items-center justify-center gap-2 text-sm font-medium border border-red-200"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  Revoke Share Link
+                </button>
+              </div>
             </div>
           )}
         </div>

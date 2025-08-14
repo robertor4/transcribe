@@ -81,7 +81,7 @@
     "recentTranscriptions": "Transcripciones recientes",
     "uploadAudio": "Subir audio",
     "uploadAudioFiles": "Subir archivos de audio",
-    "transcriptionHistory": "Historial de transcripciones",
+    "transcriptionHistory": "Transcripciones",
     "yourTranscriptions": "Tus transcripciones",
     "howItWorks": "Cómo funciona",
     "recordingGuide": "Guía de grabación",
@@ -103,7 +103,7 @@
     "aiPowered": "Impulsado por IA",
     "supportedFormats": "Formatos soportados: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
     "supportedFormatsShort": "Soporta: {formats} • Máx {size} • Múltiples archivos",
-    "maxFileSize": "Tamaño máximo del archivo: 500MB",
+    "maxFileSize": "Tamaño máximo del archivo: 5GB",
     "selectFile": "Seleccionar archivo de audio",
     "addContext": "Agregar contexto (Opcional)",
     "analysisType": "Tipo de análisis (Opcional)",
@@ -160,7 +160,7 @@
       "customDescription": "Usa el campo de contexto a continuación para proporcionar instrucciones específicas para tu análisis personalizado"
     },
     "error": {
-      "fileSize": "El tamaño del archivo excede el límite de 500MB",
+      "fileSize": "El tamaño del archivo excede el límite de 5GB",
       "fileTooLarge": "Archivo demasiado grande (máx 100MB)",
       "fileTooLargeWhisper": "El archivo es demasiado grande. El tamaño máximo es 25MB debido al límite de la API de OpenAI Whisper. Para archivos más grandes, considera dividirlos.",
       "fileType": "Tipo de archivo no soportado",
@@ -227,7 +227,7 @@
     "subtitle": "Transforma tu audio en información accionable en tres simples pasos",
     "step1": {
       "title": "Sube tu audio",
-      "description": "Arrastra y suelta o selecciona cualquier archivo de audio hasta 500MB. Soportamos todos los formatos comunes incluyendo M4A, MP3, WAV y más."
+      "description": "Arrastra y suelta o selecciona cualquier archivo de audio hasta 5GB. Soportamos todos los formatos comunes incluyendo M4A, MP3, WAV y más."
     },
     "step2": {
       "title": "Transcripción con IA",
@@ -240,7 +240,7 @@
     "features": {
       "title": "Características clave",
       "realTime": "Seguimiento de progreso en tiempo real",
-      "largFiles": "Soporte para archivos grandes (hasta 500MB)",
+      "largFiles": "Soporte para archivos grandes (hasta 5GB)",
       "multiLanguage": "Detección multiidioma",
       "contextAware": "Procesamiento consciente del contexto",
       "secureStorage": "Almacenamiento seguro en la nube",
@@ -456,7 +456,7 @@
       },
       "largeFiles": {
         "title": "Soporte para archivos grandes",
-        "description": "Maneja archivos de hasta 500MB con división inteligente automática"
+        "description": "Maneja archivos de hasta 5GB con transcripción avanzada de AssemblyAI"
       },
       "security": {
         "title": "Seguridad empresarial",

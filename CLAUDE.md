@@ -209,3 +209,4 @@ Always rebuild shared package after modifications:
 ```bash
 npm run build:shared
 ```
+- Always use brand colors for new UI screens and components

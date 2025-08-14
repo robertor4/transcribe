@@ -178,7 +178,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           <p className="text-xs text-gray-500">
             {t('supportedFormatsShort', { 
               formats: SUPPORTED_AUDIO_FORMATS.join(', '),
-              size: '100MB'
+              size: '5GB'
             })}
           </p>
         </div>

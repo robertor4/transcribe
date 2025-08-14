@@ -81,7 +81,7 @@
     "recentTranscriptions": "Recente transcripties",
     "uploadAudio": "Audio uploaden",
     "uploadAudioFiles": "Audiobestanden uploaden",
-    "transcriptionHistory": "Transcriptiegeschiedenis",
+    "transcriptionHistory": "Transcripties",
     "yourTranscriptions": "Jouw transcripties",
     "howItWorks": "Hoe het werkt",
     "recordingGuide": "Opnamegids",
@@ -103,7 +103,7 @@
     "aiPowered": "AI-aangedreven",
     "supportedFormats": "Ondersteunde formaten: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
     "supportedFormatsShort": "Ondersteunt: {formats} • Max {size} • Meerdere bestanden",
-    "maxFileSize": "Maximale bestandsgrootte: 500MB",
+    "maxFileSize": "Maximale bestandsgrootte: 5GB",
     "selectFile": "Selecteer audiobestand",
     "addContext": "Context toevoegen (optioneel)",
     "boostAccuracy": "🎯 Verbeter de nauwkeurigheid met 40% met slechts één regel context",
@@ -140,7 +140,7 @@
     "addContextForTechnicalTerms": "Voeg context toe voor technische termen",
     "uploadMultipleFilesAtOnce": "Upload meerdere bestanden tegelijk",
     "error": {
-      "fileSize": "Bestandsgrootte overschrijdt limiet van 500MB",
+      "fileSize": "Bestandsgrootte overschrijdt limiet van 5GB",
       "fileTooLarge": "Bestand te groot (max 100MB)",
       "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege OpenAI Whisper API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
       "fileType": "Niet-ondersteund bestandstype",
@@ -207,7 +207,7 @@
     "subtitle": "Transformeer je audio naar bruikbare inzichten in drie eenvoudige stappen",
     "step1": {
       "title": "Upload je audio",
-      "description": "Sleep en zet neer of selecteer een audiobestand tot 500MB. We ondersteunen alle gangbare formaten waaronder M4A, MP3, WAV en meer."
+      "description": "Sleep en zet neer of selecteer een audiobestand tot 5GB. We ondersteunen alle gangbare formaten waaronder M4A, MP3, WAV en meer."
     },
     "step2": {
       "title": "AI-transcriptie",
@@ -220,7 +220,7 @@
     "features": {
       "title": "Belangrijkste functies",
       "realTime": "Real-time voortgang volgen",
-      "largFiles": "Ondersteuning voor grote bestanden (tot 500MB)",
+      "largFiles": "Ondersteuning voor grote bestanden (tot 5GB)",
       "multiLanguage": "Meertalige detectie",
       "contextAware": "Contextbewuste verwerking",
       "secureStorage": "Veilige cloudopslag",
@@ -436,7 +436,7 @@
       },
       "largeFiles": {
         "title": "Ondersteuning voor grote bestanden",
-        "description": "Verwerk bestanden tot 500MB met automatische intelligente splitsing"
+        "description": "Verwerk bestanden tot 5GB met AssemblyAI's geavanceerde transcriptie"
       },
       "security": {
         "title": "Enterprise beveiliging",

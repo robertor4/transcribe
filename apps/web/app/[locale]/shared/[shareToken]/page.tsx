@@ -134,7 +134,7 @@ export default function SharedTranscriptionPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
           <div className="text-center mb-6">
-            <Lock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <Lock className="w-12 h-12 text-[#cc3399] mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-gray-900">{t('passwordRequired')}</h2>
             <p className="text-gray-600 mt-2">{t('passwordDescription')}</p>
           </div>
@@ -145,13 +145,13 @@ export default function SharedTranscriptionPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('enterPassword')}
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] hover:border-gray-300 transition-colors placeholder-gray-500 text-gray-900"
               autoFocus
               required
             />
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors"
+              className="w-full bg-[#cc3399] text-white py-3 rounded-lg hover:bg-[#b82d89] transition-colors"
             >
               {t('submit')}
             </button>
@@ -244,7 +244,17 @@ export default function SharedTranscriptionPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>{t('footer.poweredBy')}</p>
+          <p>
+            Powered by{' '}
+            <a 
+              href="https://neuralsummary.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#cc3399] hover:text-[#b82d89] transition-colors"
+            >
+              Neural Summary
+            </a>
+          </p>
           <p className="mt-2">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
         </div>
       </div>

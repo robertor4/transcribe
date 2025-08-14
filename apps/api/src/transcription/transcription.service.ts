@@ -130,6 +130,7 @@ export class TranscriptionService {
   }> {
     try {
       // Always use AssemblyAI as primary service for transcription and diarization
+      // AssemblyAI handles files up to 5GB without chunking
       return await this.transcribeWithAssemblyAI(fileUrl, context, onProgress);
     } catch (error) {
       this.logger.warn(
@@ -142,7 +143,8 @@ export class TranscriptionService {
       }
 
       // Fallback to Whisper (without speaker diarization)
-      const result = await this.transcribeAudio(fileUrl, context, onProgress);
+      // Whisper requires chunking for files > 25MB
+      const result = await this.transcribeAudioWithWhisper(fileUrl, context, onProgress);
       return {
         ...result,
         speakers: undefined,
@@ -214,6 +216,17 @@ export class TranscriptionService {
     }
   }
 
+  // Whisper fallback method with chunking support for files > 25MB
+  async transcribeAudioWithWhisper(
+    fileUrl: string,
+    context?: string,
+    onProgress?: (progress: number, message: string) => void,
+  ): Promise<{ text: string; language?: string }> {
+    return this.transcribeAudio(fileUrl, context, onProgress);
+  }
+
+  // Legacy method - kept for backward compatibility
+  // Contains the chunking logic for Whisper API
   async transcribeAudio(
     fileUrl: string,
     context?: string,
@@ -245,7 +258,8 @@ export class TranscriptionService {
       );
       fs.writeFileSync(tempFilePath, fileBuffer);
 
-      // Check file size
+      // For backward compatibility, keep the chunking logic here
+      // This method is now mainly used as a legacy fallback
       const stats = fs.statSync(tempFilePath);
       const fileSizeInMB = stats.size / (1024 * 1024);
 

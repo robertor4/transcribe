@@ -81,7 +81,7 @@
     "recentTranscriptions": "Transcriptions récentes",
     "uploadAudio": "Téléverser l'audio",
     "uploadAudioFiles": "Téléverser des fichiers audio",
-    "transcriptionHistory": "Historique des transcriptions",
+    "transcriptionHistory": "Transcriptions",
     "yourTranscriptions": "Vos transcriptions",
     "howItWorks": "Comment ça marche",
     "recordingGuide": "Guide d'enregistrement",
@@ -103,7 +103,7 @@
     "aiPowered": "Alimenté par l'IA",
     "supportedFormats": "Formats supportés : M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
     "supportedFormatsShort": "Supporte : {formats} • Max {size} • Plusieurs fichiers",
-    "maxFileSize": "Taille maximale du fichier : 500MB",
+    "maxFileSize": "Taille maximale du fichier : 5GB",
     "selectFile": "Sélectionner un fichier audio",
     "addContext": "Ajouter du contexte (Optionnel)",
     "boostAccuracy": "🎯 Améliorez la précision de 40% avec seulement une ligne de contexte",
@@ -140,7 +140,7 @@
     "addContextForTechnicalTerms": "Ajoutez du contexte pour les termes techniques",
     "uploadMultipleFilesAtOnce": "Téléversez plusieurs fichiers à la fois",
     "error": {
-      "fileSize": "La taille du fichier dépasse la limite de 500MB",
+      "fileSize": "La taille du fichier dépasse la limite de 5GB",
       "fileTooLarge": "Fichier trop volumineux (max 100MB)",
       "fileTooLargeWhisper": "Le fichier est trop volumineux. La taille maximale est de 25MB en raison de la limite de l'API OpenAI Whisper. Pour les fichiers plus volumineux, considérez les diviser.",
       "fileType": "Type de fichier non supporté",
@@ -207,7 +207,7 @@
     "subtitle": "Transformez votre audio en informations exploitables en trois étapes simples",
     "step1": {
       "title": "Téléversez votre audio",
-      "description": "Glissez-déposez ou sélectionnez un fichier audio jusqu'à 500MB. Nous supportons tous les formats courants incluant M4A, MP3, WAV et plus."
+      "description": "Glissez-déposez ou sélectionnez un fichier audio jusqu'à 5GB. Nous supportons tous les formats courants incluant M4A, MP3, WAV et plus."
     },
     "step2": {
       "title": "Transcription IA",
@@ -220,7 +220,7 @@
     "features": {
       "title": "Fonctionnalités clés",
       "realTime": "Suivi de progression en temps réel",
-      "largFiles": "Support de fichiers volumineux (jusqu'à 500MB)",
+      "largFiles": "Support de fichiers volumineux (jusqu'à 5GB)",
       "multiLanguage": "Détection multilingue",
       "contextAware": "Traitement contextuel",
       "secureStorage": "Stockage cloud sécurisé",

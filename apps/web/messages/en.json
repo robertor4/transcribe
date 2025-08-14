@@ -119,7 +119,7 @@
     "recentTranscriptions": "Recent Transcriptions",
     "uploadAudio": "Upload Audio",
     "uploadAudioFiles": "Upload audio files",
-    "transcriptionHistory": "Transcription History",
+    "transcriptionHistory": "Transcriptions",
     "yourTranscriptions": "Your transcriptions",
     "howItWorks": "How It Works",
     "recordingGuide": "Recording Guide",
@@ -141,7 +141,7 @@
     "aiPowered": "AI-powered",
     "supportedFormats": "Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG",
     "supportedFormatsShort": "Supports: {formats} • Max {size} • Multiple files",
-    "maxFileSize": "Maximum file size: 500MB",
+    "maxFileSize": "Maximum file size: 5GB",
     "selectFile": "Select Audio File",
     "addContext": "Add Context (Optional)",
     "analysisType": "Analysis Type (Optional)",
@@ -200,7 +200,7 @@
       "customDescription": "Use the context field below to provide specific instructions for your custom analysis"
     },
     "error": {
-      "fileSize": "File size exceeds 500MB limit",
+      "fileSize": "File size exceeds 5GB limit",
       "fileTooLarge": "File too large (max 100MB)",
       "fileTooLargeWhisper": "File is too large. Maximum size is 25MB due to OpenAI Whisper API limit. For larger files, consider splitting them.",
       "fileType": "Unsupported file type",
@@ -268,7 +268,7 @@
     "subtitle": "Transform your audio into actionable insights in three simple steps",
     "step1": {
       "title": "Upload Your Audio",
-      "description": "Drag and drop or select any audio file up to 500MB. We support all common formats including M4A, MP3, WAV, and more."
+      "description": "Drag and drop or select any audio file up to 5GB. We support all common formats including M4A, MP3, WAV, and more."
     },
     "step2": {
       "title": "AI Transcription",
@@ -281,7 +281,7 @@
     "features": {
       "title": "Key Features",
       "realTime": "Real-time Progress Tracking",
-      "largFiles": "Large File Support (up to 500MB)",
+      "largFiles": "Large File Support (up to 5GB)",
       "multiLanguage": "Multi-language Detection",
       "contextAware": "Context-aware Processing",
       "secureStorage": "Secure Cloud Storage",
@@ -501,7 +501,7 @@
       },
       "largeFiles": {
         "title": "Large File Support",
-        "description": "Handle files up to 500MB with automatic intelligent splitting"
+        "description": "Handle files up to 5GB with AssemblyAI's advanced transcription"
       },
       "security": {
         "title": "Enterprise Security",
