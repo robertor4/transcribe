@@ -35,14 +35,16 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  async signup(@Body() dto: SignupDto): Promise<ApiResponse<{ message: string }>> {
+  async signup(
+    @Body() dto: SignupDto,
+  ): Promise<ApiResponse<{ message: string }>> {
     // This endpoint is called after Firebase Auth creates the user
     // We use it to trigger the verification email
     // The actual user creation is handled by Firebase Auth on the frontend
-    
+
     // Note: In a production app, you might want to verify the user was actually created
     // by checking with Firebase Admin SDK
-    
+
     return {
       success: true,
       data: {
@@ -58,7 +60,7 @@ export class AuthController {
     @Body() dto: VerifyEmailDto,
   ): Promise<ApiResponse<{ verified: boolean }>> {
     const userId = (req as any).user.uid;
-    
+
     const verified = await this.emailVerificationService.verifyCode(
       userId,
       dto.code,

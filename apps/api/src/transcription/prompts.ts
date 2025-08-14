@@ -199,22 +199,33 @@ const ANALYSIS_PROMPTS: Record<AnalysisType, string> = {
 
 // System prompts for each analysis type
 const SYSTEM_PROMPTS: Record<AnalysisType, string> = {
-  [AnalysisType.SUMMARY]: 'You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics.',
-  [AnalysisType.COMMUNICATION_STYLES]: 'You are an expert communication analyst who identifies and analyzes communication patterns, speaking styles, and interaction dynamics in conversations.',
-  [AnalysisType.ACTION_ITEMS]: 'You are a project management expert who extracts, organizes, and prioritizes action items, tasks, and deliverables from conversations.',
-  [AnalysisType.EMOTIONAL_INTELLIGENCE]: 'You are an emotional intelligence expert who analyzes emotional tone, empathy levels, conflict handling, and interpersonal dynamics in conversations.',
-  [AnalysisType.INFLUENCE_PERSUASION]: 'You are a persuasion and influence expert who identifies persuasion techniques, argumentation patterns, and influence strategies used in conversations.',
-  [AnalysisType.PERSONAL_DEVELOPMENT]: 'You are a professional development coach who identifies areas for improvement, learning opportunities, and provides constructive feedback based on conversation analysis.',
-  [AnalysisType.CUSTOM]: 'You are a versatile AI assistant who can analyze conversations based on specific user instructions.',
+  [AnalysisType.SUMMARY]:
+    'You are a helpful assistant that creates structured summaries of meeting transcripts and conversations. You are skilled at analyzing communication patterns and group dynamics.',
+  [AnalysisType.COMMUNICATION_STYLES]:
+    'You are an expert communication analyst who identifies and analyzes communication patterns, speaking styles, and interaction dynamics in conversations.',
+  [AnalysisType.ACTION_ITEMS]:
+    'You are a project management expert who extracts, organizes, and prioritizes action items, tasks, and deliverables from conversations.',
+  [AnalysisType.EMOTIONAL_INTELLIGENCE]:
+    'You are an emotional intelligence expert who analyzes emotional tone, empathy levels, conflict handling, and interpersonal dynamics in conversations.',
+  [AnalysisType.INFLUENCE_PERSUASION]:
+    'You are a persuasion and influence expert who identifies persuasion techniques, argumentation patterns, and influence strategies used in conversations.',
+  [AnalysisType.PERSONAL_DEVELOPMENT]:
+    'You are a professional development coach who identifies areas for improvement, learning opportunities, and provides constructive feedback based on conversation analysis.',
+  [AnalysisType.CUSTOM]:
+    'You are a versatile AI assistant who can analyze conversations based on specific user instructions.',
 };
 
 // Helper function to get prompt by analysis type
-export function getPromptByType(analysisType: AnalysisType = AnalysisType.SUMMARY): string {
+export function getPromptByType(
+  analysisType: AnalysisType = AnalysisType.SUMMARY,
+): string {
   return ANALYSIS_PROMPTS[analysisType] || SUMMARIZATION_PROMPT;
 }
 
 // Helper function to get system prompt by analysis type
-export function getSystemPromptByType(analysisType: AnalysisType = AnalysisType.SUMMARY): string {
+export function getSystemPromptByType(
+  analysisType: AnalysisType = AnalysisType.SUMMARY,
+): string {
   return SYSTEM_PROMPTS[analysisType] || SYSTEM_PROMPTS[AnalysisType.SUMMARY];
 }
 
@@ -225,15 +236,15 @@ export function buildAnalysisPrompt(
   context = '',
   language = '',
 ): string {
-  let basePrompt = ANALYSIS_PROMPTS[analysisType] || SUMMARIZATION_PROMPT;
-  
+  const basePrompt = ANALYSIS_PROMPTS[analysisType] || SUMMARIZATION_PROMPT;
+
   // For custom analysis, context becomes the instructions
   if (analysisType === AnalysisType.CUSTOM && context) {
     return `${context}\n\nTranscript:\n${transcription}`;
   }
-  
+
   let fullPrompt = basePrompt;
-  
+
   // Add context if provided
   if (context) {
     fullPrompt = `## Context
@@ -246,7 +257,7 @@ Please use this context to better understand references, participants, technical
 
 ${basePrompt}`;
   }
-  
+
   // Add language instructions if specified
   if (language && language !== 'english') {
     fullPrompt = `CRITICAL LANGUAGE REQUIREMENT: 
@@ -260,6 +271,6 @@ ${basePrompt}`;
 
 ${fullPrompt}`;
   }
-  
+
   return `${fullPrompt}\n\n---\nTRANSCRIPT:\n${transcription}`;
 }

@@ -7,7 +7,6 @@ import { TranscriptionProcessor } from './transcription.processor';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
-import { GoogleSpeechModule } from '../google-speech/google-speech.module';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
 @Module({
@@ -16,7 +15,6 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     FirebaseModule,
     WebSocketModule,
     AssemblyAIModule,
-    GoogleSpeechModule, // Keep for now as fallback
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),

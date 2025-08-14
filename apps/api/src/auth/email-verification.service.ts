@@ -32,8 +32,10 @@ export class EmailVerificationService {
     try {
       const code = this.generateVerificationCode();
       const hashedCode = this.hashCode(code);
-      
-      const verificationData: Omit<VerificationCode, 'code'> & { code: string } = {
+
+      const verificationData: Omit<VerificationCode, 'code'> & {
+        code: string;
+      } = {
         code: hashedCode,
         email,
         createdAt: new Date(),
@@ -135,7 +137,10 @@ export class EmailVerificationService {
         .doc(userId)
         .delete();
     } catch (error) {
-      this.logger.error(`Error deleting verification code for user ${userId}:`, error);
+      this.logger.error(
+        `Error deleting verification code for user ${userId}:`,
+        error,
+      );
     }
   }
 
@@ -154,7 +159,7 @@ export class EmailVerificationService {
       }
 
       const data = doc.data() as VerificationCode;
-      
+
       // Check if last attempt was within cooldown period (1 minute)
       const lastAttemptTime = data.createdAt;
       const now = new Date();
@@ -187,9 +192,9 @@ export class EmailVerificationService {
     // - AWS SES
     // - Firebase Email Extension
     // - Or any other email service
-    
+
     this.logger.log(`Verification code for ${email}: ${code}`);
-    
+
     // Example with SendGrid (requires @sendgrid/mail package):
     /*
     const msg = {

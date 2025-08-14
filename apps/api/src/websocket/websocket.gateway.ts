@@ -9,11 +9,11 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { 
-  WEBSOCKET_EVENTS, 
+import {
+  WEBSOCKET_EVENTS,
   TranscriptionProgress,
   SummaryComment,
-  SummaryRegenerationProgress 
+  SummaryRegenerationProgress,
 } from '@transcribe/shared';
 import { FirebaseService } from '../firebase/firebase.service';
 

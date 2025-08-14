@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Body,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Put, Body, UseGuards, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { UserService } from './user.service';
@@ -20,7 +13,7 @@ export class UserController {
   async getProfile(@Req() req: Request): Promise<ApiResponse<User>> {
     const userId = (req as any).user.uid;
     const user = await this.userService.getUserProfile(userId);
-    
+
     return {
       success: true,
       data: user || undefined,
@@ -37,7 +30,7 @@ export class UserController {
       userId,
       preferences,
     );
-    
+
     return {
       success: true,
       data: updatedUser,

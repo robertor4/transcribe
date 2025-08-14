@@ -22,7 +22,8 @@ export class TranscriptionProcessor {
 
   @Process('transcribe')
   async handleTranscription(job: Job<TranscriptionJob>) {
-    const { transcriptionId, userId, fileUrl, analysisType, context } = job.data;
+    const { transcriptionId, userId, fileUrl, analysisType, context } =
+      job.data;
 
     this.logger.log(`Processing transcription job ${transcriptionId}`);
 
@@ -55,16 +56,18 @@ export class TranscriptionProcessor {
             });
           },
         );
-      
+
       const transcriptText = transcriptionResult.text;
       const detectedLanguage = transcriptionResult.language;
       const speakers = transcriptionResult.speakers;
       const speakerSegments = transcriptionResult.speakerSegments;
       const transcriptWithSpeakers = transcriptionResult.transcriptWithSpeakers;
       const speakerCount = transcriptionResult.speakerCount;
-      
+
       if (detectedLanguage) {
-        this.logger.log(`Detected language for transcription ${transcriptionId}: ${detectedLanguage}`);
+        this.logger.log(
+          `Detected language for transcription ${transcriptionId}: ${detectedLanguage}`,
+        );
       }
 
       // Update progress
@@ -113,22 +116,27 @@ export class TranscriptionProcessor {
         completedAt: new Date(),
         updatedAt: new Date(),
       };
-      
+
       if (detectedLanguage) {
         updateData.detectedLanguage = detectedLanguage;
         updateData.summaryLanguage = detectedLanguage;
       }
-      
+
       // Add speaker diarization data if available
       if (speakers && speakers.length > 0) {
         updateData.speakers = speakers;
         updateData.speakerSegments = speakerSegments;
         updateData.transcriptWithSpeakers = transcriptWithSpeakers;
         updateData.speakerCount = speakerCount;
-        this.logger.log(`Added speaker diarization data: ${speakerCount} speakers identified`);
+        this.logger.log(
+          `Added speaker diarization data: ${speakerCount} speakers identified`,
+        );
       }
-      
-      await this.firebaseService.updateTranscription(transcriptionId, updateData);
+
+      await this.firebaseService.updateTranscription(
+        transcriptionId,
+        updateData,
+      );
 
       // Delete original uploaded file for security and privacy
       try {

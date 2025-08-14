@@ -38,7 +38,7 @@ export class UserService {
     try {
       // Get user info from Firebase Auth
       const authUser = await this.firebaseService.auth.getUser(userId);
-      
+
       const userData: Omit<User, 'uid'> = {
         email: authUser.email || '',
         emailVerified: authUser.emailVerified || false,
@@ -68,7 +68,7 @@ export class UserService {
     try {
       // Ensure user profile exists
       let user = await this.getUserProfile(userId);
-      
+
       if (!user) {
         user = await this.createUserProfile(userId);
       }
@@ -89,7 +89,7 @@ export class UserService {
       if (!updatedUser) {
         throw new Error('Failed to retrieve updated user');
       }
-      
+
       return updatedUser;
     } catch (error) {
       this.logger.error(

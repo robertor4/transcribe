@@ -24,7 +24,7 @@ export class AssemblyAIService {
     if (!apiKey) {
       throw new Error('ASSEMBLYAI_API_KEY is not configured');
     }
-    
+
     this.client = new AssemblyAI({
       apiKey: apiKey,
     });
@@ -36,7 +36,7 @@ export class AssemblyAIService {
   ): Promise<AssemblyAIResult> {
     try {
       this.logger.log(`Starting AssemblyAI transcription for URL: ${audioUrl}`);
-      
+
       // Start transcription with language detection and speaker diarization
       const transcript = await this.client.transcripts.create({
         audio_url: audioUrl,
@@ -48,12 +48,15 @@ export class AssemblyAIService {
       });
 
       this.logger.log(`Transcription job created with ID: ${transcript.id}`);
-      
+
       // Poll for completion
-      const completedTranscript = await this.client.transcripts.waitUntilReady(transcript.id, {
-        pollingInterval: 3000, // Poll every 3 seconds
-        pollingTimeout: 600000, // 10 minute timeout
-      });
+      const completedTranscript = await this.client.transcripts.waitUntilReady(
+        transcript.id,
+        {
+          pollingInterval: 3000, // Poll every 3 seconds
+          pollingTimeout: 600000, // 10 minute timeout
+        },
+      );
 
       if (completedTranscript.status === 'error') {
         throw new Error(`Transcription failed: ${completedTranscript.error}`);
@@ -61,7 +64,9 @@ export class AssemblyAIService {
 
       // Log detected language
       if (completedTranscript.language_code) {
-        this.logger.log(`Detected language: ${completedTranscript.language_code} (confidence: ${completedTranscript.language_confidence})`);
+        this.logger.log(
+          `Detected language: ${completedTranscript.language_code} (confidence: ${completedTranscript.language_confidence})`,
+        );
       }
 
       // Process the results
@@ -79,12 +84,12 @@ export class AssemblyAIService {
   ): Promise<AssemblyAIResult> {
     try {
       this.logger.log(`Uploading file to AssemblyAI: ${fileName}`);
-      
+
       // Upload the file to AssemblyAI
       const uploadUrl = await this.client.files.upload(audioBuffer);
-      
+
       this.logger.log(`File uploaded successfully, starting transcription`);
-      
+
       // Use the uploaded URL for transcription
       return this.transcribeWithDiarization(uploadUrl, context);
     } catch (error) {
@@ -96,28 +101,29 @@ export class AssemblyAIService {
   private processTranscriptionResponse(transcript: any): AssemblyAIResult {
     // Map language codes from AssemblyAI to our format
     const languageMap: Record<string, string> = {
-      'en': 'en-us',
-      'en_us': 'en-us',
-      'en_uk': 'en-gb',
-      'nl': 'nl-nl',
-      'de': 'de-de',
-      'fr': 'fr-fr',
-      'es': 'es-es',
+      en: 'en-us',
+      en_us: 'en-us',
+      en_uk: 'en-gb',
+      nl: 'nl-nl',
+      de: 'de-de',
+      fr: 'fr-fr',
+      es: 'es-es',
     };
 
-    const mappedLanguage = transcript.language_code 
-      ? (languageMap[transcript.language_code.toLowerCase()] || transcript.language_code)
+    const mappedLanguage = transcript.language_code
+      ? languageMap[transcript.language_code.toLowerCase()] ||
+        transcript.language_code
       : undefined;
 
     // Process speaker segments if speaker diarization was enabled
     let speakers: Speaker[] = [];
-    let speakerSegments: SpeakerSegment[] = [];
+    const speakerSegments: SpeakerSegment[] = [];
     let transcriptWithSpeakers = '';
 
     if (transcript.utterances && transcript.utterances.length > 0) {
       // Build speaker segments from utterances
       const speakerMap = new Map<string, Speaker>();
-      
+
       for (const utterance of transcript.utterances) {
         // Create or update speaker info
         const speakerTag = `Speaker ${utterance.speaker}`;
@@ -130,12 +136,14 @@ export class AssemblyAIService {
             firstAppearance: utterance.start / 1000, // Convert ms to seconds
           });
         }
-        
+
         const speaker = speakerMap.get(speakerTag)!;
         const duration = (utterance.end - utterance.start) / 1000;
         speaker.totalSpeakingTime += duration;
-        speaker.wordCount += utterance.words ? utterance.words.length : utterance.text.split(' ').length;
-        
+        speaker.wordCount += utterance.words
+          ? utterance.words.length
+          : utterance.text.split(' ').length;
+
         // Create speaker segment
         speakerSegments.push({
           speakerTag: speakerTag,
@@ -144,14 +152,18 @@ export class AssemblyAIService {
           text: utterance.text,
           confidence: utterance.confidence,
         });
-        
+
         // Build transcript with speakers
         transcriptWithSpeakers += `${speakerTag}: ${utterance.text}\n\n`;
       }
-      
-      speakers = Array.from(speakerMap.values()).sort((a, b) => a.speakerId - b.speakerId);
-      
-      this.logger.log(`Processed ${speakers.length} speakers with ${speakerSegments.length} segments`);
+
+      speakers = Array.from(speakerMap.values()).sort(
+        (a, b) => a.speakerId - b.speakerId,
+      );
+
+      this.logger.log(
+        `Processed ${speakers.length} speakers with ${speakerSegments.length} segments`,
+      );
     }
 
     return {

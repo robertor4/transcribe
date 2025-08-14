@@ -14,8 +14,8 @@ A production-ready monorepo application for audio transcription and intelligent 
 - **Authentication**: Firebase Auth (Email/Password + Google OAuth)
 - **Queue**: Redis with Bull for scalable job processing
 - **AI Services**: 
-  - OpenAI Whisper API for transcription (default)
-  - Google Cloud Speech-to-Text with speaker diarization (optional, via USE_GOOGLE_SPEECH flag)
+  - AssemblyAI for transcription and speaker diarization (primary)
+  - OpenAI Whisper API for transcription (fallback when AssemblyAI fails)
   - GPT-4o-mini/GPT-4o for summarization
 - **Audio Processing**: FFmpeg for splitting large files into 10-minute chunks
 
@@ -153,7 +153,7 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 JWT_SECRET=...
 PORT=3001
-USE_GOOGLE_SPEECH=true  # Optional: Enable Google Speech-to-Text
+ASSEMBLYAI_API_KEY=...
 ```
 
 Frontend `.env.local`:
