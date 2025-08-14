@@ -1,10 +1,11 @@
-import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, Logger, forwardRef, Inject, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import {
   Transcription,
   TranscriptionStatus,
@@ -14,12 +15,16 @@ import {
   AnalysisType,
   Speaker,
   SpeakerSegment,
+  ShareSettings,
+  ShareEmailRequest,
+  SharedTranscriptionView,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -36,6 +41,8 @@ export class TranscriptionService {
     private websocketGateway: WebSocketGateway,
     @Inject(forwardRef(() => AssemblyAIService))
     private assemblyAIService: AssemblyAIService,
+    @Inject(forwardRef(() => EmailService))
+    private emailService: EmailService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
@@ -733,6 +740,245 @@ export class TranscriptionService {
     await this.firebaseService.updateTranscription(transcriptionId, updates);
 
     return this.firebaseService.getTranscription(userId, transcriptionId);
+  }
+
+  // Share-related methods
+  private generateShareToken(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
+
+  async createShareLink(
+    transcriptionId: string,
+    userId: string,
+    settings?: { expiresAt?: Date; maxViews?: number; password?: string },
+  ): Promise<{ shareToken: string; shareUrl: string }> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Generate unique share token
+    const shareToken = this.generateShareToken();
+    
+    // Create share settings - only include defined values
+    const shareSettings: ShareSettings = {
+      enabled: true,
+    };
+    
+    // Only add optional fields if they have values
+    if (settings?.expiresAt) {
+      shareSettings.expiresAt = settings.expiresAt;
+    }
+    if (settings?.maxViews) {
+      shareSettings.maxViews = settings.maxViews;
+    }
+    if (settings?.password) {
+      shareSettings.password = settings.password;
+    }
+
+    // Update transcription with share info
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      shareToken,
+      shareSettings,
+      sharedAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const shareUrl = `${frontendUrl}/en/shared/${shareToken}`;
+
+    this.logger.log(`Share link created for transcription ${transcriptionId}`);
+
+    return { shareToken, shareUrl };
+  }
+
+  async revokeShareLink(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<void> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Remove share info - use special method to delete fields
+    await this.firebaseService.deleteShareInfo(transcriptionId);
+
+    this.logger.log(`Share link revoked for transcription ${transcriptionId}`);
+  }
+
+  async updateShareSettings(
+    transcriptionId: string,
+    userId: string,
+    settings: { expiresAt?: Date; maxViews?: number; password?: string },
+  ): Promise<void> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    if (!transcription.shareSettings || !transcription.shareToken) {
+      throw new BadRequestException('No share link exists for this transcription');
+    }
+
+    // Update share settings - maintain existing values and only update provided ones
+    const updatedSettings: ShareSettings = {
+      ...transcription.shareSettings,
+    };
+    
+    // Only update fields that were explicitly provided
+    if (settings.expiresAt !== undefined) {
+      if (settings.expiresAt === null) {
+        delete updatedSettings.expiresAt;
+      } else {
+        updatedSettings.expiresAt = settings.expiresAt;
+      }
+    }
+    
+    if (settings.maxViews !== undefined) {
+      if (settings.maxViews === null) {
+        delete updatedSettings.maxViews;
+      } else {
+        updatedSettings.maxViews = settings.maxViews;
+      }
+    }
+    
+    if (settings.password !== undefined) {
+      if (settings.password === null) {
+        delete updatedSettings.password;
+      } else {
+        updatedSettings.password = settings.password;
+      }
+    }
+
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      shareSettings: updatedSettings,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(`Share settings updated for transcription ${transcriptionId}`);
+  }
+
+  async getSharedTranscription(
+    shareToken: string,
+    password?: string,
+    incrementView: boolean = false,
+  ): Promise<SharedTranscriptionView | null> {
+    // Find transcription by share token
+    const transcription = await this.firebaseService.getTranscriptionByShareToken(shareToken);
+    
+    if (!transcription || !transcription.shareSettings?.enabled) {
+      return null;
+    }
+
+    const settings = transcription.shareSettings;
+
+    // Check if link has expired
+    if (settings.expiresAt && new Date(settings.expiresAt) < new Date()) {
+      this.logger.log(`Share link expired for token ${shareToken}`);
+      return null;
+    }
+
+    // Check view count limit (use current count, not incremented)
+    const currentViewCount = settings.viewCount || 0;
+    if (settings.maxViews && currentViewCount >= settings.maxViews) {
+      this.logger.log(`View limit reached for share token ${shareToken}`);
+      return null;
+    }
+
+    // Check password if required
+    if (settings.password && settings.password !== password) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    // Only increment view count if requested (to avoid multiple increments)
+    let finalViewCount = currentViewCount;
+    if (incrementView) {
+      finalViewCount = currentViewCount + 1;
+      const updatedSettings = {
+        ...settings,
+        viewCount: finalViewCount,
+      };
+      await this.firebaseService.updateTranscription(transcription.id, {
+        shareSettings: updatedSettings,
+      });
+      this.logger.log(`Incremented view count for share token ${shareToken} to ${finalViewCount}`);
+    }
+
+    // Get user display name for sharedBy field
+    const user = await this.firebaseService.getUserById(transcription.userId);
+    const sharedBy = user?.displayName || user?.email || 'Anonymous';
+
+    // Return sanitized view without sensitive data
+    const sharedView: SharedTranscriptionView = {
+      id: transcription.id,
+      fileName: transcription.fileName,
+      title: transcription.title,
+      transcriptText: transcription.transcriptText,
+      analyses: transcription.analyses,
+      speakerSegments: transcription.speakerSegments,
+      speakers: transcription.speakers,
+      createdAt: transcription.createdAt,
+      sharedBy,
+      viewCount: finalViewCount,
+    };
+
+    return sharedView;
+  }
+
+  async sendShareEmail(
+    transcriptionId: string,
+    userId: string,
+    emailRequest: ShareEmailRequest,
+  ): Promise<boolean> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Ensure share link exists
+    if (!transcription.shareToken) {
+      // Create share link if it doesn't exist
+      const { shareToken } = await this.createShareLink(transcriptionId, userId, {});
+      transcription.shareToken = shareToken;
+    }
+
+    // Get user info for sender name
+    const user = await this.firebaseService.getUserById(userId);
+    const senderName = emailRequest.senderName || user?.displayName || user?.email || 'Someone';
+
+    // Send email
+    const success = await this.emailService.sendShareEmail(
+      transcription.shareToken,
+      transcription.title || transcription.fileName,
+      {
+        ...emailRequest,
+        senderName,
+      },
+      'en', // TODO: Get user's preferred language
+    );
+
+    if (success) {
+      this.logger.log(`Share email sent for transcription ${transcriptionId} to ${emailRequest.recipientEmail}`);
+    }
+
+    return success;
   }
 
   async generateSummaryWithFeedback(

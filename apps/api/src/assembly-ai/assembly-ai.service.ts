@@ -128,8 +128,14 @@ export class AssemblyAIService {
         // Create or update speaker info
         const speakerTag = `Speaker ${utterance.speaker}`;
         if (!speakerMap.has(speakerTag)) {
+          // Convert speaker letter to number (A=1, B=2, etc.) or use the number directly if it's numeric
+          let speakerId = parseInt(utterance.speaker);
+          if (isNaN(speakerId)) {
+            // If it's a letter, convert to number (A=1, B=2, etc.)
+            speakerId = utterance.speaker.toUpperCase().charCodeAt(0) - 64;
+          }
           speakerMap.set(speakerTag, {
-            speakerId: parseInt(utterance.speaker),
+            speakerId: speakerId,
             speakerTag: speakerTag,
             totalSpeakingTime: 0,
             wordCount: 0,

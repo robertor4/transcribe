@@ -23,6 +23,8 @@ import { SummaryWithComments } from './SummaryWithComments';
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId: string;
+  speakerSegments?: any[];
+  speakers?: any[];
 }
 
 // Blog-style content component for non-summary analysis tabs
@@ -95,7 +97,7 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcriptionId }) => {
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcriptionId, speakerSegments, speakers }) => {
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
@@ -139,17 +141,39 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   };
 
   const getTabColor = (color: string, isActive: boolean) => {
-    if (isActive) return 'border-[#cc3399] text-[#cc3399]';
+    // Keep original color for text, only change border when active
+    const baseColors = {
+      'blue': 'text-blue-600',
+      'purple': 'text-purple-600',
+      'green': 'text-green-600',
+      'pink': 'text-pink-600',
+      'orange': 'text-orange-600',
+      'teal': 'text-teal-600',
+    };
     
-    switch(color) {
-      case 'blue': return 'text-blue-600 hover:text-blue-700 hover:border-blue-300';
-      case 'purple': return 'text-purple-600 hover:text-purple-700 hover:border-purple-300';
-      case 'green': return 'text-green-600 hover:text-green-700 hover:border-green-300';
-      case 'pink': return 'text-pink-600 hover:text-pink-700 hover:border-pink-300';
-      case 'orange': return 'text-orange-600 hover:text-orange-700 hover:border-orange-300';
-      case 'teal': return 'text-teal-600 hover:text-teal-700 hover:border-teal-300';
-      default: return 'text-gray-500 hover:text-gray-700 hover:border-gray-300';
-    }
+    const borderColors = {
+      'blue': 'border-blue-600',
+      'purple': 'border-purple-600',
+      'green': 'border-green-600',
+      'pink': 'border-pink-600',
+      'orange': 'border-orange-600',
+      'teal': 'border-teal-600',
+    };
+    
+    const hoverColors = {
+      'blue': 'hover:text-blue-700 hover:border-blue-300',
+      'purple': 'hover:text-purple-700 hover:border-purple-300',
+      'green': 'hover:text-green-700 hover:border-green-300',
+      'pink': 'hover:text-pink-700 hover:border-pink-300',
+      'orange': 'hover:text-orange-700 hover:border-orange-300',
+      'teal': 'hover:text-teal-700 hover:border-teal-300',
+    };
+    
+    const textColor = baseColors[color] || 'text-gray-500';
+    const borderColor = isActive ? (borderColors[color] || 'border-gray-500') : '';
+    const hoverStyle = isActive ? '' : (hoverColors[color] || 'hover:text-gray-700 hover:border-gray-300');
+    
+    return { textColor, borderColor, hoverStyle };
   };
 
   const getBackgroundColor = (color: string) => {
@@ -175,6 +199,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
             
             if (!hasContent) return null;
             
+            const tabStyles = getTabColor(info.color, activeTab === info.key);
+            
             return (
               <button
                 key={info.key}
@@ -182,9 +208,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                 className={`
                   py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2 whitespace-nowrap
                   transition-colors duration-200
+                  ${tabStyles.textColor} ${tabStyles.hoverStyle}
                   ${activeTab === info.key 
-                    ? 'border-[#cc3399] text-[#cc3399]' 
-                    : `border-transparent ${getTabColor(info.color, false)}`
+                    ? tabStyles.borderColor 
+                    : 'border-transparent'
                   }
                 `}
                 title={info.description}
@@ -259,11 +286,89 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
               <div className="py-6">
                 {info.key === 'transcript' ? (
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-h-[600px] overflow-y-auto">
-                      <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
-                        {isFormatted ? formatTranscript(content) : content}
-                      </p>
-                    </div>
+                    {/* Show speaker segments if available, otherwise show plain transcript */}
+                    {speakerSegments && speakerSegments.length > 0 ? (
+                      <div className="space-y-4">
+                        {speakerSegments.map((segment, index) => {
+                          let speakerLetter = '';
+                          let speakerNumber = 1;
+                          
+                          // Extract the last capital letter from the tag (handles "Speaker A", "A", "Speaker 1", etc.)
+                          const letterMatch = segment.speakerTag.match(/[A-Z](?![a-z])/g);
+                          const numberMatch = segment.speakerTag.match(/\d+/);
+                          
+                          if (letterMatch && letterMatch.length > 0) {
+                            // Found a letter (e.g., "Speaker A" -> "A")
+                            speakerLetter = letterMatch[letterMatch.length - 1];
+                            speakerNumber = speakerLetter.charCodeAt(0) - 64; // A=1, B=2, etc.
+                          } else if (numberMatch) {
+                            // Found a number (e.g., "Speaker 1" -> 1)
+                            speakerNumber = parseInt(numberMatch[0]);
+                            speakerLetter = String.fromCharCode(64 + speakerNumber); // 1->A, 2->B, etc.
+                          } else {
+                            // Fallback: use first character if uppercase, otherwise 'A'
+                            speakerLetter = /^[A-Z]/.test(segment.speakerTag) ? segment.speakerTag[0] : 'A';
+                            speakerNumber = speakerLetter.charCodeAt(0) - 64;
+                          }
+                          
+                          // Define color schemes for speakers
+                          const colors = [
+                            'bg-blue-100 text-blue-700',
+                            'bg-green-100 text-green-700',
+                            'bg-purple-100 text-purple-700',
+                            'bg-orange-100 text-orange-700',
+                            'bg-pink-100 text-pink-700',
+                            'bg-teal-100 text-teal-700',
+                          ];
+                          
+                          // Avatar background colors (darker versions)
+                          const avatarColors = [
+                            'bg-blue-500',
+                            'bg-green-500',
+                            'bg-purple-500',
+                            'bg-orange-500',
+                            'bg-pink-500',
+                            'bg-teal-500',
+                          ];
+                          
+                          // Get consistent colors based on speaker number
+                          const colorIndex = (speakerNumber - 1) % colors.length;
+                          const colorClass = colors[colorIndex];
+                          const avatarColorClass = avatarColors[colorIndex];
+                          
+                          return (
+                            <div key={index} className="flex gap-3 group hover:bg-gray-50 p-3 rounded-lg transition-colors">
+                              <div className="flex-shrink-0 pt-1">
+                                <div className={`w-10 h-10 rounded-full ${avatarColorClass} flex items-center justify-center text-white font-semibold shadow-sm`}>
+                                  {speakerLetter}
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-baseline gap-2 mb-1">
+                                  <span className={`text-sm font-semibold ${colorClass.split(' ')[1]}`}>
+                                    {segment.speakerTag}
+                                  </span>
+                                  {segment.startTime !== undefined && (
+                                    <span className="text-xs text-gray-400">
+                                      {Math.floor(segment.startTime / 60)}:{String(Math.floor(segment.startTime % 60)).padStart(2, '0')}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-gray-700 leading-relaxed break-words">
+                                  {segment.text}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                        <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                          {isFormatted ? formatTranscript(content) : content}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : info.key === 'summary' ? (
                   <SummaryWithComments

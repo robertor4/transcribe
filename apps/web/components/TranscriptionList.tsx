@@ -29,13 +29,16 @@ import {
   Edit3,
   X,
   Users,
-  User
+  User,
+  Share2,
+  Link
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 import { AnalysisTabs } from './AnalysisTabs';
+import { ShareModal } from './ShareModal';
 
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
@@ -50,6 +53,25 @@ export const TranscriptionList: React.FC = () => {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
   const [activeTab, setActiveTab] = useState<{ [key: string]: 'summary' | 'transcript' }>({});
+  const [shareModalTranscription, setShareModalTranscription] = useState<Transcription | null>(null);
+
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    const formatted = d.toLocaleDateString('en-US', options);
+    
+    // Add ordinal suffix to day
+    const day = d.getDate();
+    const suffix = ['th', 'st', 'nd', 'rd'][
+      day % 10 > 3 ? 0 : (day % 100 - day % 10 !== 10) ? day % 10 : 0
+    ];
+    
+    return formatted.replace(/\d+,/, `${day}${suffix},`);
+  };
 
   useEffect(() => {
     loadTranscriptions();
@@ -424,7 +446,7 @@ export const TranscriptionList: React.FC = () => {
                         </span>
                       )}
                       <span className="text-xs text-gray-500">
-                        {new Date(transcription.createdAt).toLocaleDateString()}
+                        {formatDate(transcription.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -449,6 +471,19 @@ export const TranscriptionList: React.FC = () => {
                       title={isExpanded ? t('hideTranscript') : t('viewTranscription')}
                     >
                       {isExpanded ? t('close') : t('view')}
+                    </button>
+                  )}
+                  
+                  {transcription.status === TranscriptionStatus.COMPLETED && (
+                    <button
+                      onClick={() => setShareModalTranscription(transcription)}
+                      className="p-2 text-gray-400 hover:text-blue-500 transition-colors relative"
+                      title={t('share')}
+                    >
+                      <Share2 className="h-5 w-5" />
+                      {transcription.shareToken && (
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                      )}
                     </button>
                   )}
                   
@@ -515,6 +550,8 @@ export const TranscriptionList: React.FC = () => {
                         transcript: transcription.transcriptText
                       }} 
                       transcriptionId={transcription.id}
+                      speakerSegments={transcription.speakerSegments}
+                      speakers={transcription.speakers}
                     />
                   </div>
                 ) : (
@@ -687,6 +724,21 @@ export const TranscriptionList: React.FC = () => {
           </div>
         );
       })}
+      
+      {/* Share Modal */}
+      {shareModalTranscription && (
+        <ShareModal
+          transcription={shareModalTranscription}
+          isOpen={!!shareModalTranscription}
+          onClose={() => setShareModalTranscription(null)}
+          onShareUpdate={(updatedTranscription) => {
+            // Update the transcription in the list with the new share info
+            setTranscriptions(prev => 
+              prev.map(t => t.id === updatedTranscription.id ? updatedTranscription : t)
+            );
+          }}
+        />
+      )}
     </div>
   );
 };

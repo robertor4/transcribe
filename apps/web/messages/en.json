@@ -260,7 +260,8 @@
     "failedToUpdateTitle": "Failed to update title",
     "close": "Close",
     "view": "View",
-    "delete": "Delete"
+    "delete": "Delete",
+    "share": "Share"
   },
   "howItWorks": {
     "title": "How It Works",
@@ -611,6 +612,55 @@
         "security": "Security"
       },
       "copyright": "© 2024 Neural Summary by Olympia Tech. All rights reserved."
+    }
+  },
+  "share": {
+    "title": "Share Transcript",
+    "linkTab": "Share Link",
+    "emailTab": "Send via Email",
+    "settings": "Share Settings",
+    "expiresAt": "Expiration Date",
+    "maxViews": "Maximum Views",
+    "unlimitedViews": "Unlimited",
+    "password": "Password Protection",
+    "optional": "Optional",
+    "generateLink": "Generate Share Link",
+    "shareLink": "Share Link",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "scanQR": "Scan QR code to share",
+    "expiresOn": "Expires",
+    "viewsRemaining": "Views remaining",
+    "passwordProtected": "Password protected",
+    "revokeLink": "Revoke Share Link",
+    "confirmRevoke": "Are you sure you want to revoke this share link? Anyone with the link will no longer be able to access this transcript.",
+    "recipientEmail": "Recipient Email",
+    "recipientName": "Recipient Name",
+    "message": "Personal Message",
+    "messagePlaceholder": "Add a personal message (optional)",
+    "sendEmail": "Send Email",
+    "emailSent": "Email sent successfully!"
+  },
+  "shared": {
+    "loading": "Loading transcript...",
+    "passwordRequired": "Password Required",
+    "passwordDescription": "This transcript is password protected. Please enter the password to view it.",
+    "enterPassword": "Enter password",
+    "submit": "Submit",
+    "error": {
+      "title": "Access Error",
+      "invalidLink": "This share link is invalid or has expired.",
+      "notFound": "Transcript not found.",
+      "loadFailed": "Failed to load transcript."
+    },
+    "sharedBy": "Shared by",
+    "views": "Views",
+    "readOnly": "Read-Only",
+    "analysis": "Analysis",
+    "transcript": "Full Transcript",
+    "footer": {
+      "poweredBy": "Powered by Neural Summary",
+      "copyright": "© {year} Neural Summary. All rights reserved."
     }
   }
 }

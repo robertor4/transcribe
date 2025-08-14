@@ -13,6 +13,7 @@ import {
   Req,
   BadRequestException,
   ParseIntPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
@@ -27,14 +28,41 @@ import {
   SummaryComment,
   RegenerateSummaryRequest,
   AnalysisType,
+  SharedTranscriptionView,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
-@UseGuards(FirebaseAuthGuard)
 export class TranscriptionController {
   constructor(private readonly transcriptionService: TranscriptionService) {}
 
+  // Public endpoint for shared transcripts (no auth required)
+  @Get('shared/:shareToken')
+  async getSharedTranscription(
+    @Param('shareToken') shareToken: string,
+    @Query('password') password?: string,
+    @Query('incrementView') incrementView?: string,
+  ): Promise<ApiResponse<SharedTranscriptionView>> {
+    // Only increment view count if explicitly requested (first load)
+    const shouldIncrementView = incrementView === 'true';
+    
+    const transcription = await this.transcriptionService.getSharedTranscription(
+      shareToken,
+      password,
+      shouldIncrementView,
+    );
+
+    if (!transcription) {
+      throw new UnauthorizedException('Invalid or expired share link');
+    }
+
+    return {
+      success: true,
+      data: transcription,
+    };
+  }
+
   @Post('upload')
+  @UseGuards(FirebaseAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
@@ -91,6 +119,7 @@ export class TranscriptionController {
   }
 
   @Get()
+  @UseGuards(FirebaseAuthGuard)
   async getTranscriptions(
     @Req() req: Request & { user: any },
     @Query('page', ParseIntPipe) page = 1,
@@ -109,6 +138,7 @@ export class TranscriptionController {
   }
 
   @Get(':id')
+  @UseGuards(FirebaseAuthGuard)
   async getTranscription(
     @Param('id') id: string,
     @Req() req: Request & { user: any },
@@ -129,6 +159,7 @@ export class TranscriptionController {
   }
 
   @Put(':id/title')
+  @UseGuards(FirebaseAuthGuard)
   async updateTitle(
     @Param('id') id: string,
     @Body('title') title: string,
@@ -152,6 +183,7 @@ export class TranscriptionController {
   }
 
   @Delete(':id')
+  @UseGuards(FirebaseAuthGuard)
   async deleteTranscription(
     @Param('id') id: string,
     @Req() req: Request & { user: any },
@@ -166,6 +198,7 @@ export class TranscriptionController {
 
   // Comment endpoints
   @Post(':id/comments')
+  @UseGuards(FirebaseAuthGuard)
   async addComment(
     @Param('id') transcriptionId: string,
     @Body() commentData: { position: any; content: string },
@@ -186,6 +219,7 @@ export class TranscriptionController {
   }
 
   @Get(':id/comments')
+  @UseGuards(FirebaseAuthGuard)
   async getComments(
     @Param('id') transcriptionId: string,
     @Req() req: Request & { user: any },
@@ -202,6 +236,7 @@ export class TranscriptionController {
   }
 
   @Put(':id/comments/:commentId')
+  @UseGuards(FirebaseAuthGuard)
   async updateComment(
     @Param('id') transcriptionId: string,
     @Param('commentId') commentId: string,
@@ -223,6 +258,7 @@ export class TranscriptionController {
   }
 
   @Delete(':id/comments/:commentId')
+  @UseGuards(FirebaseAuthGuard)
   async deleteComment(
     @Param('id') transcriptionId: string,
     @Param('commentId') commentId: string,
@@ -241,6 +277,7 @@ export class TranscriptionController {
   }
 
   @Post(':id/regenerate-summary')
+  @UseGuards(FirebaseAuthGuard)
   async regenerateSummary(
     @Param('id') transcriptionId: string,
     @Body() request: { instructions?: string },
@@ -256,6 +293,91 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Summary regeneration started',
+    };
+  }
+
+  // Share endpoints
+  @Post(':id/share')
+  @UseGuards(FirebaseAuthGuard)
+  async createShareLink(
+    @Param('id') transcriptionId: string,
+    @Body() shareSettings: { expiresAt?: Date; maxViews?: number; password?: string },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ shareToken: string; shareUrl: string }>> {
+    const result = await this.transcriptionService.createShareLink(
+      transcriptionId,
+      req.user.uid,
+      shareSettings,
+    );
+
+    return {
+      success: true,
+      data: result,
+      message: 'Share link created successfully',
+    };
+  }
+
+  @Delete(':id/share')
+  @UseGuards(FirebaseAuthGuard)
+  async revokeShareLink(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.transcriptionService.revokeShareLink(
+      transcriptionId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      message: 'Share link revoked successfully',
+    };
+  }
+
+  @Put(':id/share-settings')
+  @UseGuards(FirebaseAuthGuard)
+  async updateShareSettings(
+    @Param('id') transcriptionId: string,
+    @Body() shareSettings: { expiresAt?: Date; maxViews?: number; password?: string },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.transcriptionService.updateShareSettings(
+      transcriptionId,
+      req.user.uid,
+      shareSettings,
+    );
+
+    return {
+      success: true,
+      message: 'Share settings updated successfully',
+    };
+  }
+
+  @Post(':id/share/email')
+  @UseGuards(FirebaseAuthGuard)
+  async sendShareEmail(
+    @Param('id') transcriptionId: string,
+    @Body() emailRequest: {
+      recipientEmail: string;
+      recipientName?: string;
+      message?: string;
+      senderName?: string;
+    },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    const success = await this.transcriptionService.sendShareEmail(
+      transcriptionId,
+      req.user.uid,
+      emailRequest,
+    );
+
+    if (!success) {
+      throw new BadRequestException('Failed to send share email');
+    }
+
+    return {
+      success: true,
+      message: 'Share email sent successfully',
     };
   }
 }

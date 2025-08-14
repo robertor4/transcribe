@@ -86,6 +86,23 @@ export const transcriptionApi = {
   deleteComment: async (id: string, commentId: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/comments/${commentId}`);
   },
+
+  // Share API methods
+  createShareLink: async (id: string, settings?: { expiresAt?: Date; maxViews?: number; password?: string }): Promise<ApiResponse<{ shareToken: string; shareUrl: string }>> => {
+    return api.post(`/transcriptions/${id}/share`, settings || {});
+  },
+
+  revokeShareLink: async (id: string): Promise<ApiResponse> => {
+    return api.delete(`/transcriptions/${id}/share`);
+  },
+
+  updateShareSettings: async (id: string, settings: { expiresAt?: Date; maxViews?: number; password?: string }): Promise<ApiResponse> => {
+    return api.put(`/transcriptions/${id}/share-settings`, settings);
+  },
+
+  sendShareEmail: async (id: string, emailRequest: { recipientEmail: string; recipientName?: string; message?: string; senderName?: string }): Promise<ApiResponse> => {
+    return api.post(`/transcriptions/${id}/share/email`, emailRequest);
+  },
 };
 
 export default api;

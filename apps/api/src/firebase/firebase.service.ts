@@ -436,4 +436,52 @@ export class FirebaseService implements OnModuleInit {
       updatedAt: data?.updatedAt?.toDate() || new Date(),
     };
   }
+
+  async getTranscriptionByShareToken(shareToken: string): Promise<Transcription | null> {
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('shareToken', '==', shareToken)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+
+    return {
+      ...data,
+      id: doc.id,
+      createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+      updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
+      completedAt: data.completedAt?.toDate ? data.completedAt.toDate() : data.completedAt,
+      sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+    } as Transcription;
+  }
+
+  async getUserById(userId: string): Promise<any> {
+    try {
+      const userRecord = await this.auth.getUser(userId);
+      return {
+        uid: userRecord.uid,
+        email: userRecord.email,
+        displayName: userRecord.displayName,
+        photoURL: userRecord.photoURL,
+      };
+    } catch (error) {
+      this.logger.error(`Error fetching user ${userId}:`, error);
+      return null;
+    }
+  }
+
+  async deleteShareInfo(transcriptionId: string): Promise<void> {
+    await this.db.collection('transcriptions').doc(transcriptionId).update({
+      shareToken: admin.firestore.FieldValue.delete(),
+      shareSettings: admin.firestore.FieldValue.delete(),
+      sharedAt: admin.firestore.FieldValue.delete(),
+      updatedAt: new Date(),
+    });
+  }
 }

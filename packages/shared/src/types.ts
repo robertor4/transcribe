@@ -88,6 +88,10 @@ export interface Transcription {
   speakerSegments?: SpeakerSegment[];
   transcriptWithSpeakers?: string; // Formatted transcript with speaker labels
   diarizationConfidence?: number;
+  // Sharing fields
+  shareToken?: string;
+  shareSettings?: ShareSettings;
+  sharedAt?: Date;
 }
 
 export interface TranscriptionJob {
@@ -204,6 +208,34 @@ export interface AnalysisTypeInfo {
   description: string;
 }
 
+export interface ShareSettings {
+  enabled: boolean;
+  expiresAt?: Date;
+  viewCount?: number;
+  maxViews?: number;
+  password?: string;
+}
+
+export interface ShareEmailRequest {
+  recipientEmail: string;
+  recipientName?: string;
+  message?: string;
+  senderName?: string;
+}
+
+export interface SharedTranscriptionView {
+  id: string;
+  fileName: string;
+  title?: string;
+  transcriptText?: string;
+  analyses?: AnalysisResults;
+  speakerSegments?: SpeakerSegment[];
+  speakers?: Speaker[];
+  createdAt: Date;
+  sharedBy?: string;
+  viewCount?: number;
+}
+
 export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
   {
     key: 'summary',
@@ -211,6 +243,13 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     icon: 'MessageSquare',
     color: 'blue',
     description: 'Comprehensive overview with key topics and decisions'
+  },
+  {
+    key: 'transcript',
+    label: 'Full Transcript',
+    icon: 'FileText',
+    color: 'gray',
+    description: 'Complete transcription of the audio'
   },
   {
     key: 'communicationStyles',
@@ -246,12 +285,5 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     icon: 'TrendingUp',
     color: 'teal',
     description: 'Growth opportunities and recommendations'
-  },
-  {
-    key: 'transcript',
-    label: 'Full Transcript',
-    icon: 'FileText',
-    color: 'gray',
-    description: 'Complete transcription of the audio'
   }
 ];
