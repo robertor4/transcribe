@@ -9,7 +9,7 @@ COPY turbo.json ./
 COPY packages ./packages
 COPY apps/web ./apps/web
 
-# Install dependencies
+# Install all dependencies (including workspace dependencies)
 RUN npm ci
 
 # Build shared package first
@@ -17,6 +17,7 @@ RUN npm run build:shared
 
 # Build web app
 WORKDIR /app/apps/web
+RUN npm ci
 RUN npm run build
 
 # Production stage
