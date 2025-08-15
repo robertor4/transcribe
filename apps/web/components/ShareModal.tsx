@@ -116,14 +116,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       }
 
       const response = await transcriptionApi.createShareLink(transcription.id, settings);
-      const url = response.data.shareUrl;
+      const url = response.data?.shareUrl || '';
       setShareUrl(url);
       await generateQRCode(url);
       
       // Update the transcription object
       const updatedTranscription = {
         ...transcription,
-        shareToken: response.data.shareToken,
+        shareToken: response.data?.shareToken,
         shareSettings: {
           enabled: true,
           ...settings,
