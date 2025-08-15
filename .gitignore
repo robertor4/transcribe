@@ -43,4 +43,7 @@ temp/
 
 # Test coverage
 coverage/
-.nyc_output/.env.production
+.nyc_output/
+
+# Production environment
+.env.production
