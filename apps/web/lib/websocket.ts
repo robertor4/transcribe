@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { auth } from './firebase';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
+import { getWebSocketUrl } from './config';
 
 class WebSocketService {
   private socket: Socket | null = null;
@@ -16,11 +17,12 @@ class WebSocketService {
     }
 
     const token = await user.getIdToken();
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const socketUrl = getWebSocketUrl();
 
-    this.socket = io(API_URL, {
+    this.socket = io(socketUrl, {
       auth: { token },
       transports: ['websocket'],
+      path: '/socket.io/',
     });
 
     this.socket.on('connect', () => {

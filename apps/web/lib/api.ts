@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { auth } from './firebase';
 import { ApiResponse, AnalysisType } from '@transcribe/shared';
+import { getApiUrl } from './config';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
