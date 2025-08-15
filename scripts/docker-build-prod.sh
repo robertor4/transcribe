@@ -21,7 +21,10 @@ if [ ! -f ".env.production" ]; then
 fi
 
 # Export all environment variables from .env.production
-export $(cat .env.production | grep -v '^#' | xargs)
+# Use a different method that handles multi-line values properly
+set -a
+source .env.production
+set +a
 
 echo -e "${GREEN}Environment variables loaded${NC}"
 
