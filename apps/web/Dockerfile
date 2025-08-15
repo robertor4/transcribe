@@ -9,29 +9,31 @@ COPY turbo.json ./
 COPY packages ./packages
 COPY apps/web ./apps/web
 
-# Install all dependencies (including workspace dependencies)
+# Install all dependencies at root level (monorepo)
 RUN npm ci
 
 # Build shared package first
 RUN npm run build:shared
 
-# Build web app
-WORKDIR /app/apps/web
-RUN npm ci
-RUN npm run build
+# Build web app (from root, using workspace)
+RUN npm run build --workspace=apps/web
 
 # Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built application
+# Copy package files first
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/packages ./packages
+
+# Copy web app files
+COPY --from=builder /app/apps/web/package*.json ./apps/web/
 COPY --from=builder /app/apps/web/.next ./apps/web/.next
 COPY --from=builder /app/apps/web/public ./apps/web/public
-COPY --from=builder /app/apps/web/package*.json ./apps/web/
-COPY --from=builder /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/package*.json ./
+
+# Copy node_modules from root (monorepo structure)
+COPY --from=builder /app/node_modules ./node_modules
 
 WORKDIR /app/apps/web
 
