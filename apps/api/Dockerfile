@@ -33,7 +33,8 @@ COPY --from=builder /app/turbo.json ./
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/apps/api/package*.json ./apps/api/
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+# Copy all node_modules from root (monorepo structure)
+COPY --from=builder /app/node_modules ./node_modules
 
 WORKDIR /app/apps/api
 
