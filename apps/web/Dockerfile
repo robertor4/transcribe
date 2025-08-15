@@ -9,6 +9,11 @@ COPY turbo.json ./
 COPY packages ./packages
 COPY apps/web ./apps/web
 
+# Copy the production environment file to both root and app directory
+# This ensures it's available during the workspace build
+COPY .env.production ./.env.production
+COPY .env.production ./apps/web/.env.production
+
 # Install all dependencies at root level (monorepo)
 RUN npm ci
 
@@ -16,7 +21,8 @@ RUN npm ci
 RUN npm run build:shared
 
 # Build web app (from root, using workspace)
-RUN npm run build --workspace=apps/web
+# Next.js will read .env.production during build
+RUN cd apps/web && npm run build
 
 # Production stage
 FROM node:20-alpine
