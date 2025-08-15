@@ -50,6 +50,7 @@ services:
     container_name: transcribe-web
     environment:
       - NODE_ENV=production
+      - PORT=3000
     env_file:
       - .env.production
     depends_on:
