@@ -169,9 +169,9 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
       'teal': 'hover:text-teal-700 hover:border-teal-300',
     };
     
-    const textColor = baseColors[color] || 'text-gray-500';
-    const borderColor = isActive ? (borderColors[color] || 'border-gray-500') : '';
-    const hoverStyle = isActive ? '' : (hoverColors[color] || 'hover:text-gray-700 hover:border-gray-300');
+    const textColor = baseColors[color as keyof typeof baseColors] || 'text-gray-500';
+    const borderColor = isActive ? (borderColors[color as keyof typeof borderColors] || 'border-gray-500') : '';
+    const hoverStyle = isActive ? '' : (hoverColors[color as keyof typeof hoverColors] || 'hover:text-gray-700 hover:border-gray-300');
     
     return { textColor, borderColor, hoverStyle };
   };
