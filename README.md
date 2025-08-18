@@ -40,9 +40,9 @@ A production-ready monorepo application for audio transcription and intelligent 
 ### Infrastructure
 - **Monorepo**: Turborepo
 - **Containerization**: Docker & Docker Compose
-- **Web Server**: Nginx (production)
-- **Queue**: Redis
-- **Deployment**: VPS with automated scripts
+- **Reverse Proxy**: Traefik v3 with automatic SSL (Let's Encrypt)
+- **Queue**: Redis with Bull for job processing
+- **Deployment**: Hetzner VPS with Docker-based deployment
 
 ## Quick Start
 
@@ -65,15 +65,24 @@ cd transcribe
 
 Create `.env` in the root directory:
 ```bash
+# AI Services
 OPENAI_API_KEY=your_openai_key
 ASSEMBLYAI_API_KEY=your_assemblyai_key
+
+# Firebase Admin SDK
 FIREBASE_PROJECT_ID=your_project_id
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 FIREBASE_CLIENT_EMAIL=your_service_account_email
 FIREBASE_STORAGE_BUCKET=project-id.firebasestorage.app
+
+# Redis (local development)
 REDIS_HOST=localhost
 REDIS_PORT=6379
+
+# Authentication
 JWT_SECRET=your_jwt_secret
+
+# Server
 PORT=3001
 ```
 
@@ -116,11 +125,11 @@ npm run redis:check   # Verify Redis connectivity
 npm run build:shared  # Build shared TypeScript types package
 ```
 
-### Docker Development
+### Docker Commands
 ```bash
-npm run dev:docker       # Run entire stack in Docker
-npm run dev:docker:build # Build Docker images for development
-npm run docker:logs      # View Docker container logs
+docker-compose -f docker-compose.dev.yml up    # Run development stack in Docker
+docker-compose -f docker-compose.prod.yml up   # Run production stack locally
+docker-compose logs -f                          # View container logs
 ```
 
 ### Testing & Quality
@@ -153,11 +162,12 @@ transcribe/
 ├── packages/
 │   └── shared/             # Shared TypeScript types
 ├── scripts/
-│   ├── setup-vps.sh       # VPS setup automation
-│   ├── deploy.sh          # Deployment script
-│   └── deploy-update.sh   # Update deployment
-├── nginx/                  # Nginx configuration
-├── docker-compose.yml      # Production Docker setup
+│   └── deploy.sh          # Deployment script to Hetzner
+├── docs/                   # Documentation
+│   ├── DEPLOYMENT.md      # Deployment guide
+│   ├── DOCKER.md          # Docker setup
+│   └── ...
+├── docker-compose.prod.yml # Production setup with Traefik
 ├── docker-compose.dev.yml  # Development Docker setup
 └── turbo.json             # Turborepo configuration
 ```
@@ -186,28 +196,36 @@ transcribe/
 
 ## Deployment
 
-### VPS Deployment
+### Production Deployment (Traefik + Docker)
 
-1. Run the setup script on a fresh Ubuntu 22.04/24.04 VPS:
+The application uses Traefik as a reverse proxy with automatic SSL certificate management from Let's Encrypt.
+
+1. **Configure Server IP**: Edit `scripts/deploy.sh` and set your server IP:
 ```bash
-sudo bash scripts/setup-vps.sh yourdomain.com your@email.com
+SERVER_IP="YOUR_SERVER_IP"  # Replace with actual IP
 ```
 
-2. Deploy the application:
+2. **Set Production Environment**: Create `.env.production` with your production values (see `docs/PRODUCTION_ENV_TEMPLATE.md`)
+
+3. **Deploy to Server**:
 ```bash
 ./scripts/deploy.sh
 ```
 
-3. For updates:
-```bash
-./scripts/deploy-update.sh
-```
+This will:
+- Install Docker and Docker Compose if needed
+- Copy files to your server
+- Build and start all services with Traefik
+- Automatically obtain SSL certificates
+- Set up health checks and monitoring
 
-### Docker Production Deployment
+### Manual Docker Deployment
 
 ```bash
 docker-compose -f docker-compose.prod.yml up -d
 ```
+
+For detailed deployment instructions, see `docs/DEPLOYMENT.md`
 
 ## Configuration
 

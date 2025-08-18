@@ -1,6 +1,50 @@
 version: '3.8'
 
 services:
+  # Traefik - Modern reverse proxy with automatic SSL
+  traefik:
+    image: traefik:v3.0
+    container_name: transcribe-traefik
+    command:
+      # Enable Docker provider
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=transcribe_transcribe-network"
+      
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      
+      # SSL/TLS Configuration - Use HTTP challenge for Let's Encrypt
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@neuralsummary.com}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      
+      # Enable API (for debugging, disable later)
+      - "--api.insecure=true"
+      
+      # Logging
+      - "--log.level=DEBUG"
+      - "--accesslog=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard (remove in production)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+      - traefik-logs:/var/log/traefik
+    networks:
+      - transcribe-network
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis - Message queue and caching
   redis:
     image: redis:7-alpine
     container_name: transcribe-redis
@@ -15,7 +59,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # API Backend - NestJS
   api:
     build:
       context: .
@@ -26,6 +76,7 @@ services:
       - PORT=3001
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - FRONTEND_URL=https://neuralsummary.com
     env_file:
       - .env.production
     depends_on:
@@ -37,12 +88,32 @@ services:
     networks:
       - transcribe-network
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      
+      # API routing
+      - "traefik.http.routers.api.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`))"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=3001"
+      
+      
+      # Strip /api prefix when forwarding to backend
+      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.middlewares=api-stripprefix@docker"
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
 
+  # Web Frontend - Next.js
   web:
     build:
       context: .
@@ -58,30 +129,39 @@ services:
     networks:
       - transcribe-network
     restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  nginx:
-    image: nginx:alpine
-    container_name: transcribe-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-      - nginx-logs:/var/log/nginx
-    depends_on:
-      - web
-      - api
-    networks:
-      - transcribe-network
-    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      
+      # Frontend routing
+      - "traefik.http.routers.web.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+      
+      # HTTP to HTTPS redirect
+      - "traefik.http.routers.web-redirect.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      - "traefik.http.routers.web-redirect.entrypoints=web"
+      - "traefik.http.routers.web-redirect.middlewares=https-redirect@docker"
+      
+      # Security headers middleware
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+      
+      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.referrerPolicy=strict-origin-when-cross-origin"
+      
+      - "traefik.http.routers.web.middlewares=security-headers@docker"
     logging:
       driver: "json-file"
       options:
@@ -93,7 +173,9 @@ volumes:
     driver: local
   api-logs:
     driver: local
-  nginx-logs:
+  traefik-certificates:
+    driver: local
+  traefik-logs:
     driver: local
 
 networks:
