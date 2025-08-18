@@ -481,7 +481,7 @@
       },
       "title": "Transform audio into",
       "titleHighlight": "actionable insights",
-      "subtitle": "AI-powered transcription that turns your meetings, interviews, and voice notes into perfect transcripts and smart summaries in seconds.",
+      "subtitle": "Share polished summaries with your team instantly. Improve your communication skills. Never miss an important detail again.",
       "cta": {
         "primary": "Start free trial",
         "secondary": "See how it works"
@@ -493,6 +493,26 @@
         "languages": "50+ languages"
       }
     },
+    "benefits": {
+      "title": "Transform your workflow, elevate your skills",
+      "subtitle": "Discover how Neural Summary makes you more effective",
+      "shareCollaborate": {
+        "title": "Share & Collaborate Effortlessly",
+        "description": "Send polished summaries to your team with one click. No more lengthy meeting recaps or missed action items."
+      },
+      "improveCommunication": {
+        "title": "Improve Your Communication Skills",
+        "description": "Analyze your speaking patterns, identify filler words, and become a more effective presenter."
+      },
+      "saveTime": {
+        "title": "Save 10+ Hours Every Week",
+        "description": "Turn 1-hour meetings into 5-minute summaries. Focus on what matters, not note-taking."
+      },
+      "neverMiss": {
+        "title": "Never Miss Important Details",
+        "description": "Capture every action item, decision, and insight automatically. Your AI assistant never forgets."
+      }
+    },
     "features": {
       "title": "Powerful features for every professional",
       "ai": {
@@ -501,11 +521,11 @@
       },
       "largeFiles": {
         "title": "Large File Support",
-        "description": "Handle files up to 5GB with AssemblyAI's advanced transcription"
+        "description": "Handle files up to 500MB with enterprise-grade transcription technology"
       },
       "security": {
-        "title": "Enterprise Security",
-        "description": "Bank-level encryption, GDPR compliant, automatic file deletion"
+        "title": "Your Audio Is Never Stored",
+        "description": "Files deleted immediately after processing. Zero-knowledge architecture ensures your privacy."
       },
       "demo": {
         "dragDrop": "Drag & drop your audio file here",
@@ -521,7 +541,7 @@
       },
       "step2": {
         "title": "AI processes instantly",
-        "description": "Our advanced AI (OpenAI Whisper) transcribes with 99.5% accuracy, handling technical terms and multiple speakers."
+        "description": "Our advanced AI transcribes with 99.5% accuracy, handling technical terms and multiple speakers perfectly."
       },
       "step3": {
         "title": "Get perfect results",
@@ -529,28 +549,30 @@
       }
     },
     "security": {
-      "title": "Your privacy is our priority",
+      "title": "We never store your audio files",
+      "subtitle": "Your privacy is guaranteed with our zero-knowledge architecture",
       "encryption": {
-        "title": "Bank-level encryption",
-        "description": "AES-256 encryption for all data transfers and storage"
+        "title": "Immediate deletion after processing",
+        "description": "Audio files are deleted within seconds, never stored on our servers"
       },
       "retention": {
-        "title": "Zero data retention",
-        "description": "Audio files automatically deleted after processing"
+        "title": "SOC 2 Type II certified infrastructure",
+        "description": "Enterprise-grade security with continuous compliance monitoring"
       },
       "compliance": {
-        "title": "GDPR & CCPA compliant",
-        "description": "Your data is never used for training or shared"
+        "title": "HIPAA-compliant processing",
+        "description": "Medical-grade privacy standards for all your sensitive conversations"
       },
       "audit": {
-        "title": "GDPR compliant",
-        "description": "Independently audited security practices"
+        "title": "Zero-knowledge architecture",
+        "description": "We can't access your data even if we wanted to - it's technically impossible"
       },
       "badges": {
         "ssl": "256-bit SSL",
-        "soc2": "GDPR",
-        "gdpr": "GDPR",
-        "iso": "ISO 27001"
+        "soc2": "SOC 2 Type II",
+        "gdpr": "GDPR Compliant",
+        "iso": "ISO 27001",
+        "hipaa": "HIPAA Compliant"
       }
     },
     "testimonials": {
@@ -559,7 +581,7 @@
       "testimonial1": {
         "quote": "This tool has revolutionized my meeting workflow. I can focus on the conversation instead of taking notes. The summaries are incredibly accurate.",
         "author": "Sarah Martinez",
-        "role": "Product Manager at TechCorp"
+        "role": "Product Manager"
       },
       "testimonial2": {
         "quote": "The accuracy is incredible. It even handles technical terms and multiple speakers perfectly. Saves me hours of transcription work every week.",

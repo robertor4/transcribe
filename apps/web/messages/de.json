@@ -142,7 +142,7 @@
     "error": {
       "fileSize": "Dateigröße überschreitet 5GB-Limit",
       "fileTooLarge": "Datei zu groß (max 100MB)",
-      "fileTooLargeWhisper": "Datei ist zu groß. Maximale Größe ist 25MB aufgrund der OpenAI Whisper API-Begrenzung. Für größere Dateien sollten Sie diese aufteilen.",
+      "fileTooLargeWhisper": "Datei ist zu groß. Maximale Größe ist 25MB aufgrund der API-Begrenzung. Für größere Dateien sollten Sie diese aufteilen.",
       "fileType": "Nicht unterstützter Dateityp",
       "unsupportedFormat": "Nicht unterstütztes Format (Typ: {type})",
       "invalidFileType": "Ungültiger Dateityp. Unterstützte Formate: {formats}",
@@ -211,7 +211,7 @@
     },
     "step2": {
       "title": "KI-Transkription",
-      "description": "Unsere fortschrittliche KI, angetrieben von OpenAI Whisper, transkribiert Ihre Audiodateien mit hoher Genauigkeit und erkennt automatisch mehrere Sprachen."
+      "description": "Unsere fortschrittliche KI transkribiert Ihre Audiodateien mit hoher Genauigkeit und erkennt automatisch mehrere Sprachen."
     },
     "step3": {
       "title": "Intelligente Zusammenfassung",
@@ -416,7 +416,7 @@
       },
       "title": "Verwandeln Sie Audio in",
       "titleHighlight": "verwertbare Erkenntnisse",
-      "subtitle": "KI-gestützte Transkription, die Ihre Meetings, Interviews und Sprachnotizen in perfekte Transkripte und intelligente Zusammenfassungen in Sekunden verwandelt.",
+      "subtitle": "Teilen Sie professionelle Zusammenfassungen sofort mit Ihrem Team. Verbessern Sie Ihre Kommunikationsfähigkeiten. Verpassen Sie nie wieder wichtige Details.",
       "cta": {
         "primary": "Kostenlose Testversion starten",
         "secondary": "So funktioniert's"
@@ -426,6 +426,26 @@
         "saveTime": "Sparen Sie 10+ Stunden/Woche",
         "accuracy": "99,5% Genauigkeit",
         "languages": "50+ Sprachen"
+      }
+    },
+    "benefits": {
+      "title": "Transformieren Sie Ihre Arbeitsweise, verbessern Sie Ihre Fähigkeiten",
+      "subtitle": "Entdecken Sie, wie Neural Summary Sie effektiver macht",
+      "shareCollaborate": {
+        "title": "Mühelos Teilen & Zusammenarbeiten",
+        "description": "Senden Sie professionelle Zusammenfassungen mit einem Klick an Ihr Team. Keine langwierigen Meeting-Berichte oder verpasste Aktionspunkte mehr."
+      },
+      "improveCommunication": {
+        "title": "Verbessern Sie Ihre Kommunikationsfähigkeiten",
+        "description": "Analysieren Sie Ihre Sprechmuster, identifizieren Sie Füllwörter und werden Sie ein effektiverer Präsentator."
+      },
+      "saveTime": {
+        "title": "Sparen Sie 10+ Stunden Jede Woche",
+        "description": "Verwandeln Sie 1-stündige Meetings in 5-minütige Zusammenfassungen. Konzentrieren Sie sich auf das Wesentliche, nicht auf Notizen."
+      },
+      "neverMiss": {
+        "title": "Verpassen Sie Nie Wichtige Details",
+        "description": "Erfassen Sie automatisch jeden Aktionspunkt, jede Entscheidung und jeden Einblick. Ihr KI-Assistent vergisst nie."
       }
     },
     "features": {
@@ -439,8 +459,8 @@
         "description": "Verarbeiten Sie Dateien bis zu 500 MB mit automatischer intelligenter Aufteilung"
       },
       "security": {
-        "title": "Enterprise-Sicherheit",
-        "description": "Verschlüsselung auf Bankniveau, DSGVO-konform, automatische Dateilöschung"
+        "title": "Ihre Audio Wird Niemals Gespeichert",
+        "description": "Dateien werden sofort nach der Verarbeitung gelöscht. Zero-Knowledge-Architektur gewährleistet Ihre Privatsphäre."
       },
       "demo": {
         "dragDrop": "Ziehen Sie Ihre Audiodatei hierher",
@@ -456,7 +476,7 @@
       },
       "step2": {
         "title": "KI verarbeitet sofort",
-        "description": "Unsere fortschrittliche KI (OpenAI Whisper) transkribiert mit 99,5% Genauigkeit und verarbeitet technische Begriffe und mehrere Sprecher."
+        "description": "Unsere fortschrittliche KI transkribiert mit 99,5% Genauigkeit und verarbeitet technische Begriffe und mehrere Sprecher perfekt."
       },
       "step3": {
         "title": "Perfekte Ergebnisse erhalten",
@@ -464,28 +484,30 @@
       }
     },
     "security": {
-      "title": "Ihre Privatsphäre ist unsere Priorität",
+      "title": "Wir speichern niemals Ihre Audiodateien",
+      "subtitle": "Ihre Privatsphäre ist mit unserer Zero-Knowledge-Architektur garantiert",
       "encryption": {
-        "title": "Verschlüsselung auf Bankniveau",
-        "description": "AES-256-Verschlüsselung für alle Datenübertragungen und Speicherung"
+        "title": "Sofortige Löschung nach Verarbeitung",
+        "description": "Audiodateien werden innerhalb von Sekunden gelöscht, niemals auf unseren Servern gespeichert"
       },
       "retention": {
-        "title": "Keine Datenspeicherung",
-        "description": "Audiodateien werden nach der Verarbeitung automatisch gelöscht"
+        "title": "SOC 2 Type II zertifizierte Infrastruktur",
+        "description": "Enterprise-Grade-Sicherheit mit kontinuierlicher Compliance-Überwachung"
       },
       "compliance": {
-        "title": "DSGVO & CCPA konform",
-        "description": "Ihre Daten werden niemals für Training verwendet oder geteilt"
+        "title": "HIPAA-konforme Verarbeitung",
+        "description": "Medizinische Datenschutzstandards für alle Ihre sensiblen Gespräche"
       },
       "audit": {
-        "title": "DSGVO-konform",
-        "description": "Unabhängig geprüfte Sicherheitspraktiken"
+        "title": "Zero-Knowledge-Architektur",
+        "description": "Wir können nicht auf Ihre Daten zugreifen, selbst wenn wir wollten - es ist technisch unmöglich"
       },
       "badges": {
         "ssl": "256-bit SSL",
-        "soc2": "DSGVO",
-        "gdpr": "DSGVO",
-        "iso": "ISO 27001"
+        "soc2": "SOC 2 Type II",
+        "gdpr": "DSGVO-konform",
+        "iso": "ISO 27001",
+        "hipaa": "HIPAA-konform"
       }
     },
     "testimonials": {
@@ -494,7 +516,7 @@
       "testimonial1": {
         "quote": "Dieses Tool hat meinen Meeting-Workflow revolutioniert. Ich kann mich auf das Gespräch konzentrieren, anstatt Notizen zu machen. Die Zusammenfassungen sind unglaublich genau.",
         "author": "Sarah Martinez",
-        "role": "Produktmanagerin bei TechCorp"
+        "role": "Produktmanagerin"
       },
       "testimonial2": {
         "quote": "Die Genauigkeit ist unglaublich. Es verarbeitet technische Begriffe und mehrere Sprecher perfekt. Spart mir jede Woche Stunden an Transkriptionsarbeit.",

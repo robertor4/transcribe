@@ -1,4 +1,4 @@
-# Neural Notes - Audio Transcription & AI Summarization Platform
+# Neural Summary - Audio Transcription & AI Summarization Platform
 
 A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 500MB), real-time progress tracking via WebSockets, and context-aware AI processing.
 

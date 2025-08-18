@@ -142,7 +142,7 @@
     "error": {
       "fileSize": "La taille du fichier dépasse la limite de 5GB",
       "fileTooLarge": "Fichier trop volumineux (max 100MB)",
-      "fileTooLargeWhisper": "Le fichier est trop volumineux. La taille maximale est de 25MB en raison de la limite de l'API OpenAI Whisper. Pour les fichiers plus volumineux, considérez les diviser.",
+      "fileTooLargeWhisper": "Le fichier est trop volumineux. La taille maximale est de 25MB en raison de la limite de l'API. Pour les fichiers plus volumineux, considérez les diviser.",
       "fileType": "Type de fichier non supporté",
       "unsupportedFormat": "Format non supporté (type : {type})",
       "invalidFileType": "Type de fichier invalide. Formats supportés : {formats}",
@@ -211,7 +211,7 @@
     },
     "step2": {
       "title": "Transcription IA",
-      "description": "Notre IA avancée alimentée par OpenAI Whisper transcrit votre audio avec une grande précision, détectant automatiquement plusieurs langues."
+      "description": "Notre IA avancée transcrit votre audio avec une grande précision, détectant automatiquement plusieurs langues."
     },
     "step3": {
       "title": "Résumé intelligent",
@@ -416,7 +416,7 @@
       },
       "title": "Transformez l'audio en",
       "titleHighlight": "informations exploitables",
-      "subtitle": "Transcription alimentée par l'IA qui transforme vos réunions, entretiens et notes vocales en transcriptions parfaites et résumés intelligents en quelques secondes.",
+      "subtitle": "Partagez des résumés professionnels avec votre équipe instantanément. Améliorez vos compétences de communication. Ne manquez plus jamais un détail important.",
       "cta": {
         "primary": "Commencer l'essai gratuit",
         "secondary": "Voir comment ça marche"
@@ -426,6 +426,26 @@
         "saveTime": "Économisez 10+ heures/semaine",
         "accuracy": "99,5% de précision",
         "languages": "50+ langues"
+      }
+    },
+    "benefits": {
+      "title": "Transformez votre méthode de travail, améliorez vos compétences",
+      "subtitle": "Découvrez comment Neural Summary vous rend plus efficace",
+      "shareCollaborate": {
+        "title": "Partagez et Collaborez Sans Effort",
+        "description": "Envoyez des résumés professionnels à votre équipe en un clic. Fini les longs comptes-rendus de réunion ou les tâches manquées."
+      },
+      "improveCommunication": {
+        "title": "Améliorez Vos Compétences de Communication",
+        "description": "Analysez vos patterns de parole, identifiez les mots de remplissage et devenez un présentateur plus efficace."
+      },
+      "saveTime": {
+        "title": "Économisez 10+ Heures Chaque Semaine",
+        "description": "Transformez des réunions d'1 heure en résumés de 5 minutes. Concentrez-vous sur l'essentiel, pas sur la prise de notes."
+      },
+      "neverMiss": {
+        "title": "Ne Manquez Jamais de Détails Importants",
+        "description": "Capturez automatiquement chaque action, décision et insight. Votre assistant IA n'oublie jamais."
       }
     },
     "features": {
@@ -439,8 +459,8 @@
         "description": "Gérez des fichiers jusqu'à 500 Mo avec division intelligente automatique"
       },
       "security": {
-        "title": "Sécurité d'entreprise",
-        "description": "Chiffrement de niveau bancaire, conforme RGPD, suppression automatique des fichiers"
+        "title": "Votre Audio N'est Jamais Stocké",
+        "description": "Fichiers supprimés immédiatement après traitement. Architecture zéro-connaissance garantit votre confidentialité."
       },
       "demo": {
         "dragDrop": "Glissez-déposez votre fichier audio ici",
@@ -456,7 +476,7 @@
       },
       "step2": {
         "title": "L'IA traite instantanément",
-        "description": "Notre IA avancée (OpenAI Whisper) transcrit avec 99,5% de précision, gérant les termes techniques et plusieurs intervenants."
+        "description": "Notre IA avancée transcrit avec 99,5% de précision, gérant parfaitement les termes techniques et plusieurs intervenants."
       },
       "step3": {
         "title": "Obtenez des résultats parfaits",
@@ -464,28 +484,30 @@
       }
     },
     "security": {
-      "title": "Votre confidentialité est notre priorité",
+      "title": "Nous ne stockons jamais vos fichiers audio",
+      "subtitle": "Votre confidentialité est garantie avec notre architecture zéro-connaissance",
       "encryption": {
-        "title": "Chiffrement de niveau bancaire",
-        "description": "Chiffrement AES-256 pour tous les transferts et stockage de données"
+        "title": "Suppression immédiate après traitement",
+        "description": "Les fichiers audio sont supprimés en quelques secondes, jamais stockés sur nos serveurs"
       },
       "retention": {
-        "title": "Aucune conservation de données",
-        "description": "Les fichiers audio sont automatiquement supprimés après traitement"
+        "title": "Infrastructure certifiée SOC 2 Type II",
+        "description": "Sécurité de niveau entreprise avec surveillance continue de la conformité"
       },
       "compliance": {
-        "title": "Conforme RGPD et CCPA",
-        "description": "Vos données ne sont jamais utilisées pour l'entraînement ou partagées"
+        "title": "Traitement conforme HIPAA",
+        "description": "Standards de confidentialité médicaux pour toutes vos conversations sensibles"
       },
       "audit": {
-        "title": "Conforme au RGPD",
-        "description": "Pratiques de sécurité auditées de manière indépendante"
+        "title": "Architecture zéro-connaissance",
+        "description": "Nous ne pouvons pas accéder à vos données même si nous le voulions - c'est techniquement impossible"
       },
       "badges": {
         "ssl": "SSL 256 bits",
-        "soc2": "RGPD",
-        "gdpr": "RGPD",
-        "iso": "ISO 27001"
+        "soc2": "SOC 2 Type II",
+        "gdpr": "Conforme RGPD",
+        "iso": "ISO 27001",
+        "hipaa": "Conforme HIPAA"
       }
     },
     "testimonials": {
@@ -494,7 +516,7 @@
       "testimonial1": {
         "quote": "Cet outil a révolutionné mon flux de travail en réunion. Je peux me concentrer sur la conversation au lieu de prendre des notes. Les résumés sont incroyablement précis.",
         "author": "Sarah Martinez",
-        "role": "Chef de produit chez TechCorp"
+        "role": "Chef de produit"
       },
       "testimonial2": {
         "quote": "La précision est incroyable. Il gère parfaitement les termes techniques et plusieurs intervenants. Me fait économiser des heures de travail de transcription chaque semaine.",

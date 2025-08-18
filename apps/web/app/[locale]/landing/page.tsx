@@ -168,72 +168,85 @@ export default async function LandingPage({
           </div>
         </section>
 
-        {/* Visual Demo Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="features-heading">
+        {/* Benefits Section - What's in it for me? */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="benefits-heading">
           <div className="max-w-7xl mx-auto">
-            <ScrollAnimation className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <h2 id="features-heading" className="text-3xl font-bold text-gray-900">
-                    {t('landing.features.title')}
-                  </h2>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <Sparkles className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-gray-900">{t('landing.features.ai.title')}</h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {t('landing.features.ai.description')}
-                        </p>
-                      </div>
+            <div className="text-center mb-12">
+              <ScrollAnimation>
+                <h2 id="benefits-heading" className="text-4xl font-bold text-gray-900 mb-4">
+                  {t('landing.benefits.title')}
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  {t('landing.benefits.subtitle')}
+                </p>
+              </ScrollAnimation>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft">
+                <div className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
+                      <Users className="h-6 w-6 text-[#cc3399]" aria-hidden="true" />
                     </div>
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <FileAudio className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-gray-900">{t('landing.features.largeFiles.title')}</h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {t('landing.features.largeFiles.description')}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                          <Lock className="h-5 w-5 text-[#cc3399]" aria-hidden="true" />
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-semibold text-gray-900">{t('landing.features.security.title')}</h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {t('landing.features.security.description')}
-                        </p>
-                      </div>
-                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
+                      {t('landing.benefits.shareCollaborate.title')}
+                    </h3>
                   </div>
+                  <p className="text-gray-600">
+                    {t('landing.benefits.shareCollaborate.description')}
+                  </p>
                 </div>
-                <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-100 rounded-xl p-8 flex items-center justify-center min-h-[400px]">
-                  <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg hover-scale">
-                      <Upload className="h-10 w-10 text-[#cc3399]" aria-hidden="true" />
+              </ScrollAnimation>
+
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={100}>
+                <div className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="h-6 w-6 text-blue-600" aria-hidden="true" />
                     </div>
-                    <p className="text-lg font-semibold text-gray-800">
-                      {t('landing.features.demo.dragDrop')}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {t('landing.features.demo.record')}
-                    </p>
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
+                      {t('landing.benefits.improveCommunication.title')}
+                    </h3>
                   </div>
+                  <p className="text-gray-600">
+                    {t('landing.benefits.improveCommunication.description')}
+                  </p>
                 </div>
-              </div>
-            </ScrollAnimation>
+              </ScrollAnimation>
+
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft" delay={200}>
+                <div className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Clock className="h-6 w-6 text-green-600" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
+                      {t('landing.benefits.saveTime.title')}
+                    </h3>
+                  </div>
+                  <p className="text-gray-600">
+                    {t('landing.benefits.saveTime.description')}
+                  </p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={300}>
+                <div className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="h-6 w-6 text-purple-600" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
+                      {t('landing.benefits.neverMiss.title')}
+                    </h3>
+                  </div>
+                  <p className="text-gray-600">
+                    {t('landing.benefits.neverMiss.description')}
+                  </p>
+                </div>
+              </ScrollAnimation>
+            </div>
           </div>
         </section>
 
@@ -251,53 +264,80 @@ export default async function LandingPage({
             
             <div className="grid gap-8 md:grid-cols-3">
               <ScrollAnimation className="relative" animation="slideLeft">
-                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     1
                   </div>
-                  <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                    <Mic className="h-7 w-7 text-blue-600" aria-hidden="true" />
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="/assets/images/how-it-works-step1-recording.webp"
+                      alt="Recording audio easily"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {t('landing.howItWorks.step1.title')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('landing.howItWorks.step1.description')}
-                  </p>
+                  <div className="p-8">
+                    <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                      <Mic className="h-7 w-7 text-blue-600" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      {t('landing.howItWorks.step1.title')}
+                    </h3>
+                    <p className="text-gray-600">
+                      {t('landing.howItWorks.step1.description')}
+                    </p>
+                  </div>
                 </article>
               </ScrollAnimation>
 
               <ScrollAnimation className="relative" delay={200}>
-                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     2
                   </div>
-                  <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                    <Brain className="h-7 w-7 text-purple-600" aria-hidden="true" />
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="/assets/images/how-it-works-step2-ai-processing.webp"
+                      alt="AI processing audio"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {t('landing.howItWorks.step2.title')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('landing.howItWorks.step2.description')}
-                  </p>
+                  <div className="p-8">
+                    <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                      <Brain className="h-7 w-7 text-purple-600" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      {t('landing.howItWorks.step2.title')}
+                    </h3>
+                    <p className="text-gray-600">
+                      {t('landing.howItWorks.step2.description')}
+                    </p>
+                  </div>
                 </article>
               </ScrollAnimation>
 
               <ScrollAnimation className="relative" animation="slideRight" delay={400}>
-                <article className="bg-white rounded-xl shadow-lg p-8 h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     3
                   </div>
-                  <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                    <Award className="h-7 w-7 text-green-600" aria-hidden="true" />
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src="/assets/images/how-it-works-step3-insights.webp"
+                      alt="Reviewing insights and summaries"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {t('landing.howItWorks.step3.title')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('landing.howItWorks.step3.description')}
-                  </p>
+                  <div className="p-8">
+                    <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                      <Award className="h-7 w-7 text-green-600" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                      {t('landing.howItWorks.step3.title')}
+                    </h3>
+                    <p className="text-gray-600">
+                      {t('landing.howItWorks.step3.description')}
+                    </p>
+                  </div>
                 </article>
               </ScrollAnimation>
             </div>
@@ -310,11 +350,16 @@ export default async function LandingPage({
             <ScrollAnimation className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
-                  <div className="flex items-center mb-6">
-                    <Shield className="h-8 w-8 text-green-600 mr-3" aria-hidden="true" />
-                    <h2 id="security-heading" className="text-2xl font-bold text-gray-900">
-                      {t('landing.security.title')}
-                    </h2>
+                  <div className="mb-6">
+                    <div className="flex items-center mb-2">
+                      <Shield className="h-8 w-8 text-green-600 mr-3" aria-hidden="true" />
+                      <h2 id="security-heading" className="text-3xl font-bold text-gray-900">
+                        {t('landing.security.title')}
+                      </h2>
+                    </div>
+                    <p className="text-lg text-gray-600">
+                      {t('landing.security.subtitle')}
+                    </p>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-start">
@@ -347,23 +392,33 @@ export default async function LandingPage({
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-center">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Lock className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
-                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.ssl')}</p>
+                <div className="space-y-6">
+                  <div className="relative rounded-xl overflow-hidden shadow-xl">
+                    <img 
+                      src="/assets/images/security-data-protection.webp"
+                      alt="Enterprise-grade security and data protection"
+                      className="w-full h-auto"
+                      width={512}
+                      height={384}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-green-900/20 to-transparent"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Lock className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
+                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.ssl')}</p>
                     </div>
-                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Shield className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
-                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.soc2')}</p>
+                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Shield className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
+                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.soc2')}</p>
                     </div>
-                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Award className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
-                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.gdpr')}</p>
+                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
+                      <Award className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
+                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.gdpr')}</p>
                     </div>
-                    <div className="bg-white rounded-lg p-4 text-center shadow-sm hover-scale transition-all-smooth">
-                      <CheckCircle className="h-8 w-8 text-gray-400 mx-auto mb-2" aria-hidden="true" />
-                      <p className="text-xs text-gray-600 font-medium">{t('landing.security.badges.iso')}</p>
+                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
+                      <CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
+                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.hipaa')}</p>
                     </div>
                   </div>
                 </div>
@@ -399,7 +454,13 @@ export default async function LandingPage({
                   "{t('landing.testimonials.testimonial1.quote')}"
                 </p>
                 <footer className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <img 
+                    src="/assets/images/avatars/avatar-sarah-martinez.webp"
+                    alt="Sarah Martinez"
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
+                    width={40}
+                    height={40}
+                  />
                   <div>
                     <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial1.author')}</cite>
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial1.role')}</p>
@@ -419,7 +480,13 @@ export default async function LandingPage({
                   "{t('landing.testimonials.testimonial2.quote')}"
                 </p>
                 <footer className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <img 
+                    src="/assets/images/avatars/avatar-james-liu.webp"
+                    alt="Dr. James Liu"
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
+                    width={40}
+                    height={40}
+                  />
                   <div>
                     <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial2.author')}</cite>
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial2.role')}</p>
@@ -439,7 +506,13 @@ export default async function LandingPage({
                   "{t('landing.testimonials.testimonial3.quote')}"
                 </p>
                 <footer className="flex items-center">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full mr-3" aria-hidden="true"></div>
+                  <img 
+                    src="/assets/images/avatars/avatar-emily-chen.webp"
+                    alt="Emily Chen"
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
+                    width={40}
+                    height={40}
+                  />
                   <div>
                     <cite className="font-semibold text-gray-900 text-sm not-italic">{t('landing.testimonials.testimonial3.author')}</cite>
                     <p className="text-xs text-gray-500">{t('landing.testimonials.testimonial3.role')}</p>
@@ -536,6 +609,8 @@ export default async function LandingPage({
                 <span>{t('landing.security.badges.soc2')}</span>
                 <span>•</span>
                 <span>{t('landing.security.badges.gdpr')}</span>
+                <span>•</span>
+                <span>{t('landing.security.badges.hipaa')}</span>
                 <span>•</span>
                 <span>{t('landing.security.badges.iso')}</span>
               </div>
