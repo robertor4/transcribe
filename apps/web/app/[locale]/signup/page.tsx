@@ -16,7 +16,7 @@ export default async function SignupPage({
         <div>
           <div className="flex justify-center mb-4">
             <img 
-              src="/assets/OT-symbol.webp" 
+              src="/assets/neural-summary-logo.webp" 
               alt="Neural Summary Logo" 
               className="h-12 w-auto"
             />

@@ -40,7 +40,7 @@ export default async function LandingPage({
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <img 
-                  src="/assets/OT-symbol.webp" 
+                  src="/assets/neural-summary-logo.webp" 
                   alt="Neural Summary" 
                   className="h-8 w-auto mr-3"
                   width={32}
@@ -596,7 +596,7 @@ export default async function LandingPage({
             <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
               <div className="flex items-center mb-4 md:mb-0">
                 <img 
-                  src="/assets/OT-symbol.webp" 
+                  src="/assets/neural-summary-logo.webp" 
                   alt="Neural Summary" 
                   className="h-6 w-auto mr-2"
                   width={24}

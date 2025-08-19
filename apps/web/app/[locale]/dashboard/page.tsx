@@ -120,7 +120,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <img 
-                src="/assets/OT-symbol.webp" 
+                src="/assets/neural-summary-logo.webp" 
                 alt="Neural Summary Logo" 
                 className="h-8 w-auto mr-3"
               />
