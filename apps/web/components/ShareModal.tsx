@@ -72,6 +72,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     includeSpeakerInfo: true,
   });
   
+  // Share mode tabs
+  const [shareMode, setShareMode] = useState<'link' | 'email'>('link');
+  
   // Email form
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
@@ -365,6 +368,38 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         <div className="p-6">
           {!transcription.shareToken ? (
             <>
+              {/* Tab Navigation */}
+              <div className="flex gap-2 mb-6 border-b border-gray-200">
+                <button
+                  onClick={() => setShareMode('link')}
+                  className={`px-4 py-2 font-medium transition-all ${
+                    shareMode === 'link'
+                      ? 'text-purple-600 border-b-2 border-purple-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Link className="w-4 h-4" />
+                    {t('shareViaLink')}
+                  </div>
+                </button>
+                <button
+                  onClick={() => setShareMode('email')}
+                  className={`px-4 py-2 font-medium transition-all ${
+                    shareMode === 'email'
+                      ? 'text-purple-600 border-b-2 border-purple-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {t('shareViaEmail')}
+                  </div>
+                </button>
+              </div>
+
+              {shareMode === 'link' ? (
+            <>
               {/* Content Selection */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -618,6 +653,74 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </>
                 )}
               </button>
+            </>
+              ) : (
+                <>
+                  {/* Email Form */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Mail className="w-5 h-5 text-purple-600" />
+                      {t('sendViaEmail')}
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      <input
+                        type="email"
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        placeholder={t('recipientEmail')}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
+                        required
+                      />
+                      
+                      <input
+                        type="text"
+                        value={recipientName}
+                        onChange={(e) => setRecipientName(e.target.value)}
+                        placeholder={t('recipientName')}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
+                      />
+                      
+                      <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder={t('personalMessage')}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
+                      />
+                      
+                      <button
+                        onClick={handleSendEmail}
+                        disabled={emailLoading || !recipientEmail}
+                        className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {emailLoading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            {t('sending')}
+                          </>
+                        ) : emailSent ? (
+                          <>
+                            <Check className="w-5 h-5" />
+                            {t('emailSent')}
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="w-5 h-5" />
+                            {t('sendEmail')}
+                          </>
+                        )}
+                      </button>
+                      
+                      {emailSent && (
+                        <div className="p-3 bg-green-50 text-green-700 rounded-lg text-sm">
+                          {t('emailSentSuccess')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <>

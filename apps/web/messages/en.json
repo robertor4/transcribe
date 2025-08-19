@@ -460,6 +460,12 @@
     "fr": "Français",
     "es": "Español"
   },
+  "cookieConsent": {
+    "title": "Cookie Preferences",
+    "description": "We use cookies to improve your experience. By continuing, you agree to our use of cookies.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
   "footer": {
     "copyright": "© 2024 Neural Summary. All rights reserved.",
     "privacy": "Privacy Policy",
@@ -638,8 +644,18 @@
   },
   "share": {
     "title": "Share Transcript",
+    "shareViaLink": "Share via Link",
+    "shareViaEmail": "Share via Email",
     "linkTab": "Share Link",
     "emailTab": "Send via Email",
+    "sendViaEmail": "Send via Email",
+    "recipientEmail": "Recipient's Email",
+    "recipientName": "Recipient's Name (optional)",
+    "personalMessage": "Personal Message (optional)",
+    "sending": "Sending...",
+    "sendEmail": "Send Email",
+    "emailSent": "Email Sent!",
+    "emailSentSuccess": "Email sent successfully! The recipient will receive the share link shortly.",
     "settings": "Share Settings",
     "shareSettings": "Security Settings",
     "contentSelection": "Select Content to Share",
