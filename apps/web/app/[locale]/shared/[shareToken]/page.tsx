@@ -14,8 +14,6 @@ import {
   Loader2,
   FileText,
   AlertCircle,
-  Shield,
-  CheckCircle,
 } from 'lucide-react';
 
 export default function SharedTranscriptionPage() {
@@ -220,93 +218,23 @@ export default function SharedTranscriptionPage() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Content Included Badge */}
-        {transcription.contentOptions && (
-          <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Shield className="w-5 h-5 text-purple-600" />
-              <h3 className="text-sm font-semibold text-gray-900">Shared Content</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {transcription.contentOptions.includeTranscript && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Transcript
-                </span>
-              )}
-              {transcription.contentOptions.includeSummary && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Summary
-                </span>
-              )}
-              {transcription.contentOptions.includeCommunicationStyles && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Communication Analysis
-                </span>
-              )}
-              {transcription.contentOptions.includeActionItems && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Action Items
-                </span>
-              )}
-              {transcription.contentOptions.includeEmotionalIntelligence && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-pink-100 text-pink-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Emotional IQ
-                </span>
-              )}
-              {transcription.contentOptions.includeInfluencePersuasion && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Influence Analysis
-                </span>
-              )}
-              {transcription.contentOptions.includePersonalDevelopment && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-teal-100 text-teal-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Development Insights
-                </span>
-              )}
-              {transcription.contentOptions.includeSpeakerInfo && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">
-                  <CheckCircle className="w-3 h-3" />
-                  Speaker Details
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
         <div className="bg-white rounded-lg shadow-sm p-6">
-          {/* Analysis Tabs - filter based on contentOptions */}
+          {/* Analysis Tabs - only show content that was explicitly shared */}
           {(transcription.analyses || transcription.transcriptText) && (
             <div>
-              {/* Build filtered analyses based on contentOptions */}
               <AnalysisTabs 
                 transcriptionId={transcription.id}
                 analyses={{
-                  // Only include analyses that were explicitly shared
+                  // The backend already filters analyses based on contentOptions
+                  // We just need to add the transcript if it was provided
                   ...(transcription.analyses || {}),
-                  // Add transcript if it was shared
-                  ...(transcription.transcriptText && transcription.contentOptions?.includeTranscript !== false 
+                  // Add transcript only if it was shared (backend provides it only when shared)
+                  ...(transcription.transcriptText 
                     ? { transcript: transcription.transcriptText } 
                     : {})
                 }}
-                speakerSegments={
-                  // Only include speaker info if it was shared
-                  transcription.contentOptions?.includeSpeakerInfo !== false 
-                    ? transcription.speakerSegments 
-                    : undefined
-                }
-                speakers={
-                  // Only include speaker info if it was shared
-                  transcription.contentOptions?.includeSpeakerInfo !== false 
-                    ? transcription.speakers 
-                    : undefined
-                }
+                speakerSegments={transcription.speakerSegments}
+                speakers={transcription.speakers}
               />
             </div>
           )}

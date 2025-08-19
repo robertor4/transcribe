@@ -229,4 +229,40 @@ Always rebuild shared package after modifications:
 ```bash
 npm run build:shared
 ```
+
+## UI Design Guidelines
+
+### Brand Colors
+- **Primary**: `#cc3399` (pink/magenta) 
+- **Primary hover**: `#b82d89` (darker pink)
+- **Primary light**: `bg-pink-50` for subtle backgrounds
 - Always use brand colors for new UI screens and components
+
+### Text Color Best Practices
+
+**CRITICAL: Always specify explicit text colors for readability**
+
+When creating UI components, NEVER use text size classes without color:
+- ❌ WRONG: `className="text-sm"` or `className="text-sm font-medium"`
+- ✅ CORRECT: `className="text-sm text-gray-700"` or `className="text-sm font-medium text-gray-800"`
+
+**Text Color Guidelines:**
+- **Headers/Titles**: `text-gray-900` (maximum contrast)
+- **Primary text**: `text-gray-800` (buttons, important labels)
+- **Secondary text**: `text-gray-700` (descriptions, form labels)
+- **Tertiary text**: `text-gray-600` (hints only - use sparingly)
+- **Never use**: `text-gray-500` or lighter for body text (poor readability)
+
+**Interactive Elements:**
+- **Default state**: `text-gray-700` minimum
+- **Hover state**: `hover:text-gray-900` or `hover:text-[#cc3399]`
+- **Selected/Active**: `text-[#cc3399]` or `text-gray-900`
+
+**Input Fields & Textareas:**
+- **Always include both text and placeholder colors**
+- ❌ WRONG: `className="px-3 py-2 border border-gray-400 rounded-lg"`
+- ✅ CORRECT: `className="px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500"`
+- **Input text**: `text-gray-800` (dark, readable)
+- **Placeholder text**: `placeholder:text-gray-500` (visible but subtle)
+- **Border**: `border-gray-400` minimum (not gray-300 or lighter)
+- **Focus state**: `focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20`
