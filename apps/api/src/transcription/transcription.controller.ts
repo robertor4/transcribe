@@ -18,6 +18,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
+import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import {
   isValidAudioFile,
@@ -301,7 +302,12 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async createShareLink(
     @Param('id') transcriptionId: string,
-    @Body() shareSettings: { expiresAt?: Date; maxViews?: number; password?: string },
+    @Body() shareSettings: { 
+      expiresAt?: Date; 
+      maxViews?: number; 
+      password?: string;
+      contentOptions?: ShareContentOptions;
+    },
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<{ shareToken: string; shareUrl: string }>> {
     const result = await this.transcriptionService.createShareLink(
@@ -338,7 +344,12 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async updateShareSettings(
     @Param('id') transcriptionId: string,
-    @Body() shareSettings: { expiresAt?: Date; maxViews?: number; password?: string },
+    @Body() shareSettings: { 
+      expiresAt?: Date; 
+      maxViews?: number; 
+      password?: string;
+      contentOptions?: ShareContentOptions;
+    },
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse> {
     await this.transcriptionService.updateShareSettings(

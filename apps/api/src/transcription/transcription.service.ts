@@ -18,6 +18,7 @@ import {
   ShareSettings,
   ShareEmailRequest,
   SharedTranscriptionView,
+  ShareContentOptions,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -764,7 +765,12 @@ export class TranscriptionService {
   async createShareLink(
     transcriptionId: string,
     userId: string,
-    settings?: { expiresAt?: Date; maxViews?: number; password?: string },
+    settings?: { 
+      expiresAt?: Date; 
+      maxViews?: number; 
+      password?: string;
+      contentOptions?: ShareContentOptions;
+    },
   ): Promise<{ shareToken: string; shareUrl: string }> {
     // Verify user owns this transcription
     const transcription = await this.firebaseService.getTranscription(
@@ -792,6 +798,22 @@ export class TranscriptionService {
     }
     if (settings?.password) {
       shareSettings.password = settings.password;
+    }
+    if (settings?.contentOptions) {
+      shareSettings.contentOptions = settings.contentOptions;
+    } else {
+      // Default to sharing everything for backward compatibility
+      shareSettings.contentOptions = {
+        includeTranscript: true,
+        includeSummary: true,
+        includeCommunicationStyles: true,
+        includeActionItems: true,
+        includeEmotionalIntelligence: true,
+        includeInfluencePersuasion: true,
+        includePersonalDevelopment: true,
+        includeCustomAnalysis: true,
+        includeSpeakerInfo: true,
+      };
     }
 
     // Update transcription with share info
@@ -832,7 +854,12 @@ export class TranscriptionService {
   async updateShareSettings(
     transcriptionId: string,
     userId: string,
-    settings: { expiresAt?: Date; maxViews?: number; password?: string },
+    settings: { 
+      expiresAt?: Date; 
+      maxViews?: number; 
+      password?: string;
+      contentOptions?: ShareContentOptions;
+    },
   ): Promise<void> {
     // Verify user owns this transcription
     const transcription = await this.firebaseService.getTranscription(
@@ -875,6 +902,10 @@ export class TranscriptionService {
       } else {
         updatedSettings.password = settings.password;
       }
+    }
+    
+    if (settings.contentOptions !== undefined) {
+      updatedSettings.contentOptions = settings.contentOptions;
     }
 
     await this.firebaseService.updateTranscription(transcriptionId, {
@@ -935,18 +966,59 @@ export class TranscriptionService {
     const user = await this.firebaseService.getUserById(transcription.userId);
     const sharedBy = user?.displayName || user?.email || 'Anonymous';
 
+    // Get content options (default to all if not specified for backward compatibility)
+    const contentOptions = settings.contentOptions || {
+      includeTranscript: true,
+      includeSummary: true,
+      includeCommunicationStyles: true,
+      includeActionItems: true,
+      includeEmotionalIntelligence: true,
+      includeInfluencePersuasion: true,
+      includePersonalDevelopment: true,
+      includeCustomAnalysis: true,
+      includeSpeakerInfo: true,
+    };
+
+    // Filter analyses based on content options
+    let filteredAnalyses: Partial<typeof transcription.analyses> = undefined;
+    if (transcription.analyses) {
+      filteredAnalyses = {};
+      if (contentOptions.includeSummary && transcription.analyses.summary) {
+        filteredAnalyses.summary = transcription.analyses.summary;
+      }
+      if (contentOptions.includeCommunicationStyles && transcription.analyses.communicationStyles) {
+        filteredAnalyses.communicationStyles = transcription.analyses.communicationStyles;
+      }
+      if (contentOptions.includeActionItems && transcription.analyses.actionItems) {
+        filteredAnalyses.actionItems = transcription.analyses.actionItems;
+      }
+      if (contentOptions.includeEmotionalIntelligence && transcription.analyses.emotionalIntelligence) {
+        filteredAnalyses.emotionalIntelligence = transcription.analyses.emotionalIntelligence;
+      }
+      if (contentOptions.includeInfluencePersuasion && transcription.analyses.influencePersuasion) {
+        filteredAnalyses.influencePersuasion = transcription.analyses.influencePersuasion;
+      }
+      if (contentOptions.includePersonalDevelopment && transcription.analyses.personalDevelopment) {
+        filteredAnalyses.personalDevelopment = transcription.analyses.personalDevelopment;
+      }
+      if (contentOptions.includeCustomAnalysis && transcription.analyses.custom) {
+        filteredAnalyses.custom = transcription.analyses.custom;
+      }
+    }
+
     // Return sanitized view without sensitive data
     const sharedView: SharedTranscriptionView = {
       id: transcription.id,
       fileName: transcription.fileName,
       title: transcription.title,
-      transcriptText: transcription.transcriptText,
-      analyses: transcription.analyses,
-      speakerSegments: transcription.speakerSegments,
-      speakers: transcription.speakers,
+      transcriptText: contentOptions.includeTranscript ? transcription.transcriptText : undefined,
+      analyses: filteredAnalyses,
+      speakerSegments: contentOptions.includeSpeakerInfo ? transcription.speakerSegments : undefined,
+      speakers: contentOptions.includeSpeakerInfo ? transcription.speakers : undefined,
       createdAt: transcription.createdAt,
       sharedBy,
       viewCount: finalViewCount,
+      contentOptions,
     };
 
     return sharedView;

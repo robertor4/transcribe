@@ -53,6 +53,7 @@ export interface AnalysisResults {
   emotionalIntelligence?: string;
   influencePersuasion?: string;
   personalDevelopment?: string;
+  custom?: string;
   transcript?: string;
 }
 
@@ -208,12 +209,25 @@ export interface AnalysisTypeInfo {
   description: string;
 }
 
+export interface ShareContentOptions {
+  includeTranscript: boolean;
+  includeSummary: boolean;
+  includeCommunicationStyles: boolean;
+  includeActionItems: boolean;
+  includeEmotionalIntelligence: boolean;
+  includeInfluencePersuasion: boolean;
+  includePersonalDevelopment: boolean;
+  includeCustomAnalysis: boolean;
+  includeSpeakerInfo: boolean;
+}
+
 export interface ShareSettings {
   enabled: boolean;
   expiresAt?: Date;
   viewCount?: number;
   maxViews?: number;
   password?: string;
+  contentOptions?: ShareContentOptions;
 }
 
 export interface ShareEmailRequest {
@@ -228,12 +242,13 @@ export interface SharedTranscriptionView {
   fileName: string;
   title?: string;
   transcriptText?: string;
-  analyses?: AnalysisResults;
+  analyses?: Partial<AnalysisResults>;
   speakerSegments?: SpeakerSegment[];
   speakers?: Speaker[];
   createdAt: Date;
   sharedBy?: string;
   viewCount?: number;
+  contentOptions?: ShareContentOptions;
 }
 
 export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [

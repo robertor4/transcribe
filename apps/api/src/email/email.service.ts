@@ -1,25 +1,51 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import * as nodemailer from 'nodemailer';
 import { ShareEmailRequest } from '@transcribe/shared';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private resend: Resend;
+  private transporter: nodemailer.Transporter | null = null;
   private fromEmail: string;
   private frontendUrl: string;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
-    this.fromEmail = this.configService.get<string>('RESEND_FROM_EMAIL') || 'noreply@transcribe.app';
+    // Separate auth user from FROM email for domain alias support
+    const gmailAuthUser = this.configService.get<string>('GMAIL_AUTH_USER');
+    const gmailFromEmail = this.configService.get<string>('GMAIL_FROM_EMAIL') || 'noreply@neuralsummary.com';
+    const gmailAppPassword = this.configService.get<string>('GMAIL_APP_PASSWORD');
+    
+    this.fromEmail = gmailFromEmail;
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     
-    if (apiKey) {
-      this.resend = new Resend(apiKey);
-      this.logger.log('Resend email service initialized');
+    if (gmailAuthUser && gmailAppPassword) {
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: gmailAuthUser,
+          pass: gmailAppPassword,
+        },
+      });
+      
+      // Verify transporter configuration
+      this.transporter.verify((error, success) => {
+        if (error) {
+          this.logger.error('Gmail configuration error:', error);
+          this.logger.warn('Make sure you are using an App Password, not your regular Gmail password');
+          this.logger.warn('Generate an App Password at: https://myaccount.google.com/apppasswords');
+          this.logger.warn(`Auth user: ${gmailAuthUser}, FROM email: ${gmailFromEmail}`);
+        } else {
+          this.logger.log('Gmail email service configured and ready');
+          this.logger.log(`Authenticating as: ${gmailAuthUser}`);
+          this.logger.log(`Sending from: ${gmailFromEmail}`);
+        }
+      });
+      
+      this.logger.log('Gmail email service initialized');
     } else {
-      this.logger.warn('RESEND_API_KEY not configured, email sending will be disabled');
+      this.logger.warn('Gmail credentials not configured, email sending will be disabled');
+      this.logger.warn('Required: GMAIL_AUTH_USER and GMAIL_APP_PASSWORD environment variables');
     }
   }
 
@@ -29,7 +55,7 @@ export class EmailService {
     request: ShareEmailRequest,
     locale: string = 'en',
   ): Promise<boolean> {
-    if (!this.resend) {
+    if (!this.transporter) {
       this.logger.warn('Email service not configured, skipping email send');
       return false;
     }
@@ -57,20 +83,15 @@ export class EmailService {
         request.message,
       );
 
-      const { data, error } = await this.resend.emails.send({
-        from: `Neural Summary <${this.fromEmail}>`,
-        to: [request.recipientEmail],
+      const info = await this.transporter.sendMail({
+        from: `"Neural Summary" <${this.fromEmail}>`,
+        to: request.recipientEmail,
         subject,
         html: htmlContent,
         text: textContent,
       });
 
-      if (error) {
-        this.logger.error('Failed to send share email:', error);
-        return false;
-      }
-
-      this.logger.log(`Share email sent successfully to ${request.recipientEmail}`, data);
+      this.logger.log(`Share email sent successfully to ${request.recipientEmail}`, info.messageId);
       return true;
     } catch (error) {
       this.logger.error('Error sending share email:', error);

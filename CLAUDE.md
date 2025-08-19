@@ -7,12 +7,13 @@ A production-ready monorepo application for audio transcription and intelligent 
 
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS v4, React Dropzone, next-intl (5 languages)
+- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4, React Dropzone, next-intl (5 languages)
 - **Backend**: NestJS, TypeScript, Bull queues, Socket.io WebSockets
 - **Database**: Firebase Firestore (NoSQL document store)
 - **Storage**: Firebase Storage (new .firebasestorage.app format as of Oct 2024)
 - **Authentication**: Firebase Auth (Email/Password + Google OAuth)
 - **Queue**: Redis with Bull for scalable job processing
+- **Email Service**: Gmail SMTP with App Password for transactional emails (sharing transcripts)
 - **AI Services**: 
   - AssemblyAI for transcription and speaker diarization (primary)
   - OpenAI Whisper API for transcription (fallback when AssemblyAI fails)
@@ -135,6 +136,21 @@ socket.emit('transcription_completed', { jobId, transcriptionId });
 socket.emit('transcription_failed', { jobId, error });
 ```
 
+### Email Service (Gmail SMTP with Domain Alias)
+- **Service**: Gmail SMTP with App Password for transactional emails
+- **Implementation**: `apps/api/src/email/email.service.ts`
+- **Use Case**: Sending share transcript emails to recipients
+- **Configuration**: 
+  - `GMAIL_AUTH_USER`: Primary Gmail account for authentication (e.g., roberto@dreamone.nl)
+  - `GMAIL_FROM_EMAIL`: Email address shown in FROM field (e.g., noreply@neuralsummary.com - domain alias)
+  - `GMAIL_APP_PASSWORD`: App Password from primary account
+- **Features**: HTML and plain text email templates with branding
+- **Setup**: 
+  1. Enable 2FA on primary Gmail account
+  2. Generate App Password at https://myaccount.google.com/apppasswords
+  3. Configure domain alias in Google Workspace (neuralsummary.com)
+  4. Create email aliases as needed (noreply@neuralsummary.com)
+
 ### Internationalization (i18n)
 - Supported locales: en, nl, de, fr, es (defined in apps/web/i18n.config.ts:1)
 - URL structure: `/[locale]/...` (e.g., `/en/dashboard`, `/fr/landing`)
@@ -154,6 +170,9 @@ REDIS_PORT=6379
 JWT_SECRET=...
 PORT=3001
 ASSEMBLYAI_API_KEY=...
+GMAIL_AUTH_USER=roberto@dreamone.nl  # Primary Gmail account for authentication
+GMAIL_FROM_EMAIL=noreply@neuralsummary.com  # Email address shown in FROM field (domain alias)
+GMAIL_APP_PASSWORD=...  # Google App Password from primary account
 ```
 
 Frontend `.env.local`:
@@ -178,6 +197,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 
 Landing page locations:
 - Main: `/apps/web/app/[locale]/landing/page.tsx`
+- Home redirect: `/apps/web/app/[locale]/page.tsx`
 - Layout: `/apps/web/app/[locale]/layout.tsx`
 - Sitemap: `/apps/web/app/sitemap.ts`
 - Robots: `/apps/web/public/robots.txt`

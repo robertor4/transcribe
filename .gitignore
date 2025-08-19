@@ -47,3 +47,6 @@ coverage/
 
 # Production environment
 .env.production
+
+# Environment backup files
+.env.backup.*

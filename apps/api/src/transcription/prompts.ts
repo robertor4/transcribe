@@ -14,11 +14,20 @@ Create sections for:
 - Key discussion points (main points with brief explanations)
 - Conversation summary (pyramid principle: conclusion first, then supporting arguments, evidence, context)
 - Decisions made (if any - concrete agreements reached)
-- Action items (if any - what, who, when)
+- Key action items (if any - what, who, when)
 - Important details (if any - dates, tools, dependencies)
 - Next steps (if any - immediate plans and future actions)
 
-Note: Use natural section headings appropriate for the language of the transcript.`;
+Note: Use natural section headings appropriate for the language of the transcript.
+
+Key points of guidance for a good conversation summary:
+- Start with the core tension or discovery - What central question, problem, or insight drove the conversation, giving it narrative direction beyond just topic coverage.
+- Include concrete specifics - Use precise details, numbers, examples, and outcomes rather than generic descriptions to make the summary memorable and actionable.
+- Show the thinking journey - Capture how ideas evolved, shifted, or built upon each other during the discussion, not just the final conclusions.
+- Preserve distinctive elements - Keep unique language, frameworks, metaphors, or terminology that characterized how participants actually talked about the issues.
+- Highlight what remains open - Note unresolved questions and follow-up needs to make the summary forward-looking and useful for next steps.
+- Use precise, active language - Choose specific verbs that capture what actually happened rather than generic terms like "discussed" or "covered."
+- The goal is creating a summary that reads like the compelling opening of an article about that conversation - one that orients someone to why this particular exchange was worth having and what made it unique.`;
 
 // Communication Styles Analysis Prompt
 const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
@@ -84,14 +93,16 @@ Provide a comprehensive overview of all action items and deliverables identified
 ## Mid-term actions
 ## Long-term actions
 
-For each action item include: Task description | Owner | Deadline | Dependencies (if any)
+Only add sections with items. Leave out the sections that don't contain items.
+
+For each action item include: Task description | Owner | Deadline | Dependencies (if any).
 
 Requirements:
 - Start items with action verbs
 - Be specific about deliverables
 - Include success criteria where mentioned
 - Flag unclear items as [NEEDS CLARIFICATION]
-- Mark critical path items with [CRITICAL] in the item line
+- Mark critical path items with (CRITICAL) in the item line
 - Note if deadlines are firm vs. targets
 - Identify risks (unrealistic timelines, resource gaps)
 - Include follow-ups, decision dependencies, and recurring commitments within the appropriate time horizon category

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
-import { Transcription } from '@transcribe/shared';
+import { Transcription, ShareContentOptions } from '@transcribe/shared';
 import {
   X,
   Copy,
@@ -20,6 +20,15 @@ import {
   ChevronUp,
   Clock,
   Shield,
+  FileText,
+  MessageSquare,
+  Users,
+  ListChecks,
+  Brain,
+  Target,
+  TrendingUp,
+  Sparkles,
+  Info,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 
@@ -48,6 +57,20 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [enablePassword, setEnablePassword] = useState(false);
   const [password, setPassword] = useState<string>('');
   
+  // Content selection
+  const [contentPreset, setContentPreset] = useState<string>('complete');
+  const [contentOptions, setContentOptions] = useState<ShareContentOptions>({
+    includeTranscript: true,
+    includeSummary: true,
+    includeCommunicationStyles: true,
+    includeActionItems: true,
+    includeEmotionalIntelligence: true,
+    includeInfluencePersuasion: true,
+    includePersonalDevelopment: true,
+    includeCustomAnalysis: true,
+    includeSpeakerInfo: true,
+  });
+  
   // Email form
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
@@ -73,18 +96,96 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       const url = `${window.location.origin}/en/shared/${transcription.shareToken}`;
       setShareUrl(url);
       generateQRCode(url);
+      
+      // Load existing content options if available
+      if (transcription.shareSettings?.contentOptions) {
+        setContentOptions(transcription.shareSettings.contentOptions);
+        // Determine preset based on current options
+        determinePreset(transcription.shareSettings.contentOptions);
+      }
     } else if (!isOpen) {
       // Reset state when modal closes
       setShowQrCode(false);
       setShowEmailForm(false);
       setEmailSent(false);
+      setPassword('');
+      setEnablePassword(false);
     }
-  }, [transcription.shareToken, isOpen]);
+  }, [transcription, isOpen]);
+
+  const determinePreset = (options: ShareContentOptions) => {
+    const allTrue = Object.values(options).every(v => v === true);
+    const summaryOnly = options.includeSummary && !options.includeTranscript && 
+      !options.includeCommunicationStyles && !options.includeActionItems &&
+      !options.includeEmotionalIntelligence && !options.includeInfluencePersuasion &&
+      !options.includePersonalDevelopment && !options.includeCustomAnalysis;
+    const summaryAndTranscript = options.includeSummary && options.includeTranscript &&
+      !options.includeCommunicationStyles && !options.includeActionItems &&
+      !options.includeEmotionalIntelligence && !options.includeInfluencePersuasion &&
+      !options.includePersonalDevelopment && !options.includeCustomAnalysis;
+    
+    if (allTrue) setContentPreset('complete');
+    else if (summaryOnly) setContentPreset('summary');
+    else if (summaryAndTranscript) setContentPreset('summaryTranscript');
+    else setContentPreset('custom');
+  };
+
+  const handlePresetChange = (preset: string) => {
+    setContentPreset(preset);
+    
+    switch (preset) {
+      case 'summary':
+        setContentOptions({
+          includeTranscript: false,
+          includeSummary: true,
+          includeCommunicationStyles: false,
+          includeActionItems: false,
+          includeEmotionalIntelligence: false,
+          includeInfluencePersuasion: false,
+          includePersonalDevelopment: false,
+          includeCustomAnalysis: false,
+          includeSpeakerInfo: false,
+        });
+        break;
+      case 'summaryTranscript':
+        setContentOptions({
+          includeTranscript: true,
+          includeSummary: true,
+          includeCommunicationStyles: false,
+          includeActionItems: false,
+          includeEmotionalIntelligence: false,
+          includeInfluencePersuasion: false,
+          includePersonalDevelopment: false,
+          includeCustomAnalysis: false,
+          includeSpeakerInfo: true,
+        });
+        break;
+      case 'complete':
+        setContentOptions({
+          includeTranscript: true,
+          includeSummary: true,
+          includeCommunicationStyles: true,
+          includeActionItems: true,
+          includeEmotionalIntelligence: true,
+          includeInfluencePersuasion: true,
+          includePersonalDevelopment: true,
+          includeCustomAnalysis: true,
+          includeSpeakerInfo: true,
+        });
+        break;
+    }
+  };
+
+  const handleContentOptionChange = (key: keyof ShareContentOptions) => {
+    const newOptions = { ...contentOptions, [key]: !contentOptions[key] };
+    setContentOptions(newOptions);
+    setContentPreset('custom');
+  };
 
   const generateQRCode = async (url: string) => {
     try {
       const qrDataUrl = await QRCode.toDataURL(url, {
-        width: 150,
+        width: 200,
         margin: 2,
         color: {
           dark: '#1F2937',
@@ -100,7 +201,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const handleCreateShareLink = async () => {
     setLoading(true);
     try {
-      const settings: any = {};
+      const settings: any = {
+        contentOptions,
+      };
       
       // Calculate expiration date based on selected option
       const now = new Date();
@@ -133,6 +236,43 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       onShareUpdate(updatedTranscription);
     } catch (error) {
       console.error('Error creating share link:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateShareSettings = async () => {
+    setLoading(true);
+    try {
+      const settings: any = {
+        contentOptions,
+      };
+      
+      // Calculate expiration date based on selected option
+      const now = new Date();
+      if (expirationOption === '24hours') {
+        settings.expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      } else if (expirationOption === '7days') {
+        settings.expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      }
+      
+      if (enablePassword && password) {
+        settings.password = password;
+      }
+
+      await transcriptionApi.updateShareSettings(transcription.id, settings);
+      
+      // Update the transcription object
+      const updatedTranscription = {
+        ...transcription,
+        shareSettings: {
+          ...transcription.shareSettings,
+          ...settings,
+        },
+      };
+      onShareUpdate(updatedTranscription);
+    } catch (error) {
+      console.error('Error updating share settings:', error);
     } finally {
       setLoading(false);
     }
@@ -201,285 +341,450 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-5 border-b bg-gradient-to-r from-[#cc3399]/5 to-purple-50">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                <Share2 className="w-5 h-5 text-[#cc3399]" />
-                Share Transcript
+        <div className="p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Share2 className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-gray-900">
+                {t('title')}
               </h2>
-              <p className="text-sm text-gray-600 mt-1 truncate max-w-[350px]">
-                {transcription.title || transcription.fileName}
-              </p>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 hover:bg-white/80 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
         </div>
 
-        <div className="p-5">
-          {!shareUrl ? (
-            // Create Share Link Section
-            <div className="space-y-5">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Share Settings</h3>
+        <div className="p-6">
+          {!transcription.shareToken ? (
+            <>
+              {/* Content Selection */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-purple-600" />
+                  {t('contentSelection')}
+                </h3>
                 
-                {/* Expiration Options */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <span>Link expires in:</span>
+                {/* Preset Options */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                  <button
+                    onClick={() => handlePresetChange('summary')}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      contentPreset === 'summary'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <MessageSquare className="w-5 h-5 mx-auto mb-1 text-purple-600" />
+                    <span className="text-sm font-medium">{t('summaryOnly')}</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handlePresetChange('summaryTranscript')}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      contentPreset === 'summaryTranscript'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <FileText className="w-5 h-5 mx-auto mb-1 text-blue-600" />
+                    <span className="text-sm font-medium">{t('summaryTranscript')}</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => handlePresetChange('complete')}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      contentPreset === 'complete'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <Sparkles className="w-5 h-5 mx-auto mb-1 text-green-600" />
+                    <span className="text-sm font-medium">{t('completeAnalysis')}</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => setContentPreset('custom')}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      contentPreset === 'custom'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <Shield className="w-5 h-5 mx-auto mb-1 text-orange-600" />
+                    <span className="text-sm font-medium">{t('customSelection')}</span>
+                  </button>
+                </div>
+                
+                {/* Custom Content Options */}
+                {contentPreset === 'custom' && (
+                  <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeTranscript}
+                        onChange={() => handleContentOptionChange('includeTranscript')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <FileText className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm">{t('includeTranscript')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeSummary}
+                        onChange={() => handleContentOptionChange('includeSummary')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <MessageSquare className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">{t('includeSummary')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeCommunicationStyles}
+                        onChange={() => handleContentOptionChange('includeCommunicationStyles')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <Users className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm">{t('includeCommunication')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeActionItems}
+                        onChange={() => handleContentOptionChange('includeActionItems')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <ListChecks className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">{t('includeActionItems')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeEmotionalIntelligence}
+                        onChange={() => handleContentOptionChange('includeEmotionalIntelligence')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <Brain className="w-4 h-4 text-pink-600" />
+                      <span className="text-sm">{t('includeEmotionalIQ')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeInfluencePersuasion}
+                        onChange={() => handleContentOptionChange('includeInfluencePersuasion')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <Target className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm">{t('includeInfluence')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includePersonalDevelopment}
+                        onChange={() => handleContentOptionChange('includePersonalDevelopment')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <TrendingUp className="w-4 h-4 text-teal-600" />
+                      <span className="text-sm">{t('includeDevelopment')}</span>
+                    </label>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeSpeakerInfo}
+                        onChange={() => handleContentOptionChange('includeSpeakerInfo')}
+                        className="w-4 h-4 text-purple-600 rounded"
+                      />
+                      <Users className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm">{t('includeSpeakerInfo')}</span>
+                    </label>
                   </div>
-                  <div className="flex gap-2">
+                )}
+                
+                {/* Content Preview Info */}
+                <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-4 h-4 text-blue-600 mt-0.5" />
+                    <p className="text-sm text-blue-800">
+                      {t('contentPreviewInfo')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Share Settings */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-purple-600" />
+                  {t('shareSettings')}
+                </h3>
+
+                {/* Expiration */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <Clock className="inline w-4 h-4 mr-1" />
+                    {t('expiration')}
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
                     <button
-                      type="button"
                       onClick={() => setExpirationOption('24hours')}
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`p-2 text-sm rounded-lg border ${
                         expirationOption === '24hours'
-                          ? 'bg-[#cc3399] text-white shadow-sm'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          ? 'border-purple-600 bg-purple-50 text-purple-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      24 Hours
+                      {t('24hours')}
                     </button>
                     <button
-                      type="button"
                       onClick={() => setExpirationOption('7days')}
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`p-2 text-sm rounded-lg border ${
                         expirationOption === '7days'
-                          ? 'bg-[#cc3399] text-white shadow-sm'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          ? 'border-purple-600 bg-purple-50 text-purple-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      7 Days
+                      {t('7days')}
                     </button>
                     <button
-                      type="button"
                       onClick={() => setExpirationOption('never')}
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`p-2 text-sm rounded-lg border ${
                         expirationOption === 'never'
-                          ? 'bg-[#cc3399] text-white shadow-sm'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          ? 'border-purple-600 bg-purple-50 text-purple-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
-                      Never
+                      {t('never')}
                     </button>
                   </div>
                 </div>
 
                 {/* Password Protection */}
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={enablePassword}
-                        onChange={(e) => {
-                          setEnablePassword(e.target.checked);
-                          if (!e.target.checked) setPassword('');
-                        }}
-                        className="rounded border-gray-300 text-[#cc3399] focus:ring-[#cc3399]"
-                      />
-                      <Shield className="w-4 h-4 text-gray-500" />
-                      Password protect
-                    </label>
-                  </div>
+                <div className="mb-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={enablePassword}
+                      onChange={(e) => setEnablePassword(e.target.checked)}
+                      className="w-4 h-4 text-purple-600 rounded"
+                    />
+                    <Lock className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      {t('passwordProtect')}
+                    </span>
+                  </label>
                   {enablePassword && (
                     <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter password"
-                      className="mt-2 w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
+                      placeholder={t('enterPassword')}
+                      className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
                     />
                   )}
                 </div>
               </div>
 
+              {/* Create Button */}
               <button
                 onClick={handleCreateShareLink}
-                disabled={loading || (enablePassword && !password)}
-                className="w-full bg-[#cc3399] text-white py-2.5 rounded-lg hover:bg-[#b82d89] transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2 font-medium"
+                disabled={loading}
+                className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t('creating')}
+                  </>
                 ) : (
-                  <Link className="w-4 h-4" />
+                  <>
+                    <Link className="w-5 h-5" />
+                    {t('createLink')}
+                  </>
                 )}
-                Create Share Link
               </button>
-            </div>
+            </>
           ) : (
-            // Share Link Display Section
-            <div className="space-y-4">
-              {/* Share Link */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Share Link
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={shareUrl}
-                    readOnly
-                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-700"
-                  />
+            <>
+              {/* Existing Share Link */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {t('linkCreated')}
+                </h3>
+
+                {/* Share URL */}
+                <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={shareUrl}
+                      readOnly
+                      className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
+                    />
+                    <button
+                      onClick={handleCopyLink}
+                      className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                    >
+                      {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {copied && (
+                    <p className="text-sm text-green-600">{t('linkCopied')}</p>
+                  )}
+                </div>
+
+                {/* Current Settings Display */}
+                {transcription.shareSettings && (
+                  <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-2">{t('currentSettings')}</h4>
+                    <div className="space-y-1 text-sm text-gray-700">
+                      {transcription.shareSettings.expiresAt && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          <span>{t('expiresOn')}: {formatDate(transcription.shareSettings.expiresAt)}</span>
+                        </div>
+                      )}
+                      {transcription.shareSettings.password && (
+                        <div className="flex items-center gap-2">
+                          <Lock className="w-4 h-4" />
+                          <span>{t('passwordProtected')}</span>
+                        </div>
+                      )}
+                      {transcription.shareSettings.viewCount !== undefined && (
+                        <div className="flex items-center gap-2">
+                          <Eye className="w-4 h-4" />
+                          <span>{t('viewCount')}: {transcription.shareSettings.viewCount}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Update Settings Button */}
+                <button
+                  onClick={handleUpdateShareSettings}
+                  disabled={loading}
+                  className="w-full mb-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t('updating')}
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-4 h-4" />
+                      {t('updateSettings')}
+                    </>
+                  )}
+                </button>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
                   <button
-                    onClick={handleCopyLink}
-                    className={`px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 text-sm font-medium ${
-                      copied 
-                        ? 'bg-green-50 text-green-700 border border-green-200' 
-                        : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200'
-                    }`}
+                    onClick={() => setShowQrCode(!showQrCode)}
+                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex flex-col items-center gap-1"
                   >
-                    {copied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5" />
-                        Copy
-                      </>
-                    )}
+                    <QrCode className="w-5 h-5 text-gray-600" />
+                    <span className="text-xs text-gray-600">{t('qrCode')}</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => setShowEmailForm(!showEmailForm)}
+                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex flex-col items-center gap-1"
+                  >
+                    <Mail className="w-5 h-5 text-gray-600" />
+                    <span className="text-xs text-gray-600">{t('email')}</span>
+                  </button>
+                  
+                  <button
+                    onClick={handleRevokeShareLink}
+                    disabled={loading}
+                    className="p-3 border border-red-300 rounded-lg hover:bg-red-50 flex flex-col items-center gap-1 text-red-600"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    <span className="text-xs">{t('revoke')}</span>
                   </button>
                 </div>
-              </div>
 
-              {/* Share Settings Info */}
-              {transcription.shareSettings && (
-                <div className="flex flex-wrap gap-2">
-                  {transcription.shareSettings.expiresAt && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
-                      <Calendar className="w-3 h-3" />
-                      Expires {formatDate(transcription.shareSettings.expiresAt)}
-                    </span>
-                  )}
-                  {transcription.shareSettings.password && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
-                      <Lock className="w-3 h-3" />
-                      Password protected
-                    </span>
-                  )}
-                </div>
-              )}
+                {/* QR Code */}
+                {showQrCode && qrCodeUrl && (
+                  <div className="mb-4 p-4 bg-gray-50 rounded-lg flex flex-col items-center">
+                    <img src={qrCodeUrl} alt="QR Code" className="mb-2" />
+                    <p className="text-sm text-gray-600">{t('scanQR')}</p>
+                  </div>
+                )}
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setShowQrCode(!showQrCode)}
-                  className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                >
-                  <QrCode className="w-4 h-4" />
-                  QR Code
-                  {showQrCode ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
-                <button
-                  onClick={() => setShowEmailForm(!showEmailForm)}
-                  className="px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                >
-                  <Mail className="w-4 h-4" />
-                  Email
-                  {showEmailForm ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
-              </div>
-
-              {/* QR Code Section */}
-              {showQrCode && qrCodeUrl && (
-                <div className="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-2">
-                  <img src={qrCodeUrl} alt="QR Code" className="border-2 border-gray-200 p-2 bg-white rounded-lg" />
-                  <p className="text-xs text-gray-600">Scan to open shared transcript</p>
-                </div>
-              )}
-
-              {/* Email Form Section */}
-              {showEmailForm && (
-                <div className="p-4 bg-gray-50 rounded-lg space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-gray-700 mb-1 block">
-                      Recipient Email *
-                    </label>
+                {/* Email Form */}
+                {showEmailForm && (
+                  <div className="mb-4 p-4 border border-gray-200 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3">{t('sendViaEmail')}</h4>
+                    
                     <input
                       type="email"
                       value={recipientEmail}
                       onChange={(e) => setRecipientEmail(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
-                      placeholder="john@example.com"
+                      placeholder={t('recipientEmail')}
+                      className="w-full mb-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
+                      required
                     />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-gray-700 mb-1 block">
-                      Recipient Name
-                    </label>
+                    
                     <input
                       type="text"
                       value={recipientName}
                       onChange={(e) => setRecipientName(e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500"
-                      placeholder="John Doe"
+                      placeholder={t('recipientName')}
+                      className="w-full mb-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
                     />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-gray-700 mb-1 block">
-                      Message
-                    </label>
+                    
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
+                      placeholder={t('personalMessage')}
+                      className="w-full mb-3 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-600"
                       rows={3}
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399] text-gray-900 placeholder-gray-500 resize-none"
-                      placeholder="Add a personal message..."
                     />
+                    
+                    <button
+                      onClick={handleSendEmail}
+                      disabled={emailLoading || !recipientEmail || emailSent}
+                      className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {emailLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {t('sending')}
+                        </>
+                      ) : emailSent ? (
+                        <>
+                          <Check className="w-4 h-4" />
+                          {t('emailSent')}
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="w-4 h-4" />
+                          {t('sendEmail')}
+                        </>
+                      )}
+                    </button>
                   </div>
-
-                  {emailSent && (
-                    <div className="bg-green-50 text-green-700 p-2 rounded-lg flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4" />
-                      Email sent successfully!
-                    </div>
-                  )}
-
-                  <button
-                    onClick={handleSendEmail}
-                    disabled={emailLoading || !recipientEmail}
-                    className="w-full bg-[#cc3399] text-white py-2 rounded-lg hover:bg-[#b82d89] transition-colors disabled:bg-gray-300 flex items-center justify-center gap-2 text-sm font-medium"
-                  >
-                    {emailLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Mail className="w-4 h-4" />
-                    )}
-                    Send Email
-                  </button>
-                </div>
-              )}
-
-              {/* Revoke Link */}
-              <div className="pt-3 border-t">
-                <button
-                  onClick={handleRevokeShareLink}
-                  disabled={loading}
-                  className="w-full bg-white text-red-600 py-2 rounded-lg hover:bg-red-50 transition-colors disabled:bg-gray-100 flex items-center justify-center gap-2 text-sm font-medium border border-red-200"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-4 h-4" />
-                  )}
-                  Revoke Share Link
-                </button>
+                )}
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
