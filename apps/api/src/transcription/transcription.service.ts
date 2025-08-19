@@ -180,10 +180,22 @@ export class TranscriptionService {
       const publicUrl = await this.firebaseService.getPublicUrl(fileUrl);
 
       if (onProgress) {
+        onProgress(15, 'Audio uploaded successfully...');
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      if (onProgress) {
         onProgress(
           20,
-          'Starting transcription with automatic language detection and speaker diarization...',
+          'Starting transcription with automatic language detection...',
         );
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      if (onProgress) {
+        onProgress(25, 'Initializing speaker diarization...');
       }
 
       // Use AssemblyAI for transcription with language detection and speaker diarization
@@ -193,9 +205,15 @@ export class TranscriptionService {
       );
 
       if (onProgress) {
+        onProgress(50, 'Processing complete, analyzing speakers...');
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      if (onProgress) {
         onProgress(
-          70,
-          `Transcription complete. Detected language: ${result.language || 'unknown'}`,
+          55,
+          `Detected ${result.speakerCount || 0} speakers in the conversation...`,
         );
       }
 
@@ -361,6 +379,24 @@ export class TranscriptionService {
     context?: string,
     language?: string,
   ): Promise<string> {
+    // Use default model from config or GPT-4o
+    const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+    return this.generateSummaryWithModel(
+      transcriptionText,
+      analysisType,
+      context,
+      language,
+      model,
+    );
+  }
+
+  async generateSummaryWithModel(
+    transcriptionText: string,
+    analysisType?: AnalysisType,
+    context?: string,
+    language?: string,
+    model?: string,
+  ): Promise<string> {
     try {
       const languageInstruction = language
         ? `\n\nIMPORTANT: The transcription is in ${language}. Please generate the output in ${language} as well. Use appropriate formatting and conventions for ${language}.`
@@ -377,14 +413,22 @@ export class TranscriptionService {
         language,
       );
 
+      // Use specified model or default to GPT-4o
+      const selectedModel = model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+      
+      this.logger.log(`Using model ${selectedModel} for ${analysisType || 'summary'} generation`);
+      
       const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: selectedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        temperature: 0.3,
-        max_tokens: 4000,
+        temperature: 0.1, // Reduced from 0.3 for more consistent output
+        max_tokens: 8000, // Increased from 4000 for comprehensive analyses
+        top_p: 0.95, // Added for better quality control
+        frequency_penalty: 0.2, // Reduce repetition
+        presence_penalty: 0.1, // Encourage diverse vocabulary
       });
 
       return completion.choices[0].message.content || '';
@@ -402,58 +446,71 @@ export class TranscriptionService {
     try {
       this.logger.log('Generating all analyses in parallel...');
 
+      // Determine if we should use high-quality mode based on env or transcript length
+      const qualityMode = this.configService.get('QUALITY_MODE') || 'balanced';
+      const useHighQuality = qualityMode === 'premium' || transcriptionText.length > 10000;
+
       // Generate all analyses in parallel for efficiency
+      // Use generateSummaryWithModel for critical analyses with GPT-4o
       const analysisPromises = [
-        this.generateSummary(
+        // Primary summary - always use best model
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.SUMMARY,
           context,
           language,
+          'gpt-4o', // Always use GPT-4o for main summary
         ).catch((err) => {
           this.logger.error('Summary generation failed:', err);
           return 'Summary generation failed. Please try again.';
         }),
-        this.generateSummary(
+        // Secondary analyses - use quality mode setting
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.COMMUNICATION_STYLES,
           context,
           language,
+          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
         ).catch((err) => {
           this.logger.error('Communication styles analysis failed:', err);
           return null;
         }),
-        this.generateSummary(
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.ACTION_ITEMS,
           context,
           language,
+          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
         ).catch((err) => {
           this.logger.error('Action items extraction failed:', err);
           return null;
         }),
-        this.generateSummary(
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.EMOTIONAL_INTELLIGENCE,
           context,
           language,
+          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
         ).catch((err) => {
           this.logger.error('Emotional intelligence analysis failed:', err);
           return null;
         }),
-        this.generateSummary(
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.INFLUENCE_PERSUASION,
           context,
           language,
+          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
         ).catch((err) => {
           this.logger.error('Influence/persuasion analysis failed:', err);
           return null;
         }),
-        this.generateSummary(
+        this.generateSummaryWithModel(
           transcriptionText,
           AnalysisType.PERSONAL_DEVELOPMENT,
           context,
           language,
+          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
         ).catch((err) => {
           this.logger.error('Personal development analysis failed:', err);
           return null;
@@ -526,6 +583,36 @@ export class TranscriptionService {
 
   async getTranscription(userId: string, transcriptionId: string) {
     return this.firebaseService.getTranscription(userId, transcriptionId);
+  }
+
+  extractTitleFromSummary(summary: string): string | null {
+    try {
+      // Extract the first H1 heading from the markdown summary
+      // Match lines that start with a single # followed by space
+      const headingMatch = summary.match(/^#\s+(.+)$/m);
+      
+      if (headingMatch && headingMatch[1]) {
+        // Clean the title: remove any remaining markdown, trim whitespace
+        let title = headingMatch[1]
+          .replace(/\*\*/g, '') // Remove bold markdown
+          .replace(/\*/g, '') // Remove italic markdown
+          .replace(/`/g, '') // Remove code markdown
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Convert links to text
+          .trim();
+        
+        // Limit title length to 200 characters
+        if (title.length > 200) {
+          title = title.substring(0, 197) + '...';
+        }
+        
+        return title;
+      }
+      
+      return null;
+    } catch (error) {
+      this.logger.error('Error extracting title from summary:', error);
+      return null;
+    }
   }
 
   async updateTitle(
@@ -1095,14 +1182,20 @@ export class TranscriptionService {
         language,
       );
 
+      // Use GPT-4o for maximum quality (configurable via env)
+      const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+      
       const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        temperature: 0.3,
-        max_tokens: 4000,
+        temperature: 0.1, // Reduced from 0.3 for more consistent output
+        max_tokens: 8000, // Increased from 4000 for comprehensive analyses
+        top_p: 0.95, // Added for better quality control
+        frequency_penalty: 0.2, // Reduce repetition
+        presence_penalty: 0.1, // Encourage diverse vocabulary
       });
 
       return completion.choices[0].message.content || '';

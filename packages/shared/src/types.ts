@@ -124,6 +124,7 @@ export interface TranscriptionProgress {
   message?: string;
   error?: string;
   startTime?: number; // Timestamp when processing started (for timeout tracking)
+  stage?: 'uploading' | 'processing' | 'summarizing'; // Current processing stage
 }
 
 export interface ApiResponse<T = any> {

@@ -39,6 +39,7 @@ import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 import { AnalysisTabs } from './AnalysisTabs';
 import { ShareModal } from './ShareModal';
+import { ProcessingStatus } from './ProcessingStatus';
 
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
@@ -445,6 +446,11 @@ export const TranscriptionList: React.FC = () => {
                           {formatDuration(transcription.duration)}
                         </span>
                       )}
+                      {transcription.title && transcription.title !== transcription.fileName && (
+                        <span className="text-xs text-gray-500">
+                          {transcription.fileName}
+                        </span>
+                      )}
                       <span className="text-xs text-gray-500">
                         {formatDate(transcription.createdAt)}
                       </span>
@@ -453,12 +459,19 @@ export const TranscriptionList: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(transcription.status)}
-                    <span className="text-sm text-gray-600">
-                      {progress ? progress.message : getStatusText(transcription.status, transcription.id)}
-                    </span>
-                  </div>
+                  {transcription.status === TranscriptionStatus.PROCESSING && progress ? (
+                    <ProcessingStatus 
+                      progress={progress.progress || 0}
+                      stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
+                    />
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      {getStatusIcon(transcription.status)}
+                      <span className="text-sm text-gray-600">
+                        {progress ? progress.message : getStatusText(transcription.status, transcription.id)}
+                      </span>
+                    </div>
+                  )}
                   
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button

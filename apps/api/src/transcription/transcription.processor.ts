@@ -34,12 +34,24 @@ export class TranscriptionProcessor {
         updatedAt: new Date(),
       });
 
-      // Send progress update
+      // Send initial progress update
+      this.websocketGateway.sendTranscriptionProgress(userId, {
+        transcriptionId,
+        status: TranscriptionStatus.PROCESSING,
+        progress: 5,
+        message: 'Initializing audio processing...',
+        stage: 'processing',
+      });
+
+      // Small delay to show initialization
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 10,
         message: 'Starting transcription...',
+        stage: 'processing',
       });
 
       // Transcribe audio (with progress updates handled internally for chunks)
@@ -70,12 +82,13 @@ export class TranscriptionProcessor {
         );
       }
 
-      // Update progress
+      // Update progress for summarization phase
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 60,
         message: 'Transcription complete, generating comprehensive analyses...',
+        stage: 'summarizing',
       });
 
       // Generate ALL analyses in parallel
@@ -88,12 +101,32 @@ export class TranscriptionProcessor {
       // For backward compatibility, keep the summary field
       const summary = analyses.summary;
 
-      // Update progress
+      // Extract title from the summary
+      const extractedTitle = this.transcriptionService.extractTitleFromSummary(summary);
+      if (extractedTitle) {
+        this.logger.log(
+          `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
+        );
+      }
+
+      // Update progress - finalizing
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 90,
         message: 'All analyses generated, saving results...',
+        stage: 'summarizing',
+      });
+
+      // Small delay before final save
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      this.websocketGateway.sendTranscriptionProgress(userId, {
+        transcriptionId,
+        status: TranscriptionStatus.PROCESSING,
+        progress: 95,
+        message: 'Finalizing your transcription...',
+        stage: 'summarizing',
       });
 
       // Save transcription results
@@ -116,6 +149,11 @@ export class TranscriptionProcessor {
         completedAt: new Date(),
         updatedAt: new Date(),
       };
+
+      // Add the extracted title if available
+      if (extractedTitle) {
+        updateData.title = extractedTitle;
+      }
 
       if (detectedLanguage) {
         updateData.detectedLanguage = detectedLanguage;
