@@ -29,6 +29,7 @@ import {
   TrendingUp,
   Sparkles,
   Info,
+  Eye,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 
