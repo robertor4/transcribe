@@ -6,6 +6,9 @@ import { getMessages } from 'next-intl/server';
 import { locales } from '@/i18n.config';
 import "../globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
+import { PageTracker } from "@/components/PageTracker";
+import { CookieConsent } from "@/components/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -112,7 +115,13 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body className={inter.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <AnalyticsProvider>
+              <PageTracker />
+              {children}
+              <CookieConsent />
+            </AnalyticsProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

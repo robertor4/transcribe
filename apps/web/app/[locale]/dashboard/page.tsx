@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { FileUploader } from '@/components/FileUploader';
 import { TranscriptionList } from '@/components/TranscriptionList';
 import { HowItWorks } from '@/components/HowItWorks';
@@ -19,6 +20,7 @@ export default function DashboardPage() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
   const locale = useLocale();
+  const { trackEvent } = useAnalytics();
   const tDashboard = useTranslations('dashboard');
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
@@ -81,6 +83,10 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await logout();
+    trackEvent('logout', { 
+      user_email: user?.email,
+      locale: locale 
+    });
     router.push('/login');
   };
 
@@ -147,7 +153,10 @@ export default function DashboardPage() {
         <div className="border-b border-gray-200 mb-8">
           <nav className="-mb-px flex flex-wrap gap-x-8">
             <button
-              onClick={() => setActiveTab('upload')}
+              onClick={() => {
+                setActiveTab('upload');
+                trackEvent('dashboard_viewed', { tab: 'upload' });
+              }}
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'upload'
@@ -162,7 +171,10 @@ export default function DashboardPage() {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('history')}
+              onClick={() => {
+                setActiveTab('history');
+                trackEvent('dashboard_viewed', { tab: 'history' });
+              }}
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'history'
@@ -177,7 +189,10 @@ export default function DashboardPage() {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('recording-guide')}
+              onClick={() => {
+                setActiveTab('recording-guide');
+                trackEvent('dashboard_viewed', { tab: 'recording-guide' });
+              }}
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'recording-guide'
@@ -192,7 +207,10 @@ export default function DashboardPage() {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('how-it-works')}
+              onClick={() => {
+                setActiveTab('how-it-works');
+                trackEvent('dashboard_viewed', { tab: 'how-it-works' });
+              }}
               className={`
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'how-it-works'

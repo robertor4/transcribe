@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Mail, Lock, User, AlertCircle, Loader2, Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { sendEmailVerification } from 'firebase/auth';
@@ -20,6 +21,7 @@ export default function SignupForm() {
   
   const { signUpWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
 
   // Password strength validation
@@ -60,8 +62,19 @@ export default function SignupForm() {
     setLoading(true);
 
     try {
+      // Track signup started
+      trackEvent('signup_started', {
+        method: 'email'
+      });
+      
       // Create the user account
       await signUpWithEmail(email, password, displayName);
+      
+      // Track signup completed
+      trackEvent('signup_completed', {
+        method: 'email',
+        email: email
+      });
       
       // Send verification email
       if (auth.currentUser) {
@@ -102,6 +115,9 @@ export default function SignupForm() {
 
     try {
       await signInWithGoogle();
+      trackEvent('signup_completed', {
+        method: 'google'
+      });
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || tAuth('signupFailed'));

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -15,6 +16,7 @@ export default function LoginForm() {
   
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -24,6 +26,10 @@ export default function LoginForm() {
 
     try {
       await signInWithEmail(email, password);
+      trackEvent('login', {
+        method: 'email',
+        email: email
+      });
       router.push('/dashboard');
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to sign in';
@@ -46,6 +52,9 @@ export default function LoginForm() {
 
     try {
       await signInWithGoogle();
+      trackEvent('login', {
+        method: 'google'
+      });
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || tAuth('invalidCredentials'));

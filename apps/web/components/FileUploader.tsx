@@ -3,6 +3,7 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslations } from 'next-intl';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { 
   Upload, 
   X, 
@@ -36,6 +37,7 @@ interface FileUploaderProps {
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
   const t = useTranslations('upload');
+  const { trackEvent } = useAnalytics();
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
@@ -46,6 +48,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     const validFiles = acceptedFiles.filter(file => {
       console.log('File:', file.name, 'Type:', file.type, 'Size:', file.size);
+      
+      // Track file drop attempt
+      trackEvent('audio_uploaded', {
+        file_name: file.name,
+        file_size: file.size,
+        file_type: file.type,
+        method: 'drop'
+      });
       
       if (!isValidAudioFile(file.name, file.type)) {
         setErrors(prev => [...prev, `${file.name}: ${t('error.unsupportedFormat', { type: file.type })}`]);
@@ -101,9 +111,24 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
     try {
       for (const file of files) {
+        // Track transcription start
+        trackEvent('transcription_started', {
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type,
+          has_context: !!context
+        });
+        
         const response = await transcriptionApi.upload(file, undefined, context);
         if (response?.success && onUploadComplete) {
           onUploadComplete(response.data.id, file.name);
+          
+          // Track successful upload
+          trackEvent('transcription_completed', {
+            transcription_id: response.data.id,
+            file_name: file.name,
+            file_size: file.size
+          });
         }
       }
       
@@ -111,6 +136,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       setContext('');
     } catch (error: any) {
       setErrors([error.message || 'Upload failed']);
+      
+      // Track upload failure
+      trackEvent('upload_failed', {
+        error_message: error.message || 'Unknown error',
+        file_count: files.length
+      });
     } finally {
       setUploading(false);
     }
