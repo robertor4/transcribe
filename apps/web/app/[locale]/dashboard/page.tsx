@@ -121,14 +121,13 @@ export default function DashboardPage() {
             <div className="flex items-center">
               <img 
                 src="/assets/OT-symbol.webp" 
-                alt="OT Logo" 
+                alt="Neural Summary Logo" 
                 className="h-8 w-auto mr-3"
               />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
                   {tCommon('appName')}
                 </h1>
-                <p className="text-xs text-gray-500">By Olympia Tech</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">

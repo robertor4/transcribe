@@ -41,7 +41,7 @@ export default async function LandingPage({
               <div className="flex items-center">
                 <img 
                   src="/assets/OT-symbol.webp" 
-                  alt="Neural Summary by Olympia Tech" 
+                  alt="Neural Summary" 
                   className="h-8 w-auto mr-3"
                   width={32}
                   height={32}
@@ -597,7 +597,7 @@ export default async function LandingPage({
               <div className="flex items-center mb-4 md:mb-0">
                 <img 
                   src="/assets/OT-symbol.webp" 
-                  alt="Olympia Tech" 
+                  alt="Neural Summary" 
                   className="h-6 w-auto mr-2"
                   width={24}
                   height={24}

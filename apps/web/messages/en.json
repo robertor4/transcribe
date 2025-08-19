@@ -473,7 +473,7 @@
   },
   "landing": {
     "hero": {
-      "byline": "By Olympia Tech",
+      "byline": "",
       "trustIndicators": {
         "users": "10,000+ users",
         "rating": "4.9/5 rating",
@@ -633,7 +633,7 @@
         "terms": "Terms",
         "security": "Security"
       },
-      "copyright": "© 2024 Neural Summary by Olympia Tech. All rights reserved."
+      "copyright": "© 2024 Neural Summary. All rights reserved."
     }
   },
   "share": {

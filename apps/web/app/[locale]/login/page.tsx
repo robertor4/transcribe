@@ -17,7 +17,7 @@ export default async function LoginPage({
           <div className="flex justify-center mb-4">
             <img 
               src="/assets/OT-symbol.webp" 
-              alt="OT Logo" 
+              alt="Neural Summary Logo" 
               className="h-12 w-auto"
             />
           </div>

@@ -408,7 +408,7 @@
   },
   "landing": {
     "hero": {
-      "byline": "Von Olympia Tech",
+      "byline": "",
       "trustIndicators": {
         "users": "10.000+ Nutzer",
         "rating": "4,9/5 Bewertung",
@@ -568,7 +568,7 @@
         "terms": "Bedingungen",
         "security": "Sicherheit"
       },
-      "copyright": "© 2024 Neural Summary von Olympia Tech. Alle Rechte vorbehalten."
+      "copyright": "© 2024 Neural Summary. Alle Rechte vorbehalten."
     }
   }
 }

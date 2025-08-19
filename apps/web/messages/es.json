@@ -428,7 +428,7 @@
   },
   "landing": {
     "hero": {
-      "byline": "Por Olympia Tech",
+      "byline": "",
       "trustIndicators": {
         "users": "10,000+ usuarios",
         "rating": "4.9/5 calificación",
@@ -588,7 +588,7 @@
         "terms": "Términos",
         "security": "Seguridad"
       },
-      "copyright": "© 2024 Neural Notes por Olympia Tech. Todos los derechos reservados."
+      "copyright": "© 2024 Neural Notes. Todos los derechos reservados."
     }
   }
 }

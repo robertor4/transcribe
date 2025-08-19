@@ -77,7 +77,7 @@ class NotificationService {
         this.sendNotification({
           title: 'Notifications enabled!',
           body: 'You\'ll be notified when your transcriptions are ready.',
-          icon: '/assets/OT-symbol.webp',
+          icon: '/assets/icons/notification-icon.svg',
         });
         
         return true;
@@ -141,7 +141,7 @@ class NotificationService {
     try {
       const notification = new Notification(options.title, {
         body: options.body,
-        icon: options.icon || '/assets/OT-symbol.webp',
+        icon: options.icon || '/assets/icons/notification-icon.svg',
         tag: options.tag,
         data: options.data,
         requireInteraction: options.requireInteraction || false,
@@ -214,7 +214,7 @@ class NotificationService {
     try {
       const notification = new Notification(options.title, {
         body: options.body,
-        icon: options.icon || '/assets/OT-symbol.webp',
+        icon: options.icon || '/assets/icons/notification-icon.svg',
         tag: options.tag,
         data: options.data,
         requireInteraction: options.requireInteraction || false,
@@ -275,7 +275,7 @@ class NotificationService {
       try {
         const testNotification = new Notification('🔔 Test Notification', {
           body: 'If you see this, notifications are working!',
-          icon: '/assets/OT-symbol.webp',
+          icon: '/assets/icons/notification-icon.svg',
           tag: 'test-notification',
           requireInteraction: false,
         });

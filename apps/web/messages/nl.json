@@ -408,7 +408,7 @@
   },
   "landing": {
     "hero": {
-      "byline": "Door Olympia Tech",
+      "byline": "",
       "trustIndicators": {
         "users": "10.000+ gebruikers",
         "rating": "4.9/5 beoordeling",
@@ -568,7 +568,7 @@
         "terms": "Voorwaarden",
         "security": "Beveiliging"
       },
-      "copyright": "© 2024 Neural Summary door Olympia Tech. Alle rechten voorbehouden."
+      "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden."
     }
   }
 }

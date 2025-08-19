@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   },
   description: 'Transform audio recordings into accurate transcripts and intelligent summaries with Neural Summary. 99.5% accuracy, 50+ languages, enterprise security. Start free today.',
   keywords: ['audio transcription', 'AI transcription', 'speech to text', 'meeting notes', 'interview transcription', 'voice notes', 'OpenAI Whisper', 'automatic transcription', 'audio to text converter'],
-  authors: [{ name: 'Olympia Tech', url: 'https://olympiatech.ai' }],
-  creator: 'Olympia Tech',
-  publisher: 'Olympia Tech',
+  authors: [{ name: 'Neural Summary' }],
+  creator: 'Neural Summary',
+  publisher: 'Neural Summary',
   formatDetection: {
     email: false,
     address: false,
@@ -58,8 +58,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Neural Summary - AI-Powered Audio Transcription',
     description: 'Transform audio into accurate transcripts & summaries. 99.5% accuracy, 50+ languages. Start free.',
-    site: '@olympiatech',
-    creator: '@olympiatech',
+    site: '@neuralsummary',
+    creator: '@neuralsummary',
     images: ['/assets/OT-symbol.webp'],
   },
   robots: {
