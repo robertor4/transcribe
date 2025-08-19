@@ -11,7 +11,9 @@ import {
   FileText,
   Copy,
   Check,
-  FileSearch
+  FileSearch,
+  Calendar,
+  List
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
@@ -19,6 +21,8 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { useTranslations } from 'next-intl';
 import { SummaryWithComments } from './SummaryWithComments';
+import TranscriptTimeline from './TranscriptTimeline';
+import { ActionItemsTable } from './ActionItemsTable';
 
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
@@ -102,6 +106,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [isFormatted, setIsFormatted] = useState(true);
+  const [transcriptView, setTranscriptView] = useState<'timeline' | 'list'>('timeline');
 
   const formatTranscript = (text: string): string => {
     // Add line breaks after sentences (. ! ?)
@@ -247,7 +252,35 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {info.key === 'transcript' && (
+                    {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => setTranscriptView('timeline')}
+                          className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                            transcriptView === 'timeline' 
+                              ? 'text-[#cc3399] bg-white' 
+                              : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                          title="Timeline view"
+                        >
+                          <Calendar className="h-4 w-4" />
+                          <span>Timeline</span>
+                        </button>
+                        <button
+                          onClick={() => setTranscriptView('list')}
+                          className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                            transcriptView === 'list' 
+                              ? 'text-[#cc3399] bg-white' 
+                              : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                          title="List view"
+                        >
+                          <List className="h-4 w-4" />
+                          <span>List</span>
+                        </button>
+                      </>
+                    )}
+                    {info.key === 'transcript' && transcriptView === 'list' && (
                       <button
                         onClick={() => setIsFormatted(!isFormatted)}
                         className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
@@ -286,8 +319,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
               <div className="py-6">
                 {info.key === 'transcript' ? (
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
-                    {/* Show speaker segments if available, otherwise show plain transcript */}
-                    {speakerSegments && speakerSegments.length > 0 ? (
+                    {/* Show timeline or list view based on selection */}
+                    {speakerSegments && speakerSegments.length > 0 && transcriptView === 'timeline' ? (
+                      <TranscriptTimeline segments={speakerSegments} />
+                    ) : speakerSegments && speakerSegments.length > 0 && transcriptView === 'list' ? (
                       <div className="space-y-4">
                         {speakerSegments.map((segment, index) => {
                           let speakerLetter = '';
@@ -376,6 +411,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                     summary={content}
                     isEditable={false}
                   />
+                ) : info.key === 'actionItems' ? (
+                  <ActionItemsTable content={content} />
                 ) : (
                   <BlogStyleContent content={content} />
                 )}
