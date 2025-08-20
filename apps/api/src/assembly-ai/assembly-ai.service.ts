@@ -20,7 +20,7 @@ export class AssemblyAIService {
   private client: AssemblyAI;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get('ASSEMBLYAI_API_KEY');
+    const apiKey = this.configService.get<string>('ASSEMBLYAI_API_KEY');
     if (!apiKey) {
       throw new Error('ASSEMBLYAI_API_KEY is not configured');
     }
@@ -38,40 +38,41 @@ export class AssemblyAIService {
       this.logger.log(`Starting AssemblyAI transcription for URL: ${audioUrl}`);
 
       // Prepare word boost from context - extract important keywords
-      const wordBoost = context 
-        ? context.split(' ')
-            .filter(word => word.length > 3) // Filter out short words
+      const wordBoost = context
+        ? context
+            .split(' ')
+            .filter((word) => word.length > 3) // Filter out short words
             .slice(0, 100) // AssemblyAI limits word boost
         : [];
 
       // Start transcription with enhanced quality settings
       const transcript = await this.client.transcripts.create({
         audio_url: audioUrl,
-        
+
         // Core transcription settings
         speech_model: 'best', // Use Best tier for maximum accuracy
         speaker_labels: true, // Enable speaker diarization
         language_detection: true, // Enable automatic language detection
         language_confidence_threshold: 0.8, // Increased from 0.7 for better language detection
-        
+
         // Quality enhancement parameters
         punctuate: true, // Add proper punctuation
         format_text: true, // Improve formatting with proper capitalization
         disfluencies: false, // Remove filler words like "um", "uh" for cleaner transcript
-        
+
         // Word boosting for context-specific terms
-        ...(wordBoost.length > 0 && { 
+        ...(wordBoost.length > 0 && {
           word_boost: wordBoost,
-          boost_param: 'high' // Maximum boost weight for important terms
+          boost_param: 'high', // Maximum boost weight for important terms
         }),
-        
+
         // Additional quality settings
         auto_chapters: true, // Automatically detect chapter/topic changes
         entity_detection: true, // Detect and tag entities like names, locations
         sentiment_analysis: true, // Add sentiment scores to utterances
         iab_categories: true, // Categorize content by IAB taxonomy
-        
-        // Audio processing enhancements  
+
+        // Audio processing enhancements
         audio_start_from: 0,
         // audio_end_at is optional, don't specify to process entire file
         filter_profanity: false, // Keep original content
@@ -103,9 +104,11 @@ export class AssemblyAIService {
 
       // Log quality metrics if available
       if (completedTranscript.confidence) {
-        this.logger.log(`Transcription confidence score: ${completedTranscript.confidence}`);
+        this.logger.log(
+          `Transcription confidence score: ${completedTranscript.confidence}`,
+        );
       }
-      
+
       // Process the results
       return this.processTranscriptionResponse(completedTranscript);
     } catch (error) {

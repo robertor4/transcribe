@@ -327,15 +327,15 @@ export class FirebaseService implements OnModuleInit {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
-    
+
     if (user.displayName !== undefined && user.displayName !== null) {
       userData.displayName = user.displayName;
     }
-    
+
     if (user.photoURL !== undefined && user.photoURL !== null) {
       userData.photoURL = user.photoURL;
     }
-    
+
     await this.db
       .collection('users')
       .doc(user.uid)
@@ -446,7 +446,9 @@ export class FirebaseService implements OnModuleInit {
     };
   }
 
-  async getTranscriptionByShareToken(shareToken: string): Promise<Transcription | null> {
+  async getTranscriptionByShareToken(
+    shareToken: string,
+  ): Promise<Transcription | null> {
     const snapshot = await this.db
       .collection('transcriptions')
       .where('shareToken', '==', shareToken)
@@ -463,9 +465,15 @@ export class FirebaseService implements OnModuleInit {
     return {
       ...data,
       id: doc.id,
-      createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
-      updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
-      completedAt: data.completedAt?.toDate ? data.completedAt.toDate() : data.completedAt,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
+      completedAt: data.completedAt?.toDate
+        ? data.completedAt.toDate()
+        : data.completedAt,
       sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
     } as Transcription;
   }

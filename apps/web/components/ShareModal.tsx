@@ -16,8 +16,6 @@ import {
   Loader2,
   QrCode,
   Share2,
-  ChevronDown,
-  ChevronUp,
   Clock,
   Shield,
   FileText,
@@ -28,8 +26,8 @@ import {
   Target,
   TrendingUp,
   Sparkles,
-  Info,
   Eye,
+  Plus,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 
@@ -38,6 +36,11 @@ interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   onShareUpdate: (transcription: Transcription) => void;
+}
+
+interface EmailChip {
+  email: string;
+  id: string;
 }
 
 export const ShareModal: React.FC<ShareModalProps> = ({
@@ -75,14 +78,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     includeSpeakerInfo: true,
   });
   
-  // Share mode tabs
-  const [shareMode, setShareMode] = useState<'link' | 'email'>('link');
-  
-  // Email form
-  const [showEmailForm, setShowEmailForm] = useState(false);
-  const [recipientEmail, setRecipientEmail] = useState<string>('');
-  const [recipientName, setRecipientName] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
+  // Email functionality
+  const [showEmailSection, setShowEmailSection] = useState(false);
+  const [emailInput, setEmailInput] = useState<string>('');
+  const [emailChips, setEmailChips] = useState<EmailChip[]>([]);
+  const [emailError, setEmailError] = useState<string>('');
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
@@ -103,7 +103,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setLocalShareToken(transcription.shareToken);
     
     if (transcription.shareToken && isOpen) {
-      const url = `${window.location.origin}/en/shared/${transcription.shareToken}`;
+      const url = `${window.location.origin}/s/${transcription.shareToken}`;
       setShareUrl(url);
       generateQRCode(url);
       
@@ -116,8 +116,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     } else if (!isOpen) {
       // Reset state when modal closes
       setShowQrCode(false);
-      setShowEmailForm(false);
+      setShowEmailSection(false);
       setEmailSent(false);
+      setEmailChips([]);
+      setEmailInput('');
+      setEmailError('');
       setPassword('');
       setEnablePassword(false);
       setLocalShareToken(transcription.shareToken);
@@ -212,7 +215,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const handleCreateShareLink = async () => {
     setLoading(true);
     try {
-      const settings: any = {
+      const settings: Record<string, unknown> = {
         contentOptions,
       };
       
@@ -231,7 +234,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
       const response = await transcriptionApi.createShareLink(transcription.id, settings);
       const shareToken = response.data?.shareToken;
-      const url = response.data?.shareUrl || '';
+      // Use the URL from the API response, or construct it if not provided
+      const url = response.data?.shareUrl || `${window.location.origin}/s/${shareToken}`;
       
       if (shareToken && url) {
         // Update local state immediately for UI transition
@@ -264,7 +268,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const handleUpdateShareSettings = async () => {
     setLoading(true);
     try {
-      const settings: any = {
+      const settings: Record<string, unknown> = {
         contentOptions,
       };
       
@@ -313,7 +317,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       setLocalShareToken(undefined);
       setShareUrl('');
       setQrCodeUrl('');
-      setShowEmailForm(false);
+      setShowEmailSection(false);
       
       // Update the transcription object
       const updatedTranscription = {
@@ -344,29 +348,94 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     }
   };
 
-  const handleSendEmail = async () => {
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+      e.preventDefault();
+      addEmailChip();
+    } else if (e.key === 'Backspace' && emailInput === '' && emailChips.length > 0) {
+      // Remove last chip when backspace is pressed on empty input
+      const newChips = [...emailChips];
+      newChips.pop();
+      setEmailChips(newChips);
+    }
+  };
+
+  const addEmailChip = () => {
+    const trimmedEmail = emailInput.trim().replace(/,$/g, '');
+    
+    if (trimmedEmail === '') {
+      return;
+    }
+
+    if (!validateEmail(trimmedEmail)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
+    if (emailChips.some(chip => chip.email === trimmedEmail)) {
+      setEmailError('This email has already been added');
+      return;
+    }
+
+    setEmailChips([...emailChips, { email: trimmedEmail, id: Date.now().toString() }]);
+    setEmailInput('');
+    setEmailError('');
+  };
+
+  const removeEmailChip = (id: string) => {
+    setEmailChips(emailChips.filter(chip => chip.id !== id));
+  };
+
+  const handleSendEmails = async () => {
+    if (emailChips.length === 0) {
+      setEmailError('Please add at least one email address');
+      return;
+    }
+
     setEmailLoading(true);
     setEmailSent(false);
     try {
-      await transcriptionApi.sendShareEmail(transcription.id, {
-        recipientEmail,
-        recipientName,
-        message,
-      });
+      // Send to each email address
+      for (const chip of emailChips) {
+        await transcriptionApi.sendShareEmail(transcription.id, {
+          recipientEmail: chip.email,
+        });
+      }
+      
       setEmailSent(true);
       setTimeout(() => {
-        setRecipientEmail('');
-        setRecipientName('');
-        setMessage('');
+        setEmailChips([]);
+        setEmailInput('');
         setEmailSent(false);
-        setShowEmailForm(false);
+        setShowEmailSection(false);
       }, 3000);
     } catch (error) {
-      console.error('Error sending email:', error);
-      alert('Failed to send email. Please try again.');
+      console.error('Error sending emails:', error);
+      alert('Failed to send emails. Please try again.');
     } finally {
       setEmailLoading(false);
     }
+  };
+
+  const getSelectedContentSummary = () => {
+    const selected = [];
+    if (contentOptions.includeSummary) selected.push(t('includeSummary'));
+    if (contentOptions.includeTranscript) selected.push(t('includeTranscript'));
+    if (contentOptions.includeActionItems) selected.push(t('includeActionItems'));
+    if (contentOptions.includeCommunicationStyles) selected.push(t('includeCommunication'));
+    if (contentOptions.includeEmotionalIntelligence) selected.push(t('includeEmotionalIQ'));
+    if (contentOptions.includeInfluencePersuasion) selected.push(t('includeInfluence'));
+    if (contentOptions.includePersonalDevelopment) selected.push(t('includeDevelopment'));
+    if (contentOptions.includeSpeakerInfo) selected.push(t('includeSpeakerInfo'));
+    
+    if (selected.length === 0) return t('noContentSelected');
+    if (selected.length > 3) return `${selected.length} ${t('itemsSelected')}`;
+    return selected.join(', ');
   };
 
   if (!isOpen) return null;
@@ -394,38 +463,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
         <div className="p-6">
           {!localShareToken ? (
-            <>
-              {/* Tab Navigation */}
-              <div className="flex gap-2 mb-6 border-b border-gray-300">
-                <button
-                  onClick={() => setShareMode('link')}
-                  className={`px-4 py-2 font-medium transition-all ${
-                    shareMode === 'link'
-                      ? 'text-[#cc3399] border-b-2 border-[#cc3399]'
-                      : 'text-gray-600 hover:text-[#cc3399]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Link className="w-4 h-4" />
-                    {t('shareViaLink')}
-                  </div>
-                </button>
-                <button
-                  onClick={() => setShareMode('email')}
-                  className={`px-4 py-2 font-medium transition-all ${
-                    shareMode === 'email'
-                      ? 'text-[#cc3399] border-b-2 border-[#cc3399]'
-                      : 'text-gray-600 hover:text-[#cc3399]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    {t('shareViaEmail')}
-                  </div>
-                </button>
-              </div>
-
-              {shareMode === 'link' ? (
             <>
               {/* Content Selection */}
               <div className="mb-6">
@@ -577,16 +614,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </label>
                   </div>
                 )}
-                
-                {/* Content Preview Info */}
-                <div className="mt-2 p-3 bg-pink-50 rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-[#cc3399] mt-0.5" />
-                    <p className="text-sm text-gray-800">
-                      {t('contentPreviewInfo')}
-                    </p>
-                  </div>
-                </div>
               </div>
 
               {/* Share Settings */}
@@ -681,74 +708,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 )}
               </button>
             </>
-              ) : (
-                <>
-                  {/* Email Form */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Mail className="w-5 h-5 text-[#cc3399]" />
-                      {t('sendViaEmail')}
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      <input
-                        type="email"
-                        value={recipientEmail}
-                        onChange={(e) => setRecipientEmail(e.target.value)}
-                        placeholder={t('recipientEmail')}
-                        className="w-full px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                        required
-                      />
-                      
-                      <input
-                        type="text"
-                        value={recipientName}
-                        onChange={(e) => setRecipientName(e.target.value)}
-                        placeholder={t('recipientName')}
-                        className="w-full px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                      />
-                      
-                      <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder={t('personalMessage')}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                      />
-                      
-                      <button
-                        onClick={handleSendEmail}
-                        disabled={emailLoading || !recipientEmail}
-                        className="w-full py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
-                      >
-                        {emailLoading ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            {t('sending')}
-                          </>
-                        ) : emailSent ? (
-                          <>
-                            <Check className="w-5 h-5" />
-                            {t('emailSent')}
-                          </>
-                        ) : (
-                          <>
-                            <Mail className="w-5 h-5" />
-                            {t('sendEmail')}
-                          </>
-                        )}
-                      </button>
-                      
-                      {emailSent && (
-                        <div className="p-3 bg-green-50 text-green-700 rounded-lg text-sm">
-                          {t('emailSentSuccess')}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
           ) : (
             <>
               {/* Existing Share Link */}
@@ -780,23 +739,36 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* Current Settings Display */}
                 {transcription.shareSettings && (
-                  <div className="mb-4 p-4 bg-pink-50 rounded-lg">
-                    <h4 className="font-medium text-gray-900 mb-2">{t('currentSettings')}</h4>
-                    <div className="space-y-1 text-sm text-gray-700">
+                  <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-300">
+                    <h4 className="font-medium text-gray-900 mb-3">{t('currentSettings')}</h4>
+                    
+                    {/* Content Settings */}
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
+                        <FileText className="w-4 h-4" />
+                        <span className="font-medium">{t('sharedContent')}:</span>
+                      </div>
+                      <p className="text-sm text-gray-600 ml-6">
+                        {getSelectedContentSummary()}
+                      </p>
+                    </div>
+
+                    {/* Security Settings */}
+                    <div className="space-y-2">
                       {transcription.shareSettings.expiresAt && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
                           <Calendar className="w-4 h-4" />
                           <span>{t('expiresOn')}: {formatDate(transcription.shareSettings.expiresAt)}</span>
                         </div>
                       )}
                       {transcription.shareSettings.password && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
                           <Lock className="w-4 h-4" />
                           <span>{t('passwordProtected')}</span>
                         </div>
                       )}
                       {transcription.shareSettings.viewCount !== undefined && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
                           <Eye className="w-4 h-4" />
                           <span>{t('viewCount')}: {transcription.shareSettings.viewCount}</span>
                         </div>
@@ -804,25 +776,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </div>
                   </div>
                 )}
-
-                {/* Update Settings Button */}
-                <button
-                  onClick={handleUpdateShareSettings}
-                  disabled={loading}
-                  className="w-full mb-3 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {t('updating')}
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="w-4 h-4" />
-                      {t('updateSettings')}
-                    </>
-                  )}
-                </button>
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-3 gap-2 mb-4">
@@ -835,11 +788,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </button>
                   
                   <button
-                    onClick={() => setShowEmailForm(!showEmailForm)}
+                    onClick={() => setShowEmailSection(!showEmailSection)}
                     className="p-3 border border-gray-400 rounded-lg hover:bg-pink-50 flex flex-col items-center gap-1 transition-colors"
                   >
                     <Mail className="w-5 h-5 text-gray-700" />
-                    <span className="text-xs text-gray-700 font-medium">{t('email')}</span>
+                    <span className="text-xs text-gray-700 font-medium">{t('sendEmail')}</span>
                   </button>
                   
                   <button
@@ -848,7 +801,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     className="p-3 border border-red-300 rounded-lg hover:bg-red-50 flex flex-col items-center gap-1 text-red-600"
                   >
                     <Trash2 className="w-5 h-5" />
-                    <span className="text-xs">{t('revoke')}</span>
+                    <span className="text-xs font-medium">{t('revoke')}</span>
                   </button>
                 </div>
 
@@ -860,39 +813,69 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </div>
                 )}
 
-                {/* Email Form */}
-                {showEmailForm && (
+                {/* Email Section */}
+                {showEmailSection && (
                   <div className="mb-4 p-4 border border-gray-400 rounded-lg bg-white">
-                    <h4 className="font-medium text-gray-900 mb-3">{t('sendViaEmail')}</h4>
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-[#cc3399]" />
+                      {t('sendViaEmail')}
+                    </h4>
                     
-                    <input
-                      type="email"
-                      value={recipientEmail}
-                      onChange={(e) => setRecipientEmail(e.target.value)}
-                      placeholder={t('recipientEmail')}
-                      className="w-full mb-2 px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                      required
-                    />
+                    {/* Email Chips Display */}
+                    {emailChips.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {emailChips.map((chip) => (
+                          <div
+                            key={chip.id}
+                            className="flex items-center gap-1 px-3 py-1 bg-pink-50 border border-[#cc3399]/30 rounded-full"
+                          >
+                            <span className="text-sm text-gray-800">{chip.email}</span>
+                            <button
+                              onClick={() => removeEmailChip(chip.id)}
+                              className="ml-1 text-gray-600 hover:text-red-600"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     
-                    <input
-                      type="text"
-                      value={recipientName}
-                      onChange={(e) => setRecipientName(e.target.value)}
-                      placeholder={t('recipientName')}
-                      className="w-full mb-2 px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                    />
+                    {/* Email Input */}
+                    <div className="relative mb-3">
+                      <input
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => {
+                          setEmailInput(e.target.value);
+                          setEmailError('');
+                        }}
+                        onKeyDown={handleEmailInputKeyDown}
+                        onBlur={addEmailChip}
+                        placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                      />
+                      <button
+                        onClick={addEmailChip}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-[#cc3399]"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    </div>
                     
-                    <textarea
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder={t('personalMessage')}
-                      className="w-full mb-3 px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                      rows={3}
-                    />
+                    {/* Error Message */}
+                    {emailError && (
+                      <p className="text-sm text-red-600 mb-3">{emailError}</p>
+                    )}
+                    
+                    {/* Help Text */}
+                    <p className="text-xs text-gray-600 mb-3">
+                      {t('emailHelpText')}
+                    </p>
                     
                     <button
-                      onClick={handleSendEmail}
-                      disabled={emailLoading || !recipientEmail || emailSent}
+                      onClick={handleSendEmails}
+                      disabled={emailLoading || emailChips.length === 0 || emailSent}
                       className="w-full py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
                     >
                       {emailLoading ? (
@@ -903,17 +886,48 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       ) : emailSent ? (
                         <>
                           <Check className="w-4 h-4" />
-                          {t('emailSent')}
+                          {t('emailsSent')}
                         </>
                       ) : (
                         <>
                           <Mail className="w-4 h-4" />
-                          {t('sendEmail')}
+                          {t('sendEmails')}
                         </>
                       )}
                     </button>
+                    
+                    {emailSent && (
+                      <div className="mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm">
+                        {t('emailsSentSuccess')}
+                      </div>
+                    )}
                   </div>
                 )}
+
+                {/* Update Settings Section */}
+                <div className="border-t border-gray-300 pt-4 mt-6">
+                  <h4 className="font-medium text-gray-900 mb-3">{t('updateSettings')}</h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {t('updateSettingsInfo')}
+                  </p>
+                  <button
+                    onClick={handleUpdateShareSettings}
+                    disabled={loading}
+                    className="w-full py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 border border-gray-400"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {t('updating')}
+                      </>
+                    ) : (
+                      <>
+                        <Shield className="w-4 h-4" />
+                        {t('updateShareSettings')}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </>
           )}

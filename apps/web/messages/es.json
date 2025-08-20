@@ -590,5 +590,329 @@
       },
       "copyright": "© 2024 Neural Notes. Todos los derechos reservados."
     }
+  },
+  "terms": {
+    "meta": {
+      "title": "Términos de Uso - Neural Summary",
+      "description": "Términos de Uso para el servicio de transcripción y análisis impulsado por IA de Neural Summary. Términos y condiciones conformes al RGPD."
+    },
+    "title": "Términos de Uso",
+    "effectiveDate": "Fecha de vigencia",
+    "tableOfContents": "Tabla de contenidos",
+    "links": {
+      "privacy": "Política de privacidad",
+      "home": "Inicio"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Aceptación de los términos",
+        "content": "Al acceder o usar Neural Summary ('Servicio'), usted acepta estar sujeto a estos Términos de Uso ('Términos'). Si no está de acuerdo con alguna parte de estos términos, no tiene permiso para acceder al Servicio.",
+        "notice": "Estos Términos constituyen un acuerdo legalmente vinculante entre usted y [COMPANY_LEGAL_NAME] con respecto a su uso del Servicio."
+      },
+      "serviceDescription": {
+        "title": "Descripción del servicio",
+        "content": "Neural Summary proporciona servicios de transcripción de audio impulsados por IA y análisis inteligente. Nuestra plataforma incluye:",
+        "features": {
+          "transcription": "Transcripción automática de archivos de audio utilizando tecnología de IA avanzada",
+          "analysis": "Resumen inteligente y análisis del contenido transcrito",
+          "storage": "Almacenamiento seguro en la nube de sus transcripciones y archivos de audio",
+          "sharing": "Capacidad de compartir transcripciones con acceso controlado"
+        }
+      },
+      "userObligations": {
+        "title": "Obligaciones y responsabilidades del usuario",
+        "content": "Como usuario de nuestro Servicio, usted acepta usar Neural Summary de manera responsable y de conformidad con todas las leyes y regulaciones aplicables.",
+        "prohibited": {
+          "title": "Usos prohibidos",
+          "illegal": "Cargar o procesar contenido que viole leyes o regulaciones",
+          "harmful": "Usar el Servicio para dañar, amenazar o acosar a otros",
+          "unauthorized": "Acceder o intentar acceder a áreas no autorizadas del Servicio",
+          "interference": "Interferir con o interrumpir el Servicio o los servidores",
+          "reverseEngineering": "Realizar ingeniería inversa, descompilar o desensamblar cualquier parte del Servicio"
+        }
+      },
+      "intellectualProperty": {
+        "title": "Derechos de propiedad intelectual",
+        "ownership": {
+          "title": "Propiedad del servicio",
+          "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de [COMPANY_LEGAL_NAME] y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
+        },
+        "userContent": {
+          "title": "Su contenido",
+          "content": "Usted retiene todos los derechos sobre el contenido que carga al Servicio. Al cargar contenido, nos otorga una licencia limitada para procesar, almacenar y mostrar su contenido únicamente con el propósito de brindarle el Servicio."
+        },
+        "license": {
+          "title": "Otorgamiento de licencia",
+          "content": "Le otorgamos una licencia limitada, no exclusiva, no transferible y revocable para usar el Servicio para sus propósitos personales o comerciales internos, sujeto a estos Términos."
+        }
+      },
+      "privacy": {
+        "title": "Privacidad y protección de datos",
+        "content": "Su uso del Servicio también se rige por nuestra Política de privacidad, que se incorpora a estos Términos por referencia.",
+        "gdpr": {
+          "title": "Cumplimiento del RGPD",
+          "content": "Cumplimos con el Reglamento General de Protección de Datos (RGPD) y le proporcionamos los siguientes derechos:",
+          "rights": {
+            "access": "Derecho de acceso a sus datos personales",
+            "rectification": "Derecho a rectificar datos inexactos",
+            "erasure": "Derecho al borrado ('derecho al olvido')",
+            "portability": "Derecho a la portabilidad de datos",
+            "objection": "Derecho a oponerse al procesamiento"
+          }
+        }
+      },
+      "liability": {
+        "title": "Limitación de responsabilidad",
+        "disclaimer": "EL SERVICIO SE PROPORCIONA 'TAL COMO ESTÁ' SIN GARANTÍAS DE NINGÚN TIPO, YA SEAN EXPRESAS O IMPLÍCITAS.",
+        "limitations": {
+          "title": "Limitaciones de responsabilidad",
+          "content": "En la medida máxima permitida por la ley, [COMPANY_LEGAL_NAME] no será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos resultantes de su uso o incapacidad para usar el Servicio."
+        },
+        "maxLiability": "Responsabilidad máxima"
+      },
+      "termination": {
+        "title": "Terminación",
+        "content": "Podemos terminar o suspender su cuenta y acceso al Servicio inmediatamente, sin aviso previo o responsabilidad, por cualquier razón, incluyendo el incumplimiento de estos Términos.",
+        "consequences": {
+          "title": "Efectos de la terminación",
+          "accessRevoked": "Su derecho a usar el Servicio cesará inmediatamente",
+          "dataRetention": "Podemos retener ciertos datos según lo requiera la ley o para propósitos comerciales legítimos",
+          "obligations": "Todas las disposiciones de los Términos que deben sobrevivir a la terminación sobrevivirán"
+        }
+      },
+      "governingLaw": {
+        "title": "Ley aplicable y jurisdicción",
+        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes de [JURISDICTION], sin tener en cuenta sus disposiciones sobre conflictos de leyes.",
+        "jurisdiction": "Jurisdicción",
+        "court": "Tribunales competentes"
+      },
+      "contact": {
+        "title": "Información de contacto",
+        "content": "Si tiene preguntas sobre estos Términos, por favor contáctenos en:",
+        "company": "Empresa",
+        "registration": "Número de registro",
+        "address": "Dirección",
+        "email": "Correo electrónico",
+        "dpo": "Oficial de protección de datos"
+      },
+      "amendments": {
+        "title": "Enmiendas a los términos",
+        "content": "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Notificaremos a los usuarios sobre cambios materiales publicando los nuevos Términos en esta página y actualizando la 'Fecha de vigencia'."
+      }
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Política de Privacidad - Neural Summary",
+      "description": "Política de Privacidad para Neural Summary. Aprenda cómo recopilamos, usamos y protegemos sus datos personales en cumplimiento del RGPD."
+    },
+    "title": "Política de Privacidad",
+    "effectiveDate": "Última actualización",
+    "gdprCompliant": "Conforme al RGPD",
+    "introduction": "En Neural Summary, tomamos su privacidad en serio. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando usa nuestro servicio. Cumplimos con el Reglamento General de Protección de Datos (RGPD) y estamos comprometidos a proteger sus datos personales.",
+    "tableOfContents": "Tabla de contenidos",
+    "links": {
+      "terms": "Términos de Uso",
+      "home": "Inicio"
+    },
+    "sections": {
+      "dataController": {
+        "title": "Controlador de datos",
+        "content": "El controlador de datos responsable de sus datos personales es:",
+        "company": "Nombre de la empresa",
+        "registration": "Número de registro",
+        "address": "Dirección registrada",
+        "email": "Correo de contacto",
+        "dpo": "Oficial de protección de datos"
+      },
+      "dataCollected": {
+        "title": "Qué datos recopilamos",
+        "content": "Recopilamos diferentes tipos de información para proporcionar y mejorar nuestro Servicio:",
+        "personal": {
+          "title": "Información personal",
+          "email": "Dirección de correo electrónico",
+          "name": "Nombre (opcional)",
+          "profile": "Información de perfil de proveedores OAuth (Google)",
+          "payment": "Información de pago (procesada de forma segura a través de proveedores terceros)"
+        },
+        "usage": {
+          "title": "Datos de uso",
+          "audioFiles": "Archivos de audio que carga para transcripción",
+          "transcriptions": "Transcripciones y resultados de análisis",
+          "analysisResults": "Resúmenes e insights generados por IA",
+          "preferences": "Preferencias y configuraciones del usuario"
+        },
+        "technical": {
+          "title": "Datos técnicos",
+          "ipAddress": "Dirección IP y ubicación aproximada",
+          "browser": "Tipo y versión del navegador",
+          "device": "Información del dispositivo y sistema operativo",
+          "logs": "Registros de acceso y patrones de uso"
+        }
+      },
+      "legalBasis": {
+        "title": "Base legal para el procesamiento",
+        "content": "Procesamos sus datos personales basados en los siguientes fundamentos legales:",
+        "contract": {
+          "title": "Ejecución del contrato",
+          "content": "Procesamiento necesario para brindarle nuestros servicios de transcripción y análisis."
+        },
+        "consent": {
+          "title": "Consentimiento",
+          "content": "Procesamiento basado en su consentimiento explícito para comunicaciones de marketing y analíticas."
+        },
+        "legitimate": {
+          "title": "Intereses legítimos",
+          "content": "Procesamiento necesario para nuestros intereses legítimos en mejorar nuestros servicios y prevenir fraude."
+        },
+        "legal": {
+          "title": "Obligaciones legales",
+          "content": "Procesamiento necesario para cumplir con obligaciones legales, como requisitos fiscales y contables."
+        }
+      },
+      "dataUsage": {
+        "title": "Cómo usamos sus datos",
+        "content": "Usamos los datos recopilados para varios propósitos:",
+        "purposes": {
+          "service": "Para proporcionar y mantener nuestros servicios de transcripción y análisis",
+          "communication": "Para comunicarnos con usted sobre su cuenta y actualizaciones del servicio",
+          "improvement": "Para mejorar y personalizar su experiencia",
+          "security": "Para detectar, prevenir y abordar problemas técnicos y amenazas de seguridad",
+          "compliance": "Para cumplir con obligaciones legales y hacer cumplir nuestros términos",
+          "analytics": "Para analizar patrones de uso y mejorar nuestro servicio (con su consentimiento)"
+        }
+      },
+      "dataSharing": {
+        "title": "Compartir datos y terceros",
+        "content": "Podemos compartir sus datos con proveedores de servicios terceros confiables que nos ayudan a operar nuestro Servicio:",
+        "serviceProviders": {
+          "title": "Proveedores de servicios",
+          "hosting": "Infraestructura en la nube",
+          "transcription": "Servicios de transcripción",
+          "analysis": "Análisis de IA",
+          "email": "Servicio de correo electrónico",
+          "analytics": "Analíticas"
+        },
+        "notice": "Nunca vendemos sus datos personales a terceros. Todos los proveedores de servicios están sujetos a estrictos acuerdos de confidencialidad y solo pueden usar sus datos para brindarnos servicios."
+      },
+      "dataRetention": {
+        "title": "Retención de datos",
+        "content": "Retenemos sus datos personales solo el tiempo necesario para cumplir los propósitos descritos en esta Política de Privacidad:",
+        "periods": {
+          "title": "Períodos de retención",
+          "account": "Datos de cuenta",
+          "transcriptions": "Transcripciones",
+          "audioFiles": "Archivos de audio",
+          "logs": "Registros del sistema",
+          "analytics": "Datos de analíticas"
+        }
+      },
+      "userRights": {
+        "title": "Sus derechos bajo el RGPD",
+        "content": "Bajo el Reglamento General de Protección de Datos (RGPD), usted tiene los siguientes derechos:",
+        "rights": {
+          "access": {
+            "title": "Derecho de acceso",
+            "content": "Tiene el derecho de solicitar copias de sus datos personales que poseemos."
+          },
+          "rectification": {
+            "title": "Derecho de rectificación",
+            "content": "Tiene el derecho de solicitar la corrección de cualquier dato personal inexacto o incompleto."
+          },
+          "erasure": {
+            "title": "Derecho al borrado",
+            "content": "Tiene el derecho de solicitar la eliminación de sus datos personales bajo ciertas circunstancias."
+          },
+          "portability": {
+            "title": "Derecho a la portabilidad de datos",
+            "content": "Tiene el derecho de recibir sus datos en un formato estructurado, comúnmente usado y legible por máquina."
+          },
+          "restriction": {
+            "title": "Derecho a restringir el procesamiento",
+            "content": "Tiene el derecho de solicitar la restricción del procesamiento bajo ciertas circunstancias."
+          },
+          "objection": {
+            "title": "Derecho de oposición",
+            "content": "Tiene el derecho de oponerse al procesamiento basado en intereses legítimos o para marketing directo."
+          },
+          "withdraw": {
+            "title": "Derecho a retirar el consentimiento",
+            "content": "Cuando el procesamiento se base en consentimiento, tiene el derecho de retirar el consentimiento en cualquier momento."
+          }
+        },
+        "howToExercise": "Para ejercer cualquiera de estos derechos, por favor contacte a nuestro Oficial de Protección de Datos en la dirección de correo proporcionada abajo.",
+        "responseTime": "Responderemos a su solicitud dentro de 30 días según lo requerido por el RGPD."
+      },
+      "dataSecurity": {
+        "title": "Seguridad de datos",
+        "content": "Implementamos medidas técnicas y organizacionales apropiadas para proteger sus datos personales:",
+        "measures": {
+          "title": "Medidas de seguridad",
+          "encryption": "Cifrado de extremo a extremo para datos en tránsito y en reposo",
+          "access": "Controles de acceso estrictos y mecanismos de autenticación",
+          "monitoring": "Monitoreo continuo de seguridad y detección de amenazas",
+          "backup": "Respaldos regulares y procedimientos de recuperación ante desastres",
+          "training": "Entrenamiento regular de seguridad para nuestro personal",
+          "incident": "Procedimientos de respuesta a incidentes y notificación de violaciones"
+        },
+        "breach": "En caso de una violación de datos que represente un riesgo para sus derechos y libertades, le notificaremos a usted y a la autoridad supervisora relevante dentro de 72 horas según lo requerido por el RGPD."
+      },
+      "cookies": {
+        "title": "Cookies y seguimiento",
+        "content": "Usamos cookies y tecnologías de seguimiento similares para mejorar su experiencia:",
+        "types": {
+          "title": "Tipos de cookies",
+          "essential": {
+            "title": "Cookies esenciales",
+            "content": "Requeridas para que el Servicio funcione correctamente (autenticación, seguridad)"
+          },
+          "analytics": {
+            "title": "Cookies de analíticas",
+            "content": "Nos ayudan a entender cómo los usuarios interactúan con nuestro Servicio (con su consentimiento)"
+          },
+          "functional": {
+            "title": "Cookies funcionales",
+            "content": "Recuerdan sus preferencias y configuraciones"
+          }
+        },
+        "manage": "Puede gestionar las preferencias de cookies a través de la configuración de su navegador o nuestra herramienta de consentimiento de cookies."
+      },
+      "internationalTransfers": {
+        "title": "Transferencias internacionales de datos",
+        "content": "Sus datos pueden ser transferidos y procesados en países fuera del Espacio Económico Europeo (EEE).",
+        "safeguards": {
+          "title": "Salvaguardas",
+          "scc": "Cláusulas contractuales estándar aprobadas por la Comisión Europea",
+          "adequacy": "Decisiones de adecuación para países con leyes de protección de datos equivalentes",
+          "shield": "Salvaguardas apropiadas según lo requerido por el Artículo 46 del RGPD"
+        }
+      },
+      "children": {
+        "title": "Privacidad de menores",
+        "content": "Nuestro Servicio no está destinado a menores, y no recopilamos conscientemente datos personales de personas menores de la edad especificada abajo.",
+        "age": "Edad mínima"
+      },
+      "contact": {
+        "title": "Contáctenos",
+        "content": "Si tiene preguntas sobre esta Política de Privacidad o desea ejercer sus derechos, por favor contáctenos:",
+        "dpo": {
+          "title": "Oficial de Protección de Datos",
+          "email": "Correo electrónico",
+          "phone": "Teléfono",
+          "address": "Dirección"
+        },
+        "supervisory": {
+          "title": "Autoridad Supervisora",
+          "content": "También tiene el derecho de presentar una queja ante su autoridad local de protección de datos:",
+          "authority": "Nombre de la autoridad",
+          "website": "Sitio web"
+        }
+      },
+      "updates": {
+        "title": "Cambios a esta Política de Privacidad",
+        "content": "Podemos actualizar nuestra Política de Privacidad de vez en cuando. La versión actualizada se indicará mediante una fecha de 'Última actualización' actualizada.",
+        "notification": "Para cambios materiales, le notificaremos por correo electrónico o mediante un aviso prominente en nuestro Servicio."
+      }
+    }
   }
 }

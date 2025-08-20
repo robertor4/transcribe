@@ -44,7 +44,7 @@ export class TranscriptionProcessor {
       });
 
       // Small delay to show initialization
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
@@ -102,7 +102,8 @@ export class TranscriptionProcessor {
       const summary = analyses.summary;
 
       // Extract title from the summary
-      const extractedTitle = this.transcriptionService.extractTitleFromSummary(summary);
+      const extractedTitle =
+        this.transcriptionService.extractTitleFromSummary(summary);
       if (extractedTitle) {
         this.logger.log(
           `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
@@ -119,7 +120,7 @@ export class TranscriptionProcessor {
       });
 
       // Small delay before final save
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,

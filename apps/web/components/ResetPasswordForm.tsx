@@ -53,8 +53,9 @@ export default function ResetPasswordForm() {
         const userEmail = await verifyPasswordResetCode(code);
         setEmail(userEmail);
         setVerifying(false);
-      } catch (error: any) {
-        const errorMessage = error.message || '';
+      } catch (error) {
+        const errorObj = error as { message?: string };
+        const errorMessage = errorObj.message || '';
         
         if (errorMessage.includes('expired')) {
           setError(tAuth('resetLinkExpired'));
@@ -113,8 +114,9 @@ export default function ResetPasswordForm() {
       setTimeout(() => {
         router.push('/login');
       }, 3000);
-    } catch (error: any) {
-      const errorMessage = error.message || '';
+    } catch (error) {
+      const errorObj = error as { message?: string };
+      const errorMessage = errorObj.message || '';
       
       if (errorMessage.includes('weak-password')) {
         setError(tAuth('weakPassword'));

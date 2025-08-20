@@ -17,7 +17,6 @@ import {
   FileAudio, 
   Trash2, 
   Clock, 
-  CheckCircle, 
   XCircle,
   Loader2,
   FileText,
@@ -46,7 +45,6 @@ export const TranscriptionList: React.FC = () => {
   const [showTechnicalError, setShowTechnicalError] = useState<Set<string>>(new Set());
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<{ [key: string]: 'summary' | 'transcript' }>({});
   const [shareModalTranscription, setShareModalTranscription] = useState<Transcription | null>(null);
 
   const formatDate = (date: Date | string) => {
@@ -191,13 +189,14 @@ export const TranscriptionList: React.FC = () => {
       if (response?.success) {
         setTranscriptions(response.data.items);
       }
-    } catch (error: any) {
+    } catch (error) {
+      const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: unknown } };
       console.error('Failed to load transcriptions:', {
         error,
-        message: error?.message,
-        status: error?.status,
-        responseStatus: error?.response?.status,
-        responseData: error?.response?.data,
+        message: errorObj?.message,
+        status: errorObj?.status,
+        responseStatus: errorObj?.response?.status,
+        responseData: errorObj?.response?.data,
         fullError: JSON.stringify(error)
       });
       
@@ -344,8 +343,6 @@ export const TranscriptionList: React.FC = () => {
 
   const getStatusIcon = (status: TranscriptionStatus) => {
     switch (status) {
-      case TranscriptionStatus.COMPLETED:
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
       case TranscriptionStatus.PROCESSING:
         return <Loader2 className="h-5 w-5 text-[#cc3399] animate-spin" />;
       case TranscriptionStatus.FAILED:
@@ -407,22 +404,21 @@ export const TranscriptionList: React.FC = () => {
             className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-gray-300 hover:scale-[1.005] cursor-pointer"
           >
             <div className="p-4 bg-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 flex-1">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1">
                       {editingTitleId === transcription.id ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-1">
                           <input
                             type="text"
                             value={editingTitleValue}
                             onChange={(e) => setEditingTitleValue(e.target.value)}
                             onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
-                            className="text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 min-w-0"
+                            className="text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 min-w-0 flex-1"
                             placeholder={t('editTitle')}
                             autoFocus
-                            style={{ width: '200px' }}
                           />
                           <button
                             onClick={() => saveTitle(transcription.id)}
@@ -440,8 +436,8 @@ export const TranscriptionList: React.FC = () => {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate min-w-0">
                             {transcription.title || transcription.fileName}
                           </p>
                           <button
@@ -454,41 +450,41 @@ export const TranscriptionList: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className="text-xs text-gray-500">
+                    <div className="flex items-center space-x-4 mt-1 overflow-hidden">
+                      <span className="text-xs text-gray-500 flex-shrink-0">
                         {formatFileSize(transcription.fileSize)}
                       </span>
                       {transcription.duration && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 flex-shrink-0">
                           {formatDuration(transcription.duration)}
                         </span>
                       )}
                       {transcription.title && transcription.title !== transcription.fileName && (
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 truncate">
                           {transcription.fileName}
                         </span>
                       )}
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 flex-shrink-0">
                         {formatDate(transcription.createdAt)}
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 flex-shrink-0">
                   {transcription.status === TranscriptionStatus.PROCESSING && progress ? (
                     <ProcessingStatus 
                       progress={progress.progress || 0}
                       stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
                     />
-                  ) : (
+                  ) : transcription.status === TranscriptionStatus.FAILED ? (
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(transcription.status)}
                       <span className="text-sm text-gray-600">
-                        {progress ? progress.message : getStatusText(transcription.status, transcription.id)}
+                        {getStatusText(transcription.status, transcription.id)}
                       </span>
                     </div>
-                  )}
+                  ) : null}
                   
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
@@ -590,7 +586,7 @@ export const TranscriptionList: React.FC = () => {
                 
                 <div className="p-4">
                 {/* Show content based on active tab */}
-                {(!activeTab[transcription.id] || activeTab[transcription.id] === 'summary') && transcription.summary && (
+                {transcription.summary && (
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">
@@ -638,7 +634,7 @@ export const TranscriptionList: React.FC = () => {
                   </div>
                 )}
                 
-                {activeTab[transcription.id] === 'transcript' && transcription.transcriptText && (
+                {transcription.transcriptText && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-gray-900 flex items-center">

@@ -570,5 +570,329 @@
       },
       "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden."
     }
+  },
+  "terms": {
+    "meta": {
+      "title": "Servicevoorwaarden - Neural Summary",
+      "description": "Servicevoorwaarden voor Neural Summary's AI-aangedreven transcriptie- en analyseservice. AVG-conforme algemene voorwaarden."
+    },
+    "title": "Servicevoorwaarden",
+    "effectiveDate": "Ingangsdatum",
+    "tableOfContents": "Inhoudsopgave",
+    "links": {
+      "privacy": "Privacybeleid",
+      "home": "Home"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Aanvaarding van de Voorwaarden",
+        "content": "Door toegang te krijgen tot of gebruik te maken van Neural Summary ('Service'), gaat u akkoord om gebonden te zijn aan deze Servicevoorwaarden ('Voorwaarden'). Als u het niet eens bent met enig deel van deze voorwaarden, heeft u geen toestemming om toegang te krijgen tot de Service.",
+        "notice": "Deze Voorwaarden vormen een juridisch bindende overeenkomst tussen u en [COMPANY_LEGAL_NAME] betreffende uw gebruik van de Service."
+      },
+      "serviceDescription": {
+        "title": "Servicebeschrijving",
+        "content": "Neural Summary biedt AI-aangedreven audiotranscriptie en intelligente analyseservices. Ons platform omvat:",
+        "features": {
+          "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
+          "analysis": "Intelligente samenvatting en analyse van getranscribeerde inhoud",
+          "storage": "Veilige cloudopslag van uw transcripties en audiobestanden",
+          "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
+        }
+      },
+      "userObligations": {
+        "title": "Verplichtingen en Verantwoordelijkheden van Gebruikers",
+        "content": "Als gebruiker van onze Service gaat u akkoord Neural Summary verantwoordelijk en in overeenstemming met alle toepasselijke wetten en regelgeving te gebruiken.",
+        "prohibited": {
+          "title": "Verboden Gebruik",
+          "illegal": "Uploaden of verwerken van inhoud die wetten of regelgeving schendt",
+          "harmful": "De Service gebruiken om anderen te schaden, bedreigen of lastig te vallen",
+          "unauthorized": "Toegang krijgen tot of proberen toegang te krijgen tot ongeautoriseerde gebieden van de Service",
+          "interference": "Interfereren met of verstoren van de Service of servers",
+          "reverseEngineering": "Reverse engineering, decompileren of demonteren van enig deel van de Service"
+        }
+      },
+      "intellectualProperty": {
+        "title": "Intellectuele Eigendomsrechten",
+        "ownership": {
+          "title": "Eigendom van de Service",
+          "content": "De Service en haar originele inhoud, functies en functionaliteit zijn eigendom van [COMPANY_LEGAL_NAME] en worden beschermd door internationale auteursrecht-, handelsmerk-, octrooi-, handelsgeheim- en andere intellectuele eigendomswetten."
+        },
+        "userContent": {
+          "title": "Uw Inhoud",
+          "content": "U behoudt alle rechten op de inhoud die u uploadt naar de Service. Door inhoud te uploaden, verleent u ons een beperkte licentie om uw inhoud te verwerken, op te slaan en weer te geven uitsluitend voor het doel van het verlenen van de Service aan u."
+        },
+        "license": {
+          "title": "Licentieverlening",
+          "content": "Wij verlenen u een beperkte, niet-exclusieve, niet-overdraagbare, herroepbare licentie om de Service te gebruiken voor uw persoonlijke of interne zakelijke doeleinden, onderworpen aan deze Voorwaarden."
+        }
+      },
+      "privacy": {
+        "title": "Privacy en Gegevensbescherming",
+        "content": "Uw gebruik van de Service wordt ook beheerst door ons Privacybeleid, dat door verwijzing in deze Voorwaarden is opgenomen.",
+        "gdpr": {
+          "title": "AVG-naleving",
+          "content": "Wij voldoen aan de Algemene Verordening Gegevensbescherming (AVG) en bieden u de volgende rechten:",
+          "rights": {
+            "access": "Recht op toegang tot uw persoonsgegevens",
+            "rectification": "Recht op rectificatie van onjuiste gegevens",
+            "erasure": "Recht op verwijdering ('recht om vergeten te worden')",
+            "portability": "Recht op gegevensportabiliteit",
+            "objection": "Recht om bezwaar te maken tegen verwerking"
+          }
+        }
+      },
+      "liability": {
+        "title": "Beperking van Aansprakelijkheid",
+        "disclaimer": "DE SERVICE WORDT GELEVERD 'ZOALS HET IS' ZONDER GARANTIES VAN WELKE AARD DAN OOK, EXPLICIET OF IMPLICIET.",
+        "limitations": {
+          "title": "Aansprakelijkheidsbeperkingen",
+          "content": "Voor zover maximaal toegestaan door de wet, is [COMPANY_LEGAL_NAME] niet aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade die voortvloeit uit uw gebruik of onvermogen om de Service te gebruiken."
+        },
+        "maxLiability": "Maximale Aansprakelijkheid"
+      },
+      "termination": {
+        "title": "Beëindiging",
+        "content": "Wij kunnen uw account en toegang tot de Service onmiddellijk beëindigen of opschorten, zonder voorafgaande kennisgeving of aansprakelijkheid, om welke reden dan ook, inclusief schending van deze Voorwaarden.",
+        "consequences": {
+          "title": "Gevolgen van Beëindiging",
+          "accessRevoked": "Uw recht om de Service te gebruiken zal onmiddellijk ophouden",
+          "dataRetention": "Wij kunnen bepaalde gegevens behouden zoals vereist door de wet of voor legitieme zakelijke doeleinden",
+          "obligations": "Alle bepalingen van de Voorwaarden die beëindiging moeten overleven, zullen overleven"
+        }
+      },
+      "governingLaw": {
+        "title": "Toepasselijk Recht en Jurisdictie",
+        "content": "Deze Voorwaarden worden beheerst door en geïnterpreteerd in overeenstemming met de wetten van [JURISDICTION], zonder rekening te houden met zijn conflictrechtelijke bepalingen.",
+        "jurisdiction": "Jurisdictie",
+        "court": "Bevoegde Rechtbanken"
+      },
+      "contact": {
+        "title": "Contactinformatie",
+        "content": "Als u vragen heeft over deze Voorwaarden, neem dan contact met ons op via:",
+        "company": "Bedrijf",
+        "registration": "Registratienummer",
+        "address": "Adres",
+        "email": "E-mail",
+        "dpo": "Functionaris voor Gegevensbescherming"
+      },
+      "amendments": {
+        "title": "Wijzigingen in de Voorwaarden",
+        "content": "Wij behouden ons het recht voor om deze Voorwaarden op elk moment te wijzigen. Wij zullen gebruikers op de hoogte stellen van materiële wijzigingen door de nieuwe Voorwaarden op deze pagina te plaatsen en de 'Ingangsdatum' bij te werken."
+      }
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacybeleid - Neural Summary",
+      "description": "Privacybeleid voor Neural Summary. Leer hoe wij uw persoonsgegevens verzamelen, gebruiken en beschermen in overeenstemming met de AVG."
+    },
+    "title": "Privacybeleid",
+    "effectiveDate": "Laatst bijgewerkt",
+    "gdprCompliant": "AVG-conform",
+    "introduction": "Bij Neural Summary nemen wij uw privacy serieus. Dit Privacybeleid legt uit hoe wij uw informatie verzamelen, gebruiken, bekendmaken en beschermen wanneer u onze service gebruikt. Wij voldoen aan de Algemene Verordening Gegevensbescherming (AVG) en zetten ons in voor de bescherming van uw persoonsgegevens.",
+    "tableOfContents": "Inhoudsopgave",
+    "links": {
+      "terms": "Servicevoorwaarden",
+      "home": "Home"
+    },
+    "sections": {
+      "dataController": {
+        "title": "Verwerkingsverantwoordelijke",
+        "content": "De verwerkingsverantwoordelijke voor uw persoonsgegevens is:",
+        "company": "Bedrijfsnaam",
+        "registration": "Registratienummer",
+        "address": "Geregistreerd adres",
+        "email": "Contact e-mail",
+        "dpo": "Functionaris voor Gegevensbescherming"
+      },
+      "dataCollected": {
+        "title": "Welke Gegevens Wij Verzamelen",
+        "content": "Wij verzamelen verschillende soorten informatie om onze Service te leveren en te verbeteren:",
+        "personal": {
+          "title": "Persoonlijke Informatie",
+          "email": "E-mailadres",
+          "name": "Naam (optioneel)",
+          "profile": "Profielinformatie van OAuth-providers (Google)",
+          "payment": "Betalingsinformatie (veilig verwerkt via externe providers)"
+        },
+        "usage": {
+          "title": "Gebruiksgegevens",
+          "audioFiles": "Audiobestanden die u uploadt voor transcriptie",
+          "transcriptions": "Transcripties en analyseresultaten",
+          "analysisResults": "AI-gegenereerde samenvattingen en inzichten",
+          "preferences": "Gebruikersvoorkeuren en instellingen"
+        },
+        "technical": {
+          "title": "Technische Gegevens",
+          "ipAddress": "IP-adres en geschatte locatie",
+          "browser": "Browsertype en versie",
+          "device": "Apparaatinformatie en besturingssysteem",
+          "logs": "Toegangslogboeken en gebruikspatronen"
+        }
+      },
+      "legalBasis": {
+        "title": "Rechtsgrondslag voor Verwerking",
+        "content": "Wij verwerken uw persoonsgegevens op basis van de volgende rechtsgronden:",
+        "contract": {
+          "title": "Contractuitvoering",
+          "content": "Verwerking die noodzakelijk is om u onze transcriptie- en analyseservices te bieden."
+        },
+        "consent": {
+          "title": "Toestemming",
+          "content": "Verwerking gebaseerd op uw expliciete toestemming voor marketingcommunicatie en analytics."
+        },
+        "legitimate": {
+          "title": "Gerechtvaardigd Belang",
+          "content": "Verwerking die noodzakelijk is voor onze gerechtvaardigde belangen bij het verbeteren van onze services en het voorkomen van fraude."
+        },
+        "legal": {
+          "title": "Wettelijke Verplichtingen",
+          "content": "Verwerking die noodzakelijk is om te voldoen aan wettelijke verplichtingen, zoals belasting- en boekhoudvereisten."
+        }
+      },
+      "dataUsage": {
+        "title": "Hoe Wij Uw Gegevens Gebruiken",
+        "content": "Wij gebruiken de verzamelde gegevens voor verschillende doeleinden:",
+        "purposes": {
+          "service": "Om onze transcriptie- en analyseservices te leveren en te onderhouden",
+          "communication": "Om met u te communiceren over uw account en service-updates",
+          "improvement": "Om uw ervaring te verbeteren en te personaliseren",
+          "security": "Om technische problemen en beveiligingsdreigingen te detecteren, voorkomen en aan te pakken",
+          "compliance": "Om te voldoen aan wettelijke verplichtingen en onze voorwaarden af te dwingen",
+          "analytics": "Om gebruikspatronen te analyseren en onze service te verbeteren (met uw toestemming)"
+        }
+      },
+      "dataSharing": {
+        "title": "Gegevensdeling en Externe Partijen",
+        "content": "Wij kunnen uw gegevens delen met vertrouwde externe serviceproviders die ons helpen bij het beheren van onze Service:",
+        "serviceProviders": {
+          "title": "Serviceproviders",
+          "hosting": "Cloudinfrastructuur",
+          "transcription": "Transcriptieservices",
+          "analysis": "AI-analyse",
+          "email": "E-mailservice",
+          "analytics": "Analytics"
+        },
+        "notice": "Wij verkopen nooit uw persoonsgegevens aan externe partijen. Alle serviceproviders zijn gebonden aan strikte vertrouwelijkheidsovereenkomsten en kunnen uw gegevens alleen gebruiken om diensten aan ons te verlenen."
+      },
+      "dataRetention": {
+        "title": "Gegevensbewaring",
+        "content": "Wij bewaren uw persoonsgegevens alleen zolang als noodzakelijk is om de doeleinden te vervullen die in dit Privacybeleid zijn beschreven:",
+        "periods": {
+          "title": "Bewaringsperioden",
+          "account": "Accountgegevens",
+          "transcriptions": "Transcripties",
+          "audioFiles": "Audiobestanden",
+          "logs": "Systeemlogboeken",
+          "analytics": "Analytische gegevens"
+        }
+      },
+      "userRights": {
+        "title": "Uw Rechten onder de AVG",
+        "content": "Onder de Algemene Verordening Gegevensbescherming (AVG) heeft u de volgende rechten:",
+        "rights": {
+          "access": {
+            "title": "Recht op Toegang",
+            "content": "U heeft het recht om kopieën van uw persoonsgegevens die wij bewaren op te vragen."
+          },
+          "rectification": {
+            "title": "Recht op Rectificatie",
+            "content": "U heeft het recht om correctie van onjuiste of onvolledige persoonsgegevens te verzoeken."
+          },
+          "erasure": {
+            "title": "Recht op Verwijdering",
+            "content": "U heeft het recht om verwijdering van uw persoonsgegevens te verzoeken onder bepaalde omstandigheden."
+          },
+          "portability": {
+            "title": "Recht op Gegevensportabiliteit",
+            "content": "U heeft het recht om uw gegevens te ontvangen in een gestructureerd, algemeen gebruikt en machineleesbaar formaat."
+          },
+          "restriction": {
+            "title": "Recht op Beperking van Verwerking",
+            "content": "U heeft het recht om beperking van verwerking te verzoeken onder bepaalde omstandigheden."
+          },
+          "objection": {
+            "title": "Recht van Bezwaar",
+            "content": "U heeft het recht om bezwaar te maken tegen verwerking gebaseerd op gerechtvaardigd belang of voor directe marketing."
+          },
+          "withdraw": {
+            "title": "Recht om Toestemming in te Trekken",
+            "content": "Waar verwerking gebaseerd is op toestemming, heeft u het recht om toestemming op elk moment in te trekken."
+          }
+        },
+        "howToExercise": "Om een van deze rechten uit te oefenen, neem contact op met onze Functionaris voor Gegevensbescherming op het e-mailadres hieronder vermeld.",
+        "responseTime": "Wij zullen binnen 30 dagen op uw verzoek reageren zoals vereist door de AVG."
+      },
+      "dataSecurity": {
+        "title": "Gegevensbeveiliging",
+        "content": "Wij implementeren passende technische en organisatorische maatregelen om uw persoonsgegevens te beschermen:",
+        "measures": {
+          "title": "Beveiligingsmaatregelen",
+          "encryption": "End-to-end encryptie voor gegevens in transit en at rest",
+          "access": "Strikte toegangscontroles en authenticatiemechanismen",
+          "monitoring": "Continue beveiligingsmonitoring en detectie van bedreigingen",
+          "backup": "Regelmatige back-ups en procedures voor noodherstel",
+          "training": "Regelmatige beveiligingstraining voor ons personeel",
+          "incident": "Procedures voor incidentrespons en meldingen van datalekken"
+        },
+        "breach": "In het geval van een datalek dat een risico vormt voor uw rechten en vrijheden, zullen wij u en de relevante toezichthoudende autoriteit binnen 72 uur informeren zoals vereist door de AVG."
+      },
+      "cookies": {
+        "title": "Cookies en Tracking",
+        "content": "Wij gebruiken cookies en vergelijkbare trackingtechnologieën om uw ervaring te verbeteren:",
+        "types": {
+          "title": "Soorten Cookies",
+          "essential": {
+            "title": "Essentiële Cookies",
+            "content": "Vereist voor het goed functioneren van de Service (authenticatie, beveiliging)"
+          },
+          "analytics": {
+            "title": "Analytische Cookies",
+            "content": "Helpen ons begrijpen hoe gebruikers omgaan met onze Service (met uw toestemming)"
+          },
+          "functional": {
+            "title": "Functionele Cookies",
+            "content": "Onthouden uw voorkeuren en instellingen"
+          }
+        },
+        "manage": "U kunt cookievoorkeuren beheren via uw browserinstellingen of ons tool voor cookietoestemming."
+      },
+      "internationalTransfers": {
+        "title": "Internationale Gegevensoverdrachten",
+        "content": "Uw gegevens kunnen worden overgedragen naar en verwerkt in landen buiten de Europese Economische Ruimte (EER).",
+        "safeguards": {
+          "title": "Waarborgen",
+          "scc": "Standaard Contractuele Clausules goedgekeurd door de Europese Commissie",
+          "adequacy": "Adequaatheidsbesluiten voor landen met gelijkwaardige gegevensbeschermingswetten",
+          "shield": "Passende waarborgen zoals vereist door AVG Artikel 46"
+        }
+      },
+      "children": {
+        "title": "Privacy van Kinderen",
+        "content": "Onze Service is niet bedoeld voor kinderen, en wij verzamelen bewust geen persoonsgegevens van personen onder de hieronder aangegeven leeftijd.",
+        "age": "Minimumleeftijd"
+      },
+      "contact": {
+        "title": "Neem Contact met Ons Op",
+        "content": "Als u vragen heeft over dit Privacybeleid of uw rechten wilt uitoefenen, neem dan contact met ons op:",
+        "dpo": {
+          "title": "Functionaris voor Gegevensbescherming",
+          "email": "E-mail",
+          "phone": "Telefoon",
+          "address": "Adres"
+        },
+        "supervisory": {
+          "title": "Toezichthoudende Autoriteit",
+          "content": "U heeft ook het recht om een klacht in te dienen bij uw lokale toezichthoudende autoriteit voor gegevensbescherming:",
+          "authority": "Naam Autoriteit",
+          "website": "Website"
+        }
+      },
+      "updates": {
+        "title": "Wijzigingen in dit Privacybeleid",
+        "content": "Wij kunnen ons Privacybeleid van tijd tot tijd bijwerken. De bijgewerkte versie wordt aangegeven door een bijgewerkte 'Laatst bijgewerkt' datum.",
+        "notification": "Voor materiële wijzigingen zullen wij u via e-mail of door een prominente kennisgeving op onze Service op de hoogte stellen."
+      }
+    }
   }
 }

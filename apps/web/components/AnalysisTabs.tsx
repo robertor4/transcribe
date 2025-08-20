@@ -27,8 +27,8 @@ import { ActionItemsTable } from './ActionItemsTable';
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId: string;
-  speakerSegments?: any[];
-  speakers?: any[];
+  speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
+  speakers?: Array<{ id: string; name: string; utteranceCount?: number; totalWords?: number }>;
 }
 
 // Blog-style content component for non-summary analysis tabs

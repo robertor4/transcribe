@@ -6,13 +6,15 @@ import { Cookie, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export function CookieConsent() {
-  const t = useTranslations('cookieConsent');
-  const { isAnalyticsEnabled, setAnalyticsConsent } = useAnalytics();
+  // const t = useTranslations('cookieConsent');
+  const { setAnalyticsConsent } = useAnalytics();
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check if user has already made a choice
+    setMounted(true);
+    // Check if user has already made a choice only after mounting
     const consentChoice = localStorage.getItem('analytics_consent');
     if (consentChoice === null) {
       // No choice made yet, show banner after a delay
@@ -30,7 +32,8 @@ export function CookieConsent() {
     setShowBanner(false);
   };
 
-  if (!showBanner) return null;
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted || !showBanner) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6">
@@ -92,7 +95,7 @@ export function CookieConsent() {
                 <div className="flex items-start space-x-2">
                   <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">What we DON\'T collect:</p>
+                    <p className="text-sm font-medium text-gray-900">What we DON&apos;T collect:</p>
                     <ul className="text-xs text-gray-600 mt-1 space-y-1">
                       <li>• Your audio files or transcription content</li>
                       <li>• Personal identifiable information without consent</li>

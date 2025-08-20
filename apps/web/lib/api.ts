@@ -34,7 +34,7 @@ api.interceptors.request.use(async (config) => {
     try {
       const token = await user.getIdToken();
       config.headers.Authorization = `Bearer ${token}`;
-    } catch (error) {
+    } catch {
       // Failed to get auth token
     }
   }

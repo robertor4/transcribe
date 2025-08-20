@@ -26,7 +26,9 @@ export class FirebaseAuthGuard implements CanActivate {
 
       // Check if email is verified
       if (decodedToken.email_verified === false) {
-        throw new UnauthorizedException('Email not verified. Please verify your email to access this resource.');
+        throw new UnauthorizedException(
+          'Email not verified. Please verify your email to access this resource.',
+        );
       }
 
       // Ensure user exists in database
@@ -46,7 +48,7 @@ export class FirebaseAuthGuard implements CanActivate {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      
+
       throw new UnauthorizedException('Invalid or expired token');
     }
   }

@@ -17,7 +17,7 @@ export default async function RootPage() {
   let detectedLocale = defaultLocale;
   for (const lang of languages) {
     const langCode = lang.split('-')[0];
-    if (locales.includes(langCode as any)) {
+    if (locales.includes(langCode as typeof locales[number])) {
       detectedLocale = langCode as typeof defaultLocale;
       break;
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { SharedTranscriptionView } from '@transcribe/shared';
@@ -46,24 +46,7 @@ export default function SharedTranscriptionPage() {
     return formatted.replace(/\d+,/, `${day}${suffix},`);
   };
 
-  useEffect(() => {
-    if (shareToken) {
-      // Use sessionStorage to track if we've already incremented for this session
-      const sessionKey = `share_view_${shareToken}`;
-      const hasViewed = sessionStorage.getItem(sessionKey);
-      
-      if (!hasViewed) {
-        // First time viewing in this session - increment the view count
-        fetchSharedTranscription(undefined, true);
-        sessionStorage.setItem(sessionKey, 'true');
-      } else {
-        // Already viewed in this session - don't increment
-        fetchSharedTranscription(undefined, false);
-      }
-    }
-  }, [shareToken]);
-
-  const fetchSharedTranscription = async (withPassword?: string, incrementView: boolean = false) => {
+  const fetchSharedTranscription = useCallback(async (withPassword?: string, incrementView: boolean = false) => {
     setLoading(true);
     setError('');
     
@@ -113,7 +96,24 @@ export default function SharedTranscriptionPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [shareToken, t]);
+
+  useEffect(() => {
+    if (shareToken) {
+      // Use sessionStorage to track if we've already incremented for this session
+      const sessionKey = `share_view_${shareToken}`;
+      const hasViewed = sessionStorage.getItem(sessionKey);
+      
+      if (!hasViewed) {
+        // First time viewing in this session - increment the view count
+        fetchSharedTranscription(undefined, true);
+        sessionStorage.setItem(sessionKey, 'true');
+      } else {
+        // Already viewed in this session - don't increment
+        fetchSharedTranscription(undefined, false);
+      }
+    }
+  }, [shareToken, fetchSharedTranscription]);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();

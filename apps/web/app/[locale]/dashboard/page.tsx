@@ -29,19 +29,6 @@ export default function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   
-  // Immediate redirect check for unverified emails
-  if (!loading && user && !user.emailVerified) {
-    router.push('/verify-email');
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-2">Your email is not verified.</p>
-          <p className="text-sm text-gray-500">Redirecting to verification page...</p>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     const checkAuthState = async () => {
       if (!loading) {
@@ -60,7 +47,7 @@ export default function DashboardPage() {
             router.push('/verify-email');
             return;
           }
-        } catch (error) {
+        } catch {
           // Error reloading user
         }
       }
@@ -73,35 +60,36 @@ export default function DashboardPage() {
     // Listen for transcription completion to refresh the list
     const unsubscribe = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
-      (progress: TranscriptionProgress) => {
+      (progress: unknown) => {
+        const typedProgress = progress as TranscriptionProgress;
         setRefreshKey(prev => prev + 1);
         
         // Get the file name from our stored map
-        const fileName = activeTranscriptions.get(progress.transcriptionId) || 'your file';
+        const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
         
         // Send browser notification if enabled
-        if (progress.status === 'completed') {
+        if (typedProgress.status === 'completed') {
           // Force notification for testing (third parameter = true)
           notificationService.sendTranscriptionComplete(
             fileName,
-            progress.transcriptionId,
+            typedProgress.transcriptionId,
             true // Force notification even if tab is focused
           );
           // Clean up the stored file name
           setActiveTranscriptions(prev => {
             const newMap = new Map(prev);
-            newMap.delete(progress.transcriptionId);
+            newMap.delete(typedProgress.transcriptionId);
             return newMap;
           });
-        } else if (progress.status === 'failed') {
+        } else if (typedProgress.status === 'failed') {
           notificationService.sendTranscriptionFailed(
             fileName,
-            progress.transcriptionId
+            typedProgress.transcriptionId
           );
           // Clean up the stored file name
           setActiveTranscriptions(prev => {
             const newMap = new Map(prev);
-            newMap.delete(progress.transcriptionId);
+            newMap.delete(typedProgress.transcriptionId);
             return newMap;
           });
         }

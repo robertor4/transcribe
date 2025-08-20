@@ -305,7 +305,7 @@ const notificationService = new NotificationService();
 
 // Make it available globally for debugging in browser console
 if (typeof window !== 'undefined') {
-  (window as any).notificationService = notificationService;
+  (window as unknown as { notificationService: typeof notificationService }).notificationService = notificationService;
   console.log('Notification service available as window.notificationService');
   console.log('Run window.notificationService.debug() to check status');
 }

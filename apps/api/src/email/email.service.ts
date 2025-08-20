@@ -13,12 +13,16 @@ export class EmailService {
   constructor(private configService: ConfigService) {
     // Separate auth user from FROM email for domain alias support
     const gmailAuthUser = this.configService.get<string>('GMAIL_AUTH_USER');
-    const gmailFromEmail = this.configService.get<string>('GMAIL_FROM_EMAIL') || 'noreply@neuralsummary.com';
-    const gmailAppPassword = this.configService.get<string>('GMAIL_APP_PASSWORD');
-    
+    const gmailFromEmail =
+      this.configService.get<string>('GMAIL_FROM_EMAIL') ||
+      'noreply@neuralsummary.com';
+    const gmailAppPassword =
+      this.configService.get<string>('GMAIL_APP_PASSWORD');
+
     this.fromEmail = gmailFromEmail;
-    this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-    
+    this.frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+
     if (gmailAuthUser && gmailAppPassword) {
       // PRODUCTION FIX: Use explicit SMTP config for Hetzner/data center compatibility
       this.transporter = nodemailer.createTransport({
@@ -41,22 +45,32 @@ export class EmailService {
         logger: true,
         debug: process.env.NODE_ENV !== 'production',
       });
-      
+
       // Verify transporter configuration
       this.transporter?.verify((error, success) => {
         if (error) {
           this.logger.error('Gmail configuration error:', error);
-          this.logger.warn('Make sure you are using an App Password, not your regular Gmail password');
-          this.logger.warn('Generate an App Password at: https://myaccount.google.com/apppasswords');
-          this.logger.warn(`Auth user: ${gmailAuthUser}, FROM email: ${gmailFromEmail}`);
-          
+          this.logger.warn(
+            'Make sure you are using an App Password, not your regular Gmail password',
+          );
+          this.logger.warn(
+            'Generate an App Password at: https://myaccount.google.com/apppasswords',
+          );
+          this.logger.warn(
+            `Auth user: ${gmailAuthUser}, FROM email: ${gmailFromEmail}`,
+          );
+
           // Log more details for production debugging
           if (error.message.includes('Invalid login')) {
             this.logger.error('Authentication failed - check App Password');
           } else if (error.message.includes('ECONNREFUSED')) {
-            this.logger.error('Connection refused - check firewall/network settings');
+            this.logger.error(
+              'Connection refused - check firewall/network settings',
+            );
           } else if (error.message.includes('getaddrinfo')) {
-            this.logger.error('DNS resolution failed - check network configuration');
+            this.logger.error(
+              'DNS resolution failed - check network configuration',
+            );
           }
         } else {
           this.logger.log('Gmail email service configured and ready');
@@ -65,11 +79,15 @@ export class EmailService {
           this.logger.log(`Using SMTP: smtp.gmail.com:587 with STARTTLS`);
         }
       });
-      
+
       this.logger.log('Gmail email service initialized');
     } else {
-      this.logger.warn('Gmail credentials not configured, email sending will be disabled');
-      this.logger.warn('Required: GMAIL_AUTH_USER and GMAIL_APP_PASSWORD environment variables');
+      this.logger.warn(
+        'Gmail credentials not configured, email sending will be disabled',
+      );
+      this.logger.warn(
+        'Required: GMAIL_AUTH_USER and GMAIL_APP_PASSWORD environment variables',
+      );
     }
   }
 
@@ -85,12 +103,12 @@ export class EmailService {
     }
 
     try {
-      const shareUrl = `${this.frontendUrl}/${locale}/shared/${shareToken}`;
+      const shareUrl = `${this.frontendUrl}/s/${shareToken}`;
       const senderName = request.senderName || 'Someone';
       const recipientName = request.recipientName || 'there';
-      
+
       const subject = `${senderName} shared a transcript with you: "${transcriptionTitle}"`;
-      
+
       const htmlContent = this.generateEmailHtml(
         transcriptionTitle,
         shareUrl,
@@ -115,22 +133,31 @@ export class EmailService {
         text: textContent,
       });
 
-      this.logger.log(`Share email sent successfully to ${request.recipientEmail}`, info.messageId);
+      this.logger.log(
+        `Share email sent successfully to ${request.recipientEmail}`,
+        info.messageId,
+      );
       return true;
     } catch (error: any) {
       this.logger.error('Error sending share email:', error);
-      
+
       // Log specific error details for production debugging
       if (error.code === 'EAUTH') {
-        this.logger.error('Authentication failed - verify App Password and 2FA is enabled');
+        this.logger.error(
+          'Authentication failed - verify App Password and 2FA is enabled',
+        );
       } else if (error.code === 'ESOCKET') {
         this.logger.error('Socket error - check network/firewall settings');
       } else if (error.responseCode === 534) {
-        this.logger.error('Google requires app-specific password or less secure app access');
+        this.logger.error(
+          'Google requires app-specific password or less secure app access',
+        );
       } else if (error.responseCode === 535) {
-        this.logger.error('Invalid credentials - check GMAIL_AUTH_USER and GMAIL_APP_PASSWORD');
+        this.logger.error(
+          'Invalid credentials - check GMAIL_AUTH_USER and GMAIL_APP_PASSWORD',
+        );
       }
-      
+
       return false;
     }
   }
@@ -347,7 +374,9 @@ export class EmailService {
       </tr>
     </table>
     
-    ${customMessage ? `
+    ${
+      customMessage
+        ? `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0;">
       <tr>
         <td>
@@ -362,7 +391,9 @@ export class EmailService {
         </td>
       </tr>
     </table>
-    ` : ''}
+    `
+        : ''
+    }
     
     <div class="button-container">
       <a href="${shareUrl}" class="button">View Transcript →</a>
@@ -395,15 +426,15 @@ export class EmailService {
     let text = `Hi ${recipientName || 'there'},\n\n`;
     text += `${senderName} has shared a transcript with you:\n\n`;
     text += `"${transcriptionTitle}"\n\n`;
-    
+
     if (customMessage) {
       text += `Message from ${senderName}:\n${customMessage}\n\n`;
     }
-    
+
     text += `View the transcript here:\n${shareUrl}\n\n`;
     text += `This link may expire or have limited views based on the sender's settings.\n\n`;
     text += `---\nNeural Summary • ${new Date().getFullYear()}`;
-    
+
     return text;
   }
 }

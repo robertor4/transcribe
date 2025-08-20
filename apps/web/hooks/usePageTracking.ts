@@ -10,6 +10,9 @@ export function usePageTracking() {
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Extract locale from pathname
     const pathParts = pathname.split('/');
     const locale = pathParts[1];

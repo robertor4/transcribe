@@ -1,4 +1,11 @@
-import { Injectable, Logger, forwardRef, Inject, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  forwardRef,
+  Inject,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
 import { ConfigService } from '@nestjs/config';
@@ -6,6 +13,7 @@ import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { nanoid } from 'nanoid';
 import {
   Transcription,
   TranscriptionStatus,
@@ -145,7 +153,11 @@ export class TranscriptionService {
 
       // Fallback to Whisper (without speaker diarization)
       // Whisper requires chunking for files > 25MB
-      const result = await this.transcribeAudioWithWhisper(fileUrl, context, onProgress);
+      const result = await this.transcribeAudioWithWhisper(
+        fileUrl,
+        context,
+        onProgress,
+      );
       return {
         ...result,
         speakers: undefined,
@@ -183,7 +195,7 @@ export class TranscriptionService {
         onProgress(15, 'Audio uploaded successfully...');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (onProgress) {
         onProgress(
@@ -192,7 +204,7 @@ export class TranscriptionService {
         );
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (onProgress) {
         onProgress(25, 'Initializing speaker diarization...');
@@ -208,7 +220,7 @@ export class TranscriptionService {
         onProgress(50, 'Processing complete, analyzing speakers...');
       }
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (onProgress) {
         onProgress(
@@ -414,10 +426,13 @@ export class TranscriptionService {
       );
 
       // Use specified model or default to GPT-4o
-      const selectedModel = model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
-      
-      this.logger.log(`Using model ${selectedModel} for ${analysisType || 'summary'} generation`);
-      
+      const selectedModel =
+        model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+
+      this.logger.log(
+        `Using model ${selectedModel} for ${analysisType || 'summary'} generation`,
+      );
+
       const completion = await this.openai.chat.completions.create({
         model: selectedModel,
         messages: [
@@ -448,7 +463,8 @@ export class TranscriptionService {
 
       // Determine if we should use high-quality mode based on env or transcript length
       const qualityMode = this.configService.get('QUALITY_MODE') || 'balanced';
-      const useHighQuality = qualityMode === 'premium' || transcriptionText.length > 10000;
+      const useHighQuality =
+        qualityMode === 'premium' || transcriptionText.length > 10000;
 
       // Generate all analyses in parallel for efficiency
       // Use generateSummaryWithModel for critical analyses with GPT-4o
@@ -590,7 +606,7 @@ export class TranscriptionService {
       // Extract the first H1 heading from the markdown summary
       // Match lines that start with a single # followed by space
       const headingMatch = summary.match(/^#\s+(.+)$/m);
-      
+
       if (headingMatch && headingMatch[1]) {
         // Clean the title: remove any remaining markdown, trim whitespace
         let title = headingMatch[1]
@@ -599,15 +615,15 @@ export class TranscriptionService {
           .replace(/`/g, '') // Remove code markdown
           .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Convert links to text
           .trim();
-        
+
         // Limit title length to 200 characters
         if (title.length > 200) {
           title = title.substring(0, 197) + '...';
         }
-        
+
         return title;
       }
-      
+
       return null;
     } catch (error) {
       this.logger.error('Error extracting title from summary:', error);
@@ -845,16 +861,39 @@ export class TranscriptionService {
   }
 
   // Share-related methods
-  private generateShareToken(): string {
+  private async generateShareToken(): Promise<string> {
+    // Generate a 10-character URL-safe token using nanoid
+    // With 10 characters from 64-char alphabet, we get ~60 bits of entropy
+    // This gives us billions of possible combinations
+    let token: string;
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    // Keep generating until we find a unique token (collision check)
+    do {
+      token = nanoid(10); // Generates something like: "xK9mP2nQr3"
+      attempts++;
+      
+      // Check if this token already exists
+      const existing = await this.firebaseService.getTranscriptionByShareToken(token);
+      if (!existing) {
+        return token;
+      }
+      
+      this.logger.warn(`Share token collision detected, regenerating (attempt ${attempts})`);
+    } while (attempts < maxAttempts);
+    
+    // Fallback to longer token if we somehow can't generate a unique short one
+    this.logger.error('Failed to generate unique short token, falling back to long token');
     return crypto.randomBytes(32).toString('hex');
   }
 
   async createShareLink(
     transcriptionId: string,
     userId: string,
-    settings?: { 
-      expiresAt?: Date; 
-      maxViews?: number; 
+    settings?: {
+      expiresAt?: Date;
+      maxViews?: number;
       password?: string;
       contentOptions?: ShareContentOptions;
     },
@@ -869,13 +908,13 @@ export class TranscriptionService {
     }
 
     // Generate unique share token
-    const shareToken = this.generateShareToken();
-    
+    const shareToken = await this.generateShareToken();
+
     // Create share settings - only include defined values
     const shareSettings: ShareSettings = {
       enabled: true,
     };
-    
+
     // Only add optional fields if they have values
     if (settings?.expiresAt) {
       shareSettings.expiresAt = settings.expiresAt;
@@ -911,8 +950,9 @@ export class TranscriptionService {
       updatedAt: new Date(),
     });
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-    const shareUrl = `${frontendUrl}/en/shared/${shareToken}`;
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const shareUrl = `${frontendUrl}/s/${shareToken}`;
 
     this.logger.log(`Share link created for transcription ${transcriptionId}`);
 
@@ -941,9 +981,9 @@ export class TranscriptionService {
   async updateShareSettings(
     transcriptionId: string,
     userId: string,
-    settings: { 
-      expiresAt?: Date; 
-      maxViews?: number; 
+    settings: {
+      expiresAt?: Date;
+      maxViews?: number;
       password?: string;
       contentOptions?: ShareContentOptions;
     },
@@ -958,14 +998,16 @@ export class TranscriptionService {
     }
 
     if (!transcription.shareSettings || !transcription.shareToken) {
-      throw new BadRequestException('No share link exists for this transcription');
+      throw new BadRequestException(
+        'No share link exists for this transcription',
+      );
     }
 
     // Update share settings - maintain existing values and only update provided ones
     const updatedSettings: ShareSettings = {
       ...transcription.shareSettings,
     };
-    
+
     // Only update fields that were explicitly provided
     if (settings.expiresAt !== undefined) {
       if (settings.expiresAt === null) {
@@ -974,7 +1016,7 @@ export class TranscriptionService {
         updatedSettings.expiresAt = settings.expiresAt;
       }
     }
-    
+
     if (settings.maxViews !== undefined) {
       if (settings.maxViews === null) {
         delete updatedSettings.maxViews;
@@ -982,7 +1024,7 @@ export class TranscriptionService {
         updatedSettings.maxViews = settings.maxViews;
       }
     }
-    
+
     if (settings.password !== undefined) {
       if (settings.password === null) {
         delete updatedSettings.password;
@@ -990,7 +1032,7 @@ export class TranscriptionService {
         updatedSettings.password = settings.password;
       }
     }
-    
+
     if (settings.contentOptions !== undefined) {
       updatedSettings.contentOptions = settings.contentOptions;
     }
@@ -1000,7 +1042,9 @@ export class TranscriptionService {
       updatedAt: new Date(),
     });
 
-    this.logger.log(`Share settings updated for transcription ${transcriptionId}`);
+    this.logger.log(
+      `Share settings updated for transcription ${transcriptionId}`,
+    );
   }
 
   async getSharedTranscription(
@@ -1009,8 +1053,9 @@ export class TranscriptionService {
     incrementView: boolean = false,
   ): Promise<SharedTranscriptionView | null> {
     // Find transcription by share token
-    const transcription = await this.firebaseService.getTranscriptionByShareToken(shareToken);
-    
+    const transcription =
+      await this.firebaseService.getTranscriptionByShareToken(shareToken);
+
     if (!transcription || !transcription.shareSettings?.enabled) {
       return null;
     }
@@ -1046,7 +1091,9 @@ export class TranscriptionService {
       await this.firebaseService.updateTranscription(transcription.id, {
         shareSettings: updatedSettings,
       });
-      this.logger.log(`Incremented view count for share token ${shareToken} to ${finalViewCount}`);
+      this.logger.log(
+        `Incremented view count for share token ${shareToken} to ${finalViewCount}`,
+      );
     }
 
     // Get user display name for sharedBy field
@@ -1073,22 +1120,44 @@ export class TranscriptionService {
       if (contentOptions.includeSummary && transcription.analyses.summary) {
         filteredAnalyses.summary = transcription.analyses.summary;
       }
-      if (contentOptions.includeCommunicationStyles && transcription.analyses.communicationStyles) {
-        filteredAnalyses.communicationStyles = transcription.analyses.communicationStyles;
+      if (
+        contentOptions.includeCommunicationStyles &&
+        transcription.analyses.communicationStyles
+      ) {
+        filteredAnalyses.communicationStyles =
+          transcription.analyses.communicationStyles;
       }
-      if (contentOptions.includeActionItems && transcription.analyses.actionItems) {
+      if (
+        contentOptions.includeActionItems &&
+        transcription.analyses.actionItems
+      ) {
         filteredAnalyses.actionItems = transcription.analyses.actionItems;
       }
-      if (contentOptions.includeEmotionalIntelligence && transcription.analyses.emotionalIntelligence) {
-        filteredAnalyses.emotionalIntelligence = transcription.analyses.emotionalIntelligence;
+      if (
+        contentOptions.includeEmotionalIntelligence &&
+        transcription.analyses.emotionalIntelligence
+      ) {
+        filteredAnalyses.emotionalIntelligence =
+          transcription.analyses.emotionalIntelligence;
       }
-      if (contentOptions.includeInfluencePersuasion && transcription.analyses.influencePersuasion) {
-        filteredAnalyses.influencePersuasion = transcription.analyses.influencePersuasion;
+      if (
+        contentOptions.includeInfluencePersuasion &&
+        transcription.analyses.influencePersuasion
+      ) {
+        filteredAnalyses.influencePersuasion =
+          transcription.analyses.influencePersuasion;
       }
-      if (contentOptions.includePersonalDevelopment && transcription.analyses.personalDevelopment) {
-        filteredAnalyses.personalDevelopment = transcription.analyses.personalDevelopment;
+      if (
+        contentOptions.includePersonalDevelopment &&
+        transcription.analyses.personalDevelopment
+      ) {
+        filteredAnalyses.personalDevelopment =
+          transcription.analyses.personalDevelopment;
       }
-      if (contentOptions.includeCustomAnalysis && transcription.analyses.custom) {
+      if (
+        contentOptions.includeCustomAnalysis &&
+        transcription.analyses.custom
+      ) {
         filteredAnalyses.custom = transcription.analyses.custom;
       }
     }
@@ -1098,10 +1167,16 @@ export class TranscriptionService {
       id: transcription.id,
       fileName: transcription.fileName,
       title: transcription.title,
-      transcriptText: contentOptions.includeTranscript ? transcription.transcriptText : undefined,
+      transcriptText: contentOptions.includeTranscript
+        ? transcription.transcriptText
+        : undefined,
       analyses: filteredAnalyses,
-      speakerSegments: contentOptions.includeSpeakerInfo ? transcription.speakerSegments : undefined,
-      speakers: contentOptions.includeSpeakerInfo ? transcription.speakers : undefined,
+      speakerSegments: contentOptions.includeSpeakerInfo
+        ? transcription.speakerSegments
+        : undefined,
+      speakers: contentOptions.includeSpeakerInfo
+        ? transcription.speakers
+        : undefined,
       createdAt: transcription.createdAt,
       sharedBy,
       viewCount: finalViewCount,
@@ -1128,13 +1203,18 @@ export class TranscriptionService {
     // Ensure share link exists
     if (!transcription.shareToken) {
       // Create share link if it doesn't exist
-      const { shareToken } = await this.createShareLink(transcriptionId, userId, {});
+      const { shareToken } = await this.createShareLink(
+        transcriptionId,
+        userId,
+        {},
+      );
       transcription.shareToken = shareToken;
     }
 
     // Get user info for sender name
     const user = await this.firebaseService.getUserById(userId);
-    const senderName = emailRequest.senderName || user?.displayName || user?.email || 'Someone';
+    const senderName =
+      emailRequest.senderName || user?.displayName || user?.email || 'Someone';
 
     // Send email
     const success = await this.emailService.sendShareEmail(
@@ -1148,7 +1228,9 @@ export class TranscriptionService {
     );
 
     if (success) {
-      this.logger.log(`Share email sent for transcription ${transcriptionId} to ${emailRequest.recipientEmail}`);
+      this.logger.log(
+        `Share email sent for transcription ${transcriptionId} to ${emailRequest.recipientEmail}`,
+      );
     }
 
     return success;
@@ -1184,7 +1266,7 @@ export class TranscriptionService {
 
       // Use GPT-4o for maximum quality (configurable via env)
       const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
-      
+
       const completion = await this.openai.chat.completions.create({
         model: model,
         messages: [

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { sendEmailVerification, reload } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -72,12 +72,13 @@ export default function VerifyEmailPage() {
         setResendCooldown(60); // 60 second cooldown
         console.log('Verification email resent successfully');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error resending verification email:', error);
-      if (error.code === 'auth/too-many-requests') {
+      const errorWithCode = error as { code?: string; message?: string };
+      if (errorWithCode.code === 'auth/too-many-requests') {
         setError(tAuth('tooManyRequests'));
       } else {
-        setError(tAuth('resendFailed') + ': ' + error.message);
+        setError(tAuth('resendFailed') + ': ' + (errorWithCode.message || 'Unknown error'));
       }
     } finally {
       setCheckingVerification(false);

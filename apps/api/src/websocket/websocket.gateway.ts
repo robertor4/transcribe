@@ -19,9 +19,10 @@ import { FirebaseService } from '../firebase/firebase.service';
 
 @WSGateway({
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.FRONTEND_URL 
-      : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.FRONTEND_URL
+        : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     credentials: true,
   },
 })
@@ -40,7 +41,7 @@ export class WebSocketGateway
     this.logger.log(`Client connected: ${client.id}`);
 
     try {
-      const token = client.handshake.auth.token;
+      const token = client.handshake.auth?.token as string | undefined;
       if (!token) {
         client.disconnect();
         return;
@@ -65,7 +66,7 @@ export class WebSocketGateway
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
 
-    const userId = client.data.userId;
+    const userId = client.data?.userId as string | undefined;
     if (userId && this.userSockets.has(userId)) {
       this.userSockets.get(userId)?.delete(client.id);
       if (this.userSockets.get(userId)?.size === 0) {
@@ -79,7 +80,7 @@ export class WebSocketGateway
     @MessageBody() transcriptionId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.join(`transcription:${transcriptionId}`);
+    void client.join(`transcription:${transcriptionId}`);
     this.logger.log(
       `Client ${client.id} subscribed to transcription ${transcriptionId}`,
     );
@@ -90,7 +91,7 @@ export class WebSocketGateway
     @MessageBody() transcriptionId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.leave(`transcription:${transcriptionId}`);
+    void client.leave(`transcription:${transcriptionId}`);
     this.logger.log(
       `Client ${client.id} unsubscribed from transcription ${transcriptionId}`,
     );
@@ -101,7 +102,7 @@ export class WebSocketGateway
     @MessageBody() transcriptionId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.join(`comments:${transcriptionId}`);
+    void client.join(`comments:${transcriptionId}`);
     this.logger.log(
       `Client ${client.id} subscribed to comments for transcription ${transcriptionId}`,
     );
@@ -112,7 +113,7 @@ export class WebSocketGateway
     @MessageBody() transcriptionId: string,
     @ConnectedSocket() client: Socket,
   ) {
-    client.leave(`comments:${transcriptionId}`);
+    void client.leave(`comments:${transcriptionId}`);
     this.logger.log(
       `Client ${client.id} unsubscribed from comments for transcription ${transcriptionId}`,
     );

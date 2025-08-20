@@ -14,7 +14,7 @@ export default function ForgotPasswordForm() {
   const [emailSent, setEmailSent] = useState(false);
   
   const { sendPasswordResetEmail } = useAuth();
-  const router = useRouter();
+  // const router = useRouter();
   const tAuth = useTranslations('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,8 +25,9 @@ export default function ForgotPasswordForm() {
     try {
       await sendPasswordResetEmail(email);
       setEmailSent(true);
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to send reset email';
+    } catch (error) {
+      const errorObj = error as { message?: string };
+      const errorMessage = errorObj.message || 'Failed to send reset email';
       
       if (errorMessage.includes('user-not-found')) {
         setError(tAuth('userNotFound'));

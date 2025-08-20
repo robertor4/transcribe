@@ -52,9 +52,10 @@ export default function LoginForm() {
         // Fallback to dashboard if no current user (shouldn't happen)
         router.push('/dashboard');
       }
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to sign in';
-      const errorCode = error.code || '';
+    } catch (error) {
+      const errorObj = error as { message?: string; code?: string };
+      const errorMessage = errorObj.message || 'Failed to sign in';
+      const errorCode = errorObj.code || '';
       
       // Map Firebase errors to user-friendly messages
       // Note: Firebase v9+ uses different error codes depending on the version
@@ -89,7 +90,7 @@ export default function LoginForm() {
             setSuggestGoogle(false);
             setShowPasswordReset(true);
           }
-        } catch (fetchError) {
+        } catch {
           setError(tAuth('invalidCredentials'));
         }
       } else if (errorCode === 'auth/too-many-requests') {
@@ -114,8 +115,9 @@ export default function LoginForm() {
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message || tAuth('invalidCredentials'));
+    } catch (error) {
+      const errorObj = error as { message?: string };
+      setError(errorObj.message || tAuth('invalidCredentials'));
     } finally {
       setLoading(false);
     }

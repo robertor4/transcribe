@@ -45,12 +45,13 @@ export class TranscriptionController {
   ): Promise<ApiResponse<SharedTranscriptionView>> {
     // Only increment view count if explicitly requested (first load)
     const shouldIncrementView = incrementView === 'true';
-    
-    const transcription = await this.transcriptionService.getSharedTranscription(
-      shareToken,
-      password,
-      shouldIncrementView,
-    );
+
+    const transcription =
+      await this.transcriptionService.getSharedTranscription(
+        shareToken,
+        password,
+        shouldIncrementView,
+      );
 
     if (!transcription) {
       throw new UnauthorizedException('Invalid or expired share link');
@@ -302,9 +303,10 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async createShareLink(
     @Param('id') transcriptionId: string,
-    @Body() shareSettings: { 
-      expiresAt?: Date; 
-      maxViews?: number; 
+    @Body()
+    shareSettings: {
+      expiresAt?: Date;
+      maxViews?: number;
       password?: string;
       contentOptions?: ShareContentOptions;
     },
@@ -344,9 +346,10 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async updateShareSettings(
     @Param('id') transcriptionId: string,
-    @Body() shareSettings: { 
-      expiresAt?: Date; 
-      maxViews?: number; 
+    @Body()
+    shareSettings: {
+      expiresAt?: Date;
+      maxViews?: number;
       password?: string;
       contentOptions?: ShareContentOptions;
     },
@@ -368,7 +371,8 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async sendShareEmail(
     @Param('id') transcriptionId: string,
-    @Body() emailRequest: {
+    @Body()
+    emailRequest: {
       recipientEmail: string;
       recipientName?: string;
       message?: string;

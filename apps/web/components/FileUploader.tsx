@@ -42,10 +42,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
-  const [showQuickTips, setShowQuickTips] = useState(true);
+  // const [showQuickTips, setShowQuickTips] = useState(true);
 
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: Array<{ file: File; errors: Array<{ code: string; message: string }> }>) => {
     const validFiles = acceptedFiles.filter(file => {
       console.log('File:', file.name, 'Type:', file.type, 'Size:', file.size);
       
@@ -87,7 +87,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         setErrors(prev => [...prev, errorMessage]);
       });
     }
-  }, []);
+  }, [t, trackEvent]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -134,7 +134,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       
       setFiles([]);
       setContext('');
-    } catch (error: any) {
+    } catch (error) {
       setErrors([error.message || 'Upload failed']);
       
       // Track upload failure

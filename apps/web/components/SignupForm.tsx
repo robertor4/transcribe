@@ -83,7 +83,7 @@ export default function SignupForm() {
             url: `${window.location.origin}/dashboard`, // Redirect URL after verification
           });
           console.log('Verification email sent successfully');
-        } catch (emailError: any) {
+        } catch (emailError) {
           console.error('Error sending verification email:', emailError);
           // Still redirect to verification page even if email fails
           // User can resend from there
@@ -92,9 +92,10 @@ export default function SignupForm() {
       
       // Redirect to verification page
       router.push('/verify-email');
-    } catch (error: any) {
-      const errorMessage = error.message || 'Failed to sign up';
-      const errorCode = error.code || '';
+    } catch (error) {
+      const errorObj = error as { message?: string; code?: string };
+      // const errorMessage = errorObj.message || 'Failed to sign up';
+      const errorCode = errorObj.code || '';
       
       if (errorCode === 'auth/email-already-in-use') {
         // Check which provider this email is registered with
@@ -134,8 +135,9 @@ export default function SignupForm() {
         method: 'google'
       });
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message || tAuth('signupFailed'));
+    } catch (error) {
+      const errorObj = error as { message?: string };
+      setError(errorObj.message || tAuth('signupFailed'));
     } finally {
       setLoading(false);
     }

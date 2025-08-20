@@ -570,5 +570,329 @@
       },
       "copyright": "© 2024 Neural Summary. Alle Rechte vorbehalten."
     }
+  },
+  "terms": {
+    "meta": {
+      "title": "Nutzungsbedingungen - Neural Summary",
+      "description": "Nutzungsbedingungen für Neural Summary's KI-gestützte Transkriptions- und Analyseservice. DSGVO-konforme Allgemeine Geschäftsbedingungen."
+    },
+    "title": "Nutzungsbedingungen",
+    "effectiveDate": "Inkrafttreten",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "links": {
+      "privacy": "Datenschutzrichtlinie",
+      "home": "Startseite"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Annahme der Bedingungen",
+        "content": "Durch den Zugriff auf oder die Nutzung von Neural Summary ('Service') erklären Sie sich damit einverstanden, an diese Nutzungsbedingungen ('Bedingungen') gebunden zu sein. Wenn Sie mit einem Teil dieser Bedingungen nicht einverstanden sind, haben Sie keine Berechtigung, auf den Service zuzugreifen.",
+        "notice": "Diese Bedingungen stellen eine rechtlich bindende Vereinbarung zwischen Ihnen und [COMPANY_LEGAL_NAME] bezüglich Ihrer Nutzung des Service dar."
+      },
+      "serviceDescription": {
+        "title": "Servicebeschreibung",
+        "content": "Neural Summary bietet KI-gestützte Audiotranskription und intelligente Analysedienste. Unsere Plattform umfasst:",
+        "features": {
+          "transcription": "Automatische Transkription von Audiodateien mit fortschrittlicher KI-Technologie",
+          "analysis": "Intelligente Zusammenfassung und Analyse von transkribiertem Inhalt",
+          "storage": "Sichere Cloud-Speicherung Ihrer Transkriptionen und Audiodateien",
+          "sharing": "Möglichkeit, Transkriptionen mit kontrolliertem Zugang zu teilen"
+        }
+      },
+      "userObligations": {
+        "title": "Nutzerpflichten und Verantwortlichkeiten",
+        "content": "Als Nutzer unseres Service verpflichten Sie sich, Neural Summary verantwortungsbewusst und in Übereinstimmung mit allen geltenden Gesetzen und Vorschriften zu verwenden.",
+        "prohibited": {
+          "title": "Verbotene Nutzung",
+          "illegal": "Hochladen oder Verarbeiten von Inhalten, die Gesetze oder Vorschriften verletzen",
+          "harmful": "Nutzung des Service, um anderen zu schaden, sie zu bedrohen oder zu belästigen",
+          "unauthorized": "Zugriff auf oder Versuch des Zugriffs auf unbefugte Bereiche des Service",
+          "interference": "Störung oder Unterbrechung des Service oder der Server",
+          "reverseEngineering": "Reverse Engineering, Dekompilierung oder Demontage eines Teils des Service"
+        }
+      },
+      "intellectualProperty": {
+        "title": "Rechte des geistigen Eigentums",
+        "ownership": {
+          "title": "Service-Eigentum",
+          "content": "Der Service und seine ursprünglichen Inhalte, Funktionen und Funktionalitäten sind Eigentum von [COMPANY_LEGAL_NAME] und sind durch internationale Urheberrechts-, Marken-, Patent-, Geschäftsgeheimnis- und andere Gesetze zum geistigen Eigentum geschützt."
+        },
+        "userContent": {
+          "title": "Ihr Inhalt",
+          "content": "Sie behalten alle Rechte an den Inhalten, die Sie in den Service hochladen. Durch das Hochladen von Inhalten gewähren Sie uns eine begrenzte Lizenz zur Verarbeitung, Speicherung und Anzeige Ihrer Inhalte ausschließlich zum Zweck der Bereitstellung des Service für Sie."
+        },
+        "license": {
+          "title": "Lizenzgewährung",
+          "content": "Wir gewähren Ihnen eine begrenzte, nicht-exklusive, nicht-übertragbare, widerrufbare Lizenz zur Nutzung des Service für Ihre persönlichen oder internen geschäftlichen Zwecke, vorbehaltlich dieser Bedingungen."
+        }
+      },
+      "privacy": {
+        "title": "Datenschutz und Datenschutz",
+        "content": "Ihre Nutzung des Service unterliegt auch unserer Datenschutzrichtlinie, die durch Verweis in diese Bedingungen einbezogen wird.",
+        "gdpr": {
+          "title": "DSGVO-Einhaltung",
+          "content": "Wir halten uns an die Datenschutz-Grundverordnung (DSGVO) und bieten Ihnen die folgenden Rechte:",
+          "rights": {
+            "access": "Recht auf Zugang zu Ihren personenbezogenen Daten",
+            "rectification": "Recht auf Berichtigung unrichtiger Daten",
+            "erasure": "Recht auf Löschung ('Recht auf Vergessenwerden')",
+            "portability": "Recht auf Datenübertragbarkeit",
+            "objection": "Recht auf Widerspruch gegen die Verarbeitung"
+          }
+        }
+      },
+      "liability": {
+        "title": "Haftungsbeschränkung",
+        "disclaimer": "DER SERVICE WIRD 'WIE BESEHEN' OHNE GARANTIEN JEDER ART, WEDER AUSDRÜCKLICH NOCH STILLSCHWEIGEND, BEREITGESTELLT.",
+        "limitations": {
+          "title": "Haftungsbeschränkungen",
+          "content": "Soweit nach geltendem Recht zulässig, haftet [COMPANY_LEGAL_NAME] nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die aus Ihrer Nutzung oder Unfähigkeit zur Nutzung des Service resultieren."
+        },
+        "maxLiability": "Maximale Haftung"
+      },
+      "termination": {
+        "title": "Kündigung",
+        "content": "Wir können Ihr Konto und den Zugang zum Service sofort kündigen oder aussetzen, ohne vorherige Ankündigung oder Haftung, aus jedem Grund, einschließlich der Verletzung dieser Bedingungen.",
+        "consequences": {
+          "title": "Auswirkungen der Kündigung",
+          "accessRevoked": "Ihr Recht zur Nutzung des Service erlischt sofort",
+          "dataRetention": "Wir können bestimmte Daten nach gesetzlichen Anforderungen oder für berechtigte Geschäftszwecke aufbewahren",
+          "obligations": "Alle Bestimmungen der Bedingungen, die eine Kündigung überdauern sollten, bleiben bestehen"
+        }
+      },
+      "governingLaw": {
+        "title": "Geltendes Recht und Gerichtsstand",
+        "content": "Diese Bedingungen unterliegen den Gesetzen von [JURISDICTION] und werden in Übereinstimmung mit diesen ausgelegt, ohne Berücksichtigung ihrer Kollisionsnormen.",
+        "jurisdiction": "Gerichtsstand",
+        "court": "Zuständige Gerichte"
+      },
+      "contact": {
+        "title": "Kontaktinformationen",
+        "content": "Wenn Sie Fragen zu diesen Bedingungen haben, kontaktieren Sie uns bitte unter:",
+        "company": "Unternehmen",
+        "registration": "Registrierungsnummer",
+        "address": "Adresse",
+        "email": "E-Mail",
+        "dpo": "Datenschutzbeauftragter"
+      },
+      "amendments": {
+        "title": "Änderungen der Bedingungen",
+        "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über wesentliche Änderungen informieren, indem wir die neuen Bedingungen auf dieser Seite veröffentlichen und das 'Inkrafttreten'-Datum aktualisieren."
+      }
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Datenschutzrichtlinie - Neural Summary",
+      "description": "Datenschutzrichtlinie für Neural Summary. Erfahren Sie, wie wir Ihre personenbezogenen Daten in Übereinstimmung mit der DSGVO sammeln, verwenden und schützen."
+    },
+    "title": "Datenschutzrichtlinie",
+    "effectiveDate": "Zuletzt aktualisiert",
+    "gdprCompliant": "DSGVO-konform",
+    "introduction": "Bei Neural Summary nehmen wir Ihre Privatsphäre ernst. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Informationen sammeln, verwenden, offenlegen und schützen, wenn Sie unseren Service nutzen. Wir halten uns an die Datenschutz-Grundverordnung (DSGVO) und verpflichten uns zum Schutz Ihrer personenbezogenen Daten.",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "links": {
+      "terms": "Nutzungsbedingungen",
+      "home": "Startseite"
+    },
+    "sections": {
+      "dataController": {
+        "title": "Datenverantwortlicher",
+        "content": "Der für Ihre personenbezogenen Daten verantwortliche Datenverantwortliche ist:",
+        "company": "Firmenname",
+        "registration": "Registrierungsnummer",
+        "address": "Eingetragene Adresse",
+        "email": "Kontakt-E-Mail",
+        "dpo": "Datenschutzbeauftragter"
+      },
+      "dataCollected": {
+        "title": "Welche Daten wir sammeln",
+        "content": "Wir sammeln verschiedene Arten von Informationen, um unseren Service bereitzustellen und zu verbessern:",
+        "personal": {
+          "title": "Persönliche Informationen",
+          "email": "E-Mail-Adresse",
+          "name": "Name (optional)",
+          "profile": "Profilinformationen von OAuth-Anbietern (Google)",
+          "payment": "Zahlungsinformationen (sicher verarbeitet über Drittanbieter)"
+        },
+        "usage": {
+          "title": "Nutzungsdaten",
+          "audioFiles": "Audiodateien, die Sie zur Transkription hochladen",
+          "transcriptions": "Transkriptionen und Analyseergebnisse",
+          "analysisResults": "KI-generierte Zusammenfassungen und Erkenntnisse",
+          "preferences": "Benutzereinstellungen und -präferenzen"
+        },
+        "technical": {
+          "title": "Technische Daten",
+          "ipAddress": "IP-Adresse und ungefährer Standort",
+          "browser": "Browsertyp und -version",
+          "device": "Geräteinformationen und Betriebssystem",
+          "logs": "Zugangsprotokoll und Nutzungsmuster"
+        }
+      },
+      "legalBasis": {
+        "title": "Rechtsgrundlage für die Verarbeitung",
+        "content": "Wir verarbeiten Ihre personenbezogenen Daten auf Grundlage folgender Rechtsgrundlagen:",
+        "contract": {
+          "title": "Vertragserfüllung",
+          "content": "Verarbeitung, die notwendig ist, um Ihnen unsere Transkriptions- und Analysedienste zu bieten."
+        },
+        "consent": {
+          "title": "Einwilligung",
+          "content": "Verarbeitung basierend auf Ihrer ausdrücklichen Einwilligung für Marketingkommunikation und Analysen."
+        },
+        "legitimate": {
+          "title": "Berechtigte Interessen",
+          "content": "Verarbeitung, die für unsere berechtigten Interessen an der Verbesserung unserer Dienste und der Betrugsbekämpfung erforderlich ist."
+        },
+        "legal": {
+          "title": "Rechtliche Verpflichtungen",
+          "content": "Verarbeitung, die notwendig ist, um rechtlichen Verpflichtungen nachzukommen, wie Steuer- und Buchhaltungsanforderungen."
+        }
+      },
+      "dataUsage": {
+        "title": "Wie wir Ihre Daten verwenden",
+        "content": "Wir verwenden die gesammelten Daten für verschiedene Zwecke:",
+        "purposes": {
+          "service": "Zur Bereitstellung und Wartung unserer Transkriptions- und Analysedienste",
+          "communication": "Zur Kommunikation mit Ihnen über Ihr Konto und Service-Updates",
+          "improvement": "Zur Verbesserung und Personalisierung Ihrer Erfahrung",
+          "security": "Zur Erkennung, Verhinderung und Behebung technischer Probleme und Sicherheitsbedrohungen",
+          "compliance": "Zur Einhaltung rechtlicher Verpflichtungen und Durchsetzung unserer Bedingungen",
+          "analytics": "Zur Analyse von Nutzungsmustern und Verbesserung unseres Service (mit Ihrer Einwilligung)"
+        }
+      },
+      "dataSharing": {
+        "title": "Datenweitergabe und Dritte",
+        "content": "Wir können Ihre Daten mit vertrauenswürdigen Drittanbietern teilen, die uns beim Betrieb unseres Service unterstützen:",
+        "serviceProviders": {
+          "title": "Dienstleister",
+          "hosting": "Cloud-Infrastruktur",
+          "transcription": "Transkriptionsdienste",
+          "analysis": "KI-Analyse",
+          "email": "E-Mail-Service",
+          "analytics": "Analysen"
+        },
+        "notice": "Wir verkaufen niemals Ihre personenbezogenen Daten an Dritte. Alle Dienstleister sind durch strenge Vertraulichkeitsvereinbarungen gebunden und können Ihre Daten nur zur Erbringung von Dienstleistungen für uns verwenden."
+      },
+      "dataRetention": {
+        "title": "Datenspeicherung",
+        "content": "Wir bewahren Ihre personenbezogenen Daten nur so lange auf, wie es zur Erfüllung der in dieser Datenschutzrichtlinie dargelegten Zwecke erforderlich ist:",
+        "periods": {
+          "title": "Aufbewahrungszeiten",
+          "account": "Kontodaten",
+          "transcriptions": "Transkriptionen",
+          "audioFiles": "Audiodateien",
+          "logs": "Systemprotokolle",
+          "analytics": "Analysedaten"
+        }
+      },
+      "userRights": {
+        "title": "Ihre Rechte unter der DSGVO",
+        "content": "Unter der Datenschutz-Grundverordnung (DSGVO) haben Sie folgende Rechte:",
+        "rights": {
+          "access": {
+            "title": "Recht auf Auskunft",
+            "content": "Sie haben das Recht, Kopien Ihrer personenbezogenen Daten, die wir besitzen, anzufordern."
+          },
+          "rectification": {
+            "title": "Recht auf Berichtigung",
+            "content": "Sie haben das Recht, die Korrektur unrichtiger oder unvollständiger personenbezogener Daten zu verlangen."
+          },
+          "erasure": {
+            "title": "Recht auf Löschung",
+            "content": "Sie haben das Recht, unter bestimmten Umständen die Löschung Ihrer personenbezogenen Daten zu verlangen."
+          },
+          "portability": {
+            "title": "Recht auf Datenübertragbarkeit",
+            "content": "Sie haben das Recht, Ihre Daten in einem strukturierten, gängigen und maschinenlesbaren Format zu erhalten."
+          },
+          "restriction": {
+            "title": "Recht auf Einschränkung der Verarbeitung",
+            "content": "Sie haben das Recht, unter bestimmten Umständen eine Einschränkung der Verarbeitung zu verlangen."
+          },
+          "objection": {
+            "title": "Widerspruchsrecht",
+            "content": "Sie haben das Recht, der Verarbeitung aufgrund berechtigter Interessen oder für Direktmarketing zu widersprechen."
+          },
+          "withdraw": {
+            "title": "Recht auf Widerruf der Einwilligung",
+            "content": "Wo die Verarbeitung auf Einwilligung basiert, haben Sie das Recht, die Einwilligung jederzeit zu widerrufen."
+          }
+        },
+        "howToExercise": "Um eines dieser Rechte auszuüben, wenden Sie sich bitte an unseren Datenschutzbeauftragten unter der unten angegebenen E-Mail-Adresse.",
+        "responseTime": "Wir werden innerhalb von 30 Tagen auf Ihre Anfrage antworten, wie von der DSGVO gefordert."
+      },
+      "dataSecurity": {
+        "title": "Datensicherheit",
+        "content": "Wir implementieren angemessene technische und organisatorische Maßnahmen zum Schutz Ihrer personenbezogenen Daten:",
+        "measures": {
+          "title": "Sicherheitsmaßnahmen",
+          "encryption": "Ende-zu-Ende-Verschlüsselung für Daten in der Übertragung und im Ruhezustand",
+          "access": "Strenge Zugriffskontrollen und Authentifizierungsmechanismen",
+          "monitoring": "Kontinuierliche Sicherheitsüberwachung und Bedrohungserkennung",
+          "backup": "Regelmäßige Backups und Notfallwiederherstellungsverfahren",
+          "training": "Regelmäßige Sicherheitsschulungen für unser Personal",
+          "incident": "Verfahren für Vorfallreaktion und Datenschutzverletzungsmeldungen"
+        },
+        "breach": "Im Falle einer Datenschutzverletzung, die ein Risiko für Ihre Rechte und Freiheiten darstellt, werden wir Sie und die zuständige Aufsichtsbehörde innerhalb von 72 Stunden benachrichtigen, wie von der DSGVO gefordert."
+      },
+      "cookies": {
+        "title": "Cookies und Tracking",
+        "content": "Wir verwenden Cookies und ähnliche Tracking-Technologien zur Verbesserung Ihrer Erfahrung:",
+        "types": {
+          "title": "Cookie-Typen",
+          "essential": {
+            "title": "Wesentliche Cookies",
+            "content": "Erforderlich für das ordnungsgemäße Funktionieren des Service (Authentifizierung, Sicherheit)"
+          },
+          "analytics": {
+            "title": "Analyse-Cookies",
+            "content": "Helfen uns zu verstehen, wie Benutzer mit unserem Service interagieren (mit Ihrer Einwilligung)"
+          },
+          "functional": {
+            "title": "Funktionale Cookies",
+            "content": "Merken sich Ihre Präferenzen und Einstellungen"
+          }
+        },
+        "manage": "Sie können Cookie-Einstellungen über Ihre Browsereinstellungen oder unser Cookie-Einverständnis-Tool verwalten."
+      },
+      "internationalTransfers": {
+        "title": "Internationale Datenübertragungen",
+        "content": "Ihre Daten können in Länder außerhalb des Europäischen Wirtschaftsraums (EWR) übertragen und dort verarbeitet werden.",
+        "safeguards": {
+          "title": "Schutzmaßnahmen",
+          "scc": "Standardvertragsklauseln, die von der Europäischen Kommission genehmigt wurden",
+          "adequacy": "Angemessenheitsbeschlüsse für Länder mit gleichwertigen Datenschutzgesetzen",
+          "shield": "Angemessene Schutzmaßnahmen gemäß DSGVO Artikel 46"
+        }
+      },
+      "children": {
+        "title": "Datenschutz für Kinder",
+        "content": "Unser Service ist nicht für Kinder bestimmt, und wir sammeln wissentlich keine personenbezogenen Daten von Personen unter dem unten angegebenen Alter.",
+        "age": "Mindestalter"
+      },
+      "contact": {
+        "title": "Kontaktieren Sie uns",
+        "content": "Wenn Sie Fragen zu dieser Datenschutzrichtlinie haben oder Ihre Rechte ausüben möchten, kontaktieren Sie uns bitte:",
+        "dpo": {
+          "title": "Datenschutzbeauftragter",
+          "email": "E-Mail",
+          "phone": "Telefon",
+          "address": "Adresse"
+        },
+        "supervisory": {
+          "title": "Aufsichtsbehörde",
+          "content": "Sie haben auch das Recht, eine Beschwerde bei Ihrer örtlichen Datenschutz-Aufsichtsbehörde einzureichen:",
+          "authority": "Name der Behörde",
+          "website": "Website"
+        }
+      },
+      "updates": {
+        "title": "Änderungen an dieser Datenschutzrichtlinie",
+        "content": "Wir können unsere Datenschutzrichtlinie von Zeit zu Zeit aktualisieren. Die aktualisierte Version wird durch ein aktualisiertes 'Zuletzt aktualisiert'-Datum angezeigt.",
+        "notification": "Bei wesentlichen Änderungen werden wir Sie per E-Mail oder durch einen prominenten Hinweis auf unserem Service benachrichtigen."
+      }
+    }
   }
 }

@@ -63,9 +63,11 @@ interface AnalyticsProviderProps {
 export function AnalyticsProvider({ children, user }: AnalyticsProviderProps) {
   const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useState(false);
   const [analyticsInstance, setAnalyticsInstance] = useState<Analytics | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check for user consent from localStorage
+    setMounted(true);
+    // Check for user consent from localStorage only after mounting
     const consent = localStorage.getItem('analytics_consent');
     setIsAnalyticsEnabled(consent === 'true');
 
