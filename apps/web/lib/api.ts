@@ -35,7 +35,7 @@ api.interceptors.response.use(
 );
 
 export const transcriptionApi = {
-  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<any>> => {
+  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
     const formData = new FormData();
     formData.append('file', file);
     if (analysisType) formData.append('analysisType', analysisType);
@@ -49,17 +49,17 @@ export const transcriptionApi = {
     });
   },
 
-  list: async (page = 1, pageSize = 20): Promise<ApiResponse<any>> => {
+  list: async (page = 1, pageSize = 20): Promise<ApiResponse<{ items: unknown[]; total: number; page: number; pageSize: number }>> => {
     return api.get('/transcriptions', {
       params: { page, pageSize },
     });
   },
 
-  get: async (id: string): Promise<ApiResponse<any>> => {
+  get: async (id: string): Promise<ApiResponse<unknown>> => {
     return api.get(`/transcriptions/${id}`);
   },
 
-  updateTitle: async (id: string, title: string): Promise<ApiResponse<any>> => {
+  updateTitle: async (id: string, title: string): Promise<ApiResponse<{ message: string }>> => {
     return api.put(`/transcriptions/${id}/title`, { title });
   },
 
@@ -67,20 +67,20 @@ export const transcriptionApi = {
     return api.delete(`/transcriptions/${id}`);
   },
 
-  regenerateSummary: async (id: string, instructions?: string): Promise<ApiResponse<any>> => {
+  regenerateSummary: async (id: string, instructions?: string): Promise<ApiResponse<{ summary: string }>> => {
     return api.post(`/transcriptions/${id}/regenerate-summary`, { instructions });
   },
 
   // Comment API methods
-  addComment: async (id: string, position: any, content: string): Promise<ApiResponse<any>> => {
+  addComment: async (id: string, position: { start: number; end: number }, content: string): Promise<ApiResponse<{ id: string; content: string; position: { start: number; end: number }; createdAt: string }>> => {
     return api.post(`/transcriptions/${id}/comments`, { position, content });
   },
 
-  getComments: async (id: string): Promise<ApiResponse<any[]>> => {
+  getComments: async (id: string): Promise<ApiResponse<unknown[]>> => {
     return api.get(`/transcriptions/${id}/comments`);
   },
 
-  updateComment: async (id: string, commentId: string, updates: { content?: string; resolved?: boolean }): Promise<ApiResponse<any>> => {
+  updateComment: async (id: string, commentId: string, updates: { content?: string; resolved?: boolean }): Promise<ApiResponse<{ id: string; content: string; resolved: boolean }>> => {
     return api.put(`/transcriptions/${id}/comments/${commentId}`, updates);
   },
 

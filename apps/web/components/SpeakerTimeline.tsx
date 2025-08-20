@@ -10,12 +10,8 @@ interface SpeakerTimelineProps {
 }
 
 export default function SpeakerTimeline({ segments, className = '' }: SpeakerTimelineProps) {
-  if (!segments || segments.length === 0) {
-    return null;
-  }
-
   const timelineData = useMemo(() => {
-    if (!segments.length) return { duration: 0, speakerBlocks: [] };
+    if (!segments || !segments.length) return { duration: 0, speakerBlocks: [] };
 
     const duration = segments[segments.length - 1].endTime;
     
@@ -78,6 +74,11 @@ export default function SpeakerTimeline({ segments, className = '' }: SpeakerTim
   };
 
   const { duration, speakerBlocks } = timelineData;
+
+  // Early return if no segments
+  if (!segments || segments.length === 0) {
+    return null;
+  }
 
   // Get unique speakers for the legend
   const uniqueSpeakers = Array.from(new Set(speakerBlocks.map(b => b.speakerTag))).sort();

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Clock, User, ChevronDown, ChevronUp, Search, PlayCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 
 interface SpeakerSegment {
   speakerTag: string;

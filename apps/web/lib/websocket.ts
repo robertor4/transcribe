@@ -1,11 +1,11 @@
 import { io, Socket } from 'socket.io-client';
 import { auth } from './firebase';
-import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
+import { WEBSOCKET_EVENTS } from '@transcribe/shared';
 import { getWebSocketUrl } from './config';
 
 class WebSocketService {
   private socket: Socket | null = null;
-  private listeners: Map<string, Set<(data: any) => void>> = new Map();
+  private listeners: Map<string, Set<(data: unknown) => void>> = new Map();
 
   async connect() {
     if (this.socket?.connected) return;
@@ -39,7 +39,7 @@ class WebSocketService {
 
     // Forward events to listeners
     Object.values(WEBSOCKET_EVENTS).forEach(event => {
-      this.socket?.on(event, (data: any) => {
+      this.socket?.on(event, (data: unknown) => {
         this.emit(event, data);
       });
     });
@@ -58,7 +58,7 @@ class WebSocketService {
     this.socket?.emit(WEBSOCKET_EVENTS.UNSUBSCRIBE_TRANSCRIPTION, transcriptionId);
   }
 
-  on(event: string, callback: (data: any) => void) {
+  on(event: string, callback: (data: unknown) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
@@ -69,7 +69,7 @@ class WebSocketService {
     };
   }
 
-  private emit(event: string, data: any) {
+  private emit(event: string, data: unknown) {
     this.listeners.get(event)?.forEach(callback => callback(data));
   }
 }

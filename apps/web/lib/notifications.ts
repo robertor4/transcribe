@@ -120,7 +120,7 @@ class NotificationService {
     body: string;
     icon?: string;
     tag?: string;
-    data?: any;
+    data?: unknown;
     requireInteraction?: boolean;
   }): void {
     console.log('sendNotification called with:', options);
@@ -201,7 +201,7 @@ class NotificationService {
     body: string;
     icon?: string;
     tag?: string;
-    data?: any;
+    data?: unknown;
     requireInteraction?: boolean;
   }): void {
     console.log('sendNotificationForced called with:', options);

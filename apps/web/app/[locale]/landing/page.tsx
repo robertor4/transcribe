@@ -5,7 +5,6 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import { 
   Shield, 
-  Zap, 
   Brain, 
   Lock, 
   Award, 
@@ -14,9 +13,7 @@ import {
   Users,
   CheckCircle,
   Star,
-  Upload,
   ArrowRight,
-  FileAudio,
   Mic,
   Globe,
   Sparkles,
@@ -451,7 +448,7 @@ export default async function LandingPage({
                   ))}
                 </div>
                 <p className="text-gray-700 mb-4 italic">
-                  "{t('landing.testimonials.testimonial1.quote')}"
+                  &ldquo;{t('landing.testimonials.testimonial1.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
                   <img 
@@ -477,7 +474,7 @@ export default async function LandingPage({
                   ))}
                 </div>
                 <p className="text-gray-700 mb-4 italic">
-                  "{t('landing.testimonials.testimonial2.quote')}"
+                  &ldquo;{t('landing.testimonials.testimonial2.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
                   <img 
@@ -503,7 +500,7 @@ export default async function LandingPage({
                   ))}
                 </div>
                 <p className="text-gray-700 mb-4 italic">
-                  "{t('landing.testimonials.testimonial3.quote')}"
+                  &ldquo;{t('landing.testimonials.testimonial3.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
                   <img 
@@ -563,33 +560,33 @@ export default async function LandingPage({
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('landing.footer.product.title')}</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/features" className="hover:text-white transition-colors">{t('landing.footer.product.features')}</a></li>
-                  <li><a href="/pricing" className="hover:text-white transition-colors">{t('landing.footer.product.pricing')}</a></li>
-                  <li><a href="/api" className="hover:text-white transition-colors">{t('landing.footer.product.api')}</a></li>
+                  <li><Link href={`/${locale}/features`} className="hover:text-white transition-colors">{t('landing.footer.product.features')}</Link></li>
+                  <li><Link href={`/${locale}/pricing`} className="hover:text-white transition-colors">{t('landing.footer.product.pricing')}</Link></li>
+                  <li><Link href={`/${locale}/api`} className="hover:text-white transition-colors">{t('landing.footer.product.api')}</Link></li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('landing.footer.company.title')}</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/about" className="hover:text-white transition-colors">{t('landing.footer.company.about')}</a></li>
-                  <li><a href="/blog" className="hover:text-white transition-colors">{t('landing.footer.company.blog')}</a></li>
-                  <li><a href="/careers" className="hover:text-white transition-colors">{t('landing.footer.company.careers')}</a></li>
+                  <li><Link href={`/${locale}/about`} className="hover:text-white transition-colors">{t('landing.footer.company.about')}</Link></li>
+                  <li><Link href={`/${locale}/blog`} className="hover:text-white transition-colors">{t('landing.footer.company.blog')}</Link></li>
+                  <li><Link href={`/${locale}/careers`} className="hover:text-white transition-colors">{t('landing.footer.company.careers')}</Link></li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('landing.footer.support.title')}</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/help" className="hover:text-white transition-colors">{t('landing.footer.support.help')}</a></li>
-                  <li><a href="/contact" className="hover:text-white transition-colors">{t('landing.footer.support.contact')}</a></li>
-                  <li><a href="/status" className="hover:text-white transition-colors">{t('landing.footer.support.status')}</a></li>
+                  <li><Link href={`/${locale}/help`} className="hover:text-white transition-colors">{t('landing.footer.support.help')}</Link></li>
+                  <li><Link href={`/${locale}/contact`} className="hover:text-white transition-colors">{t('landing.footer.support.contact')}</Link></li>
+                  <li><Link href={`/${locale}/status`} className="hover:text-white transition-colors">{t('landing.footer.support.status')}</Link></li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('landing.footer.legal.title')}</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><a href="/privacy" className="hover:text-white transition-colors">{t('landing.footer.legal.privacy')}</a></li>
-                  <li><a href="/terms" className="hover:text-white transition-colors">{t('landing.footer.legal.terms')}</a></li>
-                  <li><a href="/security" className="hover:text-white transition-colors">{t('landing.footer.legal.security')}</a></li>
+                  <li><Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">{t('landing.footer.legal.privacy')}</Link></li>
+                  <li><Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('landing.footer.legal.terms')}</Link></li>
+                  <li><Link href={`/${locale}/security`} className="hover:text-white transition-colors">{t('landing.footer.legal.security')}</Link></li>
                 </ul>
               </div>
             </div>

@@ -26,9 +26,10 @@ export async function updateUserLanguagePreference(language: string) {
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error) {
     // If it's a network error, silently fail and just log
-    if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+    const err = error as { code?: string; message?: string };
+    if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK' || err.message?.includes('Network Error')) {
       console.log('API not available, language preference saved locally only');
       return; // Don't throw, just return silently
     }

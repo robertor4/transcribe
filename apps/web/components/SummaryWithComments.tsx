@@ -6,17 +6,11 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 
 interface SummaryWithCommentsProps {
-  transcriptionId: string;
   summary: string;
-  isEditable?: boolean;
-  onSummaryRegenerated?: (newSummary: string) => void;
 }
 
 export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
-  transcriptionId,
-  summary,
-  isEditable = true,
-  onSummaryRegenerated
+  summary
 }) => {
   // Process the summary to handle HTML-styled intro paragraph
   const processedSummary = useMemo(() => {
@@ -38,7 +32,7 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
           components={{
-            p: ({children, ...props}) => {
+            p: ({children}) => {
               // Check if this is the intro paragraph
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');

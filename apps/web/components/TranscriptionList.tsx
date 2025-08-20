@@ -14,28 +14,19 @@ import {
 } from '@transcribe/shared';
 import { 
   FileAudio, 
-  Download, 
   Trash2, 
   Clock, 
   CheckCircle, 
   XCircle,
   Loader2,
-  ChevronDown,
-  ChevronUp,
   FileText,
   Copy,
   Check,
   AlignLeft,
   Edit3,
   X,
-  Users,
-  User,
-  Share2,
-  Link
+  Share2
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 import { AnalysisTabs } from './AnalysisTabs';
 import { ShareModal } from './ShareModal';
@@ -184,7 +175,7 @@ export const TranscriptionList: React.FC = () => {
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
-  }, []);
+  }, [t]);
 
   const loadTranscriptions = async () => {
     try {
