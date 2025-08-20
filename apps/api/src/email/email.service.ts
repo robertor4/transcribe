@@ -20,25 +20,49 @@ export class EmailService {
     this.frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
     
     if (gmailAuthUser && gmailAppPassword) {
+      // PRODUCTION FIX: Use explicit SMTP config for Hetzner/data center compatibility
       this.transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // use STARTTLS
         auth: {
           user: gmailAuthUser,
           pass: gmailAppPassword,
         },
+        tls: {
+          // Required for some data center IPs that Google might not trust
+          rejectUnauthorized: false,
+          minVersion: 'TLSv1.2',
+        },
+        // Increase timeouts for potentially slower connections
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        // Add these for better debugging
+        logger: true,
+        debug: process.env.NODE_ENV !== 'production',
       });
       
       // Verify transporter configuration
-      this.transporter.verify((error, success) => {
+      this.transporter?.verify((error, success) => {
         if (error) {
           this.logger.error('Gmail configuration error:', error);
           this.logger.warn('Make sure you are using an App Password, not your regular Gmail password');
           this.logger.warn('Generate an App Password at: https://myaccount.google.com/apppasswords');
           this.logger.warn(`Auth user: ${gmailAuthUser}, FROM email: ${gmailFromEmail}`);
+          
+          // Log more details for production debugging
+          if (error.message.includes('Invalid login')) {
+            this.logger.error('Authentication failed - check App Password');
+          } else if (error.message.includes('ECONNREFUSED')) {
+            this.logger.error('Connection refused - check firewall/network settings');
+          } else if (error.message.includes('getaddrinfo')) {
+            this.logger.error('DNS resolution failed - check network configuration');
+          }
         } else {
           this.logger.log('Gmail email service configured and ready');
           this.logger.log(`Authenticating as: ${gmailAuthUser}`);
           this.logger.log(`Sending from: ${gmailFromEmail}`);
+          this.logger.log(`Using SMTP: smtp.gmail.com:587 with STARTTLS`);
         }
       });
       
@@ -93,8 +117,20 @@ export class EmailService {
 
       this.logger.log(`Share email sent successfully to ${request.recipientEmail}`, info.messageId);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Error sending share email:', error);
+      
+      // Log specific error details for production debugging
+      if (error.code === 'EAUTH') {
+        this.logger.error('Authentication failed - verify App Password and 2FA is enabled');
+      } else if (error.code === 'ESOCKET') {
+        this.logger.error('Socket error - check network/firewall settings');
+      } else if (error.responseCode === 534) {
+        this.logger.error('Google requires app-specific password or less secure app access');
+      } else if (error.responseCode === 535) {
+        this.logger.error('Invalid credentials - check GMAIL_AUTH_USER and GMAIL_APP_PASSWORD');
+      }
+      
       return false;
     }
   }
@@ -112,7 +148,18 @@ export class EmailService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>Transcript Shared With You - Neural Summary</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -161,44 +208,6 @@ export class EmailService {
     .sender-name {
       color: #cc3399;
       font-weight: 600;
-    }
-    .transcript-title {
-      background: linear-gradient(135deg, #fce7f3 0%, #f9fafb 100%);
-      padding: 20px;
-      border-radius: 10px;
-      margin: 25px 0;
-      border-left: 4px solid #cc3399;
-    }
-    .transcript-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      color: #9333ea;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-    .transcript-name {
-      font-size: 18px;
-      color: #111827;
-      font-weight: 600;
-    }
-    .message-box {
-      background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-      border-left: 4px solid #f59e0b;
-      padding: 18px;
-      margin: 25px 0;
-      border-radius: 8px;
-    }
-    .message-label {
-      font-size: 13px;
-      color: #92400e;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .message-content {
-      color: #451a03;
-      font-size: 15px;
-      line-height: 1.5;
     }
     .button-container {
       text-align: center;
@@ -255,6 +264,61 @@ export class EmailService {
       font-weight: 600;
       margin-top: 15px;
     }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1a1a2e !important;
+        color: #e5e7eb !important;
+      }
+      .container {
+        background-color: #16213e !important;
+        color: #e5e7eb !important;
+      }
+      h1 {
+        color: #f3f4f6 !important;
+      }
+      .greeting {
+        color: #e5e7eb !important;
+      }
+      .sender-info {
+        color: #d1d5db !important;
+      }
+      .sender-name {
+        color: #ec4899 !important;
+      }
+      .button {
+        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
+      }
+      .url-section {
+        background-color: #1f2937 !important;
+      }
+      .url-label {
+        color: #9ca3af !important;
+      }
+      .link {
+        color: #ec4899 !important;
+      }
+      .footer {
+        border-top-color: #374151 !important;
+      }
+      .footer-text {
+        color: #9ca3af !important;
+      }
+      .footer-brand {
+        color: #c084fc !important;
+      }
+    }
+    
+    /* Gmail-specific dark mode */
+    [data-ogsc] body {
+      background: #1a1a2e !important;
+      color: #e5e7eb !important;
+    }
+    [data-ogsc] .container {
+      background-color: #16213e !important;
+      color: #e5e7eb !important;
+    }
   </style>
 </head>
 <body>
@@ -268,16 +332,36 @@ export class EmailService {
     
     <p class="sender-info"><span class="sender-name">${senderName}</span> has shared a transcript with you:</p>
     
-    <div class="transcript-title">
-      <div class="transcript-label">📄 Transcript</div>
-      <div class="transcript-name">${transcriptionTitle}</div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0;">
+      <tr>
+        <td>
+          <table width="100%" cellpadding="20" cellspacing="0" border="0" style="background-color: #4a1d7a; border-radius: 10px; border-left: 4px solid #cc3399;">
+            <tr>
+              <td>
+                <div style="font-size: 12px; text-transform: uppercase; color: #e9d5ff !important; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">📄 Transcript</div>
+                <div style="font-size: 18px; color: #ffffff !important; font-weight: 600;">${transcriptionTitle}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
     
     ${customMessage ? `
-    <div class="message-box">
-      <div class="message-label">💬 Message from ${senderName}:</div>
-      <div class="message-content">${customMessage}</div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0;">
+      <tr>
+        <td>
+          <table width="100%" cellpadding="18" cellspacing="0" border="0" style="background-color: #7c6f64; border-radius: 8px; border-left: 4px solid #fbbf24;">
+            <tr>
+              <td>
+                <div style="font-size: 13px; color: #fef3c7 !important; font-weight: 600; margin-bottom: 8px;">💬 Message from ${senderName}:</div>
+                <div style="font-size: 15px; color: #ffffff !important; line-height: 1.5;">${customMessage}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
     ` : ''}
     
     <div class="button-container">
@@ -293,6 +377,7 @@ export class EmailService {
       <p class="footer-text">This link may expire or have limited views based on the sender's settings.</p>
       <p class="footer-text">You're receiving this because someone shared a transcript with you.</p>
       <p class="footer-brand">✨ Neural Summary • ${new Date().getFullYear()}</p>
+      <p class="footer-text" style="font-size: 10px; color: #9ca3af;">Email Template v3 - Dark Mode Fixed</p>
     </div>
   </div>
 </body>
