@@ -387,7 +387,7 @@ export const TranscriptionList: React.FC = () => {
         return (
           <div
             key={transcription.id}
-            className="border border-gray-200 rounded-lg overflow-hidden"
+            className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-gray-300 hover:scale-[1.005] cursor-pointer"
           >
             <div className="p-4 bg-white">
               <div className="flex items-center justify-between">

@@ -239,7 +239,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
       </div>
 
       {/* Transcript Segments */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {groupedSegments.map((group, groupIndex) => {
           const colors = getSpeakerColor(group.speakerTag);
           const isExpanded = group.segments.some(s => expandedSegments.has(s.index));
@@ -254,7 +254,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
               }`}
             >
               {/* Timeline connector */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200" />
+              <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 opacity-50" />
               
               {/* Time marker */}
               <div className="absolute left-0 top-4 flex items-center">
@@ -265,14 +265,14 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
               </div>
               
               {/* Content card */}
-              <div className={`ml-24 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
+              <div className={`ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-3`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${colors.avatar} flex items-center justify-center text-white font-semibold shadow-sm`}>
+                    <div className={`w-8 h-8 rounded-full ${colors.avatar} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}>
                       {getSpeakerInitial(group.speakerTag)}
                     </div>
                     <div>
-                      <div className={`font-semibold ${colors.text}`}>
+                      <div className={`text-sm font-semibold ${colors.text}`}>
                         {group.speakerTag}
                       </div>
                       <div className="text-xs text-gray-500">
@@ -295,7 +295,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                   )}
                 </div>
                 
-                <div className="text-gray-700">
+                <div className="text-sm text-gray-700">
                   {isExpanded ? (
                     <div className="space-y-2">
                       {group.segments.map(({ segment, index }) => (
@@ -308,12 +308,12 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                           <span className="text-xs text-gray-400 mr-2">
                             [{formatTime(segment.startTime)}]
                           </span>
-                          <span>{segment.text}</span>
+                          <span className="text-sm">{segment.text}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className={`whitespace-pre-wrap ${
+                    <p className={`text-sm whitespace-pre-wrap ${
                       hasSearchResult ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded' : ''
                     }`}>
                       {group.text}
