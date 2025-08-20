@@ -319,18 +319,27 @@ export class FirebaseService implements OnModuleInit {
     displayName?: string;
     photoURL?: string;
   }) {
+    // Filter out undefined values
+    const userData: any = {
+      uid: user.uid,
+      email: user.email,
+      role: 'user',
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    
+    if (user.displayName !== undefined && user.displayName !== null) {
+      userData.displayName = user.displayName;
+    }
+    
+    if (user.photoURL !== undefined && user.photoURL !== null) {
+      userData.photoURL = user.photoURL;
+    }
+    
     await this.db
       .collection('users')
       .doc(user.uid)
-      .set(
-        {
-          ...user,
-          role: 'user',
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        },
-        { merge: true },
-      );
+      .set(userData, { merge: true });
   }
 
   async getUser(uid: string) {

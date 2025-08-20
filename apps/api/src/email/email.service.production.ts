@@ -21,7 +21,7 @@ export class EmailService {
     
     if (gmailAuthUser && gmailAppPassword) {
       // PRODUCTION FIX: Use explicit SMTP config for Hetzner/data center compatibility
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
         secure: false, // use STARTTLS
@@ -43,7 +43,7 @@ export class EmailService {
       });
       
       // Verify transporter configuration
-      this.transporter.verify((error, success) => {
+      this.transporter?.verify((error, success) => {
         if (error) {
           this.logger.error('Gmail configuration error:', error);
           this.logger.warn('Make sure you are using an App Password, not your regular Gmail password');

@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { auth } from '@/lib/firebase';
 import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -13,6 +14,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [suggestGoogle, setSuggestGoogle] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
   
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
@@ -23,6 +26,8 @@ export default function LoginForm() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    setSuggestGoogle(false);
+    setShowPasswordReset(false);
 
     try {
       await signInWithEmail(email, password);
@@ -30,13 +35,64 @@ export default function LoginForm() {
         method: 'email',
         email: email
       });
-      router.push('/dashboard');
+      // Small delay to ensure auth state is fully propagated
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force reload to get latest email verification status
+      if (auth.currentUser) {
+        await auth.currentUser.reload();
+        const refreshedUser = auth.currentUser;
+        
+        if (refreshedUser.emailVerified === false) {
+          router.push('/verify-email');
+        } else {
+          router.push('/dashboard');
+        }
+      } else {
+        // Fallback to dashboard if no current user (shouldn't happen)
+        router.push('/dashboard');
+      }
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to sign in';
-      // Map Firebase errors to translation keys
-      if (errorMessage.includes('invalid-credential') || errorMessage.includes('user-not-found')) {
-        setError(tAuth('invalidCredentials'));
-      } else if (errorMessage.includes('too-many-requests')) {
+      const errorCode = error.code || '';
+      
+      // Map Firebase errors to user-friendly messages
+      // Note: Firebase v9+ uses different error codes depending on the version
+      // 'auth/invalid-credential' is the new unified error
+      // 'auth/invalid-login-credentials' is also used in some versions
+      if (errorCode === 'auth/invalid-credential' || 
+          errorCode === 'auth/user-not-found' || 
+          errorCode === 'auth/wrong-password' || 
+          errorCode === 'auth/invalid-login-credentials' ||
+          errorMessage.includes('auth/invalid-credential') ||
+          errorMessage.includes('INVALID_LOGIN_CREDENTIALS')) {
+        // Check if this email exists with a different provider
+        try {
+          const { fetchSignInMethodsForEmail } = await import('firebase/auth');
+          const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+          
+          if (signInMethods.length === 0) {
+            // No account exists with this email
+            setError('No account found with this email. Please sign up first.');
+            setSuggestGoogle(false);
+          } else if (!signInMethods.includes('password')) {
+            // User exists but with different provider (likely Google)
+            if (signInMethods.includes('google.com')) {
+              setError('This email is registered with Google sign-in. Please use the "Sign in with Google" button below.');
+              setSuggestGoogle(true);
+            } else {
+              setError('This email is registered with a different sign-in method. Please use the appropriate sign-in option.');
+            }
+          } else {
+            // Account exists with password, so password must be wrong
+            setError('Incorrect password. Please try again or use the "Forgot password?" link below.');
+            setSuggestGoogle(false);
+            setShowPasswordReset(true);
+          }
+        } catch (fetchError) {
+          setError(tAuth('invalidCredentials'));
+        }
+      } else if (errorCode === 'auth/too-many-requests') {
         setError(tAuth('tooManyRequests'));
       } else {
         setError(tAuth('invalidCredentials'));
@@ -55,6 +111,8 @@ export default function LoginForm() {
       trackEvent('login', {
         method: 'google'
       });
+      // Small delay to ensure auth state is fully propagated
+      await new Promise(resolve => setTimeout(resolve, 200));
       router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || tAuth('invalidCredentials'));
@@ -123,7 +181,11 @@ export default function LoginForm() {
         <div className="flex items-center justify-between">
           <Link 
             href="/forgot-password"
-            className="text-sm text-[#cc3399] hover:text-[#b82d89]"
+            className={`text-sm transition-all ${
+              showPasswordReset 
+                ? 'text-[#cc3399] font-semibold animate-pulse hover:text-[#b82d89]' 
+                : 'text-[#cc3399] hover:text-[#b82d89]'
+            }`}
           >
             {tAuth('forgotPassword')}
           </Link>
@@ -163,7 +225,11 @@ export default function LoginForm() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full flex justify-center items-center px-4 py-3 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
+              suggestGoogle 
+                ? 'border-[#cc3399] bg-pink-50 text-gray-900 hover:bg-pink-100 animate-pulse' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+            }`}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path

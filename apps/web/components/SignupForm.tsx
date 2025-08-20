@@ -94,12 +94,27 @@ export default function SignupForm() {
       router.push('/verify-email');
     } catch (error: any) {
       const errorMessage = error.message || 'Failed to sign up';
+      const errorCode = error.code || '';
       
-      if (errorMessage.includes('email-already-in-use')) {
-        setError(tAuth('emailAlreadyInUse'));
-      } else if (errorMessage.includes('invalid-email')) {
+      if (errorCode === 'auth/email-already-in-use') {
+        // Check which provider this email is registered with
+        try {
+          const { fetchSignInMethodsForEmail } = await import('firebase/auth');
+          const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+          
+          if (signInMethods.includes('google.com')) {
+            setError('This email is already registered with Google sign-in. Please sign in using the Google button on the login page.');
+          } else if (signInMethods.includes('password')) {
+            setError('This email is already registered. Please sign in instead.');
+          } else {
+            setError(tAuth('emailAlreadyInUse'));
+          }
+        } catch {
+          setError(tAuth('emailAlreadyInUse'));
+        }
+      } else if (errorCode === 'auth/invalid-email') {
         setError(tAuth('invalidEmail'));
-      } else if (errorMessage.includes('weak-password')) {
+      } else if (errorCode === 'auth/weak-password') {
         setError(tAuth('weakPassword'));
       } else {
         setError(tAuth('signupFailed'));

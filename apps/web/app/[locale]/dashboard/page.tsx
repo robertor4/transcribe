@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { auth } from '@/lib/firebase';
 import { FileUploader } from '@/components/FileUploader';
 import { TranscriptionList } from '@/components/TranscriptionList';
 import { HowItWorks } from '@/components/HowItWorks';
@@ -27,11 +28,45 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
+  
+  // Immediate redirect check for unverified emails
+  if (!loading && user && !user.emailVerified) {
+    router.push('/verify-email');
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-2">Your email is not verified.</p>
+          <p className="text-sm text-gray-500">Redirecting to verification page...</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
+    const checkAuthState = async () => {
+      if (!loading) {
+        if (!user) {
+          router.push('/login');
+          return;
+        }
+        
+        // Force refresh the user to get latest email verification status
+        try {
+          await user.reload();
+          // Get the refreshed user object
+          const currentUser = auth.currentUser;
+          
+          if (currentUser && !currentUser.emailVerified) {
+            router.push('/verify-email');
+            return;
+          }
+        } catch (error) {
+          // Error reloading user
+        }
+      }
+    };
+    
+    checkAuthState();
   }, [user, loading, router]);
 
   useEffect(() => {
@@ -39,17 +74,13 @@ export default function DashboardPage() {
     const unsubscribe = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       (progress: TranscriptionProgress) => {
-        console.log('Transcription completed event received:', progress);
         setRefreshKey(prev => prev + 1);
         
         // Get the file name from our stored map
         const fileName = activeTranscriptions.get(progress.transcriptionId) || 'your file';
-        console.log('File name for notification:', fileName);
-        console.log('Active transcriptions map:', activeTranscriptions);
         
         // Send browser notification if enabled
         if (progress.status === 'completed') {
-          console.log('Sending completion notification for:', fileName);
           // Force notification for testing (third parameter = true)
           notificationService.sendTranscriptionComplete(
             fileName,
@@ -63,7 +94,6 @@ export default function DashboardPage() {
             return newMap;
           });
         } else if (progress.status === 'failed') {
-          console.log('Sending failure notification for:', fileName);
           notificationService.sendTranscriptionFailed(
             fileName,
             progress.transcriptionId
@@ -104,10 +134,34 @@ export default function DashboardPage() {
     setRefreshKey(prev => prev + 1);
   };
 
-  if (loading || !user) {
+  // Show loading state while checking auth
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+  
+  // If no user, they should be redirected to login
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // If user is unverified, show message while redirecting
+  if (!user.emailVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-2">Your email is not verified.</p>
+          <p className="text-sm text-gray-500">Redirecting to verification page...</p>
+        </div>
       </div>
     );
   }
@@ -120,7 +174,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <img 
-                src="/assets/neural-summary-logo.webp" 
+                src="/assets/NS-symbol.webp" 
                 alt="Neural Summary Logo" 
                 className="h-8 w-auto mr-3"
               />

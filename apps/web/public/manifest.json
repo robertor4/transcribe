@@ -1,0 +1,16 @@
+{
+  "name": "Neural Summary",
+  "short_name": "Neural Summary",
+  "description": "Transform audio into actionable insights with AI-powered transcription and summarization",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#cc3399",
+  "icons": [
+    {
+      "src": "/assets/NS-symbol.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

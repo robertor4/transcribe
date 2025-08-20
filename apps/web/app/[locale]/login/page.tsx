@@ -16,7 +16,7 @@ export default async function LoginPage({
         <div>
           <div className="flex justify-center mb-4">
             <img 
-              src="/assets/neural-summary-logo.webp" 
+              src="/assets/NS-symbol.webp" 
               alt="Neural Summary Logo" 
               className="h-12 w-auto"
             />

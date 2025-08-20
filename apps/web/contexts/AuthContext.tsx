@@ -51,16 +51,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     setMounted(true);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      setLoading(false);
-      
       if (user) {
-        // Connect WebSocket when user is authenticated
-        await websocketService.connect();
+        // Always reload user to get latest email verification status
+        try {
+          await user.reload();
+          // Get the refreshed user
+          const refreshedUser = auth.currentUser;
+          setUser(refreshedUser);
+          
+          // Check email verification and redirect if needed
+          if (refreshedUser && !refreshedUser.emailVerified && typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            // Don't redirect if already on verify-email page
+            if (!currentPath.includes('/verify-email')) {
+              window.location.href = '/verify-email';
+              return;
+            }
+          }
+          
+          // Connect WebSocket when user is authenticated
+          await websocketService.connect();
+        } catch (error) {
+          setUser(user);
+        }
       } else {
+        setUser(null);
         // Disconnect WebSocket when user logs out
         websocketService.disconnect();
       }
+      
+      setLoading(false);
     });
 
     return unsubscribe;

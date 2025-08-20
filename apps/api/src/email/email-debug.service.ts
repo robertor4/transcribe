@@ -58,7 +58,7 @@ export class EmailDebugService {
     for (const { name, config } of configs) {
       this.logger.log(`\nTesting: ${name}`);
       try {
-        const transporter = nodemailer.createTransporter(config as any);
+        const transporter = nodemailer.createTransport(config as any);
         
         // Test connection
         await new Promise((resolve, reject) => {

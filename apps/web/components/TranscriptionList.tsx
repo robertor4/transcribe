@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 import websocketService from '@/lib/websocket';
 import { 
   Transcription, 
@@ -35,6 +36,7 @@ import { ProcessingStatus } from './ProcessingStatus';
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
   const tCommon = useTranslations('common');
+  const { user } = useAuth();
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -66,7 +68,13 @@ export const TranscriptionList: React.FC = () => {
   };
 
   useEffect(() => {
-    loadTranscriptions();
+    // Only load transcriptions if user is available
+    if (user) {
+      loadTranscriptions();
+    } else {
+      // If no user, just set loading to false to show empty state
+      setLoading(false);
+    }
     
     // Track timeout timers for processing transcriptions
     const timeoutTimers = new Map<string, NodeJS.Timeout>();
@@ -175,7 +183,7 @@ export const TranscriptionList: React.FC = () => {
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
-  }, [t]);
+  }, [t, user]);
 
   const loadTranscriptions = async () => {
     try {
@@ -183,8 +191,26 @@ export const TranscriptionList: React.FC = () => {
       if (response?.success) {
         setTranscriptions(response.data.items);
       }
-    } catch (error) {
-      console.error(t('failedToLoad'), error);
+    } catch (error: any) {
+      console.error('Failed to load transcriptions:', {
+        error,
+        message: error?.message,
+        status: error?.status,
+        responseStatus: error?.response?.status,
+        responseData: error?.response?.data,
+        fullError: JSON.stringify(error)
+      });
+      
+      // Check if this is an email verification error
+      if (error?.response?.status === 401 && 
+          error?.response?.data?.message?.includes('Email not verified')) {
+        console.log('Email verification required - redirecting to verify-email page');
+        // The dashboard should handle this redirect, but log it here
+      }
+      
+      // Set empty list for any error to show empty state
+      // The API interceptor will handle auth issues and retry
+      setTranscriptions([]);
     } finally {
       setLoading(false);
     }

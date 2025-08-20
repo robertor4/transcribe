@@ -14,23 +14,94 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use(async (config) => {
-  const user = auth.currentUser;
+  // Wait a moment for auth to stabilize if needed
+  let user = auth.currentUser;
+  
+  // If no user, wait briefly for auth state to settle (useful right after sign-in)
+  // This is especially important for email/password login
+  if (!user) {
+    // Try waiting up to 1 second with multiple checks
+    for (let i = 0; i < 10; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      user = auth.currentUser;
+      if (user) {
+        break;
+      }
+    }
+  }
+  
   if (user) {
-    const token = await user.getIdToken();
-    config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    } catch (error) {
+      // Failed to get auth token
+    }
   }
   return config;
 });
 
 // Handle responses
 api.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized
-      window.location.href = '/login';
+  (response) => {
+    return response.data;
+  },
+  async (error) => {
+    
+    const originalRequest = error.config;
+    
+    // Check if we got a 401 and haven't already retried
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      // Check if this is an email verification error
+      if (error.response?.data?.message?.includes('Email not verified')) {
+        window.location.href = '/verify-email';
+        return Promise.reject(error.response?.data || { 
+          status: 401, 
+          message: 'Email not verified' 
+        });
+      }
+      
+      // Check if user is still authenticated
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          // Try to get a fresh token
+          const newToken = await user.getIdToken(true); // force refresh
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          
+          // Retry the request with the new token
+          return api(originalRequest);
+        } catch (refreshError) {
+          // If token refresh fails, then redirect to login
+          window.location.href = '/login';
+          // Still return a rejected promise with proper error
+          return Promise.reject({ 
+            status: 401, 
+            message: 'Authentication failed', 
+            originalError: refreshError 
+          });
+        }
+      } else {
+        // User is not authenticated, redirect to login
+        window.location.href = '/login';
+        // Return a rejected promise with proper error
+        return Promise.reject({ 
+          status: 401, 
+          message: 'User not authenticated' 
+        });
+      }
     }
-    return Promise.reject(error.response?.data || error);
+    
+    // Make sure we always return a proper error object
+    const errorToReturn = error.response?.data || {
+      status: error.response?.status || 500,
+      message: error.message || 'An unknown error occurred',
+      originalError: error
+    };
+    
+    return Promise.reject(errorToReturn);
   }
 );
 
