@@ -51,6 +51,7 @@
     "userNotFound": "Usuario no encontrado",
     "tooManyRequests": "Demasiadas solicitudes. Por favor, inténtalo más tarde.",
     "backToLogin": "Volver al inicio de sesión",
+    "backToHome": "Volver al inicio",
     "enterEmailForReset": "Ingrese su dirección de correo electrónico para recibir un enlace de restablecimiento",
     "sendResetLink": "Enviar enlace de restablecimiento",
     "resetLinkSent": "¡Enlace enviado!",
@@ -268,12 +269,7 @@
         "description": "Soportamos M4A, MP3, WAV y otros formatos comunes. Los formatos de mayor calidad dan mejores resultados."
       }
     },
-    "recommendedApps": {
-      "title": "Aplicaciones de grabación recomendadas",
-      "ios": "iOS: Notas de Voz, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Escritorio: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Aplicaciones recomendadas:",
     "proTips": {
       "title": "Consejos profesionales de grabación para mejores resultados",
       "audioQuality": "Calidad de audio:",
@@ -288,7 +284,6 @@
     "recordingInstructions": "Instrucciones de grabación por dispositivo",
     "stepByStep": "Instrucciones paso a paso:",
     "quickTips": "Consejos rápidos:",
-    "recommendedApps": "Aplicaciones recomendadas:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -306,9 +301,18 @@
           "Considera usar AirPods o un micrófono externo para mejor calidad"
         ],
         "apps": [
-          { "name": "Notas de Voz", "description": "Integrada, simple y confiable" },
-          { "name": "Just Press Record", "description": "Sincronización en la nube entre dispositivos Apple" },
-          { "name": "Recorder", "description": "Simple y fácil de usar" }
+          {
+            "name": "Notas de Voz",
+            "description": "Integrada, simple y confiable"
+          },
+          {
+            "name": "Just Press Record",
+            "description": "Sincronización en la nube entre dispositivos Apple"
+          },
+          {
+            "name": "Recorder",
+            "description": "Simple y fácil de usar"
+          }
         ]
       },
       "android": {
@@ -327,9 +331,18 @@
           "Mantén el dispositivo estable durante la grabación"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Simple y efectiva" },
-          { "name": "Easy Voice Recorder", "description": "Alta calidad con respaldo en la nube" },
-          { "name": "Smart Recorder", "description": "Reducción automática de ruido" }
+          {
+            "name": "Voice Recorder",
+            "description": "Simple y efectiva"
+          },
+          {
+            "name": "Easy Voice Recorder",
+            "description": "Alta calidad con respaldo en la nube"
+          },
+          {
+            "name": "Smart Recorder",
+            "description": "Reducción automática de ruido"
+          }
         ]
       },
       "mac": {
@@ -348,9 +361,18 @@
           "Graba en una habitación con muebles suaves para reducir el eco"
         ],
         "apps": [
-          { "name": "QuickTime Player", "description": "Integrado y confiable" },
-          { "name": "Audacity", "description": "Gratis, edición de audio profesional" },
-          { "name": "GarageBand", "description": "Características avanzadas para música y podcasting" }
+          {
+            "name": "QuickTime Player",
+            "description": "Integrado y confiable"
+          },
+          {
+            "name": "Audacity",
+            "description": "Gratis, edición de audio profesional"
+          },
+          {
+            "name": "GarageBand",
+            "description": "Características avanzadas para música y podcasting"
+          }
         ]
       },
       "windows": {
@@ -369,9 +391,18 @@
           "Posiciona el micrófono lejos del teclado y ratón"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Aplicación integrada de Windows" },
-          { "name": "Audacity", "description": "Editor de audio gratuito, multiplataforma" },
-          { "name": "OBS Studio", "description": "Grabación avanzada con múltiples fuentes" }
+          {
+            "name": "Voice Recorder",
+            "description": "Aplicación integrada de Windows"
+          },
+          {
+            "name": "Audacity",
+            "description": "Editor de audio gratuito, multiplataforma"
+          },
+          {
+            "name": "OBS Studio",
+            "description": "Grabación avanzada con múltiples fuentes"
+          }
         ]
       }
     },
@@ -607,7 +638,7 @@
       "acceptance": {
         "title": "Aceptación de los términos",
         "content": "Al acceder o usar Neural Summary ('Servicio'), usted acepta estar sujeto a estos Términos de Uso ('Términos'). Si no está de acuerdo con alguna parte de estos términos, no tiene permiso para acceder al Servicio.",
-        "notice": "Estos Términos constituyen un acuerdo legalmente vinculante entre usted y [COMPANY_LEGAL_NAME] con respecto a su uso del Servicio."
+        "notice": "Estos Términos constituyen un acuerdo legalmente vinculante entre usted y DreamOne Holding BV con respecto a su uso del Servicio."
       },
       "serviceDescription": {
         "title": "Descripción del servicio",
@@ -635,7 +666,7 @@
         "title": "Derechos de propiedad intelectual",
         "ownership": {
           "title": "Propiedad del servicio",
-          "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de [COMPANY_LEGAL_NAME] y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
+          "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de DreamOne Holding BV y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
         },
         "userContent": {
           "title": "Su contenido",
@@ -666,7 +697,7 @@
         "disclaimer": "EL SERVICIO SE PROPORCIONA 'TAL COMO ESTÁ' SIN GARANTÍAS DE NINGÚN TIPO, YA SEAN EXPRESAS O IMPLÍCITAS.",
         "limitations": {
           "title": "Limitaciones de responsabilidad",
-          "content": "En la medida máxima permitida por la ley, [COMPANY_LEGAL_NAME] no será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos resultantes de su uso o incapacidad para usar el Servicio."
+          "content": "En la medida máxima permitida por la ley, DreamOne Holding BV no será responsable de daños indirectos, incidentales, especiales, consecuentes o punitivos resultantes de su uso o incapacidad para usar el Servicio."
         },
         "maxLiability": "Responsabilidad máxima"
       },
@@ -682,7 +713,7 @@
       },
       "governingLaw": {
         "title": "Ley aplicable y jurisdicción",
-        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes de [JURISDICTION], sin tener en cuenta sus disposiciones sobre conflictos de leyes.",
+        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes de The Netherlands, sin tener en cuenta sus disposiciones sobre conflictos de leyes.",
         "jurisdiction": "Jurisdicción",
         "court": "Tribunales competentes"
       },
@@ -914,5 +945,115 @@
         "notification": "Para cambios materiales, le notificaremos por correo electrónico o mediante un aviso prominente en nuestro Servicio."
       }
     }
+  },
+  "share": {
+    "title": "Compartir Transcripción",
+    "shareSettings": "Configuración de Seguridad",
+    "contentSelection": "Seleccionar Contenido para Compartir",
+    "summaryOnly": "Solo Resumen",
+    "summaryTranscript": "Resumen + Transcripción",
+    "completeAnalysis": "Análisis Completo",
+    "customSelection": "Personalizado",
+    "includeTranscript": "Transcripción Completa",
+    "includeSummary": "Resumen",
+    "includeCommunication": "Estilos de Comunicación",
+    "includeActionItems": "Puntos de Acción",
+    "includeEmotionalIQ": "Inteligencia Emocional",
+    "includeInfluence": "Influencia y Persuasión",
+    "includeDevelopment": "Desarrollo Personal",
+    "includeSpeakerInfo": "Información del Hablante",
+    "sharedContent": "Contenido Compartido",
+    "noContentSelected": "No se ha seleccionado contenido",
+    "itemsSelected": "elementos seleccionados",
+    "expiration": "Caducidad del Enlace",
+    "24hours": "24 Horas",
+    "7days": "7 Días",
+    "never": "Nunca",
+    "passwordProtect": "Protección con Contraseña",
+    "enterPassword": "Introducir contraseña",
+    "createLink": "Crear Enlace para Compartir",
+    "creating": "Creando...",
+    "linkCreated": "Enlace para Compartir Creado",
+    "currentSettings": "Configuración Actual",
+    "updateSettings": "Actualizar Configuración",
+    "updateSettingsInfo": "Puede cambiar qué contenido se comparte y la configuración de seguridad en cualquier momento.",
+    "updateShareSettings": "Actualizar Configuración de Compartir",
+    "updating": "Actualizando...",
+    "qrCode": "Código QR",
+    "sendEmail": "Enviar Correo",
+    "revoke": "Revocar",
+    "linkCopied": "¡Enlace copiado al portapapeles!",
+    "sendViaEmail": "Enviar por Correo Electrónico",
+    "enterEmailAddresses": "Ingrese direcciones de correo (presione Enter o coma para agregar)",
+    "addAnotherEmail": "Agregar otra dirección de correo",
+    "emailHelpText": "Presione Enter, coma o espacio para agregar múltiples direcciones de correo",
+    "sending": "Enviando...",
+    "sendEmails": "Enviar Correos",
+    "emailsSent": "¡Correos Enviados!",
+    "emailsSentSuccess": "¡Correos enviados con éxito! Los destinatarios recibirán el enlace para compartir pronto.",
+    "viewCount": "Vistas",
+    "expiresOn": "Caduca",
+    "passwordProtected": "Protegido con contraseña",
+    "scanQR": "Escanear código QR para compartir",
+    "confirmRevoke": "¿Está seguro de que desea revocar este enlace para compartir? Las personas con el enlace ya no podrán acceder a esta transcripción."
+  },
+  "shared": {
+    "title": "Transcripción Compartida",
+    "loadingTranscript": "Cargando transcripción...",
+    "enterPassword": "Introducir Contraseña",
+    "passwordRequired": "Esta transcripción está protegida con contraseña.",
+    "password": "Contraseña",
+    "submit": "Enviar",
+    "invalidPassword": "Contraseña inválida",
+    "transcriptNotFound": "Transcripción no encontrada",
+    "transcriptExpired": "Este enlace para compartir ha caducado",
+    "transcriptRevoked": "Este enlace para compartir ha sido revocado",
+    "errorLoading": "Error al cargar la transcripción",
+    "sharedBy": "Compartido por",
+    "sharedOn": "Compartido el",
+    "downloadTranscript": "Descargar Transcripción",
+    "playRecording": "Reproducir Grabación",
+    "backToTop": "Volver arriba",
+    "noAnalysisAvailable": "No hay análisis disponible",
+    "noTranscriptAvailable": "No hay transcripción disponible"
+  },
+  "cookieConsent": {
+    "title": "Usamos cookies para mejorar tu experiencia",
+    "subtitle": "Ayúdanos a mejorar Neural Summary permitiendo analytics",
+    "description": "Usamos Firebase Analytics para entender cómo usas nuestra aplicación y mejorar tu experiencia. Esto incluye el seguimiento de vistas de página, uso de funciones y métricas de rendimiento. Tus datos nunca se venden a terceros.",
+    "learnMore": "Más información sobre nuestras prácticas de privacidad",
+    "whatWeCollect": "Lo que recopilamos:",
+    "whatWeCollectItems": {
+      "pageViews": "Vistas de página y patrones de navegación",
+      "featureUsage": "Uso de funciones (cargas, transcripciones, resúmenes)",
+      "performance": "Métricas de rendimiento e informes de errores",
+      "deviceInfo": "Información del dispositivo y navegador"
+    },
+    "whatWeDontCollect": "Lo que NO recopilamos:",
+    "whatWeDontCollectItems": {
+      "audioFiles": "Tus archivos de audio o contenido de transcripción",
+      "personalInfo": "Información personal identificable sin consentimiento",
+      "advertising": "Datos con fines publicitarios"
+    },
+    "changePreference": "Puedes cambiar tu preferencia en cualquier momento en la configuración del panel.",
+    "accept": "Aceptar Analytics",
+    "decline": "Rechazar"
+  },
+  "analyses": {
+    "custom": "Análisis Personalizado",
+    "default": "Análisis Estándar",
+    "copy": "Copiar",
+    "copied": "¡Copiado!"
+  },
+  "actionItemsTable": {
+    "task": "Tarea",
+    "owner": "Responsable",
+    "deadline": "Fecha límite",
+    "timeline": "Cronología",
+    "dependencies": "Dependencias",
+    "unassigned": "No asignado",
+    "noDeadline": "Sin fecha límite",
+    "notSpecified": "No especificado",
+    "none": "Ninguna"
   }
 }

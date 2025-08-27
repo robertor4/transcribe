@@ -173,6 +173,15 @@ class NotificationService {
    * Send notification for completed transcription
    */
   sendTranscriptionComplete(fileName: string, transcriptionId: string, forceNotification: boolean = false): void {
+    console.log('[NotificationService] sendTranscriptionComplete called:', {
+      fileName,
+      transcriptionId,
+      forceNotification,
+      isEnabled: this.isEnabled(),
+      permission: this.isSupported() ? Notification.permission : 'unsupported',
+      hasFocus: document.hasFocus()
+    });
+
     // For testing/debugging, we can force the notification even if page is focused
     if (forceNotification) {
       this.sendNotificationForced({
@@ -183,13 +192,71 @@ class NotificationService {
         requireInteraction: false,
       });
     } else {
-      this.sendNotification({
+      // For transcription completions, always show notification regardless of focus
+      // Users want to be notified when their transcription is done
+      this.sendNotificationAlways({
         title: '✅ Transcription complete!',
         body: `Your transcription for "${fileName}" is ready to view.`,
         tag: `transcription-${transcriptionId}`,
         data: { transcriptionId },
         requireInteraction: false,
       });
+    }
+  }
+
+  /**
+   * Send notification regardless of focus state (for important events like transcription completion)
+   */
+  sendNotificationAlways(options: {
+    title: string;
+    body: string;
+    icon?: string;
+    tag?: string;
+    data?: unknown;
+    requireInteraction?: boolean;
+  }): void {
+    console.log('[NotificationService] sendNotificationAlways called with:', options);
+    
+    if (!this.isEnabled()) {
+      console.log('[NotificationService] Notifications are not enabled');
+      return;
+    }
+
+    try {
+      const notification = new Notification(options.title, {
+        body: options.body,
+        icon: options.icon || '/assets/icons/notification-icon.svg',
+        tag: options.tag,
+        data: options.data,
+        requireInteraction: options.requireInteraction || false,
+      });
+
+      // Handle notification click
+      notification.onclick = (event) => {
+        event.preventDefault();
+        window.focus();
+        notification.close();
+        
+        if (options.data?.transcriptionId) {
+          console.log('[NotificationService] Notification clicked for transcription:', options.data.transcriptionId);
+          // Navigate to the transcription if on dashboard
+          if (window.location.pathname.includes('/dashboard')) {
+            // Could trigger a custom event to select the transcription
+            window.dispatchEvent(new CustomEvent('selectTranscription', { 
+              detail: { transcriptionId: options.data.transcriptionId } 
+            }));
+          }
+        }
+      };
+
+      // Auto-close notification after 10 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 10000);
+      
+      console.log('[NotificationService] Notification sent successfully');
+    } catch (error) {
+      console.error('[NotificationService] Error sending notification:', error);
     }
   }
 
@@ -246,7 +313,15 @@ class NotificationService {
    * Send notification for failed transcription
    */
   sendTranscriptionFailed(fileName: string, transcriptionId: string): void {
-    this.sendNotification({
+    console.log('[NotificationService] sendTranscriptionFailed called:', {
+      fileName,
+      transcriptionId,
+      isEnabled: this.isEnabled(),
+      permission: this.isSupported() ? Notification.permission : 'unsupported'
+    });
+
+    // Always notify for failures regardless of focus
+    this.sendNotificationAlways({
       title: '❌ Transcription failed',
       body: `Failed to transcribe "${fileName}". Please try again.`,
       tag: `transcription-${transcriptionId}`,

@@ -90,6 +90,7 @@
     "resendIn": "Resend in",
     "resendFailed": "Failed to resend email. Please try again.",
     "backToLogin": "Back to login",
+    "backToHome": "Back to home",
     "enterEmailForReset": "Enter your email address to receive a password reset link",
     "sendResetLink": "Send Reset Link",
     "resetLinkSent": "Reset Link Sent!",
@@ -478,6 +479,17 @@
     "copy": "Copy",
     "copied": "Copied!"
   },
+  "actionItemsTable": {
+    "task": "Task",
+    "owner": "Owner",
+    "deadline": "Deadline",
+    "timeline": "Timeline",
+    "dependencies": "Dependencies",
+    "unassigned": "Unassigned",
+    "noDeadline": "No deadline",
+    "notSpecified": "Not specified",
+    "none": "None"
+  },
   "landing": {
     "hero": {
       "byline": "",
@@ -732,7 +744,7 @@
       "acceptance": {
         "title": "Acceptance of Terms",
         "content": "By accessing or using Neural Summary ('Service'), you agree to be bound by these Terms of Use ('Terms'). If you disagree with any part of these terms, you do not have permission to access the Service.",
-        "notice": "These Terms constitute a legally binding agreement between you and [COMPANY_LEGAL_NAME] regarding your use of the Service."
+        "notice": "These Terms constitute a legally binding agreement between you and DreamOne Holding BV regarding your use of the Service."
       },
       "serviceDescription": {
         "title": "Service Description",
@@ -760,7 +772,7 @@
         "title": "Intellectual Property Rights",
         "ownership": {
           "title": "Service Ownership",
-          "content": "The Service and its original content, features, and functionality are owned by [COMPANY_LEGAL_NAME] and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws."
+          "content": "The Service and its original content, features, and functionality are owned by DreamOne Holding BV and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws."
         },
         "userContent": {
           "title": "Your Content",
@@ -791,7 +803,7 @@
         "disclaimer": "THE SERVICE IS PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.",
         "limitations": {
           "title": "Liability Limitations",
-          "content": "To the maximum extent permitted by law, [COMPANY_LEGAL_NAME] shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the Service."
+          "content": "To the maximum extent permitted by law, DreamOne Holding BV shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the Service."
         },
         "maxLiability": "Maximum Liability"
       },
@@ -807,7 +819,7 @@
       },
       "governingLaw": {
         "title": "Governing Law and Jurisdiction",
-        "content": "These Terms shall be governed by and construed in accordance with the laws of [JURISDICTION], without regard to its conflict of law provisions.",
+        "content": "These Terms shall be governed by and construed in accordance with the laws of The Netherlands, without regard to its conflict of law provisions.",
         "jurisdiction": "Jurisdiction",
         "court": "Competent Courts"
       },

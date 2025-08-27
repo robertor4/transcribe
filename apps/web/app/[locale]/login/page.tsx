@@ -1,4 +1,6 @@
 import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
+import { ArrowLeft } from 'lucide-react';
 import LoginForm from '@/components/LoginForm';
 
 export default async function LoginPage({
@@ -31,6 +33,16 @@ export default async function LoginPage({
         </div>
         
         <LoginForm />
+        
+        <div className="mt-4">
+          <Link 
+            href="/landing"
+            className="flex items-center justify-center text-sm text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            {tAuth('backToHome')}
+          </Link>
+        </div>
       </div>
     </div>
   );

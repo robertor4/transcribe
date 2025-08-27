@@ -51,6 +51,7 @@
     "userNotFound": "Benutzer nicht gefunden",
     "tooManyRequests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
     "backToLogin": "Zurück zur Anmeldung",
+    "backToHome": "Zurück zur Startseite",
     "enterEmailForReset": "Geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten",
     "sendResetLink": "Zurücksetzungslink senden",
     "resetLinkSent": "Link gesendet!",
@@ -248,12 +249,7 @@
         "description": "Wir unterstützen M4A, MP3, WAV und andere gängige Formate. Höhere Qualitätsformate liefern bessere Ergebnisse."
       }
     },
-    "recommendedApps": {
-      "title": "Empfohlene Aufnahme-Apps",
-      "ios": "iOS: Sprachmemos, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Empfohlene Apps:",
     "proTips": {
       "title": "Profi-Aufnahmetipps für beste Ergebnisse",
       "audioQuality": "Audioqualität:",
@@ -268,7 +264,6 @@
     "recordingInstructions": "Aufnahmeanweisungen nach Gerät",
     "stepByStep": "Schritt-für-Schritt Anleitung:",
     "quickTips": "Schnelle Tipps:",
-    "recommendedApps": "Empfohlene Apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -286,9 +281,18 @@
           "Verwenden Sie AirPods oder ein externes Mikrofon für bessere Qualität"
         ],
         "apps": [
-          { "name": "Sprachmemos", "description": "Eingebaut, einfach und zuverlässig" },
-          { "name": "Just Press Record", "description": "Cloud-Sync zwischen Apple-Geräten" },
-          { "name": "Recorder", "description": "Einfach und benutzerfreundlich" }
+          {
+            "name": "Sprachmemos",
+            "description": "Eingebaut, einfach und zuverlässig"
+          },
+          {
+            "name": "Just Press Record",
+            "description": "Cloud-Sync zwischen Apple-Geräten"
+          },
+          {
+            "name": "Recorder",
+            "description": "Einfach und benutzerfreundlich"
+          }
         ]
       },
       "android": {
@@ -307,9 +311,18 @@
           "Halten Sie das Gerät während der Aufnahme ruhig"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Einfach und effektiv" },
-          { "name": "Easy Voice Recorder", "description": "Hohe Qualität mit Cloud-Backup" },
-          { "name": "Smart Recorder", "description": "Automatische Geräuschreduzierung" }
+          {
+            "name": "Voice Recorder",
+            "description": "Einfach und effektiv"
+          },
+          {
+            "name": "Easy Voice Recorder",
+            "description": "Hohe Qualität mit Cloud-Backup"
+          },
+          {
+            "name": "Smart Recorder",
+            "description": "Automatische Geräuschreduzierung"
+          }
         ]
       },
       "mac": {
@@ -328,9 +341,18 @@
           "Nehmen Sie in einem Raum mit weichen Möbeln auf, um Echo zu reduzieren"
         ],
         "apps": [
-          { "name": "QuickTime Player", "description": "Eingebaut und zuverlässig" },
-          { "name": "Audacity", "description": "Kostenlose, professionelle Audiobearbeitung" },
-          { "name": "GarageBand", "description": "Erweiterte Funktionen für Musik und Podcasting" }
+          {
+            "name": "QuickTime Player",
+            "description": "Eingebaut und zuverlässig"
+          },
+          {
+            "name": "Audacity",
+            "description": "Kostenlose, professionelle Audiobearbeitung"
+          },
+          {
+            "name": "GarageBand",
+            "description": "Erweiterte Funktionen für Musik und Podcasting"
+          }
         ]
       },
       "windows": {
@@ -349,9 +371,18 @@
           "Positionieren Sie das Mikrofon weg von Tastatur und Maus"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Eingebaute Windows-App" },
-          { "name": "Audacity", "description": "Kostenloser, plattformübergreifender Audio-Editor" },
-          { "name": "OBS Studio", "description": "Erweiterte Aufnahme mit mehreren Quellen" }
+          {
+            "name": "Voice Recorder",
+            "description": "Eingebaute Windows-App"
+          },
+          {
+            "name": "Audacity",
+            "description": "Kostenloser, plattformübergreifender Audio-Editor"
+          },
+          {
+            "name": "OBS Studio",
+            "description": "Erweiterte Aufnahme mit mehreren Quellen"
+          }
         ]
       }
     },
@@ -587,7 +618,7 @@
       "acceptance": {
         "title": "Annahme der Bedingungen",
         "content": "Durch den Zugriff auf oder die Nutzung von Neural Summary ('Service') erklären Sie sich damit einverstanden, an diese Nutzungsbedingungen ('Bedingungen') gebunden zu sein. Wenn Sie mit einem Teil dieser Bedingungen nicht einverstanden sind, haben Sie keine Berechtigung, auf den Service zuzugreifen.",
-        "notice": "Diese Bedingungen stellen eine rechtlich bindende Vereinbarung zwischen Ihnen und [COMPANY_LEGAL_NAME] bezüglich Ihrer Nutzung des Service dar."
+        "notice": "Diese Bedingungen stellen eine rechtlich bindende Vereinbarung zwischen Ihnen und DreamOne Holding BV bezüglich Ihrer Nutzung des Service dar."
       },
       "serviceDescription": {
         "title": "Servicebeschreibung",
@@ -615,7 +646,7 @@
         "title": "Rechte des geistigen Eigentums",
         "ownership": {
           "title": "Service-Eigentum",
-          "content": "Der Service und seine ursprünglichen Inhalte, Funktionen und Funktionalitäten sind Eigentum von [COMPANY_LEGAL_NAME] und sind durch internationale Urheberrechts-, Marken-, Patent-, Geschäftsgeheimnis- und andere Gesetze zum geistigen Eigentum geschützt."
+          "content": "Der Service und seine ursprünglichen Inhalte, Funktionen und Funktionalitäten sind Eigentum von DreamOne Holding BV und sind durch internationale Urheberrechts-, Marken-, Patent-, Geschäftsgeheimnis- und andere Gesetze zum geistigen Eigentum geschützt."
         },
         "userContent": {
           "title": "Ihr Inhalt",
@@ -646,7 +677,7 @@
         "disclaimer": "DER SERVICE WIRD 'WIE BESEHEN' OHNE GARANTIEN JEDER ART, WEDER AUSDRÜCKLICH NOCH STILLSCHWEIGEND, BEREITGESTELLT.",
         "limitations": {
           "title": "Haftungsbeschränkungen",
-          "content": "Soweit nach geltendem Recht zulässig, haftet [COMPANY_LEGAL_NAME] nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die aus Ihrer Nutzung oder Unfähigkeit zur Nutzung des Service resultieren."
+          "content": "Soweit nach geltendem Recht zulässig, haftet DreamOne Holding BV nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden, die aus Ihrer Nutzung oder Unfähigkeit zur Nutzung des Service resultieren."
         },
         "maxLiability": "Maximale Haftung"
       },
@@ -662,7 +693,7 @@
       },
       "governingLaw": {
         "title": "Geltendes Recht und Gerichtsstand",
-        "content": "Diese Bedingungen unterliegen den Gesetzen von [JURISDICTION] und werden in Übereinstimmung mit diesen ausgelegt, ohne Berücksichtigung ihrer Kollisionsnormen.",
+        "content": "Diese Bedingungen unterliegen den Gesetzen von The Netherlands und werden in Übereinstimmung mit diesen ausgelegt, ohne Berücksichtigung ihrer Kollisionsnormen.",
         "jurisdiction": "Gerichtsstand",
         "court": "Zuständige Gerichte"
       },
@@ -894,5 +925,115 @@
         "notification": "Bei wesentlichen Änderungen werden wir Sie per E-Mail oder durch einen prominenten Hinweis auf unserem Service benachrichtigen."
       }
     }
+  },
+  "share": {
+    "title": "Transkript Teilen",
+    "shareSettings": "Sicherheitseinstellungen",
+    "contentSelection": "Inhalt zum Teilen auswählen",
+    "summaryOnly": "Nur Zusammenfassung",
+    "summaryTranscript": "Zusammenfassung + Transkript",
+    "completeAnalysis": "Vollständige Analyse",
+    "customSelection": "Benutzerdefiniert",
+    "includeTranscript": "Vollständiges Transkript",
+    "includeSummary": "Zusammenfassung",
+    "includeCommunication": "Kommunikationsstile",
+    "includeActionItems": "Aktionspunkte",
+    "includeEmotionalIQ": "Emotionale Intelligenz",
+    "includeInfluence": "Einfluss & Überzeugung",
+    "includeDevelopment": "Persönliche Entwicklung",
+    "includeSpeakerInfo": "Sprecherinformationen",
+    "sharedContent": "Geteilter Inhalt",
+    "noContentSelected": "Kein Inhalt ausgewählt",
+    "itemsSelected": "Elemente ausgewählt",
+    "expiration": "Link-Ablauf",
+    "24hours": "24 Stunden",
+    "7days": "7 Tage",
+    "never": "Nie",
+    "passwordProtect": "Passwortschutz",
+    "enterPassword": "Passwort eingeben",
+    "createLink": "Freigabelink erstellen",
+    "creating": "Erstellen...",
+    "linkCreated": "Freigabelink erstellt",
+    "currentSettings": "Aktuelle Einstellungen",
+    "updateSettings": "Einstellungen aktualisieren",
+    "updateSettingsInfo": "Sie können jederzeit ändern, welche Inhalte geteilt werden und die Sicherheitseinstellungen anpassen.",
+    "updateShareSettings": "Freigabeeinstellungen aktualisieren",
+    "updating": "Aktualisieren...",
+    "qrCode": "QR-Code",
+    "sendEmail": "E-Mail senden",
+    "revoke": "Widerrufen",
+    "linkCopied": "Link in Zwischenablage kopiert!",
+    "sendViaEmail": "Per E-Mail senden",
+    "enterEmailAddresses": "E-Mail-Adressen eingeben (Enter oder Komma zum Hinzufügen)",
+    "addAnotherEmail": "Weitere E-Mail-Adresse hinzufügen",
+    "emailHelpText": "Drücken Sie Enter, Komma oder Leertaste, um mehrere E-Mail-Adressen hinzuzufügen",
+    "sending": "Senden...",
+    "sendEmails": "E-Mails senden",
+    "emailsSent": "E-Mails gesendet!",
+    "emailsSentSuccess": "E-Mails erfolgreich gesendet! Empfänger erhalten den Freigabelink in Kürze.",
+    "viewCount": "Aufrufe",
+    "expiresOn": "Läuft ab",
+    "passwordProtected": "Passwortgeschützt",
+    "scanQR": "QR-Code scannen zum Teilen",
+    "confirmRevoke": "Sind Sie sicher, dass Sie diesen Freigabelink widerrufen möchten? Personen mit dem Link können nicht mehr auf dieses Transkript zugreifen."
+  },
+  "shared": {
+    "title": "Geteiltes Transkript",
+    "loadingTranscript": "Transkript wird geladen...",
+    "enterPassword": "Passwort eingeben",
+    "passwordRequired": "Dieses Transkript ist passwortgeschützt.",
+    "password": "Passwort",
+    "submit": "Absenden",
+    "invalidPassword": "Ungültiges Passwort",
+    "transcriptNotFound": "Transkript nicht gefunden",
+    "transcriptExpired": "Dieser Freigabelink ist abgelaufen",
+    "transcriptRevoked": "Dieser Freigabelink wurde widerrufen",
+    "errorLoading": "Fehler beim Laden des Transkripts",
+    "sharedBy": "Geteilt von",
+    "sharedOn": "Geteilt am",
+    "downloadTranscript": "Transkript herunterladen",
+    "playRecording": "Aufnahme abspielen",
+    "backToTop": "Zurück nach oben",
+    "noAnalysisAvailable": "Keine Analyse verfügbar",
+    "noTranscriptAvailable": "Kein Transkript verfügbar"
+  },
+  "cookieConsent": {
+    "title": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern",
+    "subtitle": "Helfen Sie uns, Neural Summary zu verbessern, indem Sie Analytics erlauben",
+    "description": "Wir verwenden Firebase Analytics, um zu verstehen, wie Sie unsere App nutzen und Ihre Erfahrung zu verbessern. Dies umfasst das Tracking von Seitenaufrufen, Funktionsnutzung und Leistungsmessungen. Ihre Daten werden niemals an Dritte verkauft.",
+    "learnMore": "Mehr über unsere Datenschutzpraktiken erfahren",
+    "whatWeCollect": "Was wir sammeln:",
+    "whatWeCollectItems": {
+      "pageViews": "Seitenaufrufe und Navigationsmuster",
+      "featureUsage": "Funktionsnutzung (Uploads, Transkriptionen, Zusammenfassungen)",
+      "performance": "Leistungsmessungen und Fehlerberichte",
+      "deviceInfo": "Geräte- und Browserinformationen"
+    },
+    "whatWeDontCollect": "Was wir NICHT sammeln:",
+    "whatWeDontCollectItems": {
+      "audioFiles": "Ihre Audiodateien oder Transkriptionsinhalte",
+      "personalInfo": "Persönlich identifizierbare Informationen ohne Zustimmung",
+      "advertising": "Daten für Werbezwecke"
+    },
+    "changePreference": "Sie können Ihre Präferenz jederzeit in den Dashboard-Einstellungen ändern.",
+    "accept": "Analytics akzeptieren",
+    "decline": "Ablehnen"
+  },
+  "analyses": {
+    "custom": "Benutzerdefinierte Analyse",
+    "default": "Standardanalyse",
+    "copy": "Kopieren",
+    "copied": "Kopiert!"
+  },
+  "actionItemsTable": {
+    "task": "Aufgabe",
+    "owner": "Verantwortlich",
+    "deadline": "Frist",
+    "timeline": "Zeitrahmen",
+    "dependencies": "Abhängigkeiten",
+    "unassigned": "Nicht zugewiesen",
+    "noDeadline": "Keine Frist",
+    "notSpecified": "Nicht spezifiziert",
+    "none": "Keine"
   }
 }

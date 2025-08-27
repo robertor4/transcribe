@@ -10,74 +10,75 @@ const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and pr
 
 Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
-Create sections for:
-- Key discussion points (main points with brief explanations)
-- Conversation summary (pyramid principle: conclusion first, then supporting arguments, evidence, context)
-- Decisions made (if any - concrete agreements reached)
-- Key action items (if any - what, who, when)
-- Important details (if any - dates, tools, dependencies)
-- Next steps (if any - immediate plans and future actions)
+## Key discussion points
+List the main topics as bullet points with brief descriptions (one line each).
+
+## Detailed discussion
+For EACH key discussion point listed above, write a dedicated paragraph that:
+- Provides specific examples and details from the conversation
+- Includes relevant quotes or specific statements when impactful
+- Explains what was proposed, debated, or explored
+- Shows how participants approached or resolved the topic
+- Uses concrete details (numbers, names, technical terms) mentioned in the conversation
+
+Each paragraph should be substantial (3-5 sentences) and give readers a clear understanding of what was actually said, not just what was discussed.
+
+## Decisions made
+Only include this section if concrete decisions were reached. List specific agreements or conclusions.
+
+## Next steps
+Only include if there are forward-looking elements that aren't captured as action items. Focus on strategic direction or future considerations.
 
 Note: Use natural section headings appropriate for the language of the transcript.
 
-Key points of guidance for a good conversation summary:
-- Start with the core tension or discovery - What central question, problem, or insight drove the conversation, giving it narrative direction beyond just topic coverage.
-- Include concrete specifics - Use precise details, numbers, examples, and outcomes rather than generic descriptions to make the summary memorable and actionable.
-- Show the thinking journey - Capture how ideas evolved, shifted, or built upon each other during the discussion, not just the final conclusions.
-- Preserve distinctive elements - Keep unique language, frameworks, metaphors, or terminology that characterized how participants actually talked about the issues.
-- Highlight what remains open - Note unresolved questions and follow-up needs to make the summary forward-looking and useful for next steps.
-- Use precise, active language - Choose specific verbs that capture what actually happened rather than generic terms like "discussed" or "covered."
-- The goal is creating a summary that reads like the compelling opening of an article about that conversation - one that orients someone to why this particular exchange was worth having and what made it unique.`;
+Key guidance for the detailed discussion section:
+- Be specific rather than generic - mention actual examples, tools, or solutions discussed
+- Capture the nuance of different viewpoints if there were disagreements
+- Include technical details, metrics, or specifications that were mentioned
+- Show the evolution of thinking if ideas developed during the conversation
+- Use the participants' actual terminology and frameworks
+- Make each paragraph self-contained so readers understand that specific topic fully`;
 
 // Communication Styles Analysis Prompt
 const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
 
 # Communication effectiveness score: X/10
 
-Provide a comprehensive explanation of the score, including the primary communication strengths and weaknesses observed in this conversation. Wrap this explanation paragraph in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
+Provide a 2-3 sentence explanation of the score, highlighting the most important strength and weakness. Wrap this brief explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
-## Clarity & structure analysis
+IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Clarity & structure analysis", write something like "Ideas were clearly expressed but conversation lacked logical flow" or "Well-structured discussion with occasional unclear explanations". Make headers scannable insights that readers can understand without reading the details.
 
-Message clarity: Were ideas expressed clearly and unambiguously?
-Logical flow: Did the conversation follow a coherent structure?
-Information density: Was the right amount of detail provided without overwhelming or under-informing?
+## [Key takeaway about clarity & structure - e.g., "Messages were clear and followed a logical progression"]
 
-## Listening & engagement patterns
+Analyze: Message clarity, logical flow, and information density. Was the conversation easy to follow? Did participants provide appropriate detail levels?
 
-Active listening indicators: Evidence of participants building on each other's ideas, asking clarifying questions, or acknowledging understanding
-Interruption/overlap patterns: How well did participants manage turn-taking?
-Engagement balance: Did all parties contribute meaningfully, or was it dominated by certain voices?
+## [Key takeaway about listening & engagement - e.g., "Active listening evident with balanced participation"]
 
-## Questioning & discovery effectiveness
+Analyze: How well did participants build on each other's ideas? Were there interruptions or good turn-taking? Did everyone contribute meaningfully?
 
-Quality of questions asked: Were they open-ended, probing, or clarifying when appropriate?
-Information extraction: How effectively did participants draw out relevant details?
-Assumption checking: Did participants verify understanding rather than making assumptions?
+## [Key takeaway about questioning - e.g., "Strategic questions uncovered valuable insights"]
 
-## Emotional intelligence & tone
+Analyze: Were questions open-ended and probing? How effectively did participants extract information and verify understanding?
 
-Tone appropriateness: Was the communication style suitable for the context and relationships?
-Conflict navigation: How were disagreements or tensions handled?
-Empathy and perspective-taking: Evidence of understanding others' viewpoints
+## [Key takeaway about tone & emotional dynamics - e.g., "Professional tone maintained despite disagreements"]
 
-## Decision-making & closure
+Analyze: Was the tone appropriate? How were conflicts handled? Did participants show empathy and understanding?
 
-Path to resolution: How efficiently did the conversation move toward conclusions?
-Consensus building: Were decisions made collaboratively with buy-in?
-Action clarity: Were next steps and responsibilities clearly established?
+## [Key takeaway about decisions & outcomes - e.g., "Clear decisions reached with defined next steps"]
 
-## Top 3 communication improvements
-Provide specific, actionable recommendations that would most improve future conversations, such as:
+Analyze: How efficiently did the conversation reach conclusions? Were decisions collaborative? Were action items clear?
 
-Process improvements (e.g., "Start with agenda setting")
-Behavioral changes (e.g., "Use more open-ended questions")
-Structural modifications (e.g., "Summarize key points before moving to next topic")
+## Top 3 communication improvements needed
+Provide specific, actionable recommendations that would most improve future conversations:
+1. [Specific improvement]
+2. [Specific improvement]  
+3. [Specific improvement]
 
-## Communication strengths to maintain
-Identify 2-3 effective communication behaviors demonstrated that should be continued.
+## Key strengths to maintain
+Identify 2-3 effective communication behaviors that should continue.
 
-## Context considerations
-Note any factors (time pressure, relationship dynamics, complexity of topic) that may have influenced communication effectiveness and should be considered when applying improvements.
+## Context factors affecting communication
+Note any circumstances (time pressure, relationships, complexity) that influenced the conversation.
 
 Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -87,25 +88,39 @@ const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this con
 
 # Action items overview
 
-Provide a comprehensive overview of all action items and deliverables identified in this conversation, organized by timeline. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+Provide a comprehensive overview of all action items and deliverables identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
-## Short-term actions
-## Mid-term actions
-## Long-term actions
+## Action items
 
-Only add sections with items. Leave out the sections that don't contain items.
+List all action items as a numbered list with the following format:
 
-For each action item include: Task description | Owner | Deadline | Dependencies (if any).
+1. Task description | Owner | Deadline | Timeline | Dependencies
+2. Task description | Owner | Deadline | Timeline | Dependencies
+
+CRITICAL FORMATTING RULES:
+- Only provide the VALUES themselves, never include field labels
+- CORRECT: "Review document | John Smith | 2024-03-01 | Short-term | None"
+- WRONG: "Review document | Owner: John Smith | Deadline: 2024-03-01 | Timeline: Short-term | Dependencies: None"
+- WRONG: "Review document | Eigenaar: John Smith | Deadline: 2024-03-01 | Tijdlijn: Short-term | Afhankelijkheden: None"
+
+Timeline should be: Short-term, Mid-term, or Long-term (always use these English terms for consistency)
 
 Requirements:
-- Start items with action verbs
+- Use numbered list (1., 2., 3., etc.)
+- Start task descriptions with action verbs
 - Be specific about deliverables
 - Include success criteria where mentioned
-- Flag unclear items as [NEEDS CLARIFICATION]
-- Mark critical path items with (CRITICAL) in the item line
+- Flag unclear items with [NEEDS CLARIFICATION] ONLY in the task description field, never in other fields
+- Mark critical path items with (CRITICAL) in the task description field only
+- For missing deadlines, leave empty or write "TBD" - do NOT use [NEEDS CLARIFICATION] in the deadline field
 - Note if deadlines are firm vs. targets
+- For dependencies, write "None" if there are no dependencies
+- Timeline classification:
+  * Short-term: Within 1-2 weeks
+  * Mid-term: Within 1-3 months
+  * Long-term: Beyond 3 months
 - Identify risks (unrealistic timelines, resource gaps)
-- Include follow-ups, decision dependencies, and recurring commitments within the appropriate time horizon category
+- Do NOT add field labels like "Owner:", "Deadline:", etc. in any language
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -115,25 +130,27 @@ const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence
 
 # Emotional intelligence analysis
 
-Provide a comprehensive overview of the emotional dynamics and interpersonal effectiveness demonstrated in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+Provide a 2-3 sentence explanation of the emotional dynamics, highlighting the most significant interpersonal strength and area for improvement. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
-## Emotional tone
-Analyze climate, shifts, and stress indicators
+IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Emotional tone", write something like "Positive atmosphere maintained despite challenging topics" or "Tension escalated when discussing deadlines". Make headers scannable insights that readers can understand without reading the details.
 
-## Empathy and understanding
-Examine empathetic responses and active listening
+## [Key takeaway about emotional tone - e.g., "Collaborative atmosphere with occasional stress during technical discussions"]
+Analyze climate, shifts, and stress indicators. What was the overall emotional temperature? How did it change throughout the conversation?
 
-## Conflict handling
-Assess disagreements, resolution strategies, and effectiveness
+## [Key takeaway about empathy - e.g., "Strong empathetic responses built trust between participants"]
+Examine empathetic responses and active listening. Did participants validate each other's feelings? Were emotions acknowledged appropriately?
 
-## Emotional regulation
-Evaluate self-control, reactions, and stress management
+## [Key takeaway about conflict - e.g., "Disagreements resolved constructively through compromise"]
+Assess disagreements, resolution strategies, and effectiveness. How were tensions handled? Were conflicts productive or destructive?
 
-## Relationship building
-Analyze rapport, trust, and collaboration
+## [Key takeaway about emotional regulation - e.g., "Participants maintained composure under pressure"]
+Evaluate self-control, reactions, and stress management. Did anyone lose their temper? How were frustrations expressed?
 
-## Recommendations
-Provide areas for development, engagement strategies, and team dynamics insights
+## [Key takeaway about relationships - e.g., "Trust strengthened through open communication"]
+Analyze rapport, trust, and collaboration. Did the conversation strengthen or weaken relationships?
+
+## Recommendations for emotional intelligence development
+Provide specific areas for improvement, engagement strategies, and team dynamics insights
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -143,25 +160,27 @@ const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion tec
 
 # Influence and persuasion analysis
 
-Provide a comprehensive overview of the key influence dynamics and persuasion strategies employed in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+Provide a 2-3 sentence explanation of the influence dynamics, highlighting the most effective persuasion technique used and the key missed opportunity. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
-## Persuasion techniques
-Analyze logical arguments, emotional appeals, credibility, and social proof
+IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Persuasion techniques", write something like "Data-driven arguments proved most convincing" or "Emotional appeals fell flat with technical audience". Make headers scannable insights that readers can understand without reading the details.
 
-## Argumentation patterns
-Examine claim-evidence structures, counter-arguments, and rebuttals
+## [Key takeaway about persuasion techniques - e.g., "Logic and evidence dominated over emotional appeals"]
+Analyze logical arguments, emotional appeals, credibility, and social proof. Which approaches resonated most? What fell flat?
 
-## Influence dynamics
-Identify who influenced whom, successful moments, and resistance
+## [Key takeaway about argumentation - e.g., "Strong evidence backing but weak counter-argument handling"]
+Examine claim-evidence structures, counter-arguments, and rebuttals. How well-structured were the arguments?
 
-## Negotiation elements
-Assess positions, compromises, and win-win solutions
+## [Key takeaway about influence flow - e.g., "Senior stakeholder's opinion shifted group consensus"]
+Identify who influenced whom, successful moments, and resistance. Who had the most sway? Where did influence attempts fail?
 
-## Decision-making influence
-Analyze how decisions were shaped, key factors, and consensus building
+## [Key takeaway about negotiation - e.g., "Compromise reached through incremental concessions"]
+Assess positions, compromises, and win-win solutions. Were there clear winners/losers or mutual benefit?
 
-## Effectiveness assessment
-Evaluate successful techniques, missed opportunities, and improvements
+## [Key takeaway about decision shaping - e.g., "Risk concerns ultimately drove the final decision"]
+Analyze how decisions were shaped, key factors, and consensus building. What tipped the scales?
+
+## Effectiveness assessment and improvements
+Evaluate successful techniques, missed opportunities, and specific recommendations for future influence attempts
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
@@ -171,25 +190,27 @@ const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insight
 
 # Personal development insights
 
-Provide a comprehensive overview of the key growth opportunities and development areas identified in this conversation. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
+Provide a 2-3 sentence explanation of the development opportunities, highlighting the most significant strength demonstrated and the primary growth area identified. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
-## Strengths demonstrated
-Analyze communication, leadership, technical expertise, and collaboration
+IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Strengths demonstrated", write something like "Strong technical expertise evident in problem-solving approach" or "Natural leadership emerged during crisis discussion". Make headers scannable insights that readers can understand without reading the details.
 
-## Areas for improvement
-Identify knowledge gaps and skills to develop
+## [Key takeaway about strengths - e.g., "Clear communication and strategic thinking drove productive outcomes"]
+Analyze communication, leadership, technical expertise, and collaboration. What capabilities stood out? How were they applied?
 
-## Learning opportunities
-Highlight topics to explore and skills to acquire
+## [Key takeaway about improvement areas - e.g., "Delegation skills need development to prevent bottlenecks"]
+Identify knowledge gaps and skills to develop. What specific weaknesses emerged? Where did limitations show?
 
-## Recommended training/development
-Suggest courses, resources, and mentoring opportunities
+## [Key takeaway about learning needs - e.g., "Project management methodology would enhance execution"]
+Highlight topics to explore and skills to acquire. What knowledge would have helped? What skills gaps were evident?
 
-## Professional growth strategies
-Outline short-term goals and long-term career plans
+## Recommended training and development resources
+Suggest specific courses, resources, and mentoring opportunities based on observed needs
 
-## Behavioral patterns
-Examine limiting behaviors, opportunities for change, and positive patterns
+## [Key takeaway about growth strategy - e.g., "Focus on stakeholder management for next career level"]
+Outline short-term goals and long-term career development paths based on demonstrated capabilities and gaps
+
+## [Key takeaway about behaviors - e.g., "Interrupting pattern limiting team collaboration"]
+Examine limiting behaviors, opportunities for change, and positive patterns to reinforce
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;

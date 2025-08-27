@@ -64,8 +64,8 @@ export default async function PrivacyPage({
     name: t('title'),
     text: t('meta.description'),
     url: `https://neuralsummary.com/${locale}/privacy`,
-    datePublished: '2024-01-01',
-    dateModified: '[LAST_UPDATED_DATE]',
+    datePublished: '2025-08-01',
+    dateModified: '2025-08-27',
     publisher: {
       '@type': 'Organization',
       name: 'Neural Summary',
@@ -122,7 +122,7 @@ export default async function PrivacyPage({
                 <Shield className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('title')}</h1>
-              <p className="text-sm text-gray-600">{t('effectiveDate')}: <strong>[LAST_UPDATED_DATE]</strong></p>
+              <p className="text-sm text-gray-600">{t('effectiveDate')}: <strong>25 August 2025</strong></p>
               <div className="mt-3 inline-flex items-center px-3 py-1.5 bg-green-100 text-green-800 rounded-full">
                 <Shield className="h-3 w-3 mr-1.5" />
                 <span className="text-xs font-medium">{t('gdprCompliant')}</span>
@@ -164,11 +164,10 @@ export default async function PrivacyPage({
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataController.content')}</p>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-sm text-gray-700">
-                    <strong>{t('sections.dataController.company')}:</strong> [COMPANY_LEGAL_NAME]<br />
-                    <strong>{t('sections.dataController.registration')}:</strong> [COMPANY_REGISTRATION_NUMBER]<br />
-                    <strong>{t('sections.dataController.address')}:</strong> [COMPANY_ADDRESS]<br />
-                    <strong>{t('sections.dataController.email')}:</strong> privacy@neuralsummary.com<br />
-                    <strong>{t('sections.dataController.dpo')}:</strong> [DPO_EMAIL]
+                    <strong>{t('sections.dataController.company')}:</strong> DreamOne Holding BV<br />
+                    <strong>{t('sections.dataController.registration')}:</strong> 88073955<br />
+                    <strong>{t('sections.dataController.email')}:</strong> info@neuralsummary.com<br />
+                    <strong>{t('sections.dataController.dpo')}:</strong> admin@neuralsummary.com
                   </p>
                 </div>
               </section>
@@ -290,11 +289,11 @@ export default async function PrivacyPage({
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="text-base font-semibold text-gray-800 mb-2">{t('sections.dataRetention.periods.title')}</h3>
                   <ul className="space-y-1 text-sm text-gray-700">
-                    <li><strong>{t('sections.dataRetention.periods.account')}:</strong> [RETENTION_PERIOD_ACCOUNT]</li>
-                    <li><strong>{t('sections.dataRetention.periods.transcriptions')}:</strong> [RETENTION_PERIOD_TRANSCRIPTIONS]</li>
-                    <li><strong>{t('sections.dataRetention.periods.audioFiles')}:</strong> [RETENTION_PERIOD_AUDIO]</li>
-                    <li><strong>{t('sections.dataRetention.periods.logs')}:</strong> [RETENTION_PERIOD_LOGS]</li>
-                    <li><strong>{t('sections.dataRetention.periods.analytics')}:</strong> [RETENTION_PERIOD_ANALYTICS]</li>
+                    <li><strong>{t('sections.dataRetention.periods.account')}:</strong> Until 12 months after account deletion</li>
+                    <li><strong>{t('sections.dataRetention.periods.transcriptions')}:</strong> Keep until deleted</li>
+                    <li><strong>{t('sections.dataRetention.periods.audioFiles')}:</strong> Raw uploads are deleted right after processing</li>
+                    <li><strong>{t('sections.dataRetention.periods.logs')}:</strong> 1 year for audit/security purposes</li>
+                    <li><strong>{t('sections.dataRetention.periods.analytics')}:</strong> 12 months</li>
                   </ul>
                 </div>
               </section>
@@ -441,9 +440,7 @@ export default async function PrivacyPage({
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="text-base font-semibold text-gray-800 mb-2">{t('sections.contact.dpo.title')}</h3>
                   <p className="text-sm text-gray-700">
-                    <strong>{t('sections.contact.dpo.email')}:</strong> [DPO_EMAIL]<br />
-                    <strong>{t('sections.contact.dpo.phone')}:</strong> [DPO_PHONE]<br />
-                    <strong>{t('sections.contact.dpo.address')}:</strong> [DPO_ADDRESS]
+                    <strong>{t('sections.contact.dpo.email')}:</strong> admin@neuralsummary.com<br />
                   </p>
                 </div>
 
@@ -451,8 +448,8 @@ export default async function PrivacyPage({
                   <h3 className="text-base font-semibold text-gray-800 mb-2">{t('sections.contact.supervisory.title')}</h3>
                   <p className="text-sm text-gray-700 mb-1">{t('sections.contact.supervisory.content')}</p>
                   <p className="text-sm text-gray-700">
-                    <strong>{t('sections.contact.supervisory.authority')}:</strong> [SUPERVISORY_AUTHORITY]<br />
-                    <strong>{t('sections.contact.supervisory.website')}:</strong> [SUPERVISORY_WEBSITE]
+                    <strong>{t('sections.contact.supervisory.authority')}:</strong> Netherlands – Autoriteit Persoonsgegevens (AP)<br />
+                    <strong>{t('sections.contact.supervisory.website')}:</strong> https://www.autoriteitpersoonsgegevens.nl/en
                   </p>
                 </div>
               </section>

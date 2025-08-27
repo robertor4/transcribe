@@ -261,6 +261,13 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     description: 'Comprehensive overview with key topics and decisions'
   },
   {
+    key: 'actionItems',
+    label: 'Action Items',
+    icon: 'ListChecks',
+    color: 'green',
+    description: 'Tasks, deadlines, and follow-ups'
+  },
+  {
     key: 'transcript',
     label: 'Full Transcript',
     icon: 'FileText',
@@ -273,13 +280,6 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     icon: 'Users',
     color: 'purple',
     description: 'Speaking patterns and interaction dynamics'
-  },
-  {
-    key: 'actionItems',
-    label: 'Action Items',
-    icon: 'ListChecks',
-    color: 'green',
-    description: 'Tasks, deadlines, and follow-ups'
   },
   {
     key: 'emotionalIntelligence',

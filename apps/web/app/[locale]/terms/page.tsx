@@ -49,8 +49,8 @@ export default async function TermsPage({
     name: t('title'),
     text: t('meta.description'),
     url: `https://neuralsummary.com/${locale}/terms`,
-    datePublished: '2024-01-01',
-    dateModified: '[LAST_UPDATED_DATE]',
+    datePublished: '2025-08-10',
+    dateModified: '2025-08-27',
     publisher: {
       '@type': 'Organization',
       name: 'Neural Summary',
@@ -107,7 +107,7 @@ export default async function TermsPage({
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('title')}</h1>
-              <p className="text-sm text-gray-600">{t('effectiveDate')}: <strong>[LAST_UPDATED_DATE]</strong></p>
+              <p className="text-sm text-gray-600">{t('effectiveDate')}: <strong>27 August 2025</strong></p>
             </div>
 
             {/* Table of Contents */}
@@ -208,7 +208,7 @@ export default async function TermsPage({
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('sections.liability.limitations.title')}</h3>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.liability.limitations.content')}</p>
                 <div className="bg-gray-50 border-l-4 border-gray-400 p-3 mb-3">
-                  <p className="text-sm text-gray-700 font-semibold">{t('sections.liability.maxLiability')}: [MAX_LIABILITY_AMOUNT]</p>
+                  <p className="text-sm text-gray-700 font-semibold">{t('sections.liability.maxLiability')}: €10,000</p>
                 </div>
               </section>
 
@@ -230,8 +230,8 @@ export default async function TermsPage({
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.governingLaw.content')}</p>
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3">
                   <p className="text-sm text-gray-700">
-                    <strong>{t('sections.governingLaw.jurisdiction')}:</strong> [JURISDICTION]<br />
-                    <strong>{t('sections.governingLaw.court')}:</strong> [COURT_JURISDICTION]
+                    <strong>{t('sections.governingLaw.jurisdiction')}:</strong> The Netherlands<br />
+                    <strong>{t('sections.governingLaw.court')}:</strong> Courts of Amsterdam, The Netherlands
                   </p>
                 </div>
               </section>
@@ -245,11 +245,11 @@ export default async function TermsPage({
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.contact.content')}</p>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-sm text-gray-700">
-                    <strong>{t('sections.contact.company')}:</strong> [COMPANY_LEGAL_NAME]<br />
-                    <strong>{t('sections.contact.registration')}:</strong> [COMPANY_REGISTRATION_NUMBER]<br />
-                    <strong>{t('sections.contact.address')}:</strong> [COMPANY_ADDRESS]<br />
-                    <strong>{t('sections.contact.email')}:</strong> legal@neuralsummary.com<br />
-                    <strong>{t('sections.contact.dpo')}:</strong> [DPO_EMAIL]
+                    <strong>{t('sections.contact.company')}:</strong> DreamOne Holding BV<br />
+                    <strong>{t('sections.contact.registration')}:</strong> 88073955<br />
+                    <strong>{t('sections.contact.address')}:</strong> Amsterdam, The Netherlands<br />
+                    <strong>{t('sections.contact.email')}:</strong> info@neuralsummary.com<br />
+                    <strong>{t('sections.contact.dpo')}:</strong> admin@neuralsummary.com
                   </p>
                 </div>
               </section>

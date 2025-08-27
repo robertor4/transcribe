@@ -47,33 +47,68 @@ export default function DashboardPage() {
             router.push('/verify-email');
             return;
           }
-        } catch {
-          // Error reloading user
+          
+          // Connect WebSocket service when user is authenticated and verified
+          console.log('[Dashboard] Connecting WebSocket service...');
+          await websocketService.connect();
+          console.log('[Dashboard] WebSocket service connected');
+        } catch (error) {
+          console.error('[Dashboard] Error during auth check or WebSocket connection:', error);
         }
       }
     };
     
     checkAuthState();
+    
+    // Cleanup: disconnect WebSocket when component unmounts
+    return () => {
+      console.log('[Dashboard] Disconnecting WebSocket service...');
+      websocketService.disconnect();
+    };
   }, [user, loading, router]);
+
+  // Load file name mappings from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('active_transcriptions');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setActiveTranscriptions(new Map(Object.entries(parsed)));
+        console.log('[Dashboard] Restored active transcriptions from localStorage:', parsed);
+      } catch (error) {
+        console.error('[Dashboard] Error parsing stored transcriptions:', error);
+      }
+    }
+  }, []);
+
+  // Save file name mappings to localStorage whenever they change
+  useEffect(() => {
+    const mapObject = Object.fromEntries(activeTranscriptions);
+    localStorage.setItem('active_transcriptions', JSON.stringify(mapObject));
+    console.log('[Dashboard] Saved active transcriptions to localStorage:', mapObject);
+  }, [activeTranscriptions]);
 
   useEffect(() => {
     // Listen for transcription completion to refresh the list
     const unsubscribe = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       (progress: unknown) => {
+        console.log('[Dashboard] Received TRANSCRIPTION_COMPLETED event:', progress);
         const typedProgress = progress as TranscriptionProgress;
         setRefreshKey(prev => prev + 1);
         
         // Get the file name from our stored map
         const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
+        console.log('[Dashboard] File name for transcription:', fileName);
         
         // Send browser notification if enabled
         if (typedProgress.status === 'completed') {
-          // Force notification for testing (third parameter = true)
+          console.log('[Dashboard] Sending completion notification for:', fileName);
+          // Don't force notification - let the service handle focus detection properly
           notificationService.sendTranscriptionComplete(
             fileName,
             typedProgress.transcriptionId,
-            true // Force notification even if tab is focused
+            false // Normal behavior - only notify when tab is not focused
           );
           // Clean up the stored file name
           setActiveTranscriptions(prev => {
@@ -82,6 +117,7 @@ export default function DashboardPage() {
             return newMap;
           });
         } else if (typedProgress.status === 'failed') {
+          console.log('[Dashboard] Sending failure notification for:', fileName);
           notificationService.sendTranscriptionFailed(
             fileName,
             typedProgress.transcriptionId
@@ -96,7 +132,32 @@ export default function DashboardPage() {
       }
     );
 
-    return unsubscribe;
+    // Also listen for failed events
+    const unsubscribeFailed = websocketService.on(
+      WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
+      (progress: unknown) => {
+        console.log('[Dashboard] Received TRANSCRIPTION_FAILED event:', progress);
+        const typedProgress = progress as TranscriptionProgress;
+        const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
+        
+        notificationService.sendTranscriptionFailed(
+          fileName,
+          typedProgress.transcriptionId
+        );
+        
+        // Clean up
+        setActiveTranscriptions(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(typedProgress.transcriptionId);
+          return newMap;
+        });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+      unsubscribeFailed();
+    };
   }, [activeTranscriptions]);
 
   const handleLogout = async () => {

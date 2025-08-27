@@ -9,6 +9,7 @@
     "delete": "Verwijderen",
     "confirm": "Bevestigen",
     "close": "Sluiten",
+    "open": "Openen",
     "back": "Terug",
     "next": "Volgende",
     "submit": "Verzenden",
@@ -24,8 +25,8 @@
     "share": "Delen",
     "export": "Exporteren",
     "import": "Importeren",
-    "open": "Openen",
-    "language": "Taal"
+    "language": "Taal",
+    "allRightsReserved": "Alle rechten voorbehouden"
   },
   "auth": {
     "signIn": "Inloggen",
@@ -34,6 +35,11 @@
     "email": "E-mail",
     "password": "Wachtwoord",
     "confirmPassword": "Wachtwoord bevestigen",
+    "displayName": "Volledige naam",
+    "enterYourName": "Voer je volledige naam in",
+    "enterYourEmail": "Voer je e-mailadres in",
+    "createPassword": "Maak een wachtwoord aan",
+    "confirmYourPassword": "Bevestig je wachtwoord",
     "forgotPassword": "Wachtwoord vergeten?",
     "resetPassword": "Wachtwoord resetten",
     "signInWithGoogle": "Inloggen met Google",
@@ -41,21 +47,53 @@
     "alreadyHaveAccount": "Heb je al een account?",
     "dontHaveAccount": "Heb je nog geen account?",
     "createAccount": "Account aanmaken",
+    "createYourAccount": "Maak je account aan",
+    "joinThousandsOfUsers": "Sluit je aan bij duizenden gebruikers die hun audio transformeren",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Log in om door te gaan naar Neural Summary",
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
+    "invalidEmail": "Voer een geldig e-mailadres in",
     "accountCreated": "Account succesvol aangemaakt",
     "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
     "emailAlreadyInUse": "E-mailadres is al in gebruik",
     "weakPassword": "Wachtwoord moet minimaal 6 tekens bevatten",
     "userNotFound": "Gebruiker niet gevonden",
     "tooManyRequests": "Te veel verzoeken. Probeer het later opnieuw.",
+    "displayNameRequired": "Voer je volledige naam in",
+    "passwordMinLength": "Minimaal 8 tekens",
+    "passwordUppercase": "Één hoofdletter",
+    "passwordLowercase": "Één kleine letter",
+    "passwordNumber": "Één cijfer",
+    "passwordRequirementsNotMet": "Voldoe aan alle wachtwoordvereisten",
+    "acceptTermsRequired": "Accepteer de algemene voorwaarden",
+    "iAgreeToThe": "Ik ga akkoord met de",
+    "termsOfService": "Servicevoorwaarden",
+    "and": "en",
+    "privacyPolicy": "Privacybeleid",
+    "orContinueWith": "Of ga verder met",
+    "signupFailed": "Account aanmaken mislukt. Probeer het opnieuw.",
+    "verifyYourEmail": "Verifieer je e-mail",
+    "verificationEmailSent": "We hebben een verificatie-e-mail gestuurd naar",
+    "checkYourInbox": "Controleer je inbox en klik op de verificatielink om door te gaan.",
+    "checkYourEmail": "Controleer je e-mail",
+    "clickVerificationLink": "Klik op de verificatielink die we hebben gestuurd om je registratie te voltooien.",
+    "enterVerificationCode": "Voer de 6-cijferige code uit je e-mail in",
+    "verifyEmail": "E-mail verifiëren",
+    "emailVerified": "E-mail geverifieerd!",
+    "redirectingToDashboard": "Doorverwijzen naar je dashboard...",
+    "invalidVerificationCode": "Ongeldige verificatiecode. Probeer het opnieuw.",
+    "verificationFailed": "Verificatie mislukt. Probeer het opnieuw.",
+    "didntReceiveEmail": "Geen e-mail ontvangen?",
+    "resendEmail": "E-mail opnieuw versturen",
+    "resendIn": "Opnieuw versturen over",
+    "resendFailed": "E-mail opnieuw versturen mislukt. Probeer het opnieuw.",
     "backToLogin": "Terug naar inloggen",
-    "enterEmailForReset": "Voer uw e-mailadres in om een resetlink te ontvangen",
+    "backToHome": "Terug naar startpagina",
+    "enterEmailForReset": "Voer je e-mailadres in om een resetlink te ontvangen",
     "sendResetLink": "Resetlink verzenden",
     "resetLinkSent": "Link verzonden!",
-    "checkEmailForReset": "Controleer uw e-mail voor een link om uw wachtwoord te resetten.",
-    "checkSpamFolder": "Als u de e-mail niet ziet, controleer dan uw spammap.",
+    "checkEmailForReset": "Controleer je e-mail voor een link om je wachtwoord te resetten.",
+    "checkSpamFolder": "Als je de e-mail niet ziet, controleer dan je spammap.",
     "tryDifferentEmail": "Probeer een ander e-mailadres",
     "newPassword": "Nieuw wachtwoord",
     "confirmNewPassword": "Nieuw wachtwoord bevestigen",
@@ -70,7 +108,7 @@
     "requestNewLink": "Nieuwe link aanvragen",
     "createNewPassword": "Nieuw wachtwoord maken",
     "enterNewPasswordFor": "Voer een nieuw wachtwoord in voor",
-    "enterNewPassword": "Voer uw nieuwe wachtwoord in",
+    "enterNewPassword": "Voer je nieuwe wachtwoord in",
     "passwordRequirements": "Wachtwoordvereisten:",
     "passwordSpecialChar": "Één speciaal teken",
     "optional": "optioneel"
@@ -106,6 +144,10 @@
     "maxFileSize": "Maximale bestandsgrootte: 5GB",
     "selectFile": "Selecteer audiobestand",
     "addContext": "Context toevoegen (optioneel)",
+    "analysisType": "Analysetype (optioneel)",
+    "analysisTypeHelp": "Kies hoe je wilt dat de AI je gesprek analyseert",
+    "customInstructions": "Aangepaste analyse-instructies",
+    "customInstructionsHelp": "Geef specifieke instructies voor hoe je wilt dat de AI je gesprek analyseert",
     "boostAccuracy": "🎯 Verbeter de nauwkeurigheid met 40% met slechts één regel context",
     "contextStats": "93% van de gebruikers die context toevoegen rapporteren betere resultaten • Duurt slechts 10 seconden",
     "contextPlaceholder": "Voorbeeld: 'Marketingvergadering met John en Sarah over Q4-strategie' of 'Medische consultatie over diabetesbehandeling'",
@@ -139,6 +181,24 @@
     "speakClearlyNormalPace": "Spreek duidelijk en in normaal tempo",
     "addContextForTechnicalTerms": "Voeg context toe voor technische termen",
     "uploadMultipleFilesAtOnce": "Upload meerdere bestanden tegelijk",
+    "comprehensiveAnalysis": "Uitgebreide analyse inbegrepen",
+    "comprehensiveAnalysisDescription": "Je audio wordt automatisch vanuit meerdere perspectieven geanalyseerd om je complete inzichten te geven:",
+    "analysisTypes": {
+      "summary": "Samenvatting (standaard)",
+      "communicationStyles": "Communicatiestijlen & verbeteringen",
+      "actionItems": "Actiepunten backlog",
+      "emotionalIntelligence": "Emotionele intelligentie analyse",
+      "influencePersuasion": "Invloed & overtuiging",
+      "personalDevelopment": "Persoonlijke ontwikkelingssuggesties",
+      "custom": "Aangepaste analyse",
+      "summaryDescription": "Uitgebreid overzicht met kernonderwerpen, beslissingen en actiepunten in een gestructureerd formaat",
+      "communication_stylesDescription": "Analyseert spreekpatronen, beurtwisseling, communicatie-effectiviteit en biedt specifieke verbeteringsaanbevelingen",
+      "action_itemsDescription": "Extraheert en organiseert alle actiepunten, taken en deliverables met eigenaren en deadlines",
+      "emotional_intelligenceDescription": "Beoordeelt emotionele toon, empathieniveaus, conflicthantering en interpersoonlijke dynamiek",
+      "influence_persuasionDescription": "Identificeert overtuigingstechnieken, argumentatiepatronen en gebruikte invloedstrategieën",
+      "personal_developmentDescription": "Suggereert trainingsmogelijkheden, te ontwikkelen vaardigheden en gebieden voor professionele groei",
+      "customDescription": "Gebruik het contextveld hieronder om specifieke instructies te geven voor je aangepaste analyse"
+    },
     "error": {
       "fileSize": "Bestandsgrootte overschrijdt limiet van 5GB",
       "fileTooLarge": "Bestand te groot (max 100MB)",
@@ -200,7 +260,8 @@
     "failedToUpdateTitle": "Bijwerken van titel mislukt",
     "close": "Sluiten",
     "view": "Bekijken",
-    "delete": "Verwijderen"
+    "delete": "Verwijderen",
+    "share": "Delen"
   },
   "howItWorks": {
     "title": "Hoe het werkt",
@@ -248,12 +309,7 @@
         "description": "We ondersteunen M4A, MP3, WAV en andere gangbare formaten. Hogere kwaliteitsformaten geven betere resultaten."
       }
     },
-    "recommendedApps": {
-      "title": "Aanbevolen opname-apps",
-      "ios": "iOS: Dictafoon, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Aanbevolen apps:",
     "proTips": {
       "title": "Pro opnametips voor de beste resultaten",
       "audioQuality": "Audiokwaliteit:",
@@ -268,7 +324,6 @@
     "recordingInstructions": "Opname-instructies per apparaat",
     "stepByStep": "Stap-voor-stap instructies:",
     "quickTips": "Snelle tips:",
-    "recommendedApps": "Aanbevolen apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -286,9 +341,18 @@
           "Overweeg het gebruik van AirPods of een externe microfoon voor betere kwaliteit"
         ],
         "apps": [
-          { "name": "Dictafoon", "description": "Ingebouwd, eenvoudig en betrouwbaar" },
-          { "name": "Just Press Record", "description": "Cloud-sync tussen Apple-apparaten" },
-          { "name": "Recorder", "description": "Eenvoudig en gebruiksvriendelijk" }
+          {
+            "name": "Dictafoon",
+            "description": "Ingebouwd, eenvoudig en betrouwbaar"
+          },
+          {
+            "name": "Just Press Record",
+            "description": "Cloud-sync tussen Apple-apparaten"
+          },
+          {
+            "name": "Recorder",
+            "description": "Eenvoudig en gebruiksvriendelijk"
+          }
         ]
       },
       "android": {
@@ -307,9 +371,18 @@
           "Houd het apparaat stil tijdens het opnemen"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Eenvoudig en effectief" },
-          { "name": "Easy Voice Recorder", "description": "Hoge kwaliteit met cloud backup" },
-          { "name": "Smart Recorder", "description": "Automatische ruisonderdrukking" }
+          {
+            "name": "Voice Recorder",
+            "description": "Eenvoudig en effectief"
+          },
+          {
+            "name": "Easy Voice Recorder",
+            "description": "Hoge kwaliteit met cloud backup"
+          },
+          {
+            "name": "Smart Recorder",
+            "description": "Automatische ruisonderdrukking"
+          }
         ]
       },
       "mac": {
@@ -328,9 +401,18 @@
           "Neem op in een kamer met zachte meubels om echo te verminderen"
         ],
         "apps": [
-          { "name": "QuickTime Player", "description": "Ingebouwd en betrouwbaar" },
-          { "name": "Audacity", "description": "Gratis, professionele audiobewerking" },
-          { "name": "GarageBand", "description": "Geavanceerde functies voor muziek en podcasting" }
+          {
+            "name": "QuickTime Player",
+            "description": "Ingebouwd en betrouwbaar"
+          },
+          {
+            "name": "Audacity",
+            "description": "Gratis, professionele audiobewerking"
+          },
+          {
+            "name": "GarageBand",
+            "description": "Geavanceerde functies voor muziek en podcasting"
+          }
         ]
       },
       "windows": {
@@ -349,9 +431,18 @@
           "Positioneer de microfoon weg van toetsenbord en muis"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Ingebouwde Windows-app" },
-          { "name": "Audacity", "description": "Gratis, cross-platform audio-editor" },
-          { "name": "OBS Studio", "description": "Geavanceerde opname met meerdere bronnen" }
+          {
+            "name": "Voice Recorder",
+            "description": "Ingebouwde Windows-app"
+          },
+          {
+            "name": "Audacity",
+            "description": "Gratis, cross-platform audio-editor"
+          },
+          {
+            "name": "OBS Studio",
+            "description": "Geavanceerde opname met meerdere bronnen"
+          }
         ]
       }
     },
@@ -399,12 +490,33 @@
     "fr": "Français",
     "es": "Español"
   },
+  "cookieConsent": {
+    "title": "Cookievoorkeuren",
+    "description": "We gebruiken cookies om je ervaring te verbeteren. Door door te gaan, ga je akkoord met ons gebruik van cookies.",
+    "accept": "Accepteren",
+    "decline": "Weigeren"
+  },
   "footer": {
     "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden.",
     "privacy": "Privacybeleid",
     "terms": "Servicevoorwaarden",
     "contact": "Contact",
     "about": "Over ons"
+  },
+  "analyses": {
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!"
+  },
+  "actionItemsTable": {
+    "task": "Taak",
+    "owner": "Eigenaar",
+    "deadline": "Deadline",
+    "timeline": "Tijdlijn",
+    "dependencies": "Afhankelijkheden",
+    "unassigned": "Niet toegewezen",
+    "noDeadline": "Geen deadline",
+    "notSpecified": "Niet gespecificeerd",
+    "none": "Geen"
   },
   "landing": {
     "hero": {
@@ -456,7 +568,7 @@
       },
       "largeFiles": {
         "title": "Ondersteuning voor grote bestanden",
-        "description": "Verwerk bestanden tot 5GB met AssemblyAI's geavanceerde transcriptie"
+        "description": "Verwerk bestanden tot 500MB met enterprise-grade transcriptietechnologie"
       },
       "security": {
         "title": "Je Audio Wordt Nooit Opgeslagen",
@@ -571,6 +683,79 @@
       "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden."
     }
   },
+  "share": {
+    "title": "Transcript delen",
+    "shareSettings": "Beveiligingsinstellingen",
+    "contentSelection": "Selecteer inhoud om te delen",
+    "summaryOnly": "Alleen samenvatting",
+    "summaryTranscript": "Samenvatting + transcript",
+    "completeAnalysis": "Volledige analyse",
+    "customSelection": "Aangepast",
+    "includeTranscript": "Volledig transcript",
+    "includeSummary": "Samenvatting",
+    "includeCommunication": "Communicatiestijlen",
+    "includeActionItems": "Actiepunten",
+    "includeEmotionalIQ": "Emotionele intelligentie",
+    "includeInfluence": "Invloed & overtuiging",
+    "includeDevelopment": "Persoonlijke ontwikkeling",
+    "includeSpeakerInfo": "Sprekerinformatie",
+    "sharedContent": "Gedeelde inhoud",
+    "noContentSelected": "Geen inhoud geselecteerd",
+    "itemsSelected": "items geselecteerd",
+    "expiration": "Link vervaldatum",
+    "24hours": "24 uur",
+    "7days": "7 dagen",
+    "never": "Nooit",
+    "passwordProtect": "Wachtwoordbeveiliging",
+    "enterPassword": "Voer wachtwoord in",
+    "createLink": "Deel link aanmaken",
+    "creating": "Aanmaken...",
+    "linkCreated": "Deel link aangemaakt",
+    "currentSettings": "Huidige instellingen",
+    "updateSettings": "Instellingen bijwerken",
+    "updateSettingsInfo": "Je kunt altijd wijzigen welke inhoud wordt gedeeld en de beveiligingsinstellingen.",
+    "updateShareSettings": "Deel instellingen bijwerken",
+    "updating": "Bijwerken...",
+    "qrCode": "QR-code",
+    "sendEmail": "E-mail versturen",
+    "revoke": "Intrekken",
+    "linkCopied": "Link gekopieerd naar klembord!",
+    "sendViaEmail": "Versturen via e-mail",
+    "enterEmailAddresses": "Voer e-mailadressen in (druk op Enter of komma om toe te voegen)",
+    "addAnotherEmail": "Nog een e-mailadres toevoegen",
+    "emailHelpText": "Druk op Enter, komma of spatie om meerdere e-mailadressen toe te voegen",
+    "sending": "Versturen...",
+    "sendEmails": "E-mails versturen",
+    "emailsSent": "E-mails verstuurd!",
+    "emailsSentSuccess": "E-mails succesvol verstuurd! Ontvangers krijgen binnenkort de deel link.",
+    "viewCount": "Weergaven",
+    "expiresOn": "Verloopt op",
+    "passwordProtected": "Wachtwoordbeveiligd",
+    "scanQR": "Scan QR-code om te delen",
+    "confirmRevoke": "Weet je zeker dat je deze deel link wilt intrekken? Iedereen met de link kan dit transcript niet meer bekijken."
+  },
+  "shared": {
+    "loading": "Transcript laden...",
+    "passwordRequired": "Wachtwoord vereist",
+    "passwordDescription": "Dit transcript is beveiligd met een wachtwoord. Voer het wachtwoord in om het te bekijken.",
+    "enterPassword": "Voer wachtwoord in",
+    "submit": "Verzenden",
+    "error": {
+      "title": "Toegangsfout",
+      "invalidLink": "Deze deel link is ongeldig of verlopen.",
+      "notFound": "Transcript niet gevonden.",
+      "loadFailed": "Laden van transcript mislukt."
+    },
+    "sharedBy": "Gedeeld door",
+    "views": "Weergaven",
+    "readOnly": "Alleen-lezen",
+    "analysis": "Analyse",
+    "transcript": "Volledig transcript",
+    "footer": {
+      "poweredBy": "Mogelijk gemaakt door Neural Summary",
+      "copyright": "© {year} Neural Summary. Alle rechten voorbehouden."
+    }
+  },
   "terms": {
     "meta": {
       "title": "Servicevoorwaarden - Neural Summary",
@@ -587,7 +772,7 @@
       "acceptance": {
         "title": "Aanvaarding van de Voorwaarden",
         "content": "Door toegang te krijgen tot of gebruik te maken van Neural Summary ('Service'), gaat u akkoord om gebonden te zijn aan deze Servicevoorwaarden ('Voorwaarden'). Als u het niet eens bent met enig deel van deze voorwaarden, heeft u geen toestemming om toegang te krijgen tot de Service.",
-        "notice": "Deze Voorwaarden vormen een juridisch bindende overeenkomst tussen u en [COMPANY_LEGAL_NAME] betreffende uw gebruik van de Service."
+        "notice": "Deze Voorwaarden vormen een juridisch bindende overeenkomst tussen u en DreamOne Holding BV betreffende uw gebruik van de Service."
       },
       "serviceDescription": {
         "title": "Servicebeschrijving",
@@ -615,7 +800,7 @@
         "title": "Intellectuele Eigendomsrechten",
         "ownership": {
           "title": "Eigendom van de Service",
-          "content": "De Service en haar originele inhoud, functies en functionaliteit zijn eigendom van [COMPANY_LEGAL_NAME] en worden beschermd door internationale auteursrecht-, handelsmerk-, octrooi-, handelsgeheim- en andere intellectuele eigendomswetten."
+          "content": "De Service en haar originele inhoud, functies en functionaliteit zijn eigendom van DreamOne Holding BV en worden beschermd door internationale auteursrecht-, handelsmerk-, octrooi-, handelsgeheim- en andere intellectuele eigendomswetten."
         },
         "userContent": {
           "title": "Uw Inhoud",
@@ -646,7 +831,7 @@
         "disclaimer": "DE SERVICE WORDT GELEVERD 'ZOALS HET IS' ZONDER GARANTIES VAN WELKE AARD DAN OOK, EXPLICIET OF IMPLICIET.",
         "limitations": {
           "title": "Aansprakelijkheidsbeperkingen",
-          "content": "Voor zover maximaal toegestaan door de wet, is [COMPANY_LEGAL_NAME] niet aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade die voortvloeit uit uw gebruik of onvermogen om de Service te gebruiken."
+          "content": "Voor zover maximaal toegestaan door de wet, is DreamOne Holding BV niet aansprakelijk voor indirecte, incidentele, speciale, gevolgschade of punitieve schade die voortvloeit uit uw gebruik of onvermogen om de Service te gebruiken."
         },
         "maxLiability": "Maximale Aansprakelijkheid"
       },
@@ -662,7 +847,7 @@
       },
       "governingLaw": {
         "title": "Toepasselijk Recht en Jurisdictie",
-        "content": "Deze Voorwaarden worden beheerst door en geïnterpreteerd in overeenstemming met de wetten van [JURISDICTION], zonder rekening te houden met zijn conflictrechtelijke bepalingen.",
+        "content": "Deze Voorwaarden worden beheerst door en geïnterpreteerd in overeenstemming met de wetten van The Netherlands, zonder rekening te houden met zijn conflictrechtelijke bepalingen.",
         "jurisdiction": "Jurisdictie",
         "court": "Bevoegde Rechtbanken"
       },
