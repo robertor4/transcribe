@@ -10,7 +10,6 @@ import {
   Calendar,
   User,
   Eye,
-  Lock,
   Loader2,
   FileText,
   AlertCircle,
@@ -227,12 +226,6 @@ export default function SharedTranscriptionPage() {
                 <FileText className="w-4 h-4 inline mr-1" />
                 {t('readOnly')}
               </span>
-              {transcription.requiresPassword && (
-                <span className="px-3 py-1 bg-pink-100 text-[#cc3399] rounded-full text-sm font-medium">
-                  <Lock className="w-4 h-4 inline mr-1" />
-                  Protected
-                </span>
-              )}
             </div>
           </div>
         </div>

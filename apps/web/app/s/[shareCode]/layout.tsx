@@ -23,7 +23,7 @@ export default async function ShareLayout({
   else if (acceptLanguage.includes('fr')) locale = 'fr';
   else if (acceptLanguage.includes('es')) locale = 'es';
   
-  const messages = await getMessages(locale);
+  const messages = await getMessages({ locale });
 
   return (
     <html lang={locale}>

@@ -28,7 +28,7 @@ interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId: string;
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
-  speakers?: Array<{ id: string; name: string; utteranceCount?: number; totalWords?: number }>;
+  speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
 }
 
 // Blog-style content component for non-summary analysis tabs
