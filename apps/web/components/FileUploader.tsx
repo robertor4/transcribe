@@ -45,7 +45,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   // const [showQuickTips, setShowQuickTips] = useState(true);
 
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: Array<{ file: File; errors: Array<{ code: string; message: string }> }>) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     const validFiles = acceptedFiles.filter(file => {
       console.log('File:', file.name, 'Type:', file.type, 'Size:', file.size);
       
@@ -120,12 +120,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         });
         
         const response = await transcriptionApi.upload(file, undefined, context);
-        if (response?.success && onUploadComplete) {
-          onUploadComplete(response.data.id, file.name);
+        if (response?.success && response.data && onUploadComplete) {
+          onUploadComplete(response.data.transcriptionId, file.name);
           
           // Track successful upload
           trackEvent('transcription_completed', {
-            transcription_id: response.data.id,
+            transcription_id: response.data?.transcriptionId,
             file_name: file.name,
             file_size: file.size
           });
@@ -135,11 +135,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       setFiles([]);
       setContext('');
     } catch (error) {
-      setErrors([error.message || 'Upload failed']);
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      setErrors([errorMessage]);
       
       // Track upload failure
       trackEvent('upload_failed', {
-        error_message: error.message || 'Unknown error',
+        error_message: errorMessage,
         file_count: files.length
       });
     } finally {

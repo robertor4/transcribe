@@ -80,7 +80,8 @@ export const TranscriptionList: React.FC = () => {
     // Listen for real-time updates
     const unsubscribeProgress = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
-      (progress: TranscriptionProgress) => {
+      (data: unknown) => {
+        const progress = data as TranscriptionProgress;
         setProgressMap(prev => {
           const newMap = new Map(prev);
           const existingProgress = newMap.get(progress.transcriptionId);
@@ -123,7 +124,8 @@ export const TranscriptionList: React.FC = () => {
 
     const unsubscribeComplete = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
-      (progress: TranscriptionProgress) => {
+      (data: unknown) => {
+        const progress = data as TranscriptionProgress;
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -142,7 +144,8 @@ export const TranscriptionList: React.FC = () => {
     
     const unsubscribeFailed = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
-      (progress: TranscriptionProgress & { error?: string }) => {
+      (data: unknown) => {
+        const progress = data as TranscriptionProgress & { error?: string };
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -186,8 +189,8 @@ export const TranscriptionList: React.FC = () => {
   const loadTranscriptions = async () => {
     try {
       const response = await transcriptionApi.list();
-      if (response?.success) {
-        setTranscriptions(response.data.items);
+      if (response?.success && response.data) {
+        setTranscriptions(response.data.items as Transcription[]);
       }
     } catch (error) {
       const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: unknown } };
@@ -201,8 +204,8 @@ export const TranscriptionList: React.FC = () => {
       });
       
       // Check if this is an email verification error
-      if (error?.response?.status === 401 && 
-          error?.response?.data?.message?.includes('Email not verified')) {
+      if (errorObj?.response?.status === 401 && 
+          (errorObj?.response?.data as any)?.message?.includes('Email not verified')) {
         console.log('Email verification required - redirecting to verify-email page');
         // The dashboard should handle this redirect, but log it here
       }
@@ -618,17 +621,7 @@ export const TranscriptionList: React.FC = () => {
                     </div>
                     <div className="bg-white border border-gray-200 rounded-lg p-4">
                       <SummaryWithComments
-                        transcriptionId={transcription.id}
                         summary={transcription.summary}
-                        onSummaryRegenerated={(newSummary) => {
-                          setTranscriptions(prev => 
-                            prev.map(t => 
-                              t.id === transcription.id 
-                                ? { ...t, summary: newSummary, summaryVersion: (t.summaryVersion || 1) + 1 }
-                                : t
-                            )
-                          );
-                        }}
                       />
                     </div>
                   </div>

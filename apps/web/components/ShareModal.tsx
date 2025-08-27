@@ -290,6 +290,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       const updatedTranscription = {
         ...transcription,
         shareSettings: {
+          enabled: true,
           ...transcription.shareSettings,
           ...settings,
         },

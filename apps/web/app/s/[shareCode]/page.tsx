@@ -10,6 +10,7 @@ import {
   Calendar,
   User,
   Eye,
+  Lock,
   Loader2,
   FileText,
   AlertCircle,

@@ -154,9 +154,9 @@ class NotificationService {
         notification.close();
         
         // If there's custom data, handle it
-        if (options.data?.transcriptionId) {
+        if ((options.data as any)?.transcriptionId) {
           // Could navigate to specific transcription
-          console.log('Notification clicked for transcription:', options.data.transcriptionId);
+          console.log('Notification clicked for transcription:', (options.data as any).transcriptionId);
         }
       };
 
@@ -237,13 +237,13 @@ class NotificationService {
         window.focus();
         notification.close();
         
-        if (options.data?.transcriptionId) {
-          console.log('[NotificationService] Notification clicked for transcription:', options.data.transcriptionId);
+        if ((options.data as any)?.transcriptionId) {
+          console.log('[NotificationService] Notification clicked for transcription:', (options.data as any).transcriptionId);
           // Navigate to the transcription if on dashboard
           if (window.location.pathname.includes('/dashboard')) {
             // Could trigger a custom event to select the transcription
             window.dispatchEvent(new CustomEvent('selectTranscription', { 
-              detail: { transcriptionId: options.data.transcriptionId } 
+              detail: { transcriptionId: (options.data as any).transcriptionId } 
             }));
           }
         }
@@ -293,8 +293,8 @@ class NotificationService {
         window.focus();
         notification.close();
         
-        if (options.data?.transcriptionId) {
-          console.log('Notification clicked for transcription:', options.data.transcriptionId);
+        if ((options.data as any)?.transcriptionId) {
+          console.log('Notification clicked for transcription:', (options.data as any).transcriptionId);
         }
       };
 

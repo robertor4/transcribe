@@ -407,9 +407,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                   </div>
                 ) : info.key === 'summary' ? (
                   <SummaryWithComments
-                    transcriptionId={transcriptionId}
                     summary={content}
-                    isEditable={false}
                   />
                 ) : info.key === 'actionItems' ? (
                   <ActionItemsTable content={content} />
