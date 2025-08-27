@@ -97,17 +97,24 @@ services:
       - "traefik.enable=true"
       
       # API routing (higher priority for /api paths)
-      - "traefik.http.routers.api.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`))"
+      - "traefik.http.routers.api.rule=Host(`neuralsummary.com`,`www.neuralsummary.com`) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`))"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.routers.api.priority=100"
-      - "traefik.http.services.api.loadbalancer.server.port=3001"
+      - "traefik.http.routers.api.service=api-service"
+      - "traefik.http.services.api-service.loadbalancer.server.port=3001"
       
       
       # Strip /api prefix when forwarding to backend
       - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.api.middlewares=api-stripprefix@docker"
+      
+      # HTTP API router for redirect
+      - "traefik.http.routers.api-http.rule=Host(`neuralsummary.com`,`www.neuralsummary.com`) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`))"
+      - "traefik.http.routers.api-http.entrypoints=web"
+      - "traefik.http.routers.api-http.priority=100"
+      - "traefik.http.routers.api-http.middlewares=https-redirect@docker"
     logging:
       driver: "json-file"
       options:
@@ -139,15 +146,16 @@ services:
       - "traefik.enable=true"
       
       # Frontend routing (lower priority, catches everything else)
-      - "traefik.http.routers.web.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      - "traefik.http.routers.web.rule=Host(`neuralsummary.com`,`www.neuralsummary.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
       - "traefik.http.routers.web.priority=50"
-      - "traefik.http.services.web.loadbalancer.server.port=3000"
+      - "traefik.http.routers.web.service=web-service"
+      - "traefik.http.services.web-service.loadbalancer.server.port=3000"
       
       # HTTP to HTTPS redirect
-      - "traefik.http.routers.web-redirect.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      - "traefik.http.routers.web-redirect.rule=Host(`neuralsummary.com`,`www.neuralsummary.com`)"
       - "traefik.http.routers.web-redirect.entrypoints=web"
       - "traefik.http.routers.web-redirect.middlewares=https-redirect@docker"
       
