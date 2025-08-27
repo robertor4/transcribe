@@ -12,12 +12,24 @@ export function isProduction(): boolean {
 }
 
 export function getApiUrl(): string {
-  if (isProduction()) {
-    // In production, use /api prefix (Nginx proxy)
+  // First check if NEXT_PUBLIC_API_URL is explicitly set (works in both dev and prod)
+  const envApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  // In production builds, NEXT_PUBLIC_API_URL will be '/api'
+  // In development, it will be 'http://localhost:3001' or undefined
+  if (envApiUrl === '/api') {
+    // This is a production build, use the /api prefix
     return '/api';
   }
+  
+  // Fallback to production detection by hostname
+  if (isProduction()) {
+    // In production, use /api prefix (Traefik proxy strips this)
+    return '/api';
+  }
+  
   // In development, use direct API URL
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  return envApiUrl || 'http://localhost:3001';
 }
 
 export function getWebSocketUrl(): string {
