@@ -9,8 +9,8 @@ COPY turbo.json ./
 COPY packages ./packages
 COPY apps/api ./apps/api
 
-# Install dependencies
-RUN npm ci
+# Install ALL dependencies (including workspace dependencies)
+RUN npm ci --workspace=apps/api --include-workspace-root
 
 # Build shared package first
 RUN npm run build:shared
@@ -27,16 +27,18 @@ RUN apk add --no-cache ffmpeg
 
 WORKDIR /app
 
-# Copy package files
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/turbo.json ./
-COPY --from=builder /app/packages ./packages
-COPY --from=builder /app/apps/api/package*.json ./apps/api/
+# Copy package files for installation
+COPY package*.json ./
+COPY turbo.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY apps/api/package*.json ./apps/api/
+
+# Install production dependencies only
+RUN npm ci --production --workspace=apps/api --include-workspace-root
+
+# Copy built artifacts
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-# Copy all node_modules from root (monorepo structure)
-COPY --from=builder /app/node_modules ./node_modules
-# Copy API-specific node_modules
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 
 WORKDIR /app/apps/api
 

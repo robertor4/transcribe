@@ -103,3 +103,25 @@
 2025-08-28T00:54:36.315358Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/index.pack.gz_"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/1.pack.gz"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/1.pack.gz_"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/index.pack.gz.old"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/0.pack.gz"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/0.pack.gz_"), AnchoredSystemPathBuf("apps/web/.next/cache/webpack/server-development/index.pack.gz")}
 2025-08-28T00:54:36.315365Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
 2025-08-28T00:54:36.344049Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2025-08-28T01:03:53.617612Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/Dockerfile"), AnchoredSystemPathBuf("apps/api/Dockerfile.tmp.13632.1756343033551")}
+2025-08-28T01:03:53.617625Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2025-08-28T01:04:16.717138Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-api-fix.sh"), AnchoredSystemPathBuf("deploy-api-fix.sh.tmp.13632.1756343056669")}
+2025-08-28T01:04:16.717146Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:04:24.116406Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-api-fix.sh")}
+2025-08-28T01:04:24.116413Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:08:59.433635Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/Dockerfile"), AnchoredSystemPathBuf("apps/api/Dockerfile.tmp.13632.1756343339342")}
+2025-08-28T01:08:59.433643Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2025-08-28T01:09:10.333416Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/Dockerfile"), AnchoredSystemPathBuf("apps/api/Dockerfile.tmp.13632.1756343350238")}
+2025-08-28T01:09:10.333426Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2025-08-28T01:09:19.333281Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/Dockerfile.tmp.13632.1756343359232"), AnchoredSystemPathBuf("apps/api/Dockerfile")}
+2025-08-28T01:09:19.333290Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2025-08-28T01:09:39.933897Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-production.sh.tmp.13632.1756343379816"), AnchoredSystemPathBuf("deploy-production.sh")}
+2025-08-28T01:09:39.933905Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:09:54.634105Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-production.sh")}
+2025-08-28T01:09:54.634114Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:10:11.233248Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".github/workflows/deploy.yml"), AnchoredSystemPathBuf(".github/workflows/deploy.yml.tmp.13632.1756343411133")}
+2025-08-28T01:10:11.233256Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:10:35.234232Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("CLAUDE.md.tmp.13632.1756343435196"), AnchoredSystemPathBuf("CLAUDE.md")}
+2025-08-28T01:10:35.234242Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:10:59.134416Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md.tmp.13632.1756343459074"), AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md")}
+2025-08-28T01:10:59.134424Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))

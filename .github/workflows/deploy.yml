@@ -1,0 +1,44 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: 94.130.27.115
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/transcribe
+            
+            # Pull latest code
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Build and restart containers
+            docker-compose -f docker-compose.prod.yml build
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Health check
+            sleep 10
+            docker ps | grep transcribe
+            
+            # Test endpoints
+            curl -f http://localhost:3001/health || exit 1
+            curl -f http://localhost:3000 || exit 1
+            
+      - name: Verify deployment
+        run: |
+          sleep 5
+          curl -f https://neuralsummary.com || exit 1
+          echo "✅ Deployment successful!"
