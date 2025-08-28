@@ -21,22 +21,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Proxy API requests to NestJS backend
-  async rewrites() {
-    // Use environment variable for API URL
-    // In production Docker, this should be set to http://api:3001
-    // In development, this defaults to localhost
-    const apiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    
-    console.log('Next.js rewrites configured with API URL:', apiUrl);
-    
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${apiUrl}/:path*`,
-      },
-    ];
-  },
+  // Note: API proxying is now handled by app/api/[...path]/route.ts
+  // This allows runtime resolution of Docker service names
 };
 
 export default withNextIntl(nextConfig);

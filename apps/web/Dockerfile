@@ -22,8 +22,6 @@ RUN npm run build:shared
 
 # Build web app (from root, using workspace)
 # Next.js will read .env.production during build
-# Set INTERNAL_API_URL for build-time rewrites configuration
-ENV INTERNAL_API_URL=http://api:3001
 RUN cd apps/web && npm run build
 
 # Production stage
