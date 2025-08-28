@@ -111,6 +111,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - INTERNAL_API_URL=http://api:3001
     env_file:
       - .env.production
     depends_on:
