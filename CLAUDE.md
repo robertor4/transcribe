@@ -62,8 +62,9 @@ npm run start         # Start production servers
 npm run clean         # Clean all build artifacts and stop Redis
 npm run setup         # Install all dependencies and build shared package
 
-# Production Deployment
-./deploy-production.sh   # Deploy to production server (commits, pushes, builds, and deploys)
+# Deployment
+./deploy.sh              # Deploy to production server (commits, pushes, builds, and deploys)
+./deploy-local.sh        # Local Docker deployment (for testing)
 ```
 
 

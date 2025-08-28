@@ -17,7 +17,7 @@
 From your local development machine:
 
 ```bash
-./deploy-production.sh
+./deploy.sh
 ```
 
 This script will:

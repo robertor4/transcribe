@@ -125,3 +125,17 @@
 2025-08-28T01:10:35.234242Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
 2025-08-28T01:10:59.134416Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md.tmp.13632.1756343459074"), AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md")}
 2025-08-28T01:10:59.134424Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:12:30.933715Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-api-fix.sh")}
+2025-08-28T01:12:30.933724Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:12:43.133878Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-local.sh"), AnchoredSystemPathBuf("deploy.sh")}
+2025-08-28T01:12:43.133886Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:12:49.634421Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-production.sh"), AnchoredSystemPathBuf("deploy.sh")}
+2025-08-28T01:12:49.634429Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:12:56.434821Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("CLAUDE.md.tmp.13632.1756343576387"), AnchoredSystemPathBuf("CLAUDE.md")}
+2025-08-28T01:12:56.434829Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:13:03.434750Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md"), AnchoredSystemPathBuf("DEPLOYMENT_GUIDE.md.tmp.13632.1756343583387")}
+2025-08-28T01:13:03.434758Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:13:10.834823Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("deploy-local.sh"), AnchoredSystemPathBuf("deploy-local.sh.tmp.13632.1756343590757")}
+2025-08-28T01:13:10.834832Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T01:13:22.534885Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("README_SCRIPTS.md"), AnchoredSystemPathBuf("README_SCRIPTS.md.tmp.13632.1756343602440")}
+2025-08-28T01:13:22.534894Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
