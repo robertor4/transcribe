@@ -35,6 +35,8 @@ COPY --from=builder /app/apps/api/package*.json ./apps/api/
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 # Copy all node_modules from root (monorepo structure)
 COPY --from=builder /app/node_modules ./node_modules
+# Copy API-specific node_modules
+COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 
 WORKDIR /app/apps/api
 
