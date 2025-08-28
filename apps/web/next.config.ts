@@ -21,6 +21,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Proxy API requests to NestJS backend
+  async rewrites() {
+    // In production, proxy to the Docker service name
+    // In development, this is handled by NEXT_PUBLIC_API_URL
+    const apiUrl = process.env.NODE_ENV === 'production' 
+      ? 'http://api:3001' // Docker service name
+      : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${apiUrl}/:path*`,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
