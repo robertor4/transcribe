@@ -89,7 +89,7 @@ services:
       - transcribe-network
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -106,9 +106,9 @@ services:
       - "traefik.http.services.api-service.loadbalancer.server.port=3001"
       
       
-      # Strip /api prefix when forwarding to backend
-      - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.api.middlewares=api-stripprefix@docker"
+      # No stripping needed - backend expects /api prefix
+      # - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
+      # - "traefik.http.routers.api.middlewares=api-stripprefix@docker"
       
       # HTTP API router for redirect
       - "traefik.http.routers.api-http.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && (PathPrefix(`/api`) || PathPrefix(`/socket.io`))"

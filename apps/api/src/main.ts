@@ -18,6 +18,9 @@ async function bootstrap() {
 
   console.log(`CORS enabled for origin: ${corsOrigin}`);
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

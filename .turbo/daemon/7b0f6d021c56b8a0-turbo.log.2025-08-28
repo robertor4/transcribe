@@ -1,0 +1,16 @@
+2025-08-28T00:12:43.025012Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml"), AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756339962933")}
+2025-08-28T00:12:43.025028Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:12:43.124374Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".turbo/daemon/7b0f6d021c56b8a0-turbo.log.2025-08-28"), AnchoredSystemPathBuf(".turbo/daemon/7b0f6d021c56b8a0-turbo.log.2025-08-27")}
+2025-08-28T00:12:43.124383Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:12:52.024028Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756339971934"), AnchoredSystemPathBuf("docker-compose.prod.yml")}
+2025-08-28T00:12:52.024059Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:12:59.323919Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756339979297"), AnchoredSystemPathBuf("docker-compose.prod.yml")}
+2025-08-28T00:12:59.323928Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:13:07.624827Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756339987590"), AnchoredSystemPathBuf("docker-compose.prod.yml")}
+2025-08-28T00:13:07.624835Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:27:20.633427Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756340840534"), AnchoredSystemPathBuf("docker-compose.prod.yml")}
+2025-08-28T00:27:20.633444Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-28T00:27:27.933364Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/src/main.ts"), AnchoredSystemPathBuf("apps/api/src/main.ts.tmp.13632.1756340847903")}
+2025-08-28T00:27:27.933372Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2025-08-28T00:27:39.833520Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("docker-compose.prod.yml"), AnchoredSystemPathBuf("docker-compose.prod.yml.tmp.13632.1756340859792")}
+2025-08-28T00:27:39.833530Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
