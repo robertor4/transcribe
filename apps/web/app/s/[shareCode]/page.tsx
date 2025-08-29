@@ -62,8 +62,9 @@ export default function SharedTranscriptionPage() {
       }
       
       const queryString = params.toString();
-      // Use relative URL that works in both dev and production
-      const url = `/api/transcriptions/shared/${shareCode}${queryString ? '?' + queryString : ''}`;
+      // Ensure we're using the correct base URL in the browser
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      const url = `${baseUrl}/api/transcriptions/shared/${shareCode}${queryString ? '?' + queryString : ''}`;
       
       const response = await fetch(url);
       const data = await response.json();

@@ -59,8 +59,9 @@ export default function SharedTranscriptionPage() {
         queryParams.append('incrementView', 'true');
       }
       
-      // Use relative URL that works in both dev and production
-      const url = `/api/transcriptions/shared/${shareToken}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      // Ensure we're using the correct base URL in the browser
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      const url = `${baseUrl}/api/transcriptions/shared/${shareToken}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
