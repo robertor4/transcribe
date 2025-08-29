@@ -47,8 +47,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     const validFiles = acceptedFiles.filter(file => {
-      console.log('File:', file.name, 'Type:', file.type, 'Size:', file.size);
-      
       // Track file drop attempt
       trackEvent('audio_uploaded', {
         file_name: file.name,

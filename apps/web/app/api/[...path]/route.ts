@@ -17,8 +17,6 @@ async function handler(req: NextRequest) {
     // Construct the backend URL
     const backendUrl = `${API_BASE_URL}${path}${queryString}`;
     
-    console.log(`[API Proxy] ${req.method} ${url.pathname} -> ${backendUrl}`);
-    
     // Prepare headers - forward most headers except Host
     const headers = new Headers();
     req.headers.forEach((value, key) => {

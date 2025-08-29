@@ -123,18 +123,12 @@ class NotificationService {
     data?: unknown;
     requireInteraction?: boolean;
   }): void {
-    console.log('sendNotification called with:', options);
-    console.log('Notification enabled status:', this.isEnabled());
-    console.log('Document has focus:', document.hasFocus());
-    
     if (!this.isEnabled()) {
-      console.log('Notifications are not enabled');
       return;
     }
 
     // Don't send notification if the page is currently focused
     if (document.hasFocus()) {
-      console.log('Page is focused, skipping notification');
       return;
     }
 
@@ -156,7 +150,7 @@ class NotificationService {
         // If there's custom data, handle it
         if ((options.data as any)?.transcriptionId) {
           // Could navigate to specific transcription
-          console.log('Notification clicked for transcription:', (options.data as any).transcriptionId);
+          // Notification clicked for transcription
         }
       };
 
@@ -173,14 +167,6 @@ class NotificationService {
    * Send notification for completed transcription
    */
   sendTranscriptionComplete(fileName: string, transcriptionId: string, forceNotification: boolean = false): void {
-    console.log('[NotificationService] sendTranscriptionComplete called:', {
-      fileName,
-      transcriptionId,
-      forceNotification,
-      isEnabled: this.isEnabled(),
-      permission: this.isSupported() ? Notification.permission : 'unsupported',
-      hasFocus: document.hasFocus()
-    });
 
     // For testing/debugging, we can force the notification even if page is focused
     if (forceNotification) {
@@ -215,10 +201,8 @@ class NotificationService {
     data?: unknown;
     requireInteraction?: boolean;
   }): void {
-    console.log('[NotificationService] sendNotificationAlways called with:', options);
     
     if (!this.isEnabled()) {
-      console.log('[NotificationService] Notifications are not enabled');
       return;
     }
 
@@ -254,7 +238,6 @@ class NotificationService {
         notification.close();
       }, 10000);
       
-      console.log('[NotificationService] Notification sent successfully');
     } catch (error) {
       console.error('[NotificationService] Error sending notification:', error);
     }
@@ -271,10 +254,8 @@ class NotificationService {
     data?: unknown;
     requireInteraction?: boolean;
   }): void {
-    console.log('sendNotificationForced called with:', options);
     
     if (!this.isEnabled()) {
-      console.log('Notifications are not enabled');
       return;
     }
 
@@ -294,7 +275,7 @@ class NotificationService {
         notification.close();
         
         if ((options.data as any)?.transcriptionId) {
-          console.log('Notification clicked for transcription:', (options.data as any).transcriptionId);
+          // Notification clicked for transcription
         }
       };
 
@@ -303,7 +284,6 @@ class NotificationService {
         notification.close();
       }, 10000);
       
-      console.log('Notification sent successfully');
     } catch (error) {
       console.error('Error sending notification:', error);
     }
@@ -313,12 +293,6 @@ class NotificationService {
    * Send notification for failed transcription
    */
   sendTranscriptionFailed(fileName: string, transcriptionId: string): void {
-    console.log('[NotificationService] sendTranscriptionFailed called:', {
-      fileName,
-      transcriptionId,
-      isEnabled: this.isEnabled(),
-      permission: this.isSupported() ? Notification.permission : 'unsupported'
-    });
 
     // Always notify for failures regardless of focus
     this.sendNotificationAlways({
