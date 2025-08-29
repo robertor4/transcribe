@@ -33,10 +33,14 @@ export function getApiUrl(): string {
 }
 
 export function getWebSocketUrl(): string {
-  if (isProduction()) {
-    // In production, use same origin (empty string)
-    return '';
+  // Check if we're in the browser
+  if (typeof window !== 'undefined') {
+    if (isProduction()) {
+      // In production, use wss:// protocol with the current host
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      return `${protocol}//${window.location.host}`;
+    }
   }
-  // In development, use direct API URL
+  // In development or server-side, use direct API URL
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 }

@@ -19,10 +19,15 @@ class WebSocketService {
     const token = await user.getIdToken();
     const socketUrl = getWebSocketUrl();
 
+    // In production, WebSocket connects through the /api proxy
+    const isProduction = typeof window !== 'undefined' && 
+      (window.location.hostname === 'neuralsummary.com' || 
+       window.location.hostname === 'www.neuralsummary.com');
+    
     this.socket = io(socketUrl, {
       auth: { token },
-      transports: ['websocket'],
-      path: '/socket.io/',
+      transports: ['websocket', 'polling'],
+      path: isProduction ? '/api/socket.io/' : '/socket.io/',
     });
 
     this.socket.on('connect', () => {

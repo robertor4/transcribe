@@ -21,6 +21,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // WebSocket proxy configuration for production
+  async rewrites() {
+    const apiUrl = process.env.NODE_ENV === 'production' 
+      ? 'http://api:3001' 
+      : 'http://localhost:3001';
+    
+    return [
+      // Proxy socket.io WebSocket connections to the API
+      {
+        source: '/api/socket.io/:path*',
+        destination: `${apiUrl}/socket.io/:path*`,
+      },
+    ];
+  },
   // Note: API proxying is now handled by app/api/[...path]/route.ts
   // This allows runtime resolution of Docker service names
 };
