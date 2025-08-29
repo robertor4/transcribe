@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { SharedTranscriptionView } from '@transcribe/shared';
 import { AnalysisTabs } from '@/components/AnalysisTabs';
+import { getApiUrl } from '@/lib/config';
 import {
   FileAudio,
   Calendar,
@@ -51,11 +52,7 @@ export default function SharedTranscriptionPage() {
     setError('');
     
     try {
-      const apiUrl = typeof window !== 'undefined' 
-        ? (window.location.hostname === 'neuralsummary.com' || window.location.hostname === 'www.neuralsummary.com'
-          ? '/api'
-          : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'))
-        : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001');
+      const apiUrl = getApiUrl();
       const queryParams = new URLSearchParams();
       if (withPassword) {
         queryParams.append('password', withPassword);

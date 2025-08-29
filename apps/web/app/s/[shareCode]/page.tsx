@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { SharedTranscriptionView } from '@transcribe/shared';
 import { AnalysisTabs } from '@/components/AnalysisTabs';
+import { getApiUrl } from '@/lib/config';
 import {
   FileAudio,
   Calendar,
@@ -51,19 +52,23 @@ export default function SharedTranscriptionPage() {
     setError('');
     
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const url = new URL(`${baseUrl}/transcriptions/shared/${shareCode}`);
+      const baseUrl = getApiUrl();
+      const endpoint = `/transcriptions/shared/${shareCode}`;
       
+      // Build query parameters
+      const params = new URLSearchParams();
       if (withPassword) {
-        url.searchParams.append('password', withPassword);
+        params.append('password', withPassword);
       }
-      
       // Only increment view on first successful load
       if (incrementView) {
-        url.searchParams.append('incrementView', 'true');
+        params.append('incrementView', 'true');
       }
       
-      const response = await fetch(url.toString());
+      const queryString = params.toString();
+      const fullUrl = `${baseUrl}${endpoint}${queryString ? '?' + queryString : ''}`;
+      
+      const response = await fetch(fullUrl);
       const data = await response.json();
       
       if (response.status === 401 && data.message?.includes('Password required')) {
