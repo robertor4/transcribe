@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# Local Docker Deployment Script for Neural Summary
+# Local Docker Testing Script for Neural Summary
 # This script is for testing Docker builds locally - NOT for production
 # For production deployment, use ./deploy.sh instead
+# 
+# Usage: ./test-docker-local.sh
 
 set -e  # Exit on error
 
