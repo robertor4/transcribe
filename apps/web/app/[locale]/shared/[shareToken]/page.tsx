@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { SharedTranscriptionView } from '@transcribe/shared';
 import { AnalysisTabs } from '@/components/AnalysisTabs';
-import { getApiUrl } from '@/lib/config';
 import {
   FileAudio,
   Calendar,
@@ -52,7 +51,6 @@ export default function SharedTranscriptionPage() {
     setError('');
     
     try {
-      const apiUrl = getApiUrl();
       const queryParams = new URLSearchParams();
       if (withPassword) {
         queryParams.append('password', withPassword);
@@ -61,7 +59,8 @@ export default function SharedTranscriptionPage() {
         queryParams.append('incrementView', 'true');
       }
       
-      const url = `${apiUrl}/transcriptions/shared/${shareToken}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+      // Use relative URL that works in both dev and production
+      const url = `/api/transcriptions/shared/${shareToken}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {

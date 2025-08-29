@@ -59,3 +59,13 @@
 2025-08-29T12:26:44.545745Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
 2025-08-29T12:27:37.445965Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json.tmp.88451.1756470457364"), AnchoredSystemPathBuf(".claude/settings.local.json")}
 2025-08-29T12:27:37.445973Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-29T12:28:25.845943Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json"), AnchoredSystemPathBuf(".claude/settings.local.json.tmp.88451.1756470505760")}
+2025-08-29T12:28:25.845951Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-29T12:35:40.247916Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx"), AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx.tmp.88451.1756470940215")}
+2025-08-29T12:35:40.247926Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2025-08-29T12:35:49.448360Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx.tmp.88451.1756470949352"), AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx")}
+2025-08-29T12:35:49.448367Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2025-08-29T12:36:02.647687Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/app/[locale]/shared/[shareToken]/page.tsx.tmp.88451.1756470962578"), AnchoredSystemPathBuf("apps/web/app/[locale]/shared/[shareToken]/page.tsx")}
+2025-08-29T12:36:02.647694Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2025-08-29T12:36:11.649044Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/app/[locale]/shared/[shareToken]/page.tsx.tmp.88451.1756470971626"), AnchoredSystemPathBuf("apps/web/app/[locale]/shared/[shareToken]/page.tsx")}
+2025-08-29T12:36:11.649052Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
