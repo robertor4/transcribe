@@ -93,9 +93,23 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    # No Traefik labels - API is accessed internally via Next.js proxy
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      
+      # WebSocket routing (highest priority for socket.io)
+      - "traefik.http.routers.websocket.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && PathPrefix(`/api/socket.io`)"
+      - "traefik.http.routers.websocket.entrypoints=websecure"
+      - "traefik.http.routers.websocket.tls=true"
+      - "traefik.http.routers.websocket.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.websocket.priority=100"
+      - "traefik.http.routers.websocket.service=api-websocket"
+      - "traefik.http.routers.websocket.middlewares=websocket-strip-prefix@docker"
+      
+      # Strip /api prefix for WebSocket
+      - "traefik.http.middlewares.websocket-strip-prefix.stripprefix.prefixes=/api"
+      
+      # Service configuration for WebSocket
+      - "traefik.http.services.api-websocket.loadbalancer.server.port=3001"
     logging:
       driver: "json-file"
       options:
