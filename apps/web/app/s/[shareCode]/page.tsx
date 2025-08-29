@@ -52,7 +52,8 @@ export default function SharedTranscriptionPage() {
     setError('');
     
     try {
-      const baseUrl = getApiUrl();
+      // Use getApiUrl() which properly handles production/dev environments
+      const apiUrl = getApiUrl();
       const endpoint = `/transcriptions/shared/${shareCode}`;
       
       // Build query parameters
@@ -66,7 +67,7 @@ export default function SharedTranscriptionPage() {
       }
       
       const queryString = params.toString();
-      const fullUrl = `${baseUrl}${endpoint}${queryString ? '?' + queryString : ''}`;
+      const fullUrl = `${apiUrl}${endpoint}${queryString ? '?' + queryString : ''}`;
       
       const response = await fetch(fullUrl);
       const data = await response.json();

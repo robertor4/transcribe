@@ -51,3 +51,11 @@
 2025-08-29T11:51:16.161993Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
 2025-08-29T11:51:16.235571Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".turbo/cookies/7.cookie")}
 2025-08-29T11:51:16.235580Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-29T11:54:54.636846Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json.tmp.88451.1756468494558"), AnchoredSystemPathBuf(".claude/settings.local.json")}
+2025-08-29T11:54:54.636865Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-29T11:55:31.137836Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json"), AnchoredSystemPathBuf(".claude/settings.local.json.tmp.88451.1756468531017")}
+2025-08-29T11:55:31.137843Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-29T12:26:44.545721Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx"), AnchoredSystemPathBuf("apps/web/app/s/[shareCode]/page.tsx.tmp.88451.1756470404479")}
+2025-08-29T12:26:44.545745Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2025-08-29T12:27:37.445965Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json.tmp.88451.1756470457364"), AnchoredSystemPathBuf(".claude/settings.local.json")}
+2025-08-29T12:27:37.445973Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
