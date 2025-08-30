@@ -29,13 +29,26 @@ export const metadata: Metadata = {
     telephone: false,
   },
   icons: {
-    icon: '/assets/OT-symbol.webp',
-    shortcut: '/assets/OT-symbol.webp',
-    apple: '/assets/OT-symbol.webp',
-    other: {
-      rel: 'apple-touch-icon-precomposed',
-      url: '/assets/OT-symbol.webp',
-    },
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'icon',
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        rel: 'icon',
+        url: '/android-chrome-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
   },
   manifest: '/manifest.json',
   openGraph: {
@@ -47,7 +60,7 @@ export const metadata: Metadata = {
     description: 'Transform audio recordings into accurate transcripts and intelligent summaries. 99.5% accuracy, 50+ languages, enterprise security.',
     images: [
       {
-        url: '/assets/OT-symbol.webp',
+        url: '/assets/NS-symbol.webp',
         width: 1200,
         height: 630,
         alt: 'Neural Summary - AI Transcription Platform',
@@ -60,7 +73,7 @@ export const metadata: Metadata = {
     description: 'Transform audio into accurate transcripts & summaries. 99.5% accuracy, 50+ languages. Start free.',
     site: '@neuralsummary',
     creator: '@neuralsummary',
-    images: ['/assets/OT-symbol.webp'],
+    images: ['/assets/NS-symbol.webp'],
   },
   robots: {
     index: true,
