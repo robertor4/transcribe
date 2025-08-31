@@ -11,9 +11,8 @@ import {
   FileText,
   Copy,
   Check,
-  FileSearch,
   Calendar,
-  List
+  FileCode
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
@@ -105,25 +104,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
   const t = useTranslations('analyses');
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
-  const [isFormatted, setIsFormatted] = useState(true);
-  const [transcriptView, setTranscriptView] = useState<'timeline' | 'list'>('timeline');
-
-  const formatTranscript = (text: string): string => {
-    // Add line breaks after sentences (. ! ?)
-    let formatted = text.replace(/([.!?])\s+/g, '$1\n\n');
-    // Add line breaks after colons if followed by a capital letter (likely speaker changes)
-    formatted = formatted.replace(/(:)\s+([A-Z])/g, '$1\n\n$2');
-    // Ensure no excessive line breaks
-    formatted = formatted.replace(/\n{3,}/g, '\n\n');
-    return formatted.trim();
-  };
+  const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
-      // If copying transcript and formatting is enabled, format it
-      if (tabKey === 'transcript' && isFormatted) {
-        content = formatTranscript(content);
-      }
       await navigator.clipboard.writeText(content);
       setCopiedTab(tabKey);
       setTimeout(() => setCopiedTab(null), 2000);
@@ -267,32 +251,18 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
                           <span>Timeline</span>
                         </button>
                         <button
-                          onClick={() => setTranscriptView('list')}
+                          onClick={() => setTranscriptView('raw')}
                           className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                            transcriptView === 'list' 
+                            transcriptView === 'raw' 
                               ? 'text-[#cc3399] bg-white' 
                               : 'text-gray-400 hover:text-gray-600'
                           }`}
-                          title="List view"
+                          title="Raw text view"
                         >
-                          <List className="h-4 w-4" />
-                          <span>List</span>
+                          <FileCode className="h-4 w-4" />
+                          <span>Raw</span>
                         </button>
                       </>
-                    )}
-                    {info.key === 'transcript' && transcriptView === 'list' && (
-                      <button
-                        onClick={() => setIsFormatted(!isFormatted)}
-                        className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                          isFormatted 
-                            ? 'text-[#cc3399] bg-white' 
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                        title={isFormatted ? 'Formatted view' : 'Raw view'}
-                      >
-                        <FileSearch className="h-4 w-4" />
-                        <span>Format</span>
-                      </button>
                     )}
                     <button
                       onClick={() => handleCopy(content, info.key)}
@@ -319,88 +289,19 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcript
               <div className="py-6">
                 {info.key === 'transcript' ? (
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
-                    {/* Show timeline or list view based on selection */}
+                    {/* Show timeline or raw view based on selection */}
                     {speakerSegments && speakerSegments.length > 0 && transcriptView === 'timeline' ? (
                       <TranscriptTimeline segments={speakerSegments} />
-                    ) : speakerSegments && speakerSegments.length > 0 && transcriptView === 'list' ? (
-                      <div className="space-y-4">
-                        {speakerSegments.map((segment, index) => {
-                          let speakerLetter = '';
-                          let speakerNumber = 1;
-                          
-                          // Extract the last capital letter from the tag (handles "Speaker A", "A", "Speaker 1", etc.)
-                          const letterMatch = segment.speakerTag.match(/[A-Z](?![a-z])/g);
-                          const numberMatch = segment.speakerTag.match(/\d+/);
-                          
-                          if (letterMatch && letterMatch.length > 0) {
-                            // Found a letter (e.g., "Speaker A" -> "A")
-                            speakerLetter = letterMatch[letterMatch.length - 1];
-                            speakerNumber = speakerLetter.charCodeAt(0) - 64; // A=1, B=2, etc.
-                          } else if (numberMatch) {
-                            // Found a number (e.g., "Speaker 1" -> 1)
-                            speakerNumber = parseInt(numberMatch[0]);
-                            speakerLetter = String.fromCharCode(64 + speakerNumber); // 1->A, 2->B, etc.
-                          } else {
-                            // Fallback: use first character if uppercase, otherwise 'A'
-                            speakerLetter = /^[A-Z]/.test(segment.speakerTag) ? segment.speakerTag[0] : 'A';
-                            speakerNumber = speakerLetter.charCodeAt(0) - 64;
-                          }
-                          
-                          // Define color schemes for speakers
-                          const colors = [
-                            'bg-blue-100 text-blue-700',
-                            'bg-green-100 text-green-700',
-                            'bg-purple-100 text-purple-700',
-                            'bg-orange-100 text-orange-700',
-                            'bg-pink-100 text-pink-700',
-                            'bg-teal-100 text-teal-700',
-                          ];
-                          
-                          // Avatar background colors (darker versions)
-                          const avatarColors = [
-                            'bg-blue-500',
-                            'bg-green-500',
-                            'bg-purple-500',
-                            'bg-orange-500',
-                            'bg-pink-500',
-                            'bg-teal-500',
-                          ];
-                          
-                          // Get consistent colors based on speaker number
-                          const colorIndex = (speakerNumber - 1) % colors.length;
-                          const colorClass = colors[colorIndex];
-                          const avatarColorClass = avatarColors[colorIndex];
-                          
-                          return (
-                            <div key={index} className="flex gap-3 group hover:bg-gray-50 p-3 rounded-lg transition-colors">
-                              <div className="flex-shrink-0 pt-1">
-                                <div className={`w-10 h-10 rounded-full ${avatarColorClass} flex items-center justify-center text-white font-semibold shadow-sm`}>
-                                  {speakerLetter}
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-baseline gap-2 mb-1">
-                                  <span className={`text-sm font-semibold ${colorClass.split(' ')[1]}`}>
-                                    {segment.speakerTag}
-                                  </span>
-                                  {segment.startTime !== undefined && (
-                                    <span className="text-xs text-gray-400">
-                                      {Math.floor(segment.startTime / 60)}:{String(Math.floor(segment.startTime % 60)).padStart(2, '0')}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-gray-700 leading-relaxed break-words">
-                                  {segment.text}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    ) : speakerSegments && speakerSegments.length > 0 && transcriptView === 'raw' ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                        <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                          {speakerSegments.map(segment => segment.text).join(' ')}
+                        </p>
                       </div>
                     ) : (
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                         <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
-                          {isFormatted ? formatTranscript(content) : content}
+                          {content}
                         </p>
                       </div>
                     )}

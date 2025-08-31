@@ -71,7 +71,7 @@ export class TranscriptionService {
     );
 
     // Upload file to Firebase Storage
-    const fileUrl = await this.firebaseService.uploadFile(
+    const uploadResult = await this.firebaseService.uploadFile(
       file.buffer,
       `audio/${userId}/${Date.now()}_${file.originalname}`,
       file.mimetype,
@@ -81,7 +81,8 @@ export class TranscriptionService {
     const transcription: Omit<Transcription, 'id'> = {
       userId,
       fileName: file.originalname,
-      fileUrl,
+      fileUrl: uploadResult.url,
+      storagePath: uploadResult.path,
       fileSize: file.size,
       mimeType: file.mimetype,
       status: TranscriptionStatus.PENDING,
@@ -108,7 +109,7 @@ export class TranscriptionService {
       id: generateJobId(),
       transcriptionId,
       userId,
-      fileUrl,
+      fileUrl: uploadResult.url,
       analysisType,
       context,
       priority: 1,
@@ -672,16 +673,33 @@ export class TranscriptionService {
     );
 
     if (transcription) {
-      // Delete file from storage if it exists
-      if (transcription.fileUrl) {
-        try {
+      // Delete file from storage if it exists and hasn't been deleted already
+      try {
+        if (transcription.storagePath) {
+          // Use the storage path for reliable deletion (new transcriptions)
+          await this.firebaseService.deleteFileByPath(
+            transcription.storagePath,
+          );
+          this.logger.log(
+            `Deleted file via storage path for transcription ${transcriptionId}`,
+          );
+        } else if (transcription.fileUrl) {
+          // Fallback to URL-based deletion for older transcriptions
           await this.firebaseService.deleteFile(transcription.fileUrl);
-        } catch (error) {
-          // Log but don't fail the deletion if file is already gone
-          this.logger.warn(
-            `File deletion failed for transcription ${transcriptionId}, continuing with document deletion`,
+          this.logger.log(
+            `Deleted file via URL for transcription ${transcriptionId}`,
+          );
+        } else {
+          // File already deleted (e.g., after processing)
+          this.logger.log(
+            `No file to delete for transcription ${transcriptionId} - already cleaned up`,
           );
         }
+      } catch (error) {
+        // Log but don't fail the deletion if file is already gone
+        this.logger.warn(
+          `File deletion failed for transcription ${transcriptionId}, continuing with document deletion`,
+        );
       }
 
       // Delete transcription document

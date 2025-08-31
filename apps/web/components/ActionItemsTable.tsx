@@ -97,9 +97,9 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
               number: currentNumber,
               task,
               owner: ownerValue || t('unassigned'),
-              deadline: deadlineValue || '-',  // Use simple dash for no deadline
+              deadline: deadlineValue === 'TBD' ? '-' : (deadlineValue || '-'),  // Replace TBD with dash
               timeline: timelineValue || t('notSpecified'),
-              dependencies: dependenciesValue || t('none'),
+              dependencies: dependenciesValue === 'None' ? '-' : (dependenciesValue || '-'),  // Replace None with dash
               isCritical,
               needsClarification
             });
@@ -108,8 +108,20 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
       }
     }
     
-    return { overview, actionItems: items };
-  }, [content]);
+    // Sort items by timeline: Short-term first, then Mid-term, then Long-term
+    const sortedItems = items.sort((a, b) => {
+      const getTimelinePriority = (timeline: string) => {
+        if (timeline.includes('Short')) return 1;
+        if (timeline.includes('Mid')) return 2;
+        if (timeline.includes('Long')) return 3;
+        return 4; // Not specified goes last
+      };
+      
+      return getTimelinePriority(a.timeline) - getTimelinePriority(b.timeline);
+    });
+    
+    return { overview, actionItems: sortedItems };
+  }, [content, t]);
   
   // If no action items found, fall back to blog-style rendering
   if (actionItems.length === 0) {
@@ -144,17 +156,6 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
   
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-8">
-      {/* Overview */}
-      {overview && (
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="prose prose-gray prose-lg max-w-none prose-p:text-base">
-            <p className="text-base leading-relaxed font-medium text-gray-700 border-l-4 border-[#cc3399] pl-6">
-              {overview}
-            </p>
-          </div>
-        </div>
-      )}
-      
       {/* Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
@@ -228,8 +229,8 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700">
-                    {item.dependencies === 'None' || item.dependencies === t('none') ? (
-                      <span className="text-gray-500 italic">{t('none')}</span>
+                    {item.dependencies === '-' ? (
+                      <span className="text-gray-500">-</span>
                     ) : (
                       item.dependencies
                     )}

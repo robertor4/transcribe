@@ -67,7 +67,8 @@ export interface Transcription {
   userId: string;
   fileName: string;
   title?: string; // Custom user-defined title, defaults to fileName
-  fileUrl: string;
+  fileUrl?: string; // Optional - cleared after file deletion for privacy
+  storagePath?: string; // The actual storage path for reliable deletion
   fileSize: number;
   mimeType: string;
   duration?: number;

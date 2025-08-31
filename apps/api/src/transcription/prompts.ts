@@ -42,29 +42,38 @@ Key guidance for the detailed discussion section:
 // Communication Styles Analysis Prompt
 const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
 
-# Communication effectiveness score: X/10
+# Write your key takeaway about communication effectiveness here: X/10
+
+IMPORTANT: This should be a level 1 heading (use single #). Write a descriptive assessment that captures the essence of the communication quality. DO NOT include brackets. Examples of good H1 titles:
+# Highly effective communication with excellent collaboration: 9/10
+# Moderately effective discussion with room for improvement: 6/10
+# Poor communication hindered by constant interruptions: 3/10
+# Exceptional communication drove productive outcomes: 10/10
+# Communication struggled due to unclear objectives: 4/10
+
+The heading MUST be a level 1 heading (single #) with a complete, meaningful statement that immediately tells readers the communication quality level. DO NOT include square brackets [ ] in your title. DO NOT use ## (h2) for this main title.
 
 Provide a 2-3 sentence explanation of the score, highlighting the most important strength and weakness. Wrap this brief explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
 IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Clarity & structure analysis", write something like "Ideas were clearly expressed but conversation lacked logical flow" or "Well-structured discussion with occasional unclear explanations". Make headers scannable insights that readers can understand without reading the details.
 
-## [Key takeaway about clarity & structure - e.g., "Messages were clear and followed a logical progression"]
+## Write a key takeaway about clarity & structure here (e.g., "Messages were clear and followed a logical progression")
 
 Analyze: Message clarity, logical flow, and information density. Was the conversation easy to follow? Did participants provide appropriate detail levels?
 
-## [Key takeaway about listening & engagement - e.g., "Active listening evident with balanced participation"]
+## Write a key takeaway about listening & engagement (e.g., "Active listening evident with balanced participation")
 
 Analyze: How well did participants build on each other's ideas? Were there interruptions or good turn-taking? Did everyone contribute meaningfully?
 
-## [Key takeaway about questioning - e.g., "Strategic questions uncovered valuable insights"]
+## Write a key takeaway about questioning (e.g., "Strategic questions uncovered valuable insights")
 
 Analyze: Were questions open-ended and probing? How effectively did participants extract information and verify understanding?
 
-## [Key takeaway about tone & emotional dynamics - e.g., "Professional tone maintained despite disagreements"]
+## Write a key takeaway about tone & emotional dynamics (e.g., "Professional tone maintained despite disagreements")
 
 Analyze: Was the tone appropriate? How were conflicts handled? Did participants show empathy and understanding?
 
-## [Key takeaway about decisions & outcomes - e.g., "Clear decisions reached with defined next steps"]
+## Write a key takeaway about decisions & outcomes (e.g., "Clear decisions reached with defined next steps")
 
 Analyze: How efficiently did the conversation reach conclusions? Were decisions collaborative? Were action items clear?
 
@@ -112,9 +121,9 @@ Requirements:
 - Include success criteria where mentioned
 - Flag unclear items with [NEEDS CLARIFICATION] ONLY in the task description field, never in other fields
 - Mark critical path items with (CRITICAL) in the task description field only
-- For missing deadlines, leave empty or write "TBD" - do NOT use [NEEDS CLARIFICATION] in the deadline field
+- For missing deadlines, use a hyphen (-) - do NOT use [NEEDS CLARIFICATION] in the deadline field
 - Note if deadlines are firm vs. targets
-- For dependencies, write "None" if there are no dependencies
+- For dependencies, use a hyphen (-) if there are no dependencies
 - Timeline classification:
   * Short-term: Within 1-2 weeks
   * Mid-term: Within 1-3 months
@@ -128,25 +137,36 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Emotional Intelligence Analysis Prompt
 const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence aspects of this conversation.
 
-# Emotional intelligence analysis
+# Write your key emotional intelligence takeaway here
+
+IMPORTANT: This should be a level 1 heading (use single #). Write the MOST CRITICAL emotional intelligence insight from this conversation. This should be the one thing someone needs to know about the emotional dynamics. DO NOT include brackets. Examples of good H1 titles:
+- High emotional intelligence fostered trust and collaboration
+- Lack of empathy created unnecessary tension
+- Exceptional emotional awareness prevented conflict escalation
+- Poor emotional regulation derailed productive discussion
+- Strong interpersonal skills built team cohesion
+- Unaddressed frustrations undermined team morale
+- Emotional maturity enabled difficult conversations
+
+The heading should capture the essence of the emotional dynamics - what really mattered emotionally in this conversation. DO NOT include square brackets [ ] in your title.
 
 Provide a 2-3 sentence explanation of the emotional dynamics, highlighting the most significant interpersonal strength and area for improvement. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
 IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Emotional tone", write something like "Positive atmosphere maintained despite challenging topics" or "Tension escalated when discussing deadlines". Make headers scannable insights that readers can understand without reading the details.
 
-## [Key takeaway about emotional tone - e.g., "Collaborative atmosphere with occasional stress during technical discussions"]
+## Write a key takeaway about emotional tone (e.g., "Collaborative atmosphere with occasional stress during technical discussions")
 Analyze climate, shifts, and stress indicators. What was the overall emotional temperature? How did it change throughout the conversation?
 
-## [Key takeaway about empathy - e.g., "Strong empathetic responses built trust between participants"]
+## Write a key takeaway about empathy (e.g., "Strong empathetic responses built trust between participants")
 Examine empathetic responses and active listening. Did participants validate each other's feelings? Were emotions acknowledged appropriately?
 
-## [Key takeaway about conflict - e.g., "Disagreements resolved constructively through compromise"]
+## Write a key takeaway about conflict (e.g., "Disagreements resolved constructively through compromise")
 Assess disagreements, resolution strategies, and effectiveness. How were tensions handled? Were conflicts productive or destructive?
 
-## [Key takeaway about emotional regulation - e.g., "Participants maintained composure under pressure"]
+## Write a key takeaway about emotional regulation (e.g., "Participants maintained composure under pressure")
 Evaluate self-control, reactions, and stress management. Did anyone lose their temper? How were frustrations expressed?
 
-## [Key takeaway about relationships - e.g., "Trust strengthened through open communication"]
+## Write a key takeaway about relationships (e.g., "Trust strengthened through open communication")
 Analyze rapport, trust, and collaboration. Did the conversation strengthen or weaken relationships?
 
 ## Recommendations for emotional intelligence development
@@ -158,25 +178,27 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Influence and Persuasion Analysis Prompt
 const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion techniques used in this conversation.
 
-# Influence and persuasion analysis
+# Write your key influence and persuasion takeaway here
+
+IMPORTANT: This should be a level 1 heading (use single #). DO NOT use ## (h2) for this main title.
 
 Provide a 2-3 sentence explanation of the influence dynamics, highlighting the most effective persuasion technique used and the key missed opportunity. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
 IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Persuasion techniques", write something like "Data-driven arguments proved most convincing" or "Emotional appeals fell flat with technical audience". Make headers scannable insights that readers can understand without reading the details.
 
-## [Key takeaway about persuasion techniques - e.g., "Logic and evidence dominated over emotional appeals"]
+## Write a key takeaway about persuasion techniques (e.g., "Logic and evidence dominated over emotional appeals")
 Analyze logical arguments, emotional appeals, credibility, and social proof. Which approaches resonated most? What fell flat?
 
-## [Key takeaway about argumentation - e.g., "Strong evidence backing but weak counter-argument handling"]
+## Write a key takeaway about argumentation (e.g., "Strong evidence backing but weak counter-argument handling")
 Examine claim-evidence structures, counter-arguments, and rebuttals. How well-structured were the arguments?
 
-## [Key takeaway about influence flow - e.g., "Senior stakeholder's opinion shifted group consensus"]
+## Write a key takeaway about influence flow (e.g., "Senior stakeholder's opinion shifted group consensus")
 Identify who influenced whom, successful moments, and resistance. Who had the most sway? Where did influence attempts fail?
 
-## [Key takeaway about negotiation - e.g., "Compromise reached through incremental concessions"]
+## Write a key takeaway about negotiation (e.g., "Compromise reached through incremental concessions")
 Assess positions, compromises, and win-win solutions. Were there clear winners/losers or mutual benefit?
 
-## [Key takeaway about decision shaping - e.g., "Risk concerns ultimately drove the final decision"]
+## Write a key takeaway about decision shaping (e.g., "Risk concerns ultimately drove the final decision")
 Analyze how decisions were shaped, key factors, and consensus building. What tipped the scales?
 
 ## Effectiveness assessment and improvements
@@ -188,28 +210,30 @@ If the transcript is in a non-English language, ALL headings and content must be
 // Personal Development Analysis Prompt
 const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insights based on this conversation.
 
-# Personal development insights
+# Write your key personal development insight here
+
+IMPORTANT: This should be a level 1 heading (use single #). DO NOT use ## (h2) for this main title.
 
 Provide a 2-3 sentence explanation of the development opportunities, highlighting the most significant strength demonstrated and the primary growth area identified. Wrap this explanation in HTML: <p style="font-size: 1.4em;">Your explanation text here</p>
 
 IMPORTANT: For ALL sections below, write headers as key takeaway statements that describe what actually happened, not generic categories. For example, instead of "Strengths demonstrated", write something like "Strong technical expertise evident in problem-solving approach" or "Natural leadership emerged during crisis discussion". Make headers scannable insights that readers can understand without reading the details.
 
-## [Key takeaway about strengths - e.g., "Clear communication and strategic thinking drove productive outcomes"]
+## Write a key takeaway about strengths (e.g., "Clear communication and strategic thinking drove productive outcomes")
 Analyze communication, leadership, technical expertise, and collaboration. What capabilities stood out? How were they applied?
 
-## [Key takeaway about improvement areas - e.g., "Delegation skills need development to prevent bottlenecks"]
+## Write a key takeaway about improvement areas (e.g., "Delegation skills need development to prevent bottlenecks")
 Identify knowledge gaps and skills to develop. What specific weaknesses emerged? Where did limitations show?
 
-## [Key takeaway about learning needs - e.g., "Project management methodology would enhance execution"]
+## Write a key takeaway about learning needs (e.g., "Project management methodology would enhance execution")
 Highlight topics to explore and skills to acquire. What knowledge would have helped? What skills gaps were evident?
 
 ## Recommended training and development resources
 Suggest specific courses, resources, and mentoring opportunities based on observed needs
 
-## [Key takeaway about growth strategy - e.g., "Focus on stakeholder management for next career level"]
+## Write a key takeaway about growth strategy (e.g., "Focus on stakeholder management for next career level")
 Outline short-term goals and long-term career development paths based on demonstrated capabilities and gaps
 
-## [Key takeaway about behaviors - e.g., "Interrupting pattern limiting team collaboration"]
+## Write a key takeaway about behaviors (e.g., "Interrupting pattern limiting team collaboration")
 Examine limiting behaviors, opportunities for change, and positive patterns to reinforce
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.

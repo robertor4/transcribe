@@ -75,6 +75,14 @@ export class FirebaseService implements OnModuleInit {
     await this.db.collection('transcriptions').doc(id).update(data);
   }
 
+  async clearTranscriptionFileReferences(id: string) {
+    // Use FieldValue.delete() to remove fields from the document
+    await this.db.collection('transcriptions').doc(id).update({
+      fileUrl: admin.firestore.FieldValue.delete(),
+      storagePath: admin.firestore.FieldValue.delete(),
+    });
+  }
+
   async getTranscription(
     userId: string,
     id: string,
@@ -163,7 +171,7 @@ export class FirebaseService implements OnModuleInit {
     buffer: Buffer,
     path: string,
     contentType: string,
-  ): Promise<string> {
+  ): Promise<{ url: string; path: string }> {
     const bucket = this.storage.bucket();
     const file = bucket.file(path);
 
@@ -179,12 +187,13 @@ export class FirebaseService implements OnModuleInit {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return url;
+    return { url, path };
   }
 
   async uploadText(text: string, path: string): Promise<string> {
     const buffer = Buffer.from(text, 'utf-8');
-    return this.uploadFile(buffer, path, 'text/plain');
+    const result = await this.uploadFile(buffer, path, 'text/plain');
+    return result.url;
   }
 
   async getPublicUrl(url: string): Promise<string> {
@@ -276,6 +285,27 @@ export class FirebaseService implements OnModuleInit {
     } catch (error) {
       this.logger.error('Error parsing file URL or downloading:', error);
       this.logger.error('Original URL:', url);
+      throw error;
+    }
+  }
+
+  async deleteFileByPath(path: string) {
+    try {
+      const bucket = this.storage.bucket();
+      const file = bucket.file(path);
+      await file.delete();
+      this.logger.log(`Successfully deleted file by path: ${path}`);
+    } catch (error: any) {
+      // Check if the error is a 404 (file not found)
+      if (error?.code === 404 || error?.message?.includes('No such object')) {
+        this.logger.warn(
+          `File already deleted or doesn't exist at path: ${path}`,
+        );
+        // Don't throw - this is not a critical error
+        return;
+      }
+      // For other errors, log and re-throw
+      this.logger.error('Error deleting file by path:', error);
       throw error;
     }
   }
