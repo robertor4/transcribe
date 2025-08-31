@@ -50,3 +50,4 @@ coverage/
 
 # Environment backup files
 .env.backup.*
+.turbo
