@@ -442,14 +442,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-300 sticky top-0 bg-white z-10">
+        <div className="p-4 sm:p-6 border-b border-gray-300 sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Share2 className="w-6 h-6 text-[#cc3399]" />
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#cc3399]" />
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {t('title')}
               </h2>
             </div>
@@ -462,7 +462,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {!localShareToken ? (
             <>
               {/* Content Selection */}
@@ -473,7 +473,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </h3>
                 
                 {/* Preset Options */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                   <button
                     onClick={() => handlePresetChange('summary')}
                     className={`p-3 rounded-lg border-2 transition-all ${
@@ -482,8 +482,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         : 'border-gray-300 hover:border-[#cc3399]/50'
                     }`}
                   >
-                    <MessageSquare className="w-5 h-5 mx-auto mb-1 text-[#cc3399]" />
-                    <span className="text-sm font-medium text-gray-800">{t('summaryOnly')}</span>
+                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#cc3399]" />
+                    <span className="text-xs sm:text-sm font-medium text-gray-800">{t('summaryOnly')}</span>
                   </button>
                   
                   <button
@@ -494,8 +494,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         : 'border-gray-300 hover:border-[#cc3399]/50'
                     }`}
                   >
-                    <FileText className="w-5 h-5 mx-auto mb-1 text-[#cc3399]" />
-                    <span className="text-sm font-medium text-gray-800">{t('summaryTranscript')}</span>
+                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#cc3399]" />
+                    <span className="text-xs sm:text-sm font-medium text-gray-800">{t('summaryTranscript')}</span>
                   </button>
                   
                   <button
@@ -506,8 +506,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         : 'border-gray-300 hover:border-[#cc3399]/50'
                     }`}
                   >
-                    <Sparkles className="w-5 h-5 mx-auto mb-1 text-green-600" />
-                    <span className="text-sm font-medium text-gray-800">{t('completeAnalysis')}</span>
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-green-600" />
+                    <span className="text-xs sm:text-sm font-medium text-gray-800">{t('completeAnalysis')}</span>
                   </button>
                   
                   <button
@@ -518,8 +518,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         : 'border-gray-300 hover:border-[#cc3399]/50'
                     }`}
                   >
-                    <Shield className="w-5 h-5 mx-auto mb-1 text-orange-600" />
-                    <span className="text-sm font-medium text-gray-800">{t('customSelection')}</span>
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-orange-600" />
+                    <span className="text-xs sm:text-sm font-medium text-gray-800">{t('customSelection')}</span>
                   </button>
                 </div>
                 
@@ -806,17 +806,27 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </button>
                 </div>
 
-                {/* QR Code */}
-                {showQrCode && qrCodeUrl && (
-                  <div className="mb-4 p-4 bg-pink-50 rounded-lg flex flex-col items-center border border-pink-100">
-                    <img src={qrCodeUrl} alt="QR Code" className="mb-2" />
-                    <p className="text-sm text-gray-700">{t('scanQR')}</p>
-                  </div>
+                {/* QR Code - Collapsible on Mobile */}
+                {showQrCode && (
+                  <details className="mb-4 sm:open">
+                    <summary className="sm:hidden p-3 bg-pink-50 rounded-lg border border-pink-100 cursor-pointer hover:bg-pink-100 transition-colors">
+                      <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-[#cc3399]" />
+                        {t('showQRCode')}
+                      </span>
+                    </summary>
+                    {qrCodeUrl && (
+                      <div className="p-4 bg-pink-50 rounded-lg flex flex-col items-center border border-pink-100 sm:mt-0 mt-2">
+                        <img src={qrCodeUrl} alt="QR Code" className="mb-2 w-32 h-32 sm:w-auto sm:h-auto" />
+                        <p className="text-xs sm:text-sm text-gray-700">{t('scanQR')}</p>
+                      </div>
+                    )}
+                  </details>
                 )}
 
                 {/* Email Section */}
                 {showEmailSection && (
-                  <div className="mb-4 p-4 border border-gray-400 rounded-lg bg-white">
+                  <div className="mb-4 p-3 sm:p-4 border border-gray-400 rounded-lg bg-white">
                     <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
                       <Mail className="w-4 h-4 text-[#cc3399]" />
                       {t('sendViaEmail')}
@@ -828,9 +838,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         {emailChips.map((chip) => (
                           <div
                             key={chip.id}
-                            className="flex items-center gap-1 px-3 py-1 bg-pink-50 border border-[#cc3399]/30 rounded-full"
+                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-pink-50 border border-[#cc3399]/30 rounded-full"
                           >
-                            <span className="text-sm text-gray-800">{chip.email}</span>
+                            <span className="text-xs sm:text-sm text-gray-800">{chip.email}</span>
                             <button
                               onClick={() => removeEmailChip(chip.id)}
                               className="ml-1 text-gray-600 hover:text-red-600"
@@ -854,7 +864,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         onKeyDown={handleEmailInputKeyDown}
                         onBlur={addEmailChip}
                         placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
-                        className="w-full px-3 py-2 pr-10 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 rounded-lg text-sm sm:text-base text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
                       />
                       <button
                         onClick={addEmailChip}

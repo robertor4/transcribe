@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { ShareEmailRequest } from '@transcribe/shared';
+import { ShareEmailRequest, Transcription, User } from '@transcribe/shared';
 
 @Injectable()
 export class EmailService {
@@ -41,9 +41,6 @@ export class EmailService {
         // Increase timeouts for potentially slower connections
         connectionTimeout: 10000,
         greetingTimeout: 10000,
-        // Add these for better debugging
-        logger: true,
-        debug: process.env.NODE_ENV !== 'production',
       });
 
       // Verify transporter configuration
@@ -74,9 +71,6 @@ export class EmailService {
           }
         } else {
           this.logger.log('Gmail email service configured and ready');
-          this.logger.log(`Authenticating as: ${gmailAuthUser}`);
-          this.logger.log(`Sending from: ${gmailFromEmail}`);
-          this.logger.log(`Using SMTP: smtp.gmail.com:587 with STARTTLS`);
         }
       });
 
@@ -89,6 +83,80 @@ export class EmailService {
         'Required: GMAIL_AUTH_USER and GMAIL_APP_PASSWORD environment variables',
       );
     }
+  }
+
+  async sendTranscriptionCompleteEmail(
+    user: User,
+    transcription: Transcription,
+  ): Promise<boolean> {
+    if (!this.transporter) {
+      this.logger.warn('Email service not configured, skipping email send');
+      return false;
+    }
+
+    // Check if user has email notifications enabled
+    if (
+      !user.emailNotifications?.enabled ||
+      user.emailNotifications?.onTranscriptionComplete === false
+    ) {
+      this.logger.debug(`Email notifications disabled for user ${user.uid}`);
+      return false;
+    }
+
+    try {
+      const transcriptionUrl = `${this.frontendUrl}/${user.preferredLanguage || 'en'}/dashboard?transcriptionId=${transcription.id}`;
+      const recipientName = user.displayName || 'there';
+      const transcriptionTitle = transcription.title || transcription.fileName;
+
+      // Get the user's preferred language for the email
+      const locale = user.preferredLanguage || 'en';
+
+      const subject = this.getLocalizedSubject(locale, transcriptionTitle);
+
+      const htmlContent = this.generateTranscriptionCompleteEmailHtml(
+        transcriptionTitle,
+        transcriptionUrl,
+        recipientName,
+        transcription,
+        locale,
+      );
+
+      const textContent = this.generateTranscriptionCompleteEmailText(
+        transcriptionTitle,
+        transcriptionUrl,
+        recipientName,
+        transcription,
+        locale,
+      );
+
+      const info = await this.transporter.sendMail({
+        from: `"Neural Summary" <${this.fromEmail}>`,
+        to: user.email,
+        subject,
+        html: htmlContent,
+        text: textContent,
+      });
+
+      this.logger.debug(
+        `Transcription complete email sent to ${user.email} for transcription ${transcription.id}`,
+        info.messageId,
+      );
+      return true;
+    } catch (error: any) {
+      this.logger.error('Error sending transcription complete email:', error);
+      return false;
+    }
+  }
+
+  private getLocalizedSubject(locale: string, title: string): string {
+    const subjects = {
+      en: `Your transcription "${title}" is ready`,
+      nl: `Uw transcriptie "${title}" is klaar`,
+      de: `Ihre Transkription "${title}" ist fertig`,
+      fr: `Votre transcription "${title}" est prête`,
+      es: `Tu transcripción "${title}" está lista`,
+    };
+    return subjects[locale] || subjects.en;
   }
 
   async sendShareEmail(
@@ -133,7 +201,7 @@ export class EmailService {
         text: textContent,
       });
 
-      this.logger.log(
+      this.logger.debug(
         `Share email sent successfully to ${request.recipientEmail}`,
         info.messageId,
       );
@@ -434,6 +502,521 @@ export class EmailService {
     text += `View the transcript here:\n${shareUrl}\n\n`;
     text += `This link may expire or have limited views based on the sender's settings.\n\n`;
     text += `---\nNeural Summary • ${new Date().getFullYear()}`;
+
+    return text;
+  }
+
+  private generateTranscriptionCompleteEmailHtml(
+    transcriptionTitle: string,
+    transcriptionUrl: string,
+    recipientName: string,
+    transcription: Transcription,
+    locale: string,
+  ): string {
+    // Calculate processing statistics
+    const processingTime =
+      transcription.completedAt && transcription.createdAt
+        ? Math.round(
+            (new Date(transcription.completedAt).getTime() -
+              new Date(transcription.createdAt).getTime()) /
+              1000 /
+              60,
+          )
+        : null;
+
+    const analysisTypes: string[] = [];
+    if (transcription.analyses?.summary) analysisTypes.push('Summary');
+    if (transcription.analyses?.actionItems) analysisTypes.push('Action Items');
+    if (transcription.analyses?.communicationStyles)
+      analysisTypes.push('Communication Styles');
+    if (transcription.analyses?.emotionalIntelligence)
+      analysisTypes.push('Emotional Intelligence');
+    if (transcription.analyses?.influencePersuasion)
+      analysisTypes.push('Influence & Persuasion');
+    if (transcription.analyses?.personalDevelopment)
+      analysisTypes.push('Personal Development');
+    if (transcription.analyses?.custom) analysisTypes.push('Custom Analysis');
+
+    const getLocalizedContent = (key: string) => {
+      const content = {
+        en: {
+          greeting: `Hi ${recipientName}`,
+          mainMessage:
+            'Your transcription has been successfully processed and is ready to view.',
+          processingTime: 'Processing time',
+          minutes: 'minutes',
+          duration: 'Audio duration',
+          speakers: 'Speakers detected',
+          analyses: 'Analyses completed',
+          viewButton: 'View Your Transcription',
+          urlLabel: 'Or copy and paste this link into your browser:',
+          footer1:
+            'You received this email because you have email notifications enabled.',
+          footer2:
+            'To manage your notification preferences, visit your account settings.',
+          unsubscribe: 'Unsubscribe from these notifications',
+        },
+        nl: {
+          greeting: `Hallo ${recipientName}`,
+          mainMessage:
+            'Uw transcriptie is succesvol verwerkt en klaar om te bekijken.',
+          processingTime: 'Verwerkingstijd',
+          minutes: 'minuten',
+          duration: 'Audio duur',
+          speakers: 'Sprekers gedetecteerd',
+          analyses: 'Analyses voltooid',
+          viewButton: 'Bekijk Uw Transcriptie',
+          urlLabel: 'Of kopieer en plak deze link in uw browser:',
+          footer1:
+            'U ontvangt deze e-mail omdat u e-mailmeldingen heeft ingeschakeld.',
+          footer2:
+            'Om uw meldingsvoorkeuren te beheren, bezoek uw accountinstellingen.',
+          unsubscribe: 'Uitschrijven van deze meldingen',
+        },
+        de: {
+          greeting: `Hallo ${recipientName}`,
+          mainMessage:
+            'Ihre Transkription wurde erfolgreich verarbeitet und ist bereit zur Ansicht.',
+          processingTime: 'Verarbeitungszeit',
+          minutes: 'Minuten',
+          duration: 'Audiodauer',
+          speakers: 'Sprecher erkannt',
+          analyses: 'Analysen abgeschlossen',
+          viewButton: 'Transkription Anzeigen',
+          urlLabel: 'Oder kopieren Sie diesen Link in Ihren Browser:',
+          footer1:
+            'Sie erhalten diese E-Mail, weil Sie E-Mail-Benachrichtigungen aktiviert haben.',
+          footer2:
+            'Um Ihre Benachrichtigungseinstellungen zu verwalten, besuchen Sie Ihre Kontoeinstellungen.',
+          unsubscribe: 'Von diesen Benachrichtigungen abmelden',
+        },
+        fr: {
+          greeting: `Bonjour ${recipientName}`,
+          mainMessage:
+            'Votre transcription a été traitée avec succès et est prête à être consultée.',
+          processingTime: 'Temps de traitement',
+          minutes: 'minutes',
+          duration: 'Durée audio',
+          speakers: 'Locuteurs détectés',
+          analyses: 'Analyses terminées',
+          viewButton: 'Voir Votre Transcription',
+          urlLabel: 'Ou copiez et collez ce lien dans votre navigateur :',
+          footer1:
+            'Vous recevez cet e-mail car vous avez activé les notifications par e-mail.',
+          footer2:
+            'Pour gérer vos préférences de notification, visitez les paramètres de votre compte.',
+          unsubscribe: 'Se désabonner de ces notifications',
+        },
+        es: {
+          greeting: `Hola ${recipientName}`,
+          mainMessage:
+            'Su transcripción se ha procesado con éxito y está lista para ver.',
+          processingTime: 'Tiempo de procesamiento',
+          minutes: 'minutos',
+          duration: 'Duración del audio',
+          speakers: 'Hablantes detectados',
+          analyses: 'Análisis completados',
+          viewButton: 'Ver Su Transcripción',
+          urlLabel: 'O copie y pegue este enlace en su navegador:',
+          footer1:
+            'Recibe este correo porque tiene las notificaciones por correo habilitadas.',
+          footer2:
+            'Para gestionar sus preferencias de notificación, visite la configuración de su cuenta.',
+          unsubscribe: 'Cancelar suscripción a estas notificaciones',
+        },
+      };
+      return content[locale]?.[key] || content.en[key];
+    };
+
+    return `
+<!DOCTYPE html>
+<html lang="${locale}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>${transcriptionTitle} - Neural Summary</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #111827;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #fce7f3 0%, #f3e7fc 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background-color: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 25px rgba(204, 51, 153, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 35px;
+      padding-bottom: 25px;
+      border-bottom: 2px solid #fce7f3;
+    }
+    .logo-text {
+      font-size: 26px;
+      font-weight: 700;
+      color: #cc3399;
+      margin-bottom: 15px;
+    }
+    h1 {
+      color: #374151;
+      font-size: 20px;
+      margin: 0;
+      font-weight: 600;
+    }
+    .greeting {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+    .main-message {
+      font-size: 16px;
+      color: #4b5563;
+      margin-bottom: 25px;
+    }
+    .transcription-info {
+      background: linear-gradient(135deg, #4a1d7a 0%, #6b21a8 100%);
+      border-radius: 10px;
+      padding: 25px;
+      margin: 25px 0;
+      color: white;
+    }
+    .transcription-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: white !important;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .stat-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #e9d5ff !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: white !important;
+    }
+    .analysis-list {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .analysis-label {
+      font-size: 12px;
+      color: #e9d5ff !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .analysis-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .analysis-tag {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 13px;
+      color: white !important;
+    }
+    .button-container {
+      text-align: center;
+      margin: 35px 0;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #cc3399 0%, #b82d89 100%);
+      color: white !important;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(204, 51, 153, 0.25);
+      transition: transform 0.2s;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(204, 51, 153, 0.35);
+    }
+    .url-section {
+      background-color: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .url-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    .link {
+      color: #cc3399;
+      word-break: break-all;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 25px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .footer-text {
+      font-size: 13px;
+      color: #6b7280;
+      margin: 5px 0;
+    }
+    .footer-brand {
+      font-size: 14px;
+      color: #9333ea;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+    .unsubscribe {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 15px;
+    }
+    .unsubscribe a {
+      color: #cc3399;
+      text-decoration: none;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1a1a2e !important;
+      }
+      .container {
+        background-color: #16213e !important;
+        color: #e5e7eb !important;
+      }
+      h1 {
+        color: #f3f4f6 !important;
+      }
+      .greeting {
+        color: #e5e7eb !important;
+      }
+      .main-message {
+        color: #d1d5db !important;
+      }
+      .url-section {
+        background-color: #1f2937 !important;
+      }
+      .url-label {
+        color: #9ca3af !important;
+      }
+      .link {
+        color: #ec4899 !important;
+      }
+      .footer {
+        border-top-color: #374151 !important;
+      }
+      .footer-text {
+        color: #9ca3af !important;
+      }
+      .footer-brand {
+        color: #c084fc !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-text">Neural Summary</div>
+      <h1>✨ Transcription Complete!</h1>
+    </div>
+    
+    <p class="greeting">${getLocalizedContent('greeting')},</p>
+    
+    <p class="main-message">${getLocalizedContent('mainMessage')}</p>
+    
+    <div class="transcription-info">
+      <div class="transcription-title">📄 ${transcriptionTitle}</div>
+      
+      <div class="stats-grid">
+        ${
+          processingTime
+            ? `
+        <div class="stat-item">
+          <div class="stat-label">⏱ ${getLocalizedContent('processingTime')}</div>
+          <div class="stat-value">${processingTime} ${getLocalizedContent('minutes')}</div>
+        </div>
+        `
+            : ''
+        }
+        ${
+          transcription.duration
+            ? `
+        <div class="stat-item">
+          <div class="stat-label">🎵 ${getLocalizedContent('duration')}</div>
+          <div class="stat-value">${Math.round(transcription.duration / 60)} ${getLocalizedContent('minutes')}</div>
+        </div>
+        `
+            : ''
+        }
+        ${
+          transcription.speakerCount
+            ? `
+        <div class="stat-item">
+          <div class="stat-label">👥 ${getLocalizedContent('speakers')}</div>
+          <div class="stat-value">${transcription.speakerCount}</div>
+        </div>
+        `
+            : ''
+        }
+        ${
+          transcription.detectedLanguage
+            ? `
+        <div class="stat-item">
+          <div class="stat-label">🌍 Language</div>
+          <div class="stat-value">${transcription.detectedLanguage}</div>
+        </div>
+        `
+            : ''
+        }
+      </div>
+      
+      ${
+        analysisTypes.length > 0
+          ? `
+      <div class="analysis-list">
+        <div class="analysis-label">📊 ${getLocalizedContent('analyses')}</div>
+        <div class="analysis-items">
+          ${analysisTypes.map((type) => `<span class="analysis-tag">✓ ${type}</span>`).join('')}
+        </div>
+      </div>
+      `
+          : ''
+      }
+    </div>
+    
+    <div class="button-container">
+      <a href="${transcriptionUrl}" class="button">${getLocalizedContent('viewButton')} →</a>
+    </div>
+    
+    <div class="url-section">
+      <div class="url-label">${getLocalizedContent('urlLabel')}</div>
+      <a href="${transcriptionUrl}" class="link">${transcriptionUrl}</a>
+    </div>
+    
+    <div class="footer">
+      <p class="footer-text">${getLocalizedContent('footer1')}</p>
+      <p class="footer-text">${getLocalizedContent('footer2')}</p>
+      <p class="footer-brand">✨ Neural Summary • ${new Date().getFullYear()}</p>
+      <p class="unsubscribe">
+        <a href="${this.frontendUrl}/${locale}/settings">${getLocalizedContent('unsubscribe')}</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+  }
+
+  private generateTranscriptionCompleteEmailText(
+    transcriptionTitle: string,
+    transcriptionUrl: string,
+    recipientName: string,
+    transcription: Transcription,
+    locale: string,
+  ): string {
+    const getLocalizedContent = (key: string) => {
+      const content = {
+        en: {
+          greeting: `Hi ${recipientName}`,
+          mainMessage:
+            'Your transcription has been successfully processed and is ready to view.',
+          title: 'Transcription',
+          processingComplete: 'Processing complete',
+          viewHere: 'View your transcription here',
+          footer:
+            'You received this email because you have email notifications enabled. To manage your preferences, visit your account settings.',
+        },
+        nl: {
+          greeting: `Hallo ${recipientName}`,
+          mainMessage:
+            'Uw transcriptie is succesvol verwerkt en klaar om te bekijken.',
+          title: 'Transcriptie',
+          processingComplete: 'Verwerking voltooid',
+          viewHere: 'Bekijk uw transcriptie hier',
+          footer:
+            'U ontvangt deze e-mail omdat u e-mailmeldingen heeft ingeschakeld. Om uw voorkeuren te beheren, bezoek uw accountinstellingen.',
+        },
+        de: {
+          greeting: `Hallo ${recipientName}`,
+          mainMessage:
+            'Ihre Transkription wurde erfolgreich verarbeitet und ist bereit zur Ansicht.',
+          title: 'Transkription',
+          processingComplete: 'Verarbeitung abgeschlossen',
+          viewHere: 'Sehen Sie Ihre Transkription hier',
+          footer:
+            'Sie erhalten diese E-Mail, weil Sie E-Mail-Benachrichtigungen aktiviert haben. Um Ihre Einstellungen zu verwalten, besuchen Sie Ihre Kontoeinstellungen.',
+        },
+        fr: {
+          greeting: `Bonjour ${recipientName}`,
+          mainMessage:
+            'Votre transcription a été traitée avec succès et est prête à être consultée.',
+          title: 'Transcription',
+          processingComplete: 'Traitement terminé',
+          viewHere: 'Consultez votre transcription ici',
+          footer:
+            'Vous recevez cet e-mail car vous avez activé les notifications par e-mail. Pour gérer vos préférences, visitez les paramètres de votre compte.',
+        },
+        es: {
+          greeting: `Hola ${recipientName}`,
+          mainMessage:
+            'Su transcripción se ha procesado con éxito y está lista para ver.',
+          title: 'Transcripción',
+          processingComplete: 'Procesamiento completado',
+          viewHere: 'Ver su transcripción aquí',
+          footer:
+            'Recibe este correo porque tiene las notificaciones por correo habilitadas. Para gestionar sus preferencias, visite la configuración de su cuenta.',
+        },
+      };
+      return content[locale]?.[key] || content.en[key];
+    };
+
+    let text = `${getLocalizedContent('greeting')},\n\n`;
+    text += `${getLocalizedContent('mainMessage')}\n\n`;
+    text += `${getLocalizedContent('title')}: "${transcriptionTitle}"\n`;
+
+    if (transcription.duration) {
+      text += `Duration: ${Math.round(transcription.duration / 60)} minutes\n`;
+    }
+    if (transcription.speakerCount) {
+      text += `Speakers: ${transcription.speakerCount}\n`;
+    }
+
+    text += `\n${getLocalizedContent('processingComplete')}!\n\n`;
+    text += `${getLocalizedContent('viewHere')}:\n${transcriptionUrl}\n\n`;
+    text += `---\n${getLocalizedContent('footer')}\n\n`;
+    text += `Neural Summary • ${new Date().getFullYear()}`;
 
     return text;
   }

@@ -308,8 +308,17 @@ export class FirebaseService implements OnModuleInit {
       const bucket = this.storage.bucket();
       const file = bucket.file(filePath);
       await file.delete();
-    } catch (error) {
+      this.logger.log(`Successfully deleted file: ${filePath}`);
+    } catch (error: any) {
+      // Check if the error is a 404 (file not found)
+      if (error?.code === 404 || error?.message?.includes('No such object')) {
+        this.logger.warn(`File already deleted or doesn't exist: ${url}`);
+        // Don't throw - this is not a critical error
+        return;
+      }
+      // For other errors, log and re-throw
       this.logger.error('Error deleting file:', error);
+      throw error;
     }
   }
 

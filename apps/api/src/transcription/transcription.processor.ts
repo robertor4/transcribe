@@ -9,6 +9,8 @@ import {
 import { TranscriptionService } from './transcription.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
+import { EmailService } from '../email/email.service';
+import { UserService } from '../user/user.service';
 
 @Processor(QUEUE_NAMES.TRANSCRIPTION)
 export class TranscriptionProcessor {
@@ -18,6 +20,8 @@ export class TranscriptionProcessor {
     private transcriptionService: TranscriptionService,
     private firebaseService: FirebaseService,
     private websocketGateway: WebSocketGateway,
+    private emailService: EmailService,
+    private userService: UserService,
   ) {}
 
   @Process('transcribe')
@@ -201,6 +205,30 @@ export class TranscriptionProcessor {
         progress: 100,
         message: 'Transcription completed successfully!',
       });
+
+      // Send email notification
+      try {
+        const user = await this.userService.getUserProfile(userId);
+        if (user) {
+          const transcription =
+            await this.firebaseService.getTranscription(userId, transcriptionId);
+          if (transcription) {
+            await this.emailService.sendTranscriptionCompleteEmail(
+              user,
+              transcription,
+            );
+            this.logger.log(
+              `Email notification sent to ${user.email} for transcription ${transcriptionId}`,
+            );
+          }
+        }
+      } catch (emailError) {
+        // Don't fail the transcription if email fails
+        this.logger.error(
+          `Failed to send email notification for transcription ${transcriptionId}:`,
+          emailError,
+        );
+      }
 
       this.logger.log(
         `Transcription job ${transcriptionId} completed successfully`,

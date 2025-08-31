@@ -61,6 +61,42 @@ export class UserService {
     }
   }
 
+  async updateUserProfile(
+    userId: string,
+    profile: { displayName?: string; photoURL?: string },
+  ): Promise<User> {
+    try {
+      // Ensure user profile exists
+      let user = await this.getUserProfile(userId);
+
+      if (!user) {
+        user = await this.createUserProfile(userId);
+      }
+
+      // Update profile
+      const updates = {
+        ...profile,
+        updatedAt: new Date(),
+      };
+
+      await this.firebaseService.firestore
+        .collection('users')
+        .doc(userId)
+        .update(updates);
+
+      // Return updated user
+      const updatedUser = await this.getUserProfile(userId);
+      if (!updatedUser) {
+        throw new Error('Failed to retrieve updated user');
+      }
+
+      return updatedUser;
+    } catch (error) {
+      this.logger.error(`Error updating profile for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
   async updateUserPreferences(
     userId: string,
     preferences: { preferredLanguage?: string },
@@ -94,6 +130,61 @@ export class UserService {
     } catch (error) {
       this.logger.error(
         `Error updating preferences for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async updateEmailNotifications(
+    userId: string,
+    emailNotifications: {
+      enabled?: boolean;
+      onTranscriptionComplete?: boolean;
+      digest?: 'immediate' | 'daily' | 'weekly';
+    },
+  ): Promise<User> {
+    try {
+      // Ensure user profile exists
+      let user = await this.getUserProfile(userId);
+
+      if (!user) {
+        user = await this.createUserProfile(userId);
+      }
+
+      // Merge with existing email notification settings
+      const currentEmailNotifications = user.emailNotifications || {
+        enabled: true,
+        onTranscriptionComplete: true,
+        digest: 'immediate',
+      };
+
+      const updatedEmailNotifications = {
+        ...currentEmailNotifications,
+        ...emailNotifications,
+      };
+
+      // Update email notification preferences
+      const updates = {
+        emailNotifications: updatedEmailNotifications,
+        updatedAt: new Date(),
+      };
+
+      await this.firebaseService.firestore
+        .collection('users')
+        .doc(userId)
+        .update(updates);
+
+      // Return updated user
+      const updatedUser = await this.getUserProfile(userId);
+      if (!updatedUser) {
+        throw new Error('Failed to retrieve updated user');
+      }
+
+      return updatedUser;
+    } catch (error) {
+      this.logger.error(
+        `Error updating email notifications for user ${userId}:`,
         error,
       );
       throw error;

@@ -11,7 +11,7 @@ import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { NotificationToggle } from '@/components/NotificationToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { LogOut, FileAudio, Upload, Info, Mic } from 'lucide-react';
+import { LogOut, FileAudio, Upload, Info, Mic, Settings } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
@@ -237,6 +237,13 @@ export default function DashboardPage() {
               <span className="text-sm text-gray-600">{user.email}</span>
               <LanguageSwitcher />
               <NotificationToggle />
+              <button
+                onClick={() => router.push('/settings')}
+                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                title={tDashboard('settings')}
+              >
+                <Settings className="h-5 w-5" />
+              </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"

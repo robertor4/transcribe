@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,12 +25,14 @@ import {
   AlignLeft,
   Edit3,
   X,
-  Share2
+  Share2,
+  Calendar
 } from 'lucide-react';
 import { SummaryWithComments } from './SummaryWithComments';
 import { AnalysisTabs } from './AnalysisTabs';
 import { ShareModal } from './ShareModal';
 import { ProcessingStatus } from './ProcessingStatus';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
 export const TranscriptionList: React.FC = () => {
   const t = useTranslations('transcription');
@@ -38,6 +40,7 @@ export const TranscriptionList: React.FC = () => {
   const { user } = useAuth();
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [progressMap, setProgressMap] = useState<Map<string, TranscriptionProgress>>(new Map());
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -46,6 +49,11 @@ export const TranscriptionList: React.FC = () => {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
   const [shareModalTranscription, setShareModalTranscription] = useState<Transcription | null>(null);
+  
+  // Infinite scroll state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 20; // Load 20 items at a time
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -65,14 +73,104 @@ export const TranscriptionList: React.FC = () => {
     return formatted.replace(/\d+,/, `${day}${suffix},`);
   };
 
+  // Group transcriptions by month
+  const groupedTranscriptions = useMemo(() => {
+    const groups: Record<string, Transcription[]> = {};
+    
+    transcriptions.forEach(transcription => {
+      const date = new Date(transcription.createdAt);
+      const monthYear = date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      
+      if (!groups[monthYear]) {
+        groups[monthYear] = [];
+      }
+      groups[monthYear].push(transcription);
+    });
+    
+    // Sort months in descending order (newest first)
+    const sortedGroups: Record<string, Transcription[]> = {};
+    Object.keys(groups)
+      .sort((a, b) => {
+        const dateA = new Date(groups[a][0].createdAt);
+        const dateB = new Date(groups[b][0].createdAt);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .forEach(key => {
+        sortedGroups[key] = groups[key];
+      });
+    
+    return sortedGroups;
+  }, [transcriptions]);
+
+  const loadTranscriptions = useCallback(async (reset = false) => {
+    if (!hasMore && !reset) return;
+    if (loadingMore && !reset) return; // Prevent multiple simultaneous loads
+    
+    try {
+      const pageToLoad = reset ? 1 : currentPage;
+      
+      if (pageToLoad === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+      
+      const response = await transcriptionApi.list(pageToLoad, pageSize);
+      
+      if (response?.success && response.data) {
+        const data = response.data as any;
+        const newItems = data.items as Transcription[];
+        
+        if (reset) {
+          // Reset for initial load or refresh
+          setTranscriptions(newItems);
+          setCurrentPage(2); // Next page will be 2
+        } else {
+          // Append for infinite scroll, but filter out duplicates
+          setTranscriptions(prev => {
+            const existingIds = new Set(prev.map(t => t.id));
+            const uniqueNewItems = newItems.filter(item => !existingIds.has(item.id));
+            return [...prev, ...uniqueNewItems];
+          });
+          setCurrentPage(prev => prev + 1);
+        }
+        
+        // Update pagination state
+        setHasMore(data.hasMore || false);
+      }
+    } catch (error) {
+      const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: unknown } };
+      console.error('Failed to load transcriptions:', errorObj);
+      
+      if (errorObj?.response?.status === 401 && 
+          (errorObj?.response?.data as any)?.message?.includes('Email not verified')) {
+        console.log('Email verification required');
+      }
+      
+      if (reset || currentPage === 1) {
+        setTranscriptions([]);
+      }
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [currentPage, hasMore, pageSize, loadingMore]);
+
+  // Load initial transcriptions when component mounts or user changes
   useEffect(() => {
-    // Only load transcriptions if user is available
     if (user) {
-      loadTranscriptions();
+      loadTranscriptions(true);
     } else {
-      // If no user, just set loading to false to show empty state
       setLoading(false);
     }
+  }, [user]);
+
+  // Set up WebSocket listeners
+  useEffect(() => {
+    if (!user) return;
     
     // Track timeout timers for processing transcriptions
     const timeoutTimers = new Map<string, NodeJS.Timeout>();
@@ -138,7 +236,8 @@ export const TranscriptionList: React.FC = () => {
           newMap.delete(progress.transcriptionId);
           return newMap;
         });
-        loadTranscriptions();
+        // Reload from the beginning to show new transcriptions
+        loadTranscriptions(true);
       }
     );
     
@@ -172,8 +271,8 @@ export const TranscriptionList: React.FC = () => {
           )
         );
         
-        // Reload to get the latest status from server
-        loadTranscriptions();
+        // Reload to get the latest status
+        loadTranscriptions(true);
       }
     );
 
@@ -184,39 +283,7 @@ export const TranscriptionList: React.FC = () => {
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
-  }, [t, user]);
-
-  const loadTranscriptions = async () => {
-    try {
-      const response = await transcriptionApi.list();
-      if (response?.success && response.data) {
-        setTranscriptions(response.data.items as Transcription[]);
-      }
-    } catch (error) {
-      const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: unknown } };
-      console.error('Failed to load transcriptions:', {
-        error,
-        message: errorObj?.message,
-        status: errorObj?.status,
-        responseStatus: errorObj?.response?.status,
-        responseData: errorObj?.response?.data,
-        fullError: JSON.stringify(error)
-      });
-      
-      // Check if this is an email verification error
-      if (errorObj?.response?.status === 401 && 
-          (errorObj?.response?.data as any)?.message?.includes('Email not verified')) {
-        console.log('Email verification required - redirecting to verify-email page');
-        // The dashboard should handle this redirect, but log it here
-      }
-      
-      // Set empty list for any error to show empty state
-      // The API interceptor will handle auth issues and retry
-      setTranscriptions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [t, user, loadTranscriptions]);
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('confirmDelete'))) return;
@@ -355,6 +422,13 @@ export const TranscriptionList: React.FC = () => {
     }
   };
 
+  // Set up infinite scroll
+  const sentinelRef = useInfiniteScroll(
+    () => loadTranscriptions(false),
+    hasMore,
+    loadingMore
+  );
+
   const getStatusText = (status: TranscriptionStatus, transcriptionId?: string) => {
     const progress = transcriptionId 
       ? progressMap.get(transcriptionId)
@@ -396,14 +470,31 @@ export const TranscriptionList: React.FC = () => {
   }
 
   return (
-    <div className="space-y-4">
-      {transcriptions.map((transcription) => {
-        const progress = progressMap.get(transcription.id);
-        const isExpanded = expandedId === transcription.id;
-        
-        return (
-          <div
-            key={transcription.id}
+    <div className="space-y-8">
+      {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
+        <div key={monthYear}>
+          {/* Month Divider */}
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm -mx-6 px-6 py-3 mb-4 border-b border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-[#cc3399]/10 rounded-lg">
+                <Calendar className="h-4 w-4 text-[#cc3399]" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-800">{monthYear}</h3>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
+              </span>
+            </div>
+          </div>
+          
+          {/* Transcriptions for this month */}
+          <div className="space-y-4">
+            {monthTranscriptions.map((transcription) => {
+              const progress = progressMap.get(transcription.id);
+              const isExpanded = expandedId === transcription.id;
+              
+              return (
+                <div
+                  key={transcription.id}
             className="border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-gray-300 hover:scale-[1.005] cursor-pointer"
           >
             <div className="p-4 bg-white">
@@ -740,9 +831,32 @@ export const TranscriptionList: React.FC = () => {
                 )}
               </div>
             )}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
+      
+      {/* Infinite Scroll Sentinel */}
+      <div ref={sentinelRef} className="h-10" />
+      
+      {/* Loading More Indicator */}
+      {loadingMore && (
+        <div className="flex justify-center py-4">
+          <div className="flex items-center gap-2 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">{t('loadingMore')}</span>
+          </div>
+        </div>
+      )}
+      
+      {/* No More Items Message */}
+      {!hasMore && transcriptions.length > 0 && (
+        <div className="text-center py-4 text-sm text-gray-500">
+          {t('noMoreTranscriptions')}
+        </div>
+      )}
       
       {/* Share Modal */}
       {shareModalTranscription && (

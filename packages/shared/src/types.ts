@@ -34,6 +34,11 @@ export interface User {
     type: 'free' | 'pro' | 'enterprise';
     expiresAt?: Date;
   };
+  emailNotifications?: {
+    enabled: boolean;
+    onTranscriptionComplete?: boolean;
+    digest?: 'immediate' | 'daily' | 'weekly';
+  };
 }
 
 export interface TranscriptionContext {

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { MobileNav } from '@/components/MobileNav';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import { 
   Shield, 
@@ -32,25 +33,27 @@ export default async function LandingPage({
     <>
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
         {/* Header */}
-        <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+        <header className="fixed top-0 left-0 right-0 bg-white backdrop-blur-sm shadow-sm z-50">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center">
                 <img 
                   src="/assets/NS-symbol.webp" 
                   alt="Neural Summary" 
-                  className="h-8 w-auto mr-3"
+                  className="h-8 w-auto mr-2 sm:mr-3"
                   width={32}
                   height={32}
                 />
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                     {t('common.appName')}
                   </h1>
-                  <p className="text-xs text-gray-500">{t('landing.hero.byline')}</p>
+                  <p className="text-xs text-gray-500 hidden sm:block">{t('landing.hero.byline')}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
+              
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-4">
                 <LanguageSwitcher />
                 <Link
                   href={`/${locale}/login`}
@@ -67,6 +70,9 @@ export default async function LandingPage({
                   {t('landing.nav.getStarted')}
                 </Link>
               </div>
+
+              {/* Mobile Navigation */}
+              <MobileNav locale={locale} />
             </div>
           </nav>
         </header>
@@ -122,10 +128,10 @@ export default async function LandingPage({
                 </ScrollAnimation>
 
                 {/* CTA Buttons */}
-                <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4" delay={400}>
+                <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0" delay={400}>
                   <Link
                     href={`/${locale}/login`}
-                    className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow"
                     aria-label="Start your free trial of Neural Summary"
                   >
                     {t('landing.hero.cta.primary')}
@@ -133,7 +139,7 @@ export default async function LandingPage({
                   </Link>
                   <a
                     href="#how-it-works"
-                    className="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
                     aria-label="Learn how Neural Summary works"
                   >
                     <Play className="h-5 w-5 mr-2" aria-hidden="true" />

@@ -20,7 +20,7 @@ export default async function LoginPage({
             <img 
               src="/assets/NS-symbol.webp" 
               alt="Neural Summary Logo" 
-              className="h-12 w-auto"
+              className="h-16 w-auto"
             />
           </div>
           <h2 className="text-center text-3xl font-extrabold text-gray-900">

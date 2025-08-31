@@ -672,8 +672,17 @@ export class TranscriptionService {
     );
 
     if (transcription) {
-      // Delete file from storage
-      await this.firebaseService.deleteFile(transcription.fileUrl);
+      // Delete file from storage if it exists
+      if (transcription.fileUrl) {
+        try {
+          await this.firebaseService.deleteFile(transcription.fileUrl);
+        } catch (error) {
+          // Log but don't fail the deletion if file is already gone
+          this.logger.warn(
+            `File deletion failed for transcription ${transcriptionId}, continuing with document deletion`,
+          );
+        }
+      }
 
       // Delete transcription document
       await this.firebaseService.deleteTranscription(transcriptionId);
@@ -868,23 +877,28 @@ export class TranscriptionService {
     let token: string;
     let attempts = 0;
     const maxAttempts = 10;
-    
+
     // Keep generating until we find a unique token (collision check)
     do {
       token = nanoid(10); // Generates something like: "xK9mP2nQr3"
       attempts++;
-      
+
       // Check if this token already exists
-      const existing = await this.firebaseService.getTranscriptionByShareToken(token);
+      const existing =
+        await this.firebaseService.getTranscriptionByShareToken(token);
       if (!existing) {
         return token;
       }
-      
-      this.logger.warn(`Share token collision detected, regenerating (attempt ${attempts})`);
+
+      this.logger.warn(
+        `Share token collision detected, regenerating (attempt ${attempts})`,
+      );
     } while (attempts < maxAttempts);
-    
+
     // Fallback to longer token if we somehow can't generate a unique short one
-    this.logger.error('Failed to generate unique short token, falling back to long token');
+    this.logger.error(
+      'Failed to generate unique short token, falling back to long token',
+    );
     return crypto.randomBytes(32).toString('hex');
   }
 

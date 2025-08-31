@@ -51,6 +51,29 @@ class NotificationService {
   }
 
   /**
+   * Request notification permission
+   */
+  async requestPermission(): Promise<boolean> {
+    if (!this.isSupported()) {
+      console.warn('Notifications are not supported in this browser');
+      return false;
+    }
+
+    if (this.isDenied()) {
+      console.warn('Notification permission was denied. Please enable in browser settings.');
+      return false;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      return permission === 'granted';
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return false;
+    }
+  }
+
+  /**
    * Request permission and enable notifications
    */
   async enable(): Promise<boolean> {

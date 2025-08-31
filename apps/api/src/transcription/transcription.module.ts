@@ -8,6 +8,7 @@ import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
 import { EmailModule } from '../email/email.module';
+import { UserModule } from '../user/user.module';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
 @Module({
@@ -17,6 +18,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     WebSocketModule,
     AssemblyAIModule,
     EmailModule,
+    UserModule,
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),

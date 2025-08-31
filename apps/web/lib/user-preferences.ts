@@ -60,3 +60,62 @@ export async function getUserProfile() {
     return null;
   }
 }
+
+export async function updateUserProfile(profile: {
+  displayName?: string;
+  photoURL?: string;
+}) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('No user logged in');
+    }
+
+    const token = await user.getIdToken();
+    
+    const response = await axios.put(
+      `${API_URL}/user/profile`,
+      profile,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
+}
+
+export async function updateEmailNotifications(settings: {
+  enabled?: boolean;
+  onTranscriptionComplete?: boolean;
+  digest?: 'immediate' | 'daily' | 'weekly';
+}) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error('No user logged in');
+    }
+
+    const token = await user.getIdToken();
+    
+    const response = await axios.put(
+      `${API_URL}/user/email-notifications`,
+      settings,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error('Error updating email notifications:', error);
+    throw error;
+  }
+}

@@ -20,6 +20,23 @@ export class UserController {
     };
   }
 
+  @Put('profile')
+  async updateProfile(
+    @Req() req: Request,
+    @Body() profile: { displayName?: string; photoURL?: string },
+  ): Promise<ApiResponse<User>> {
+    const userId = (req as any).user.uid;
+    const updatedUser = await this.userService.updateUserProfile(
+      userId,
+      profile,
+    );
+
+    return {
+      success: true,
+      data: updatedUser,
+    };
+  }
+
   @Put('preferences')
   async updatePreferences(
     @Req() req: Request,
@@ -29,6 +46,28 @@ export class UserController {
     const updatedUser = await this.userService.updateUserPreferences(
       userId,
       preferences,
+    );
+
+    return {
+      success: true,
+      data: updatedUser,
+    };
+  }
+
+  @Put('email-notifications')
+  async updateEmailNotifications(
+    @Req() req: Request,
+    @Body()
+    emailNotifications: {
+      enabled?: boolean;
+      onTranscriptionComplete?: boolean;
+      digest?: 'immediate' | 'daily' | 'weekly';
+    },
+  ): Promise<ApiResponse<User>> {
+    const userId = (req as any).user.uid;
+    const updatedUser = await this.userService.updateEmailNotifications(
+      userId,
+      emailNotifications,
     );
 
     return {

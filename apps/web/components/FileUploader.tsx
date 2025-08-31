@@ -10,18 +10,11 @@ import {
   FileAudio, 
   AlertCircle, 
   Shield, 
-  Zap, 
   CheckCircle,
   Info,
   ChevronDown,
   Lock,
-  MessageSquare,
-  ListChecks,
-  Brain,
-  Target,
-  TrendingUp,
-  Sparkles,
-  Users
+  Zap
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import { 
@@ -42,10 +35,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
-  // const [showQuickTips, setShowQuickTips] = useState(true);
-
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+    // Clear previous errors
+    setErrors([]);
+    
+    // Check for maximum files limit (3)
+    const currentFileCount = files.length;
+    if (currentFileCount >= 3) {
+      setErrors([t('error.maxFilesReached') || 'Maximum 3 files allowed']);
+      return;
+    }
+    
+    const newErrors: string[] = [];
     const validFiles = acceptedFiles.filter(file => {
       // Track file drop attempt
       trackEvent('audio_uploaded', {
@@ -55,20 +57,38 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         method: 'drop'
       });
       
+      // Check for duplicate file names
+      const isDuplicate = files.some(existingFile => existingFile.name === file.name);
+      if (isDuplicate) {
+        newErrors.push(`${file.name}: ${t('error.duplicateFile') || 'This file has already been selected'}`);
+        return false;
+      }
+      
       if (!isValidAudioFile(file.name, file.type)) {
-        setErrors(prev => [...prev, `${file.name}: ${t('error.unsupportedFormat', { type: file.type })}`]);
+        newErrors.push(`${file.name}: ${t('error.unsupportedFormat', { type: file.type })}`);
         return false;
       }
       if (file.size > MAX_FILE_SIZE) {
-        setErrors(prev => [...prev, `${file.name}: ${t('error.fileTooLarge')}`]);
+        newErrors.push(`${file.name}: ${t('error.fileTooLarge')}`);
         return false;
       }
       return true;
     });
 
-    setFiles(prev => [...prev, ...validFiles]);
+    // Only add files if we won't exceed the limit
+    const filesToAdd = validFiles.slice(0, 3 - currentFileCount);
+    if (validFiles.length > filesToAdd.length) {
+      newErrors.push(t('error.tooManyFiles', { max: 3 }) || 'Only 3 files can be uploaded at once');
+    }
+    
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
+    }
+    
+    setFiles(prev => [...prev, ...filesToAdd]);
     
     if (rejectedFiles.length > 0) {
+      const rejectedErrors: string[] = [];
       rejectedFiles.forEach(rejection => {
         const file = rejection.file;
         const error = rejection.errors[0];
@@ -82,10 +102,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           errorMessage = `${file.name}: ${error.message}`;
         }
         
-        setErrors(prev => [...prev, errorMessage]);
+        rejectedErrors.push(errorMessage);
       });
+      setErrors(prev => [...prev, ...rejectedErrors]);
     }
-  }, [t, trackEvent]);
+  }, [files, t, trackEvent]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -148,214 +169,172 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
   return (
     <div className="space-y-6">
-      {/* Primary Upload Area - Most Prominent */}
-      <div className="space-y-4">
-
-        {/* Main Dropzone - Primary Focus */}
-        <div
-          {...getRootProps()}
-          className={`
-            border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer
-            transition-all duration-200 transform
-            ${isDragActive 
-              ? 'border-[#cc3399] bg-pink-50 scale-[1.02] shadow-xl' 
-              : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20 hover:shadow-lg hover:scale-[1.01]'
-            }
-          `}
-        >
-          <input {...getInputProps()} />
-          <div className="flex justify-center mb-4">
-            <div className="p-4 bg-white rounded-full shadow-md">
-              <Upload className="h-12 w-12 text-[#cc3399]" />
+      {/* Error Messages */}
+      {errors.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-red-800">{t('uploadErrors')}</h3>
+              <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
             </div>
           </div>
-          {isDragActive ? (
-            <>
-              <p className="text-2xl font-bold text-[#cc3399] mb-2">{t('releaseToUpload')}</p>
-              <p className="text-sm text-gray-600">{t('transcriptionStartsImmediately')}</p>
-            </>
-          ) : (
-            <>
-              <p className="text-2xl font-bold text-gray-900 mb-2">
-                {t('dropAudioHere')}
-              </p>
-              <p className="text-base text-gray-600 mb-4">
-                {t('orClickToBrowse')}
-              </p>
-              <button className="inline-flex items-center px-6 py-3 bg-[#cc3399] text-white font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
-                {t('selectAudioFile')}
-              </button>
-              <div className="mt-6 flex items-center justify-center space-x-6 text-sm text-gray-500">
-                <div className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                  <span>{t('instantProcessing')}</span>
-                </div>
-                <div className="flex items-center">
-                  <Lock className="h-4 w-4 text-[#cc3399] mr-1" />
-                  <span>{t('secure')}</span>
-                </div>
-                <div className="flex items-center">
-                  <Zap className="h-4 w-4 text-yellow-500 mr-1" />
-                  <span>{t('aiPowered')}</span>
-                </div>
-              </div>
-            </>
-          )}
         </div>
+      )}
 
-        {/* Supported Formats - Small, Non-distracting */}
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            {t('supportedFormatsShort', { 
-              formats: SUPPORTED_AUDIO_FORMATS.join(', '),
-              size: '5GB'
-            })}
-          </p>
-        </div>
-
-        {/* Info about comprehensive analysis - Appears when files are selected */}
-        {files.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full">
-                  <Sparkles className="h-4 w-4 text-white" />
-                </div>
+      {/* When no files selected - show full width dropzone */}
+      {files.length === 0 ? (
+        <div className="space-y-4">
+          {/* Main Dropzone - Primary Focus */}
+          <div
+            {...getRootProps()}
+            className={`
+              border-2 border-dashed rounded-2xl p-6 sm:p-8 md:p-12 text-center cursor-pointer
+              transition-all duration-200 transform
+              ${isDragActive 
+                ? 'border-[#cc3399] bg-pink-50 scale-[1.02] shadow-xl' 
+                : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20 hover:shadow-lg hover:scale-[1.01]'
+              }
+            `}
+          >
+            <input {...getInputProps()} />
+            <div className="flex justify-center mb-4">
+              <div className="p-3 sm:p-4 bg-white rounded-full shadow-md">
+                <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-[#cc3399]" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">
-                  {t('comprehensiveAnalysis')}
-                </h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  {t('comprehensiveAnalysisDescription')}
+            </div>
+            {isDragActive ? (
+              <>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#cc3399] mb-2">{t('releaseToUpload')}</p>
+                <p className="text-xs sm:text-sm text-gray-600">{t('transcriptionStartsImmediately')}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  {t('dropAudioHere')}
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                  <div className="flex items-center text-gray-700">
-                    <MessageSquare className="h-3 w-3 text-blue-500 mr-1" />
-                    <span>{t('analysisTypes.summary')}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <Users className="h-3 w-3 text-purple-500 mr-1" />
-                    <span>{t('analysisTypes.communicationStyles')}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <ListChecks className="h-3 w-3 text-green-500 mr-1" />
-                    <span>{t('analysisTypes.actionItems')}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <Brain className="h-3 w-3 text-pink-500 mr-1" />
-                    <span>{t('analysisTypes.emotionalIntelligence')}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <Target className="h-3 w-3 text-orange-500 mr-1" />
-                    <span>{t('analysisTypes.influencePersuasion')}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <TrendingUp className="h-3 w-3 text-teal-500 mr-1" />
-                    <span>{t('analysisTypes.personalDevelopment')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Context Input - Enhanced with Persuasive Messaging */}
-        {files.length > 0 && (
-          <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-5 border border-pink-200 shadow-sm">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <div className="p-2 bg-[#cc3399] rounded-full">
-                  <Zap className="h-4 w-4 text-white" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <label htmlFor="context" className="block text-base font-semibold text-gray-900 mb-1">
-                  {t('boostAccuracy')}
-                </label>
-                <p className="text-sm text-gray-600 mb-3">
-                  {t('contextStats')}
+                <p className="text-sm sm:text-base text-gray-600 mb-4">
+                  {t('orClickToBrowse')}
                 </p>
-                <textarea
-                  id="context"
-                  value={context}
-                  onChange={(e) => setContext(e.target.value)}
-                  placeholder={t('contextPlaceholder')}
-                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-900 placeholder-gray-500 text-sm bg-white transition-all duration-200 hover:border-[#cc3399]"
-                  rows={2}
-                />
-                <div className="mt-2 flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-xs">
-                    <span className="flex items-center text-gray-600">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      {t('improvesTechnicalTerms')}
-                    </span>
-                    <span className="flex items-center text-gray-600">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      {t('betterSpeakerRecognition')}
-                    </span>
-                    <span className="flex items-center text-gray-600">
-                      <CheckCircle className="h-3 w-3 text-green-500 mr-1" />
-                      {t('smarterSummaries')}
-                    </span>
-                  </div>
-                  {context.length > 0 && (
-                    <span className="text-xs font-medium text-green-600 animate-pulse">
-                      {t('greatThisWillHelp')}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error Messages */}
-        {errors.length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start">
-              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-red-800">{t('uploadErrors')}</h3>
-                <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
-                  {errors.map((error, index) => (
-                    <li key={index}>{error}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* File List */}
-        {files.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-700">{t('selectedFiles')}</h3>
-            {files.map((file, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3"
-              >
-                <div className="flex items-center space-x-3">
-                  <FileAudio className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => removeFile(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <X className="h-5 w-5" />
+                <button className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-[#cc3399] text-white text-sm sm:text-base font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
+                  {t('selectAudioFile')}
                 </button>
-              </div>
-            ))}
+                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                    <span>{t('instantProcessing')}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Lock className="h-4 w-4 text-[#cc3399] mr-1" />
+                    <span>{t('secure')}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Zap className="h-4 w-4 text-yellow-500 mr-1" />
+                    <span>{t('aiPowered')}</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-        )}
 
-        {/* Upload Button */}
-        {files.length > 0 && (
+          {/* Supported Formats - Small, Non-distracting */}
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              {t('supportedFormatsShort', { 
+                formats: SUPPORTED_AUDIO_FORMATS.join(', '),
+                size: '5GB'
+              })}
+            </p>
+          </div>
+        </div>
+      ) : (
+        /* When files are selected - show single column layout */
+        <div className="space-y-4">
+          {/* Selected files */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-700">
+              {t('selectedFiles')} ({files.length})
+            </h3>
+            <div className="space-y-2">
+              {files.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3 hover:border-[#cc3399] transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <FileAudio className="h-5 w-5 text-[#cc3399]" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{file.name}</p>
+                      <p className="text-xs text-gray-600">{formatFileSize(file.size)}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removeFile(index)}
+                    className="text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded"
+                    title="Remove file"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Compact dropzone for adding more files */}
+          {files.length < 3 ? (
+            <div
+              {...getRootProps()}
+              className={`
+                border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
+                transition-all duration-200
+                ${isDragActive 
+                  ? 'border-[#cc3399] bg-pink-50' 
+                  : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20'
+                }
+              `}
+            >
+              <input {...getInputProps()} />
+              <div className="flex items-center justify-center space-x-2">
+                <Upload className="h-5 w-5 text-[#cc3399]" />
+                <p className="text-sm font-medium text-gray-700">
+                  {t('dropMoreFiles') || 'Add more files'}
+                </p>
+                <span className="text-sm text-gray-500">
+                  {t('orClickToAddMore') || 'or click to browse'}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center bg-gray-50">
+              <div className="flex items-center justify-center space-x-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <p className="text-sm font-medium text-gray-600">
+                  {t('maxFilesSelected') || 'Maximum files selected (3)'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Context Input - Simplified */}
+          <div>
+            <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-2">
+              {t('addContext') || 'Add context (optional)'}
+            </label>
+            <textarea
+              id="context"
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              placeholder={t('contextPlaceholder')}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-800 placeholder:text-gray-500 text-sm bg-white transition-all duration-200 hover:border-[#cc3399]"
+              rows={3}
+            />
+          </div>
+
+          {/* Upload Button - Full width */}
           <button
             onClick={handleUpload}
             disabled={uploading}
@@ -369,8 +348,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           >
             {uploading ? t('uploading') : t('uploadFiles', { count: files.length })}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Secondary Information - Collapsed by Default */}
       <details className="group">
