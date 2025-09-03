@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 500MB), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-4 models.
+A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-4 models.
 
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
@@ -118,7 +118,7 @@ Create composite index for transcriptions:
 - Fields: `userId` (Ascending), `createdAt` (Descending)
 
 ### Audio Processing Constraints
-- Max file size: 500MB (configurable by subscription tier)
+- Max file size: 1GB (Free), 3GB (Pro), 5GB (Enterprise)
 - Chunk size: 10 minutes or 25MB (whichever is smaller)
 - Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
 - MIME type handling: Accepts variations like `audio/x-m4a`, `audio/mp4`, `application/octet-stream`

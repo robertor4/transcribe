@@ -10,7 +10,7 @@ const PLANS = [
     period: '/month',
     features: [
       '5 transcriptions per month',
-      'Up to 25MB per file',
+      'Up to 1GB per file',
       'Basic summary',
       'Email notifications',
     ],
@@ -22,7 +22,7 @@ const PLANS = [
     period: '/month',
     features: [
       'Unlimited transcriptions',
-      'Up to 500MB per file',
+      'Up to 3GB per file',
       'All analysis types',
       'Priority processing',
       'API access',
@@ -35,7 +35,7 @@ const PLANS = [
     period: '',
     features: [
       'Everything in Pro',
-      'Custom file size limits',
+      'Up to 5GB per file',
       'Dedicated support',
       'SLA guarantee',
       'Custom integrations',

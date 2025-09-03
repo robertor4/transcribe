@@ -30,6 +30,7 @@ import {
   RegenerateSummaryRequest,
   AnalysisType,
   SharedTranscriptionView,
+  MAX_FILE_SIZE,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -68,7 +69,7 @@ export class TranscriptionController {
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
-        fileSize: 500 * 1024 * 1024, // 500MB - We can now handle larger files with splitting
+        fileSize: MAX_FILE_SIZE, // 5GB - AssemblyAI's limit for remote URLs
       },
     }),
   )

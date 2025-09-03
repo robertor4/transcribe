@@ -1,10 +1,10 @@
 # Neural Summary - Audio Transcription & AI Summarization Platform
 
-A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 500MB), real-time progress tracking via WebSockets, and context-aware AI processing.
+A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing.
 
 ## Features
 
-- **Advanced Audio Processing**: Handle files up to 500MB with automatic splitting into optimal chunks
+- **Advanced Audio Processing**: Handle files up to 5GB (enterprise) with automatic splitting into optimal chunks
 - **Multi-Language Support**: Interface available in English, Dutch, German, French, and Spanish
 - **Real-Time Progress Tracking**: WebSocket-based updates for transcription and summarization progress
 - **Speaker Diarization**: Automatic speaker identification and separation
@@ -245,7 +245,7 @@ Create a composite index:
 
 ### Audio Processing Limits
 
-- Maximum file size: 500MB
+- Maximum file size: 1GB (Free), 3GB (Pro), 5GB (Enterprise)
 - Chunk size: 10 minutes or 25MB (whichever is smaller)
 - Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
 

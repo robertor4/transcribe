@@ -678,7 +678,7 @@
       },
       "largeFiles": {
         "title": "Large File Support",
-        "description": "Handle files up to 500MB with enterprise-grade transcription technology"
+        "description": "Handle files up to 5GB with enterprise-grade transcription technology"
       },
       "security": {
         "title": "Your Audio Is Never Stored",

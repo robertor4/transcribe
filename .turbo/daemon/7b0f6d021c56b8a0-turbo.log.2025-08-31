@@ -936,3 +936,5 @@
 2025-08-31T21:44:53.653660Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
 2025-08-31T21:45:13.494695Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json.tmp.37081.1756676713383"), AnchoredSystemPathBuf(".claude/settings.local.json")}
 2025-08-31T21:45:13.494716Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-08-31T21:45:33.394225Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".claude/settings.local.json"), AnchoredSystemPathBuf(".claude/settings.local.json.tmp.37081.1756676733284")}
+2025-08-31T21:45:33.394238Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))

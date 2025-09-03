@@ -487,7 +487,7 @@
       },
       "largeFiles": {
         "title": "Unterstützung großer Dateien",
-        "description": "Verarbeiten Sie Dateien bis zu 500 MB mit automatischer intelligenter Aufteilung"
+        "description": "Verarbeiten Sie Dateien bis zu 5 GB mit automatischer intelligenter Aufteilung"
       },
       "security": {
         "title": "Ihre Audio Wird Niemals Gespeichert",
