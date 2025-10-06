@@ -203,26 +203,17 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Checking API health at http://localhost:3001/health..."
+            echo "Checking API health..."
 
-            # Wait a moment for API to be ready
-            sleep 2
-
-            # Check if curl is available
-            if ! command -v curl &> /dev/null; then
-              echo "❌ curl not found, installing..."
-              apt-get update && apt-get install -y curl
-            fi
-
-            API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health || echo "000")
-            echo "API returned status: $API_STATUS"
-
-            if [ "$API_STATUS" = "200" ]; then
+            # Check API health inside the container (port 3001 is not exposed to host)
+            if docker exec transcribe-api wget --spider -q http://localhost:3001/health; then
               echo "✅ API: Healthy"
             else
-              echo "❌ API: Unhealthy (HTTP $API_STATUS)"
-              echo "Checking if API container is running..."
+              echo "❌ API: Health check failed"
+              echo "Container status:"
               docker ps | grep transcribe-api || echo "API container not found"
+              echo "Recent logs:"
+              docker logs --tail 10 transcribe-api
               exit 1
             fi
 
