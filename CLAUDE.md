@@ -128,6 +128,34 @@ npm run setup         # Install all dependencies and build shared package
 
 ## Critical Implementation Details
 
+### GPT-5 Model Configuration
+**Current Model**: GPT-5 (upgraded from GPT-4o in October 2025)
+
+**Model Selection Strategy** (configured in `apps/api/src/transcription/transcription.service.ts`):
+- **Primary Summary**: Always uses `gpt-5` for highest quality reasoning and insights
+- **Secondary Analyses**: Quality-based selection
+  - `QUALITY_MODE=premium` OR transcript > 10K characters → `gpt-5`
+  - `QUALITY_MODE=balanced` AND transcript < 10K characters → `gpt-5-mini`
+- **Default Fallback**: `gpt-5` if `GPT_MODEL_PREFERENCE` env var not set
+
+**Cost Savings** (vs GPT-4o):
+- Input tokens: $1.25/1M (50% cheaper than GPT-4o's $2.50/1M)
+- Output tokens: $10/1M (same as GPT-4o)
+- Overall: ~28% cost reduction per analysis
+- Semantic caching: 90% discount on repeated inputs ($0.125/1M)
+
+**Capabilities**:
+- Input limit: 272K tokens (vs 128K for GPT-4o)
+- Output limit: 128K tokens
+- Reasoning levels: minimal, low, medium, high (configurable)
+- Better quality for sophisticated transcript analysis
+
+**Environment Variables**:
+```bash
+GPT_MODEL_PREFERENCE=gpt-5        # Options: gpt-5, gpt-5-mini, gpt-5-nano
+QUALITY_MODE=premium              # Options: premium, balanced
+```
+
 ### Prompts Location
 All AI prompts for transcription analysis are located in:
 ```

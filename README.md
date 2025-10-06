@@ -34,7 +34,7 @@ A production-ready monorepo application for audio transcription and intelligent 
 ### AI Services
 - **Primary Transcription**: AssemblyAI (with speaker diarization)
 - **Fallback Transcription**: OpenAI Whisper API
-- **Summarization**: GPT-4o-mini / GPT-4o
+- **Summarization & Analysis**: GPT-5 / GPT-5-mini (context-aware with 272K token limit)
 - **Audio Processing**: FFmpeg for file splitting
 
 ### Infrastructure
@@ -196,36 +196,46 @@ transcribe/
 
 ## Deployment
 
-### Production Deployment (Traefik + Docker)
+### Production Deployment (GitHub Actions)
 
-The application uses Traefik as a reverse proxy with automatic SSL certificate management from Let's Encrypt.
+The application uses **GitHub Actions** for automated CI/CD deployment with health checks and rollback capabilities.
 
-1. **Configure Server IP**: Edit `scripts/deploy.sh` and set your server IP:
+**Automatic Deployment:**
+- Push to `main` branch triggers automatic deployment to production
+- Zero-downtime deployment with health verification
+- Automatic rollback on failure
+
+**Manual Deployment:**
+1. Go to [GitHub Actions](https://github.com/your-org/neural-summary/actions)
+2. Run "Deploy to Production" workflow
+3. Choose deployment type:
+   - **Full** - Complete rebuild and deploy (default)
+   - **Quick** - Restart services without rebuild
+   - **Service-only** - Deploy specific services (api, web, redis, traefik)
+
+**Rollback:**
 ```bash
-SERVER_IP="YOUR_SERVER_IP"  # Replace with actual IP
+# Via GitHub Actions
+Go to Actions → Run "Rollback Deployment" workflow
 ```
 
-2. **Set Production Environment**: Create `.env.production` with your production values (see `docs/PRODUCTION_ENV_TEMPLATE.md`)
-
-3. **Deploy to Server**:
+**Emergency Manual Deployment:**
 ```bash
-./scripts/deploy.sh
+./deploy-manual.sh              # Backup script for emergencies
+./deploy-manual.sh --quick      # Quick restart
+./deploy-manual.sh --service api,web  # Deploy specific services
 ```
 
-This will:
-- Install Docker and Docker Compose if needed
-- Copy files to your server
-- Build and start all services with Traefik
-- Automatically obtain SSL certificates
-- Set up health checks and monitoring
+**Required GitHub Secrets:**
+- `SSH_PRIVATE_KEY` - SSH key for server access
+- `DEPLOY_SERVER` - Production server IP/hostname
 
-### Manual Docker Deployment
+**Infrastructure:**
+- **Reverse Proxy**: Traefik v3 with automatic SSL (Let's Encrypt)
+- **Containers**: Docker Compose with health checks
+- **Server**: Hetzner VPS (or any Docker-capable server)
 
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-For detailed deployment instructions, see `docs/DEPLOYMENT.md`
+For detailed deployment instructions, see `CLAUDE.md`
 
 ## Configuration
 
