@@ -251,7 +251,7 @@ jobs:
         run: |
           echo "🌐 Checking site accessibility..."
           for i in {1..5}; do
-            SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
+            SITE_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
             if [ "$SITE_STATUS" = "200" ]; then
               echo "✅ https://neuralsummary.com is accessible (HTTP $SITE_STATUS)"
               exit 0

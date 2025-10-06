@@ -154,7 +154,7 @@ jobs:
       - name: Verify site
         run: |
           for i in {1..5}; do
-            SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
+            SITE_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
             if [ "$SITE_STATUS" = "200" ]; then
               echo "✅ Site accessible"
               exit 0
