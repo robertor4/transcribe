@@ -183,6 +183,32 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
         </div>
       </div>
 
+      {/* Summary Stats */}
+      <div className="mb-8 pb-6 border-b border-gray-200">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">{formatTime(totalDuration)}</div>
+            <div className="text-sm text-gray-500">Total Duration</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">{segments.length}</div>
+            <div className="text-sm text-gray-500">Segments</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">
+              {new Set(segments.map(s => s.speakerTag)).size}
+            </div>
+            <div className="text-sm text-gray-500">Speakers</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">
+              {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
+            </div>
+            <div className="text-sm text-gray-500">Avg Words/Segment</div>
+          </div>
+        </div>
+      </div>
+
       {/* Interactive Timeline Bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -324,32 +350,6 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
             </div>
           );
         })}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{formatTime(totalDuration)}</div>
-            <div className="text-sm text-gray-500">Total Duration</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{segments.length}</div>
-            <div className="text-sm text-gray-500">Segments</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
-              {new Set(segments.map(s => s.speakerTag)).size}
-            </div>
-            <div className="text-sm text-gray-500">Speakers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
-              {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
-            </div>
-            <div className="text-sm text-gray-500">Avg Words/Segment</div>
-          </div>
-        </div>
       </div>
     </div>
   );

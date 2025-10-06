@@ -440,11 +440,8 @@ export class TranscriptionService {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        temperature: 0.1, // Reduced from 0.3 for more consistent output
-        max_tokens: 8000, // Increased from 4000 for comprehensive analyses
-        top_p: 0.95, // Added for better quality control
-        frequency_penalty: 0.2, // Reduce repetition
-        presence_penalty: 0.1, // Encourage diverse vocabulary
+        max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
+        // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
       });
 
       return completion.choices[0].message.content || '';
@@ -1305,11 +1302,8 @@ export class TranscriptionService {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        temperature: 0.1, // Reduced from 0.3 for more consistent output
-        max_tokens: 8000, // Increased from 4000 for comprehensive analyses
-        top_p: 0.95, // Added for better quality control
-        frequency_penalty: 0.2, // Reduce repetition
-        presence_penalty: 0.1, // Encourage diverse vocabulary
+        max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
+        // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
       });
 
       return completion.choices[0].message.content || '';
