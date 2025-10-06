@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-4 models.
+A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-5 models.
 
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
@@ -17,7 +17,7 @@ A production-ready monorepo application for audio transcription and intelligent 
 - **AI Services**: 
   - AssemblyAI for transcription and speaker diarization (primary)
   - OpenAI Whisper API for transcription (fallback when AssemblyAI fails)
-  - GPT-4o-mini/GPT-4o for summarization
+  - GPT-5/GPT-5-mini for summarization and sophisticated analysis
 - **Audio Processing**: FFmpeg for splitting large files into 10-minute chunks
 
 ## Development Commands

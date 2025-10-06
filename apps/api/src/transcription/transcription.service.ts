@@ -392,8 +392,8 @@ export class TranscriptionService {
     context?: string,
     language?: string,
   ): Promise<string> {
-    // Use default model from config or GPT-4o
-    const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+    // Use default model from config or GPT-5
+    const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-5';
     return this.generateSummaryWithModel(
       transcriptionText,
       analysisType,
@@ -426,9 +426,9 @@ export class TranscriptionService {
         language,
       );
 
-      // Use specified model or default to GPT-4o
+      // Use specified model or default to GPT-5
       const selectedModel =
-        model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+        model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-5';
 
       this.logger.log(
         `Using model ${selectedModel} for ${analysisType || 'summary'} generation`,
@@ -468,7 +468,7 @@ export class TranscriptionService {
         qualityMode === 'premium' || transcriptionText.length > 10000;
 
       // Generate all analyses in parallel for efficiency
-      // Use generateSummaryWithModel for critical analyses with GPT-4o
+      // Use generateSummaryWithModel for critical analyses with GPT-5
       const analysisPromises = [
         // Primary summary - always use best model
         this.generateSummaryWithModel(
@@ -476,7 +476,7 @@ export class TranscriptionService {
           AnalysisType.SUMMARY,
           context,
           language,
-          'gpt-4o', // Always use GPT-4o for main summary
+          'gpt-5', // Always use GPT-5 for main summary
         ).catch((err) => {
           this.logger.error('Summary generation failed:', err);
           return 'Summary generation failed. Please try again.';
@@ -487,7 +487,7 @@ export class TranscriptionService {
           AnalysisType.COMMUNICATION_STYLES,
           context,
           language,
-          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
+          useHighQuality ? 'gpt-5' : 'gpt-5-mini',
         ).catch((err) => {
           this.logger.error('Communication styles analysis failed:', err);
           return null;
@@ -497,7 +497,7 @@ export class TranscriptionService {
           AnalysisType.ACTION_ITEMS,
           context,
           language,
-          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
+          useHighQuality ? 'gpt-5' : 'gpt-5-mini',
         ).catch((err) => {
           this.logger.error('Action items extraction failed:', err);
           return null;
@@ -507,7 +507,7 @@ export class TranscriptionService {
           AnalysisType.EMOTIONAL_INTELLIGENCE,
           context,
           language,
-          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
+          useHighQuality ? 'gpt-5' : 'gpt-5-mini',
         ).catch((err) => {
           this.logger.error('Emotional intelligence analysis failed:', err);
           return null;
@@ -517,7 +517,7 @@ export class TranscriptionService {
           AnalysisType.INFLUENCE_PERSUASION,
           context,
           language,
-          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
+          useHighQuality ? 'gpt-5' : 'gpt-5-mini',
         ).catch((err) => {
           this.logger.error('Influence/persuasion analysis failed:', err);
           return null;
@@ -527,7 +527,7 @@ export class TranscriptionService {
           AnalysisType.PERSONAL_DEVELOPMENT,
           context,
           language,
-          useHighQuality ? 'gpt-4o' : 'gpt-4o-mini',
+          useHighQuality ? 'gpt-5' : 'gpt-5-mini',
         ).catch((err) => {
           this.logger.error('Personal development analysis failed:', err);
           return null;
@@ -1296,8 +1296,8 @@ export class TranscriptionService {
         language,
       );
 
-      // Use GPT-4o for maximum quality (configurable via env)
-      const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-4o';
+      // Use GPT-5 for maximum quality (configurable via env)
+      const model = this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-5';
 
       const completion = await this.openai.chat.completions.create({
         model: model,
