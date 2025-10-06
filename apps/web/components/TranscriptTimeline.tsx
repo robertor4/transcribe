@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 
 interface SpeakerSegment {
   speakerTag: string;
@@ -106,6 +106,20 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
     setExpandedSegments(newExpanded);
   };
 
+  const highlightText = (text: string, query: string) => {
+    if (!query) return text;
+
+    const regex = new RegExp(`(${query})`, 'gi');
+    const parts = text.split(regex);
+
+    return parts.map((part, index) => {
+      if (part.toLowerCase() === query.toLowerCase()) {
+        return <mark key={index} className="bg-yellow-200 px-1 rounded">{part}</mark>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   useEffect(() => {
     if (!searchQuery) {
       setSearchResults(new Set());
@@ -128,8 +142,8 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
   // Group consecutive segments by speaker for cleaner display
   const groupedSegments = segments.reduce((groups, segment, index) => {
     const lastGroup = groups[groups.length - 1];
-    
-    if (lastGroup && lastGroup.speakerTag === segment.speakerTag && 
+
+    if (lastGroup && lastGroup.speakerTag === segment.speakerTag &&
         segment.startTime - lastGroup.endTime < 2) {
       // Merge with previous group if same speaker and gap < 2 seconds
       lastGroup.segments.push({ segment, index });
@@ -145,7 +159,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
         text: segment.text,
       });
     }
-    
+
     return groups;
   }, [] as Array<{
     speakerTag: string;
@@ -154,6 +168,13 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
     endTime: number;
     text: string;
   }>);
+
+  // Filter segments based on search query
+  const filteredGroups = searchQuery
+    ? groupedSegments.filter(group =>
+        group.segments.some(s => searchResults.has(s.index))
+      )
+    : groupedSegments;
 
   // Generate time markers for the timeline
   const timeMarkers = [];
@@ -173,13 +194,48 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
             placeholder="Search transcript..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
+            className="w-full pl-10 pr-24 py-2 border border-gray-300 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
           />
           {searchQuery && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
-              {searchResults.size} results
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+              <span className="text-sm text-gray-500">
+                {searchResults.size} results
+              </span>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Summary Stats */}
+      <div className="mb-8 pb-6 border-b border-gray-200">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">{formatTime(totalDuration)}</div>
+            <div className="text-sm text-gray-500">Total Duration</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">{segments.length}</div>
+            <div className="text-sm text-gray-500">Segments</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">
+              {new Set(segments.map(s => s.speakerTag)).size}
+            </div>
+            <div className="text-sm text-gray-500">Speakers</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-gray-900">
+              {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
+            </div>
+            <div className="text-sm text-gray-500">Avg Words/Segment</div>
+          </div>
         </div>
       </div>
 
@@ -240,7 +296,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
 
       {/* Transcript Segments */}
       <div className="space-y-2">
-        {groupedSegments.map((group, groupIndex) => {
+        {filteredGroups.map((group, groupIndex) => {
           const colors = getSpeakerColor(group.speakerTag);
           const isExpanded = group.segments.some(s => expandedSegments.has(s.index));
           const hasSearchResult = group.segments.some(s => searchResults.has(s.index));
@@ -249,9 +305,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
             <div
               key={groupIndex}
               id={`segment-${group.segments[0].index}`}
-              className={`relative transition-all ${
-                hasSearchResult ? 'ring-2 ring-yellow-400 ring-offset-2' : ''
-              }`}
+              className="relative transition-all"
             >
               {/* Timeline connector */}
               <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 opacity-50" />
@@ -299,24 +353,20 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                   {isExpanded ? (
                     <div className="space-y-2">
                       {group.segments.map(({ segment, index }) => (
-                        <div 
-                          key={index} 
-                          className={`pl-4 border-l-2 ${colors.border} ${
-                            searchResults.has(index) ? 'bg-yellow-100 -mx-2 px-6 py-1 rounded' : ''
-                          }`}
+                        <div
+                          key={index}
+                          className={`pl-4 border-l-2 ${colors.border}`}
                         >
                           <span className="text-xs text-gray-400 mr-2">
                             [{formatTime(segment.startTime)}]
                           </span>
-                          <span className="text-sm">{segment.text}</span>
+                          <span className="text-sm">{highlightText(segment.text, searchQuery)}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className={`text-sm whitespace-pre-wrap ${
-                      hasSearchResult ? 'bg-yellow-100 -mx-2 px-2 py-1 rounded' : ''
-                    }`}>
-                      {group.text}
+                    <p className="text-sm whitespace-pre-wrap">
+                      {highlightText(group.text, searchQuery)}
                     </p>
                   )}
                 </div>
@@ -324,32 +374,6 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
             </div>
           );
         })}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{formatTime(totalDuration)}</div>
-            <div className="text-sm text-gray-500">Total Duration</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{segments.length}</div>
-            <div className="text-sm text-gray-500">Segments</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
-              {new Set(segments.map(s => s.speakerTag)).size}
-            </div>
-            <div className="text-sm text-gray-500">Speakers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
-              {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
-            </div>
-            <div className="text-sm text-gray-500">Avg Words/Segment</div>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -125,19 +125,16 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
   
   // If no action items found, fall back to blog-style rendering
   if (actionItems.length === 0) {
+    // Strip HTML tags from content before rendering
+    const cleanContent = content.replace(/<p\s+style="[^"]*">([^<]+)<\/p>/g, '$1');
+
     return (
       <div className="max-w-4xl mx-auto px-6 lg:px-8">
         <div className="prose prose-gray prose-lg max-w-none">
-          <ReactMarkdown 
+          <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{
-              p: ({children}) => {
-                const text = String(children);
-                if (text.includes('font-size: 1.4em')) {
-                  return null; // Skip HTML styled paragraphs
-                }
-                return <p className="text-base leading-relaxed mb-4 text-gray-700">{children}</p>;
-              },
+              p: ({children}) => <p className="text-base leading-relaxed mb-4 text-gray-700">{children}</p>,
               h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
               h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
               h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
@@ -147,7 +144,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
               strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
             }}
           >
-            {content}
+            {cleanContent}
           </ReactMarkdown>
         </div>
       </div>

@@ -13,14 +13,12 @@ export default function HomePage() {
     if (!loading) {
       // Extract locale from current pathname
       const locale = pathname.split('/')[1] || 'en';
-      
-      if (user) {
-        router.push(`/${locale}/dashboard`);
-      } else {
-        router.push(`/${locale}/landing`);
-      }
+
+      // Always redirect to landing page (both logged-in and logged-out users)
+      // Users can navigate to dashboard manually via nav or links
+      router.push(`/${locale}/landing`);
     }
-  }, [user, loading, router, pathname]);
+  }, [loading, router, pathname]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
