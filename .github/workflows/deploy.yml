@@ -4,41 +4,298 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: 'Deployment type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - quick
+          - service-only
+      services:
+        description: 'Services to deploy (comma-separated: api,web,redis,traefik)'
+        required: false
+        default: ''
+      skip_build:
+        description: 'Skip Docker image rebuild'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  REMOTE_DIR: /opt/transcribe
+  COMPOSE_FILE: docker-compose.prod.yml
 
 jobs:
-  deploy:
+  pre-deploy-checks:
+    name: Pre-deployment checks
     runs-on: ubuntu-latest
-    
+    environment: production
+    outputs:
+      commit_hash: ${{ steps.commit.outputs.hash }}
+      short_hash: ${{ steps.commit.outputs.short }}
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v0.1.5
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          host: 94.130.27.115
+          fetch-depth: 2
+
+      - name: Get commit info
+        id: commit
+        run: |
+          echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Check for breaking changes
+        run: |
+          echo "🔍 Checking for breaking changes..."
+          git diff HEAD~1 HEAD --name-only
+
+          if git diff HEAD~1 HEAD --name-only | grep -q "docker-compose.prod.yml"; then
+            echo "⚠️  docker-compose.prod.yml has been modified"
+          fi
+
+          if git diff HEAD~1 HEAD --name-only | grep -q "Dockerfile"; then
+            echo "⚠️  Dockerfile(s) have been modified"
+          fi
+
+  deploy:
+    name: Deploy to production server
+    needs: pre-deploy-checks
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine deployment mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ inputs.deployment_type }}" >> $GITHUB_OUTPUT
+            echo "services=${{ inputs.services }}" >> $GITHUB_OUTPUT
+            echo "skip_build=${{ inputs.skip_build }}" >> $GITHUB_OUTPUT
+          else
+            echo "type=full" >> $GITHUB_OUTPUT
+            echo "services=" >> $GITHUB_OUTPUT
+            echo "skip_build=false" >> $GITHUB_OUTPUT
+          fi
+
+          echo "📋 Deployment configuration:"
+          echo "  Type: $(cat $GITHUB_OUTPUT | grep '^type=' | cut -d= -f2)"
+          echo "  Services: $(cat $GITHUB_OUTPUT | grep '^services=' | cut -d= -f2 || echo 'all')"
+          echo "  Skip build: $(cat $GITHUB_OUTPUT | grep '^skip_build=' | cut -d= -f2)"
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOYMENT_TYPE: ${{ steps.mode.outputs.type }}
+          SERVICES: ${{ steps.mode.outputs.services }}
+          SKIP_BUILD: ${{ steps.mode.outputs.skip_build }}
+          COMMIT_HASH: ${{ needs.pre-deploy-checks.outputs.short_hash }}
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: DEPLOYMENT_TYPE,SERVICES,SKIP_BUILD,COMMIT_HASH,REMOTE_DIR,COMPOSE_FILE
+          script: |
+            set -e
+            cd $REMOTE_DIR
+
+            echo "🚀 Starting deployment..."
+            echo "Commit: $COMMIT_HASH"
+            echo "Type: $DEPLOYMENT_TYPE"
+
+            # Save previous commit for rollback
+            PREVIOUS_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "none")
+            echo "Previous commit: ${PREVIOUS_COMMIT:0:8}"
+            echo "$PREVIOUS_COMMIT" > .previous_commit
+
+            # Pull latest code
+            echo "📥 Fetching latest code..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            NEW_COMMIT=$(git rev-parse HEAD)
+            echo "✅ Updated to commit: ${NEW_COMMIT:0:8}"
+
+            # Verify environment file
+            if [ ! -f .env.production ]; then
+              echo "❌ Error: .env.production not found!"
+              exit 1
+            fi
+
+            # Quick deployment (restart only)
+            if [ "$DEPLOYMENT_TYPE" = "quick" ]; then
+              echo "🔄 Quick restart (no rebuild)..."
+
+              if [ -n "$SERVICES" ]; then
+                for service in $(echo $SERVICES | tr ',' ' '); do
+                  echo "Restarting $service..."
+                  docker-compose -f $COMPOSE_FILE restart $service
+                done
+              else
+                echo "Restarting all services..."
+                docker-compose -f $COMPOSE_FILE restart
+              fi
+
+              echo "✅ Quick deployment complete"
+              exit 0
+            fi
+
+            # Build images (unless skipped)
+            if [ "$SKIP_BUILD" = "true" ]; then
+              echo "⏭️  Skipping Docker build..."
+            else
+              if [ -n "$SERVICES" ]; then
+                echo "🔨 Building services: $SERVICES..."
+                SERVICES_LIST=$(echo $SERVICES | tr ',' ' ')
+                docker-compose -f $COMPOSE_FILE build --no-cache $SERVICES_LIST
+              else
+                echo "🔨 Building all containers..."
+                docker-compose -f $COMPOSE_FILE build --no-cache
+              fi
+            fi
+
+            # Deploy with zero downtime
+            if [ -n "$SERVICES" ]; then
+              echo "🚢 Deploying services: $SERVICES..."
+              SERVICES_LIST=$(echo $SERVICES | tr ',' ' ')
+              docker-compose -f $COMPOSE_FILE up -d --no-deps $SERVICES_LIST
+            else
+              echo "🚢 Deploying all services..."
+              docker-compose -f $COMPOSE_FILE up -d
+            fi
+
+            echo "✅ Deployment complete"
+
+      - name: Wait for services to stabilize
+        run: sleep 15
+
+  health-checks:
+    name: Health checks
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Redis health
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/transcribe
-            
-            # Pull latest code
-            git fetch origin main
-            git reset --hard origin/main
-            
-            # Build and restart containers
-            docker-compose -f docker-compose.prod.yml build
-            docker-compose -f docker-compose.prod.yml up -d
-            
-            # Health check
-            sleep 10
-            docker ps | grep transcribe
-            
-            # Test endpoints
-            curl -f http://localhost:3001/health || exit 1
-            curl -f http://localhost:3000 || exit 1
-            
-      - name: Verify deployment
+            if docker exec transcribe-redis redis-cli ping 2>/dev/null | grep -q "PONG"; then
+              echo "✅ Redis: Healthy"
+            else
+              echo "❌ Redis: Not responding"
+              exit 1
+            fi
+
+      - name: Check API health
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
+            if [ "$API_STATUS" = "200" ]; then
+              echo "✅ API: Healthy (HTTP $API_STATUS)"
+            else
+              echo "❌ API: HTTP $API_STATUS"
+              exit 1
+            fi
+
+      - name: Check Web container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            WEB_STATUS=$(docker inspect transcribe-web --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$WEB_STATUS" = "running" ]; then
+              echo "✅ Web: Running"
+            else
+              echo "❌ Web: $WEB_STATUS"
+              exit 1
+            fi
+
+      - name: Check Traefik
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            TRAEFIK_STATUS=$(docker inspect transcribe-traefik --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$TRAEFIK_STATUS" = "running" ]; then
+              echo "✅ Traefik: Running"
+            else
+              echo "❌ Traefik: $TRAEFIK_STATUS"
+              exit 1
+            fi
+
+      - name: Verify site accessibility
         run: |
-          sleep 5
-          curl -f https://neuralsummary.com || exit 1
-          echo "✅ Deployment successful!"
+          echo "🌐 Checking site accessibility..."
+          for i in {1..5}; do
+            SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
+            if [ "$SITE_STATUS" = "200" ]; then
+              echo "✅ https://neuralsummary.com is accessible (HTTP $SITE_STATUS)"
+              exit 0
+            fi
+            echo "⏳ Attempt $i/5: HTTP $SITE_STATUS, retrying..."
+            sleep 5
+          done
+          echo "❌ Site not accessible after 5 attempts"
+          exit 1
+
+      - name: Show recent logs
+        if: always()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "📋 Recent API logs:"
+            docker logs --tail 20 transcribe-api 2>&1 | grep -v 'WebSocket\|Health check' || true
+
+            echo ""
+            echo "📋 Container status:"
+            docker ps --format "table {{.Names}}\t{{.Status}}" | grep transcribe || true
+
+  notify:
+    name: Deployment notification
+    needs: [pre-deploy-checks, deploy, health-checks]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Create deployment summary
+        run: |
+          echo "# 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ needs.pre-deploy-checks.outputs.short_hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Site:** https://neuralsummary.com" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.health-checks.result }}" = "success" ]; then
+            echo "✅ All health checks passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Health checks failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Rollback Command" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "# Run manually on server if needed:" >> $GITHUB_STEP_SUMMARY
+          echo "cd /opt/transcribe && git reset --hard \$(cat .previous_commit) && docker-compose -f docker-compose.prod.yml up -d" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

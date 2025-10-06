@@ -1,0 +1,193 @@
+name: Health Check
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      redis_status:
+        description: 'Redis health status'
+        value: ${{ jobs.health-checks.outputs.redis }}
+      api_status:
+        description: 'API health status'
+        value: ${{ jobs.health-checks.outputs.api }}
+      web_status:
+        description: 'Web health status'
+        value: ${{ jobs.health-checks.outputs.web }}
+      traefik_status:
+        description: 'Traefik health status'
+        value: ${{ jobs.health-checks.outputs.traefik }}
+      site_status:
+        description: 'Site accessibility status'
+        value: ${{ jobs.health-checks.outputs.site }}
+
+jobs:
+  health-checks:
+    name: Run health checks
+    runs-on: ubuntu-latest
+    outputs:
+      redis: ${{ steps.redis.outcome }}
+      api: ${{ steps.api.outcome }}
+      web: ${{ steps.web.outcome }}
+      traefik: ${{ steps.traefik.outcome }}
+      site: ${{ steps.site.outcome }}
+
+    steps:
+      - name: Check Redis
+        id: redis
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if docker exec transcribe-redis redis-cli ping 2>/dev/null | grep -q "PONG"; then
+              echo "✅ Redis: Healthy"
+              exit 0
+            else
+              echo "❌ Redis: Not responding"
+              exit 1
+            fi
+
+      - name: Check API health endpoint
+        id: api
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
+            if [ "$API_STATUS" = "200" ]; then
+              echo "✅ API: Healthy (HTTP $API_STATUS)"
+              exit 0
+            else
+              echo "❌ API: HTTP $API_STATUS"
+              exit 1
+            fi
+
+      - name: Check Web container
+        id: web
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            WEB_STATUS=$(docker inspect transcribe-web --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$WEB_STATUS" = "running" ]; then
+              echo "✅ Web: Running"
+              exit 0
+            else
+              echo "❌ Web: $WEB_STATUS"
+              exit 1
+            fi
+
+      - name: Check Traefik
+        id: traefik
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            TRAEFIK_STATUS=$(docker inspect transcribe-traefik --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$TRAEFIK_STATUS" = "running" ]; then
+              echo "✅ Traefik: Running"
+              exit 0
+            else
+              echo "❌ Traefik: $TRAEFIK_STATUS"
+              exit 1
+            fi
+
+      - name: Verify site accessibility
+        id: site
+        continue-on-error: true
+        run: |
+          echo "🌐 Checking site accessibility..."
+          for i in {1..5}; do
+            SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
+            if [ "$SITE_STATUS" = "200" ]; then
+              echo "✅ https://neuralsummary.com is accessible (HTTP $SITE_STATUS)"
+              exit 0
+            fi
+            echo "⏳ Attempt $i/5: HTTP $SITE_STATUS, retrying..."
+            sleep 5
+          done
+          echo "❌ Site not accessible after 5 attempts"
+          exit 1
+
+      - name: Get container logs
+        if: always()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "📋 Container Status:"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep transcribe || true
+
+            echo ""
+            echo "📋 Recent API logs (last 20 lines):"
+            docker logs --tail 20 transcribe-api 2>&1 | grep -v 'WebSocket\|Health check' || true
+
+            echo ""
+            echo "📋 Recent Web logs (last 10 lines):"
+            docker logs --tail 10 transcribe-web 2>&1 || true
+
+      - name: Create health summary
+        if: always()
+        run: |
+          echo "# 🏥 Health Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.redis.outcome }}" = "success" ]; then
+            echo "| Redis | ✅ Healthy |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Redis | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.api.outcome }}" = "success" ]; then
+            echo "| API | ✅ Healthy |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| API | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.web.outcome }}" = "success" ]; then
+            echo "| Web | ✅ Healthy |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Web | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.traefik.outcome }}" = "success" ]; then
+            echo "| Traefik | ✅ Healthy |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Traefik | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ steps.site.outcome }}" = "success" ]; then
+            echo "| Site (neuralsummary.com) | ✅ Accessible |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Site (neuralsummary.com) | ❌ Not accessible |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Overall status
+          if [ "${{ steps.redis.outcome }}" = "success" ] && \
+             [ "${{ steps.api.outcome }}" = "success" ] && \
+             [ "${{ steps.web.outcome }}" = "success" ] && \
+             [ "${{ steps.traefik.outcome }}" = "success" ] && \
+             [ "${{ steps.site.outcome }}" = "success" ]; then
+            echo "**Overall Status:** ✅ All systems operational" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Overall Status:** ⚠️ Some services are not healthy" >> $GITHUB_STEP_SUMMARY
+          fi

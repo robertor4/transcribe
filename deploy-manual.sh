@@ -1,12 +1,15 @@
 #!/bin/bash
 
-# Production Deployment Script for Neural Summary
-# Usage: 
-#   ./deploy.sh                    # Full deployment with rebuild
-#   ./deploy.sh --quick            # Quick deploy (code only, no rebuild)
-#   ./deploy.sh --service web      # Update specific service
-#   ./deploy.sh --service api,web  # Update multiple services
-#   ./deploy.sh --no-build         # Update without rebuilding images
+# Manual Deployment Script for Neural Summary
+# ⚠️  NOTE: This is a backup/emergency deployment script
+# For normal deployments, use GitHub Actions at: https://github.com/your-org/neural-summary/actions
+#
+# Usage:
+#   ./deploy-manual.sh                    # Full deployment with rebuild
+#   ./deploy-manual.sh --quick            # Quick deploy (code only, no rebuild)
+#   ./deploy-manual.sh --service web      # Update specific service
+#   ./deploy-manual.sh --service api,web  # Update multiple services
+#   ./deploy-manual.sh --no-build         # Update without rebuilding images
 
 set -e  # Exit on error
 

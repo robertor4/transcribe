@@ -61,11 +61,40 @@ npm run build         # Production build for all packages
 npm run start         # Start production servers
 npm run clean         # Clean all build artifacts and stop Redis
 npm run setup         # Install all dependencies and build shared package
-
-# Deployment
-./deploy.sh              # Deploy to production server (commits, pushes, builds, and deploys)
-./deploy-local.sh        # Local Docker deployment (for testing)
 ```
+
+### Deployment
+
+**Production Deployment (Automated via GitHub Actions):**
+- Push to `main` branch triggers automatic deployment to production
+- Manual deployment: Go to [Actions](https://github.com/your-org/neural-summary/actions) → Run "Deploy to Production" workflow
+- Workflow options:
+  - **Deployment type**: full (default), quick (restart only), service-only
+  - **Services**: Specify services to deploy (api, web, redis, traefik)
+  - **Skip build**: Deploy without rebuilding Docker images
+- Health checks run automatically after deployment
+- View deployment history and status in GitHub Actions UI
+
+**Rollback:**
+- Go to [Actions](https://github.com/your-org/neural-summary/actions) → Run "Rollback Deployment" workflow
+- Option to rollback to previous deployment or specify commit hash
+- Automatic health checks after rollback
+
+**Health Checks:**
+- Manual: Run "Health Check" workflow in GitHub Actions
+- Checks Redis, API, Web, Traefik, and site accessibility
+- Generates detailed health report
+
+**Emergency/Manual Deployment:**
+```bash
+./deploy-manual.sh              # Backup script for emergency deployments
+./deploy-manual.sh --quick      # Quick restart without rebuild
+./deploy-manual.sh --service api,web  # Deploy specific services
+```
+
+**GitHub Secrets Required:**
+- `SSH_PRIVATE_KEY` - SSH key for server access
+- `DEPLOY_SERVER` - Production server IP/hostname
 
 
 ## High-Level Architecture

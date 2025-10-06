@@ -1,0 +1,194 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_hash:
+        description: 'Commit hash to rollback to (leave empty to use previous deployment)'
+        required: false
+        default: ''
+      skip_health_check:
+        description: 'Skip health checks after rollback'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  REMOTE_DIR: /opt/transcribe
+  COMPOSE_FILE: docker-compose.prod.yml
+
+jobs:
+  confirm-rollback:
+    name: Confirm rollback
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Display rollback info
+        run: |
+          echo "⚠️  ROLLBACK DEPLOYMENT"
+          echo "This will revert the production deployment"
+
+          if [ -n "${{ inputs.commit_hash }}" ]; then
+            echo "Target commit: ${{ inputs.commit_hash }}"
+          else
+            echo "Target: Previous deployment (from .previous_commit file)"
+          fi
+
+  rollback:
+    name: Execute rollback
+    needs: confirm-rollback
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      rollback_commit: ${{ steps.rollback.outputs.commit }}
+
+    steps:
+      - name: Rollback to previous version
+        id: rollback
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TARGET_COMMIT: ${{ inputs.commit_hash }}
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: TARGET_COMMIT,REMOTE_DIR,COMPOSE_FILE
+          script: |
+            set -e
+            cd $REMOTE_DIR
+
+            echo "🔄 Starting rollback..."
+
+            # Determine target commit
+            if [ -n "$TARGET_COMMIT" ]; then
+              ROLLBACK_COMMIT="$TARGET_COMMIT"
+              echo "Rolling back to specified commit: $ROLLBACK_COMMIT"
+            elif [ -f .previous_commit ]; then
+              ROLLBACK_COMMIT=$(cat .previous_commit)
+              echo "Rolling back to previous deployment: $ROLLBACK_COMMIT"
+            else
+              echo "❌ No rollback target found!"
+              echo "Provide a commit hash or ensure .previous_commit file exists"
+              exit 1
+            fi
+
+            # Save current commit before rollback
+            CURRENT_COMMIT=$(git rev-parse HEAD)
+            echo "Current commit: ${CURRENT_COMMIT:0:8}"
+            echo "$CURRENT_COMMIT" > .rollback_from
+
+            # Reset to target commit
+            echo "📥 Fetching repository state..."
+            git fetch origin
+
+            echo "⏮️  Resetting to commit: ${ROLLBACK_COMMIT:0:8}..."
+            git reset --hard $ROLLBACK_COMMIT
+
+            # Rebuild and restart containers
+            echo "🔨 Rebuilding containers..."
+            docker-compose -f $COMPOSE_FILE build --no-cache
+
+            echo "🚢 Restarting services..."
+            docker-compose -f $COMPOSE_FILE up -d
+
+            echo "✅ Rollback complete"
+            echo "Rolled back from ${CURRENT_COMMIT:0:8} to ${ROLLBACK_COMMIT:0:8}"
+
+            # Output for next job
+            echo "commit=${ROLLBACK_COMMIT:0:8}" >> $GITHUB_OUTPUT
+
+      - name: Wait for services to stabilize
+        run: sleep 15
+
+  health-checks:
+    name: Verify rollback
+    needs: rollback
+    runs-on: ubuntu-latest
+    if: ${{ !inputs.skip_health_check }}
+
+    steps:
+      - name: Check Redis
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if docker exec transcribe-redis redis-cli ping 2>/dev/null | grep -q "PONG"; then
+              echo "✅ Redis: Healthy"
+            else
+              echo "❌ Redis: Not responding"
+              exit 1
+            fi
+
+      - name: Check API
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
+            if [ "$API_STATUS" = "200" ]; then
+              echo "✅ API: Healthy"
+            else
+              echo "❌ API: HTTP $API_STATUS"
+              exit 1
+            fi
+
+      - name: Check Web
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_SERVER }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            WEB_STATUS=$(docker inspect transcribe-web --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$WEB_STATUS" = "running" ]; then
+              echo "✅ Web: Running"
+            else
+              echo "❌ Web: $WEB_STATUS"
+              exit 1
+            fi
+
+      - name: Verify site
+        run: |
+          for i in {1..5}; do
+            SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
+            if [ "$SITE_STATUS" = "200" ]; then
+              echo "✅ Site accessible"
+              exit 0
+            fi
+            echo "⏳ Attempt $i/5: HTTP $SITE_STATUS"
+            sleep 5
+          done
+          echo "❌ Site not accessible"
+          exit 1
+
+  notify:
+    name: Rollback summary
+    needs: [rollback, health-checks]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Create summary
+        run: |
+          echo "# ⏮️  Rollback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Rolled back to:** ${{ needs.rollback.outputs.rollback_commit }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Site:** https://neuralsummary.com" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.health-checks.result }}" = "success" ] || [ "${{ needs.health-checks.result }}" = "skipped" ]; then
+            echo "**Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status:** ❌ Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Re-rollback Command" >> $GITHUB_STEP_SUMMARY
+          echo "If you need to undo this rollback:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "cd /opt/transcribe && git reset --hard \$(cat .rollback_from) && docker-compose -f docker-compose.prod.yml build && docker-compose -f docker-compose.prod.yml up -d" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
