@@ -26,43 +26,48 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
       isCritical: boolean;
       needsClarification: boolean;
     }> = [];
-    
+
     let inActionItemsSection = false;
     let currentNumber = 0;
-    
+
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
+      const line = lines[i].trim(); // Trim whitespace for better matching
+
       // Extract overview paragraph
       const htmlParagraphRegex = /<p\s+style="font-size:\s*1\.4em;">([^<]+)<\/p>/;
       const match = line.match(htmlParagraphRegex);
       if (match) {
         overview = match[1];
       }
-      
-      // Check if we're entering the action items section
-      if (line.match(/^##\s+Action items/i) || line.match(/^##\s+Actiepunten/i)) {
+
+      // Check if we're entering the action items section (more flexible matching)
+      // Match with or without ##, case insensitive
+      if (line.match(/^##?\s*(Action items|Actiepunten|Aktionspunkte|Éléments d'action|Elementos de acción)/i)) {
         inActionItemsSection = true;
         continue;
       }
-      
+
       // Check if we're leaving the action items section
       if (inActionItemsSection && line.match(/^##\s+/)) {
         inActionItemsSection = false;
       }
-      
-      // Parse numbered action items
-      if (inActionItemsSection) {
-        const numberedItemRegex = /^(\d+)\.\s+(.+)/;
-        const numberedMatch = line.match(numberedItemRegex);
-        
-        if (numberedMatch) {
+
+      // Parse numbered action items - look for any line with pipe separators after trimming
+      const numberedItemRegex = /^(\d+)\.\s+(.+)/;
+      const numberedMatch = line.match(numberedItemRegex);
+
+      if (numberedMatch) {
+        const itemContent = numberedMatch[2];
+
+        // Check if this looks like a pipe-separated action item
+        if (itemContent.includes('|')) {
+          inActionItemsSection = true; // Auto-detect we're in action items section
           currentNumber = parseInt(numberedMatch[1]);
-          const itemContent = numberedMatch[2];
-          
+
           // Split by pipe separator
           const parts = itemContent.split('|').map(p => p.trim());
-          
+
+          // Need at least 4 parts (task | owner | deadline | timeline), dependencies optional
           if (parts.length >= 4) {
             // Extract task and check for markers
             let task = parts[0];
@@ -92,7 +97,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
             const deadlineValue = cleanValue(parts[2] || '');
             const timelineValue = cleanValue(parts[3] || '');
             const dependenciesValue = cleanValue(parts[4] || '');
-            
+
             items.push({
               number: currentNumber,
               task,
@@ -138,10 +143,12 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
               h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
               h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
               h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
-              ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6">{children}</ul>,
-              ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6">{children}</ol>,
+              ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700">{children}</ul>,
+              ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700">{children}</ol>,
               li: ({children}) => <li className="text-base leading-relaxed text-gray-700">{children}</li>,
-              strong: ({children}) => <strong className="font-semibold text-gray-800">{children}</strong>,
+              strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+              em: ({children}) => <em className="italic text-gray-700">{children}</em>,
+              code: ({children}) => <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm">{children}</code>,
             }}
           >
             {cleanContent}

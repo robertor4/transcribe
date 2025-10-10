@@ -11,17 +11,22 @@ const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and pr
 Then provide a 1-2 sentence overview directly under the main heading that elaborates on the conversation's purpose and outcome. Wrap this overview paragraph in HTML: <p style="font-size: 1.4em;">Your overview text here</p>
 
 ## Key discussion points
-List the main topics as bullet points with brief descriptions (one line each).
+List the main topics as bullet points with brief descriptions (one line each). Start each bullet point with **bold text** for the topic name/key phrase (2-4 words), followed by a brief description.
+
+Example format:
+- **Topic name:** Brief description of what was discussed
+- **Another key point:** What this covered
 
 ## Detailed discussion
 For EACH key discussion point listed above, write a dedicated paragraph that:
+- Starts with the **topic in bold** (matching the bullet point from above)
 - Provides specific examples and details from the conversation
 - Includes relevant quotes or specific statements when impactful
 - Explains what was proposed, debated, or explored
 - Shows how participants approached or resolved the topic
 - Uses concrete details (numbers, names, technical terms) mentioned in the conversation
 
-Each paragraph should be substantial (3-5 sentences) and give readers a clear understanding of what was actually said, not just what was discussed.
+Each paragraph should be substantial (3-5 sentences) and give readers a clear understanding of what was actually said, not just what was discussed. The bold topic at the start helps readers quickly scan and find specific discussion areas.
 
 ## Decisions made
 Only include this section if concrete decisions were reached. List specific agreements or conclusions.

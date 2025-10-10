@@ -114,9 +114,9 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
 
     return parts.map((part, index) => {
       if (part.toLowerCase() === query.toLowerCase()) {
-        return <mark key={index} className="bg-yellow-200 px-1 rounded">{part}</mark>;
+        return <mark key={index} className="bg-yellow-200 text-gray-900 px-1 rounded">{part}</mark>;
       }
-      return <span key={index}>{part}</span>;
+      return <span key={index} className="text-gray-700">{part}</span>;
     });
   };
 
@@ -299,8 +299,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
         {filteredGroups.map((group, groupIndex) => {
           const colors = getSpeakerColor(group.speakerTag);
           const isExpanded = group.segments.some(s => expandedSegments.has(s.index));
-          const hasSearchResult = group.segments.some(s => searchResults.has(s.index));
-          
+
           return (
             <div
               key={groupIndex}
