@@ -55,7 +55,7 @@ export const WEBSOCKET_EVENTS = {
   UNSUBSCRIBE_TRANSCRIPTION: 'unsubscribe_transcription',
   SUBSCRIBE_COMMENTS: 'subscribe_comments',
   UNSUBSCRIBE_COMMENTS: 'unsubscribe_comments',
-  
+
   // Server to Client
   TRANSCRIPTION_PROGRESS: 'transcription_progress',
   TRANSCRIPTION_COMPLETED: 'transcription_completed',
@@ -66,11 +66,12 @@ export const WEBSOCKET_EVENTS = {
   COMMENT_ADDED: 'comment_added',
   COMMENT_UPDATED: 'comment_updated',
   COMMENT_DELETED: 'comment_deleted',
-  
-  // Connection
+
+  // Connection & Auth
   CONNECTION: 'connection',
   DISCONNECT: 'disconnect',
-  ERROR: 'error'
+  ERROR: 'error',
+  AUTH_ERROR: 'auth_error'
 } as const;
 
 export const ERROR_CODES = {
@@ -82,7 +83,10 @@ export const ERROR_CODES = {
   UNSUPPORTED_FORMAT: 'UNSUPPORTED_FORMAT',
   TRANSCRIPTION_FAILED: 'TRANSCRIPTION_FAILED',
   QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
-  INTERNAL_ERROR: 'INTERNAL_ERROR'
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  AUTH_TOKEN_EXPIRED: 'AUTH_TOKEN_EXPIRED',
+  AUTH_TOKEN_INVALID: 'AUTH_TOKEN_INVALID',
+  AUTH_TOKEN_MISSING: 'AUTH_TOKEN_MISSING'
 } as const;
 
 export const SUBSCRIPTION_LIMITS = {
