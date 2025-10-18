@@ -265,7 +265,7 @@ export class EmailService {
       background-color: #f9fafb;
     }
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       background-color: white;
       border-radius: 12px;
@@ -387,7 +387,7 @@ export class EmailService {
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9fafb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="500" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 500px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+        <table width="600" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 600px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <tr>
             <td>
               <div class="header">
@@ -592,7 +592,7 @@ export class EmailService {
       background-color: #f9fafb;
     }
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       background-color: white;
       border-radius: 12px;
@@ -740,7 +740,7 @@ export class EmailService {
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9fafb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="500" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 500px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+        <table width="600" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 600px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
           <tr>
             <td>
               <div class="header">
