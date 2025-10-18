@@ -383,39 +383,49 @@ export class EmailService {
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
-      <div class="logo-text">Neural Summary</div>
-    </div>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="500" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 500px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td>
+              <div class="header">
+                <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
+                <div class="logo-text">Neural Summary</div>
+              </div>
 
-    <div class="share-icon">🔗</div>
-    <h1>Transcript Shared With You</h1>
-    <p class="greeting">Hi ${recipientName || 'there'},</p>
-    <p class="sender-info"><span class="sender-name">${senderName}</span> has shared a transcript with you</p>
+              <div class="share-icon">🔗</div>
+              <h1>Transcript Shared With You</h1>
+              <p class="greeting">Hi ${recipientName || 'there'},</p>
+              <p class="sender-info"><span class="sender-name">${senderName}</span> has shared a transcript with you</p>
 
-    <div class="transcription-title">${transcriptionTitle}</div>
+              <div class="transcription-title">${transcriptionTitle}</div>
 
-    ${
-      customMessage
-        ? `<div class="custom-message">"${customMessage}"<br><span style="font-size: 13px; color: #9ca3af;">— ${senderName}</span></div>`
-        : ''
-    }
-    
-    <div class="button-container">
-      <a href="${shareUrl}" class="button">View Transcript →</a>
-    </div>
-    
-    <div class="url-section">
-      <div class="url-label">Or copy and paste this link into your browser:</div>
-      <a href="${shareUrl}" class="link">${shareUrl}</a>
-    </div>
-    
-    <div class="footer">
-      <p class="footer-text">This link may expire or have limited views based on the sender's settings.</p>
-    </div>
-  </div>
+              ${
+                customMessage
+                  ? `<div class="custom-message">"${customMessage}"<br><span style="font-size: 13px; color: #9ca3af;">— ${senderName}</span></div>`
+                  : ''
+              }
+
+              <div class="button-container">
+                <a href="${shareUrl}" class="button">View Transcript →</a>
+              </div>
+
+              <div class="url-section">
+                <div class="url-label">Or copy and paste this link into your browser:</div>
+                <a href="${shareUrl}" class="link">${shareUrl}</a>
+              </div>
+
+              <div class="footer">
+                <p class="footer-text">This link may expire or have limited views based on the sender's settings.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
     `;
@@ -726,36 +736,46 @@ export class EmailService {
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
-      <div class="logo-text">Neural Summary</div>
-    </div>
+<body style="margin: 0; padding: 0; background-color: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="500" cellpadding="40" cellspacing="0" border="0" class="container" style="max-width: 500px; background-color: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td>
+              <div class="header">
+                <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
+                <div class="logo-text">Neural Summary</div>
+              </div>
 
-    <div class="completion-icon">✨</div>
-    <h1>Transcription Complete!</h1>
-    <p class="greeting">${getLocalizedContent('greeting')},</p>
-    <p class="greeting">${getLocalizedContent('mainMessage')}</p>
+              <div class="completion-icon">✨</div>
+              <h1>Transcription Complete!</h1>
+              <p class="greeting">${getLocalizedContent('greeting')},</p>
+              <p class="greeting">${getLocalizedContent('mainMessage')}</p>
 
-    <div class="transcription-title">${transcriptionTitle}</div>
-    
-    <div class="button-container">
-      <a href="${transcriptionUrl}" class="button">${getLocalizedContent('viewButton')} →</a>
-    </div>
-    
-    <div class="url-section">
-      <div class="url-label">${getLocalizedContent('urlLabel')}</div>
-      <a href="${transcriptionUrl}" class="link">${transcriptionUrl}</a>
-    </div>
-    
-    <div class="footer">
-      <p class="footer-text">${getLocalizedContent('footer1')}</p>
-      <p class="unsubscribe">
-        <a href="${this.frontendUrl}/${locale}/settings">${getLocalizedContent('unsubscribe')}</a>
-      </p>
-    </div>
-  </div>
+              <div class="transcription-title">${transcriptionTitle}</div>
+
+              <div class="button-container">
+                <a href="${transcriptionUrl}" class="button">${getLocalizedContent('viewButton')} →</a>
+              </div>
+
+              <div class="url-section">
+                <div class="url-label">${getLocalizedContent('urlLabel')}</div>
+                <a href="${transcriptionUrl}" class="link">${transcriptionUrl}</a>
+              </div>
+
+              <div class="footer">
+                <p class="footer-text">${getLocalizedContent('footer1')}</p>
+                <p class="unsubscribe">
+                  <a href="${this.frontendUrl}/${locale}/settings">${getLocalizedContent('unsubscribe')}</a>
+                </p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
     `;
