@@ -260,70 +260,98 @@ export class EmailService {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
       color: #111827;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background: linear-gradient(135deg, #fce7f3 0%, #f3e7fc 100%);
-      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #f9fafb;
     }
     .container {
+      max-width: 500px;
+      margin: 0 auto;
       background-color: white;
       border-radius: 12px;
       padding: 40px;
-      box-shadow: 0 10px 25px rgba(204, 51, 153, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     .header {
       text-align: center;
-      margin-bottom: 35px;
-      padding-bottom: 25px;
-      border-bottom: 2px solid #fce7f3;
+      margin-bottom: 30px;
+    }
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
     }
     .logo-text {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 700;
       color: #cc3399;
-      margin-bottom: 15px;
+      margin: 0;
+    }
+    .share-icon {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 20px;
     }
     h1 {
-      color: #374151;
-      font-size: 18px;
-      margin: 0;
-      font-weight: 500;
+      color: #111827;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      margin: 0 0 10px 0;
     }
     .greeting {
       font-size: 16px;
-      color: #374151;
+      color: #6b7280;
+      text-align: center;
       margin-bottom: 10px;
     }
     .sender-info {
       font-size: 16px;
-      color: #4b5563;
-      margin-bottom: 20px;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 30px;
     }
     .sender-name {
       color: #cc3399;
       font-weight: 600;
     }
+    .transcription-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #374151;
+      text-align: center;
+      margin: 20px 0 10px 0;
+      padding: 15px;
+      background-color: #f9fafb;
+      border-radius: 8px;
+    }
+    .custom-message {
+      font-size: 15px;
+      color: #6b7280;
+      text-align: center;
+      font-style: italic;
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #fef3f7;
+      border-left: 3px solid #cc3399;
+      border-radius: 4px;
+    }
     .button-container {
       text-align: center;
-      margin: 35px 0;
+      margin: 30px 0;
     }
     .button {
       display: inline-block;
       padding: 14px 32px;
-      background: linear-gradient(135deg, #cc3399 0%, #b82d89 100%);
+      background-color: #cc3399;
       color: white !important;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
       font-size: 16px;
-      box-shadow: 0 4px 14px rgba(204, 51, 153, 0.25);
-      transition: transform 0.2s;
     }
     .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(204, 51, 153, 0.35);
-      color: white !important;
+      background-color: #b82d89;
     }
     .url-section {
       background-color: #f9fafb;
@@ -350,116 +378,28 @@ export class EmailService {
     }
     .footer-text {
       font-size: 13px;
-      color: #6b7280;
+      color: #9ca3af;
       margin: 5px 0;
-    }
-    .footer-brand {
-      font-size: 14px;
-      color: #9333ea;
-      font-weight: 600;
-      margin-top: 15px;
-    }
-    
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #1a1a2e !important;
-        color: #e5e7eb !important;
-      }
-      .container {
-        background-color: #16213e !important;
-        color: #e5e7eb !important;
-      }
-      h1 {
-        color: #f3f4f6 !important;
-      }
-      .greeting {
-        color: #e5e7eb !important;
-      }
-      .sender-info {
-        color: #d1d5db !important;
-      }
-      .sender-name {
-        color: #ec4899 !important;
-      }
-      .button {
-        background: linear-gradient(135deg, #ec4899 0%, #db2777 100%) !important;
-      }
-      .url-section {
-        background-color: #1f2937 !important;
-      }
-      .url-label {
-        color: #9ca3af !important;
-      }
-      .link {
-        color: #ec4899 !important;
-      }
-      .footer {
-        border-top-color: #374151 !important;
-      }
-      .footer-text {
-        color: #9ca3af !important;
-      }
-      .footer-brand {
-        color: #c084fc !important;
-      }
-    }
-    
-    /* Gmail-specific dark mode */
-    [data-ogsc] body {
-      background: #1a1a2e !important;
-      color: #e5e7eb !important;
-    }
-    [data-ogsc] .container {
-      background-color: #16213e !important;
-      color: #e5e7eb !important;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
+      <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
       <div class="logo-text">Neural Summary</div>
-      <h1>A transcript has been shared with you</h1>
     </div>
-    
+
+    <div class="share-icon">🔗</div>
+    <h1>Transcript Shared With You</h1>
     <p class="greeting">Hi ${recipientName || 'there'},</p>
-    
-    <p class="sender-info"><span class="sender-name">${senderName}</span> has shared a transcript with you:</p>
-    
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0;">
-      <tr>
-        <td>
-          <table width="100%" cellpadding="20" cellspacing="0" border="0" style="background-color: #4a1d7a; border-radius: 10px; border-left: 4px solid #cc3399;">
-            <tr>
-              <td>
-                <div style="font-size: 12px; text-transform: uppercase; color: #e9d5ff !important; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px;">📄 Transcript</div>
-                <div style="font-size: 18px; color: #ffffff !important; font-weight: 600;">${transcriptionTitle}</div>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    
+    <p class="sender-info"><span class="sender-name">${senderName}</span> has shared a transcript with you</p>
+
+    <div class="transcription-title">${transcriptionTitle}</div>
+
     ${
       customMessage
-        ? `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 25px 0;">
-      <tr>
-        <td>
-          <table width="100%" cellpadding="18" cellspacing="0" border="0" style="background-color: #7c6f64; border-radius: 8px; border-left: 4px solid #fbbf24;">
-            <tr>
-              <td>
-                <div style="font-size: 13px; color: #fef3c7 !important; font-weight: 600; margin-bottom: 8px;">💬 Message from ${senderName}:</div>
-                <div style="font-size: 15px; color: #ffffff !important; line-height: 1.5;">${customMessage}</div>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-    `
+        ? `<div class="custom-message">"${customMessage}"<br><span style="font-size: 13px; color: #9ca3af;">— ${senderName}</span></div>`
         : ''
     }
     
@@ -474,9 +414,6 @@ export class EmailService {
     
     <div class="footer">
       <p class="footer-text">This link may expire or have limited views based on the sender's settings.</p>
-      <p class="footer-text">You're receiving this because someone shared a transcript with you.</p>
-      <p class="footer-brand">✨ Neural Summary • ${new Date().getFullYear()}</p>
-      <p class="footer-text" style="font-size: 10px; color: #9ca3af;">Email Template v3 - Dark Mode Fixed</p>
     </div>
   </div>
 </body>
