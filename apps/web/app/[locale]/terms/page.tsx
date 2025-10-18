@@ -35,7 +35,7 @@ export default async function TermsPage({
   let t;
   try {
     t = await getTranslations({ locale, namespace: 'terms' });
-  } catch (error) {
+  } catch {
     console.warn(`Terms translations missing for locale: ${locale}, falling back to English`);
     t = await getTranslations({ locale: 'en', namespace: 'terms' });
   }

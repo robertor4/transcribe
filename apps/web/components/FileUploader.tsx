@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection } from 'react-dropzone';
 import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { 
@@ -36,7 +36,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [context, setContext] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     // Clear previous errors
     setErrors([]);
     

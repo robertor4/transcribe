@@ -2,21 +2,20 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { 
-  ArrowLeft, 
-  Shield, 
-  Lock, 
-  Eye, 
-  Database, 
-  Users, 
-  Globe, 
-  AlertCircle, 
+import {
+  ArrowLeft,
+  Shield,
+  Lock,
+  Eye,
+  Database,
+  Users,
+  Globe,
+  AlertCircle,
   Mail,
   Cookie,
   Clock,
   FileCheck,
-  UserCheck,
-  Server
+  UserCheck
 } from 'lucide-react';
 import type { Metadata } from 'next';
 
@@ -46,11 +45,11 @@ export default async function PrivacyPage({
 }) {
   const { locale } = await params;
   
-  // Use English as fallback if privacy translations are missing  
+  // Use English as fallback if privacy translations are missing
   let t;
   try {
     t = await getTranslations({ locale, namespace: 'privacy' });
-  } catch (error) {
+  } catch {
     console.warn(`Privacy translations missing for locale: ${locale}, falling back to English`);
     t = await getTranslations({ locale: 'en', namespace: 'privacy' });
   }

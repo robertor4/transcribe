@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Cookie, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 export function CookieConsent() {
-  // const t = useTranslations('cookieConsent');
   const { setAnalyticsConsent } = useAnalytics();
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);

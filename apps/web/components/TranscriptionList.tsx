@@ -5,14 +5,22 @@ import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import websocketService from '@/lib/websocket';
-import { 
-  Transcription, 
+import {
+  Transcription,
   TranscriptionStatus,
   TranscriptionProgress,
   WEBSOCKET_EVENTS,
   formatFileSize,
-  formatDuration 
+  formatDuration
 } from '@transcribe/shared';
+
+interface ListResponse {
+  items: Transcription[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore?: boolean;
+}
 import { 
   FileAudio, 
   Trash2, 
@@ -119,10 +127,10 @@ export const TranscriptionList: React.FC = () => {
       }
       
       const response = await transcriptionApi.list(pageToLoad, pageSize);
-      
+
       if (response?.success && response.data) {
-        const data = response.data as any;
-        const newItems = data.items as Transcription[];
+        const data = response.data as ListResponse;
+        const newItems = data.items;
         
         if (reset) {
           // Reset for initial load or refresh
@@ -142,11 +150,11 @@ export const TranscriptionList: React.FC = () => {
         setHasMore(data.hasMore || false);
       }
     } catch (error) {
-      const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: unknown } };
+      const errorObj = error as { message?: string; status?: number; response?: { status?: number; data?: { message?: string } } };
       console.error('Failed to load transcriptions:', errorObj);
-      
-      if (errorObj?.response?.status === 401 && 
-          (errorObj?.response?.data as any)?.message?.includes('Email not verified')) {
+
+      if (errorObj?.response?.status === 401 &&
+          errorObj?.response?.data?.message?.includes('Email not verified')) {
         console.log('Email verification required');
       }
       
@@ -166,7 +174,7 @@ export const TranscriptionList: React.FC = () => {
     } else {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, loadTranscriptions]);
 
   // Set up WebSocket listeners
   useEffect(() => {

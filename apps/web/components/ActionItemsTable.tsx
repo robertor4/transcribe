@@ -13,9 +13,8 @@ interface ActionItemsTableProps {
 
 export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) => {
   const t = useTranslations('actionItemsTable');
-  const { overview, actionItems } = useMemo(() => {
+  const { actionItems } = useMemo(() => {
     const lines = content.split('\n');
-    let overview = '';
     const items: Array<{
       number: number;
       task: string;
@@ -32,13 +31,6 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim(); // Trim whitespace for better matching
-
-      // Extract overview paragraph
-      const htmlParagraphRegex = /<p\s+style="font-size:\s*1\.4em;">([^<]+)<\/p>/;
-      const match = line.match(htmlParagraphRegex);
-      if (match) {
-        overview = match[1];
-      }
 
       // Check if we're entering the action items section (more flexible matching)
       // Match with or without ##, case insensitive
@@ -124,8 +116,8 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
       
       return getTimelinePriority(a.timeline) - getTimelinePriority(b.timeline);
     });
-    
-    return { overview, actionItems: sortedItems };
+
+    return { actionItems: sortedItems };
   }, [content, t]);
   
   // If no action items found, fall back to blog-style rendering

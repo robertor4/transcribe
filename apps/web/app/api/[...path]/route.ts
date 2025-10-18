@@ -30,7 +30,7 @@ async function handler(req: NextRequest) {
       method: req.method,
       headers: headers,
       body: req.body ? await req.arrayBuffer() : undefined,
-      // @ts-ignore - Next.js specific
+      // @ts-expect-error - Next.js specific duplex property
       duplex: 'half',
     });
     
