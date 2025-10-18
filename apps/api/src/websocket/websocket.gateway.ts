@@ -68,12 +68,14 @@ export class WebSocketGateway
       this.logger.error('Authentication failed:', error);
 
       // Determine error code based on Firebase error
-      let errorCode: typeof ERROR_CODES[keyof typeof ERROR_CODES] = ERROR_CODES.AUTH_TOKEN_INVALID;
+      let errorCode: (typeof ERROR_CODES)[keyof typeof ERROR_CODES] =
+        ERROR_CODES.AUTH_TOKEN_INVALID;
       let errorMessage = 'Authentication failed';
 
       if (error?.errorInfo?.code === 'auth/id-token-expired') {
         errorCode = ERROR_CODES.AUTH_TOKEN_EXPIRED;
-        errorMessage = 'Authentication token has expired. Please refresh and try again.';
+        errorMessage =
+          'Authentication token has expired. Please refresh and try again.';
       } else if (error?.errorInfo?.code) {
         errorMessage = error.errorInfo.message || errorMessage;
       }

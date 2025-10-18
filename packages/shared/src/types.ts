@@ -123,6 +123,21 @@ export interface FileUploadRequest {
   priority?: number;
 }
 
+export interface BatchUploadRequest {
+  files: File[];
+  mergeFiles: boolean;
+  analysisType?: AnalysisType;
+  context?: string;
+  contextId?: string;
+  priority?: number;
+}
+
+export interface BatchUploadResponse {
+  transcriptionIds: string[];
+  fileNames: string[];
+  merged: boolean;
+}
+
 export interface TranscriptionProgress {
   transcriptionId: string;
   status: TranscriptionStatus;

@@ -27,6 +27,7 @@ import {
   ShareEmailRequest,
   SharedTranscriptionView,
   ShareContentOptions,
+  BatchUploadResponse,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -124,6 +125,156 @@ export class TranscriptionService {
     });
 
     return { ...transcription, id: transcriptionId };
+  }
+
+  async createBatchTranscription(
+    userId: string,
+    files: Express.Multer.File[],
+    mergeFiles: boolean,
+    analysisType?: AnalysisType,
+    context?: string,
+    contextId?: string,
+  ): Promise<BatchUploadResponse> {
+    this.logger.log(
+      `Creating batch transcription for user ${userId}, ${files.length} files, merge: ${mergeFiles}`,
+    );
+
+    if (mergeFiles) {
+      // Merge files and create single transcription
+      const tempDir = path.join(process.cwd(), 'temp', userId);
+      await fs.promises.mkdir(tempDir, { recursive: true });
+
+      try {
+        // Write files to temporary directory
+        const tempFilePaths: string[] = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const tempPath = path.join(tempDir, `${i}_${file.originalname}`);
+          await fs.promises.writeFile(tempPath, file.buffer);
+          tempFilePaths.push(tempPath);
+        }
+
+        // Merge files
+        const mergedFileName = `merged_${Date.now()}.mp3`;
+        const mergedFilePath = path.join(tempDir, mergedFileName);
+        await this.audioSplitter.mergeAudioFiles(tempFilePaths, mergedFilePath);
+
+        // Read merged file
+        const mergedBuffer = await fs.promises.readFile(mergedFilePath);
+        const mergedStats = await fs.promises.stat(mergedFilePath);
+
+        this.logger.log(
+          `Merged file created: ${mergedFilePath}, size: ${mergedStats.size} bytes`,
+        );
+
+        // Upload merged file to Firebase
+        const uploadResult = await this.firebaseService.uploadFile(
+          mergedBuffer,
+          `audio/${userId}/${Date.now()}_${mergedFileName}`,
+          'audio/mpeg',
+        );
+
+        this.logger.log(
+          `Merged file uploaded to Firebase: ${uploadResult.url}, path: ${uploadResult.path}`,
+        );
+
+        // Create transcription document
+        const fileNames = files.map((f) => f.originalname).join(', ');
+        const transcription: Omit<Transcription, 'id'> = {
+          userId,
+          fileName: `Merged: ${fileNames}`,
+          fileUrl: uploadResult.url,
+          storagePath: uploadResult.path,
+          fileSize: mergedStats.size,
+          mimeType: 'audio/mpeg',
+          status: TranscriptionStatus.PENDING,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        if (analysisType) transcription.analysisType = analysisType;
+        if (context) transcription.context = context;
+        if (contextId) transcription.contextId = contextId;
+
+        const transcriptionId =
+          await this.firebaseService.createTranscription(transcription);
+
+        // Create job and add to queue
+        const job: TranscriptionJob = {
+          id: generateJobId(),
+          transcriptionId,
+          userId,
+          fileUrl: uploadResult.url,
+          analysisType,
+          context,
+          priority: 1,
+          retryCount: 0,
+          maxRetries: 3,
+          createdAt: new Date(),
+        };
+
+        await this.transcriptionQueue.add('transcribe', job, {
+          priority: job.priority,
+          attempts: job.maxRetries,
+        });
+
+        // Clean up temporary files
+        for (const tempPath of tempFilePaths) {
+          await fs.promises
+            .unlink(tempPath)
+            .catch((err) =>
+              this.logger.warn(`Failed to delete temp file ${tempPath}:`, err),
+            );
+        }
+        await fs.promises
+          .unlink(mergedFilePath)
+          .catch((err) =>
+            this.logger.warn(
+              `Failed to delete merged file ${mergedFilePath}:`,
+              err,
+            ),
+          );
+        await fs.promises.rmdir(tempDir).catch(() => {
+          // Ignore if directory is not empty
+        });
+
+        return {
+          transcriptionIds: [transcriptionId],
+          fileNames: [transcription.fileName],
+          merged: true,
+        };
+      } catch (error) {
+        // Clean up on error
+        await fs.promises
+          .rm(tempDir, { recursive: true, force: true })
+          .catch((err) =>
+            this.logger.warn(`Failed to cleanup temp directory:`, err),
+          );
+        throw error;
+      }
+    } else {
+      // Process each file individually
+      const transcriptionIds: string[] = [];
+      const fileNames: string[] = [];
+
+      for (const file of files) {
+        const transcription = await this.createTranscription(
+          userId,
+          file,
+          analysisType,
+          context,
+          contextId,
+        );
+        transcriptionIds.push(transcription.id);
+        fileNames.push(file.originalname);
+      }
+
+      return {
+        transcriptionIds,
+        fileNames,
+        merged: false,
+      };
+    }
   }
 
   async transcribeAudioWithProgress(

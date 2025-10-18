@@ -10,12 +10,13 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  UploadedFiles,
   Req,
   BadRequestException,
   ParseIntPipe,
   UnauthorizedException,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
 import { ShareContentOptions } from '@transcribe/shared';
@@ -30,6 +31,7 @@ import {
   RegenerateSummaryRequest,
   AnalysisType,
   SharedTranscriptionView,
+  BatchUploadResponse,
   MAX_FILE_SIZE,
 } from '@transcribe/shared';
 
@@ -118,6 +120,75 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'File uploaded successfully and queued for transcription',
+    };
+  }
+
+  @Post('upload-batch')
+  @UseGuards(FirebaseAuthGuard)
+  @UseInterceptors(
+    FilesInterceptor('files', 3, {
+      limits: {
+        fileSize: MAX_FILE_SIZE,
+      },
+    }),
+  )
+  async uploadBatch(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('mergeFiles') mergeFiles: string,
+    @Body('analysisType') analysisType: AnalysisType,
+    @Body('context') context: string,
+    @Body('contextId') contextId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<BatchUploadResponse>> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files provided');
+    }
+
+    if (files.length > 3) {
+      throw new BadRequestException('Maximum 3 files allowed');
+    }
+
+    console.log('Received batch upload:', {
+      fileCount: files.length,
+      mergeFiles: mergeFiles === 'true',
+      files: files.map((f) => ({
+        name: f.originalname,
+        size: f.size,
+        type: f.mimetype,
+      })),
+    });
+
+    // Validate all files
+    for (const file of files) {
+      if (!isValidAudioFile(file.originalname, file.mimetype)) {
+        throw new BadRequestException(
+          `Invalid audio file format: ${file.originalname} (${file.mimetype})`,
+        );
+      }
+
+      if (!validateFileSize(file.size)) {
+        throw new BadRequestException(
+          `File size exceeds limit: ${file.originalname}`,
+        );
+      }
+    }
+
+    const shouldMerge = mergeFiles === 'true';
+    const result = await this.transcriptionService.createBatchTranscription(
+      req.user.uid,
+      files,
+      shouldMerge,
+      analysisType,
+      context,
+      contextId,
+    );
+
+    return {
+      success: true,
+      data: result,
+      message: shouldMerge
+        ? 'Files merged and queued for transcription'
+        : `${files.length} files uploaded and queued for transcription`,
     };
   }
 

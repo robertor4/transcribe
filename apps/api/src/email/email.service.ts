@@ -634,133 +634,83 @@ export class EmailService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <meta name="supported-color-schemes" content="light dark">
   <title>${transcriptionTitle} - Neural Summary</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
       color: #111827;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background: linear-gradient(135deg, #fce7f3 0%, #f3e7fc 100%);
-      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #f9fafb;
     }
     .container {
+      max-width: 500px;
+      margin: 0 auto;
       background-color: white;
       border-radius: 12px;
       padding: 40px;
-      box-shadow: 0 10px 25px rgba(204, 51, 153, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     .header {
       text-align: center;
-      margin-bottom: 35px;
-      padding-bottom: 25px;
-      border-bottom: 2px solid #fce7f3;
+      margin-bottom: 30px;
+    }
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
     }
     .logo-text {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 700;
       color: #cc3399;
-      margin-bottom: 15px;
+      margin: 0;
+    }
+    .completion-icon {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 20px;
     }
     h1 {
-      color: #374151;
-      font-size: 20px;
-      margin: 0;
+      color: #111827;
+      font-size: 24px;
       font-weight: 600;
+      text-align: center;
+      margin: 0 0 10px 0;
     }
     .greeting {
       font-size: 16px;
-      color: #374151;
-      margin-bottom: 10px;
-    }
-    .main-message {
-      font-size: 16px;
-      color: #4b5563;
-      margin-bottom: 25px;
-    }
-    .transcription-info {
-      background: linear-gradient(135deg, #4a1d7a 0%, #6b21a8 100%);
-      border-radius: 10px;
-      padding: 25px;
-      margin: 25px 0;
-      color: white;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 30px;
     }
     .transcription-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
-      margin-bottom: 20px;
-      color: white !important;
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-top: 15px;
-    }
-    .stat-item {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 12px;
+      color: #374151;
+      text-align: center;
+      margin: 20px 0 30px 0;
+      padding: 15px;
+      background-color: #f9fafb;
       border-radius: 8px;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: #e9d5ff !important;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-    .stat-value {
-      font-size: 16px;
-      font-weight: 600;
-      color: white !important;
-    }
-    .analysis-list {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .analysis-label {
-      font-size: 12px;
-      color: #e9d5ff !important;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-    }
-    .analysis-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .analysis-tag {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 10px;
-      border-radius: 15px;
-      font-size: 13px;
-      color: white !important;
     }
     .button-container {
       text-align: center;
-      margin: 35px 0;
+      margin: 30px 0;
     }
     .button {
       display: inline-block;
       padding: 14px 32px;
-      background: linear-gradient(135deg, #cc3399 0%, #b82d89 100%);
+      background-color: #cc3399;
       color: white !important;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 600;
       font-size: 16px;
-      box-shadow: 0 4px 14px rgba(204, 51, 153, 0.25);
-      transition: transform 0.2s;
     }
     .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(204, 51, 153, 0.35);
+      background-color: #b82d89;
     }
     .url-section {
       background-color: #f9fafb;
@@ -776,7 +726,7 @@ export class EmailService {
     .link {
       color: #cc3399;
       word-break: break-all;
-      font-size: 14px;
+      font-size: 13px;
       text-decoration: none;
     }
     .footer {
@@ -787,14 +737,8 @@ export class EmailService {
     }
     .footer-text {
       font-size: 13px;
-      color: #6b7280;
+      color: #9ca3af;
       margin: 5px 0;
-    }
-    .footer-brand {
-      font-size: 14px;
-      color: #9333ea;
-      font-weight: 600;
-      margin-top: 15px;
     }
     .unsubscribe {
       font-size: 12px;
@@ -805,7 +749,7 @@ export class EmailService {
       color: #cc3399;
       text-decoration: none;
     }
-    
+
     /* Dark mode support */
     @media (prefers-color-scheme: dark) {
       body {
@@ -848,73 +792,16 @@ export class EmailService {
 <body>
   <div class="container">
     <div class="header">
+      <img src="https://neuralsummary.com/assets/NS-symbol.webp" alt="Neural Summary" class="logo" />
       <div class="logo-text">Neural Summary</div>
-      <h1>✨ Transcription Complete!</h1>
     </div>
-    
+
+    <div class="completion-icon">✨</div>
+    <h1>Transcription Complete!</h1>
     <p class="greeting">${getLocalizedContent('greeting')},</p>
-    
-    <p class="main-message">${getLocalizedContent('mainMessage')}</p>
-    
-    <div class="transcription-info">
-      <div class="transcription-title">📄 ${transcriptionTitle}</div>
-      
-      <div class="stats-grid">
-        ${
-          processingTime
-            ? `
-        <div class="stat-item">
-          <div class="stat-label">⏱ ${getLocalizedContent('processingTime')}</div>
-          <div class="stat-value">${processingTime} ${getLocalizedContent('minutes')}</div>
-        </div>
-        `
-            : ''
-        }
-        ${
-          transcription.duration
-            ? `
-        <div class="stat-item">
-          <div class="stat-label">🎵 ${getLocalizedContent('duration')}</div>
-          <div class="stat-value">${Math.round(transcription.duration / 60)} ${getLocalizedContent('minutes')}</div>
-        </div>
-        `
-            : ''
-        }
-        ${
-          transcription.speakerCount
-            ? `
-        <div class="stat-item">
-          <div class="stat-label">👥 ${getLocalizedContent('speakers')}</div>
-          <div class="stat-value">${transcription.speakerCount}</div>
-        </div>
-        `
-            : ''
-        }
-        ${
-          transcription.detectedLanguage
-            ? `
-        <div class="stat-item">
-          <div class="stat-label">🌍 Language</div>
-          <div class="stat-value">${transcription.detectedLanguage}</div>
-        </div>
-        `
-            : ''
-        }
-      </div>
-      
-      ${
-        analysisTypes.length > 0
-          ? `
-      <div class="analysis-list">
-        <div class="analysis-label">📊 ${getLocalizedContent('analyses')}</div>
-        <div class="analysis-items">
-          ${analysisTypes.map((type) => `<span class="analysis-tag">✓ ${type}</span>`).join('')}
-        </div>
-      </div>
-      `
-          : ''
-      }
-    </div>
+    <p class="greeting">${getLocalizedContent('mainMessage')}</p>
+
+    <div class="transcription-title">${transcriptionTitle}</div>
     
     <div class="button-container">
       <a href="${transcriptionUrl}" class="button">${getLocalizedContent('viewButton')} →</a>
@@ -927,8 +814,6 @@ export class EmailService {
     
     <div class="footer">
       <p class="footer-text">${getLocalizedContent('footer1')}</p>
-      <p class="footer-text">${getLocalizedContent('footer2')}</p>
-      <p class="footer-brand">✨ Neural Summary • ${new Date().getFullYear()}</p>
       <p class="unsubscribe">
         <a href="${this.frontendUrl}/${locale}/settings">${getLocalizedContent('unsubscribe')}</a>
       </p>

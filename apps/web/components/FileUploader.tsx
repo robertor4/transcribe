@@ -4,17 +4,19 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
-import { 
-  Upload, 
-  X, 
-  FileAudio, 
-  AlertCircle, 
-  Shield, 
+import {
+  Upload,
+  X,
+  FileAudio,
+  AlertCircle,
+  Shield,
   CheckCircle,
   Info,
   ChevronDown,
   Lock,
-  Zap
+  Zap,
+  GripVertical,
+  Loader2
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import { 
@@ -35,6 +37,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
+  const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     // Clear previous errors
@@ -122,6 +126,32 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const moveFile = (fromIndex: number, toIndex: number) => {
+    setFiles(prev => {
+      const newFiles = [...prev];
+      const [movedFile] = newFiles.splice(fromIndex, 1);
+      newFiles.splice(toIndex, 0, movedFile);
+      return newFiles;
+    });
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    // Move the file while dragging for visual feedback
+    moveFile(draggedIndex, index);
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) return;
 
@@ -129,7 +159,36 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
     setErrors([]);
 
     try {
-      for (const file of files) {
+      // Use batch upload API for multiple files
+      if (files.length > 1) {
+        const mergeFiles = processingMode === 'merged';
+
+        // Track batch transcription start
+        trackEvent('batch_transcription_started', {
+          file_count: files.length,
+          merge_files: mergeFiles,
+          has_context: !!context
+        });
+
+        const response = await transcriptionApi.uploadBatch(files, mergeFiles, undefined, context);
+
+        if (response?.success && response.data && onUploadComplete) {
+          // Call onUploadComplete for each transcription
+          response.data.transcriptionIds.forEach((id, index) => {
+            onUploadComplete(id, response.data.fileNames[index]);
+          });
+
+          // Track successful upload
+          trackEvent('batch_transcription_completed', {
+            transcription_count: response.data.transcriptionIds.length,
+            merged: response.data.merged,
+            file_count: files.length
+          });
+        }
+      } else {
+        // Single file - use existing upload method
+        const file = files[0];
+
         // Track transcription start
         trackEvent('transcription_started', {
           file_name: file.name,
@@ -137,11 +196,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           file_type: file.type,
           has_context: !!context
         });
-        
+
         const response = await transcriptionApi.upload(file, undefined, context);
         if (response?.success && response.data && onUploadComplete) {
           onUploadComplete(response.data.transcriptionId, file.name);
-          
+
           // Track successful upload
           trackEvent('transcription_completed', {
             transcription_id: response.data?.transcriptionId,
@@ -150,17 +209,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           });
         }
       }
-      
+
       setFiles([]);
       setContext('');
+      setProcessingMode('individual');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Upload failed';
       setErrors([errorMessage]);
-      
+
       // Track upload failure
       trackEvent('upload_failed', {
         error_message: errorMessage,
-        file_count: files.length
+        file_count: files.length,
+        processing_mode: processingMode
       });
     } finally {
       setUploading(false);
@@ -256,29 +317,64 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         <div className="space-y-4">
           {/* Selected files */}
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-700">
-              {t('selectedFiles')} ({files.length})
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-gray-700">
+                {t('selectedFiles')} ({files.length})
+              </h3>
+              {files.length > 1 && (
+                <p className="text-xs text-gray-600">
+                  {t('dragToReorder') || 'Drag to reorder'}
+                </p>
+              )}
+            </div>
             <div className="space-y-2">
               {files.map((file, index) => (
                 <div
-                  key={index}
-                  className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3 hover:border-[#cc3399] transition-colors"
+                  key={`${file.name}-${index}`}
+                  draggable={files.length > 1}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`
+                    flex items-center justify-between bg-white border rounded-lg p-3 transition-all
+                    ${draggedIndex === index
+                      ? 'border-[#cc3399] bg-pink-50'
+                      : 'border-gray-200 hover:border-[#cc3399]'
+                    }
+                    ${files.length > 1 ? 'cursor-move' : ''}
+                  `}
                 >
-                  <div className="flex items-center space-x-3">
-                    <FileAudio className="h-5 w-5 text-[#cc3399]" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                      <p className="text-xs text-gray-600">{formatFileSize(file.size)}</p>
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
+                    {files.length > 1 && (
+                      <div className="flex flex-col">
+                        <GripVertical className="h-5 w-5 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="flex items-center space-x-2 min-w-0 flex-1">
+                      <FileAudio className="h-5 w-5 text-[#cc3399] flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center space-x-2">
+                          {files.length > 1 && (
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#cc3399] text-white text-xs font-semibold flex-shrink-0">
+                              {index + 1}
+                            </span>
+                          )}
+                          <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                        </div>
+                        <p className="text-xs text-gray-600">{formatFileSize(file.size)}</p>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded"
-                    title="Remove file"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+                  <div className="flex items-center ml-3">
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded"
+                      title={t('removeFile') || 'Remove file'}
+                      type="button"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -319,10 +415,68 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             </div>
           )}
 
+          {/* Processing Mode Toggle - Only shown when multiple files */}
+          {files.length > 1 && (
+            <div className="border border-gray-300 rounded-lg p-4 bg-white">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                {t('processingMode')}
+              </label>
+              {processingMode === 'merged' && (
+                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start space-x-2">
+                    <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-blue-800">
+                      {t('mergeOrderMatters') || 'Files will be merged in the order shown above. Drag to reorder them chronologically.'}
+                    </p>
+                  </div>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setProcessingMode('individual')}
+                  className={`
+                    flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
+                    ${processingMode === 'individual'
+                      ? 'border-[#cc3399] bg-pink-50 text-gray-900'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#cc3399] hover:bg-pink-50/20'
+                    }
+                  `}
+                >
+                  <div className="flex items-center space-x-2 mb-1">
+                    <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
+                    <span className="font-semibold text-sm text-gray-900">{t('processIndividually')}</span>
+                  </div>
+                  <span className="text-xs text-gray-600 text-center">{t('processIndividuallyDesc')}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setProcessingMode('merged')}
+                  className={`
+                    flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
+                    ${processingMode === 'merged'
+                      ? 'border-[#cc3399] bg-pink-50 text-gray-900'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#cc3399] hover:bg-pink-50/20'
+                    }
+                  `}
+                >
+                  <div className="flex items-center space-x-2 mb-1">
+                    <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
+                    <span className="font-semibold text-sm text-gray-900">{t('processMerged')}</span>
+                  </div>
+                  <span className="text-xs text-gray-600 text-center">{t('processMergedDesc')}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Context Input - Simplified */}
           <div>
             <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-2">
-              {t('addContext') || 'Add context (optional)'}
+              {files.length > 1
+                ? (processingMode === 'merged' ? t('contextForMerged') : t('contextForAll'))
+                : t('addContext')}
             </label>
             <textarea
               id="context"
@@ -339,14 +493,21 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             onClick={handleUpload}
             disabled={uploading}
             className={`
-              w-full py-3 px-4 rounded-lg font-medium transition-colors
+              w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center
               ${uploading
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
               }
             `}
           >
-            {uploading ? t('uploading') : t('uploadFiles', { count: files.length })}
+            {uploading && (
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+            )}
+            {uploading
+              ? (files.length > 1 && processingMode === 'merged'
+                  ? t('mergingFiles', { count: files.length })
+                  : t('uploading'))
+              : t('uploadFiles', { count: files.length })}
           </button>
         </div>
       )}

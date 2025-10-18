@@ -151,6 +151,22 @@
     "dropMoreFiles": "Add more files",
     "orClickToAddMore": "or click to browse",
     "maxFilesSelected": "Maximum files selected (3)",
+    "processingMode": "Processing Mode",
+    "processIndividually": "Process separately",
+    "processIndividuallyDesc": "Create individual transcripts for each file",
+    "processMerged": "Merge files",
+    "processMergedDesc": "Combine into one conversation",
+    "fileOrder": "File order",
+    "mergingFiles": "Merging {count} files...",
+    "contextForAll": "Context (applies to all files)",
+    "contextForMerged": "Context for merged conversation",
+    "dragToReorder": "Drag to reorder",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeFile": "Remove file",
+    "firstFile": "First file",
+    "lastFile": "Last file",
+    "mergeOrderMatters": "Files will be merged in the order shown above. Drag to reorder them chronologically.",
     "analysisType": "Analysis Type (Optional)",
     "analysisTypeHelp": "Choose how you'd like the AI to analyze your conversation",
     "customInstructions": "Custom Analysis Instructions",
@@ -636,19 +652,36 @@
         "rating": "4.9/5 rating",
         "certified": "GDPR compliant"
       },
-      "title": "Transform audio into",
-      "titleHighlight": "actionable insights",
-      "subtitle": "Share polished summaries with your team instantly. Improve your communication skills. Never miss an important detail again.",
+      "title": "Ready to turn every conversation into",
+      "titleHighlight": "clarity.",
+      "subtitle": "Neural Summary transforms hours of audio into clear, structured notes, decisions, and next steps — in seconds.",
       "cta": {
-        "primary": "Start free trial",
+        "primary": "Start your free trial",
         "secondary": "See how it works"
       },
-      "guarantee": "No credit card required • 3 free transcriptions • Cancel anytime",
+      "guarantee": "Takes less than 2 minutes • No credit card • Instant setup",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
         "languages": "50+ languages"
       }
+    },
+    "valueProposition": {
+      "title": "Your AI that listens, understands, and summarizes — so you can think, lead, and decide.",
+      "subtitle": "Neural Summary improves how you communicate and make decisions by enhancing three key areas professionals struggle with:",
+      "efficiency": {
+        "title": "Efficiency",
+        "description": "Automate transcription and summarization so you reclaim hours every week."
+      },
+      "clarity": {
+        "title": "Clarity",
+        "description": "Capture what really matters from meetings, interviews, and discussions."
+      },
+      "impact": {
+        "title": "Impact",
+        "description": "Turn insights into action with structured, shareable summaries and next steps."
+      },
+      "tagline": "Don't just remember what was said — act on it."
     },
     "benefits": {
       "title": "Transform your workflow, elevate your skills",
@@ -670,6 +703,14 @@
         "description": "Capture every action item, decision, and insight automatically. Your AI assistant never forgets."
       }
     },
+    "whyTeams": {
+      "title": "Why Teams Choose Neural Summary",
+      "benefit1": "Save 3–5 hours per week on manual documentation",
+      "benefit2": "Reduce information loss and miscommunication",
+      "benefit3": "Keep teams aligned without endless note-sharing",
+      "benefit4": "Secure, compliant, and scalable for any organization",
+      "tagline": "Stop wasting time in meetings — start turning words into action."
+    },
     "features": {
       "title": "Powerful features for every professional",
       "ai": {
@@ -690,24 +731,40 @@
       }
     },
     "howItWorks": {
-      "title": "3 simple steps to perfect transcriptions",
+      "title": "How It Works",
       "subtitle": "Get started in under 60 seconds",
       "step1": {
-        "title": "Record anywhere",
-        "description": "Use your phone, Zoom, or any recording app. We support all major audio formats including M4A, MP3, WAV, and more."
+        "title": "Upload or record audio",
+        "description": "Use your phone, Zoom, or any recording app. We support all major audio formats — meetings, calls, podcasts, or interviews."
       },
       "step2": {
-        "title": "AI processes instantly",
-        "description": "Our advanced AI transcribes with 99.5% accuracy, handling technical terms and multiple speakers perfectly."
+        "title": "Let Neural Summary process it",
+        "description": "Our AI listens, understands context, and extracts key points — all automatically with 99.5% accuracy."
       },
       "step3": {
-        "title": "Get perfect results",
-        "description": "Receive a full transcript and executive summary with key points. Export, share, or integrate with your workflow."
+        "title": "Receive structured results instantly",
+        "description": "Complete with executive summaries, highlights, and action items. It's like having a full-time analyst — without the payroll."
       }
     },
     "security": {
-      "title": "We never store your audio files",
-      "subtitle": "Your privacy is guaranteed with our zero-knowledge architecture",
+      "title": "Trusted by professionals who value precision and privacy",
+      "subtitle": "Enterprise-grade security and compliance",
+      "stats": {
+        "users": "10,000+ users worldwide",
+        "rating": "rated 4.9 / 5 on average"
+      },
+      "compliance": {
+        "title": "Built with enterprise-grade security",
+        "description": "GDPR, SOC 2 Type II, and HIPAA compliant"
+      },
+      "useCases": {
+        "title": "Trusted by professionals",
+        "description": "Used by legal, medical, research, and executive teams where every word matters."
+      },
+      "technology": {
+        "title": "Powered by cutting-edge AI",
+        "description": "Built with the latest language models fine-tuned for business communication."
+      },
       "encryption": {
         "title": "Immediate deletion after processing",
         "description": "Audio files are deleted within seconds, never stored on our servers"
@@ -715,10 +772,6 @@
       "retention": {
         "title": "SOC 2 Type II certified infrastructure",
         "description": "Enterprise-grade security with continuous compliance monitoring"
-      },
-      "compliance": {
-        "title": "HIPAA-compliant processing",
-        "description": "Medical-grade privacy standards for all your sensitive conversations"
       },
       "audit": {
         "title": "Zero-knowledge architecture",
@@ -736,14 +789,14 @@
       "title": "Loved by professionals worldwide",
       "rating": "4.9/5 from 2,000+ reviews",
       "testimonial1": {
-        "quote": "This tool has revolutionized my meeting workflow. I can focus on the conversation instead of taking notes. The summaries are incredibly accurate.",
+        "quote": "This tool has completely changed how I handle meetings — I finally walk away with clarity.",
         "author": "Sarah Martinez",
-        "role": "Product Manager"
+        "role": "Head of Strategy"
       },
       "testimonial2": {
-        "quote": "The accuracy is incredible. It even handles technical terms and multiple speakers perfectly. Saves me hours of transcription work every week.",
+        "quote": "I can focus on my clients, not on typing.",
         "author": "Dr. James Liu",
-        "role": "Research Director"
+        "role": "Clinical Researcher"
       },
       "testimonial3": {
         "quote": "As a journalist, this tool is invaluable. I can conduct interviews naturally and get perfect transcripts within minutes. Game changer!",
@@ -752,12 +805,12 @@
       }
     },
     "cta": {
-      "title": "Ready to save hours every week?",
-      "subtitle": "Join 10,000+ professionals who've transformed their workflow with Neural Summary. Start your free trial today - no credit card required.",
-      "button": "Start free trial",
+      "title": "Ready to reclaim your time and never lose another insight?",
+      "subtitle": "Join thousands of professionals using Neural Summary to work smarter, communicate better, and decide faster.",
+      "button": "Start your free trial",
       "benefits": {
-        "free": "3 free transcriptions",
-        "noCard": "No credit card",
+        "free": "No credit card",
+        "noCard": "Instant access",
         "cancel": "Cancel anytime"
       }
     },
@@ -795,7 +848,8 @@
         "terms": "Terms",
         "security": "Security"
       },
-      "copyright": "© 2024 Neural Summary. All rights reserved."
+      "copyright": "© 2024 Neural Summary. All rights reserved.",
+      "tagline": "Built by communication scientists and AI engineers to help humans understand each other better."
     }
   },
   "share": {
