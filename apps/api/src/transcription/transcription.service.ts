@@ -1527,4 +1527,218 @@ ${transcription}`;
 
     return prompt;
   }
+
+  // Translation methods
+  async translateTranscription(
+    transcriptionId: string,
+    userId: string,
+    targetLanguage: string,
+  ): Promise<any> {
+    // Verify user owns this transcription
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    if (!transcription.transcriptText) {
+      throw new BadRequestException(
+        'No transcript available for this transcription',
+      );
+    }
+
+    // Check if translation already exists
+    if (
+      transcription.translations &&
+      transcription.translations[targetLanguage]
+    ) {
+      this.logger.log(
+        `Translation to ${targetLanguage} already exists for transcription ${transcriptionId}`,
+      );
+      return transcription.translations[targetLanguage];
+    }
+
+    // Get language name
+    const { SUPPORTED_LANGUAGES } = await import('@transcribe/shared');
+    const targetLang = SUPPORTED_LANGUAGES.find((l) => l.code === targetLanguage);
+    if (!targetLang) {
+      throw new BadRequestException(
+        `Unsupported language: ${targetLanguage}`,
+      );
+    }
+
+    this.logger.log(
+      `Translating transcription ${transcriptionId} to ${targetLang.name}`,
+    );
+
+    // Translate transcript and all analyses in parallel using GPT-5-mini for cost efficiency
+    const translationPromises: Promise<string>[] = [];
+
+    // Translate transcript
+    if (transcription.transcriptText) {
+      translationPromises.push(
+        this.translateText(
+          transcription.transcriptText,
+          targetLang.name,
+          'transcript',
+        ),
+      );
+    }
+
+    // Translate all available analyses
+    const analysisKeys: string[] = [
+      'summary',
+      'communicationStyles',
+      'actionItems',
+      'emotionalIntelligence',
+      'influencePersuasion',
+      'personalDevelopment',
+      'custom',
+    ];
+
+    const analysisTranslations: Record<string, Promise<string>> = {};
+    if (transcription.analyses) {
+      for (const key of analysisKeys) {
+        const analysisValue = transcription.analyses[key as keyof typeof transcription.analyses];
+        if (analysisValue) {
+          analysisTranslations[key] = this.translateText(
+            analysisValue,
+            targetLang.name,
+            `${key} analysis`,
+          );
+          translationPromises.push(analysisTranslations[key]);
+        }
+      }
+    }
+
+    // Execute all translations in parallel
+    await Promise.all(translationPromises);
+
+    // Build translation data object
+    const translatedAnalyses: any = {};
+    for (const key in analysisTranslations) {
+      translatedAnalyses[key] = await analysisTranslations[key];
+    }
+
+    const translationData = {
+      language: targetLanguage,
+      languageName: targetLang.name,
+      transcriptText: transcription.transcriptText
+        ? await this.translateText(
+            transcription.transcriptText,
+            targetLang.name,
+            'transcript',
+          )
+        : undefined,
+      analyses: translatedAnalyses,
+      translatedAt: new Date(),
+      translatedBy: 'gpt-5-mini' as const,
+    };
+
+    // Save translation to Firestore
+    const translations = transcription.translations || {};
+    translations[targetLanguage] = translationData;
+
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      translations,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(
+      `Translation to ${targetLang.name} completed for transcription ${transcriptionId}`,
+    );
+
+    return translationData;
+  }
+
+  private async translateText(
+    text: string,
+    targetLanguage: string,
+    contentType: string = 'text',
+  ): Promise<string> {
+    try {
+      const systemPrompt = `You are a professional translator. Translate the following ${contentType} to ${targetLanguage}.
+
+CRITICAL INSTRUCTIONS:
+- Maintain ALL original formatting including markdown, line breaks, bullet points, headings, tables, and special characters
+- Preserve speaker labels (e.g., "Speaker 1:", "Speaker 2:") exactly as they appear
+- Keep technical terms and proper nouns when appropriate
+- Maintain the same tone, style, and level of formality
+- Do NOT add any introductions, explanations, or comments
+- Output ONLY the translated content`;
+
+      const userPrompt = `Translate this to ${targetLanguage}:\n\n${text}`;
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-5-mini', // Use mini version for cost efficiency
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_completion_tokens: 8000,
+      });
+
+      return completion.choices[0].message.content || text;
+    } catch (error) {
+      this.logger.error(`Error translating ${contentType}:`, error);
+      throw error;
+    }
+  }
+
+  async getTranslation(
+    transcriptionId: string,
+    userId: string,
+    language: string,
+  ): Promise<any> {
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    if (!transcription.translations || !transcription.translations[language]) {
+      throw new BadRequestException(
+        `No translation available for language: ${language}`,
+      );
+    }
+
+    return transcription.translations[language];
+  }
+
+  async deleteTranslation(
+    transcriptionId: string,
+    userId: string,
+    language: string,
+  ): Promise<void> {
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    if (!transcription.translations || !transcription.translations[language]) {
+      throw new BadRequestException(
+        `No translation exists for language: ${language}`,
+      );
+    }
+
+    // Remove the translation
+    const translations = { ...transcription.translations };
+    delete translations[language];
+
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      translations,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(
+      `Deleted translation for language ${language} from transcription ${transcriptionId}`,
+    );
+  }
 }

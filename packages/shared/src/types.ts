@@ -62,6 +62,15 @@ export interface AnalysisResults {
   transcript?: string;
 }
 
+export interface TranslationData {
+  language: string; // Target language code (e.g., 'es', 'fr', 'de')
+  languageName: string; // Human-readable language name (e.g., 'Spanish', 'French')
+  transcriptText?: string; // Translated transcript
+  analyses?: AnalysisResults; // Translated analyses
+  translatedAt: Date;
+  translatedBy: 'gpt-5' | 'gpt-5-mini'; // Model used for translation
+}
+
 export interface Transcription {
   id: string;
   userId: string;
@@ -99,6 +108,8 @@ export interface Transcription {
   shareToken?: string;
   shareSettings?: ShareSettings;
   sharedAt?: Date;
+  // Translation fields
+  translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
 }
 
 export interface TranscriptionJob {
@@ -273,6 +284,24 @@ export interface SharedTranscriptionView {
   contentOptions?: ShareContentOptions;
 }
 
+export interface TranslateRequest {
+  targetLanguage: string; // Language code (e.g., 'es', 'fr', 'de')
+}
+
+export interface TranslationResponse {
+  transcriptionId: string;
+  language: string;
+  languageName: string;
+  translatedAt: Date;
+  translationData: TranslationData;
+}
+
+export interface SupportedLanguage {
+  code: string;
+  name: string;
+  nativeName: string;
+}
+
 export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
   {
     key: 'summary',
@@ -323,4 +352,22 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     color: 'teal',
     description: 'Growth opportunities and recommendations'
   }
+];
+
+export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' }
 ];
