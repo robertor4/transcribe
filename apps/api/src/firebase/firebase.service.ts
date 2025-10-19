@@ -175,17 +175,29 @@ export class FirebaseService implements OnModuleInit {
     const bucket = this.storage.bucket();
     const file = bucket.file(path);
 
+    this.logger.log(`Uploading file to storage: ${path}, size: ${buffer.length} bytes`);
+
     await file.save(buffer, {
       metadata: {
         contentType,
       },
     });
 
+    this.logger.log(`File saved successfully: ${path}`);
+
+    // Verify the file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new Error(`File upload verification failed: ${path}`);
+    }
+
     // Generate signed URL with long expiration
     const [url] = await file.getSignedUrl({
       action: 'read',
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+
+    this.logger.log(`Generated signed URL for: ${path}`);
 
     return { url, path };
   }
@@ -224,15 +236,25 @@ export class FirebaseService implements OnModuleInit {
       filePath = decodeURIComponent(filePath);
 
       this.logger.log(`Creating public URL for file: ${filePath}`);
+      this.logger.log(`Original URL: ${url}`);
 
       const bucket = this.storage.bucket();
       const file = bucket.file(filePath);
+
+      // Check if file exists
+      const [exists] = await file.exists();
+      if (!exists) {
+        this.logger.error(`File does not exist in storage: ${filePath}`);
+        throw new Error(`File not found in storage: ${filePath}`);
+      }
 
       // Generate a new signed URL with long expiration for AssemblyAI
       const [publicUrl] = await file.getSignedUrl({
         action: 'read',
         expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
       });
+
+      this.logger.log(`Generated public URL: ${publicUrl}`);
 
       return publicUrl;
     } catch (error) {

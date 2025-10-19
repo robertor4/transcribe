@@ -11,6 +11,7 @@ import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import {
   WEBSOCKET_EVENTS,
+  ERROR_CODES,
   TranscriptionProgress,
   SummaryComment,
   SummaryRegenerationProgress,
@@ -43,7 +44,13 @@ export class WebSocketGateway
     try {
       const token = client.handshake.auth?.token as string | undefined;
       if (!token) {
-        client.disconnect();
+        this.logger.warn(`Client ${client.id} missing auth token`);
+        client.emit(WEBSOCKET_EVENTS.AUTH_ERROR, {
+          code: ERROR_CODES.AUTH_TOKEN_MISSING,
+          message: 'Authentication token is required',
+        });
+        // Give client time to receive error before disconnecting
+        setTimeout(() => client.disconnect(), 100);
         return;
       }
 
@@ -59,7 +66,28 @@ export class WebSocketGateway
       client.emit('connected', { userId: decodedToken.uid });
     } catch (error) {
       this.logger.error('Authentication failed:', error);
-      client.disconnect();
+
+      // Determine error code based on Firebase error
+      let errorCode: (typeof ERROR_CODES)[keyof typeof ERROR_CODES] =
+        ERROR_CODES.AUTH_TOKEN_INVALID;
+      let errorMessage = 'Authentication failed';
+
+      if (error?.errorInfo?.code === 'auth/id-token-expired') {
+        errorCode = ERROR_CODES.AUTH_TOKEN_EXPIRED;
+        errorMessage =
+          'Authentication token has expired. Please refresh and try again.';
+      } else if (error?.errorInfo?.code) {
+        errorMessage = error.errorInfo.message || errorMessage;
+      }
+
+      // Send error to client before disconnecting
+      client.emit(WEBSOCKET_EVENTS.AUTH_ERROR, {
+        code: errorCode,
+        message: errorMessage,
+      });
+
+      // Give client time to receive error before disconnecting
+      setTimeout(() => client.disconnect(), 100);
     }
   }
 

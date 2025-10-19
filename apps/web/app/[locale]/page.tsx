@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function HomePage() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Mail, AlertCircle, Loader2, CheckCircle, ArrowLeft } from 'lucide-react';
@@ -12,9 +11,8 @@ export default function ForgotPasswordForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  
+
   const { sendPasswordResetEmail } = useAuth();
-  // const router = useRouter();
   const tAuth = useTranslations('auth');
 
   const handleSubmit = async (e: React.FormEvent) => {

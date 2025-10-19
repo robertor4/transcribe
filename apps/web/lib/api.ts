@@ -120,6 +120,28 @@ export const transcriptionApi = {
     });
   },
 
+  uploadBatch: async (files: File[], mergeFiles: boolean, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ transcriptionIds: string[]; fileNames: string[]; merged: boolean }>> => {
+    const formData = new FormData();
+
+    // Append all files
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    // Append merge flag
+    formData.append('mergeFiles', mergeFiles.toString());
+
+    if (analysisType) formData.append('analysisType', analysisType);
+    if (context) formData.append('context', context);
+    if (contextId) formData.append('contextId', contextId);
+
+    return api.post('/transcriptions/upload-batch', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
   list: async (page = 1, pageSize = 20): Promise<ApiResponse<{ items: unknown[]; total: number; page: number; pageSize: number }>> => {
     return api.get('/transcriptions', {
       params: { page, pageSize },

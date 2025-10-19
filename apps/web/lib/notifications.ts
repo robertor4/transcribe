@@ -1,3 +1,7 @@
+interface NotificationData {
+  transcriptionId?: string;
+}
+
 class NotificationService {
   private readonly STORAGE_KEY = 'transcribe_notifications_enabled';
   private notificationsEnabled: boolean = false;
@@ -171,7 +175,8 @@ class NotificationService {
         notification.close();
         
         // If there's custom data, handle it
-        if ((options.data as any)?.transcriptionId) {
+        const notificationData = options.data as NotificationData | undefined;
+        if (notificationData?.transcriptionId) {
           // Could navigate to specific transcription
           // Notification clicked for transcription
         }
@@ -244,13 +249,14 @@ class NotificationService {
         window.focus();
         notification.close();
         
-        if ((options.data as any)?.transcriptionId) {
-          console.log('[NotificationService] Notification clicked for transcription:', (options.data as any).transcriptionId);
+        const notificationData = options.data as NotificationData | undefined;
+        if (notificationData?.transcriptionId) {
+          console.log('[NotificationService] Notification clicked for transcription:', notificationData.transcriptionId);
           // Navigate to the transcription if on dashboard
           if (window.location.pathname.includes('/dashboard')) {
             // Could trigger a custom event to select the transcription
-            window.dispatchEvent(new CustomEvent('selectTranscription', { 
-              detail: { transcriptionId: (options.data as any).transcriptionId } 
+            window.dispatchEvent(new CustomEvent('selectTranscription', {
+              detail: { transcriptionId: notificationData.transcriptionId }
             }));
           }
         }
@@ -296,8 +302,9 @@ class NotificationService {
         event.preventDefault();
         window.focus();
         notification.close();
-        
-        if ((options.data as any)?.transcriptionId) {
+
+        const notificationData = options.data as NotificationData | undefined;
+        if (notificationData?.transcriptionId) {
           // Notification clicked for transcription
         }
       };

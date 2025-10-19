@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { SharedTranscriptionView } from '@transcribe/shared';
+import { SharedTranscriptionView, AnalysisResults } from '@transcribe/shared';
 import { AnalysisTabs } from '@/components/AnalysisTabs';
 import {
   FileAudio,
@@ -97,7 +98,7 @@ export default function SharedTranscriptionPage() {
   useEffect(() => {
     // Initial load - increment view count
     fetchSharedTranscription(undefined, true);
-  }, [shareCode]); // Remove fetchSharedTranscription from deps to avoid infinite loop
+  }, [shareCode, fetchSharedTranscription]);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,12 +133,12 @@ export default function SharedTranscriptionPage() {
                error === 'Invalid or expired share link' ? t('error.invalidLink') :
                error}
             </p>
-            <a
+            <Link
               href="/"
               className="inline-block px-6 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
             >
               Go to Homepage
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -241,14 +242,12 @@ export default function SharedTranscriptionPage() {
           <div className="p-6">
             {/* Analysis Tabs - includes transcript as a tab */}
             {(transcription.analyses || transcription.transcriptText) && (
-              <AnalysisTabs 
+              <AnalysisTabs
                 analyses={{
                   ...transcription.analyses,
                   transcript: transcription.transcriptText
-                } as any}
-                transcriptionId={transcription.id}
+                } as AnalysisResults}
                 speakerSegments={transcription.speakerSegments}
-                speakers={transcription.speakers}
               />
             )}
           </div>

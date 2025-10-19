@@ -1,24 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  MessageSquare, 
-  Users, 
-  ListChecks, 
-  Brain, 
-  Target, 
+import {
+  MessageSquare,
+  Users,
+  ListChecks,
+  Brain,
+  Target,
   TrendingUp,
   FileText,
   Copy,
   Check,
-  Calendar,
-  FileCode
+  FileCode,
+  Calendar
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
-import { useTranslations } from 'next-intl';
 import { SummaryWithComments } from './SummaryWithComments';
 import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
@@ -102,8 +101,7 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, transcriptionId, speakerSegments, speakers }) => {
-  const t = useTranslations('analyses');
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSegments }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');

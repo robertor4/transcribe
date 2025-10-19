@@ -29,7 +29,7 @@ export class AudioSplitter {
   private ffmpegPath: string | undefined;
 
   constructor() {
-    this.initializeFfmpeg();
+    void this.initializeFfmpeg();
   }
 
   private async initializeFfmpeg() {
@@ -42,7 +42,7 @@ export class AudioSplitter {
         ffmpeg.setFfmpegPath(this.ffmpegPath);
         this.logger.log(`FFmpeg found at: ${this.ffmpegPath}`);
       }
-    } catch (error) {
+    } catch {
       // Try common locations
       const commonPaths = [
         '/usr/bin/ffmpeg',
@@ -75,10 +75,10 @@ export class AudioSplitter {
   }
 
   async getAudioDuration(filePath: string): Promise<number> {
-    return new Promise((resolve, reject) => {
+    return new Promise<number>((resolve, reject) => {
       ffmpeg.ffprobe(filePath, (err, metadata) => {
         if (err) {
-          reject(err);
+          reject(new Error(`Failed to get audio duration: ${err.message}`));
         } else {
           resolve(metadata.format.duration || 0);
         }
@@ -219,9 +219,9 @@ export class AudioSplitter {
     }
   }
 
-  async mergeTranscriptions(
+  mergeTranscriptions(
     transcriptions: { text: string; chunk: AudioChunk }[],
-  ): Promise<string> {
+  ): string {
     transcriptions.sort((a, b) => a.chunk.index - b.chunk.index);
 
     const mergedText = transcriptions
@@ -260,5 +260,100 @@ export class AudioSplitter {
     }
 
     return chunkInfo;
+  }
+
+  async mergeAudioFiles(
+    inputPaths: string[],
+    outputPath: string,
+  ): Promise<string> {
+    // Check if ffmpeg is available
+    const ffmpegAvailable = await this.checkFfmpegAvailable();
+    if (!ffmpegAvailable) {
+      throw new Error('FFmpeg is not available. Cannot merge audio files.');
+    }
+
+    if (inputPaths.length === 0) {
+      throw new Error('No input files provided for merging');
+    }
+
+    if (inputPaths.length === 1) {
+      // If only one file, just copy it
+      await fs.promises.copyFile(inputPaths[0], outputPath);
+      this.logger.log('Single file provided, copied to output path');
+      return outputPath;
+    }
+
+    this.logger.log(
+      `Merging ${inputPaths.length} audio files into: ${outputPath}`,
+    );
+
+    // Create a temporary file list for FFmpeg concat demuxer
+    const tempDir = path.dirname(outputPath);
+    const fileListPath = path.join(tempDir, `filelist_${Date.now()}.txt`);
+
+    try {
+      // Create file list for concat demuxer
+      // Format: file '/path/to/file1.mp3'
+      const fileListContent = inputPaths
+        .map((filePath) => `file '${filePath.replace(/'/g, "'\\''")}'`)
+        .join('\n');
+
+      await fs.promises.writeFile(fileListPath, fileListContent, 'utf8');
+
+      this.logger.debug(`File list created at: ${fileListPath}`);
+
+      // Use FFmpeg concat demuxer to merge files (fast, no re-encoding)
+      return new Promise((resolve, reject) => {
+        ffmpeg()
+          .input(fileListPath)
+          .inputOptions(['-f', 'concat', '-safe', '0'])
+          .audioCodec('libmp3lame')
+          .audioBitrate('128k')
+          .on('start', (commandLine) => {
+            this.logger.debug(`Starting merge: ${commandLine}`);
+          })
+          .on('progress', (progress) => {
+            if (progress.percent) {
+              this.logger.debug(`Merging progress: ${progress.percent}%`);
+            }
+          })
+          .on('end', () => {
+            this.logger.log(`Successfully merged files to: ${outputPath}`);
+            // Clean up file list
+            void fs.promises.unlink(fileListPath).catch((error) => {
+              this.logger.warn(
+                `Failed to delete file list: ${fileListPath}`,
+                error,
+              );
+            });
+            resolve(outputPath);
+          })
+          .on('error', (err) => {
+            this.logger.error('Error merging audio files:', err);
+            // Clean up file list
+            void fs.promises.unlink(fileListPath).catch((error) => {
+              this.logger.warn(
+                `Failed to delete file list: ${fileListPath}`,
+                error,
+              );
+            });
+            reject(new Error(`Failed to merge audio files: ${err.message}`));
+          })
+          .save(outputPath);
+      });
+    } catch (error) {
+      // Clean up file list if it was created
+      try {
+        if (fs.existsSync(fileListPath)) {
+          await fs.promises.unlink(fileListPath);
+        }
+      } catch (cleanupError) {
+        this.logger.warn(
+          `Failed to delete file list: ${fileListPath}`,
+          cleanupError,
+        );
+      }
+      throw error;
+    }
   }
 }

@@ -206,7 +206,9 @@ export class TranscriptionProcessor {
         );
 
         // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(transcriptionId);
+        await this.firebaseService.clearTranscriptionFileReferences(
+          transcriptionId,
+        );
       } catch (deleteError) {
         // Log but don't fail the entire job if file deletion fails
         this.logger.warn(
@@ -283,7 +285,9 @@ export class TranscriptionProcessor {
         );
 
         // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(transcriptionId);
+        await this.firebaseService.clearTranscriptionFileReferences(
+          transcriptionId,
+        );
       } catch (deleteError) {
         this.logger.warn(
           `Failed to delete original audio file for failed transcription ${transcriptionId}:`,
@@ -291,7 +295,22 @@ export class TranscriptionProcessor {
         );
       }
 
-      // Update status to failed
+      // Check if transcription was already completed before marking as failed
+      // This prevents post-completion cleanup errors from marking successful transcriptions as failed
+      const currentTranscription = await this.firebaseService.getTranscription(
+        userId,
+        transcriptionId,
+      );
+
+      if (currentTranscription?.status === TranscriptionStatus.COMPLETED) {
+        this.logger.warn(
+          `Transcription ${transcriptionId} already completed, not marking as failed due to post-completion error: ${error.message}`,
+        );
+        // Don't throw - the transcription actually succeeded
+        return;
+      }
+
+      // Update status to failed only if it wasn't completed
       await this.firebaseService.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.FAILED,
         error: error.message || 'Transcription failed',
