@@ -24,7 +24,7 @@ import { ActionItemsTable } from './ActionItemsTable';
 
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
-  transcriptionId: string;
+  transcriptionId?: string;
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
 }

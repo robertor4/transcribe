@@ -173,15 +173,17 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         const response = await transcriptionApi.uploadBatch(files, mergeFiles, undefined, context);
 
         if (response?.success && response.data && onUploadComplete) {
+          const { transcriptionIds, fileNames, merged } = response.data;
+
           // Call onUploadComplete for each transcription
-          response.data.transcriptionIds.forEach((id, index) => {
-            onUploadComplete(id, response.data.fileNames[index]);
+          transcriptionIds.forEach((id, index) => {
+            onUploadComplete(id, fileNames[index]);
           });
 
           // Track successful upload
           trackEvent('batch_transcription_completed', {
-            transcription_count: response.data.transcriptionIds.length,
-            merged: response.data.merged,
+            transcription_count: transcriptionIds.length,
+            merged: merged,
             file_count: files.length
           });
         }
