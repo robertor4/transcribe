@@ -1,11 +1,20 @@
 import { ReactNode } from 'react';
+import { Inter } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 type Props = {
   children: ReactNode;
 };
 
-// Since we have a `not-found.tsx` page on the root, a layout file
-// is required, even if it's just passing children through.
+// Root layout required for error pages (404, 500, etc.)
 export default function RootLayout({ children }: Props) {
-  return children;
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        {children}
+      </body>
+    </html>
+  );
 }

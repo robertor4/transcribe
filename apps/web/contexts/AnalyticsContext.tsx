@@ -22,6 +22,8 @@ export type AnalyticsEventName =
   | 'transcription_started'
   | 'transcription_completed'
   | 'transcription_failed'
+  | 'batch_transcription_started'
+  | 'batch_transcription_completed'
   | 'summary_generated'
   | 'custom_analysis_requested'
   | 'speaker_detection_enabled'
