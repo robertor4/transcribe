@@ -12,19 +12,24 @@ import {
   Copy,
   Check,
   FileCode,
-  Calendar
+  Calendar,
+  Languages,
+  Loader2,
+  Globe
 } from 'lucide-react';
-import { AnalysisResults, ANALYSIS_TYPE_INFO } from '@transcribe/shared';
+import { AnalysisResults, ANALYSIS_TYPE_INFO, SUPPORTED_LANGUAGES, Transcription, TranslationData } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
+import { transcriptionApi } from '@/lib/api';
 
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId?: string;
+  transcription?: Transcription;
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
 }
@@ -101,10 +106,15 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSegments }) => {
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSegments, transcriptionId, transcription }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('original');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [currentAnalyses, setCurrentAnalyses] = useState<AnalysisResults>(analyses);
+  const [translationError, setTranslationError] = useState<string | null>(null);
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
@@ -115,6 +125,66 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
       console.error('Failed to copy text:', error);
     }
   };
+
+  const handleLanguageChange = async (languageCode: string) => {
+    if (!transcriptionId) return;
+
+    setShowLanguageDropdown(false);
+    setTranslationError(null);
+
+    // If switching to original, reset to original analyses
+    if (languageCode === 'original') {
+      setSelectedLanguage('original');
+      setCurrentAnalyses(analyses);
+      return;
+    }
+
+    // Check if translation already exists
+    const existingTranslation = transcription?.translations?.[languageCode];
+    if (existingTranslation) {
+      setSelectedLanguage(languageCode);
+      setCurrentAnalyses({
+        ...existingTranslation.analyses,
+        transcript: existingTranslation.transcriptText
+      });
+      return;
+    }
+
+    // Create new translation
+    setIsTranslating(true);
+    try {
+      const response = await transcriptionApi.translate(transcriptionId, languageCode);
+      if (response.success && response.data) {
+        const translationData = response.data as TranslationData;
+        setSelectedLanguage(languageCode);
+        setCurrentAnalyses({
+          ...translationData.analyses,
+          transcript: translationData.transcriptText
+        });
+
+        // Update the transcription object with the new translation
+        if (transcription) {
+          transcription.translations = transcription.translations || {};
+          transcription.translations[languageCode] = translationData;
+        }
+      }
+    } catch (error) {
+      console.error('Translation failed:', error);
+      setTranslationError('Failed to translate. Please try again.');
+      setTimeout(() => setTranslationError(null), 5000);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  // Get translated languages
+  const translatedLanguages = transcription?.translations
+    ? Object.keys(transcription.translations)
+    : [];
+
+  const currentLanguageName = selectedLanguage === 'original'
+    ? 'Original'
+    : SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage)?.name || selectedLanguage;
 
   const getIconComponent = (iconName: string) => {
     switch(iconName) {
@@ -213,10 +283,17 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
         </nav>
       </div>
 
+      {/* Translation Error Message */}
+      {translationError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <p className="text-sm text-red-700">{translationError}</p>
+        </div>
+      )}
+
       {/* Tab Content */}
       <div className="bg-white rounded-lg">
         {ANALYSIS_TYPE_INFO.map((info) => {
-          const content = analyses[info.key];
+          const content = currentAnalyses[info.key];
           if (!content || activeTab !== info.key) return null;
           
           const Icon = getIconComponent(info.icon);
@@ -236,13 +313,121 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && (
+                    {/* Language Selector */}
+                    {transcriptionId && (
+                      <div className="relative">
+                        <button
+                          onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                          disabled={isTranslating}
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-[#cc3399] hover:bg-white rounded-lg transition-colors border border-gray-200"
+                          title="Change language"
+                        >
+                          {isTranslating ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span>Translating...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Globe className="h-4 w-4" />
+                              <span>{currentLanguageName}</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Language Dropdown */}
+                        {showLanguageDropdown && (
+                          <>
+                            <div
+                              className="fixed inset-0 z-10"
+                              onClick={() => setShowLanguageDropdown(false)}
+                            />
+                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-96 overflow-y-auto">
+                              <div className="p-2">
+                                <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2">
+                                  Select Language
+                                </div>
+
+                                {/* Original Language */}
+                                <button
+                                  onClick={() => handleLanguageChange('original')}
+                                  className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 ${
+                                    selectedLanguage === 'original'
+                                      ? 'bg-pink-50 text-[#cc3399] font-medium'
+                                      : 'hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <span>Original</span>
+                                  {selectedLanguage === 'original' && (
+                                    <Check className="h-4 w-4 text-[#cc3399]" />
+                                  )}
+                                </button>
+
+                                {/* Translated Languages */}
+                                {translatedLanguages.length > 0 && (
+                                  <>
+                                    <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 mt-2 border-t border-gray-200">
+                                      Translated
+                                    </div>
+                                    {translatedLanguages.map((langCode) => {
+                                      const lang = SUPPORTED_LANGUAGES.find(l => l.code === langCode);
+                                      if (!lang) return null;
+                                      return (
+                                        <button
+                                          key={langCode}
+                                          onClick={() => handleLanguageChange(langCode)}
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 ${
+                                            selectedLanguage === langCode
+                                              ? 'bg-pink-50 text-[#cc3399] font-medium'
+                                              : 'hover:bg-gray-50'
+                                          }`}
+                                        >
+                                          <div className="flex items-center gap-2">
+                                            <span>{lang.name}</span>
+                                            <span className="text-xs text-gray-500">{lang.nativeName}</span>
+                                          </div>
+                                          {selectedLanguage === langCode && (
+                                            <Check className="h-4 w-4 text-[#cc3399]" />
+                                          )}
+                                        </button>
+                                      );
+                                    })}
+                                  </>
+                                )}
+
+                                {/* Available Languages */}
+                                <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 mt-2 border-t border-gray-200">
+                                  Translate to...
+                                </div>
+                                {SUPPORTED_LANGUAGES.filter(
+                                  lang => !translatedLanguages.includes(lang.code)
+                                ).slice(0, 10).map((lang) => (
+                                  <button
+                                    key={lang.code}
+                                    onClick={() => handleLanguageChange(lang.code)}
+                                    className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-50 text-gray-700"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <Languages className="h-4 w-4 text-gray-400" />
+                                      <span>{lang.name}</span>
+                                      <span className="text-xs text-gray-500">{lang.nativeName}</span>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && selectedLanguage === 'original' && (
                       <>
                         <button
                           onClick={() => setTranscriptView('timeline')}
                           className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                            transcriptView === 'timeline' 
-                              ? 'text-[#cc3399] bg-white' 
+                            transcriptView === 'timeline'
+                              ? 'text-[#cc3399] bg-white'
                               : 'text-gray-400 hover:text-gray-600'
                           }`}
                           title="Timeline view"
@@ -253,8 +438,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                         <button
                           onClick={() => setTranscriptView('raw')}
                           className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                            transcriptView === 'raw' 
-                              ? 'text-[#cc3399] bg-white' 
+                            transcriptView === 'raw'
+                              ? 'text-[#cc3399] bg-white'
                               : 'text-gray-400 hover:text-gray-600'
                           }`}
                           title="Raw text view"
@@ -289,10 +474,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
               <div className="py-6">
                 {info.key === 'transcript' ? (
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
-                    {/* Show timeline or raw view based on selection */}
-                    {speakerSegments && speakerSegments.length > 0 && transcriptView === 'timeline' ? (
+                    {/* Show timeline or raw view based on selection - only for original language */}
+                    {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 && transcriptView === 'timeline' ? (
                       <TranscriptTimeline segments={speakerSegments} />
-                    ) : speakerSegments && speakerSegments.length > 0 && transcriptView === 'raw' ? (
+                    ) : selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 && transcriptView === 'raw' ? (
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                         <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
                           {speakerSegments.map(segment => segment.text).join(' ')}

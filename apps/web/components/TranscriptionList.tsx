@@ -571,6 +571,14 @@ export const TranscriptionList: React.FC = () => {
                       <span className="text-xs text-gray-500 flex-shrink-0">
                         {formatDate(transcription.createdAt)}
                       </span>
+                      {transcription.translations && Object.keys(transcription.translations).length > 0 && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 flex-shrink-0">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                          </svg>
+                          {Object.keys(transcription.translations).length} {Object.keys(transcription.translations).length === 1 ? 'translation' : 'translations'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -674,12 +682,13 @@ export const TranscriptionList: React.FC = () => {
                 {/* Show analysis tabs if we have analyses, otherwise show legacy tabs */}
                 {transcription.analyses ? (
                   <div className="p-4">
-                    <AnalysisTabs 
+                    <AnalysisTabs
                       analyses={{
                         ...transcription.analyses,
                         transcript: transcription.transcriptText
-                      }} 
+                      }}
                       transcriptionId={transcription.id}
+                      transcription={transcription}
                       speakerSegments={transcription.speakerSegments}
                       speakers={transcription.speakers}
                     />

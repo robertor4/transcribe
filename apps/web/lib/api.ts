@@ -197,6 +197,19 @@ export const transcriptionApi = {
   sendShareEmail: async (id: string, emailRequest: { recipientEmail: string; recipientName?: string; message?: string; senderName?: string }): Promise<ApiResponse> => {
     return api.post(`/transcriptions/${id}/share/email`, emailRequest);
   },
+
+  // Translation API methods
+  translate: async (id: string, targetLanguage: string): Promise<ApiResponse<unknown>> => {
+    return api.post(`/transcriptions/${id}/translate`, { targetLanguage });
+  },
+
+  getTranslation: async (id: string, language: string): Promise<ApiResponse<unknown>> => {
+    return api.get(`/transcriptions/${id}/translations/${language}`);
+  },
+
+  deleteTranslation: async (id: string, language: string): Promise<ApiResponse> => {
+    return api.delete(`/transcriptions/${id}/translations/${language}`);
+  },
 };
 
 export default api;

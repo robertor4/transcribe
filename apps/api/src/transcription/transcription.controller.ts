@@ -467,4 +467,68 @@ export class TranscriptionController {
       message: 'Share email sent successfully',
     };
   }
+
+  // Translation endpoints
+  @Post(':id/translate')
+  @UseGuards(FirebaseAuthGuard)
+  async translateTranscription(
+    @Param('id') transcriptionId: string,
+    @Body('targetLanguage') targetLanguage: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    if (!targetLanguage) {
+      throw new BadRequestException('Target language is required');
+    }
+
+    const translationData =
+      await this.transcriptionService.translateTranscription(
+        transcriptionId,
+        req.user.uid,
+        targetLanguage,
+      );
+
+    return {
+      success: true,
+      data: translationData,
+      message: `Translation to ${translationData.languageName} completed successfully`,
+    };
+  }
+
+  @Get(':id/translations/:language')
+  @UseGuards(FirebaseAuthGuard)
+  async getTranslation(
+    @Param('id') transcriptionId: string,
+    @Param('language') language: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    const translationData = await this.transcriptionService.getTranslation(
+      transcriptionId,
+      req.user.uid,
+      language,
+    );
+
+    return {
+      success: true,
+      data: translationData,
+    };
+  }
+
+  @Delete(':id/translations/:language')
+  @UseGuards(FirebaseAuthGuard)
+  async deleteTranslation(
+    @Param('id') transcriptionId: string,
+    @Param('language') language: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.transcriptionService.deleteTranslation(
+      transcriptionId,
+      req.user.uid,
+      language,
+    );
+
+    return {
+      success: true,
+      message: 'Translation deleted successfully',
+    };
+  }
 }
