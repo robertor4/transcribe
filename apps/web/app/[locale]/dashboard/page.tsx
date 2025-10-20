@@ -9,22 +9,19 @@ import { FileUploader } from '@/components/FileUploader';
 import { TranscriptionList } from '@/components/TranscriptionList';
 import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
-import { NotificationToggle } from '@/components/NotificationToggle';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { LogOut, FileAudio, Upload, Info, Mic, Settings } from 'lucide-react';
+import { UserProfileMenu } from '@/components/UserProfileMenu';
+import { FileAudio, Upload, Info, Mic } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 export default function DashboardPage() {
-  const { user, logout, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const locale = useLocale();
   const { trackEvent } = useAnalytics();
   const tDashboard = useTranslations('dashboard');
   const tCommon = useTranslations('common');
-  const tAuth = useTranslations('auth');
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
@@ -160,15 +157,6 @@ export default function DashboardPage() {
     };
   }, [activeTranscriptions]);
 
-  const handleLogout = async () => {
-    await logout();
-    trackEvent('logout', { 
-      user_email: user?.email,
-      locale: locale 
-    });
-    router.push('/login');
-  };
-
   const handleUploadComplete = (transcriptionId: string, fileName?: string) => {
     // Store the file name for this transcription
     if (fileName) {
@@ -233,24 +221,8 @@ export default function DashboardPage() {
                 </h1>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
-              <LanguageSwitcher />
-              <NotificationToggle />
-              <button
-                onClick={() => router.push('/settings')}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-                title={tDashboard('settings')}
-              >
-                <Settings className="h-5 w-5" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-                title={tAuth('signOut')}
-              >
-                <LogOut className="h-5 w-5" />
-              </button>
+            <div className="flex items-center">
+              <UserProfileMenu />
             </div>
           </div>
         </div>
