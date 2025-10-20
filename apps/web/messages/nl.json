@@ -26,6 +26,8 @@
     "export": "Exporteren",
     "import": "Importeren",
     "language": "Taal",
+    "userMenu": "Gebruikersmenu",
+    "browserNotifications": "Browsermeldingen",
     "allRightsReserved": "Alle rechten voorbehouden"
   },
   "auth": {
@@ -526,19 +528,44 @@
         "rating": "4.9/5 beoordeling",
         "certified": "AVG-compliant"
       },
-      "title": "Transformeer audio naar",
-      "titleHighlight": "bruikbare inzichten",
-      "subtitle": "Deel gepolijste samenvattingen direct met je team. Verbeter je communicatievaardigheden. Mis nooit meer een belangrijk detail.",
+      "title": "Klaar om elk gesprek om te zetten in",
+      "titleHighlight": "duidelijkheid.",
+      "subtitle": "Neural Summary transformeert uren audio in heldere, gestructureerde notities, beslissingen en vervolgstappen — in seconden.",
       "cta": {
-        "primary": "Start gratis proef",
+        "primary": "Start je gratis proefperiode",
         "secondary": "Zie hoe het werkt"
       },
-      "guarantee": "Geen creditcard vereist • 3 gratis transcripties • Altijd opzegbaar",
+      "guarantee": "Duurt minder dan 2 minuten • Geen creditcard • Directe opzet",
       "features": {
         "saveTime": "Bespaar 10+ uur/week",
         "accuracy": "99.5% nauwkeurigheid",
         "languages": "50+ talen"
       }
+    },
+    "valueProposition": {
+      "title": "Je AI die luistert, begrijpt en samenvat — zodat jij kunt denken, leiden en beslissen.",
+      "subtitle": "Neural Summary verbetert hoe je communiceert en beslissingen neemt door drie belangrijke gebieden te versterken waar professionals mee worstelen:",
+      "efficiency": {
+        "title": "Efficiëntie",
+        "description": "Automatiseer transcriptie en samenvatting zodat je elke week uren terugwint."
+      },
+      "clarity": {
+        "title": "Helderheid",
+        "description": "Leg vast wat echt belangrijk is uit vergaderingen, interviews en discussies."
+      },
+      "impact": {
+        "title": "Impact",
+        "description": "Zet inzichten om in actie met gestructureerde, deelbare samenvattingen en vervolgstappen."
+      },
+      "tagline": "Onthoud niet alleen wat er gezegd werd — handel ernaar."
+    },
+    "whyTeams": {
+      "title": "Waarom teams kiezen voor Neural Summary",
+      "benefit1": "Bespaar 3-5 uur per week op handmatige documentatie",
+      "benefit2": "Verminder informatieverlies en miscommunicatie",
+      "benefit3": "Houd teams op één lijn zonder eindeloos notities delen",
+      "benefit4": "Veilig, compliant en schaalbaar voor elke organisatie",
+      "tagline": "Stop tijd verspillen in vergaderingen — begin woorden om te zetten in actie."
     },
     "benefits": {
       "title": "Transformeer je werkwijze, verbeter je vaardigheden",
@@ -596,8 +623,24 @@
       }
     },
     "security": {
-      "title": "We slaan nooit je audiobestanden op",
-      "subtitle": "Je privacy is gegarandeerd met onze zero-knowledge architectuur",
+      "title": "Vertrouwd door professionals die precisie en privacy waarderen",
+      "subtitle": "Enterprise-grade beveiliging en compliance",
+      "stats": {
+        "users": "10.000+ gebruikers wereldwijd",
+        "rating": "gemiddeld beoordeeld met 4.9 / 5"
+      },
+      "compliance": {
+        "title": "Gebouwd met enterprise-grade beveiliging",
+        "description": "GDPR, SOC 2 Type II en HIPAA compliant"
+      },
+      "useCases": {
+        "title": "Vertrouwd door professionals",
+        "description": "Gebruikt door juridische, medische, onderzoeks- en leidinggevende teams waar elk woord telt."
+      },
+      "technology": {
+        "title": "Aangedreven door geavanceerde AI",
+        "description": "Gebouwd met de nieuwste taalmodellen, verfijnd voor zakelijke communicatie."
+      },
       "encryption": {
         "title": "Directe verwijdering na verwerking",
         "description": "Audiobestanden worden binnen seconden verwijderd, nooit opgeslagen op onze servers"
@@ -680,7 +723,8 @@
         "terms": "Voorwaarden",
         "security": "Beveiliging"
       },
-      "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden."
+      "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden.",
+      "tagline": "Gebouwd door communicatiewetenschappers en AI-ingenieurs om mensen te helpen elkaar beter te begrijpen."
     }
   },
   "share": {
