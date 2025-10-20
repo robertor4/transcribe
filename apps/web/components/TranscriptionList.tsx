@@ -230,7 +230,7 @@ export const TranscriptionList: React.FC = () => {
 
     const unsubscribeComplete = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
-      (data: unknown) => {
+      async (data: unknown) => {
         const progress = data as TranscriptionProgress;
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
@@ -238,14 +238,26 @@ export const TranscriptionList: React.FC = () => {
           clearTimeout(timer);
           timeoutTimers.delete(progress.transcriptionId);
         }
-        
+
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
           return newMap;
         });
-        // Reload from the beginning to show new transcriptions
-        loadTranscriptions(true);
+
+        // Fetch the updated transcription and update in place
+        try {
+          const response = await transcriptionApi.get(progress.transcriptionId);
+          if (response.success && response.data) {
+            setTranscriptions(prev =>
+              prev.map(t =>
+                t.id === progress.transcriptionId ? response.data as Transcription : t
+              )
+            );
+          }
+        } catch (error) {
+          console.error('Failed to fetch updated transcription:', error);
+        }
       }
     );
     
@@ -259,28 +271,25 @@ export const TranscriptionList: React.FC = () => {
           clearTimeout(timer);
           timeoutTimers.delete(progress.transcriptionId);
         }
-        
+
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
           return newMap;
         });
-        
-        // Update the transcription status to failed
-        setTranscriptions(prev => 
-          prev.map(t => 
-            t.id === progress.transcriptionId 
-              ? { 
-                  ...t, 
+
+        // Update the transcription status to failed in place
+        setTranscriptions(prev =>
+          prev.map(t =>
+            t.id === progress.transcriptionId
+              ? {
+                  ...t,
                   status: TranscriptionStatus.FAILED,
                   error: progress.error || 'Transcription failed'
                 }
               : t
           )
         );
-        
-        // Reload to get the latest status
-        loadTranscriptions(true);
       }
     );
 
