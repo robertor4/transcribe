@@ -258,35 +258,35 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             className={`
               border-2 border-dashed rounded-2xl p-6 sm:p-8 md:p-12 text-center cursor-pointer
               transition-all duration-200 transform
-              ${isDragActive 
-                ? 'border-[#cc3399] bg-pink-50 scale-[1.02] shadow-xl' 
-                : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20 hover:shadow-lg hover:scale-[1.01]'
+              ${isDragActive
+                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20 scale-[1.02] shadow-xl'
+                : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] bg-white dark:bg-gray-800 hover:bg-pink-50/20 dark:hover:bg-pink-900/10 hover:shadow-lg hover:scale-[1.01]'
               }
             `}
           >
             <input {...getInputProps()} />
             <div className="flex justify-center mb-4">
-              <div className="p-3 sm:p-4 bg-white rounded-full shadow-md">
+              <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-full shadow-md">
                 <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-[#cc3399]" />
               </div>
             </div>
             {isDragActive ? (
               <>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#cc3399] mb-2">{t('releaseToUpload')}</p>
-                <p className="text-xs sm:text-sm text-gray-600">{t('transcriptionStartsImmediately')}</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('transcriptionStartsImmediately')}</p>
               </>
             ) : (
               <>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                   {t('dropAudioHere')}
                 </p>
-                <p className="text-sm sm:text-base text-gray-600 mb-4">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
                   {t('orClickToBrowse')}
                 </p>
                 <button className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-[#cc3399] text-white text-sm sm:text-base font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
                   {t('selectAudioFile')}
                 </button>
-                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
+                <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
                     <span>{t('instantProcessing')}</span>
@@ -306,8 +306,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
           {/* Supported Formats - Small, Non-distracting */}
           <div className="text-center">
-            <p className="text-xs text-gray-500">
-              {t('supportedFormatsShort', { 
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {t('supportedFormatsShort', {
                 formats: SUPPORTED_AUDIO_FORMATS.join(', '),
                 size: '5GB'
               })}
@@ -320,11 +320,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           {/* Selected files */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t('selectedFiles')} ({files.length})
               </h3>
               {files.length > 1 && (
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   {t('dragToReorder') || 'Drag to reorder'}
                 </p>
               )}
@@ -363,7 +363,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                           )}
                           <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
                         </div>
-                        <p className="text-xs text-gray-600">{formatFileSize(file.size)}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{formatFileSize(file.size)}</p>
                       </div>
                     </div>
                   </div>
@@ -401,16 +401,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                 <p className="text-sm font-medium text-gray-700">
                   {t('dropMoreFiles') || 'Add more files'}
                 </p>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {t('orClickToAddMore') || 'or click to browse'}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center bg-gray-50">
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center bg-gray-50 dark:bg-gray-800">
               <div className="flex items-center justify-center space-x-2">
                 <CheckCircle className="h-5 w-5 text-green-500" />
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   {t('maxFilesSelected') || 'Maximum files selected (3)'}
                 </p>
               </div>
@@ -419,8 +419,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
           {/* Processing Mode Toggle - Only shown when multiple files */}
           {files.length > 1 && (
-            <div className="border border-gray-300 rounded-lg p-4 bg-white">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 {t('processingMode')}
               </label>
               {processingMode === 'merged' && (
@@ -449,7 +449,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                     <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
                     <span className="font-semibold text-sm text-gray-900">{t('processIndividually')}</span>
                   </div>
-                  <span className="text-xs text-gray-600 text-center">{t('processIndividuallyDesc')}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processIndividuallyDesc')}</span>
                 </button>
 
                 <button
@@ -467,7 +467,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                     <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
                     <span className="font-semibold text-sm text-gray-900">{t('processMerged')}</span>
                   </div>
-                  <span className="text-xs text-gray-600 text-center">{t('processMergedDesc')}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processMergedDesc')}</span>
                 </button>
               </div>
             </div>
@@ -485,7 +485,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder={t('contextPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-800 placeholder:text-gray-500 text-sm bg-white transition-all duration-200 hover:border-[#cc3399]"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-800 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm bg-white dark:bg-gray-700 transition-all duration-200 hover:border-[#cc3399]"
               rows={3}
             />
           </div>
@@ -516,19 +516,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
       {/* Secondary Information - Collapsed by Default */}
       <details className="group">
-        <summary className="cursor-pointer flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-          <span className="text-sm font-medium text-gray-700 flex items-center">
+        <summary className="cursor-pointer flex items-center justify-between py-2 px-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
             <Info className="h-4 w-4 mr-2" />
             {t('howItWorksAndTips')}
           </span>
-          <ChevronDown className="h-4 w-4 text-gray-500 group-open:rotate-180 transition-transform" />
+          <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400 group-open:rotate-180 transition-transform" />
         </summary>
         
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Quick Features */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('features')}</h4>
-            <div className="space-y-2 text-xs text-gray-600">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm">{t('features')}</h4>
+            <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-start">
                 <CheckCircle className="h-3 w-3 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('instantProcessingOnUpload')}</span>
@@ -549,9 +549,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           </div>
 
           {/* Security */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('security')}</h4>
-            <div className="space-y-2 text-xs text-gray-600">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm">{t('security')}</h4>
+            <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-start">
                 <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('encryption')}</span>
@@ -572,9 +572,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           </div>
 
           {/* Pro Tips */}
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2 text-sm">{t('proTips')}</h4>
-            <ul className="space-y-1 text-xs text-gray-600">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm">{t('proTips')}</h4>
+            <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
               <li>• {t('recordQuietEnvironment')}</li>
               <li>• {t('speakClearlyNormalPace')}</li>
               <li>• {t('addContextForTechnicalTerms')}</li>
