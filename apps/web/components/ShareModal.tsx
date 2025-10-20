@@ -510,22 +510,22 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-300 sticky top-0 bg-white z-10">
+        <div className="p-4 sm:p-6 border-b border-gray-300 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
               <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#cc3399]" />
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {t('title')}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-pink-50 rounded-lg transition-colors"
+              className="p-2 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-gray-700 hover:text-gray-900" />
+              <X className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" />
             </button>
           </div>
         </div>
