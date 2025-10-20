@@ -474,16 +474,19 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
               <div className="py-6">
                 {info.key === 'transcript' ? (
                   <div className="max-w-4xl mx-auto px-6 lg:px-8">
-                    {/* Show timeline or raw view based on selection - only for original language */}
-                    {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 && transcriptView === 'timeline' ? (
-                      <TranscriptTimeline segments={speakerSegments} />
-                    ) : selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 && transcriptView === 'raw' ? (
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                        <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
-                          {speakerSegments.map(segment => segment.text).join(' ')}
-                        </p>
-                      </div>
+                    {/* Show timeline or raw view for original language with speaker segments */}
+                    {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 ? (
+                      transcriptView === 'timeline' ? (
+                        <TranscriptTimeline segments={speakerSegments} />
+                      ) : (
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                          <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                            {speakerSegments.map(segment => segment.text).join(' ')}
+                          </p>
+                        </div>
+                      )
                     ) : (
+                      /* Show plain text for translated language or when no speaker segments */
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                         <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
                           {content}
