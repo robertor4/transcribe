@@ -27,7 +27,7 @@ Trusted by legal, medical, research, and executive teams where every word matter
 ### Transcription & Processing
 - **99.5% Accuracy**: Advanced AI transcription with automatic speaker identification
 - **Large File Support**: Handle files up to 5GB with intelligent audio splitting
-- **Batch Processing**: Upload multiple files at once with merge or individual processing
+- **Batch Processing**: Upload multiple files at once with merge or individual processing options and drag-to-reorder functionality
 - **Real-Time Updates**: Live progress tracking for every stage of processing
 - **50+ Languages**: Automatic language detection with support for 99 languages
 
@@ -40,9 +40,9 @@ Trusted by legal, medical, research, and executive teams where every word matter
 - **Personal Development**: Growth opportunities and actionable recommendations
 
 ### Translation & Collaboration
-- **Multi-Language Translation**: Translate to 15 languages instantly using GPT-5-mini
+- **Multi-Language Translation**: Translate transcriptions to 15 languages instantly using GPT-5-mini
 - **Secure Sharing**: Password-protected links with expiration and view limits
-- **Email Distribution**: Send summaries directly to stakeholders
+- **Email Distribution**: Send summaries directly to stakeholders with recipient tracking
 - **Timeline Visualization**: Interactive speaker timeline with timestamps
 
 ### Security & Compliance
@@ -78,13 +78,14 @@ Get started in under 60 seconds:
 ## Tech Stack
 
 ### Frontend
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 15 (App Router) with optimized rendering
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
 - **Internationalization**: next-intl (5 languages: en, nl, de, fr, es)
-- **File Upload**: React Dropzone with drag-to-reorder
+- **File Upload**: React Dropzone with multi-file batch upload and drag-to-reorder
 - **Authentication**: Firebase Auth (Email/Password + Google OAuth)
 - **Real-time**: Socket.io client for progress updates
+- **UI/UX**: Streamlined user profile menu with consolidated settings and notifications
 
 ### Backend
 - **Framework**: NestJS
@@ -269,7 +270,7 @@ transcribe/
 - `POST /transcriptions/:id/share` - Create share link with settings
 - `PUT /transcriptions/:id/share-settings` - Update share settings
 - `DELETE /transcriptions/:id/share` - Revoke share link
-- `POST /transcriptions/:id/share/email` - Send share via email
+- `POST /transcriptions/:id/share/email` - Send share via email with recipient tracking
 - `GET /transcriptions/shared/:shareToken` - Access shared transcription (public)
 
 ### WebSocket Events
