@@ -26,8 +26,8 @@ export default function DashboardPage() {
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
-  const [refreshKey, setRefreshKey] = useState(0);
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
+  const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   
   useEffect(() => {
     const checkAuthState = async () => {
@@ -95,8 +95,8 @@ export default function DashboardPage() {
       (progress: unknown) => {
         console.log('[Dashboard] Received TRANSCRIPTION_COMPLETED event:', progress);
         const typedProgress = progress as TranscriptionProgress;
-        setRefreshKey(prev => prev + 1);
-        
+        setLastCompletedId(typedProgress.transcriptionId);
+
         // Get the file name from our stored map
         const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
         console.log('[Dashboard] File name for transcription:', fileName);
@@ -177,10 +177,10 @@ export default function DashboardPage() {
     
     // Subscribe to updates for this transcription
     websocketService.subscribeToTranscription(transcriptionId);
-    
+
     // Switch to history tab to see progress
     setActiveTab('history');
-    setRefreshKey(prev => prev + 1);
+    setLastCompletedId(transcriptionId);
   };
 
   // Show loading state while checking auth
@@ -350,7 +350,7 @@ export default function DashboardPage() {
               <h2 className="text-lg font-medium text-gray-900 mb-4">
                 {tDashboard('yourTranscriptions')}
               </h2>
-              <TranscriptionList key={refreshKey} />
+              <TranscriptionList lastCompletedId={lastCompletedId} />
             </div>
           ) : activeTab === 'how-it-works' ? (
             <div>

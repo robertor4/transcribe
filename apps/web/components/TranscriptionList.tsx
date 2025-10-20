@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -42,7 +42,11 @@ import { ShareModal } from './ShareModal';
 import { ProcessingStatus } from './ProcessingStatus';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
-export const TranscriptionList: React.FC = () => {
+interface TranscriptionListProps {
+  lastCompletedId?: string | null;
+}
+
+export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastCompletedId }) => {
   const t = useTranslations('transcription');
   const tCommon = useTranslations('common');
   const { user } = useAuth();
@@ -62,6 +66,7 @@ export const TranscriptionList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 20; // Load 20 items at a time
+  const initialLoadDone = useRef(false);
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -169,12 +174,48 @@ export const TranscriptionList: React.FC = () => {
 
   // Load initial transcriptions when component mounts or user changes
   useEffect(() => {
-    if (user) {
+    if (user && !initialLoadDone.current) {
+      initialLoadDone.current = true;
       loadTranscriptions(true);
-    } else {
+    } else if (!user) {
       setLoading(false);
+      initialLoadDone.current = false;
     }
-  }, [user, loadTranscriptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Handle new completed transcription from parent
+  useEffect(() => {
+    if (!lastCompletedId || !user) return;
+
+    const fetchAndUpdateTranscription = async () => {
+      try {
+        const response = await transcriptionApi.get(lastCompletedId);
+        if (response.success && response.data) {
+          const updatedTranscription = response.data as Transcription;
+
+          setTranscriptions(prev => {
+            // Check if this transcription already exists in the list
+            const existingIndex = prev.findIndex(t => t.id === lastCompletedId);
+
+            if (existingIndex >= 0) {
+              // Update existing transcription in place
+              return prev.map(t =>
+                t.id === lastCompletedId ? updatedTranscription : t
+              );
+            } else {
+              // New transcription - prepend it to the list
+              return [updatedTranscription, ...prev];
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch completed transcription:', error);
+      }
+    };
+
+    fetchAndUpdateTranscription();
+  }, [lastCompletedId, user]);
 
   // Set up WebSocket listeners
   useEffect(() => {
