@@ -53,7 +53,7 @@ export class AssemblyAIService {
         speech_model: 'best', // Use Best tier for maximum accuracy
         speaker_labels: true, // Enable speaker diarization
         language_detection: true, // Enable automatic language detection
-        language_confidence_threshold: 0.8, // Increased from 0.7 for better language detection
+        language_confidence_threshold: 0.5, // Industry standard for production use
 
         // Quality enhancement parameters
         punctuate: true, // Add proper punctuation

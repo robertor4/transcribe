@@ -86,16 +86,36 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date);
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return d.toLocaleDateString('en-US', options);
+  const formatDate = (date: Date | string | any) => {
+    try {
+      // Handle Firestore Timestamp objects
+      let d: Date;
+      if (date && typeof date === 'object' && 'toDate' in date) {
+        d = date.toDate();
+      } else if (date && typeof date === 'object' && 'seconds' in date) {
+        // Firestore Timestamp has seconds and nanoseconds
+        d = new Date(date.seconds * 1000);
+      } else {
+        d = new Date(date);
+      }
+
+      // Check if date is valid
+      if (isNaN(d.getTime())) {
+        return 'Date unavailable';
+      }
+
+      const options: Intl.DateTimeFormatOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return d.toLocaleDateString('en-US', options);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Date unavailable';
+    }
   };
 
   useEffect(() => {
@@ -407,7 +427,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           recipientEmail: chip.email,
         });
       }
-      
+
+      // Refresh transcription data to get updated sharedWith list
+      const response = await transcriptionApi.get(transcription.id);
+      if (response.data) {
+        onShareUpdate(response.data as Transcription);
+      }
+
       setEmailSent(true);
       setTimeout(() => {
         setEmailChips([]);
@@ -420,6 +446,48 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       alert('Failed to send emails. Please try again.');
     } finally {
       setEmailLoading(false);
+    }
+  };
+
+  const handleResendToEmail = async (email: string) => {
+    try {
+      await transcriptionApi.sendShareEmail(transcription.id, {
+        recipientEmail: email,
+      });
+
+      // Refresh transcription data
+      const response = await transcriptionApi.get(transcription.id);
+      if (response.data) {
+        onShareUpdate(response.data as Transcription);
+      }
+
+      alert(`Email re-sent to ${email} successfully!`);
+    } catch (error) {
+      console.error('Error re-sending email:', error);
+      alert('Failed to re-send email. Please try again.');
+    }
+  };
+
+  const handleResendToAll = async () => {
+    if (!transcription.sharedWith || transcription.sharedWith.length === 0) return;
+
+    try {
+      for (const record of transcription.sharedWith) {
+        await transcriptionApi.sendShareEmail(transcription.id, {
+          recipientEmail: record.email,
+        });
+      }
+
+      // Refresh transcription data
+      const response = await transcriptionApi.get(transcription.id);
+      if (response.data) {
+        onShareUpdate(response.data as Transcription);
+      }
+
+      alert(`Emails re-sent to all ${transcription.sharedWith.length} recipients successfully!`);
+    } catch (error) {
+      console.error('Error re-sending emails:', error);
+      alert('Failed to re-send emails. Please try again.');
     }
   };
 
@@ -912,6 +980,57 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         {t('emailsSentSuccess')}
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* Previously Shared With Section */}
+                {transcription.sharedWith && transcription.sharedWith.length > 0 && (
+                  <div className="mb-4 p-4 border border-gray-400 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-gray-900 flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-600" />
+                        Previously Shared With ({transcription.sharedWith.length})
+                      </h4>
+                      <button
+                        onClick={handleResendToAll}
+                        className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1"
+                      >
+                        <Mail className="w-4 h-4" />
+                        Re-send to All
+                      </button>
+                    </div>
+
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {transcription.sharedWith.map((record, index) => (
+                        <div
+                          key={`${record.email}-${index}`}
+                          className="flex items-center justify-between p-2 bg-white rounded border border-gray-300 hover:border-[#cc3399]/30 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-3 h-3 text-gray-600" />
+                              <span className="text-sm font-medium text-gray-800">{record.email}</span>
+                            </div>
+                            <div className="flex items-center gap-1 ml-5 mt-1">
+                              <Clock className="w-3 h-3 text-gray-500" />
+                              <span className="text-xs text-gray-600">
+                                Sent {formatDate(record.sentAt)}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleResendToEmail(record.email)}
+                            className="ml-2 px-2 py-1 text-xs text-[#cc3399] hover:bg-pink-50 rounded border border-[#cc3399]/30 hover:border-[#cc3399] transition-colors"
+                          >
+                            Re-send
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-xs text-gray-600 mt-3">
+                      These email addresses will be cleared when you revoke the share link.
+                    </p>
                   </div>
                 )}
 
