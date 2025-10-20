@@ -25,7 +25,10 @@
     "export": "Exportar",
     "import": "Importar",
     "open": "Abrir",
-    "language": "Idioma"
+    "language": "Idioma",
+    "userMenu": "Menú de usuario",
+    "browserNotifications": "Notificaciones del navegador",
+    "allRightsReserved": "Todos los derechos reservados"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -465,19 +468,44 @@
         "rating": "4.9/5 calificación",
         "certified": "Compatible con RGPD"
       },
-      "title": "Transforma audio en",
-      "titleHighlight": "información accionable",
-      "subtitle": "Comparte resúmenes profesionales con tu equipo al instante. Mejora tus habilidades de comunicación. Nunca te pierdas un detalle importante.",
+      "title": "Listo para convertir cada conversación en",
+      "titleHighlight": "claridad.",
+      "subtitle": "Neural Summary transforma horas de audio en notas claras y estructuradas, decisiones y próximos pasos — en segundos.",
       "cta": {
-        "primary": "Iniciar prueba gratuita",
+        "primary": "Comienza tu prueba gratuita",
         "secondary": "Ver cómo funciona"
       },
-      "guarantee": "Sin tarjeta de crédito • 3 transcripciones gratis • Cancela cuando quieras",
+      "guarantee": "Toma menos de 2 minutos • Sin tarjeta de crédito • Configuración instantánea",
       "features": {
         "saveTime": "Ahorra 10+ horas/semana",
         "accuracy": "99.5% de precisión",
         "languages": "50+ idiomas"
       }
+    },
+    "valueProposition": {
+      "title": "Tu IA que escucha, entiende y resume — para que puedas pensar, liderar y decidir.",
+      "subtitle": "Neural Summary mejora cómo te comunicas y tomas decisiones fortaleciendo tres áreas clave con las que luchan los profesionales:",
+      "efficiency": {
+        "title": "Eficiencia",
+        "description": "Automatiza la transcripción y el resumen para recuperar horas cada semana."
+      },
+      "clarity": {
+        "title": "Claridad",
+        "description": "Captura lo que realmente importa de reuniones, entrevistas y discusiones."
+      },
+      "impact": {
+        "title": "Impacto",
+        "description": "Convierte insights en acción con resúmenes estructurados y compartibles y próximos pasos."
+      },
+      "tagline": "No solo recuerdes lo que se dijo — actúa en consecuencia."
+    },
+    "whyTeams": {
+      "title": "Por qué los equipos eligen Neural Summary",
+      "benefit1": "Ahorra 3-5 horas por semana en documentación manual",
+      "benefit2": "Reduce la pérdida de información y los malentendidos",
+      "benefit3": "Mantén equipos alineados sin compartir notas interminablemente",
+      "benefit4": "Seguro, conforme y escalable para cualquier organización",
+      "tagline": "Deja de perder tiempo en reuniones — comienza a convertir palabras en acción."
     },
     "benefits": {
       "title": "Transforma tu flujo de trabajo, mejora tus habilidades",
@@ -535,8 +563,24 @@
       }
     },
     "security": {
-      "title": "Nunca almacenamos tus archivos de audio",
-      "subtitle": "Tu privacidad está garantizada con nuestra arquitectura de conocimiento cero",
+      "title": "Confiado por profesionales que valoran la precisión y la privacidad",
+      "subtitle": "Seguridad y cumplimiento de nivel empresarial",
+      "stats": {
+        "users": "10,000+ usuarios en todo el mundo",
+        "rating": "calificados en promedio con 4.9 / 5"
+      },
+      "compliance": {
+        "title": "Construido con seguridad de nivel empresarial",
+        "description": "Conforme a GDPR, SOC 2 Type II y HIPAA"
+      },
+      "useCases": {
+        "title": "Confiado por profesionales",
+        "description": "Usado por equipos legales, médicos, de investigación y ejecutivos donde cada palabra cuenta."
+      },
+      "technology": {
+        "title": "Impulsado por IA de vanguardia",
+        "description": "Construido con los últimos modelos de lenguaje ajustados para comunicación empresarial."
+      },
       "encryption": {
         "title": "Eliminación inmediata después del procesamiento",
         "description": "Los archivos de audio se eliminan en segundos, nunca se almacenan en nuestros servidores"
@@ -619,7 +663,8 @@
         "terms": "Términos",
         "security": "Seguridad"
       },
-      "copyright": "© 2024 Neural Notes. Todos los derechos reservados."
+      "copyright": "© 2024 Neural Summary. Todos los derechos reservados.",
+      "tagline": "Construido por científicos de la comunicación e ingenieros de IA para ayudar a las personas a entenderse mejor entre sí."
     }
   },
   "terms": {

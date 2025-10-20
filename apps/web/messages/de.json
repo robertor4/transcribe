@@ -25,7 +25,10 @@
     "export": "Exportieren",
     "import": "Importieren",
     "open": "Öffnen",
-    "language": "Sprache"
+    "language": "Sprache",
+    "userMenu": "Benutzermenü",
+    "browserNotifications": "Browser-Benachrichtigungen",
+    "allRightsReserved": "Alle Rechte vorbehalten"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -445,19 +448,44 @@
         "rating": "4,9/5 Bewertung",
         "certified": "DSGVO-konform"
       },
-      "title": "Verwandeln Sie Audio in",
-      "titleHighlight": "verwertbare Erkenntnisse",
-      "subtitle": "Teilen Sie professionelle Zusammenfassungen sofort mit Ihrem Team. Verbessern Sie Ihre Kommunikationsfähigkeiten. Verpassen Sie nie wieder wichtige Details.",
+      "title": "Bereit, jedes Gespräch in",
+      "titleHighlight": "Klarheit zu verwandeln.",
+      "subtitle": "Neural Summary verwandelt stundenlange Audio in klare, strukturierte Notizen, Entscheidungen und nächste Schritte — in Sekunden.",
       "cta": {
-        "primary": "Kostenlose Testversion starten",
+        "primary": "Starten Sie Ihre kostenlose Testversion",
         "secondary": "So funktioniert's"
       },
-      "guarantee": "Keine Kreditkarte erforderlich • 3 kostenlose Transkriptionen • Jederzeit kündbar",
+      "guarantee": "Dauert weniger als 2 Minuten • Keine Kreditkarte • Sofortige Einrichtung",
       "features": {
         "saveTime": "Sparen Sie 10+ Stunden/Woche",
         "accuracy": "99,5% Genauigkeit",
         "languages": "50+ Sprachen"
       }
+    },
+    "valueProposition": {
+      "title": "Ihre KI, die zuhört, versteht und zusammenfasst — damit Sie denken, führen und entscheiden können.",
+      "subtitle": "Neural Summary verbessert Ihre Kommunikation und Entscheidungsfindung, indem es drei Kernbereiche stärkt, mit denen Fachkräfte kämpfen:",
+      "efficiency": {
+        "title": "Effizienz",
+        "description": "Automatisieren Sie Transkription und Zusammenfassung, um jede Woche Stunden zurückzugewinnen."
+      },
+      "clarity": {
+        "title": "Klarheit",
+        "description": "Erfassen Sie, was wirklich wichtig ist aus Meetings, Interviews und Diskussionen."
+      },
+      "impact": {
+        "title": "Wirkung",
+        "description": "Verwandeln Sie Erkenntnisse in Aktionen mit strukturierten, teilbaren Zusammenfassungen und nächsten Schritten."
+      },
+      "tagline": "Erinnern Sie sich nicht nur daran, was gesagt wurde — handeln Sie danach."
+    },
+    "whyTeams": {
+      "title": "Warum Teams Neural Summary wählen",
+      "benefit1": "Sparen Sie 3-5 Stunden pro Woche bei der manuellen Dokumentation",
+      "benefit2": "Reduzieren Sie Informationsverlust und Missverständnisse",
+      "benefit3": "Halten Sie Teams auf dem gleichen Stand ohne endloses Teilen von Notizen",
+      "benefit4": "Sicher, compliant und skalierbar für jede Organisation",
+      "tagline": "Hören Sie auf, Zeit in Meetings zu verschwenden — beginnen Sie, Worte in Taten umzusetzen."
     },
     "benefits": {
       "title": "Transformieren Sie Ihre Arbeitsweise, verbessern Sie Ihre Fähigkeiten",
@@ -515,8 +543,24 @@
       }
     },
     "security": {
-      "title": "Wir speichern niemals Ihre Audiodateien",
-      "subtitle": "Ihre Privatsphäre ist mit unserer Zero-Knowledge-Architektur garantiert",
+      "title": "Vertraut von Profis, die Präzision und Datenschutz schätzen",
+      "subtitle": "Enterprise-Grade-Sicherheit und Compliance",
+      "stats": {
+        "users": "10.000+ Nutzer weltweit",
+        "rating": "durchschnittlich mit 4,9 / 5 bewertet"
+      },
+      "compliance": {
+        "title": "Gebaut mit Enterprise-Grade-Sicherheit",
+        "description": "DSGVO, SOC 2 Type II und HIPAA konform"
+      },
+      "useCases": {
+        "title": "Vertraut von Profis",
+        "description": "Genutzt von Rechts-, Medizin-, Forschungs- und Führungsteams, wo jedes Wort zählt."
+      },
+      "technology": {
+        "title": "Angetrieben von modernster KI",
+        "description": "Gebaut mit den neuesten Sprachmodellen, feinabgestimmt für geschäftliche Kommunikation."
+      },
       "encryption": {
         "title": "Sofortige Löschung nach Verarbeitung",
         "description": "Audiodateien werden innerhalb von Sekunden gelöscht, niemals auf unseren Servern gespeichert"
@@ -599,7 +643,8 @@
         "terms": "Bedingungen",
         "security": "Sicherheit"
       },
-      "copyright": "© 2024 Neural Summary. Alle Rechte vorbehalten."
+      "copyright": "© 2024 Neural Summary. Alle Rechte vorbehalten.",
+      "tagline": "Gebaut von Kommunikationswissenschaftlern und KI-Ingenieuren, um Menschen zu helfen, einander besser zu verstehen."
     }
   },
   "terms": {

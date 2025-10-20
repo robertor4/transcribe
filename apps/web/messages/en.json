@@ -29,6 +29,8 @@
     "export": "Export",
     "import": "Import",
     "language": "Language",
+    "userMenu": "User menu",
+    "browserNotifications": "Browser Notifications",
     "allRightsReserved": "All rights reserved"
   },
   "auth": {
