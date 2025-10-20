@@ -59,41 +59,41 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                  <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
                     {introText}
                   </p>
                 );
               }
-              
+
               // Handle arrays of children (mixed content)
               if (Array.isArray(children)) {
-                const textContent = children.map(child => 
+                const textContent = children.map(child =>
                   typeof child === 'string' ? child : ''
                 ).join('');
-                
+
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                    <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
                       {introText}
                     </p>
                   );
                 }
               }
-              
-              return <p className="text-base leading-relaxed mb-4 text-gray-700">{children}</p>;
+
+              return <p className="text-base leading-relaxed mb-4 text-gray-700 dark:text-gray-300">{children}</p>;
             },
-            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
-            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
-            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
-            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700">{children}</ul>,
-            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700">{children}</ol>,
-            li: ({children}) => <li className="text-base leading-relaxed text-gray-700">{children}</li>,
-            strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
-            em: ({children}) => <em className="italic text-gray-700">{children}</em>,
-            code: ({children}) => <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm">{children}</code>,
+            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 mt-8">{children}</h1>,
+            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 mt-6">{children}</h2>,
+            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-3 mt-4">{children}</h3>,
+            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ul>,
+            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ol>,
+            li: ({children}) => <li className="text-base leading-relaxed text-gray-700 dark:text-gray-300">{children}</li>,
+            strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-gray-100">{children}</strong>,
+            em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm">{children}</code>,
             blockquote: ({children}) => (
-              <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700">
+              <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 my-4 italic text-gray-700 dark:text-gray-300">
                 {children}
               </blockquote>
             ),
@@ -250,7 +250,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
   return (
     <div className="space-y-4">
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 bg-white">
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <nav className="-mb-px flex flex-wrap gap-x-4 overflow-x-auto">
           {ANALYSIS_TYPE_INFO.map((info) => {
             const Icon = getIconComponent(info.icon);
@@ -285,13 +285,13 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
 
       {/* Translation Error Message */}
       {translationError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <p className="text-sm text-red-700">{translationError}</p>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+          <p className="text-sm text-red-700 dark:text-red-400">{translationError}</p>
         </div>
       )}
 
       {/* Tab Content */}
-      <div className="bg-white rounded-lg">
+      <div className="bg-white dark:bg-gray-800 rounded-lg">
         {ANALYSIS_TYPE_INFO.map((info) => {
           const content = currentAnalyses[info.key];
           if (!content || activeTab !== info.key) return null;
@@ -304,12 +304,12 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
               <div className={`bg-gradient-to-r ${getBackgroundColor(info.color)} p-4 rounded-t-lg border-b`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 bg-white rounded-lg shadow-sm`}>
+                    <div className={`p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm`}>
                       <Icon className={`h-5 w-5 text-${info.color}-600`} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{info.label}</h3>
-                      <p className="text-sm text-gray-600">{info.description}</p>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{info.label}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{info.description}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -319,7 +319,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                         <button
                           onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
                           disabled={isTranslating}
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-[#cc3399] hover:bg-white rounded-lg transition-colors border border-gray-200"
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-600"
                           title="Change language"
                         >
                           {isTranslating ? (

@@ -37,39 +37,39 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                  <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
                     {introText}
                   </p>
                 );
               }
-              
+
               // Handle arrays of children (mixed content)
               if (Array.isArray(children)) {
-                const textContent = children.map(child => 
+                const textContent = children.map(child =>
                   typeof child === 'string' ? child : ''
                 ).join('');
-                
+
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <p className="text-2xl leading-relaxed font-medium text-gray-700 mb-8 border-l-4 border-[#cc3399] pl-6">
+                    <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
                       {introText}
                     </p>
                   );
                 }
               }
-              
-              return <p className="text-base leading-relaxed mb-4 text-gray-700">{children}</p>;
+
+              return <p className="text-base leading-relaxed mb-4 text-gray-700 dark:text-gray-300">{children}</p>;
             },
-            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
-            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
-            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
-            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700">{children}</ul>,
-            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700">{children}</ol>,
-            li: ({children}) => <li className="text-base leading-relaxed text-gray-700">{children}</li>,
-            strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
-            em: ({children}) => <em className="italic text-gray-700">{children}</em>,
-            code: ({children}) => <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm">{children}</code>,
+            h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 mt-8">{children}</h1>,
+            h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 mt-6">{children}</h2>,
+            h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-3 mt-4">{children}</h3>,
+            ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ul>,
+            ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ol>,
+            li: ({children}) => <li className="text-base leading-relaxed text-gray-700 dark:text-gray-300">{children}</li>,
+            strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-gray-100">{children}</strong>,
+            em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm">{children}</code>,
           }}
         >
           {processedSummary}
