@@ -111,6 +111,13 @@ export class FirebaseService implements OnModuleInit {
       completedAt: data.completedAt?.toDate
         ? data.completedAt.toDate()
         : data.completedAt,
+      sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+      sharedWith: data.sharedWith?.map((record: any) => ({
+        email: record.email,
+        sentAt: record.sentAt?.toDate
+          ? record.sentAt.toDate()
+          : record.sentAt,
+      })),
     } as Transcription;
   }
 
@@ -151,6 +158,15 @@ export class FirebaseService implements OnModuleInit {
         completedAt: data.completedAt?.toDate
           ? data.completedAt.toDate()
           : data.completedAt,
+        sharedAt: data.sharedAt?.toDate
+          ? data.sharedAt.toDate()
+          : data.sharedAt,
+        sharedWith: data.sharedWith?.map((record: any) => ({
+          email: record.email,
+          sentAt: record.sentAt?.toDate
+            ? record.sentAt.toDate()
+            : record.sentAt,
+        })),
       };
     }) as Transcription[];
 
@@ -536,6 +552,12 @@ export class FirebaseService implements OnModuleInit {
         ? data.completedAt.toDate()
         : data.completedAt,
       sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+      sharedWith: data.sharedWith?.map((record: any) => ({
+        email: record.email,
+        sentAt: record.sentAt?.toDate
+          ? record.sentAt.toDate()
+          : record.sentAt,
+      })),
     } as Transcription;
   }
 
@@ -559,6 +581,7 @@ export class FirebaseService implements OnModuleInit {
       shareToken: admin.firestore.FieldValue.delete(),
       shareSettings: admin.firestore.FieldValue.delete(),
       sharedAt: admin.firestore.FieldValue.delete(),
+      sharedWith: admin.firestore.FieldValue.delete(),
       updatedAt: new Date(),
     });
   }

@@ -108,6 +108,7 @@ export interface Transcription {
   shareToken?: string;
   shareSettings?: ShareSettings;
   sharedAt?: Date;
+  sharedWith?: SharedEmailRecord[]; // Email addresses this transcript was shared with (cleared when shareToken is revoked)
   // Translation fields
   translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
 }
@@ -252,6 +253,11 @@ export interface ShareContentOptions {
   includePersonalDevelopment: boolean;
   includeCustomAnalysis: boolean;
   includeSpeakerInfo: boolean;
+}
+
+export interface SharedEmailRecord {
+  email: string;
+  sentAt: Date;
 }
 
 export interface ShareSettings {

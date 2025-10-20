@@ -131,18 +131,14 @@ export default async function LocaleLayout({
   const messages = await getMessages({ locale });
 
   return (
-    <html lang={locale}>
-      <body className={inter.className}>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>
-            <AnalyticsProvider>
-              <PageTracker />
-              {children}
-              <CookieConsent />
-            </AnalyticsProvider>
-          </AuthProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <AuthProvider>
+        <AnalyticsProvider>
+          <PageTracker />
+          {children}
+          <CookieConsent />
+        </AnalyticsProvider>
+      </AuthProvider>
+    </NextIntlClientProvider>
   );
 }

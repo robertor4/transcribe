@@ -1411,6 +1411,17 @@ export class TranscriptionService {
       this.logger.log(
         `Share email sent for transcription ${transcriptionId} to ${emailRequest.recipientEmail}`,
       );
+
+      // Track the shared email address in the transcription document
+      const sharedWith = transcription.sharedWith || [];
+      sharedWith.push({
+        email: emailRequest.recipientEmail,
+        sentAt: new Date(),
+      });
+
+      await this.firebaseService.updateTranscription(transcriptionId, {
+        sharedWith,
+      });
     }
 
     return success;
