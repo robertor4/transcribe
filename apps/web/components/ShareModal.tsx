@@ -894,24 +894,24 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* Email Section */}
                 {showEmailSection && (
-                  <div className="mb-4 p-3 sm:p-4 border border-gray-400 rounded-lg bg-white">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                  <div className="mb-4 p-3 sm:p-4 border border-gray-400 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
                       <Mail className="w-4 h-4 text-[#cc3399]" />
                       {t('sendViaEmail')}
                     </h4>
-                    
+
                     {/* Email Chips Display */}
                     {emailChips.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {emailChips.map((chip) => (
                           <div
                             key={chip.id}
-                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-pink-50 border border-[#cc3399]/30 rounded-full"
+                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-pink-50 dark:bg-pink-900/30 border border-[#cc3399]/30 dark:border-[#cc3399]/50 rounded-full"
                           >
-                            <span className="text-xs sm:text-sm text-gray-800">{chip.email}</span>
+                            <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">{chip.email}</span>
                             <button
                               onClick={() => removeEmailChip(chip.id)}
-                              className="ml-1 text-gray-600 hover:text-red-600"
+                              className="ml-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -919,7 +919,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         ))}
                       </div>
                     )}
-                    
+
                     {/* Email Input */}
                     <div className="relative mb-3">
                       <input
@@ -932,23 +932,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         onKeyDown={handleEmailInputKeyDown}
                         onBlur={addEmailChip}
                         placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
-                        className="w-full px-3 py-2 pr-10 border border-gray-400 rounded-lg text-sm sm:text-base text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-sm sm:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
                       />
                       <button
                         onClick={addEmailChip}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-[#cc3399]"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 dark:text-gray-400 hover:text-[#cc3399]"
                       >
                         <Plus className="w-5 h-5" />
                       </button>
                     </div>
-                    
+
                     {/* Error Message */}
                     {emailError && (
-                      <p className="text-sm text-red-600 mb-3">{emailError}</p>
+                      <p className="text-sm text-red-600 dark:text-red-400 mb-3">{emailError}</p>
                     )}
-                    
+
                     {/* Help Text */}
-                    <p className="text-xs text-gray-600 mb-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                       {t('emailHelpText')}
                     </p>
                     
@@ -976,7 +976,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </button>
                     
                     {emailSent && (
-                      <div className="mt-3 p-3 bg-green-50 text-green-700 rounded-lg text-sm">
+                      <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm">
                         {t('emailsSentSuccess')}
                       </div>
                     )}
@@ -985,15 +985,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* Previously Shared With Section */}
                 {transcription.sharedWith && transcription.sharedWith.length > 0 && (
-                  <div className="mb-4 p-4 border border-gray-400 rounded-lg bg-gray-50">
+                  <div className="mb-4 p-4 border border-gray-400 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-gray-900 flex items-center gap-2">
-                        <Check className="w-4 h-4 text-green-600" />
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
                         Previously Shared With ({transcription.sharedWith.length})
                       </h4>
                       <button
                         onClick={handleResendToAll}
-                        className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1"
+                        className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89] font-medium flex items-center gap-1"
                       >
                         <Mail className="w-4 h-4" />
                         Re-send to All
@@ -1004,23 +1004,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       {transcription.sharedWith.map((record, index) => (
                         <div
                           key={`${record.email}-${index}`}
-                          className="flex items-center justify-between p-2 bg-white rounded border border-gray-300 hover:border-[#cc3399]/30 transition-colors"
+                          className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/30 transition-colors"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <Mail className="w-3 h-3 text-gray-600" />
-                              <span className="text-sm font-medium text-gray-800">{record.email}</span>
+                              <Mail className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{record.email}</span>
                             </div>
                             <div className="flex items-center gap-1 ml-5 mt-1">
-                              <Clock className="w-3 h-3 text-gray-500" />
-                              <span className="text-xs text-gray-600">
+                              <Clock className="w-3 h-3 text-gray-500 dark:text-gray-400" />
+                              <span className="text-xs text-gray-600 dark:text-gray-400">
                                 Sent {formatDate(record.sentAt)}
                               </span>
                             </div>
                           </div>
                           <button
                             onClick={() => handleResendToEmail(record.email)}
-                            className="ml-2 px-2 py-1 text-xs text-[#cc3399] hover:bg-pink-50 rounded border border-[#cc3399]/30 hover:border-[#cc3399] transition-colors"
+                            className="ml-2 px-2 py-1 text-xs text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded border border-[#cc3399]/30 hover:border-[#cc3399] transition-colors"
                           >
                             Re-send
                           </button>
@@ -1028,7 +1028,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       ))}
                     </div>
 
-                    <p className="text-xs text-gray-600 mt-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
                       These email addresses will be cleared when you revoke the share link.
                     </p>
                   </div>
