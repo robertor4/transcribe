@@ -451,7 +451,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                     )}
                     <button
                       onClick={() => handleCopy(content, info.key)}
-                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#cc3399] hover:bg-white rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
                       title={`Copy ${info.label}`}
                     >
                       {copiedTab === info.key ? (
@@ -479,16 +479,16 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                       transcriptView === 'timeline' ? (
                         <TranscriptTimeline segments={speakerSegments} />
                       ) : (
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                          <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                        <div className="p-6">
+                          <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-mono">
                             {speakerSegments.map(segment => segment.text).join(' ')}
                           </p>
                         </div>
                       )
                     ) : (
                       /* Show plain text for translated language or when no speaker segments */
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                        <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
+                      <div className="p-6">
+                        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-mono">
                           {content}
                         </p>
                       </div>
