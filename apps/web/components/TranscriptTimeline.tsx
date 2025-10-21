@@ -47,18 +47,18 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
   };
 
   const getSpeakerColor = (speakerTag: string): { bg: string; border: string; text: string; avatar: string } => {
-    const speakerId = parseInt(speakerTag.replace(/[^0-9]/g, '')) || 
+    const speakerId = parseInt(speakerTag.replace(/[^0-9]/g, '')) ||
                      (speakerTag.charCodeAt(speakerTag.length - 1) - 64);
-    
+
     const colors = [
-      { bg: 'bg-blue-50', border: 'border-blue-400', text: 'text-blue-700', avatar: 'bg-blue-500' },
-      { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-700', avatar: 'bg-green-500' },
-      { bg: 'bg-purple-50', border: 'border-purple-400', text: 'text-purple-700', avatar: 'bg-purple-500' },
-      { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-700', avatar: 'bg-orange-500' },
-      { bg: 'bg-pink-50', border: 'border-pink-400', text: 'text-pink-700', avatar: 'bg-pink-500' },
-      { bg: 'bg-teal-50', border: 'border-teal-400', text: 'text-teal-700', avatar: 'bg-teal-500' },
+      { bg: 'bg-blue-50 dark:bg-blue-900/30', border: 'border-blue-400 dark:border-blue-600', text: 'text-blue-700 dark:text-blue-400', avatar: 'bg-blue-500' },
+      { bg: 'bg-green-50 dark:bg-green-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-700 dark:text-green-400', avatar: 'bg-green-500' },
+      { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-400', avatar: 'bg-purple-500' },
+      { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-700 dark:text-orange-400', avatar: 'bg-orange-500' },
+      { bg: 'bg-pink-50 dark:bg-pink-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-pink-500' },
+      { bg: 'bg-teal-50 dark:bg-teal-900/30', border: 'border-teal-400 dark:border-teal-600', text: 'text-teal-700 dark:text-teal-400', avatar: 'bg-teal-500' },
     ];
-    
+
     return colors[(speakerId - 1) % colors.length];
   };
 
@@ -114,9 +114,9 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
 
     return parts.map((part, index) => {
       if (part.toLowerCase() === query.toLowerCase()) {
-        return <mark key={index} className="bg-yellow-200 text-gray-900 px-1 rounded">{part}</mark>;
+        return <mark key={index} className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-gray-100 px-1 rounded">{part}</mark>;
       }
-      return <span key={index} className="text-gray-700">{part}</span>;
+      return <span key={index} className="text-gray-700 dark:text-gray-300">{part}</span>;
     });
   };
 
@@ -184,26 +184,26 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
   }
 
   return (
-    <div className={`bg-white rounded-lg ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg ${className}`}>
       {/* Search Bar */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
           <input
             type="text"
             placeholder="Search transcript..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-24 py-2 border border-gray-300 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
+            className="w-full pl-10 pr-24 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
           />
           {searchQuery && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {searchResults.size} results
               </span>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
                 aria-label="Clear search"
               >
                 <X className="w-4 h-4" />
@@ -214,27 +214,27 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
       </div>
 
       {/* Summary Stats */}
-      <div className="mb-8 pb-6 border-b border-gray-200">
+      <div className="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{formatTime(totalDuration)}</div>
-            <div className="text-sm text-gray-500">Total Duration</div>
+            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatTime(totalDuration)}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Total Duration</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">{segments.length}</div>
-            <div className="text-sm text-gray-500">Segments</div>
+            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{segments.length}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Segments</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
+            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               {new Set(segments.map(s => s.speakerTag)).size}
             </div>
-            <div className="text-sm text-gray-500">Speakers</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Speakers</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900">
+            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
             </div>
-            <div className="text-sm text-gray-500">Avg Words/Segment</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Avg Words/Segment</div>
           </div>
         </div>
       </div>
@@ -242,12 +242,12 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
       {/* Interactive Timeline Bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600 font-medium">Timeline Overview</span>
-          <span className="text-sm text-gray-500">{formatTime(totalDuration)}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Timeline Overview</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{formatTime(totalDuration)}</span>
         </div>
-        <div 
+        <div
           ref={timelineRef}
-          className="relative h-12 bg-gray-100 rounded-lg cursor-pointer overflow-hidden"
+          className="relative h-12 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer overflow-hidden"
           onClick={handleTimelineClick}
         >
           {/* Speaker blocks on timeline */}
@@ -273,10 +273,10 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
           {timeMarkers.map((time) => (
             <div
               key={time}
-              className="absolute top-0 h-full border-l border-gray-300"
+              className="absolute top-0 h-full border-l border-gray-300 dark:border-gray-600"
               style={{ left: `${(time / totalDuration) * 100}%` }}
             >
-              <span className="absolute -bottom-5 -left-4 text-xs text-gray-500">
+              <span className="absolute -bottom-5 -left-4 text-xs text-gray-500 dark:text-gray-400">
                 {formatTime(time)}
               </span>
             </div>
@@ -307,12 +307,12 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
               className="relative transition-all"
             >
               {/* Timeline connector */}
-              <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 opacity-50" />
-              
+              <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
+
               {/* Time marker */}
               <div className="absolute left-0 top-4 flex items-center">
-                <div className={`w-4 h-4 rounded-full ${colors.avatar} ring-4 ring-white`} />
-                <span className="ml-2 text-xs text-gray-500 font-medium">
+                <div className={`w-4 h-4 rounded-full ${colors.avatar} ring-4 ring-white dark:ring-gray-800`} />
+                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                   {formatTime(group.startTime)}
                 </span>
               </div>
@@ -328,16 +328,16 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                       <div className={`text-sm font-semibold ${colors.text}`}>
                         {group.speakerTag}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {formatDuration(group.startTime, group.endTime)}
                       </div>
                     </div>
                   </div>
-                  
+
                   {group.segments.length > 1 && (
                     <button
                       onClick={() => toggleSegment(group.segments[0].index)}
-                      className="text-gray-400 hover:text-gray-600 p-1"
+                      className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 p-1"
                     >
                       {isExpanded ? (
                         <ChevronUp className="w-5 h-5" />
@@ -347,8 +347,8 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                     </button>
                   )}
                 </div>
-                
-                <div className="text-sm text-gray-700">
+
+                <div className="text-sm text-gray-700 dark:text-gray-300">
                   {isExpanded ? (
                     <div className="space-y-2">
                       {group.segments.map(({ segment, index }) => (
@@ -356,7 +356,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                           key={index}
                           className={`pl-4 border-l-2 ${colors.border}`}
                         >
-                          <span className="text-xs text-gray-400 mr-2">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 mr-2">
                             [{formatTime(segment.startTime)}]
                           </span>
                           <span className="text-sm">{highlightText(segment.text, searchQuery)}</span>

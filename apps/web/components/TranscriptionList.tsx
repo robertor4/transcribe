@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import websocketService from '@/lib/websocket';
+import { useTranscriptionPolling } from '@/hooks/useTranscriptionPolling';
 import {
   Transcription,
   TranscriptionStatus,
@@ -67,6 +68,43 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 20; // Load 20 items at a time
   const initialLoadDone = useRef(false);
+
+  // Callback for polling hook when it updates a transcription
+  const handlePollingUpdate = useCallback((updatedTranscription: Transcription) => {
+    console.log('[Polling] Received update for transcription:', updatedTranscription.id, updatedTranscription.status);
+
+    // Update transcription in list
+    setTranscriptions(prev =>
+      prev.map(t =>
+        t.id === updatedTranscription.id ? updatedTranscription : t
+      )
+    );
+
+    // If completed or failed, clear progress map
+    if (
+      updatedTranscription.status === TranscriptionStatus.COMPLETED ||
+      updatedTranscription.status === TranscriptionStatus.FAILED
+    ) {
+      setProgressMap(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(updatedTranscription.id);
+        return newMap;
+      });
+      websocketService.clearEventTracking(updatedTranscription.id);
+    }
+  }, []);
+
+  // Set up polling fallback for in-progress transcriptions
+  const { notifyProgress } = useTranscriptionPolling(
+    transcriptions,
+    handlePollingUpdate,
+    {
+      enabled: true,
+      pollingInterval: 10000, // Poll every 10 seconds
+      staleThreshold: 30000, // Consider stale after 30 seconds without updates
+      maxConcurrentPolls: 5,
+    }
+  );
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -220,15 +258,31 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   // Set up WebSocket listeners
   useEffect(() => {
     if (!user) return;
-    
+
     // Track timeout timers for processing transcriptions
     const timeoutTimers = new Map<string, NodeJS.Timeout>();
-    
+
+    // Listen for connection health changes
+    const unsubscribeHealth = websocketService.on(
+      'connection_health_changed',
+      (data: unknown) => {
+        const healthData = data as { healthy: boolean; connected: boolean };
+        console.log('[WebSocket] Connection health changed:', healthData);
+      }
+    );
+
     // Listen for real-time updates
     const unsubscribeProgress = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
       (data: unknown) => {
         const progress = data as TranscriptionProgress;
+
+        // Notify polling hook that we received an update (resets staleness timer)
+        notifyProgress(progress.transcriptionId, progress.progress);
+
+        // Mark event received in WebSocket service
+        websocketService.markEventReceived(progress.transcriptionId);
+
         setProgressMap(prev => {
           const newMap = new Map(prev);
           const existingProgress = newMap.get(progress.transcriptionId);
@@ -237,20 +291,20 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           newMap.set(progress.transcriptionId, { ...progress, startTime });
           return newMap;
         });
-        
-        // Set or reset timeout for this transcription (5 minutes)
+
+        // Set or reset timeout for this transcription (extended to 10 minutes)
         const existingTimer = timeoutTimers.get(progress.transcriptionId);
         if (existingTimer) {
           clearTimeout(existingTimer);
         }
-        
+
         const newTimer = setTimeout(() => {
-          // Mark as failed after timeout
-          setTranscriptions(prev => 
-            prev.map(t => 
-              t.id === progress.transcriptionId 
-                ? { 
-                    ...t, 
+          // Mark as failed after timeout (only if polling hasn't already updated it)
+          setTranscriptions(prev =>
+            prev.map(t =>
+              t.id === progress.transcriptionId && t.status === TranscriptionStatus.PROCESSING
+                ? {
+                    ...t,
                     status: TranscriptionStatus.FAILED,
                     error: 'Transcription timed out. Please try again with a shorter audio file.'
                   }
@@ -263,8 +317,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             return newMap;
           });
           timeoutTimers.delete(progress.transcriptionId);
-        }, 5 * 60 * 1000); // 5 minutes timeout
-        
+          websocketService.clearEventTracking(progress.transcriptionId);
+        }, 10 * 60 * 1000); // Extended to 10 minutes timeout (polling should handle it before this)
+
         timeoutTimers.set(progress.transcriptionId, newTimer);
       }
     );
@@ -273,6 +328,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       async (data: unknown) => {
         const progress = data as TranscriptionProgress;
+
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -280,6 +336,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           timeoutTimers.delete(progress.transcriptionId);
         }
 
+        // Clear event tracking and progress map
+        websocketService.clearEventTracking(progress.transcriptionId);
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
@@ -306,6 +364,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
       (data: unknown) => {
         const progress = data as TranscriptionProgress & { error?: string };
+
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -313,6 +372,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           timeoutTimers.delete(progress.transcriptionId);
         }
 
+        // Clear event tracking and progress map
+        websocketService.clearEventTracking(progress.transcriptionId);
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
@@ -335,13 +396,14 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
     );
 
     return () => {
+      unsubscribeHealth();
       unsubscribeProgress();
       unsubscribeComplete();
       unsubscribeFailed();
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
-  }, [t, user, loadTranscriptions]);
+  }, [t, user, loadTranscriptions, notifyProgress]);
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('confirmDelete'))) return;
@@ -520,9 +582,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   if (transcriptions.length === 0) {
     return (
       <div className="text-center py-12">
-        <FileAudio className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500">{t('noTranscriptAvailable')}</p>
-        <p className="text-sm text-gray-400 mt-2">{t('noSummaryAvailable')}</p>
+        <FileAudio className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+        <p className="text-gray-500 dark:text-gray-400">{t('noTranscriptAvailable')}</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">{t('noSummaryAvailable')}</p>
       </div>
     );
   }
@@ -532,13 +594,13 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
         <div key={monthYear}>
           {/* Month Divider */}
-          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm -mx-6 px-6 py-3 mb-4 border-b border-gray-200 shadow-sm">
+          <div className="sticky top-0 z-10 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm -mx-6 px-6 py-3 mb-4 border-b border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="p-1.5 bg-[#cc3399]/10 rounded-lg">
+              <div className="p-1.5 bg-[#cc3399]/10 dark:bg-[#cc3399]/20 rounded-lg">
                 <Calendar className="h-4 w-4 text-[#cc3399]" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-800">{monthYear}</h3>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{monthYear}</h3>
+              <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
                 {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
               </span>
             </div>
@@ -553,11 +615,11 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
               return (
                 <div
                   key={transcription.id}
-            className={`border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 ${
-              !isExpanded ? 'hover:shadow-lg hover:border-gray-300 hover:scale-[1.005] cursor-pointer' : ''
+            className={`border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 ${
+              !isExpanded ? 'hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 hover:scale-[1.005] cursor-pointer' : ''
             }`}
           >
-            <div className="p-4 bg-white">
+            <div className="p-4 bg-white dark:bg-gray-800">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
@@ -570,7 +632,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                             value={editingTitleValue}
                             onChange={(e) => setEditingTitleValue(e.target.value)}
                             onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
-                            className="text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 min-w-0 flex-1"
+                            className="text-sm font-medium text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 min-w-0 flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                             placeholder={t('editTitle')}
                             autoFocus
                           />
@@ -591,12 +653,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate min-w-0">
                             {transcription.title || transcription.fileName}
                           </p>
                           <button
                             onClick={() => startEditingTitle(transcription)}
-                            className="p-1 text-gray-400 hover:text-[#cc3399] transition-colors flex-shrink-0"
+                            className="p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0"
                             title={t('editTitle')}
                           >
                             <Edit3 className="h-4 w-4" />
@@ -605,20 +667,20 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       )}
                     </div>
                     <div className="flex items-center space-x-4 mt-1 overflow-hidden">
-                      <span className="text-xs text-gray-500 flex-shrink-0">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                         {formatFileSize(transcription.fileSize)}
                       </span>
                       {transcription.duration && (
-                        <span className="text-xs text-gray-500 flex-shrink-0">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                           {formatDuration(transcription.duration)}
                         </span>
                       )}
                       {transcription.title && transcription.title !== transcription.fileName && (
-                        <span className="text-xs text-gray-500 truncate">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {transcription.fileName}
                         </span>
                       )}
-                      <span className="text-xs text-gray-500 flex-shrink-0">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                         {formatDate(transcription.createdAt)}
                       </span>
                       {transcription.translations && Object.keys(transcription.translations).length > 0 && (
@@ -642,7 +704,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                   ) : transcription.status === TranscriptionStatus.FAILED ? (
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(transcription.status)}
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
                         {getStatusText(transcription.status, transcription.id)}
                       </span>
                     </div>
@@ -652,8 +714,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : transcription.id)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        isExpanded 
-                          ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
+                        isExpanded
+                          ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                           : 'bg-[#cc3399] text-white hover:bg-[#b82e86] shadow-md hover:shadow-lg'
                       }`}
                       title={isExpanded ? t('hideTranscript') : t('viewTranscription')}
@@ -665,7 +727,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
                       onClick={() => setShareModalTranscription(transcription)}
-                      className="p-2 text-gray-400 hover:text-blue-500 transition-colors relative"
+                      className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors relative"
                       title={t('share')}
                     >
                       <Share2 className="h-5 w-5" />
@@ -675,11 +737,11 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                     </button>
                   )}
                   
-                  {(transcription.status === TranscriptionStatus.COMPLETED || 
+                  {(transcription.status === TranscriptionStatus.COMPLETED ||
                     transcription.status === TranscriptionStatus.FAILED) && (
                     <button
                       onClick={() => handleDelete(transcription.id)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                      className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                       title={t('delete')}
                     >
                       <Trash2 className="h-5 w-5" />
@@ -690,7 +752,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
 
               {progress && (
                 <div className="mt-3">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div
                       className="bg-[#cc3399] h-2 rounded-full transition-all duration-300"
                       style={{ width: `${progress.progress}%` }}
@@ -701,23 +763,23 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             </div>
 
             {transcription.status === TranscriptionStatus.FAILED && transcription.error && (
-              <div className="border-t border-gray-200 p-4 bg-red-50">
+              <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-red-50 dark:bg-red-900/20">
                 <div className="flex items-start space-x-2">
-                  <XCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <XCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-800 mb-1">{t('status_failed')}</p>
-                    <p className="text-sm text-red-700">
+                    <p className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">{t('status_failed')}</p>
+                    <p className="text-sm text-red-700 dark:text-red-400">
                       {getFriendlyErrorMessage(transcription.error)}
                     </p>
                     <button
                       onClick={() => toggleTechnicalError(transcription.id)}
-                      className="text-xs text-red-600 hover:text-red-800 underline mt-2 inline-block"
+                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline mt-2 inline-block"
                     >
                       {showTechnicalError.has(transcription.id) ? t('hideTechnicalDetails') : t('showTechnicalDetails')}
                     </button>
                     {showTechnicalError.has(transcription.id) && (
-                      <div className="mt-2 p-2 bg-red-100 rounded">
-                        <p className="text-xs text-red-600 font-mono break-all">
+                      <div className="mt-2 p-2 bg-red-100 dark:bg-red-900/30 rounded">
+                        <p className="text-xs text-red-600 dark:text-red-400 font-mono break-all">
                           {transcription.error}
                         </p>
                       </div>
@@ -728,7 +790,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             )}
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
-              <div className="border-t border-gray-200 bg-gray-50">
+              <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                 {/* Show analysis tabs if we have analyses, otherwise show legacy tabs */}
                 {transcription.analyses ? (
                   <div className="p-4">
@@ -752,7 +814,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                 {transcription.summary && (
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         <FileText className="h-4 w-4 mr-2" />
                         Summary
                         {transcription.summaryVersion && transcription.summaryVersion > 1 && (
@@ -763,7 +825,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       </h4>
                       <button
                         onClick={() => handleCopy(transcription.summary || '', `summary-${transcription.id}`)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
                         title="Copy summary"
                       >
                         {copiedId === `summary-${transcription.id}` ? (
@@ -779,7 +841,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         )}
                       </button>
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                       <SummaryWithComments
                         summary={transcription.summary}
                       />
@@ -790,7 +852,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                 {transcription.transcriptText && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         <FileAudio className="h-4 w-4 mr-2" />
                         Full Transcript
                       </h4>
@@ -799,8 +861,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                           onClick={() => toggleFormat(transcription.id)}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                             !unformattedTranscripts.has(transcription.id)
-                              ? 'bg-pink-100 text-[#cc3399] hover:bg-pink-200'
-                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                              ? 'bg-pink-100 dark:bg-pink-900/30 text-[#cc3399] hover:bg-pink-200 dark:hover:bg-pink-900/40'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
                         >
@@ -809,12 +871,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         </button>
                         <button
                           onClick={() => handleCopy(
-                            !unformattedTranscripts.has(transcription.id) 
+                            !unformattedTranscripts.has(transcription.id)
                               ? formatTranscript(transcription.transcriptText || '')
-                              : transcription.transcriptText || '', 
+                              : transcription.transcriptText || '',
                             `transcript-${transcription.id}`
                           )}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
                           title="Copy transcript"
                         >
                           {copiedId === `transcript-${transcription.id}` ? (
@@ -831,9 +893,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         </button>
                       </div>
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                      <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
-                        {!unformattedTranscripts.has(transcription.id) 
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {!unformattedTranscripts.has(transcription.id)
                           ? formatTranscript(transcription.transcriptText || '')
                           : transcription.transcriptText}
                       </p>
@@ -845,7 +907,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                 {!transcription.analyses && transcription.transcriptText && (
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-gray-900 flex items-center">
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                         <FileAudio className="h-4 w-4 mr-2" />
                         Full Transcript
                       </h4>
@@ -854,8 +916,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                           onClick={() => toggleFormat(transcription.id)}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                             !unformattedTranscripts.has(transcription.id)
-                              ? 'bg-pink-100 text-[#cc3399] hover:bg-pink-200'
-                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                              ? 'bg-pink-100 dark:bg-pink-900/30 text-[#cc3399] hover:bg-pink-200 dark:hover:bg-pink-900/40'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
                         >
@@ -864,12 +926,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         </button>
                         <button
                           onClick={() => handleCopy(
-                            !unformattedTranscripts.has(transcription.id) 
+                            !unformattedTranscripts.has(transcription.id)
                               ? formatTranscript(transcription.transcriptText || '')
-                              : transcription.transcriptText || '', 
+                              : transcription.transcriptText || '',
                             `transcript-${transcription.id}`
                           )}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-[#cc3399] hover:bg-pink-50 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
                           title="Copy transcript"
                         >
                           {copiedId === `transcript-${transcription.id}` ? (
@@ -886,9 +948,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                         </button>
                       </div>
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                      <p className="whitespace-pre-wrap text-sm text-gray-600 leading-relaxed">
-                        {!unformattedTranscripts.has(transcription.id) 
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {!unformattedTranscripts.has(transcription.id)
                           ? formatTranscript(transcription.transcriptText || '')
                           : transcription.transcriptText}
                       </p>
@@ -913,7 +975,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       {/* Loading More Indicator */}
       {loadingMore && (
         <div className="flex justify-center py-4">
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
             <Loader2 className="h-5 w-5 animate-spin" />
             <span className="text-sm">{t('loadingMore')}</span>
           </div>
@@ -922,7 +984,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       
       {/* No More Items Message */}
       {!hasMore && transcriptions.length > 0 && (
-        <div className="text-center py-4 text-sm text-gray-500">
+        <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400">
           {t('noMoreTranscriptions')}
         </div>
       )}

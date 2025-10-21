@@ -101,11 +101,12 @@ npm run setup         # Install all dependencies and build shared package
 
 ### Request Flow
 1. **File Upload**: Client validates file (format/size) → Uploads to Firebase Storage → Creates job in Redis queue
-2. **Processing Pipeline**: 
+2. **Processing Pipeline**:
    - Small files (<25MB): Direct to Whisper API
    - Large files (>25MB): FFmpeg splits → Parallel chunk processing → Ordered merge
 3. **Real-time Updates**: Socket.io broadcasts progress per chunk → Client receives updates
-4. **Data Storage**: Transcription metadata in Firestore, audio files in Firebase Storage with 5-hour signed URLs
+4. **Polling Fallback**: Automatic API polling when WebSocket fails (see [WebSocket Resilience](docs/WEBSOCKET_RESILIENCE.md))
+5. **Data Storage**: Transcription metadata in Firestore, audio files in Firebase Storage with 5-hour signed URLs
 
 ### Key Architectural Patterns
 
@@ -180,22 +181,34 @@ Create composite index for transcriptions:
 - Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
 - MIME type handling: Accepts variations like `audio/x-m4a`, `audio/mp4`, `application/octet-stream`
 
-### WebSocket Event Protocol
+### WebSocket Event Protocol & Resilience
+The application uses Socket.io for real-time updates with **automatic polling fallback** for reliability.
+
+**Event Protocol:**
 ```typescript
 // Client subscribes to job updates
 socket.emit('subscribe_transcription', { jobId, token });
 
-// Server emits progress
-socket.emit('transcription_progress', { 
-  jobId, 
-  progress: number, 
-  stage: 'uploading' | 'processing' | 'summarizing' 
+// Server emits progress (every 3s during processing)
+socket.emit('transcription_progress', {
+  jobId,
+  progress: number,
+  stage: 'uploading' | 'processing' | 'summarizing'
 });
 
 // Completion/failure events
 socket.emit('transcription_completed', { jobId, transcriptionId });
 socket.emit('transcription_failed', { jobId, error });
 ```
+
+**Resilience Features:**
+- **Automatic reconnection** with exponential backoff (3 attempts: 2s, 4s, 8s)
+- **Dual transport** fallback (WebSocket → HTTP polling)
+- **API polling fallback** when WebSocket fails (polls every 10s for stale transcriptions)
+- **Extended timeout** from 5 to 10 minutes for long transcriptions
+- **Connection health tracking** with automatic recovery
+
+**See full documentation:** [WebSocket Resilience Guide](docs/WEBSOCKET_RESILIENCE.md)
 
 ### Email Service (Gmail SMTP with Domain Alias)
 - **Service**: Gmail SMTP with App Password for transactional emails

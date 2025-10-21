@@ -120,19 +120,19 @@ export default function NotificationSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           {t('description')}
         </p>
       </div>
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="rounded-md bg-green-50 p-4">
+        <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-4">
           <div className="flex">
             <CheckCircle className="h-5 w-5 text-green-400" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">
+              <p className="text-sm font-medium text-green-800 dark:text-green-300">
                 {t('saveSuccess')}
               </p>
             </div>
@@ -141,32 +141,32 @@ export default function NotificationSettingsPage() {
       )}
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4">
+        <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-4">
           <div className="flex">
             <AlertCircle className="h-5 w-5 text-red-400" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{error}</p>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Email Notifications */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center mb-4">
-            <Mail className="h-5 w-5 text-gray-400 mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">{t('emailNotifications')}</h3>
+            <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('emailNotifications')}</h3>
           </div>
 
           <div className="space-y-4">
             {/* Master email toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700">
+                <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('enableEmailNotifications')}
                 </label>
-                <p className="text-sm text-gray-500">{t('enableEmailDescription')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('enableEmailDescription')}</p>
               </div>
               <button
                 id="email-enabled"
@@ -191,14 +191,14 @@ export default function NotificationSettingsPage() {
             {/* Individual email settings */}
             {emailEnabled && (
               <>
-                <div className="ml-6 space-y-3 border-l-2 border-gray-200 pl-6">
+                <div className="ml-6 space-y-3 border-l-2 border-gray-200 dark:border-gray-700 pl-6">
                   {/* Transcription complete */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <label htmlFor="transcription-complete" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="transcription-complete" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {t('transcriptionComplete')}
                       </label>
-                      <p className="text-sm text-gray-500">{t('transcriptionCompleteDescription')}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('transcriptionCompleteDescription')}</p>
                     </div>
                     <button
                       id="transcription-complete"
@@ -222,10 +222,10 @@ export default function NotificationSettingsPage() {
 
                   {/* Email digest frequency */}
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('digestFrequency')}
                     </label>
-                    <p className="text-sm text-gray-500 mb-2">{t('digestDescription')}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t('digestDescription')}</p>
                     <div className="flex space-x-4">
                       {(['immediate', 'daily', 'weekly'] as const).map((freq) => (
                         <label key={freq} className="flex items-center">
@@ -235,9 +235,9 @@ export default function NotificationSettingsPage() {
                             value={freq}
                             checked={digest === freq}
                             onChange={(e) => setDigest(e.target.value as typeof digest)}
-                            className="h-4 w-4 text-[#cc3399] focus:ring-[#cc3399] border-gray-300"
+                            className="h-4 w-4 text-[#cc3399] focus:ring-[#cc3399] border-gray-300 dark:border-gray-600"
                           />
-                          <span className="ml-2 text-sm text-gray-700">
+                          <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                             {t(`digest.${freq}`)}
                           </span>
                         </label>
@@ -251,7 +251,7 @@ export default function NotificationSettingsPage() {
         </div>
 
         {/* Save Button for Email Settings */}
-        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 text-right sm:px-6">
           <button
             onClick={handleSaveEmailSettings}
             disabled={saving}
@@ -270,23 +270,23 @@ export default function NotificationSettingsPage() {
       </div>
 
       {/* Browser Notifications */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center mb-4">
-            <Monitor className="h-5 w-5 text-gray-400 mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">{t('browserNotifications')}</h3>
+            <Monitor className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('browserNotifications')}</h3>
           </div>
 
           <div className="space-y-4">
             {/* Browser notification toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <label htmlFor="browser-enabled" className="text-sm font-medium text-gray-700">
+                <label htmlFor="browser-enabled" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('enableBrowserNotifications')}
                 </label>
-                <p className="text-sm text-gray-500">{t('enableBrowserDescription')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('enableBrowserDescription')}</p>
                 {permission === 'denied' && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">
                     {t('browserPermissionBlocked')}
                   </p>
                 )}
@@ -315,9 +315,9 @@ export default function NotificationSettingsPage() {
 
             {/* Notification types info */}
             {browserEnabled && (
-              <div className="ml-6 space-y-2 border-l-2 border-gray-200 pl-6">
-                <p className="text-sm text-gray-600">{t('browserNotificationTypes')}</p>
-                <ul className="text-sm text-gray-500 list-disc list-inside space-y-1">
+              <div className="ml-6 space-y-2 border-l-2 border-gray-200 dark:border-gray-700 pl-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('browserNotificationTypes')}</p>
+                <ul className="text-sm text-gray-500 dark:text-gray-400 list-disc list-inside space-y-1">
                   <li>{t('notificationType.transcriptionComplete')}</li>
                   <li>{t('notificationType.transcriptionFailed')}</li>
                   <li>{t('notificationType.transcriptionProgress')}</li>

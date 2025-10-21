@@ -33,6 +33,7 @@ export class AssemblyAIService {
   async transcribeWithDiarization(
     audioUrl: string,
     context?: string,
+    onProgress?: (progress: number, message: string) => void,
   ): Promise<AssemblyAIResult> {
     try {
       this.logger.log(`Starting AssemblyAI transcription for URL: ${audioUrl}`);
@@ -82,14 +83,53 @@ export class AssemblyAIService {
 
       this.logger.log(`Transcription job created with ID: ${transcript.id}`);
 
-      // Poll for completion
-      const completedTranscript = await this.client.transcripts.waitUntilReady(
-        transcript.id,
-        {
-          pollingInterval: 3000, // Poll every 3 seconds
-          pollingTimeout: 600000, // 10 minute timeout
-        },
-      );
+      // Send initial progress update
+      if (onProgress) {
+        onProgress(15, 'Audio uploaded, transcription in progress...');
+      }
+
+      // Poll for completion with custom polling to send progress updates
+      let completedTranscript;
+      const startTime = Date.now();
+      const pollingInterval = 3000; // Poll every 3 seconds
+      const pollingTimeout = 600000; // 10 minute timeout
+      let lastProgressUpdate = 15;
+
+      while (true) {
+        const elapsed = Date.now() - startTime;
+
+        // Check if we've exceeded the timeout
+        if (elapsed > pollingTimeout) {
+          throw new Error('Transcription polling timeout exceeded');
+        }
+
+        // Get current status
+        const currentTranscript = await this.client.transcripts.get(transcript.id);
+
+        // Check if completed
+        if (currentTranscript.status === 'completed' || currentTranscript.status === 'error') {
+          completedTranscript = currentTranscript;
+          break;
+        }
+
+        // Send progress updates every poll (gradually increase from 15% to 55%)
+        // This keeps the frontend timeout from expiring
+        if (onProgress) {
+          // Calculate progress based on elapsed time (assume max 5 minutes for transcription)
+          const maxTranscriptionTime = 300000; // 5 minutes in ms
+          const progressIncrement = Math.min(40 * (elapsed / maxTranscriptionTime), 40);
+          const currentProgress = Math.min(15 + progressIncrement, 55);
+
+          // Only send update if progress changed by at least 1%
+          if (Math.floor(currentProgress) > Math.floor(lastProgressUpdate)) {
+            lastProgressUpdate = currentProgress;
+            onProgress(Math.floor(currentProgress), 'Processing audio transcription...');
+          }
+        }
+
+        // Wait before next poll
+        await new Promise(resolve => setTimeout(resolve, pollingInterval));
+      }
 
       if (completedTranscript.status === 'error') {
         throw new Error(`Transcription failed: ${completedTranscript.error}`);
@@ -121,6 +161,7 @@ export class AssemblyAIService {
     audioBuffer: Buffer,
     fileName: string,
     context?: string,
+    onProgress?: (progress: number, message: string) => void,
   ): Promise<AssemblyAIResult> {
     try {
       this.logger.log(`Uploading file to AssemblyAI: ${fileName}`);
@@ -131,7 +172,7 @@ export class AssemblyAIService {
       this.logger.log(`File uploaded successfully, starting transcription`);
 
       // Use the uploaded URL for transcription
-      return this.transcribeWithDiarization(uploadUrl, context);
+      return this.transcribeWithDiarization(uploadUrl, context, onProgress);
     } catch (error) {
       this.logger.error('Error uploading file to AssemblyAI:', error);
       throw error;

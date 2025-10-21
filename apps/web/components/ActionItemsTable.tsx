@@ -131,16 +131,16 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{
-              p: ({children}) => <p className="text-base leading-relaxed mb-4 text-gray-700">{children}</p>,
-              h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 mb-6 mt-8">{children}</h1>,
-              h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-6">{children}</h2>,
-              h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 mb-3 mt-4">{children}</h3>,
-              ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700">{children}</ul>,
-              ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700">{children}</ol>,
-              li: ({children}) => <li className="text-base leading-relaxed text-gray-700">{children}</li>,
-              strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
-              em: ({children}) => <em className="italic text-gray-700">{children}</em>,
-              code: ({children}) => <code className="bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm">{children}</code>,
+              p: ({children}) => <p className="text-base leading-relaxed mb-4 text-gray-700 dark:text-gray-300">{children}</p>,
+              h1: ({children}) => <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 mt-8">{children}</h1>,
+              h2: ({children}) => <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 mt-6">{children}</h2>,
+              h3: ({children}) => <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-3 mt-4">{children}</h3>,
+              ul: ({children}) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ul>,
+              ol: ({children}) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-700 dark:text-gray-300">{children}</ol>,
+              li: ({children}) => <li className="text-base leading-relaxed text-gray-700 dark:text-gray-300">{children}</li>,
+              strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-gray-100">{children}</strong>,
+              em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+              code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm">{children}</code>,
             }}
           >
             {cleanContent}
@@ -153,51 +153,51 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-8">
       {/* Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-12">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider w-12">
                   #
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   {t('task')}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
                   {t('owner')}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider w-32">
                   {t('deadline')}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-28">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider w-28">
                   {t('timeline')}
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   {t('dependencies')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {actionItems.map((item, index) => (
-                <tr 
-                  key={item.number} 
-                  className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                <tr
+                  key={item.number}
+                  className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/50'}`}
                 >
-                  <td className="px-4 py-3 text-sm text-gray-700 font-medium">
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-medium">
                     {item.number}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-800">
+                  <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">
                     <div className="space-y-1">
                       <div className="font-medium">{item.task}</div>
                       <div className="flex gap-2 flex-wrap">
                         {item.isCritical && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-700">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
                             CRITICAL
                           </span>
                         )}
                         {item.needsClarification && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
                             <AlertCircle className="h-3 w-3" />
                             NEEDS CLARIFICATION
                           </span>
@@ -205,28 +205,28 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                     {item.owner}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                     {item.deadline}
                   </td>
                   <td className="px-4 py-3 text-sm">
                     <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded ${
-                      item.timeline.includes('Short') 
-                        ? 'bg-green-100 text-green-700'
+                      item.timeline.includes('Short')
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                         : item.timeline.includes('Mid')
-                        ? 'bg-blue-100 text-blue-700'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                         : item.timeline.includes('Long')
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-gray-100 text-gray-700'
+                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                     }`}>
                       {item.timeline}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">
+                  <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                     {item.dependencies === '-' ? (
-                      <span className="text-gray-500">-</span>
+                      <span className="text-gray-500 dark:text-gray-400">-</span>
                     ) : (
                       item.dependencies
                     )}
@@ -239,7 +239,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
       </div>
       
       {/* Copy helper text */}
-      <div className="mt-4 text-sm text-gray-600 text-center">
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
         Tip: Select the table to easily copy and paste into other applications
       </div>
     </div>
