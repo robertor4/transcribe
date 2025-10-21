@@ -874,22 +874,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   </button>
                 </div>
 
-                {/* QR Code - Collapsible on Mobile */}
-                {showQrCode && (
-                  <details className="mb-4 sm:open">
-                    <summary className="sm:hidden p-3 bg-pink-50 rounded-lg border border-pink-100 cursor-pointer hover:bg-pink-100 transition-colors">
-                      <span className="text-sm font-medium text-gray-800 flex items-center gap-2">
-                        <Eye className="w-4 h-4 text-[#cc3399]" />
-                        {t('showQRCode')}
-                      </span>
-                    </summary>
-                    {qrCodeUrl && (
-                      <div className="p-4 bg-pink-50 rounded-lg flex flex-col items-center border border-pink-100 sm:mt-0 mt-2">
-                        <img src={qrCodeUrl} alt="QR Code" className="mb-2 w-32 h-32 sm:w-auto sm:h-auto" />
-                        <p className="text-xs sm:text-sm text-gray-700">{t('scanQR')}</p>
-                      </div>
-                    )}
-                  </details>
+                {/* QR Code */}
+                {showQrCode && qrCodeUrl && (
+                  <div className="mb-4 p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg flex flex-col items-center border border-pink-100 dark:border-pink-900/50">
+                    <img src={qrCodeUrl} alt="QR Code" className="mb-2 w-48 h-48" />
+                    <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{t('scanQR')}</p>
+                  </div>
                 )}
 
                 {/* Email Section */}
