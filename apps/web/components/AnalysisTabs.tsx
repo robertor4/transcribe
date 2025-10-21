@@ -237,13 +237,13 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
 
   const getBackgroundColor = (color: string) => {
     switch(color) {
-      case 'blue': return 'from-blue-50 to-indigo-50';
-      case 'purple': return 'from-purple-50 to-pink-50';
-      case 'green': return 'from-green-50 to-emerald-50';
-      case 'pink': return 'from-pink-50 to-rose-50';
-      case 'orange': return 'from-orange-50 to-amber-50';
-      case 'teal': return 'from-teal-50 to-cyan-50';
-      default: return 'from-gray-50 to-gray-100';
+      case 'blue': return 'from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50';
+      case 'purple': return 'from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50';
+      case 'green': return 'from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50';
+      case 'pink': return 'from-pink-50 to-rose-50 dark:from-pink-950/50 dark:to-rose-950/50';
+      case 'orange': return 'from-orange-50 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50';
+      case 'teal': return 'from-teal-50 to-cyan-50 dark:from-teal-950/50 dark:to-cyan-950/50';
+      default: return 'from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900';
     }
   };
 
@@ -342,19 +342,19 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                               className="fixed inset-0 z-10"
                               onClick={() => setShowLanguageDropdown(false)}
                             />
-                            <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-96 overflow-y-auto">
+                            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 max-h-96 overflow-y-auto">
                               <div className="p-2">
-                                <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-2">
                                   Select Language
                                 </div>
 
                                 {/* Original Language */}
                                 <button
                                   onClick={() => handleLanguageChange('original')}
-                                  className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 ${
+                                  className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
                                     selectedLanguage === 'original'
-                                      ? 'bg-pink-50 text-[#cc3399] font-medium'
-                                      : 'hover:bg-gray-50'
+                                      ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399] dark:text-[#cc3399] font-medium'
+                                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                   }`}
                                 >
                                   <span>Original</span>
@@ -366,7 +366,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                                 {/* Translated Languages */}
                                 {translatedLanguages.length > 0 && (
                                   <>
-                                    <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 mt-2 border-t border-gray-200">
+                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                                       Translated
                                     </div>
                                     {translatedLanguages.map((langCode) => {
@@ -376,15 +376,15 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                                         <button
                                           key={langCode}
                                           onClick={() => handleLanguageChange(langCode)}
-                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 ${
+                                          className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
                                             selectedLanguage === langCode
-                                              ? 'bg-pink-50 text-[#cc3399] font-medium'
-                                              : 'hover:bg-gray-50'
+                                              ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399] dark:text-[#cc3399] font-medium'
+                                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                           }`}
                                         >
                                           <div className="flex items-center gap-2">
                                             <span>{lang.name}</span>
-                                            <span className="text-xs text-gray-500">{lang.nativeName}</span>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">{lang.nativeName}</span>
                                           </div>
                                           {selectedLanguage === langCode && (
                                             <Check className="h-4 w-4 text-[#cc3399]" />
@@ -396,7 +396,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                                 )}
 
                                 {/* Available Languages */}
-                                <div className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 mt-2 border-t border-gray-200">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                                   Translate to...
                                 </div>
                                 {SUPPORTED_LANGUAGES.filter(
@@ -405,12 +405,12 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                                   <button
                                     key={lang.code}
                                     onClick={() => handleLanguageChange(lang.code)}
-                                    className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors hover:bg-gray-50 text-gray-700"
+                                    className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                                   >
                                     <div className="flex items-center gap-2">
-                                      <Languages className="h-4 w-4 text-gray-400" />
+                                      <Languages className="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                       <span>{lang.name}</span>
-                                      <span className="text-xs text-gray-500">{lang.nativeName}</span>
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">{lang.nativeName}</span>
                                     </div>
                                   </button>
                                 ))}
@@ -427,8 +427,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                           onClick={() => setTranscriptView('timeline')}
                           className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
                             transcriptView === 'timeline'
-                              ? 'text-[#cc3399] bg-white'
-                              : 'text-gray-400 hover:text-gray-600'
+                              ? 'text-[#cc3399] bg-white dark:bg-gray-700'
+                              : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
                           }`}
                           title="Timeline view"
                         >
@@ -439,8 +439,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                           onClick={() => setTranscriptView('raw')}
                           className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
                             transcriptView === 'raw'
-                              ? 'text-[#cc3399] bg-white'
-                              : 'text-gray-400 hover:text-gray-600'
+                              ? 'text-[#cc3399] bg-white dark:bg-gray-700'
+                              : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
                           }`}
                           title="Raw text view"
                         >
