@@ -1,26 +1,58 @@
-# Transcribe App - Web Application
+# Neural Summary - Technical Documentation
 
-A modern web application for audio transcription and summarization using OpenAI's Whisper and GPT models. Features automatic audio splitting for large files, real-time progress tracking, and intelligent summarization.
+Welcome to the Neural Summary technical documentation. This directory contains detailed guides for developers working on the application.
 
-## 🚀 Key Features
+## 📚 Documentation Index
 
-- **Large File Support**: Automatically splits audio files up to 500MB into chunks for processing
+### System Architecture & Features
+
+**[WebSocket Resilience & Polling Fallback](WEBSOCKET_RESILIENCE.md)** ⭐ **NEW**
+- Comprehensive guide to the dual-layer real-time update system
+- WebSocket connection management and automatic failover
+- API polling fallback mechanism for reliability
+- Configuration, testing, and troubleshooting
+- **Read this if:** You're working on real-time features, debugging connection issues, or optimizing performance
+
+### Quick Links
+
+| Topic | Documentation | Location |
+|-------|---------------|----------|
+| **Getting Started** | See below | This file |
+| **Project Overview** | [CLAUDE.md](../CLAUDE.md) | Root directory |
+| **Real-time Updates** | [WEBSOCKET_RESILIENCE.md](WEBSOCKET_RESILIENCE.md) | This directory |
+| **Deployment** | [CLAUDE.md#deployment](../CLAUDE.md#deployment) | Root directory |
+
+---
+
+## 🚀 Application Overview
+
+Neural Summary is a production-ready monorepo application for audio transcription and intelligent summarization.
+
+### Key Features
+
+- **Large File Support**: Automatically splits audio files up to 5GB (enterprise tier)
 - **Multiple Formats**: Supports M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, and OGG
-- **Real-time Updates**: WebSocket-based progress tracking
-- **Smart Summarization**: Context-aware transcription with GPT-4 powered summaries
+- **Real-time Updates**: WebSocket-based progress tracking with automatic polling fallback
+- **Smart Summarization**: Context-aware transcription with GPT-5 powered analyses
 - **Batch Processing**: Queue-based architecture for handling multiple files
 - **Secure Storage**: Firebase-based authentication and file storage
+- **Multi-language**: Support for 5 languages (EN, NL, DE, FR, ES)
+- **Speaker Diarization**: Automatic speaker detection and labeling (AssemblyAI)
 
 ## Architecture
 
-- **Frontend**: Next.js 14 (App Router) with TypeScript, Tailwind CSS
-- **Backend**: NestJS with TypeScript, Bull Queue, WebSockets
-- **Database**: Firebase Firestore
-- **Storage**: Firebase Storage (new .firebasestorage.app format)
+- **Frontend**: Next.js 15 (App Router) with TypeScript, Tailwind CSS v4
+- **Backend**: NestJS with TypeScript, Bull queues, Socket.io WebSockets
+- **Database**: Firebase Firestore (NoSQL document store)
+- **Storage**: Firebase Storage (new .firebasestorage.app format as of Oct 2024)
 - **Authentication**: Firebase Auth (Email/Password + Google OAuth)
-- **Queue**: Redis with Bull for job processing
-- **AI Services**: OpenAI Whisper API + GPT-4
-- **Monorepo**: Turborepo for workspace management
+- **Queue**: Redis with Bull for scalable job processing
+- **AI Services**:
+  - AssemblyAI for transcription and speaker diarization (primary)
+  - OpenAI Whisper API for transcription (fallback)
+  - GPT-5/GPT-5-mini for summarization and analysis
+- **Monorepo**: Turborepo with shared TypeScript packages
+- **Audio Processing**: FFmpeg for splitting large files
 
 ## Prerequisites
 

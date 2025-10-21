@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import websocketService from '@/lib/websocket';
+import { useTranscriptionPolling } from '@/hooks/useTranscriptionPolling';
 import {
   Transcription,
   TranscriptionStatus,
@@ -67,6 +68,43 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 20; // Load 20 items at a time
   const initialLoadDone = useRef(false);
+
+  // Callback for polling hook when it updates a transcription
+  const handlePollingUpdate = useCallback((updatedTranscription: Transcription) => {
+    console.log('[Polling] Received update for transcription:', updatedTranscription.id, updatedTranscription.status);
+
+    // Update transcription in list
+    setTranscriptions(prev =>
+      prev.map(t =>
+        t.id === updatedTranscription.id ? updatedTranscription : t
+      )
+    );
+
+    // If completed or failed, clear progress map
+    if (
+      updatedTranscription.status === TranscriptionStatus.COMPLETED ||
+      updatedTranscription.status === TranscriptionStatus.FAILED
+    ) {
+      setProgressMap(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(updatedTranscription.id);
+        return newMap;
+      });
+      websocketService.clearEventTracking(updatedTranscription.id);
+    }
+  }, []);
+
+  // Set up polling fallback for in-progress transcriptions
+  const { notifyProgress } = useTranscriptionPolling(
+    transcriptions,
+    handlePollingUpdate,
+    {
+      enabled: true,
+      pollingInterval: 10000, // Poll every 10 seconds
+      staleThreshold: 30000, // Consider stale after 30 seconds without updates
+      maxConcurrentPolls: 5,
+    }
+  );
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -220,15 +258,31 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   // Set up WebSocket listeners
   useEffect(() => {
     if (!user) return;
-    
+
     // Track timeout timers for processing transcriptions
     const timeoutTimers = new Map<string, NodeJS.Timeout>();
-    
+
+    // Listen for connection health changes
+    const unsubscribeHealth = websocketService.on(
+      'connection_health_changed',
+      (data: unknown) => {
+        const healthData = data as { healthy: boolean; connected: boolean };
+        console.log('[WebSocket] Connection health changed:', healthData);
+      }
+    );
+
     // Listen for real-time updates
     const unsubscribeProgress = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
       (data: unknown) => {
         const progress = data as TranscriptionProgress;
+
+        // Notify polling hook that we received an update (resets staleness timer)
+        notifyProgress(progress.transcriptionId, progress.progress);
+
+        // Mark event received in WebSocket service
+        websocketService.markEventReceived(progress.transcriptionId);
+
         setProgressMap(prev => {
           const newMap = new Map(prev);
           const existingProgress = newMap.get(progress.transcriptionId);
@@ -237,20 +291,20 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           newMap.set(progress.transcriptionId, { ...progress, startTime });
           return newMap;
         });
-        
-        // Set or reset timeout for this transcription (5 minutes)
+
+        // Set or reset timeout for this transcription (extended to 10 minutes)
         const existingTimer = timeoutTimers.get(progress.transcriptionId);
         if (existingTimer) {
           clearTimeout(existingTimer);
         }
-        
+
         const newTimer = setTimeout(() => {
-          // Mark as failed after timeout
-          setTranscriptions(prev => 
-            prev.map(t => 
-              t.id === progress.transcriptionId 
-                ? { 
-                    ...t, 
+          // Mark as failed after timeout (only if polling hasn't already updated it)
+          setTranscriptions(prev =>
+            prev.map(t =>
+              t.id === progress.transcriptionId && t.status === TranscriptionStatus.PROCESSING
+                ? {
+                    ...t,
                     status: TranscriptionStatus.FAILED,
                     error: 'Transcription timed out. Please try again with a shorter audio file.'
                   }
@@ -263,8 +317,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             return newMap;
           });
           timeoutTimers.delete(progress.transcriptionId);
-        }, 5 * 60 * 1000); // 5 minutes timeout
-        
+          websocketService.clearEventTracking(progress.transcriptionId);
+        }, 10 * 60 * 1000); // Extended to 10 minutes timeout (polling should handle it before this)
+
         timeoutTimers.set(progress.transcriptionId, newTimer);
       }
     );
@@ -273,6 +328,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       async (data: unknown) => {
         const progress = data as TranscriptionProgress;
+
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -280,6 +336,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           timeoutTimers.delete(progress.transcriptionId);
         }
 
+        // Clear event tracking and progress map
+        websocketService.clearEventTracking(progress.transcriptionId);
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
@@ -306,6 +364,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
       (data: unknown) => {
         const progress = data as TranscriptionProgress & { error?: string };
+
         // Clear timeout timer
         const timer = timeoutTimers.get(progress.transcriptionId);
         if (timer) {
@@ -313,6 +372,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           timeoutTimers.delete(progress.transcriptionId);
         }
 
+        // Clear event tracking and progress map
+        websocketService.clearEventTracking(progress.transcriptionId);
         setProgressMap(prev => {
           const newMap = new Map(prev);
           newMap.delete(progress.transcriptionId);
@@ -335,13 +396,14 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
     );
 
     return () => {
+      unsubscribeHealth();
       unsubscribeProgress();
       unsubscribeComplete();
       unsubscribeFailed();
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
-  }, [t, user, loadTranscriptions]);
+  }, [t, user, loadTranscriptions, notifyProgress]);
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('confirmDelete'))) return;
