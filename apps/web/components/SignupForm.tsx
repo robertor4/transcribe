@@ -147,10 +147,10 @@ export default function SignupForm() {
     <>
       <form className="mt-8 space-y-6" onSubmit={handleEmailSignup}>
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2 flex-shrink-0" />
-              <p className="text-sm text-red-800">{error}</p>
+              <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2 flex-shrink-0" />
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         )}
@@ -158,12 +158,12 @@ export default function SignupForm() {
         <div className="space-y-4">
           {/* Display Name Field */}
           <div>
-            <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {tAuth('displayName')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
+                <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="displayName"
@@ -173,7 +173,7 @@ export default function SignupForm() {
                 required
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('enterYourName')}
               />
             </div>
@@ -181,12 +181,12 @@ export default function SignupForm() {
 
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {tAuth('email')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="email"
@@ -196,7 +196,7 @@ export default function SignupForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('enterYourEmail')}
               />
             </div>
@@ -204,12 +204,12 @@ export default function SignupForm() {
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {tAuth('password')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="password"
@@ -219,7 +219,7 @@ export default function SignupForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('createPassword')}
               />
             </div>
@@ -230,11 +230,11 @@ export default function SignupForm() {
                 {passwordRequirements.map((req, index) => (
                   <div key={index} className="flex items-center text-xs">
                     {req.met ? (
-                      <Check className="h-3 w-3 text-green-500 mr-1" />
+                      <Check className="h-3 w-3 text-green-500 dark:text-green-400 mr-1" />
                     ) : (
-                      <X className="h-3 w-3 text-gray-400 mr-1" />
+                      <X className="h-3 w-3 text-gray-400 dark:text-gray-500 mr-1" />
                     )}
-                    <span className={req.met ? 'text-green-700' : 'text-gray-500'}>
+                    <span className={req.met ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                       {req.text}
                     </span>
                   </div>
@@ -245,12 +245,12 @@ export default function SignupForm() {
 
           {/* Confirm Password Field */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {tAuth('confirmPassword')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="confirmPassword"
@@ -260,12 +260,12 @@ export default function SignupForm() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('confirmYourPassword')}
               />
             </div>
             {confirmPassword && password !== confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">{tAuth('passwordsDoNotMatch')}</p>
+              <p className="mt-1 text-xs text-red-600 dark:text-red-400">{tAuth('passwordsDoNotMatch')}</p>
             )}
           </div>
         </div>
@@ -278,15 +278,15 @@ export default function SignupForm() {
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setAcceptTerms(e.target.checked)}
-            className="h-4 w-4 text-[#cc3399] focus:ring-[#cc3399] border-gray-300 rounded mt-0.5"
+            className="h-4 w-4 text-[#cc3399] focus:ring-[#cc3399] border-gray-300 dark:border-gray-600 rounded mt-0.5"
           />
-          <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-600">
+          <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-600 dark:text-gray-400">
             {tAuth('iAgreeToThe')}{' '}
-            <Link href="/terms" className="text-[#cc3399] hover:text-[#b82d89]">
+            <Link href="/terms" className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
               {tAuth('termsOfService')}
             </Link>{' '}
             {tAuth('and')}{' '}
-            <Link href="/privacy" className="text-[#cc3399] hover:text-[#b82d89]">
+            <Link href="/privacy" className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
               {tAuth('privacyPolicy')}
             </Link>
           </label>
@@ -308,10 +308,10 @@ export default function SignupForm() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 text-gray-500">{tAuth('orContinueWith')}</span>
+            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('orContinueWith')}</span>
           </div>
         </div>
 
@@ -320,7 +320,7 @@ export default function SignupForm() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={loading}
-            className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
@@ -345,9 +345,9 @@ export default function SignupForm() {
         </div>
 
         <div className="text-center">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
             {tAuth('alreadyHaveAccount')}{' '}
-            <Link href="/login" className="font-medium text-[#cc3399] hover:text-[#b82d89]">
+            <Link href="/login" className="font-medium text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
               {tAuth('signIn')}
             </Link>
           </span>

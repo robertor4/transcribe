@@ -127,10 +127,10 @@ export default function LoginForm() {
     <>
       <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              <p className="text-sm text-red-800">{error}</p>
+              <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2" />
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         )}
@@ -142,7 +142,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="email"
@@ -152,7 +152,7 @@ export default function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('email')}
               />
             </div>
@@ -163,7 +163,7 @@ export default function LoginForm() {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 id="password"
@@ -173,7 +173,7 @@ export default function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
                 placeholder={tAuth('password')}
               />
             </div>
@@ -181,19 +181,19 @@ export default function LoginForm() {
         </div>
 
         <div className="flex items-center justify-between">
-          <Link 
+          <Link
             href="/forgot-password"
             className={`text-sm transition-all ${
-              showPasswordReset 
-                ? 'text-[#cc3399] font-semibold animate-pulse hover:text-[#b82d89]' 
-                : 'text-[#cc3399] hover:text-[#b82d89]'
+              showPasswordReset
+                ? 'text-[#cc3399] dark:text-[#cc3399] font-semibold animate-pulse hover:text-[#b82d89] dark:hover:text-[#b82d89]'
+                : 'text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]'
             }`}
           >
             {tAuth('forgotPassword')}
           </Link>
-          <Link 
+          <Link
             href="/signup"
-            className="text-sm text-[#cc3399] hover:text-[#b82d89]"
+            className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
           >
             {tAuth('dontHaveAccount')}
           </Link>
@@ -215,10 +215,10 @@ export default function LoginForm() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 text-gray-500">{tAuth('alreadyHaveAccount')}</span>
+            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('alreadyHaveAccount')}</span>
           </div>
         </div>
 
@@ -228,9 +228,9 @@ export default function LoginForm() {
             onClick={handleGoogleLogin}
             disabled={loading}
             className={`w-full flex justify-center items-center px-4 py-3 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
-              suggestGoogle 
-                ? 'border-[#cc3399] bg-pink-50 text-gray-900 hover:bg-pink-100 animate-pulse' 
-                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+              suggestGoogle
+                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-200 hover:bg-pink-100 dark:hover:bg-pink-900/40 animate-pulse'
+                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
             }`}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

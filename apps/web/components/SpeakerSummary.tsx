@@ -22,14 +22,14 @@ export default function SpeakerSummary({ speakers, className = '' }: SpeakerSumm
 
   const getSpeakerColor = (speakerId: number): string => {
     const colors = [
-      'bg-blue-100 text-blue-800 border-blue-300',
-      'bg-green-100 text-green-800 border-green-300',
-      'bg-purple-100 text-purple-800 border-purple-300',
-      'bg-yellow-100 text-yellow-800 border-yellow-300',
-      'bg-pink-100 text-pink-800 border-pink-300',
-      'bg-indigo-100 text-indigo-800 border-indigo-300',
-      'bg-orange-100 text-orange-800 border-orange-300',
-      'bg-teal-100 text-teal-800 border-teal-300',
+      'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700',
+      'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700',
+      'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-700',
+      'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700',
+      'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300 border-pink-300 dark:border-pink-700',
+      'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 border-indigo-300 dark:border-indigo-700',
+      'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700',
+      'bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-700',
     ];
     return colors[(speakerId - 1) % colors.length];
   };
@@ -38,13 +38,13 @@ export default function SpeakerSummary({ speakers, className = '' }: SpeakerSumm
   const totalTime = speakers.reduce((sum, speaker) => sum + speaker.totalSpeakingTime, 0);
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <User className="w-5 h-5" />
           Speaker Analysis
         </h3>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {speakers.length} speaker{speakers.length > 1 ? 's' : ''} identified
         </p>
       </div>
@@ -91,7 +91,7 @@ export default function SpeakerSummary({ speakers, className = '' }: SpeakerSumm
 
                 {/* Progress bars */}
                 <div className="mt-3 space-y-2">
-                  <div className="w-full bg-white/50 rounded-full h-2">
+                  <div className="w-full bg-white/50 dark:bg-gray-700/50 rounded-full h-2">
                     <div
                       className="bg-current rounded-full h-2 transition-all duration-300 opacity-60"
                       style={{ width: `${wordPercentage}%` }}
@@ -105,14 +105,14 @@ export default function SpeakerSummary({ speakers, className = '' }: SpeakerSumm
       </div>
 
       {/* Summary stats */}
-      <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-4 text-sm">
+      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-4 text-sm">
         <div>
-          <span className="text-gray-500">Total Words:</span>
-          <span className="ml-2 font-medium text-gray-900">{totalWords.toLocaleString()}</span>
+          <span className="text-gray-500 dark:text-gray-400">Total Words:</span>
+          <span className="ml-2 font-medium text-gray-900 dark:text-gray-200">{totalWords.toLocaleString()}</span>
         </div>
         <div>
-          <span className="text-gray-500">Total Time:</span>
-          <span className="ml-2 font-medium text-gray-900">{formatDuration(totalTime)}</span>
+          <span className="text-gray-500 dark:text-gray-400">Total Time:</span>
+          <span className="ml-2 font-medium text-gray-900 dark:text-gray-200">{formatDuration(totalTime)}</span>
         </div>
       </div>
     </div>

@@ -45,22 +45,22 @@ export default function ForgotPasswordForm() {
     return (
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30">
+            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             {tAuth('resetLinkSent')}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {tAuth('checkEmailForReset')}
           </p>
-          <p className="mt-1 text-sm font-medium text-gray-900">
+          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-200">
             {email}
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+          <p className="text-sm text-blue-800 dark:text-blue-300">
             {tAuth('checkSpamFolder')}
           </p>
         </div>
@@ -71,13 +71,13 @@ export default function ForgotPasswordForm() {
               setEmailSent(false);
               setEmail('');
             }}
-            className="text-sm text-[#cc3399] hover:text-[#b82d89]"
+            className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
           >
             {tAuth('tryDifferentEmail')}
           </button>
-          <Link 
+          <Link
             href="/login"
-            className="flex items-center justify-center text-sm text-gray-600 hover:text-gray-900"
+            className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {tAuth('backToLogin')}
@@ -90,31 +90,31 @@ export default function ForgotPasswordForm() {
   return (
     <div className="max-w-md w-full space-y-8">
       <div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
           {tAuth('resetPassword')}
         </h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {tAuth('enterEmailForReset')}
         </p>
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              <p className="text-sm text-red-800">{error}</p>
+              <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2" />
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {tAuth('email')}
           </label>
           <div className="mt-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
+              <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               id="email"
@@ -124,7 +124,7 @@ export default function ForgotPasswordForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
               placeholder={tAuth('enterYourEmail')}
             />
           </div>
@@ -145,9 +145,9 @@ export default function ForgotPasswordForm() {
         </div>
 
         <div className="text-center">
-          <Link 
+          <Link
             href="/login"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {tAuth('backToLogin')}

@@ -134,7 +134,7 @@ export default function ResetPasswordForm() {
     return (
       <div className="max-w-md w-full space-y-8 text-center">
         <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#cc3399]" />
-        <p className="text-gray-600">{tAuth('verifyingResetLink')}</p>
+        <p className="text-gray-600 dark:text-gray-400">{tAuth('verifyingResetLink')}</p>
       </div>
     );
   }
@@ -143,13 +143,13 @@ export default function ResetPasswordForm() {
     return (
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30">
+            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             {tAuth('passwordResetSuccess')}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {tAuth('redirectingToLogin')}
           </p>
         </div>
@@ -161,20 +161,20 @@ export default function ResetPasswordForm() {
     return (
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
-            <AlertCircle className="h-8 w-8 text-red-600" />
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30">
+            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
             {tAuth('resetPasswordError')}
           </h2>
-          <p className="mt-2 text-sm text-red-600">
+          <p className="mt-2 text-sm text-red-600 dark:text-red-400">
             {error}
           </p>
         </div>
         <div className="text-center">
-          <Link 
+          <Link
             href="/forgot-password"
-            className="text-[#cc3399] hover:text-[#b82d89]"
+            className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
           >
             {tAuth('requestNewLink')}
           </Link>
@@ -186,31 +186,31 @@ export default function ResetPasswordForm() {
   return (
     <div className="max-w-md w-full space-y-8">
       <div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
           {tAuth('createNewPassword')}
         </h2>
-        <p className="mt-2 text-sm text-gray-600">
-          {tAuth('enterNewPasswordFor')} <span className="font-medium">{email}</span>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          {tAuth('enterNewPasswordFor')} <span className="font-medium dark:text-gray-200">{email}</span>
         </p>
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              <p className="text-sm text-red-800">{error}</p>
+              <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2" />
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         )}
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {tAuth('newPassword')}
           </label>
           <div className="mt-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               id="password"
@@ -220,19 +220,19 @@ export default function ResetPasswordForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
               placeholder={tAuth('enterNewPassword')}
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {tAuth('confirmNewPassword')}
           </label>
           <div className="mt-1 relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             <input
               id="confirmPassword"
@@ -242,64 +242,64 @@ export default function ResetPasswordForm() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
               placeholder={tAuth('confirmYourPassword')}
             />
           </div>
         </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-sm font-medium text-gray-700 mb-2">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {tAuth('passwordRequirements')}
           </p>
           <ul className="space-y-1">
             <li className="flex items-center text-sm">
               {passwordStrength.minLength ? (
-                <Check className="h-4 w-4 text-green-500 mr-2" />
+                <Check className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
               ) : (
-                <X className="h-4 w-4 text-gray-300 mr-2" />
+                <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mr-2" />
               )}
-              <span className={passwordStrength.minLength ? 'text-green-700' : 'text-gray-500'}>
+              <span className={passwordStrength.minLength ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                 {tAuth('passwordMinLength')}
               </span>
             </li>
             <li className="flex items-center text-sm">
               {passwordStrength.hasUppercase ? (
-                <Check className="h-4 w-4 text-green-500 mr-2" />
+                <Check className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
               ) : (
-                <X className="h-4 w-4 text-gray-300 mr-2" />
+                <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mr-2" />
               )}
-              <span className={passwordStrength.hasUppercase ? 'text-green-700' : 'text-gray-500'}>
+              <span className={passwordStrength.hasUppercase ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                 {tAuth('passwordUppercase')}
               </span>
             </li>
             <li className="flex items-center text-sm">
               {passwordStrength.hasLowercase ? (
-                <Check className="h-4 w-4 text-green-500 mr-2" />
+                <Check className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
               ) : (
-                <X className="h-4 w-4 text-gray-300 mr-2" />
+                <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mr-2" />
               )}
-              <span className={passwordStrength.hasLowercase ? 'text-green-700' : 'text-gray-500'}>
+              <span className={passwordStrength.hasLowercase ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                 {tAuth('passwordLowercase')}
               </span>
             </li>
             <li className="flex items-center text-sm">
               {passwordStrength.hasNumber ? (
-                <Check className="h-4 w-4 text-green-500 mr-2" />
+                <Check className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
               ) : (
-                <X className="h-4 w-4 text-gray-300 mr-2" />
+                <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mr-2" />
               )}
-              <span className={passwordStrength.hasNumber ? 'text-green-700' : 'text-gray-500'}>
+              <span className={passwordStrength.hasNumber ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                 {tAuth('passwordNumber')}
               </span>
             </li>
             <li className="flex items-center text-sm">
               {passwordStrength.hasSpecial ? (
-                <Check className="h-4 w-4 text-green-500 mr-2" />
+                <Check className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
               ) : (
-                <X className="h-4 w-4 text-gray-300 mr-2" />
+                <X className="h-4 w-4 text-gray-300 dark:text-gray-600 mr-2" />
               )}
-              <span className={passwordStrength.hasSpecial ? 'text-green-700' : 'text-gray-500'}>
+              <span className={passwordStrength.hasSpecial ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
                 {tAuth('passwordSpecialChar')} ({tAuth('optional')})
               </span>
             </li>

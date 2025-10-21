@@ -22,10 +22,10 @@ export default function TranscriptWithSpeakers({
     // Fall back to formatted transcript if no segments
     if (transcriptWithSpeakers) {
       return (
-        <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transcript with Speakers</h3>
-          <div className="prose prose-sm max-w-none">
-            <pre className="whitespace-pre-wrap font-sans text-gray-700">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Transcript with Speakers</h3>
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-gray-300">
               {transcriptWithSpeakers}
             </pre>
           </div>
@@ -44,14 +44,14 @@ export default function TranscriptWithSpeakers({
   const getSpeakerColor = (speakerTag: string): string => {
     const speakerId = parseInt(speakerTag.replace('Speaker ', ''));
     const colors = [
-      'border-blue-400 bg-blue-50',
-      'border-green-400 bg-green-50',
-      'border-purple-400 bg-purple-50',
-      'border-yellow-400 bg-yellow-50',
-      'border-pink-400 bg-pink-50',
-      'border-indigo-400 bg-indigo-50',
-      'border-orange-400 bg-orange-50',
-      'border-teal-400 bg-teal-50',
+      'border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/30',
+      'border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30',
+      'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30',
+      'border-yellow-400 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/30',
+      'border-pink-400 dark:border-pink-600 bg-pink-50 dark:bg-pink-900/30',
+      'border-indigo-400 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30',
+      'border-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/30',
+      'border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/30',
     ];
     return colors[(speakerId - 1) % colors.length];
   };
@@ -59,14 +59,14 @@ export default function TranscriptWithSpeakers({
   const getSpeakerTextColor = (speakerTag: string): string => {
     const speakerId = parseInt(speakerTag.replace('Speaker ', ''));
     const colors = [
-      'text-blue-700',
-      'text-green-700',
-      'text-purple-700',
-      'text-yellow-700',
-      'text-pink-700',
-      'text-indigo-700',
-      'text-orange-700',
-      'text-teal-700',
+      'text-blue-700 dark:text-blue-400',
+      'text-green-700 dark:text-green-400',
+      'text-purple-700 dark:text-purple-400',
+      'text-yellow-700 dark:text-yellow-400',
+      'text-pink-700 dark:text-pink-400',
+      'text-indigo-700 dark:text-indigo-400',
+      'text-orange-700 dark:text-orange-400',
+      'text-teal-700 dark:text-teal-400',
     ];
     return colors[(speakerId - 1) % colors.length];
   };
@@ -111,12 +111,12 @@ export default function TranscriptWithSpeakers({
   });
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Transcript with Speakers</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Transcript with Speakers</h3>
         <button
           onClick={() => setShowTimestamps(!showTimestamps)}
-          className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
         >
           <Clock className="w-4 h-4" />
           {showTimestamps ? 'Hide' : 'Show'} Timestamps
@@ -140,16 +140,16 @@ export default function TranscriptWithSpeakers({
                     {group.speakerTag}
                   </span>
                   {showTimestamps && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {formatTime(group.startTime)} - {formatTime(group.endTime)}
                     </span>
                   )}
                 </div>
-                
+
                 {group.segments.length > 1 && (
                   <button
                     onClick={() => toggleSegment(group.segments[0].index)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                   >
                     {isExpanded ? (
                       <ChevronUp className="w-4 h-4" />
@@ -160,20 +160,20 @@ export default function TranscriptWithSpeakers({
                 )}
               </div>
 
-              <div className="text-gray-700">
+              <div className="text-gray-700 dark:text-gray-300">
                 {isExpanded ? (
                   // Show individual segments
                   <div className="space-y-2">
                     {group.segments.map(({ segment, index }) => (
-                      <div key={index} className="pl-6 border-l-2 border-gray-300">
+                      <div key={index} className="pl-6 border-l-2 border-gray-300 dark:border-gray-600">
                         {showTimestamps && (
-                          <span className="text-xs text-gray-400 mr-2">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 mr-2">
                             [{formatTime(segment.startTime)}]
                           </span>
                         )}
                         <span>{segment.text}</span>
                         {segment.confidence && (
-                          <span className="ml-2 text-xs text-gray-400">
+                          <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
                             ({(segment.confidence * 100).toFixed(0)}% confident)
                           </span>
                         )}
@@ -191,7 +191,7 @@ export default function TranscriptWithSpeakers({
       </div>
 
       {segments.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
           {segments.length} segments • {formatTime(segments[segments.length - 1].endTime)} total duration
         </div>
       )}
