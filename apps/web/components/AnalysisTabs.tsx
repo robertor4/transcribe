@@ -199,6 +199,23 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
     }
   };
 
+  const getIconColor = (color: string, isActive: boolean) => {
+    if (!isActive) {
+      return 'text-gray-500 dark:text-gray-400';
+    }
+
+    const colors = {
+      'blue': 'text-blue-600 dark:text-blue-500',
+      'purple': 'text-purple-600 dark:text-purple-500',
+      'green': 'text-green-600 dark:text-green-500',
+      'pink': 'text-pink-600 dark:text-pink-500',
+      'orange': 'text-orange-600 dark:text-orange-500',
+      'teal': 'text-teal-600 dark:text-teal-500',
+    };
+
+    return colors[color as keyof typeof colors] || 'text-[#cc3399]';
+  };
+
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
@@ -211,6 +228,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             if (!hasContent) return null;
 
             const isActive = activeTab === info.key;
+            const iconColor = getIconColor(info.color, isActive);
 
             return (
               <button
@@ -226,7 +244,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                 `}
                 title={info.description}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className={`h-4 w-4 ${iconColor}`} />
                 <span>{info.label}</span>
               </button>
             );
