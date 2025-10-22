@@ -114,6 +114,21 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
     return `${day} ${month} ${year}`;
   };
 
+  // Helper function to determine if a PROCESSING transcription is stuck
+  // A transcription is considered stuck if it's been processing for more than 15 minutes
+  const isStuckProcessing = (transcription: Transcription): boolean => {
+    if (transcription.status !== TranscriptionStatus.PROCESSING) {
+      return false;
+    }
+
+    const STUCK_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutes
+    const createdAt = new Date(transcription.createdAt).getTime();
+    const now = Date.now();
+    const processingTime = now - createdAt;
+
+    return processingTime > STUCK_THRESHOLD_MS;
+  };
+
   // Group transcriptions by month
   const groupedTranscriptions = useMemo(() => {
     const groups: Record<string, Transcription[]> = {};
@@ -596,6 +611,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             {monthTranscriptions.map((transcription) => {
               const progress = progressMap.get(transcription.id);
               const isExpanded = expandedId === transcription.id;
+              const isStuck = isStuckProcessing(transcription);
 
               return (
                 <div
@@ -674,16 +690,30 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                 </div>
                 
                 <div className="flex items-center space-x-3 flex-shrink-0">
-                  {transcription.status === TranscriptionStatus.PROCESSING && progress ? (
-                    <ProcessingStatus 
+                  {transcription.status === TranscriptionStatus.PROCESSING && progress && !isStuck ? (
+                    <ProcessingStatus
                       progress={progress.progress || 0}
                       stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
                     />
+                  ) : isStuck ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 text-orange-500 dark:text-orange-400 animate-spin" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Stuck Processing
+                      </span>
+                    </div>
                   ) : transcription.status === TranscriptionStatus.FAILED ? (
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(transcription.status)}
                       <span className="text-sm text-gray-600 dark:text-gray-400">
                         {getStatusText(transcription.status, transcription.id)}
+                      </span>
+                    </div>
+                  ) : transcription.status === TranscriptionStatus.PENDING ? (
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Pending
                       </span>
                     </div>
                   ) : null}
@@ -705,7 +735,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                   )}
 
                   {(transcription.status === TranscriptionStatus.COMPLETED ||
-                    transcription.status === TranscriptionStatus.FAILED) && (
+                    transcription.status === TranscriptionStatus.FAILED ||
+                    transcription.status === TranscriptionStatus.PENDING ||
+                    isStuck) && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
