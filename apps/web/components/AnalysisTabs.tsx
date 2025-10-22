@@ -199,21 +199,53 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
     }
   };
 
-  const getIconColor = (color: string, isActive: boolean) => {
+  const getTabColors = (color: string, isActive: boolean) => {
     if (!isActive) {
-      return 'text-gray-500 dark:text-gray-400';
+      return {
+        text: 'text-gray-600 dark:text-gray-400',
+        border: 'border-transparent',
+        icon: 'text-gray-500 dark:text-gray-400'
+      };
     }
 
-    const colors = {
-      'blue': 'text-blue-600 dark:text-blue-500',
-      'purple': 'text-purple-600 dark:text-purple-500',
-      'green': 'text-green-600 dark:text-green-500',
-      'pink': 'text-pink-600 dark:text-pink-500',
-      'orange': 'text-orange-600 dark:text-orange-500',
-      'teal': 'text-teal-600 dark:text-teal-500',
+    const colorMap = {
+      'blue': {
+        text: 'text-blue-700 dark:text-blue-400',
+        border: 'border-blue-600 dark:border-blue-500',
+        icon: 'text-blue-600 dark:text-blue-500'
+      },
+      'purple': {
+        text: 'text-purple-700 dark:text-purple-400',
+        border: 'border-purple-600 dark:border-purple-500',
+        icon: 'text-purple-600 dark:text-purple-500'
+      },
+      'green': {
+        text: 'text-green-700 dark:text-green-400',
+        border: 'border-green-600 dark:border-green-500',
+        icon: 'text-green-600 dark:text-green-500'
+      },
+      'pink': {
+        text: 'text-pink-700 dark:text-pink-400',
+        border: 'border-pink-600 dark:border-pink-500',
+        icon: 'text-pink-600 dark:text-pink-500'
+      },
+      'orange': {
+        text: 'text-orange-700 dark:text-orange-400',
+        border: 'border-orange-600 dark:border-orange-500',
+        icon: 'text-orange-600 dark:text-orange-500'
+      },
+      'teal': {
+        text: 'text-teal-700 dark:text-teal-400',
+        border: 'border-teal-600 dark:border-teal-500',
+        icon: 'text-teal-600 dark:text-teal-500'
+      },
     };
 
-    return colors[color as keyof typeof colors] || 'text-[#cc3399]';
+    return colorMap[color as keyof typeof colorMap] || {
+      text: 'text-[#cc3399] dark:text-[#cc3399]',
+      border: 'border-[#cc3399]',
+      icon: 'text-[#cc3399]'
+    };
   };
 
   return (
@@ -228,7 +260,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             if (!hasContent) return null;
 
             const isActive = activeTab === info.key;
-            const iconColor = getIconColor(info.color, isActive);
+            const colors = getTabColors(info.color, isActive);
 
             return (
               <button
@@ -237,14 +269,12 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                 className={`
                   py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2 whitespace-nowrap
                   transition-colors duration-200
-                  ${isActive
-                    ? 'border-[#cc3399] text-gray-900 dark:text-gray-100'
-                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
-                  }
+                  ${colors.border} ${colors.text}
+                  ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
                 `}
                 title={info.description}
               >
-                <Icon className={`h-4 w-4 ${iconColor}`} />
+                <Icon className={`h-4 w-4 ${colors.icon}`} />
                 <span>{info.label}</span>
               </button>
             );
