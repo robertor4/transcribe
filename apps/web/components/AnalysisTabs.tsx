@@ -15,7 +15,8 @@ import {
   Calendar,
   Languages,
   Loader2,
-  Globe
+  Globe,
+  Info
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO, SUPPORTED_LANGUAGES, Transcription, TranslationData } from '@transcribe/shared';
 import ReactMarkdown from 'react-markdown';
@@ -24,6 +25,7 @@ import remarkBreaks from 'remark-breaks';
 import { SummaryWithComments } from './SummaryWithComments';
 import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
+import { TranscriptionDetails } from './TranscriptionDetails';
 import { transcriptionApi } from '@/lib/api';
 
 interface AnalysisTabsProps {
@@ -195,6 +197,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
       case 'Target': return Target;
       case 'TrendingUp': return TrendingUp;
       case 'FileText': return FileText;
+      case 'Info': return Info;
       default: return MessageSquare;
     }
   };
@@ -257,7 +260,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             const Icon = getIconComponent(info.icon);
             const hasContent = analyses[info.key];
 
-            if (!hasContent) return null;
+            // Always show Details tab even if no content (we generate it from transcription)
+            if (!hasContent && info.key !== 'details') return null;
+            // Don't show Details tab if no transcription object available
+            if (info.key === 'details' && !transcription) return null;
 
             const isActive = activeTab === info.key;
             const colors = getTabColors(info.color, isActive);
@@ -293,7 +299,9 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
       <div>
         {ANALYSIS_TYPE_INFO.map((info) => {
           const content = currentAnalyses[info.key];
-          if (!content || activeTab !== info.key) return null;
+          // Show Details tab even without content
+          if (activeTab !== info.key) return null;
+          if (!content && info.key !== 'details') return null;
 
           return (
             <div key={info.key}>
@@ -484,6 +492,14 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                   />
                 ) : info.key === 'actionItems' ? (
                   <ActionItemsTable content={content} />
+                ) : info.key === 'details' ? (
+                  transcription ? (
+                    <TranscriptionDetails transcription={transcription} />
+                  ) : (
+                    <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                      No transcription data available
+                    </div>
+                  )
                 ) : (
                   <BlogStyleContent content={content} />
                 )}
