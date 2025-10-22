@@ -594,16 +594,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
         <div key={monthYear}>
           {/* Month Divider */}
-          <div className="sticky top-0 z-10 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm -mx-6 px-6 py-3 mb-4 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-1.5 bg-[#cc3399]/10 dark:bg-[#cc3399]/20 rounded-lg">
-                <Calendar className="h-4 w-4 text-[#cc3399]" />
-              </div>
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">{monthYear}</h3>
-              <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
-                {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
-              </span>
-            </div>
+          <div className="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+            <Calendar className="h-4 w-4 text-[#cc3399]" />
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{monthYear}</h3>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
+            </span>
           </div>
           
           {/* Transcriptions for this month */}
@@ -615,11 +611,11 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
               return (
                 <div
                   key={transcription.id}
-            className={`border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden transition-all duration-200 ${
-              !isExpanded ? 'hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 hover:scale-[1.005] cursor-pointer' : ''
+            className={`transition-all duration-200 ${
+              !isExpanded ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer' : ''
             }`}
           >
-            <div className="p-4 bg-white dark:bg-gray-800">
+            <div className="py-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                   <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
@@ -790,10 +786,10 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
             )}
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
-              <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 {/* Show analysis tabs if we have analyses, otherwise show legacy tabs */}
                 {transcription.analyses ? (
-                  <div className="p-4">
+                  <div>
                     <AnalysisTabs
                       analyses={{
                         ...transcription.analyses,
