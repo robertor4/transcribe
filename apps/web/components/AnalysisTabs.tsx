@@ -415,7 +415,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
               {/* Analysis Content */}
               <div>
                 {info.key === 'transcript' ? (
-                  <div className="max-w-none">
+                  <div className="max-w-5xl mx-auto px-6 lg:px-8">
                     {/* Show timeline or raw view for original language with speaker segments */}
                     {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 ? (
                       transcriptView === 'timeline' ? (
