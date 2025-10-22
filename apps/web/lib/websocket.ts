@@ -15,6 +15,8 @@ class WebSocketService {
   private maxReconnectAttempts = 3;
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private isReconnecting = false;
+  private connectionHealthy = false;
+  private lastEventTime: Map<string, number> = new Map(); // Track last event time per transcription
 
   async connect() {
     if (this.socket?.connected) return;
@@ -44,10 +46,19 @@ class WebSocketService {
       console.log('WebSocket connected');
       this.reconnectAttempts = 0;
       this.isReconnecting = false;
+      this.connectionHealthy = true;
+
+      // Emit connection health change event
+      this.emit('connection_health_changed', { healthy: true, connected: true });
     });
 
     this.socket.on('disconnect', (reason) => {
       console.log('WebSocket disconnected:', reason);
+      this.connectionHealthy = false;
+
+      // Emit connection health change event
+      this.emit('connection_health_changed', { healthy: false, connected: false, reason });
+
       // Auto-reconnect on unexpected disconnections
       if (reason === 'io server disconnect' && !this.isReconnecting) {
         this.handleReconnect();
@@ -160,6 +171,50 @@ class WebSocketService {
     this.socket = null;
     this.reconnectAttempts = 0;
     this.isReconnecting = false;
+    this.connectionHealthy = false;
+    this.lastEventTime.clear();
+  }
+
+  /**
+   * Check if WebSocket is currently connected and healthy
+   */
+  isConnected(): boolean {
+    return this.socket?.connected === true && this.connectionHealthy;
+  }
+
+  /**
+   * Get detailed connection state
+   */
+  getConnectionState() {
+    return {
+      connected: this.socket?.connected === true,
+      healthy: this.connectionHealthy,
+      reconnecting: this.isReconnecting,
+      reconnectAttempts: this.reconnectAttempts,
+      maxReconnectAttempts: this.maxReconnectAttempts,
+    };
+  }
+
+  /**
+   * Track that we received an event for a specific transcription
+   * This helps detect when a transcription has gone stale
+   */
+  markEventReceived(transcriptionId: string) {
+    this.lastEventTime.set(transcriptionId, Date.now());
+  }
+
+  /**
+   * Get the time of the last event for a transcription
+   */
+  getLastEventTime(transcriptionId: string): number | null {
+    return this.lastEventTime.get(transcriptionId) || null;
+  }
+
+  /**
+   * Clear event tracking for a transcription (when completed/failed)
+   */
+  clearEventTracking(transcriptionId: string) {
+    this.lastEventTime.delete(transcriptionId);
   }
 
   subscribeToTranscription(transcriptionId: string) {

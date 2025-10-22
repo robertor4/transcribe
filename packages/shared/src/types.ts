@@ -60,6 +60,7 @@ export interface AnalysisResults {
   personalDevelopment?: string;
   custom?: string;
   transcript?: string;
+  details?: string; // Metadata and recording information
 }
 
 export interface TranslationData {
@@ -357,6 +358,13 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     icon: 'TrendingUp',
     color: 'teal',
     description: 'Growth opportunities and recommendations'
+  },
+  {
+    key: 'details',
+    label: 'Details',
+    icon: 'Info',
+    color: 'gray',
+    description: 'Recording metadata and technical information'
   }
 ];
 

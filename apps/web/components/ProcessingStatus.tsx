@@ -74,13 +74,13 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
     <div className={`flex items-center space-x-2 ${className}`}>
       {/* Simple spinner */}
       <Loader2 className="h-5 w-5 text-[#cc3399] animate-spin" />
-      
+
       {/* Status message with shimmer */}
-      <span className="relative text-sm text-gray-700 overflow-hidden">
+      <span className="relative text-sm text-gray-700 dark:text-gray-300 overflow-hidden">
         {currentMessages[messageIndex]}...
-        <span className="shimmer-band absolute inset-0 w-[30px] h-full bg-gradient-to-r from-transparent via-white/60 to-transparent -skew-x-12" />
+        <span className="shimmer-band absolute inset-0 w-[30px] h-full bg-gradient-to-r from-transparent via-white/60 dark:via-gray-400/60 to-transparent -skew-x-12" />
       </span>
-      
+
       {/* Simple percentage */}
       <span className="text-sm font-medium text-[#cc3399]">
         {Math.round(progress)}%

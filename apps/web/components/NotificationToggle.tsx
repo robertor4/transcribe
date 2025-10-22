@@ -40,9 +40,9 @@ export const NotificationToggle: React.FC = () => {
       case 'enabled':
         return 'text-[#cc3399] hover:text-[#b82d89]';
       case 'denied':
-        return 'text-red-500 hover:text-red-600';
+        return 'text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300';
       default:
-        return 'text-gray-500 hover:text-gray-700';
+        return 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300';
     }
   };
 
@@ -70,7 +70,7 @@ export const NotificationToggle: React.FC = () => {
           relative p-2 rounded-lg transition-all duration-200
           ${status === 'denied' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
           ${getButtonColor()}
-          hover:bg-gray-100
+          hover:bg-gray-100 dark:hover:bg-gray-700
         `}
         aria-label={getTooltipContent()}
       >
@@ -92,14 +92,14 @@ export const NotificationToggle: React.FC = () => {
       {/* Tooltip */}
       {showTooltip && (
         <div className="absolute top-full right-0 mt-2 z-50">
-          <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+          <div className="bg-gray-900 dark:bg-gray-700 text-white dark:text-gray-100 text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
             <div className="flex items-center space-x-2">
               {status === 'enabled' && <Check className="h-3 w-3 text-green-400" />}
               {status === 'denied' && <AlertCircle className="h-3 w-3 text-red-400" />}
               <span>{getTooltipContent()}</span>
             </div>
             {/* Arrow */}
-            <div className="absolute -top-1 right-2 w-2 h-2 bg-gray-900 transform rotate-45" />
+            <div className="absolute -top-1 right-2 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45" />
           </div>
         </div>
       )}
@@ -107,10 +107,10 @@ export const NotificationToggle: React.FC = () => {
       {/* Mobile-friendly status text (shown on small screens) */}
       <div className="sm:hidden absolute top-full right-0 mt-1">
         {status === 'enabled' && (
-          <span className="text-xs text-green-600 font-medium">Notifications on</span>
+          <span className="text-xs text-green-600 dark:text-green-400 font-medium">Notifications on</span>
         )}
         {status === 'denied' && (
-          <span className="text-xs text-red-600 font-medium">Blocked</span>
+          <span className="text-xs text-red-600 dark:text-red-400 font-medium">Blocked</span>
         )}
       </div>
     </div>

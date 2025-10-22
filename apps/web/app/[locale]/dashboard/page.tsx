@@ -10,6 +10,7 @@ import { TranscriptionList } from '@/components/TranscriptionList';
 import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { FileAudio, Upload, Info, Mic } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
@@ -204,24 +205,25 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <img 
-                src="/assets/NS-symbol.webp" 
-                alt="Neural Summary Logo" 
+              <img
+                src="/assets/NS-symbol.webp"
+                alt="Neural Summary Logo"
                 className="h-8 w-auto mr-3"
               />
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {tCommon('appName')}
                 </h1>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <UserProfileMenu />
             </div>
           </div>
@@ -231,7 +233,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-8">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
           <nav className="-mb-px flex flex-wrap gap-x-8">
             <button
               onClick={() => {
@@ -242,7 +244,7 @@ export default function DashboardPage() {
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'upload'
                   ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -260,7 +262,7 @@ export default function DashboardPage() {
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'history'
                   ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -278,7 +280,7 @@ export default function DashboardPage() {
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'recording-guide'
                   ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -296,7 +298,7 @@ export default function DashboardPage() {
                 py-2 px-1 border-b-2 font-medium text-sm
                 ${activeTab === 'how-it-works'
                   ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
@@ -309,17 +311,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           {activeTab === 'upload' ? (
             <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 {tDashboard('uploadAudioFiles')}
               </h2>
               <FileUploader onUploadComplete={handleUploadComplete} />
             </div>
           ) : activeTab === 'history' ? (
             <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-4">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 {tDashboard('yourTranscriptions')}
               </h2>
               <TranscriptionList lastCompletedId={lastCompletedId} />
@@ -330,7 +332,7 @@ export default function DashboardPage() {
             </div>
           ) : activeTab === 'recording-guide' ? (
             <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-6">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
                 {tDashboard('howToRecord')}
               </h2>
               <RecordingGuide />

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -27,22 +29,43 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode via manual toggle - this takes precedence */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Theme Colors (Dark Mode) */
+  --color-primary: #cc3399;
+  --color-primary-hover: #ff66cc;
+  --color-primary-light: rgba(204, 51, 153, 0.2);
+
+  /* Text Colors (Dark Mode) */
+  --color-text-primary: #f9fafb; /* gray-50 */
+  --color-text-secondary: #e5e7eb; /* gray-200 */
+  --color-text-muted: #9ca3af; /* gray-400 */
+  --color-text-light: #6b7280; /* gray-500 */
+
+  /* Placeholder Colors (Dark Mode) */
+  --color-placeholder: #6b7280; /* gray-500 */
+}
+
+/* Dark mode via OS preference (only when no manual override) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light):not(.dark) {
     --background: #0a0a0a;
     --foreground: #ededed;
-    
+
     /* Theme Colors (Dark Mode) */
     --color-primary: #cc3399;
     --color-primary-hover: #ff66cc;
     --color-primary-light: rgba(204, 51, 153, 0.2);
-    
+
     /* Text Colors (Dark Mode) */
     --color-text-primary: #f9fafb; /* gray-50 */
     --color-text-secondary: #e5e7eb; /* gray-200 */
     --color-text-muted: #9ca3af; /* gray-400 */
     --color-text-light: #6b7280; /* gray-500 */
-    
+
     /* Placeholder Colors (Dark Mode) */
     --color-placeholder: #6b7280; /* gray-500 */
   }
@@ -52,6 +75,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Custom prose styling to fix color and spacing issues */
@@ -82,6 +110,46 @@ body {
   color: #1f2937 !important; /* gray-800 */
   margin-top: 0.5em !important;
   margin-bottom: 0.5em !important;
+}
+
+/* Dark mode prose styles */
+.dark .prose {
+  color: #d1d5db !important; /* gray-300 */
+}
+
+.dark .prose p {
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  color: #f9fafb !important; /* gray-50 */
+}
+
+.dark .prose strong {
+  color: #f9fafb !important; /* gray-50 */
+}
+
+.dark .prose li {
+  color: #e5e7eb !important; /* gray-200 */
+}
+
+.dark .prose code {
+  background-color: #374151 !important; /* gray-700 */
+  color: #f9fafb !important; /* gray-50 */
+}
+
+.dark .prose a {
+  color: #cc3399 !important;
+}
+
+.dark .prose blockquote {
+  color: #d1d5db !important; /* gray-300 */
+  border-left-color: #4b5563 !important; /* gray-600 */
 }
 
 /* Mobile and tablet responsive improvements */

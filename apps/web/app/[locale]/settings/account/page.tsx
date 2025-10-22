@@ -156,19 +156,19 @@ export default function AccountSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           {t('description')}
         </p>
       </div>
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="rounded-md bg-green-50 p-4">
+        <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-4">
           <div className="flex">
             <CheckCircle className="h-5 w-5 text-green-400" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-800">
+              <p className="text-sm font-medium text-green-800 dark:text-green-300">
                 {t('passwordChangeSuccess')}
               </p>
             </div>
@@ -177,31 +177,31 @@ export default function AccountSettingsPage() {
       )}
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4">
+        <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-4">
           <div className="flex">
             <AlertCircle className="h-5 w-5 text-red-400" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-red-800">{error}</p>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Security Settings */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex items-center mb-4">
-            <Shield className="h-5 w-5 text-gray-400 mr-2" />
-            <h3 className="text-lg font-medium text-gray-900">{t('security')}</h3>
+            <Shield className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('security')}</h3>
           </div>
 
           {/* Connected Accounts */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">{t('connectedAccounts')}</h4>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('connectedAccounts')}</h4>
             <div className="space-y-2">
               {authUser?.providerData?.map((provider) => (
-                <div key={provider?.providerId} className="flex items-center text-sm text-gray-600">
-                  <LogIn className="h-4 w-4 mr-2 text-gray-400" />
+                <div key={provider?.providerId} className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <LogIn className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                   {provider?.providerId === 'password' && t('emailPassword')}
                   {provider?.providerId === 'google.com' && t('googleAccount')}
                 </div>
@@ -212,14 +212,14 @@ export default function AccountSettingsPage() {
           {/* Change Password (only for password provider) */}
           {hasPasswordProvider && (
             <div className="space-y-4">
-              <h4 className="text-sm font-medium text-gray-700 flex items-center">
-                <Key className="h-4 w-4 mr-2 text-gray-400" />
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <Key className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                 {t('changePassword')}
               </h4>
-              
+
               <div className="space-y-3 ml-6">
                 <div>
-                  <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('currentPassword')}
                   </label>
                   <input
@@ -227,12 +227,12 @@ export default function AccountSettingsPage() {
                     id="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 placeholder:text-gray-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('newPassword')}
                   </label>
                   <input
@@ -240,12 +240,12 @@ export default function AccountSettingsPage() {
                     id="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 placeholder:text-gray-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('confirmPassword')}
                   </label>
                   <input
@@ -253,7 +253,7 @@ export default function AccountSettingsPage() {
                     id="confirm-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 placeholder:text-gray-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   />
                 </div>
                 
@@ -278,27 +278,27 @@ export default function AccountSettingsPage() {
       </div>
 
       {/* Data Management */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">{t('dataManagement')}</h3>
-          
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{t('dataManagement')}</h3>
+
           {/* Export Data */}
           <div className="mb-6">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">{t('exportData')}</h4>
-            <p className="text-sm text-gray-500 mb-3">{t('exportDataDescription')}</p>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('exportData')}</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{t('exportDataDescription')}</p>
             <button
               onClick={handleExportData}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399]"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399]"
             >
               <Download className="h-4 w-4 mr-2" />
               {t('downloadData')}
             </button>
           </div>
-          
+
           {/* Delete Account */}
           <div>
-            <h4 className="text-sm font-medium text-red-600 mb-2">{t('dangerZone')}</h4>
-            <p className="text-sm text-gray-500 mb-3">{t('deleteAccountWarning')}</p>
+            <h4 className="text-sm font-medium text-red-600 dark:text-red-400 mb-2">{t('dangerZone')}</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{t('deleteAccountWarning')}</p>
             
             {!showDeleteConfirm ? (
               <button
@@ -309,22 +309,22 @@ export default function AccountSettingsPage() {
                 {t('deleteAccount')}
               </button>
             ) : (
-              <div className="border border-red-300 rounded-md p-4 bg-red-50">
+              <div className="border border-red-300 dark:border-red-700 rounded-md p-4 bg-red-50 dark:bg-red-900/30">
                 <div className="flex items-start mb-3">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-red-800">
+                    <p className="text-sm font-medium text-red-800 dark:text-red-300">
                       {t('deleteConfirmTitle')}
                     </p>
-                    <p className="text-sm text-red-700 mt-1">
+                    <p className="text-sm text-red-700 dark:text-red-400 mt-1">
                       {t('deleteConfirmMessage')}
                     </p>
                   </div>
                 </div>
-                
+
                 {hasPasswordProvider && (
                   <div className="mb-3">
-                    <label htmlFor="delete-password" className="block text-sm font-medium text-red-700">
+                    <label htmlFor="delete-password" className="block text-sm font-medium text-red-700 dark:text-red-400">
                       {t('enterPasswordToConfirm')}
                     </label>
                     <input
@@ -332,7 +332,7 @@ export default function AccountSettingsPage() {
                       id="delete-password"
                       value={deletePassword}
                       onChange={(e) => setDeletePassword(e.target.value)}
-                      className="mt-1 block w-full rounded-md border-red-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm text-gray-800 placeholder:text-gray-500"
+                      className="mt-1 block w-full rounded-md border-red-300 dark:border-red-700 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     />
                   </div>
                 )}
@@ -357,7 +357,7 @@ export default function AccountSettingsPage() {
                       setShowDeleteConfirm(false);
                       setDeletePassword('');
                     }}
-                    className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                    className="inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                   >
                     {t('cancel')}
                   </button>

@@ -363,20 +363,22 @@ export class TranscriptionService {
       }
 
       // Use AssemblyAI for transcription with language detection and speaker diarization
+      // Pass the progress callback so AssemblyAI can send updates during polling
       const result = await this.assemblyAIService.transcribeWithDiarization(
         publicUrl,
         context,
+        onProgress,
       );
 
       if (onProgress) {
-        onProgress(50, 'Processing complete, analyzing speakers...');
+        onProgress(56, 'Processing complete, analyzing speakers...');
       }
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (onProgress) {
         onProgress(
-          55,
+          58,
           `Detected ${result.speakerCount || 0} speakers in the conversation...`,
         );
       }

@@ -54,11 +54,11 @@ export function LanguageSwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isPending}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] transition-colors disabled:opacity-50"
         aria-label={t('language')}
       >
         {isPending ? (
-          <div className="h-4 w-4 border-2 border-gray-300 border-t-[#cc3399] rounded-full animate-spin" />
+          <div className="h-4 w-4 border-2 border-gray-300 dark:border-gray-600 border-t-[#cc3399] rounded-full animate-spin" />
         ) : (
           <Globe className="w-4 h-4" />
         )}
@@ -74,7 +74,7 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute right-0 z-50 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5">
           <div className="py-1" role="menu" aria-orientation="vertical">
             {locales.map((loc) => {
               const isActive = loc === locale;
@@ -84,9 +84,9 @@ export function LanguageSwitcher() {
                   onClick={() => handleLanguageChange(loc)}
                   className={`
                     block w-full text-left px-4 py-2 text-sm transition-colors
-                    ${isActive 
-                      ? 'bg-[#cc3399] text-white' 
-                      : 'text-gray-700 hover:bg-gray-100'
+                    ${isActive
+                      ? 'bg-[#cc3399] text-white'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }
                   `}
                   role="menuitem"
