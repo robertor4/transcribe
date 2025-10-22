@@ -61,9 +61,11 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
-                    {introText}
-                  </p>
+                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                    <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+                      {introText}
+                    </p>
+                  </div>
                 );
               }
 
@@ -76,9 +78,11 @@ const BlogStyleContent: React.FC<{ content: string }> = ({ content }) => {
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
-                      {introText}
-                    </p>
+                    <div className="bg-gradient-to-r from-pink-50 to-purple-50 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                      <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+                        {introText}
+                      </p>
+                    </div>
                   );
                 }
               }
@@ -254,8 +258,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
   return (
     <div className="space-y-6">
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="-mb-px flex flex-wrap gap-x-6 overflow-x-auto">
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        <nav className="flex flex-wrap gap-x-6 gap-y-2 -mb-px">
           {ANALYSIS_TYPE_INFO.map((info) => {
             const Icon = getIconComponent(info.icon);
             const hasContent = analyses[info.key];
@@ -273,9 +277,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                 key={info.key}
                 onClick={() => setActiveTab(info.key)}
                 className={`
-                  py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2 whitespace-nowrap
-                  transition-colors duration-200
-                  ${colors.border} ${colors.text}
+                  py-3 px-1 font-medium text-sm flex items-center gap-2 whitespace-nowrap
+                  transition-all duration-200 border-b-2
+                  ${isActive ? colors.border : 'border-transparent'}
+                  ${colors.text}
                   ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
                 `}
                 title={info.description}

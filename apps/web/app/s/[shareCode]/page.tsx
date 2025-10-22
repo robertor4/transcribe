@@ -110,10 +110,10 @@ export default function SharedTranscriptionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-[#cc3399] mx-auto mb-4" />
-          <p className="text-gray-600">{t('loading')}</p>
+          <p className="text-gray-700">{t('loading')}</p>
         </div>
       </div>
     );
@@ -121,15 +121,15 @@ export default function SharedTranscriptionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               {t('error.title')}
             </h1>
-            <p className="text-gray-600 mb-6">
-              {error === 'Transcription not found' ? t('error.notFound') : 
+            <p className="text-gray-700 mb-6">
+              {error === 'Transcription not found' ? t('error.notFound') :
                error === 'Invalid or expired share link' ? t('error.invalidLink') :
                error}
             </p>
@@ -147,18 +147,18 @@ export default function SharedTranscriptionPage() {
 
   if (passwordRequired && !passwordSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-6">
             <Lock className="w-16 h-16 text-[#cc3399] mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               {t('passwordRequired')}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               {t('passwordDescription')}
             </p>
           </div>
-          
+
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
               <input
@@ -171,7 +171,7 @@ export default function SharedTranscriptionPage() {
                 required
               />
             </div>
-            
+
             <button
               type="submit"
               className="w-full px-6 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
@@ -186,58 +186,61 @@ export default function SharedTranscriptionPage() {
 
   if (!transcription) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">{t('error.notFound')}</p>
+          <p className="text-gray-700">{t('error.notFound')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <FileAudio className="w-8 h-8 text-[#cc3399]" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {transcription.title || transcription.fileName}
-                </h1>
-                <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                  <span className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    {t('sharedBy')}: {transcription.sharedBy}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(transcription.createdAt)}
-                  </span>
-                  {transcription.viewCount !== undefined && (
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      {t('views')}: {transcription.viewCount}
-                    </span>
-                  )}
-                </div>
+          {/* Logo/Branding */}
+          <div className="flex items-center gap-3 mb-6">
+            <img
+              src="/assets/NS-symbol.webp"
+              alt="Neural Summary"
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-semibold text-gray-900">Neural Summary</span>
+          </div>
+
+          {/* Title and Metadata */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words">
+                {transcription.title || transcription.fileName}
+              </h1>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                <span>{transcription.sharedBy}</span>
+                <span className="text-gray-400">·</span>
+                <span>{formatDate(transcription.createdAt)}</span>
+                {transcription.viewCount !== undefined && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
+                  </>
+                )}
               </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
-                <FileText className="w-4 h-4 inline mr-1" />
+
+            <div className="flex-shrink-0">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 border border-pink-200 rounded-md text-xs font-medium text-[#cc3399]">
+                <Lock className="w-3.5 h-3.5" />
                 {t('readOnly')}
-              </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             {/* Analysis Tabs - includes transcript as a tab */}
