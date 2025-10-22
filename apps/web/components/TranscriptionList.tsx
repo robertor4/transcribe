@@ -689,6 +689,13 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       progress={progress.progress || 0}
                       stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
                     />
+                  ) : transcription.status === TranscriptionStatus.PROCESSING && !progress ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 text-orange-500 dark:text-orange-400 animate-spin" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Stuck Processing
+                      </span>
+                    </div>
                   ) : transcription.status === TranscriptionStatus.FAILED ? (
                     <div className="flex items-center space-x-2">
                       {getStatusIcon(transcription.status)}
@@ -723,7 +730,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
 
                   {(transcription.status === TranscriptionStatus.COMPLETED ||
                     transcription.status === TranscriptionStatus.FAILED ||
-                    transcription.status === TranscriptionStatus.PENDING) && (
+                    transcription.status === TranscriptionStatus.PENDING ||
+                    (transcription.status === TranscriptionStatus.PROCESSING && !progress)) && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
