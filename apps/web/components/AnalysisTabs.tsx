@@ -297,13 +297,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
 
           return (
             <div key={info.key}>
-              {/* Header with Copy Button */}
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{info.label}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{info.description}</p>
-                </div>
-                <div className="flex items-center gap-2">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 mb-6">
                     {/* Language Selector */}
                     {transcriptionId && (
                       <div className="relative">
@@ -457,8 +452,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                         </>
                       )}
                     </button>
-                  </div>
-                </div>
+              </div>
 
               {/* Analysis Content */}
               <div>

@@ -37,7 +37,7 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
+                  <p className="text-xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-2 border-[#cc3399] pl-4">
                     {introText}
                   </p>
                 );
@@ -52,7 +52,7 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <p className="text-2xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-4 border-[#cc3399] pl-6">
+                    <p className="text-xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-2 border-[#cc3399] pl-4">
                       {introText}
                     </p>
                   );

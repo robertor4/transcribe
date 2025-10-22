@@ -10,9 +10,7 @@ import {
   Transcription,
   TranscriptionStatus,
   TranscriptionProgress,
-  WEBSOCKET_EVENTS,
-  formatFileSize,
-  formatDuration
+  WEBSOCKET_EVENTS
 } from '@transcribe/shared';
 
 interface ListResponse {
@@ -22,10 +20,10 @@ interface ListResponse {
   pageSize: number;
   hasMore?: boolean;
 }
-import { 
-  FileAudio, 
-  Trash2, 
-  Clock, 
+import {
+  FileAudio,
+  Trash2,
+  Clock,
   XCircle,
   Loader2,
   FileText,
@@ -34,8 +32,7 @@ import {
   AlignLeft,
   Edit3,
   X,
-  Share2,
-  Calendar
+  Share2
 } from 'lucide-react';
 import { SummaryWithComments } from './SummaryWithComments';
 import { AnalysisTabs } from './AnalysisTabs';
@@ -594,9 +591,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
         <div key={monthYear}>
           {/* Month Divider */}
-          <div className="flex items-center gap-3 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-            <Calendar className="h-4 w-4 text-[#cc3399]" />
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{monthYear}</h3>
+          <div className="flex items-baseline gap-3 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{monthYear}</h3>
             <span className="text-xs text-gray-500 dark:text-gray-400">
               {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
             </span>
@@ -617,77 +613,56 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           >
             <div className="py-4">
               <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center space-x-3 flex-1 min-w-0">
-                  <FileAudio className="h-8 w-8 text-[#cc3399] flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0">
+                  {editingTitleId === transcription.id ? (
                     <div className="flex items-center gap-2 flex-1">
-                      {editingTitleId === transcription.id ? (
-                        <div className="flex items-center gap-2 flex-1">
-                          <input
-                            type="text"
-                            value={editingTitleValue}
-                            onChange={(e) => setEditingTitleValue(e.target.value)}
-                            onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
-                            className="text-sm font-medium text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 min-w-0 flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                            placeholder={t('editTitle')}
-                            autoFocus
-                          />
-                          <button
-                            onClick={() => saveTitle(transcription.id)}
-                            className="p-1 text-green-600 hover:text-green-800 flex-shrink-0"
-                            title={tCommon('save')}
-                          >
-                            <Check className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={cancelEditingTitle}
-                            className="p-1 text-red-600 hover:text-red-800 flex-shrink-0"
-                            title={tCommon('cancel')}
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate min-w-0">
-                            {transcription.title || transcription.fileName}
-                          </p>
-                          <button
-                            onClick={() => startEditingTitle(transcription)}
-                            className="p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0"
-                            title={t('editTitle')}
-                          >
-                            <Edit3 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      )}
+                      <input
+                        type="text"
+                        value={editingTitleValue}
+                        onChange={(e) => setEditingTitleValue(e.target.value)}
+                        onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
+                        className="text-sm font-medium text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 min-w-0 flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                        placeholder={t('editTitle')}
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => saveTitle(transcription.id)}
+                        className="p-1 text-green-600 hover:text-green-800 flex-shrink-0"
+                        title={tCommon('save')}
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={cancelEditingTitle}
+                        className="p-1 text-red-600 hover:text-red-800 flex-shrink-0"
+                        title={tCommon('cancel')}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
                     </div>
-                    <div className="flex items-center space-x-4 mt-1 overflow-hidden">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                        {formatFileSize(transcription.fileSize)}
-                      </span>
-                      {transcription.duration && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                          {formatDuration(transcription.duration)}
-                        </span>
-                      )}
-                      {transcription.title && transcription.title !== transcription.fileName && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {transcription.fileName}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                        {formatDate(transcription.createdAt)}
-                      </span>
-                      {transcription.translations && Object.keys(transcription.translations).length > 0 && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 flex-shrink-0">
-                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                          </svg>
-                          {Object.keys(transcription.translations).length} {Object.keys(transcription.translations).length === 1 ? 'translation' : 'translations'}
-                        </span>
-                      )}
+                  ) : (
+                    <div className="flex items-center gap-2 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate min-w-0">
+                        {transcription.title || transcription.fileName}
+                      </p>
+                      <button
+                        onClick={() => startEditingTitle(transcription)}
+                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0"
+                        title={t('editTitle')}
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </button>
                     </div>
+                  )}
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatDate(transcription.createdAt)}
+                    </span>
+                    {transcription.translations && Object.keys(transcription.translations).length > 0 && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        • {Object.keys(transcription.translations).length} {Object.keys(transcription.translations).length === 1 ? 'translation' : 'translations'}
+                      </span>
+                    )}
                   </div>
                 </div>
                 
