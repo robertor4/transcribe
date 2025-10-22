@@ -579,6 +579,16 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
     );
   }
 
+  // Debug: Log all transcription IDs and their statuses
+  console.group('🔍 Transcriptions Debug Info');
+  console.table(transcriptions.map(t => ({
+    id: t.id,
+    title: t.title || t.fileName,
+    status: t.status,
+    createdAt: new Date(t.createdAt).toLocaleString()
+  })));
+  console.groupEnd();
+
   return (
     <div className="space-y-8">
       {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
