@@ -7,13 +7,8 @@ import { useTranslations } from 'next-intl';
 import { SharedTranscriptionView, AnalysisResults } from '@transcribe/shared';
 import { AnalysisTabs } from '@/components/AnalysisTabs';
 import {
-  FileAudio,
-  Calendar,
-  User,
-  Eye,
   Lock,
   Loader2,
-  FileText,
   AlertCircle,
 } from 'lucide-react';
 

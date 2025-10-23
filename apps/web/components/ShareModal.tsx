@@ -86,7 +86,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
-  const formatDate = (date: Date | string | any) => {
+  const formatDate = (date: Date | string | { toDate: () => Date } | { seconds: number; nanoseconds: number }) => {
     try {
       // Handle Firestore Timestamp objects
       let d: Date;
@@ -94,7 +94,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         d = date.toDate();
       } else if (date && typeof date === 'object' && 'seconds' in date) {
         // Firestore Timestamp has seconds and nanoseconds
-        d = new Date(date.seconds * 1000);
+        d = new Date((date as { seconds: number }).seconds * 1000);
       } else {
         d = new Date(date);
       }

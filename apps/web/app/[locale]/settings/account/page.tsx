@@ -91,11 +91,12 @@ export default function AccountSettingsPage() {
       setConfirmPassword('');
       
       setTimeout(() => setSuccess(false), 5000);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error changing password:', err);
-      if (err.code === 'auth/wrong-password') {
+      const firebaseError = err as { code?: string; message?: string };
+      if (firebaseError.code === 'auth/wrong-password') {
         setError(t('incorrectPassword'));
-      } else if (err.code === 'auth/requires-recent-login') {
+      } else if (firebaseError.code === 'auth/requires-recent-login') {
         setError(t('requiresRecentLogin'));
       } else {
         setError(t('passwordChangeError'));
@@ -134,11 +135,12 @@ export default function AccountSettingsPage() {
       // Logout and redirect
       await logout();
       router.push('/');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error deleting account:', err);
-      if (err.code === 'auth/wrong-password') {
+      const firebaseError = err as { code?: string; message?: string };
+      if (firebaseError.code === 'auth/wrong-password') {
         setError(t('incorrectPassword'));
-      } else if (err.code === 'auth/requires-recent-login') {
+      } else if (firebaseError.code === 'auth/requires-recent-login') {
         setError(t('requiresRecentLogin'));
       } else {
         setError(t('deleteAccountError'));

@@ -63,7 +63,7 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
         ...(transcription.speakerCount ? [{ label: 'Number of Speakers', value: transcription.speakerCount.toString() }] : []),
         ...(transcription.diarizationConfidence ? [{ label: 'Diarization Confidence', value: `${(transcription.diarizationConfidence * 100).toFixed(1)}%` }] : []),
         ...(transcription.speakers
-          ? transcription.speakers.map((speaker, index) => ({
+          ? transcription.speakers.map((speaker) => ({
               label: speaker.speakerTag,
               value: `${formatDuration(speaker.totalSpeakingTime)} (${speaker.wordCount} words)`
             }))
