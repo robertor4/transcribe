@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MobileNav } from '@/components/MobileNav';
@@ -23,12 +24,9 @@ import {
   Play
 } from 'lucide-react';
 
-export default function LandingPage({
-  params
-}: {
-  params: { locale: string }
-}) {
-  const { locale } = params;
+export default function LandingPage() {
+  const params = useParams();
+  const locale = params.locale as string;
   const t = useTranslations();
   const { user } = useAuth();
 
