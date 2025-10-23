@@ -91,19 +91,19 @@ export class TranscriptionProcessor {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 60,
-        message: 'Transcription complete, generating comprehensive analyses...',
+        message: 'Transcription complete, generating core analyses...',
         stage: 'summarizing',
       });
 
-      // Generate ALL analyses in parallel
-      const analyses = await this.transcriptionService.generateAllAnalyses(
+      // Generate CORE analyses only (Summary, Action Items, Communication, Transcript)
+      const coreAnalyses = await this.transcriptionService.generateCoreAnalyses(
         transcriptText,
         context,
         detectedLanguage,
       );
 
       // For backward compatibility, keep the summary field
-      const summary = analyses.summary;
+      const summary = coreAnalyses.summary;
 
       // Extract title from the summary
       const extractedTitle =
@@ -150,7 +150,8 @@ export class TranscriptionProcessor {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
         summary, // Keep for backward compatibility
-        analyses, // Add all analyses
+        coreAnalyses, // NEW: Store core analyses
+        generatedAnalysisIds: [], // Initialize empty array for on-demand analyses
         completedAt: new Date(),
         updatedAt: new Date(),
       };

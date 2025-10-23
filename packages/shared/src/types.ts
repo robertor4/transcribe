@@ -63,6 +63,50 @@ export interface AnalysisResults {
   details?: string; // Metadata and recording information
 }
 
+// New: Core analyses that are always generated
+export interface CoreAnalyses {
+  summary: string;
+  actionItems: string;
+  communicationStyles: string;
+  transcript: string;
+}
+
+// New: Analysis template definition
+export interface AnalysisTemplate {
+  id: string; // e.g., "system-emotional-iq"
+  name: string; // "Emotional Intelligence"
+  description: string; // Short description for catalog
+  category: 'professional' | 'content' | 'specialized';
+  icon: string; // Lucide icon name
+  color: string; // Badge color
+  systemPrompt: string; // GPT system prompt
+  userPrompt: string; // GPT user prompt template
+  modelPreference: 'gpt-5' | 'gpt-5-mini';
+  estimatedSeconds: number; // ~20 for mini, ~30 for gpt-5
+  featured: boolean; // Show in featured section
+  order: number; // Display order
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// New: Generated analysis record
+export interface GeneratedAnalysis {
+  id: string;
+  transcriptionId: string;
+  userId: string;
+  templateId: string; // Links to AnalysisTemplate
+  templateName: string; // Snapshot for history (e.g., "Emotional Intelligence")
+  content: string; // Generated markdown content
+  model: 'gpt-5' | 'gpt-5-mini';
+  tokenUsage?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+  generatedAt: Date;
+  generationTimeMs?: number;
+}
+
 export interface TranslationData {
   language: string; // Target language code (e.g., 'es', 'fr', 'de')
   languageName: string; // Human-readable language name (e.g., 'Spanish', 'French')
@@ -92,7 +136,11 @@ export interface Transcription {
   comments?: SummaryComment[];
   detectedLanguage?: string; // Language detected from the audio (e.g., 'english', 'dutch', 'german')
   summaryLanguage?: string; // Language used for the summary
-  analyses?: AnalysisResults; // All analysis results
+  analyses?: AnalysisResults; // All analysis results - DEPRECATED, use coreAnalyses
+  // NEW: Core analyses generated automatically
+  coreAnalyses?: CoreAnalyses;
+  // NEW: References to on-demand analyses
+  generatedAnalysisIds?: string[]; // Array of GeneratedAnalysis IDs
   error?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -325,18 +373,18 @@ export const ANALYSIS_TYPE_INFO: AnalysisTypeInfo[] = [
     description: 'Tasks, deadlines, and follow-ups'
   },
   {
-    key: 'transcript',
-    label: 'Full Transcript',
-    icon: 'FileText',
-    color: 'gray',
-    description: 'Complete transcription of the audio'
-  },
-  {
     key: 'communicationStyles',
     label: 'Communication',
     icon: 'Users',
     color: 'purple',
     description: 'Speaking patterns and interaction dynamics'
+  },
+  {
+    key: 'transcript',
+    label: 'Full Transcript',
+    icon: 'FileText',
+    color: 'gray',
+    description: 'Complete transcription of the audio'
   },
   {
     key: 'emotionalIntelligence',

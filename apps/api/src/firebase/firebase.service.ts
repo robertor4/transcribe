@@ -6,6 +6,7 @@ import {
   PaginatedResponse,
   TranscriptionStatus,
   SummaryComment,
+  GeneratedAnalysis,
 } from '@transcribe/shared';
 
 @Injectable()
@@ -114,9 +115,7 @@ export class FirebaseService implements OnModuleInit {
       sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
       sharedWith: data.sharedWith?.map((record: any) => ({
         email: record.email,
-        sentAt: record.sentAt?.toDate
-          ? record.sentAt.toDate()
-          : record.sentAt,
+        sentAt: record.sentAt?.toDate ? record.sentAt.toDate() : record.sentAt,
       })),
     } as Transcription;
   }
@@ -191,7 +190,9 @@ export class FirebaseService implements OnModuleInit {
     const bucket = this.storage.bucket();
     const file = bucket.file(path);
 
-    this.logger.log(`Uploading file to storage: ${path}, size: ${buffer.length} bytes`);
+    this.logger.log(
+      `Uploading file to storage: ${path}, size: ${buffer.length} bytes`,
+    );
 
     await file.save(buffer, {
       metadata: {
@@ -554,9 +555,7 @@ export class FirebaseService implements OnModuleInit {
       sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
       sharedWith: data.sharedWith?.map((record: any) => ({
         email: record.email,
-        sentAt: record.sentAt?.toDate
-          ? record.sentAt.toDate()
-          : record.sentAt,
+        sentAt: record.sentAt?.toDate ? record.sentAt.toDate() : record.sentAt,
       })),
     } as Transcription;
   }
@@ -584,5 +583,110 @@ export class FirebaseService implements OnModuleInit {
       sharedWith: admin.firestore.FieldValue.delete(),
       updatedAt: new Date(),
     });
+  }
+
+  // ============================================================
+  // GENERATED ANALYSES METHODS (On-Demand Analysis System)
+  // ============================================================
+
+  /**
+   * Create a generated analysis record
+   */
+  async createGeneratedAnalysis(analysis: Omit<any, 'id'>): Promise<string> {
+    const docRef = await this.db.collection('generatedAnalyses').add({
+      ...analysis,
+      generatedAt: admin.firestore.Timestamp.fromDate(analysis.generatedAt),
+    });
+    return docRef.id;
+  }
+
+  /**
+   * Get all generated analyses for a transcription
+   */
+  async getGeneratedAnalyses(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<any[]> {
+    const snapshot = await this.db
+      .collection('generatedAnalyses')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('userId', '==', userId)
+      .orderBy('generatedAt', 'desc')
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        generatedAt: data.generatedAt?.toDate
+          ? data.generatedAt.toDate()
+          : data.generatedAt,
+      };
+    });
+  }
+
+  /**
+   * Get a single generated analysis by ID
+   */
+  async getGeneratedAnalysisById(analysisId: string): Promise<any | null> {
+    const doc = await this.db
+      .collection('generatedAnalyses')
+      .doc(analysisId)
+      .get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    const data = doc.data();
+    if (!data) {
+      return null;
+    }
+    return {
+      id: doc.id,
+      ...data,
+      generatedAt: data.generatedAt?.toDate
+        ? data.generatedAt.toDate()
+        : data.generatedAt,
+    };
+  }
+
+  /**
+   * Delete a generated analysis
+   */
+  async deleteGeneratedAnalysis(analysisId: string): Promise<void> {
+    await this.db.collection('generatedAnalyses').doc(analysisId).delete();
+  }
+
+  /**
+   * Add analysis reference to transcription
+   */
+  async addAnalysisReference(
+    transcriptionId: string,
+    analysisId: string,
+  ): Promise<void> {
+    await this.db
+      .collection('transcriptions')
+      .doc(transcriptionId)
+      .update({
+        generatedAnalysisIds: admin.firestore.FieldValue.arrayUnion(analysisId),
+      });
+  }
+
+  /**
+   * Remove analysis reference from transcription
+   */
+  async removeAnalysisReference(
+    transcriptionId: string,
+    analysisId: string,
+  ): Promise<void> {
+    await this.db
+      .collection('transcriptions')
+      .doc(transcriptionId)
+      .update({
+        generatedAnalysisIds:
+          admin.firestore.FieldValue.arrayRemove(analysisId),
+      });
   }
 }

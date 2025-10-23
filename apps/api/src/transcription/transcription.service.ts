@@ -562,29 +562,66 @@ export class TranscriptionService {
     context?: string,
     language?: string,
     model?: string,
+    customSystemPrompt?: string, // NEW: For on-demand analysis templates
+    customUserPrompt?: string, // NEW: For on-demand analysis templates
   ): Promise<string> {
     try {
       const languageInstruction = language
         ? `\n\nIMPORTANT: The transcription is in ${language}. Please generate the output in ${language} as well. Use appropriate formatting and conventions for ${language}.`
         : '';
 
-      const systemPrompt = this.getSystemPromptForAnalysis(
-        analysisType,
-        languageInstruction,
-      );
-      const userPrompt = this.buildPromptForAnalysis(
-        transcriptionText,
-        analysisType,
-        context,
-        language,
-      );
+      // Use custom prompts if provided, otherwise use analysisType prompts
+      const systemPrompt =
+        customSystemPrompt ||
+        this.getSystemPromptForAnalysis(analysisType, languageInstruction);
+
+      let userPrompt: string;
+      if (customUserPrompt) {
+        // When using custom prompt, we need to append the transcript
+        // (buildAnalysisPrompt does this automatically, but custom prompts bypass it)
+        let fullCustomPrompt = customUserPrompt;
+
+        // Add context if provided
+        if (context) {
+          fullCustomPrompt = `## Context
+The following context information is provided about this conversation:
+${context}
+
+Please use this context to better understand references, participants, technical terms, and the overall discussion.
+
+---
+
+${customUserPrompt}`;
+        }
+
+        // Add language instructions if specified
+        if (language && language !== 'english') {
+          fullCustomPrompt = `CRITICAL LANGUAGE REQUIREMENT:
+- The transcription is in ${language}
+- You MUST generate ALL output text in ${language}
+- This includes ALL section headings, titles, labels, and content
+- Only keep English for: proper nouns, company names, and technical terms without standard translations
+- Use appropriate formatting and conventions for ${language}
+
+${fullCustomPrompt}`;
+        }
+
+        userPrompt = `${fullCustomPrompt}\n\n---\nTRANSCRIPT:\n${transcriptionText}`;
+      } else {
+        userPrompt = this.buildPromptForAnalysis(
+          transcriptionText,
+          analysisType,
+          context,
+          language,
+        );
+      }
 
       // Use specified model or default to GPT-5
       const selectedModel =
         model || this.configService.get('GPT_MODEL_PREFERENCE') || 'gpt-5';
 
       this.logger.log(
-        `Using model ${selectedModel} for ${analysisType || 'summary'} generation`,
+        `Using model ${selectedModel} for ${analysisType || 'custom'} generation`,
       );
 
       const completion = await this.openai.chat.completions.create({
@@ -604,6 +641,10 @@ export class TranscriptionService {
     }
   }
 
+  /**
+   * DEPRECATED: Use generateCoreAnalyses() instead
+   * Kept for backward compatibility
+   */
   async generateAllAnalyses(
     transcriptionText: string,
     context?: string,
@@ -716,6 +757,81 @@ export class TranscriptionService {
         influencePersuasion: null,
         personalDevelopment: null,
       };
+    }
+  }
+
+  /**
+   * NEW: Generate only core analyses (Summary, Action Items, Communication, Transcript)
+   * This is the new default for the on-demand analysis system
+   */
+  async generateCoreAnalyses(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<{
+    summary: string;
+    actionItems: string;
+    communicationStyles: string;
+    transcript: string;
+  }> {
+    try {
+      this.logger.log(
+        'Generating core analyses (Summary, Action Items, Communication)...',
+      );
+
+      const analysisPromises = [
+        // Summary - Always use GPT-5
+        this.generateSummaryWithModel(
+          transcriptionText,
+          AnalysisType.SUMMARY,
+          context,
+          language,
+          'gpt-5',
+        ).catch((err) => {
+          this.logger.error('Summary generation failed:', err);
+          return 'Summary generation failed. Please try again.';
+        }),
+
+        // Action Items - Use GPT-5-mini
+        this.generateSummaryWithModel(
+          transcriptionText,
+          AnalysisType.ACTION_ITEMS,
+          context,
+          language,
+          'gpt-5-mini',
+        ).catch((err) => {
+          this.logger.error('Action items generation failed:', err);
+          return null;
+        }),
+
+        // Communication Styles - Use GPT-5-mini
+        this.generateSummaryWithModel(
+          transcriptionText,
+          AnalysisType.COMMUNICATION_STYLES,
+          context,
+          language,
+          'gpt-5-mini',
+        ).catch((err) => {
+          this.logger.error('Communication styles generation failed:', err);
+          return null;
+        }),
+      ];
+
+      const [summary, actionItems, communicationStyles] =
+        await Promise.all(analysisPromises);
+
+      this.logger.log('Core analyses completed');
+
+      return {
+        summary: summary || 'Summary generation failed. Please try again.',
+        actionItems: actionItems || 'No action items identified.',
+        communicationStyles:
+          communicationStyles || 'Communication analysis unavailable.',
+        transcript: transcriptionText, // No AI needed - just the text
+      };
+    } catch (error) {
+      this.logger.error('Critical error generating core analyses:', error);
+      throw error;
     }
   }
 
@@ -1575,11 +1691,11 @@ ${transcription}`;
 
     // Get language name
     const { SUPPORTED_LANGUAGES } = await import('@transcribe/shared');
-    const targetLang = SUPPORTED_LANGUAGES.find((l) => l.code === targetLanguage);
+    const targetLang = SUPPORTED_LANGUAGES.find(
+      (l) => l.code === targetLanguage,
+    );
     if (!targetLang) {
-      throw new BadRequestException(
-        `Unsupported language: ${targetLanguage}`,
-      );
+      throw new BadRequestException(`Unsupported language: ${targetLanguage}`);
     }
 
     this.logger.log(
@@ -1614,7 +1730,8 @@ ${transcription}`;
     const analysisTranslations: Record<string, Promise<string>> = {};
     if (transcription.analyses) {
       for (const key of analysisKeys) {
-        const analysisValue = transcription.analyses[key as keyof typeof transcription.analyses];
+        const analysisValue =
+          transcription.analyses[key as keyof typeof transcription.analyses];
         if (analysisValue) {
           analysisTranslations[key] = this.translateText(
             analysisValue,

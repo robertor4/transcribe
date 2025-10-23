@@ -1,7 +1,7 @@
 import { AnalysisType } from '@transcribe/shared';
 
 // Default Summary Prompt
-const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and provide a comprehensive summary.
+export const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and provide a comprehensive summary.
 
 **CRITICAL FORMATTING RULES:**
 1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title showing what this conversation was about. This should be the specific subject matter and context. Do NOT use a generic label - make the heading itself BE the topic.
@@ -45,7 +45,7 @@ Key guidance for the detailed discussion section:
 - Make each paragraph self-contained so readers understand that specific topic fully`;
 
 // Communication Styles Analysis Prompt
-const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
+export const COMMUNICATION_STYLES_PROMPT = `Analyze the communication effectiveness of this conversation.
 
 # Write your key takeaway about communication effectiveness here: X/10
 
@@ -98,7 +98,7 @@ Write ALL section headers in sentence case (European/Dutch style), capitalizing 
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Action Items Extraction Prompt
-const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation.
+export const ACTION_ITEMS_PROMPT = `Extract and organize all action items from this conversation.
 
 # Action items overview
 
@@ -140,7 +140,7 @@ Write ALL section headers in sentence case, capitalizing only the first word and
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Emotional Intelligence Analysis Prompt
-const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence aspects of this conversation.
+export const EMOTIONAL_INTELLIGENCE_PROMPT = `Please analyze the emotional intelligence aspects of this conversation.
 
 # Write your key emotional intelligence takeaway here
 
@@ -181,7 +181,7 @@ Write ALL section headers in sentence case, capitalizing only the first word and
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Influence and Persuasion Analysis Prompt
-const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion techniques used in this conversation.
+export const INFLUENCE_PERSUASION_PROMPT = `Please analyze influence and persuasion techniques used in this conversation.
 
 # Write your key influence and persuasion takeaway here
 
@@ -213,7 +213,7 @@ Write ALL section headers in sentence case, capitalizing only the first word and
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Personal Development Analysis Prompt
-const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insights based on this conversation.
+export const PERSONAL_DEVELOPMENT_PROMPT = `Please provide personal development insights based on this conversation.
 
 # Write your key personal development insight here
 
@@ -245,7 +245,7 @@ Write ALL section headers in sentence case, capitalizing only the first word and
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
 
 // Custom Analysis Prompt (uses context as instructions)
-const CUSTOM_ANALYSIS_PROMPT = `Please analyze this conversation according to the specific instructions provided in the context.`;
+export const CUSTOM_ANALYSIS_PROMPT = `Please analyze this conversation according to the specific instructions provided in the context.`;
 
 // Map analysis types to their prompts
 const ANALYSIS_PROMPTS: Record<AnalysisType, string> = {

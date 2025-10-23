@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { auth } from './firebase';
-import { ApiResponse, AnalysisType } from '@transcribe/shared';
+import { ApiResponse, AnalysisType, AnalysisTemplate, GeneratedAnalysis } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
 const API_URL = getApiUrl();
@@ -209,6 +209,23 @@ export const transcriptionApi = {
 
   deleteTranslation: async (id: string, language: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/translations/${language}`);
+  },
+
+  // On-Demand Analysis API methods
+  getAnalysisTemplates: async (): Promise<ApiResponse<AnalysisTemplate[]>> => {
+    return api.get('/transcriptions/analysis-templates');
+  },
+
+  generateAnalysis: async (id: string, templateId: string): Promise<ApiResponse<GeneratedAnalysis>> => {
+    return api.post(`/transcriptions/${id}/generate-analysis`, { templateId });
+  },
+
+  getUserAnalyses: async (id: string): Promise<ApiResponse<GeneratedAnalysis[]>> => {
+    return api.get(`/transcriptions/${id}/analyses`);
+  },
+
+  deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {
+    return api.delete(`/transcriptions/${id}/analyses/${analysisId}`);
   },
 };
 
