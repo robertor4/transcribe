@@ -36,7 +36,7 @@ import {
   ChevronDown,
   Globe
 } from 'lucide-react';
-import { SummaryWithComments } from './SummaryWithComments';
+import { AnalysisContentRenderer } from './AnalysisContentRenderer';
 import { AnalysisTabs } from './AnalysisTabs';
 import { ShareModal } from './ShareModal';
 import { ProcessingStatus } from './ProcessingStatus';
@@ -865,9 +865,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       </button>
                     </div>
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <SummaryWithComments
-                        summary={transcription.summary}
-                      />
+                      <AnalysisContentRenderer content={transcription.summary} />
                     </div>
                   </div>
                 )}

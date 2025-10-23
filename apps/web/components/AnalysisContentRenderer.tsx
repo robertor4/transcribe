@@ -5,26 +5,25 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 
-interface SummaryWithCommentsProps {
-  summary: string;
+interface AnalysisContentRendererProps {
+  content: string;
 }
 
-export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
-  summary
+export const AnalysisContentRenderer: React.FC<AnalysisContentRendererProps> = ({
+  content
 }) => {
-  // Process the summary to handle HTML-styled intro paragraph
-  const processedSummary = useMemo(() => {
-    // Check if summary contains the HTML-styled paragraph
+  // Process the content to handle HTML-styled intro paragraph
+  const processedContent = useMemo(() => {
     const htmlParagraphRegex = /<p\s+style="font-size:\s*1\.4em;">([^<]+)<\/p>/;
-    const match = summary.match(htmlParagraphRegex);
-    
+    const match = content.match(htmlParagraphRegex);
+
     if (match) {
       // Replace the HTML with markdown that we'll style specially
       const introText = match[1];
-      return summary.replace(htmlParagraphRegex, `[INTRO]${introText}[/INTRO]`);
+      return content.replace(htmlParagraphRegex, `[INTRO]${introText}[/INTRO]`);
     }
-    return summary;
-  }, [summary]);
+    return content;
+  }, [content]);
 
   return (
     <div className="max-w-4xl mx-auto px-6 lg:px-8">
@@ -37,9 +36,11 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <p className="text-xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-2 border-[#cc3399] pl-4">
-                    {introText}
-                  </p>
+                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/30 dark:to-purple-950/30 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                    <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+                      {introText}
+                    </p>
+                  </div>
                 );
               }
 
@@ -52,9 +53,11 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <p className="text-xl leading-relaxed font-medium text-gray-700 dark:text-gray-300 mb-8 border-l-2 border-[#cc3399] pl-4">
-                      {introText}
-                    </p>
+                    <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/30 dark:to-purple-950/30 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                      <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+                        {introText}
+                      </p>
+                    </div>
                   );
                 }
               }
@@ -70,9 +73,14 @@ export const SummaryWithComments: React.FC<SummaryWithCommentsProps> = ({
             strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-gray-100">{children}</strong>,
             em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
             code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-1 py-0.5 rounded text-sm">{children}</code>,
+            blockquote: ({children}) => (
+              <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 my-4 italic text-gray-700 dark:text-gray-300">
+                {children}
+              </blockquote>
+            ),
           }}
         >
-          {processedSummary}
+          {processedContent}
         </ReactMarkdown>
       </div>
     </div>
