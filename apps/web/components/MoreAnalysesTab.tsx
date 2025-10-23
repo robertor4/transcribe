@@ -27,6 +27,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   useEffect(() => {
     loadTemplates();
     loadGeneratedAnalyses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcriptionId]);
 
   const loadTemplates = async () => {
@@ -71,9 +72,10 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
         setGeneratedAnalyses([response.data, ...generatedAnalyses]);
         setSelectedAnalysisId(response.data.id);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to generate analysis:', err);
-      setError(err?.message || 'Failed to generate analysis. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate analysis. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsGenerating(null);
     }
@@ -117,7 +119,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 
   if (isLoadingTemplates || isLoadingAnalyses) {
     return (
-      <div className="flex items-center justify-center py-12 text-gray-700">
+      <div className="flex items-center justify-center py-12 text-gray-700 dark:text-gray-300">
         <Loader2 className="w-6 h-6 animate-spin mr-2" />
         Loading analysis options...
       </div>
@@ -131,22 +133,22 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
         {/* Generated Analyses List */}
         {generatedAnalyses.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Your Analyses</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Your Analyses</h3>
             <div className="space-y-2">
               {generatedAnalyses.map((analysis) => (
                 <div
                   key={analysis.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                     selectedAnalysisId === analysis.id
-                      ? 'border-[#cc3399] bg-pink-50'
-                      : 'border-gray-300 hover:border-[#cc3399] hover:bg-gray-50'
+                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                   onClick={() => setSelectedAnalysisId(analysis.id)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{analysis.templateName}</p>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{analysis.templateName}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         {new Date(analysis.generatedAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -155,7 +157,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                         e.stopPropagation();
                         handleDelete(analysis.id);
                       }}
-                      className="text-gray-500 hover:text-red-600 transition-colors"
+                      className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                       title="Delete analysis"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -169,13 +171,13 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 
         {/* Template Catalog */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
             <Sparkles className="w-4 h-4 inline mr-1 text-[#cc3399]" />
             Generate More Analyses
           </h3>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-800 dark:text-red-300">
               {error}
             </div>
           )}
@@ -184,7 +186,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             {/* Featured Templates */}
             {categorizedTemplates.featured.length > 0 && (
               <div>
-                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase">Featured</h4>
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">Featured</h4>
                 <div className="space-y-2">
                   {categorizedTemplates.featured.map((template) => (
                     <TemplateCard
@@ -201,7 +203,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             {/* Professional Templates */}
             {categorizedTemplates.professional.length > 0 && (
               <div>
-                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase">Professional</h4>
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">Professional</h4>
                 <div className="space-y-2">
                   {categorizedTemplates.professional.map((template) => (
                     <TemplateCard
@@ -218,7 +220,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             {/* Content Creation Templates */}
             {categorizedTemplates.content.length > 0 && (
               <div>
-                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
                   Content Creation
                 </h4>
                 <div className="space-y-2">
@@ -237,7 +239,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             {/* Specialized Templates */}
             {categorizedTemplates.specialized.length > 0 && (
               <div>
-                <h4 className="text-xs font-medium text-gray-700 mb-2 uppercase">Specialized</h4>
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">Specialized</h4>
                 <div className="space-y-2">
                   {categorizedTemplates.specialized.map((template) => (
                     <TemplateCard
@@ -258,22 +260,22 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
       <div className="lg:col-span-2">
         {selectedAnalysis ? (
           <div>
-            <div className="mb-4 pb-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">{selectedAnalysis.templateName}</h2>
-              <p className="text-sm text-gray-600 mt-1">
+            <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedAnalysis.templateName}</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Generated {new Date(selectedAnalysis.generatedAt).toLocaleString()} •{' '}
                 {selectedAnalysis.model} • {selectedAnalysis.generationTimeMs}ms
               </p>
             </div>
-            <div className="prose prose-sm max-w-none">
+            <div className="prose prose-sm dark:prose-invert max-w-none">
               <AnalysisContentRenderer content={selectedAnalysis.content} />
             </div>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-600">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p className="text-lg font-medium text-gray-700">No analyses generated yet</p>
-            <p className="text-sm text-gray-600 mt-2">
+          <div className="text-center py-12 text-gray-600 dark:text-gray-400">
+            <Sparkles className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">No analyses generated yet</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Select a template from the left to generate your first analysis
             </p>
           </div>
@@ -306,11 +308,11 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, onG
   };
 
   return (
-    <div className="p-3 border border-gray-300 rounded-lg hover:border-[#cc3399] transition-colors bg-white">
+    <div className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-[#cc3399] transition-colors bg-white dark:bg-gray-800">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium text-gray-900 truncate">{template.name}</h4>
-          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{template.description}</p>
+          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{template.name}</h4>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{template.description}</p>
           <div className="mt-2 flex items-center gap-2">
             <span
               className={`text-xs px-2 py-0.5 rounded border ${
@@ -319,7 +321,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, onG
             >
               {template.category}
             </span>
-            <span className="text-xs text-gray-500">~{template.estimatedSeconds}s</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">~{template.estimatedSeconds}s</span>
           </div>
         </div>
         <button
