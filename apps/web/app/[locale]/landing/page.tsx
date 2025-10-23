@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
+import { useAuth } from '@/contexts/AuthContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MobileNav } from '@/components/MobileNav';
 import ScrollAnimation from '@/components/ScrollAnimation';
@@ -20,13 +23,14 @@ import {
   Play
 } from 'lucide-react';
 
-export default async function LandingPage({
+export default function LandingPage({
   params
 }: {
-  params: Promise<{ locale: string }>
+  params: { locale: string }
 }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale });
+  const { locale } = params;
+  const t = useTranslations();
+  const { user } = useAuth();
 
   return (
     <>
@@ -54,20 +58,32 @@ export default async function LandingPage({
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-4">
                 <LanguageSwitcher />
-                <Link
-                  href={`/${locale}/login`}
-                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                  aria-label="Log in to Neural Summary"
-                >
-                  {t('landing.nav.login')}
-                </Link>
-                <Link
-                  href={`/${locale}/login`}
-                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
-                  aria-label="Get started with Neural Summary"
-                >
-                  {t('landing.nav.getStarted')}
-                </Link>
+                {user ? (
+                  <Link
+                    href={`/${locale}/dashboard`}
+                    className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
+                    aria-label="Go to Dashboard"
+                  >
+                    Go to Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href={`/${locale}/login`}
+                      className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                      aria-label="Log in to Neural Summary"
+                    >
+                      {t('landing.nav.login')}
+                    </Link>
+                    <Link
+                      href={`/${locale}/login`}
+                      className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
+                      aria-label="Get started with Neural Summary"
+                    >
+                      {t('landing.nav.getStarted')}
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Mobile Navigation */}

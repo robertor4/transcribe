@@ -5,6 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-5 models.
 
+## Changelog Maintenance
+
+**CRITICAL**: All code changes MUST be documented in [CHANGELOG.md](CHANGELOG.md)
+
+When making any changes to the codebase, always update the `[Unreleased]` section with:
+- **Added**: New features, files, or capabilities
+- **Changed**: Modifications to existing functionality
+- **Fixed**: Bug fixes and error resolutions
+- **Removed**: Deprecated or deleted features
+
+The changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and helps track project evolution. Update it immediately after implementing changes, not at the end of a session.
+
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
 - **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4, React Dropzone, next-intl (5 languages)
