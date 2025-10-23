@@ -233,10 +233,13 @@ ssh $SERVER << 'EOF'
     echo "Health Check Results:"
     
     # Check Redis
-    if docker exec transcribe-redis redis-cli ping 2>/dev/null | grep -q "PONG"; then
-        echo "✅ Redis: Healthy"
+    REDIS_STATUS=$(docker inspect transcribe-redis --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+    if [ "$REDIS_STATUS" != "running" ]; then
+        echo "❌ Redis: Container is $REDIS_STATUS"
+    elif timeout 5 docker exec transcribe-redis redis-cli ping 2>&1 | grep -q "PONG"; then
+        echo "✅ Redis: Healthy and responding"
     else
-        echo "❌ Redis: Not responding"
+        echo "⚠️  Redis: Container running but not responding to PING"
     fi
     
     # Check API
