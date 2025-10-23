@@ -189,10 +189,23 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            if docker exec transcribe-redis redis-cli ping 2>/dev/null | grep -q "PONG"; then
-              echo "✅ Redis: Healthy"
+            echo "Checking Redis container status..."
+
+            # Check if container exists and is running
+            REDIS_STATUS=$(docker inspect transcribe-redis --format='{{.State.Status}}' 2>/dev/null || echo "not found")
+            if [ "$REDIS_STATUS" != "running" ]; then
+              echo "❌ Redis container is $REDIS_STATUS"
+              docker ps -a | grep transcribe-redis || echo "Container not found"
+              exit 1
+            fi
+
+            # Check Redis connectivity with timeout
+            if timeout 5 docker exec transcribe-redis redis-cli ping 2>&1 | grep -q "PONG"; then
+              echo "✅ Redis: Healthy and responding"
             else
-              echo "❌ Redis: Not responding"
+              echo "❌ Redis: Container running but not responding to PING"
+              echo "Recent logs:"
+              docker logs --tail 10 transcribe-redis
               exit 1
             fi
 
