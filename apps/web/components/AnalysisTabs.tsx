@@ -449,9 +449,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                       </>
                     )}
                     <button
-                      onClick={() => handleCopy(content, info.key)}
+                      onClick={() => handleCopy(content || '', info.key)}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
                       title={`Copy ${info.label}`}
+                      disabled={!content}
                     >
                       {copiedTab === info.key ? (
                         <>
@@ -493,10 +494,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                   </div>
                 ) : info.key === 'summary' ? (
                   <SummaryWithComments
-                    summary={content}
+                    summary={content || ''}
                   />
                 ) : info.key === 'actionItems' ? (
-                  <ActionItemsTable content={content} />
+                  <ActionItemsTable content={content || ''} />
                 ) : info.key === 'details' ? (
                   transcription ? (
                     <TranscriptionDetails transcription={transcription} />
@@ -506,7 +507,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                     </div>
                   )
                 ) : (
-                  <BlogStyleContent content={content} />
+                  <BlogStyleContent content={content || ''} />
                 )}
               </div>
             </div>
