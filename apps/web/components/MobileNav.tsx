@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/contexts/AuthContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileNavProps {
@@ -13,6 +14,7 @@ interface MobileNavProps {
 export function MobileNav({ locale }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations('landing');
+  const { user } = useAuth();
 
   return (
     <>
@@ -68,21 +70,33 @@ export function MobileNav({ locale }: MobileNavProps) {
 
             {/* Navigation Links */}
             <div className="space-y-4">
-              <Link
-                href={`/${locale}/login`}
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                {t('nav.login')}
-              </Link>
+              {user ? (
+                <Link
+                  href={`/${locale}/dashboard`}
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-lg transition-colors"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href={`/${locale}/login`}
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    {t('nav.login')}
+                  </Link>
 
-              <Link
-                href={`/${locale}/login`}
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-lg transition-colors"
-              >
-                {t('nav.getStarted')}
-              </Link>
+                  <Link
+                    href={`/${locale}/login`}
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-lg transition-colors"
+                  >
+                    {t('nav.getStarted')}
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Additional Links */}
