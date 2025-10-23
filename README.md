@@ -38,6 +38,7 @@ Trusted by legal, medical, research, and executive teams where every word matter
 - **Emotional Intelligence**: Tone and empathy analysis for better communication
 - **Influence Patterns**: Persuasion techniques and decision-making dynamics
 - **Personal Development**: Growth opportunities and actionable recommendations
+- **Context-Aware Processing**: Provide background information during upload to enhance AI understanding and improve analysis accuracy
 
 ### Translation & Collaboration
 - **Multi-Language Translation**: Translate transcriptions to 15 languages instantly using GPT-5-mini

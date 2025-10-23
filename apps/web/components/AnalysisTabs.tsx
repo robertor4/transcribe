@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   MessageSquare,
   Users,
@@ -16,13 +16,17 @@ import {
   Languages,
   Loader2,
   Globe,
-  Info
+  Info,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { AnalysisResults, ANALYSIS_TYPE_INFO, SUPPORTED_LANGUAGES, Transcription, TranslationData } from '@transcribe/shared';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
 import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
 import { TranscriptionDetails } from './TranscriptionDetails';
+import { MoreAnalysesTab } from './MoreAnalysesTab';
 import { transcriptionApi } from '@/lib/api';
 
 interface AnalysisTabsProps {
@@ -34,7 +38,7 @@ interface AnalysisTabsProps {
 }
 
 export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSegments, transcriptionId, transcription }) => {
-  const [activeTab, setActiveTab] = useState<keyof AnalysisResults>('summary');
+  const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses'>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('original');
@@ -42,6 +46,11 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [currentAnalyses, setCurrentAnalyses] = useState<AnalysisResults>(analyses);
   const [translationError, setTranslationError] = useState<string | null>(null);
+
+  // Scroll state for horizontal tabs
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
   const handleCopy = async (content: string, tabKey: string) => {
     try {
@@ -103,6 +112,46 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
       setIsTranslating(false);
     }
   };
+
+  // Scroll handling for horizontal tabs
+  const checkScrollButtons = () => {
+    if (!tabsContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+    setShowLeftArrow(scrollLeft > 5);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
+  };
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (!tabsContainerRef.current) return;
+    const scrollAmount = 200;
+    tabsContainerRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  // Check scroll buttons on mount and when tabs change
+  useEffect(() => {
+    checkScrollButtons();
+    const container = tabsContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollButtons);
+      window.addEventListener('resize', checkScrollButtons);
+      return () => {
+        container.removeEventListener('scroll', checkScrollButtons);
+        window.removeEventListener('resize', checkScrollButtons);
+      };
+    }
+  }, [analyses, transcription]);
+
+  // Auto-scroll active tab into view
+  useEffect(() => {
+    if (!tabsContainerRef.current) return;
+    const activeButton = tabsContainerRef.current.querySelector('[data-active="true"]');
+    if (activeButton) {
+      activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activeTab]);
 
   // Get translated languages
   const translatedLanguages = transcription?.translations
@@ -180,38 +229,114 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
     <div className="space-y-6">
       {/* Tab Navigation */}
       <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex flex-wrap gap-x-6 gap-y-2 -mb-px">
-          {ANALYSIS_TYPE_INFO.map((info) => {
-            const Icon = getIconComponent(info.icon);
-            const hasContent = analyses[info.key];
+        <div className="relative">
+          {/* Left scroll arrow */}
+          {showLeftArrow && (
+            <button
+              onClick={() => scrollTabs('left')}
+              className="absolute left-0 top-0 bottom-0 z-20 hidden md:flex items-center justify-center w-12 bg-gradient-to-r from-white dark:from-gray-900 to-transparent hover:from-gray-50 dark:hover:from-gray-800 transition-colors"
+              aria-label="Scroll tabs left"
+            >
+              <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            </button>
+          )}
 
-            // Always show Details tab even if no content (we generate it from transcription)
-            if (!hasContent && info.key !== 'details') return null;
-            // Don't show Details tab if no transcription object available
-            if (info.key === 'details' && !transcription) return null;
+          {/* Scrollable tabs container */}
+          <nav
+            ref={tabsContainerRef}
+            className="flex overflow-x-auto scroll-smooth -mb-px scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {/* Render all tabs EXCEPT Details */}
+            {ANALYSIS_TYPE_INFO.filter(info => info.key !== 'details').map((info) => {
+              const Icon = getIconComponent(info.icon);
+              const hasContent = analyses[info.key];
 
-            const isActive = activeTab === info.key;
-            const colors = getTabColors(info.color, isActive);
+              // Skip tabs without content
+              if (!hasContent) return null;
 
-            return (
+              const isActive = activeTab === info.key;
+              const colors = getTabColors(info.color, isActive);
+
+              return (
+                <button
+                  key={info.key}
+                  data-active={isActive}
+                  onClick={() => setActiveTab(info.key)}
+                  className={`
+                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    transition-all duration-200 border-b-2
+                    ${isActive ? colors.border : 'border-transparent'}
+                    ${colors.text}
+                    ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
+                  `}
+                  title={info.description}
+                >
+                  <Icon className={`h-4 w-4 ${colors.icon}`} />
+                  <span>{info.label}</span>
+                </button>
+              );
+            })}
+
+            {/* More Analyses Tab - render before Details */}
+            {transcriptionId && transcription && (
               <button
-                key={info.key}
-                onClick={() => setActiveTab(info.key)}
+                data-active={activeTab === 'moreAnalyses'}
+                onClick={() => setActiveTab('moreAnalyses')}
                 className={`
-                  py-3 px-1 font-medium text-sm flex items-center gap-2 whitespace-nowrap
+                  py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
                   transition-all duration-200 border-b-2
-                  ${isActive ? colors.border : 'border-transparent'}
-                  ${colors.text}
-                  ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
+                  ${activeTab === 'moreAnalyses' ? 'border-[#cc3399] text-[#cc3399]' : 'border-transparent text-gray-600 dark:text-gray-400'}
+                  ${activeTab !== 'moreAnalyses' && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
                 `}
-                title={info.description}
+                title="Generate additional analyses on-demand"
               >
-                <Icon className={`h-4 w-4 ${colors.icon}`} />
-                <span>{info.label}</span>
+                <Sparkles className={`h-4 w-4 ${activeTab === 'moreAnalyses' ? 'text-[#cc3399]' : 'text-gray-500 dark:text-gray-400'}`} />
+                <span>More Analyses</span>
               </button>
-            );
-          })}
-        </nav>
+            )}
+
+            {/* Details Tab - render last */}
+            {transcription && (() => {
+              const detailsInfo = ANALYSIS_TYPE_INFO.find(info => info.key === 'details');
+              if (!detailsInfo) return null;
+
+              const Icon = getIconComponent(detailsInfo.icon);
+              const isActive = activeTab === 'details';
+              const colors = getTabColors(detailsInfo.color, isActive);
+
+              return (
+                <button
+                  key="details"
+                  data-active={isActive}
+                  onClick={() => setActiveTab('details')}
+                  className={`
+                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    transition-all duration-200 border-b-2
+                    ${isActive ? colors.border : 'border-transparent'}
+                    ${colors.text}
+                    ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
+                  `}
+                  title={detailsInfo.description}
+                >
+                  <Icon className={`h-4 w-4 ${colors.icon}`} />
+                  <span>{detailsInfo.label}</span>
+                </button>
+              );
+            })()}
+          </nav>
+
+          {/* Right scroll arrow */}
+          {showRightArrow && (
+            <button
+              onClick={() => scrollTabs('right')}
+              className="absolute right-0 top-0 bottom-0 z-20 hidden md:flex items-center justify-center w-12 bg-gradient-to-l from-white dark:from-gray-900 to-transparent hover:from-gray-50 dark:hover:from-gray-800 transition-colors"
+              aria-label="Scroll tabs right"
+            >
+              <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Translation Error Message */}
@@ -432,6 +557,14 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             </div>
           );
         })}
+
+        {/* More Analyses Tab Content */}
+        {activeTab === 'moreAnalyses' && transcriptionId && transcription && (
+          <MoreAnalysesTab
+            transcriptionId={transcriptionId}
+            transcription={transcription}
+          />
+        )}
       </div>
     </div>
   );

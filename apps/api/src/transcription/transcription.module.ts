@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TranscriptionController } from './transcription.controller';
 import { TranscriptionService } from './transcription.service';
 import { TranscriptionProcessor } from './transcription.processor';
+import { AnalysisTemplateService } from './analysis-template.service';
+import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
@@ -27,7 +29,16 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     }),
   ],
   controllers: [TranscriptionController],
-  providers: [TranscriptionService, TranscriptionProcessor],
-  exports: [TranscriptionService],
+  providers: [
+    TranscriptionService,
+    TranscriptionProcessor,
+    AnalysisTemplateService,
+    OnDemandAnalysisService,
+  ],
+  exports: [
+    TranscriptionService,
+    AnalysisTemplateService,
+    OnDemandAnalysisService,
+  ],
 })
 export class TranscriptionModule {}

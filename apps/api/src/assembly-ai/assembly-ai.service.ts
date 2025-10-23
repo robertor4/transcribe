@@ -104,10 +104,15 @@ export class AssemblyAIService {
         }
 
         // Get current status
-        const currentTranscript = await this.client.transcripts.get(transcript.id);
+        const currentTranscript = await this.client.transcripts.get(
+          transcript.id,
+        );
 
         // Check if completed
-        if (currentTranscript.status === 'completed' || currentTranscript.status === 'error') {
+        if (
+          currentTranscript.status === 'completed' ||
+          currentTranscript.status === 'error'
+        ) {
           completedTranscript = currentTranscript;
           break;
         }
@@ -117,18 +122,24 @@ export class AssemblyAIService {
         if (onProgress) {
           // Calculate progress based on elapsed time (assume max 5 minutes for transcription)
           const maxTranscriptionTime = 300000; // 5 minutes in ms
-          const progressIncrement = Math.min(40 * (elapsed / maxTranscriptionTime), 40);
+          const progressIncrement = Math.min(
+            40 * (elapsed / maxTranscriptionTime),
+            40,
+          );
           const currentProgress = Math.min(15 + progressIncrement, 55);
 
           // Only send update if progress changed by at least 1%
           if (Math.floor(currentProgress) > Math.floor(lastProgressUpdate)) {
             lastProgressUpdate = currentProgress;
-            onProgress(Math.floor(currentProgress), 'Processing audio transcription...');
+            onProgress(
+              Math.floor(currentProgress),
+              'Processing audio transcription...',
+            );
           }
         }
 
         // Wait before next poll
-        await new Promise(resolve => setTimeout(resolve, pollingInterval));
+        await new Promise((resolve) => setTimeout(resolve, pollingInterval));
       }
 
       if (completedTranscript.status === 'error') {

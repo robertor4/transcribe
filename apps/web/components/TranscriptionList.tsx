@@ -814,13 +814,21 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
               <div className="pt-6 border-t border-gray-200 dark:border-gray-700 px-5">
-                {/* Show analysis tabs if we have analyses, otherwise show legacy tabs */}
-                {transcription.analyses ? (
+                {/* Show analysis tabs - support both old (analyses) and new (coreAnalyses) formats */}
+                {(transcription.analyses || transcription.coreAnalyses) ? (
                   <div>
                     <AnalysisTabs
                       analyses={{
-                        ...transcription.analyses,
-                        transcript: transcription.transcriptText
+                        // New format: use coreAnalyses if available, fallback to analyses
+                        summary: transcription.coreAnalyses?.summary || transcription.analyses?.summary || '',
+                        actionItems: transcription.coreAnalyses?.actionItems || transcription.analyses?.actionItems,
+                        communicationStyles: transcription.coreAnalyses?.communicationStyles || transcription.analyses?.communicationStyles,
+                        transcript: transcription.coreAnalyses?.transcript || transcription.analyses?.transcript || transcription.transcriptText,
+                        // Old format fields (only for backward compatibility)
+                        emotionalIntelligence: transcription.analyses?.emotionalIntelligence,
+                        influencePersuasion: transcription.analyses?.influencePersuasion,
+                        personalDevelopment: transcription.analyses?.personalDevelopment,
+                        details: transcription.analyses?.details,
                       }}
                       transcriptionId={transcription.id}
                       transcription={transcription}

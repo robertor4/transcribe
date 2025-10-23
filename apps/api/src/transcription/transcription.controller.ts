@@ -19,6 +19,8 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
+import { AnalysisTemplateService } from './analysis-template.service';
+import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import {
@@ -33,11 +35,17 @@ import {
   SharedTranscriptionView,
   BatchUploadResponse,
   MAX_FILE_SIZE,
+  AnalysisTemplate,
+  GeneratedAnalysis,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
 export class TranscriptionController {
-  constructor(private readonly transcriptionService: TranscriptionService) {}
+  constructor(
+    private readonly transcriptionService: TranscriptionService,
+    private readonly templateService: AnalysisTemplateService,
+    private readonly onDemandAnalysisService: OnDemandAnalysisService,
+  ) {}
 
   // Public endpoint for shared transcripts (no auth required)
   @Get('shared/:shareToken')
@@ -208,6 +216,41 @@ export class TranscriptionController {
     return {
       success: true,
       data: result,
+    };
+  }
+
+  // ============================================================
+  // ANALYSIS TEMPLATE ENDPOINTS (Must come before :id routes!)
+  // ============================================================
+
+  /**
+   * Get all available analysis templates
+   */
+  @Get('analysis-templates')
+  async getAnalysisTemplates(): Promise<ApiResponse<AnalysisTemplate[]>> {
+    const templates = this.templateService.getTemplates();
+    return {
+      success: true,
+      data: templates,
+    };
+  }
+
+  /**
+   * Get a specific analysis template by ID
+   */
+  @Get('analysis-templates/:templateId')
+  async getAnalysisTemplate(
+    @Param('templateId') templateId: string,
+  ): Promise<ApiResponse<AnalysisTemplate>> {
+    const template = this.templateService.getTemplateById(templateId);
+
+    if (!template) {
+      throw new BadRequestException(`Template not found: ${templateId}`);
+    }
+
+    return {
+      success: true,
+      data: template,
     };
   }
 
@@ -529,6 +572,74 @@ export class TranscriptionController {
     return {
       success: true,
       message: 'Translation deleted successfully',
+    };
+  }
+
+  // ============================================================
+  // ON-DEMAND ANALYSIS ENDPOINTS
+  // ============================================================
+
+  /**
+   * Generate an on-demand analysis for a transcription
+   */
+  @Post(':id/generate-analysis')
+  @UseGuards(FirebaseAuthGuard)
+  async generateAnalysis(
+    @Param('id') transcriptionId: string,
+    @Body('templateId') templateId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<GeneratedAnalysis>> {
+    if (!templateId) {
+      throw new BadRequestException('Template ID is required');
+    }
+
+    const analysis = await this.onDemandAnalysisService.generateFromTemplate(
+      transcriptionId,
+      templateId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: analysis,
+    };
+  }
+
+  /**
+   * Get all generated analyses for a transcription
+   */
+  @Get(':id/analyses')
+  @UseGuards(FirebaseAuthGuard)
+  async getUserAnalyses(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<GeneratedAnalysis[]>> {
+    const analyses = await this.onDemandAnalysisService.getUserAnalyses(
+      transcriptionId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: analyses,
+    };
+  }
+
+  /**
+   * Delete a generated analysis
+   */
+  @Delete(':id/analyses/:analysisId')
+  @UseGuards(FirebaseAuthGuard)
+  async deleteAnalysis(
+    @Param('id') transcriptionId: string,
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.onDemandAnalysisService.deleteAnalysis(analysisId, req.user.uid);
+
+    return {
+      success: true,
+      message: 'Analysis deleted successfully',
     };
   }
 }
