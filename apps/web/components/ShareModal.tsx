@@ -86,7 +86,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
 
-  const formatDate = (date: Date | string | any) => {
+  const formatDate = (date: Date | string | { toDate: () => Date }) => {
     try {
       // Handle Firestore Timestamp objects
       let d: Date;
