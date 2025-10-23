@@ -278,6 +278,27 @@ Landing page locations:
 
 ## Common Troubleshooting
 
+### Deployment Fails: Out of Disk Space
+
+**Error:** `ENOSPC: no space left on device` during deployment
+
+**Quick Fix (run on production server):**
+```bash
+# Emergency cleanup
+docker system prune -af && npm cache clean --force
+
+# Or use comprehensive cleanup script
+cd /opt/transcribe
+bash scripts/cleanup-docker.sh
+```
+
+**Check disk space:**
+```bash
+ssh root@<server> 'bash -s' < scripts/check-disk-space.sh
+```
+
+**Full documentation:** [Disk Space Management Guide](docs/DISK_SPACE_MANAGEMENT.md)
+
 ### FFmpeg Not Found
 AudioSplitter checks multiple paths: /usr/bin, /usr/local/bin, /opt/homebrew/bin
 Install: `brew install ffmpeg` (macOS) or `apt-get install ffmpeg` (Ubuntu)
@@ -287,6 +308,13 @@ Install: `brew install ffmpeg` (macOS) or `apt-get install ffmpeg` (Ubuntu)
 npm run redis:check  # Verify connectivity
 npm run redis:stop && npm run redis:start  # Restart
 ```
+
+**Production server diagnostics:**
+```bash
+ssh root@<server> 'bash -s' < scripts/diagnose-redis.sh
+```
+
+**Full documentation:** [Redis Troubleshooting Guide](docs/REDIS_TROUBLESHOOTING.md)
 
 ### Port Conflicts
 - Backend: 3001 (configurable via PORT env)
