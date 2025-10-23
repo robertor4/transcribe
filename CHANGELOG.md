@@ -46,6 +46,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive executive communications prompt with BLUF structure
   - Strategic tone focused on decisions, risks, and business impact
   - Demonstrates template system's power for future custom templates
+- **More Analyses Tab - Comprehensive UI/UX Enhancement**: Professional polish with 10 major improvements
+  - Category badges now have proper dark mode variants with 30% opacity backgrounds
+  - Selected analysis cards increased to 40% opacity with pink shadow for better visibility
+  - Analysis content area styled with subtle background, rounded corners, and "Copy to Clipboard" button
+  - Timestamp formatting improved with icons (Clock, CPU, Zap) and compact display format
+  - Visual separators added between template categories for better scanning
+  - Generate buttons globally disabled during processing with pulse animation on active card
+  - Template cards enhanced with hover effects (shadow, transform, dark mode glow)
+  - "Your Analyses" section visually separated with background shade and padding
+  - Empty state redesigned with gradient background, CTA button for featured template, and animated Sparkles icon
+  - Mobile responsive tabs implemented (Templates/Your Analyses switcher) for better small-screen UX
 - `TranscriptionService.generateAllAnalyses()` deprecated, replaced with `generateCoreAnalyses()`
 - `TranscriptionService.generateSummaryWithModel()` now accepts custom prompts for template support
 - Transcription processor updated to use `coreAnalyses` field instead of `analyses`

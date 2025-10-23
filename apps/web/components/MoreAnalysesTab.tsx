@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Loader2, Plus, Trash2, Sparkles } from 'lucide-react';
+import { Loader2, Plus, Trash2, Sparkles, Copy, Check, Clock, Cpu, Zap } from 'lucide-react';
 import { AnalysisTemplate, GeneratedAnalysis, Transcription } from '@transcribe/shared';
 import { transcriptionApi } from '@/lib/api';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
@@ -22,6 +22,8 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   const [isLoadingAnalyses, setIsLoadingAnalyses] = useState(true);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [mobileView, setMobileView] = useState<'templates' | 'analyses'>('templates');
 
   // Load templates and user's generated analyses
   useEffect(() => {
@@ -98,6 +100,29 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
     }
   };
 
+  const handleCopy = async (content: string, analysisId: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedId(analysisId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
+
+  // Format timestamp to compact format
+  const formatTimestamp = (date: Date): string => {
+    const d = new Date(date);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[d.getMonth()];
+    const day = d.getDate();
+    const hours = d.getHours();
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+    return `${month} ${day} at ${hour12}:${minutes} ${ampm}`;
+  };
+
   // Get already generated template IDs
   const generatedTemplateIds = new Set(generatedAnalyses.map((a) => a.templateId));
 
@@ -127,20 +152,48 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left Sidebar: Template Catalog + Generated List */}
-      <div className="lg:col-span-1 space-y-6">
+    <div>
+      {/* Mobile Tab Switcher - visible only on mobile */}
+      {generatedAnalyses.length > 0 && (
+        <div className="lg:hidden mb-4 flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+          <button
+            onClick={() => setMobileView('templates')}
+            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              mobileView === 'templates'
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 inline mr-1.5" />
+            Templates
+          </button>
+          <button
+            onClick={() => setMobileView('analyses')}
+            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              mobileView === 'analyses'
+                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+            }`}
+          >
+            Your Analyses ({generatedAnalyses.length})
+          </button>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Sidebar: Template Catalog + Generated List */}
+        <div className={`lg:col-span-1 space-y-6 ${generatedAnalyses.length > 0 && mobileView === 'analyses' ? 'hidden lg:block' : ''}`}>
         {/* Generated Analyses List */}
         {generatedAnalyses.length > 0 && (
-          <div>
+          <div className="bg-gray-50 dark:bg-gray-900/30 p-4 rounded-lg mb-6">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Your Analyses</h3>
             <div className="space-y-2">
               {generatedAnalyses.map((analysis) => (
                 <div
                   key={analysis.id}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
                     selectedAnalysisId === analysis.id
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/40 shadow-sm dark:shadow-pink-500/20'
                       : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                   onClick={() => setSelectedAnalysisId(analysis.id)}
@@ -182,10 +235,10 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Featured Templates */}
             {categorizedTemplates.featured.length > 0 && (
-              <div>
+              <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">Featured</h4>
                 <div className="space-y-2">
                   {categorizedTemplates.featured.map((template) => (
@@ -193,6 +246,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                       key={template.id}
                       template={template}
                       isGenerating={isGenerating === template.id}
+                      isAnyGenerating={isGenerating !== null}
                       onGenerate={handleGenerate}
                     />
                   ))}
@@ -202,7 +256,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 
             {/* Professional Templates */}
             {categorizedTemplates.professional.length > 0 && (
-              <div>
+              <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">Professional</h4>
                 <div className="space-y-2">
                   {categorizedTemplates.professional.map((template) => (
@@ -210,6 +264,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                       key={template.id}
                       template={template}
                       isGenerating={isGenerating === template.id}
+                      isAnyGenerating={isGenerating !== null}
                       onGenerate={handleGenerate}
                     />
                   ))}
@@ -219,7 +274,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 
             {/* Content Creation Templates */}
             {categorizedTemplates.content.length > 0 && (
-              <div>
+              <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
                 <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 uppercase">
                   Content Creation
                 </h4>
@@ -229,6 +284,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                       key={template.id}
                       template={template}
                       isGenerating={isGenerating === template.id}
+                      isAnyGenerating={isGenerating !== null}
                       onGenerate={handleGenerate}
                     />
                   ))}
@@ -246,6 +302,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                       key={template.id}
                       template={template}
                       isGenerating={isGenerating === template.id}
+                      isAnyGenerating={isGenerating !== null}
                       onGenerate={handleGenerate}
                     />
                   ))}
@@ -257,29 +314,78 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
       </div>
 
       {/* Right Content: Selected Analysis */}
-      <div className="lg:col-span-2">
+      <div className={`lg:col-span-2 ${generatedAnalyses.length > 0 && mobileView === 'templates' ? 'hidden lg:block' : ''}`}>
         {selectedAnalysis ? (
-          <div>
+          <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg">
             <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedAnalysis.templateName}</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Generated {new Date(selectedAnalysis.generatedAt).toLocaleString()} •{' '}
-                {selectedAnalysis.model} • {selectedAnalysis.generationTimeMs}ms
-              </p>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedAnalysis.templateName}</h2>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    <span className="flex items-center gap-1" title={new Date(selectedAnalysis.generatedAt).toLocaleString()}>
+                      <Clock className="w-3.5 h-3.5" />
+                      {formatTimestamp(selectedAnalysis.generatedAt)}
+                    </span>
+                    <span className="flex items-center gap-1" title={`Model: ${selectedAnalysis.model}`}>
+                      <Cpu className="w-3.5 h-3.5" />
+                      {selectedAnalysis.model}
+                    </span>
+                    <span className="flex items-center gap-1" title={`Generation time: ${selectedAnalysis.generationTimeMs}ms`}>
+                      <Zap className="w-3.5 h-3.5" />
+                      {(selectedAnalysis.generationTimeMs / 1000).toFixed(1)}s
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleCopy(selectedAnalysis.content, selectedAnalysis.id)}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  title="Copy to clipboard"
+                >
+                  {copiedId === selectedAnalysis.id ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
             <div className="prose prose-sm dark:prose-invert max-w-none">
               <AnalysisContentRenderer content={selectedAnalysis.content} />
             </div>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-600 dark:text-gray-400">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">No analyses generated yet</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-              Select a template from the left to generate your first analysis
+          <div className="text-center py-16 px-6 bg-gradient-to-br from-gray-50 to-pink-50/20 dark:from-gray-900/50 dark:to-pink-900/5 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+            <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#cc3399] animate-pulse" />
+            <p className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              No analyses generated yet
             </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+              Transform this conversation into professional insights using our AI-powered templates
+            </p>
+            {categorizedTemplates.featured.length > 0 && (
+              <div className="inline-flex flex-col items-center gap-2">
+                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                  Get started with
+                </p>
+                <button
+                  onClick={() => handleGenerate(categorizedTemplates.featured[0].id)}
+                  disabled={isGenerating !== null}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg text-sm font-medium"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{categorizedTemplates.featured[0]?.name || 'Featured Template'}</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
@@ -289,26 +395,31 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 interface TemplateCardProps {
   template: AnalysisTemplate;
   isGenerating: boolean;
+  isAnyGenerating: boolean;
   onGenerate: (templateId: string) => void;
 }
 
-const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, onGenerate }) => {
+const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, isAnyGenerating, onGenerate }) => {
   const colorClasses: Record<string, string> = {
-    pink: 'bg-pink-100 text-pink-800 border-pink-300',
-    orange: 'bg-orange-100 text-orange-800 border-orange-300',
-    teal: 'bg-teal-100 text-teal-800 border-teal-300',
-    purple: 'bg-purple-100 text-purple-800 border-purple-300',
-    blue: 'bg-blue-100 text-blue-800 border-blue-300',
-    green: 'bg-green-100 text-green-800 border-green-300',
-    indigo: 'bg-indigo-100 text-indigo-800 border-indigo-300',
-    red: 'bg-red-100 text-red-800 border-red-300',
-    yellow: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-    gray: 'bg-gray-100 text-gray-800 border-gray-300',
-    slate: 'bg-slate-100 text-slate-800 border-slate-300',
+    pink: 'bg-pink-100 text-pink-800 border-pink-300 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700',
+    orange: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+    teal: 'bg-teal-100 text-teal-800 border-teal-300 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700',
+    purple: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
+    blue: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700',
+    green: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+    indigo: 'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700',
+    red: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700',
+    yellow: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-700',
+    gray: 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900/30 dark:text-gray-300 dark:border-gray-700',
+    slate: 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-900/30 dark:text-slate-300 dark:border-slate-700',
   };
 
   return (
-    <div className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-[#cc3399] transition-colors bg-white dark:bg-gray-800">
+    <div className={`p-3 border rounded-lg transition-all duration-200 bg-white dark:bg-gray-800 ${
+      isGenerating
+        ? 'border-[#cc3399] shadow-md animate-pulse'
+        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] hover:shadow-lg dark:hover:shadow-pink-500/10 hover:-translate-y-0.5'
+    }`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{template.name}</h4>
@@ -326,7 +437,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, onG
         </div>
         <button
           onClick={() => onGenerate(template.id)}
-          disabled={isGenerating}
+          disabled={isAnyGenerating}
           className="flex-shrink-0 px-3 py-1.5 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center gap-1"
         >
           {isGenerating ? (
