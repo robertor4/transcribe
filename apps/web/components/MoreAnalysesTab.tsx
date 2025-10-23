@@ -330,10 +330,12 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                       <Cpu className="w-3.5 h-3.5" />
                       {selectedAnalysis.model}
                     </span>
-                    <span className="flex items-center gap-1" title={`Generation time: ${selectedAnalysis.generationTimeMs}ms`}>
-                      <Zap className="w-3.5 h-3.5" />
-                      {(selectedAnalysis.generationTimeMs / 1000).toFixed(1)}s
-                    </span>
+                    {selectedAnalysis.generationTimeMs && (
+                      <span className="flex items-center gap-1" title={`Generation time: ${selectedAnalysis.generationTimeMs}ms`}>
+                        <Zap className="w-3.5 h-3.5" />
+                        {(selectedAnalysis.generationTimeMs / 1000).toFixed(1)}s
+                      </span>
+                    )}
                   </div>
                 </div>
                 <button
