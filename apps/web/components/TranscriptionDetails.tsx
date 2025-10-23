@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Transcription, formatFileSize, formatDuration } from '@transcribe/shared';
-import { Clock, FileAudio, Globe, HardDrive, Users } from 'lucide-react';
+import { Clock, FileAudio, Globe, HardDrive, Users, MessageSquare } from 'lucide-react';
 
 interface TranscriptionDetailsProps {
   transcription: Transcription;
@@ -74,8 +74,25 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto px-6 lg:px-8 mb-16">
       <div className="space-y-8">
+        {/* Context Information Section */}
+        {transcription.context && (
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Context Information
+              </h3>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+                {transcription.context}
+              </p>
+            </div>
+          </div>
+        )}
+
         {detailSections.map((section) => {
           const Icon = section.icon;
 

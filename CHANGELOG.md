@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - CHANGELOG.md file to track all project changes
 - Changelog maintenance process documentation
+- Context information display in Details tab showing user-provided context from upload
 
 ### Changed
 - Landing page converted to client component to support authentication checks
