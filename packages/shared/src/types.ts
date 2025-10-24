@@ -30,10 +30,33 @@ export interface User {
   preferredLanguage?: string; // User's preferred language for the UI
   createdAt: Date;
   updatedAt: Date;
+
+  // NEW: Subscription fields
+  subscriptionTier: 'free' | 'professional' | 'payg';
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
+  currentPeriodStart?: Date;
+  currentPeriodEnd?: Date;
+  cancelAtPeriodEnd?: boolean;
+
+  // NEW: Usage tracking
+  usageThisMonth: {
+    hours: number;
+    transcriptions: number;
+    onDemandAnalyses: number;
+    lastResetAt: Date;
+  };
+
+  // NEW: Pay-As-You-Go credits
+  paygCredits?: number; // Remaining hours for PAYG users
+
+  // DEPRECATED: Old subscription format (kept for backward compatibility)
   subscription?: {
     type: 'free' | 'pro' | 'enterprise';
     expiresAt?: Date;
   };
+
   emailNotifications?: {
     enabled: boolean;
     onTranscriptionComplete?: boolean;
@@ -433,3 +456,147 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   { code: 'pl', name: 'Polish', nativeName: 'Polski' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' }
 ];
+
+// NEW: Subscription and pricing types
+
+export interface SubscriptionTier {
+  id: 'free' | 'professional' | 'business' | 'enterprise';
+  name: string;
+  price: {
+    monthly?: number;
+    annual?: number;
+  };
+  limits: {
+    transcriptionsPerMonth?: number; // undefined = unlimited
+    hoursPerMonth?: number; // undefined = unlimited
+    maxFileDuration?: number; // minutes
+    maxFileSize?: number; // bytes
+    onDemandAnalysesPerMonth?: number; // undefined = unlimited
+  };
+  features: {
+    coreAnalyses: boolean;
+    onDemandAnalyses: boolean;
+    translation: boolean;
+    advancedSharing: boolean;
+    batchUpload: boolean;
+    priorityProcessing: boolean;
+    apiAccess: boolean;
+  };
+}
+
+export interface UsageRecord {
+  id: string;
+  userId: string;
+  transcriptionId: string;
+  durationSeconds: number;
+  durationHours: number;
+  type: 'transcription' | 'analysis' | 'translation';
+  tier: 'free' | 'professional' | 'payg';
+  cost?: number; // For PAYG or overages (in cents)
+  createdAt: Date;
+}
+
+export interface OverageCharge {
+  id: string;
+  userId: string;
+  stripeInvoiceId: string;
+  hours: number;
+  amount: number; // in cents
+  periodStart: Date;
+  periodEnd: Date;
+  status: 'pending' | 'paid' | 'failed';
+  createdAt: Date;
+}
+
+export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
+  free: {
+    id: 'free',
+    name: 'Free',
+    price: {},
+    limits: {
+      transcriptionsPerMonth: 3,
+      hoursPerMonth: undefined,
+      maxFileDuration: 30, // minutes
+      maxFileSize: 100 * 1024 * 1024, // 100MB
+      onDemandAnalysesPerMonth: 2,
+    },
+    features: {
+      coreAnalyses: true,
+      onDemandAnalyses: true, // Limited to 2/month
+      translation: false,
+      advancedSharing: false,
+      batchUpload: false,
+      priorityProcessing: false,
+      apiAccess: false,
+    },
+  },
+  professional: {
+    id: 'professional',
+    name: 'Professional',
+    price: {
+      monthly: 29,
+      annual: 290, // 17% discount (2 months free)
+    },
+    limits: {
+      transcriptionsPerMonth: undefined, // unlimited
+      hoursPerMonth: 60,
+      maxFileDuration: undefined, // unlimited
+      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
+      onDemandAnalysesPerMonth: undefined, // unlimited
+    },
+    features: {
+      coreAnalyses: true,
+      onDemandAnalyses: true,
+      translation: true,
+      advancedSharing: true,
+      batchUpload: true,
+      priorityProcessing: true,
+      apiAccess: false, // Add-on
+    },
+  },
+  business: {
+    id: 'business',
+    name: 'Business',
+    price: {
+      monthly: 79,
+      annual: 790, // 17% discount
+    },
+    limits: {
+      transcriptionsPerMonth: undefined,
+      hoursPerMonth: 200,
+      maxFileDuration: undefined,
+      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
+      onDemandAnalysesPerMonth: undefined,
+    },
+    features: {
+      coreAnalyses: true,
+      onDemandAnalyses: true,
+      translation: true,
+      advancedSharing: true,
+      batchUpload: true,
+      priorityProcessing: true,
+      apiAccess: true,
+    },
+  },
+  enterprise: {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: {}, // Custom pricing
+    limits: {
+      transcriptionsPerMonth: undefined,
+      hoursPerMonth: undefined,
+      maxFileDuration: undefined,
+      maxFileSize: 10 * 1024 * 1024 * 1024, // 10GB
+      onDemandAnalysesPerMonth: undefined,
+    },
+    features: {
+      coreAnalyses: true,
+      onDemandAnalyses: true,
+      translation: true,
+      advancedSharing: true,
+      batchUpload: true,
+      priorityProcessing: true,
+      apiAccess: true,
+    },
+  },
+};
