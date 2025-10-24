@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, X, Minus } from 'lucide-react';
+import { Check, X, Minus, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export function FeatureComparisonTable() {
@@ -12,7 +12,7 @@ export function FeatureComparisonTable() {
       items: [
         { name: t('features.transcriptions'), free: '3/month', pro: 'Unlimited', payg: 'Credit-based' },
         { name: t('features.duration'), free: '30 min', pro: 'Unlimited', payg: 'Unlimited' },
-        { name: t('features.fileSize'), free: '100MB', pro: '5GB', payg: '5GB' },
+        { name: t('features.fileSize'), free: '100MB', pro: '5GB', payg: '1GB' },
         { name: t('features.hours'), free: '-', pro: '60 hours/month', payg: 'Pay per use' },
       ],
     },
@@ -35,35 +35,70 @@ export function FeatureComparisonTable() {
     },
   ];
 
-  const renderCell = (value: string | boolean) => {
+  const renderCell = (value: string | boolean, isPro: boolean = false) => {
     if (typeof value === 'boolean') {
       return value ? (
-        <Check className="h-5 w-5 text-green-600 dark:text-green-400 mx-auto" />
+        <div className="flex items-center justify-center">
+          <div className={`rounded-full p-1 ${isPro ? 'bg-[#cc3399]/10' : 'bg-green-100 dark:bg-green-900/20'}`}>
+            <Check className={`h-5 w-5 ${isPro ? 'text-[#cc3399]' : 'text-green-600 dark:text-green-400'}`} />
+          </div>
+        </div>
       ) : (
-        <X className="h-5 w-5 text-gray-400 dark:text-gray-600 mx-auto" />
+        <div className="flex items-center justify-center">
+          <X className="h-5 w-5 text-gray-300 dark:text-gray-700" />
+        </div>
       );
     }
     if (value === '-') {
-      return <Minus className="h-5 w-5 text-gray-400 dark:text-gray-600 mx-auto" />;
+      return (
+        <div className="flex items-center justify-center">
+          <Minus className="h-5 w-5 text-gray-300 dark:text-gray-700" />
+        </div>
+      );
     }
-    return <span className="text-gray-700 dark:text-gray-300">{value}</span>;
+    if (value === 'Unlimited') {
+      return (
+        <div className="flex items-center justify-center gap-1">
+          <Sparkles className={`h-4 w-4 ${isPro ? 'text-[#cc3399]' : 'text-purple-500'}`} />
+          <span className={`font-semibold ${isPro ? 'text-[#cc3399]' : 'text-purple-600 dark:text-purple-400'}`}>
+            {value}
+          </span>
+        </div>
+      );
+    }
+    if (value.includes('Coming soon')) {
+      return (
+        <span className="text-sm italic text-gray-500 dark:text-gray-500">
+          {value}
+        </span>
+      );
+    }
+    return (
+      <span className={`font-medium ${isPro ? 'text-gray-800 dark:text-gray-200' : 'text-gray-700 dark:text-gray-300'}`}>
+        {value}
+      </span>
+    );
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="border-b-2 border-gray-300 dark:border-gray-700">
-            <th className="text-left py-4 px-4 text-gray-900 dark:text-white font-semibold">
+          <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
+            <th className="text-left py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-2/5">
               {t('feature')}
             </th>
-            <th className="text-center py-4 px-4 text-gray-900 dark:text-white font-semibold">
+            <th className="text-center py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-1/5">
               {t('tiers.free')}
             </th>
-            <th className="text-center py-4 px-4 text-gray-900 dark:text-white font-semibold bg-pink-50 dark:bg-pink-900/20">
-              {t('tiers.professional')}
+            <th className="text-center py-5 px-6 bg-gradient-to-br from-[#cc3399]/10 via-purple-50/50 to-[#cc3399]/10 dark:from-[#cc3399]/20 dark:via-purple-900/20 dark:to-[#cc3399]/20 w-1/5">
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-[#cc3399] dark:text-[#ff66cc] font-bold text-lg">
+                  {t('tiers.professional')}
+                </span>
+              </div>
             </th>
-            <th className="text-center py-4 px-4 text-gray-900 dark:text-white font-semibold">
+            <th className="text-center py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-1/5">
               {t('tiers.payg')}
             </th>
           </tr>
@@ -74,7 +109,7 @@ export function FeatureComparisonTable() {
               <tr key={`category-${categoryIndex}`}>
                 <td
                   colSpan={4}
-                  className="py-3 px-4 bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-white"
+                  className="py-4 px-6 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
                 >
                   {category.category}
                 </td>
@@ -82,19 +117,19 @@ export function FeatureComparisonTable() {
               {category.items.map((item, itemIndex) => (
                 <tr
                   key={`item-${categoryIndex}-${itemIndex}`}
-                  className="border-b border-gray-200 dark:border-gray-700"
+                  className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
                 >
-                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
+                  <td className="py-4 px-6 text-gray-800 dark:text-gray-200 font-medium border-b border-gray-100 dark:border-gray-800">
                     {item.name}
                   </td>
-                  <td className="py-3 px-4 text-center">
-                    {renderCell(item.free)}
+                  <td className="py-4 px-6 text-center border-b border-gray-100 dark:border-gray-800">
+                    {renderCell(item.free, false)}
                   </td>
-                  <td className="py-3 px-4 text-center bg-pink-50/50 dark:bg-pink-900/10">
-                    {renderCell(item.pro)}
+                  <td className="py-4 px-6 text-center bg-gradient-to-br from-[#cc3399]/5 via-purple-50/30 to-[#cc3399]/5 dark:from-[#cc3399]/10 dark:via-purple-900/10 dark:to-[#cc3399]/10 border-b border-[#cc3399]/10 dark:border-[#cc3399]/20">
+                    {renderCell(item.pro, true)}
                   </td>
-                  <td className="py-3 px-4 text-center">
-                    {renderCell(item.payg)}
+                  <td className="py-4 px-6 text-center border-b border-gray-100 dark:border-gray-800">
+                    {renderCell(item.payg, false)}
                   </td>
                 </tr>
               ))}

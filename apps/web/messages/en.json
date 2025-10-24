@@ -1097,7 +1097,7 @@
           "fileSize": "5GB max file size",
           "analyses": "All analysis types",
           "allAnalyses": "All analysis types",
-          "onDemandAnalyses": "10 on-demand analyses/month",
+          "onDemandAnalyses": "Unlimited on-demand analyses",
           "storage": "Unlimited storage",
           "sharing": "Advanced sharing features",
           "advancedSharing": "Advanced sharing & collaboration",
