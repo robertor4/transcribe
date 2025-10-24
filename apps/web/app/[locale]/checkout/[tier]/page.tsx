@@ -37,15 +37,20 @@ export default function CheckoutPage() {
         throw new Error('Authentication token not available');
       }
 
+      // Get billing cycle from URL query parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const cycle = urlParams.get('cycle') || 'monthly';
+
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const successUrl = `${window.location.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${window.location.origin}/pricing`;
+      const locale = params.locale as string;
+      const successUrl = `${window.location.origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+      const cancelUrl = `${window.location.origin}/${locale}/pricing`;
 
       // Determine endpoint and payload based on tier
       let endpoint = '/stripe/create-checkout-session';
       let payload: any = {
         tier,
-        billing: 'monthly', // Default to monthly
+        billing: cycle, // Use cycle from URL param
         successUrl,
         cancelUrl,
       };
@@ -100,7 +105,7 @@ export default function CheckoutPage() {
           <p className="text-gray-700 dark:text-gray-300 mb-6">{error}</p>
           <div className="flex gap-4 justify-center">
             <a
-              href="/pricing"
+              href={`/${params.locale}/pricing`}
               className="px-6 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
             >
               {t('error.backToPricing')}

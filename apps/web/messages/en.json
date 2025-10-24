@@ -1246,12 +1246,14 @@
     "cta": "Continue to Payment",
     "processing": "Processing...",
     "loadingStripe": "Loading secure checkout...",
+    "redirecting": "Redirecting to secure checkout...",
     "error": {
       "title": "Checkout Error",
       "description": "There was an error loading the checkout page. Please try again.",
       "invalidTier": "Invalid subscription tier",
       "sessionFailed": "Failed to create checkout session",
-      "retry": "Try Again"
+      "backToPricing": "Back to Pricing",
+      "tryAgain": "Try Again"
     },
     "success": {
       "title": "Welcome to Neural Summary!",
