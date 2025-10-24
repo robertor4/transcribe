@@ -1046,6 +1046,7 @@
     "hero": {
       "title": "Simple, transparent pricing",
       "subtitle": "Choose the plan that fits your needs. Start free, upgrade anytime.",
+      "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout.",
       "annual": "Annual",
       "monthly": "Monthly",
       "save25": "Save 25%"
@@ -1123,9 +1124,6 @@
           "support": "Email support"
         }
       }
-    },
-    "hero": {
-      "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout."
     },
     "finalCta": {
       "title": "Ready to get started?",
