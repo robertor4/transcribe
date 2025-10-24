@@ -575,6 +575,113 @@ export class FirebaseService implements OnModuleInit {
     }
   }
 
+  // NEW: Get full user data from Firestore (including subscription info)
+  async getUser(userId: string): Promise<any> {
+    try {
+      const userDoc = await this.db.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return null;
+      }
+      return { uid: userId, ...userDoc.data() };
+    } catch (error) {
+      this.logger.error(`Error fetching user from Firestore ${userId}:`, error);
+      return null;
+    }
+  }
+
+  // NEW: Create user document in Firestore
+  async createUser(userData: any): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userData.uid).set({
+        ...userData,
+        subscriptionTier: 'free', // Default to free tier
+        usageThisMonth: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+          lastResetAt: new Date(),
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      this.logger.log(`Created user document for ${userData.uid}`);
+    } catch (error) {
+      this.logger.error(`Error creating user document:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Update user document in Firestore
+  async updateUser(userId: string, updates: any): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).update({
+        ...updates,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      this.logger.error(`Error updating user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Delete user document from Firestore
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).delete();
+      this.logger.log(`Deleted user document for ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error deleting user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Get user by Stripe customer ID
+  async getUserByStripeCustomerId(customerId: string): Promise<any> {
+    try {
+      const snapshot = await this.db
+        .collection('users')
+        .where('stripeCustomerId', '==', customerId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        return null;
+      }
+
+      const doc = snapshot.docs[0];
+      return { uid: doc.id, ...doc.data() };
+    } catch (error) {
+      this.logger.error(`Error fetching user by Stripe customer ID ${customerId}:`, error);
+      return null;
+    }
+  }
+
+  // NEW: Get all users (for migration/batch operations)
+  async getAllUsers(): Promise<any[]> {
+    try {
+      const snapshot = await this.db.collection('users').get();
+      return snapshot.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
+    } catch (error) {
+      this.logger.error('Error fetching all users:', error);
+      return [];
+    }
+  }
+
+  // NEW: Get users by subscription tier
+  async getUsersByTier(tier: string): Promise<any[]> {
+    try {
+      const snapshot = await this.db
+        .collection('users')
+        .where('subscriptionTier', '==', tier)
+        .get();
+
+      return snapshot.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
+    } catch (error) {
+      this.logger.error(`Error fetching users by tier ${tier}:`, error);
+      return [];
+    }
+  }
+
   async deleteShareInfo(transcriptionId: string): Promise<void> {
     await this.db.collection('transcriptions').doc(transcriptionId).update({
       shareToken: admin.firestore.FieldValue.delete(),
