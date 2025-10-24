@@ -24,10 +24,7 @@ interface PricingCardProps {
   currencySymbol?: string;
   showGuarantee?: boolean;
   guaranteeText?: string;
-  showRecommended?: boolean;
-  recommendedText?: string;
-  annualSavings?: string;
-  showAnnualSavings?: boolean;
+  billingNote?: string;
 }
 
 export function PricingCard({
@@ -44,10 +41,7 @@ export function PricingCard({
   currencySymbol = '$',
   showGuarantee = false,
   guaranteeText,
-  showRecommended = false,
-  recommendedText,
-  annualSavings,
-  showAnnualSavings = false,
+  billingNote,
 }: PricingCardProps) {
   return (
     <div
@@ -62,21 +56,9 @@ export function PricingCard({
       `}
     >
       {featured && (
-        <>
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#cc3399] to-purple-600 text-white px-5 py-1.5 rounded-full text-sm font-bold shadow-lg animate-pulse">
-            Most Popular
-          </div>
-          {showRecommended && recommendedText && (
-            <div className="absolute -top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-              {recommendedText}
-            </div>
-          )}
-          {showAnnualSavings && annualSavings && (
-            <div className="absolute -top-4 right-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold">
-              {annualSavings}
-            </div>
-          )}
-        </>
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#cc3399] to-purple-600 text-white px-5 py-1.5 rounded-full text-sm font-bold shadow-lg">
+          Most Popular
+        </div>
       )}
 
       <div className="mb-6">
@@ -95,6 +77,11 @@ export function PricingCard({
             {priceUnit}
           </span>
         </div>
+        {billingNote && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            {billingNote}
+          </p>
+        )}
         {currency !== 'USD' && (
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Prices automatically converted to {currency}

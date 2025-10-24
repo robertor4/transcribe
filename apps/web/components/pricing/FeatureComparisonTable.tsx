@@ -30,7 +30,7 @@ export function FeatureComparisonTable() {
         { name: t('features.sharing'), free: 'Basic', pro: 'Advanced', payg: 'Advanced' },
         { name: t('features.batch'), free: false, pro: true, payg: true },
         { name: t('features.priority'), free: false, pro: true, payg: true },
-        { name: t('features.api'), free: false, pro: false, payg: false },
+        { name: t('features.api'), free: 'Coming soon', pro: 'Coming soon', payg: 'Coming soon' },
       ],
     },
   ];

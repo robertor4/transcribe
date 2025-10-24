@@ -11,39 +11,36 @@ export function BillingToggle({ billingCycle, onToggle }: BillingToggleProps) {
   const t = useTranslations('pricing.hero');
 
   return (
-    <div className="flex items-center justify-center gap-3 mb-8">
-      <button
-        onClick={() => onToggle('monthly')}
-        className={`
-          px-6 py-2 rounded-lg font-medium transition-all duration-200
-          ${
-            billingCycle === 'monthly'
-              ? 'bg-[#cc3399] text-white shadow-lg'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-          }
-        `}
-        aria-label="Select monthly billing"
-      >
+    <div className="flex items-center justify-center gap-4 mb-8">
+      {/* Monthly Label */}
+      <span className={`text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
         {t('monthly')}
+      </span>
+
+      {/* Toggle Switch */}
+      <button
+        onClick={() => onToggle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
+        className="relative inline-flex h-8 w-16 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+        role="switch"
+        aria-checked={billingCycle === 'annual'}
+        aria-label="Toggle between monthly and annual billing"
+      >
+        <span
+          className={`inline-block h-6 w-6 transform rounded-full bg-[#cc3399] shadow-lg transition-transform ${
+            billingCycle === 'annual' ? 'translate-x-9' : 'translate-x-1'
+          }`}
+        />
       </button>
 
-      <button
-        onClick={() => onToggle('annual')}
-        className={`
-          relative px-6 py-2 rounded-lg font-medium transition-all duration-200
-          ${
-            billingCycle === 'annual'
-              ? 'bg-[#cc3399] text-white shadow-lg'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-          }
-        `}
-        aria-label="Select annual billing and save 25%"
-      >
-        {t('annual')}
-        <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+      {/* Annual Label with Save Badge */}
+      <div className="flex items-center gap-2">
+        <span className={`text-sm font-medium transition-colors ${billingCycle === 'annual' ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+          {t('annual')}
+        </span>
+        <span className="bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
           {t('save25')}
         </span>
-      </button>
+      </div>
     </div>
   );
 }

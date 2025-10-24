@@ -22,7 +22,7 @@ export default function PricingPage() {
   const tCommon = useTranslations('common');
   const tLanding = useTranslations('landing');
 
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
 
   // Standardized feature lists for each tier with icons and categories
   const freeFeatures = [
@@ -146,7 +146,7 @@ export default function PricingPage() {
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
-        <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8">
+        <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
               {t('hero.title')}
@@ -187,8 +187,9 @@ export default function PricingPage() {
             {/* Professional Tier */}
             <PricingCard
               tier="professional"
-              price={billingCycle === 'monthly' ? 29 : 261}
-              priceUnit={billingCycle === 'monthly' ? '/month' : '/year'}
+              price={billingCycle === 'monthly' ? 29 : 21.75}
+              priceUnit="/month"
+              billingNote={billingCycle === 'annual' ? 'Billed annually ($261/year)' : undefined}
               title={t('tiers.professional.title')}
               description={t('tiers.professional.description')}
               featured={true}
@@ -197,10 +198,6 @@ export default function PricingPage() {
               ctaLink={`/checkout/professional?cycle=${billingCycle}`}
               showGuarantee={true}
               guaranteeText={t('tiers.professional.guarantee')}
-              showRecommended={true}
-              recommendedText={t('tiers.professional.recommended')}
-              showAnnualSavings={billingCycle === 'annual'}
-              annualSavings={t('tiers.professional.saveAnnual')}
             />
 
             {/* Pay-As-You-Go */}
@@ -214,18 +211,6 @@ export default function PricingPage() {
               ctaText={t('tiers.payg.cta')}
               ctaLink="/checkout/payg"
             />
-          </div>
-
-          {/* View Comparison Button */}
-          <div className="mt-12 text-center">
-            <button
-              onClick={() => document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' })}
-              className="inline-flex items-center gap-2 text-[#cc3399] hover:text-[#b82d89] font-medium transition-colors group"
-              aria-label="Scroll to feature comparison table"
-            >
-              {t('hero.viewComparison')}
-              <ChevronDown className="h-5 w-5 group-hover:translate-y-1 transition-transform" />
-            </button>
           </div>
         </div>
       </section>
