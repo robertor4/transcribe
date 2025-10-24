@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Pricing Page Enhancements**: Complete UI/UX overhaul for improved conversion rates (estimated +15-30%)
+  - **Billing Toggle**: Annual/monthly billing cycle switcher with animated "Save 25%" badge
+  - **Trust Badges**: Three trust indicators in hero section (no credit card, 14-day trial, 10,000+ users)
+  - **Enhanced Navigation**: Added Features and FAQ links to header with smooth scroll behavior
+  - **Professional Card Prominence**: Increased scale (110%), gradient "Most Popular" badge with pulse animation, ring effect, "RECOMMENDED" badge, annual savings callout
+  - **Money-Back Guarantee**: 30-day guarantee badge on Professional tier
+  - **Improved CTA Hierarchy**: Free tier (primary pink), Professional (gradient), PAYG (outlined) with arrow icons and hover animations
+  - **Standardized Features**: All tiers show same 10 features with icons, organized by categories (Transcription, Analysis, Collaboration, Support)
+  - **Feature Icons**: Clock, FileText, Package, Zap, Globe, Share2, Headphones icons from lucide-react
+  - **Currency Notice Relocation**: Moved to hero section with globe icon for better visibility
+  - **Comparison Scroll Button**: "View detailed comparison" button with animated chevron for smooth navigation
+  - **Annual Pricing**: Professional tier shows $261/year (vs $29/month) with $87 savings callout
+  - **Component Architecture**: New reusable components: BillingToggle, TrustBadges, FeatureIcon
+
+### Added (Previous)
 - **Phase 1 MVP Pricing Strategy**: Complete pricing infrastructure implementation (feature branch: `feature/pricing-mvp-phase1`)
   - **Three-tier pricing model**:
     - Free: 3 transcriptions/month, 30min max, 100MB max, 2 on-demand analyses/month

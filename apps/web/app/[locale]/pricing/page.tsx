@@ -1,14 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { PricingCard } from '@/components/pricing/PricingCard';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { PricingFAQ } from '@/components/pricing/PricingFAQ';
+import { BillingToggle } from '@/components/pricing/BillingToggle';
+import { TrustBadges } from '@/components/pricing/TrustBadges';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MobileNav } from '@/components/MobileNav';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PricingPage() {
@@ -19,35 +22,46 @@ export default function PricingPage() {
   const tCommon = useTranslations('common');
   const tLanding = useTranslations('landing');
 
-  // Feature lists for each tier
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+
+  // Standardized feature lists for each tier with icons and categories
   const freeFeatures = [
-    { text: t('tiers.free.features.transcriptions'), included: true },
-    { text: t('tiers.free.features.duration'), included: true },
-    { text: t('tiers.free.features.fileSize'), included: true },
-    { text: t('tiers.free.features.coreAnalyses'), included: true },
-    { text: t('tiers.free.features.onDemand'), included: true, note: '2/month' },
-    { text: t('tiers.free.features.translation'), included: false },
-    { text: t('tiers.free.features.sharing'), included: true, note: 'Basic' },
-    { text: t('tiers.free.features.batch'), included: false },
+    { text: t('tiers.free.features.transcriptions'), included: true, icon: FileText, category: t('featureCategories.transcription') },
+    { text: t('tiers.free.features.duration'), included: true, icon: Clock, category: t('featureCategories.transcription') },
+    { text: t('tiers.free.features.fileSize'), included: true, icon: Package, category: t('featureCategories.transcription') },
+    { text: t('tiers.free.features.coreAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
+    { text: t('tiers.free.features.onDemand'), included: true, note: '2/month', category: t('featureCategories.analysis') },
+    { text: t('tiers.free.features.translation'), included: false, icon: Globe, category: t('featureCategories.analysis') },
+    { text: t('tiers.free.features.sharing'), included: true, note: 'Basic', icon: Share2, category: t('featureCategories.collaboration') },
+    { text: t('tiers.free.features.batch'), included: false, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.priority'), included: false, icon: Zap, category: t('featureCategories.collaboration') },
+    { text: t('tiers.free.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
   ];
 
   const professionalFeatures = [
-    { text: t('tiers.professional.features.hours'), included: true },
-    { text: t('tiers.professional.features.unlimited'), included: true },
-    { text: t('tiers.professional.features.allAnalyses'), included: true },
-    { text: t('tiers.professional.features.translation'), included: true },
-    { text: t('tiers.professional.features.advancedSharing'), included: true },
-    { text: t('tiers.professional.features.batch'), included: true },
-    { text: t('tiers.professional.features.priority'), included: true },
-    { text: t('tiers.professional.features.overage'), included: true, note: '$0.50/hour' },
+    { text: t('tiers.professional.features.unlimited'), included: true, icon: FileText, category: t('featureCategories.transcription') },
+    { text: t('tiers.professional.features.hours'), included: true, icon: Clock, category: t('featureCategories.transcription') },
+    { text: t('tiers.professional.features.fileSize'), included: true, icon: Package, category: t('featureCategories.transcription') },
+    { text: t('tiers.professional.features.allAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.onDemandAnalyses'), included: true, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.translation'), included: true, icon: Globe, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.advancedSharing'), included: true, icon: Share2, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.batch'), included: true, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.priority'), included: true, icon: Zap, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
   ];
 
   const paygFeatures = [
-    { text: t('tiers.payg.features.noSubscription'), included: true },
-    { text: t('tiers.payg.features.allFeatures'), included: true },
-    { text: t('tiers.payg.features.noExpiry'), included: true },
-    { text: t('tiers.payg.features.minimum'), included: true, note: '$15 min' },
-    { text: t('tiers.payg.features.rate'), included: true, note: '$1.50/hour' },
+    { text: t('tiers.payg.features.transcriptions'), included: true, icon: FileText, category: t('featureCategories.transcription') },
+    { text: t('tiers.payg.features.noExpiry'), included: true, icon: Clock, category: t('featureCategories.transcription') },
+    { text: t('tiers.payg.features.fileSize'), included: true, icon: Package, category: t('featureCategories.transcription') },
+    { text: t('tiers.professional.features.allAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
+    { text: t('tiers.payg.features.allFeatures'), included: true, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.translation'), included: true, icon: Globe, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.advancedSharing'), included: true, icon: Share2, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.batch'), included: true, category: t('featureCategories.collaboration') },
+    { text: t('tiers.professional.features.priority'), included: true, icon: Zap, category: t('featureCategories.collaboration') },
+    { text: t('tiers.payg.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
   ];
 
   return (
@@ -75,12 +89,26 @@ export default function PricingPage() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
               <Link
+                href={`/${locale}/landing#features`}
+                className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
+                aria-label="View features"
+              >
+                {tLanding('nav.features')}
+              </Link>
+              <Link
                 href={`/${locale}/pricing`}
                 className="text-[#cc3399] hover:text-[#b82d89] font-medium transition-colors"
                 aria-label="View pricing plans"
               >
                 {tLanding('nav.pricing')}
               </Link>
+              <button
+                onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
+                aria-label="View FAQ"
+              >
+                {tLanding('nav.faq')}
+              </button>
               <LanguageSwitcher />
               {user ? (
                 <Link
@@ -118,16 +146,28 @@ export default function PricingPage() {
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
-        <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('hero.title')}
-          </h1>
-          <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            {t('hero.subtitle')}
-          </p>
-        </div>
-      </section>
+        <section className="pt-24 pb-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              {t('hero.title')}
+            </h1>
+            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-6">
+              {t('hero.subtitle')}
+            </p>
+
+            {/* Trust Badges */}
+            <TrustBadges />
+
+            {/* Currency Notice */}
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-8">
+              <Globe className="h-4 w-4" />
+              <span>{t('hero.currencyNotice')}</span>
+            </div>
+
+            {/* Billing Toggle */}
+            <BillingToggle billingCycle={billingCycle} onToggle={setBillingCycle} />
+          </div>
+        </section>
 
       {/* Pricing Cards */}
       <section className="py-12 px-4 sm:px-6 lg:px-8">
@@ -147,13 +187,20 @@ export default function PricingPage() {
             {/* Professional Tier */}
             <PricingCard
               tier="professional"
-              price={29}
+              price={billingCycle === 'monthly' ? 29 : 261}
+              priceUnit={billingCycle === 'monthly' ? '/month' : '/year'}
               title={t('tiers.professional.title')}
               description={t('tiers.professional.description')}
               featured={true}
               features={professionalFeatures}
               ctaText={t('tiers.professional.cta')}
-              ctaLink="/checkout/professional"
+              ctaLink={`/checkout/professional?cycle=${billingCycle}`}
+              showGuarantee={true}
+              guaranteeText={t('tiers.professional.guarantee')}
+              showRecommended={true}
+              recommendedText={t('tiers.professional.recommended')}
+              showAnnualSavings={billingCycle === 'annual'}
+              annualSavings={t('tiers.professional.saveAnnual')}
             />
 
             {/* Pay-As-You-Go */}
@@ -169,17 +216,22 @@ export default function PricingPage() {
             />
           </div>
 
-          {/* Multi-currency notice */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('hero.currencyNotice')}
-            </p>
+          {/* View Comparison Button */}
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' })}
+              className="inline-flex items-center gap-2 text-[#cc3399] hover:text-[#b82d89] font-medium transition-colors group"
+              aria-label="Scroll to feature comparison table"
+            >
+              {t('hero.viewComparison')}
+              <ChevronDown className="h-5 w-5 group-hover:translate-y-1 transition-transform" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* Feature Comparison Table */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+      <section id="comparison" className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
             {t('comparison.title')}
@@ -189,7 +241,7 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <section id="faq" className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
             {t('faq.title')}

@@ -1049,7 +1049,10 @@
       "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout.",
       "annual": "Annual",
       "monthly": "Monthly",
-      "save25": "Save 25%"
+      "save25": "Save 25%",
+      "noCreditCard": "No credit card required",
+      "freeTrial": "14-day free trial",
+      "viewComparison": "View detailed comparison"
     },
     "tiers": {
       "free": {
@@ -1081,6 +1084,9 @@
         "description": "For professionals who transcribe regularly",
         "cta": "Start Free Trial",
         "badge": "Most Popular",
+        "recommended": "RECOMMENDED",
+        "guarantee": "30-day money-back guarantee",
+        "saveAnnual": "Save $87/year",
         "features": {
           "transcriptions": "Unlimited transcriptions",
           "hours": "60 hours/month included",
@@ -1200,6 +1206,12 @@
       "title": "Ready to get started?",
       "subtitle": "Join thousands of professionals using Neural Summary to save time and improve their work.",
       "button": "Start Free Trial"
+    },
+    "featureCategories": {
+      "transcription": "Transcription",
+      "analysis": "Analysis",
+      "collaboration": "Collaboration",
+      "support": "Support"
     }
   },
   "checkout": {
