@@ -1412,51 +1412,62 @@ ${fullCustomPrompt}`;
     };
 
     // Filter analyses based on content options
+    // Support both old format (analyses) and new format (coreAnalyses)
     let filteredAnalyses: Partial<typeof transcription.analyses> = undefined;
-    if (transcription.analyses) {
+
+    // Build analyses object from either coreAnalyses (new) or analyses (old)
+    const analysesSource = transcription.coreAnalyses
+      ? {
+          summary: transcription.coreAnalyses.summary,
+          actionItems: transcription.coreAnalyses.actionItems,
+          communicationStyles: transcription.coreAnalyses.communicationStyles,
+        }
+      : transcription.analyses;
+
+    if (analysesSource) {
       filteredAnalyses = {};
-      if (contentOptions.includeSummary && transcription.analyses.summary) {
-        filteredAnalyses.summary = transcription.analyses.summary;
+      if (contentOptions.includeSummary && analysesSource.summary) {
+        filteredAnalyses.summary = analysesSource.summary;
       }
       if (
         contentOptions.includeCommunicationStyles &&
-        transcription.analyses.communicationStyles
+        analysesSource.communicationStyles
       ) {
         filteredAnalyses.communicationStyles =
-          transcription.analyses.communicationStyles;
+          analysesSource.communicationStyles;
       }
       if (
         contentOptions.includeActionItems &&
-        transcription.analyses.actionItems
+        analysesSource.actionItems
       ) {
-        filteredAnalyses.actionItems = transcription.analyses.actionItems;
+        filteredAnalyses.actionItems = analysesSource.actionItems;
       }
       if (
         contentOptions.includeEmotionalIntelligence &&
-        transcription.analyses.emotionalIntelligence
+        analysesSource.emotionalIntelligence
       ) {
         filteredAnalyses.emotionalIntelligence =
-          transcription.analyses.emotionalIntelligence;
+          analysesSource.emotionalIntelligence;
       }
       if (
         contentOptions.includeInfluencePersuasion &&
-        transcription.analyses.influencePersuasion
+        analysesSource.influencePersuasion
       ) {
         filteredAnalyses.influencePersuasion =
-          transcription.analyses.influencePersuasion;
+          analysesSource.influencePersuasion;
       }
       if (
         contentOptions.includePersonalDevelopment &&
-        transcription.analyses.personalDevelopment
+        analysesSource.personalDevelopment
       ) {
         filteredAnalyses.personalDevelopment =
-          transcription.analyses.personalDevelopment;
+          analysesSource.personalDevelopment;
       }
       if (
         contentOptions.includeCustomAnalysis &&
-        transcription.analyses.custom
+        analysesSource.custom
       ) {
-        filteredAnalyses.custom = transcription.analyses.custom;
+        filteredAnalyses.custom = analysesSource.custom;
       }
     }
 

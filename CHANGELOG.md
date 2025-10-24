@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Share Page Analysis Display**: Fixed share screen only showing "Full Transcript" tab without analyses
+  - Made `AnalysisTabs` component work with both authenticated and unauthenticated contexts
+  - Conditionally hide "More Analyses" tab on public share pages (requires authentication)
+  - Conditionally hide translation feature on share pages (requires auth tokens)
+  - Fixed backend `getSharedTranscription` to support both old format (`analyses`) and new format (`coreAnalyses`)
+  - Share pages now correctly display all included analyses (Summary, Action Items, Communication Styles, etc.)
+- **Next.js 15 Hydration Error**: Fixed `lang` attribute mismatch in share page layout
+  - Root cause: Share page layout dynamically sets `lang` attribute based on `Accept-Language` header
+  - Server-side language detection (from header) can differ from client-side, causing hydration mismatch
+  - Applied `suppressHydrationWarning` to share layout `<html>` tag to suppress expected mismatch
+  - Also applied to root layout per Next.js 15 recommendations
+  - Fixed date rendering: moved `new Date().getFullYear()` to client-side useEffect
+  - Added `mounted` state check to prevent rendering dates before client hydration
+  - Fixed date formatting to ensure consistent output between server and client
+
 ### Added
 - **On-Demand Analysis System**: Revolutionary new analysis workflow that reduces costs and improves UX
   - 15 analysis templates across 3 categories (Professional, Content Creation, Specialized)

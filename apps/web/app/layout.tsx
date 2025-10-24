@@ -11,7 +11,7 @@ type Props = {
 // Root layout required for error pages (404, 500, etc.)
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         {children}
       </body>

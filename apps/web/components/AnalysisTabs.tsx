@@ -358,8 +358,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             <div key={info.key}>
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-2 mb-6">
-                    {/* Language Selector */}
-                    {transcriptionId && (
+                    {/* Language Selector - only show if transcriptionId and transcription are available (authenticated context) */}
+                    {transcriptionId && transcription && (
                       <div className="relative">
                         <button
                           onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
