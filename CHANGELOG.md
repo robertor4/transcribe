@@ -8,10 +8,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Phase 1 MVP Pricing Strategy**: Complete pricing infrastructure implementation
-  - Three-tier pricing model: Free (3 transcriptions/month), Professional ($29/month for 60 hours), Pay-As-You-Go ($1.50/hour)
-  - Comprehensive implementation plan document (`docs/2025-10-24_PRICING_MVP_IMPLEMENTATION_PLAN.md`)
-  - Feature branch created: `feature/pricing-mvp-phase1`
+- **Phase 1 MVP Pricing Strategy**: Complete pricing infrastructure implementation (feature branch: `feature/pricing-mvp-phase1`)
+  - **Three-tier pricing model**:
+    - Free: 3 transcriptions/month, 30min max, 100MB max, 2 on-demand analyses/month
+    - Professional: $29/month, 60 hours/month, unlimited transcriptions, overage at $0.50/hour
+    - Pay-As-You-Go: $1.50/hour, no subscription, credits never expire
+  - **Backend Infrastructure** (`apps/api/`):
+    - Stripe Integration Module: Full Stripe API integration with multi-currency support (15+ currencies)
+      - Checkout sessions for subscriptions and PAYG
+      - Webhook handling (6 event types: checkout complete, subscription updates, payment success/failure)
+      - Customer management, subscription lifecycle, overage billing
+      - 8 REST endpoints: `/stripe/create-checkout-session`, `/stripe/create-payg-session`, `/stripe/cancel-subscription`, `/stripe/update-subscription`, `/stripe/subscription`, `/stripe/billing-history`, `/stripe/currencies`, `/stripe/webhook`
+    - Usage Tracking Service: Comprehensive quota enforcement and analytics
+      - Pre-flight quota checks with tier-specific limits
+      - Post-processing usage tracking with actual duration
+      - PAYG credit deduction
+      - Overage calculation ($0.50/hour for Professional)
+      - Usage statistics with warnings at 80% quota
+    - Automated Schedulers (4 cron jobs):
+      - Monthly usage reset (1st at 00:00 UTC)
+      - Daily overage checks (02:00 UTC)
+      - Daily usage warnings (10:00 UTC)
+      - Monthly usage record cleanup (15th at 03:00 UTC)
+    - Subscription Guards: Paywall enforcement before transcription/analysis
+    - Custom Exception: `PaymentRequiredException` (HTTP 402) with error codes
+    - Firebase Extensions: User CRUD with subscription tracking, Stripe customer lookups
+  - **Frontend Implementation** (`apps/web/`):
+    - Pricing Page (`/pricing`): Full pricing page with tier comparison
+      - 3 pricing cards (Free, Professional, PAYG)
+      - Feature comparison table
+      - FAQ section (6 questions)
+      - Multi-currency support notice
+      - Dark mode support
+    - Checkout Flow (`/checkout/*`):
+      - Dynamic checkout page with Stripe integration
+      - Success page with next steps
+      - Cancel page with helpful guidance
+      - Loading states and error handling
+    - Components: `PricingCard`, `FeatureComparisonTable`, `PricingFAQ`
+  - **Type System Extensions** (`packages/shared/`):
+    - Extended `User` interface with subscription fields (tier, Stripe IDs, usage tracking, PAYG credits)
+    - New types: `SubscriptionTier`, `UsageRecord`, `OverageCharge`
+    - `SUBSCRIPTION_TIERS` constant with all tier definitions
+  - **Multi-Currency Support**:
+    - 15+ currencies: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN
+    - Automatic currency conversion via Stripe Adaptive Pricing
+    - Locale-aware checkout (en, nl, de, fr, es)
+    - Automatic VAT/sales tax calculation
+  - **Complete Usage Pipeline**:
+    1. SubscriptionGuard checks quota before processing
+    2. Transcription processes with AssemblyAI/Whisper
+    3. Duration extracted from result
+    4. UsageService tracks actual usage after completion
+    5. User monthly counters updated
+    6. PAYG credits deducted if applicable
+    7. Usage records created for analytics
+  - **Documentation**: Comprehensive implementation plan (`docs/2025-10-24_PRICING_MVP_IMPLEMENTATION_PLAN.md`)
 
 ### Fixed
 - **Share Page Analysis Display**: Fixed share screen only showing "Full Transcript" tab without analyses
