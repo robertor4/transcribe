@@ -7,19 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Pricing Page Polish**: Refinements based on user feedback for better UX and clarity
+  - **Billing Toggle**: Redesigned as iOS-style switch (pink knob on gray track), defaults to Annual for better value proposition
+  - **Professional Card**: Removed "RECOMMENDED" badge (kept "Most Popular" only to reduce visual clutter), removed pulse animation for cleaner look
+  - **Professional Pricing**: Shows per-month price even for annual ($21.75/month with "Billed annually ($261/year)" note) for better clarity
+  - **Hero Spacing**: Increased top padding to pt-32 for better separation from header
+  - **Comparison Table**: Changed API access from X marks to "Coming soon" text to communicate future roadmap
+  - **Navigation**: Removed "View detailed comparison" scroll button (users naturally scroll to see cards)
+
 ### Added
 - **Pricing Page Enhancements**: Complete UI/UX overhaul for improved conversion rates (estimated +15-30%)
-  - **Billing Toggle**: Annual/monthly billing cycle switcher with animated "Save 25%" badge
+  - **Billing Toggle**: Annual/monthly billing cycle switcher with "Save 25%" badge
   - **Trust Badges**: Three trust indicators in hero section (no credit card, 14-day trial, 10,000+ users)
   - **Enhanced Navigation**: Added Features and FAQ links to header with smooth scroll behavior
-  - **Professional Card Prominence**: Increased scale (110%), gradient "Most Popular" badge with pulse animation, ring effect, "RECOMMENDED" badge, annual savings callout
+  - **Professional Card Prominence**: Increased scale (110%), gradient "Most Popular" badge, ring effect
   - **Money-Back Guarantee**: 30-day guarantee badge on Professional tier
   - **Improved CTA Hierarchy**: Free tier (primary pink), Professional (gradient), PAYG (outlined) with arrow icons and hover animations
   - **Standardized Features**: All tiers show same 10 features with icons, organized by categories (Transcription, Analysis, Collaboration, Support)
   - **Feature Icons**: Clock, FileText, Package, Zap, Globe, Share2, Headphones icons from lucide-react
   - **Currency Notice Relocation**: Moved to hero section with globe icon for better visibility
-  - **Comparison Scroll Button**: "View detailed comparison" button with animated chevron for smooth navigation
-  - **Annual Pricing**: Professional tier shows $261/year (vs $29/month) with $87 savings callout
   - **Component Architecture**: New reusable components: BillingToggle, TrustBadges, FeatureIcon
 
 ### Added (Previous)
