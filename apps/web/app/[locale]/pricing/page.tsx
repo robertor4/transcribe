@@ -8,7 +8,6 @@ import { PricingCard } from '@/components/pricing/PricingCard';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { PricingFAQ } from '@/components/pricing/PricingFAQ';
 import { BillingToggle } from '@/components/pricing/BillingToggle';
-import { TrustBadges } from '@/components/pricing/TrustBadges';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MobileNav } from '@/components/MobileNav';
 import { ArrowRight, ChevronDown, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
@@ -23,6 +22,21 @@ export default function PricingPage() {
   const tLanding = useTranslations('landing');
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+
+  // Currency and pricing based on locale
+  const isEuro = locale !== 'en';
+  const currencySymbol = isEuro ? '€' : '$';
+  const currency = isEuro ? 'EUR' : 'USD';
+
+  // Pricing (approximate EUR conversion: 1 USD ≈ 0.92 EUR)
+  const pricing = {
+    professional: {
+      monthly: isEuro ? 27 : 29,
+      annual: isEuro ? 20 : 21.75,
+      annualTotal: isEuro ? 240 : 261,
+    },
+    payg: isEuro ? 1.40 : 1.50,
+  };
 
   // Standardized feature lists for each tier with icons and categories
   const freeFeatures = [
@@ -151,18 +165,9 @@ export default function PricingPage() {
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
               {t('hero.title')}
             </h1>
-            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-6">
+            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               {t('hero.subtitle')}
             </p>
-
-            {/* Trust Badges */}
-            <TrustBadges />
-
-            {/* Currency Notice */}
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-8">
-              <Globe className="h-4 w-4" />
-              <span>{t('hero.currencyNotice')}</span>
-            </div>
 
             {/* Billing Toggle */}
             <BillingToggle billingCycle={billingCycle} onToggle={setBillingCycle} />
@@ -187,9 +192,9 @@ export default function PricingPage() {
             {/* Professional Tier */}
             <PricingCard
               tier="professional"
-              price={billingCycle === 'monthly' ? 29 : 21.75}
+              price={billingCycle === 'monthly' ? pricing.professional.monthly : pricing.professional.annual}
               priceUnit="/month"
-              billingNote={billingCycle === 'annual' ? 'Billed annually ($261/year)' : undefined}
+              billingNote={billingCycle === 'annual' ? `Billed annually (${currencySymbol}${pricing.professional.annualTotal}/year)` : undefined}
               title={t('tiers.professional.title')}
               description={t('tiers.professional.description')}
               featured={true}
@@ -198,18 +203,22 @@ export default function PricingPage() {
               ctaLink={`/checkout/professional?cycle=${billingCycle}`}
               showGuarantee={true}
               guaranteeText={t('tiers.professional.guarantee')}
+              currencySymbol={currencySymbol}
+              currency={currency}
             />
 
             {/* Pay-As-You-Go */}
             <PricingCard
               tier="payg"
-              price={1.50}
+              price={pricing.payg}
               priceUnit={t('tiers.payg.priceUnit')}
               title={t('tiers.payg.title')}
               description={t('tiers.payg.description')}
               features={paygFeatures}
               ctaText={t('tiers.payg.cta')}
               ctaLink="/checkout/payg"
+              currencySymbol={currencySymbol}
+              currency={currency}
             />
           </div>
         </div>
