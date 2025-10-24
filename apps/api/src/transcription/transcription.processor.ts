@@ -11,6 +11,7 @@ import { FirebaseService } from '../firebase/firebase.service';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { EmailService } from '../email/email.service';
 import { UserService } from '../user/user.service';
+import { UsageService } from '../usage/usage.service';
 
 @Processor(QUEUE_NAMES.TRANSCRIPTION)
 export class TranscriptionProcessor {
@@ -22,6 +23,7 @@ export class TranscriptionProcessor {
     private websocketGateway: WebSocketGateway,
     private emailService: EmailService,
     private userService: UserService,
+    private usageService: UsageService,
   ) {}
 
   @Process('transcribe')
@@ -79,6 +81,7 @@ export class TranscriptionProcessor {
       const speakerSegments = transcriptionResult.speakerSegments;
       const transcriptWithSpeakers = transcriptionResult.transcriptWithSpeakers;
       const speakerCount = transcriptionResult.speakerCount;
+      const durationSeconds = transcriptionResult.durationSeconds || 0;
 
       if (detectedLanguage) {
         this.logger.log(
@@ -152,6 +155,7 @@ export class TranscriptionProcessor {
         summary, // Keep for backward compatibility
         coreAnalyses, // NEW: Store core analyses
         generatedAnalysisIds: [], // Initialize empty array for on-demand analyses
+        duration: durationSeconds, // Audio duration in seconds
         completedAt: new Date(),
         updatedAt: new Date(),
       };
@@ -181,6 +185,24 @@ export class TranscriptionProcessor {
         transcriptionId,
         updateData,
       );
+
+      // Track usage for billing and analytics
+      try {
+        await this.usageService.trackTranscription(
+          userId,
+          transcriptionId,
+          durationSeconds,
+        );
+        this.logger.log(
+          `Usage tracked for user ${userId}: ${(durationSeconds / 60).toFixed(2)} minutes`,
+        );
+      } catch (usageError) {
+        // Log error but don't fail the transcription if usage tracking fails
+        this.logger.error(
+          `Failed to track usage for transcription ${transcriptionId}:`,
+          usageError,
+        );
+      }
 
       // Delete original uploaded file for security and privacy
       try {

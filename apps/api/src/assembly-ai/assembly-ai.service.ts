@@ -12,6 +12,7 @@ export interface AssemblyAIResult {
   transcriptWithSpeakers?: string;
   confidence?: number;
   speakerCount?: number;
+  durationSeconds?: number; // Total audio duration in seconds
 }
 
 @Injectable()
@@ -273,6 +274,7 @@ export class AssemblyAIService {
       transcriptWithSpeakers: transcriptWithSpeakers.trim(),
       confidence: transcript.confidence,
       speakerCount: speakers.length,
+      durationSeconds: transcript.audio_duration, // Audio duration in seconds from AssemblyAI
     };
   }
 
