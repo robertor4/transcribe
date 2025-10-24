@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateCheckoutSessionDto {
   @IsEnum(['professional', 'business', 'enterprise'])
@@ -8,11 +8,11 @@ export class CreateCheckoutSessionDto {
   @IsOptional()
   billing?: 'monthly' | 'annual' = 'monthly';
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
   successUrl?: string;
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
   cancelUrl?: string;
 

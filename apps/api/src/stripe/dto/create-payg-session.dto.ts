@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString, IsUrl, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreatePaygSessionDto {
   @IsNumber()
@@ -9,11 +9,11 @@ export class CreatePaygSessionDto {
   @Min(10)
   hours: number; // Hours of credit (min 10)
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
   successUrl?: string;
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
   cancelUrl?: string;
 
