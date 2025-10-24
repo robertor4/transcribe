@@ -63,7 +63,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     5. User monthly counters updated
     6. PAYG credits deducted if applicable
     7. Usage records created for analytics
-  - **Documentation**: Comprehensive implementation plan (`docs/2025-10-24_PRICING_MVP_IMPLEMENTATION_PLAN.md`)
+  - **Frontend Subscription Management** (`apps/web/`):
+    - Subscription Management Page (`/dashboard/settings/subscription`):
+      - Current plan display with tier badge (Free/Professional/PAYG)
+      - Usage visualization with progress bars and color-coded warnings
+      - Billing history with downloadable invoices
+      - Cancel subscription with feedback modal
+      - PAYG credit display with "buy more" link
+      - Overage warnings with cost calculation
+    - Paywall Components (4 reusable components):
+      - `QuotaExceededModal`: Modal shown when limits reached (5 quota types)
+      - `UsageIndicator`: Progress bar with color-coded warnings (80% orange, 100% red)
+      - `UpgradePrompt`: 3 variants (banner, card, inline) for CTAs throughout app
+      - `PlanBadge`: Visual tier indicator with icons (Award, Crown, Zap)
+    - Dark mode support for all new components
+  - **Landing Page Enhancements**:
+    - Pricing teaser section with 3-card overview (Free, Professional, PAYG)
+    - "Pricing" link in header navigation
+    - "View full pricing details" CTA link
+    - Pricing link in footer (Product section)
+  - **Internationalization (i18n)**:
+    - Comprehensive English translation keys for all new features
+    - Pricing page translations (`pricing.*`): hero, tiers, comparison, FAQ, CTA
+    - Checkout flow translations (`checkout.*`): success, cancel, error states
+    - Subscription management translations (`subscription.*`): plan details, usage, billing history, cancel modal
+    - Paywall translations (`paywall.*`): quota exceeded modals, usage indicators, upgrade prompts
+    - 150+ new translation keys added to `apps/web/messages/en.json`
+  - **Documentation**:
+    - Comprehensive implementation plan (`docs/2025-10-24_PRICING_MVP_IMPLEMENTATION_PLAN.md`)
+    - Stripe setup guide (`docs/2025-10-24_STRIPE_SETUP_GUIDE.md`) - 30-minute configuration walkthrough
+    - Launch checklist (`docs/2025-10-24_PRICING_MVP_LAUNCH_CHECKLIST.md`) - 6-phase launch plan
+    - Deployment checklist (`docs/2025-10-24_PRICING_MVP_DEPLOYMENT_CHECKLIST.md`) - Production deployment guide with rollback procedures
 
 ### Fixed
 - **Share Page Analysis Display**: Fixed share screen only showing "Full Transcript" tab without analyses

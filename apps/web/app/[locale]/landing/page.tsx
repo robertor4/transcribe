@@ -55,6 +55,13 @@ export default function LandingPage() {
               
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-4">
+                <Link
+                  href={`/${locale}/pricing`}
+                  className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
+                  aria-label="View pricing plans"
+                >
+                  {t('landing.nav.pricing')}
+                </Link>
                 <LanguageSwitcher />
                 {user ? (
                   <Link
@@ -591,6 +598,145 @@ export default function LandingPage() {
                 aria-label="Start your free trial"
               >
                 {t('landing.hero.cta.primary')}
+                <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
+              </Link>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* Pricing Teaser Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="pricing-teaser-heading">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <ScrollAnimation>
+                <h2 id="pricing-teaser-heading" className="text-4xl font-bold text-gray-900 mb-4">
+                  Simple, transparent pricing
+                </h2>
+                <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+                  Start free, upgrade when you're ready. No hidden fees, no surprises.
+                </p>
+              </ScrollAnimation>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Free Tier */}
+              <ScrollAnimation animation="slideLeft">
+                <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-[#cc3399] transition-all hover-lift">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
+                    <p className="text-gray-700">Perfect for trying out</p>
+                  </div>
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>3 transcriptions/month</span>
+                    </li>
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>30 min max per file</span>
+                    </li>
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>Basic summary</span>
+                    </li>
+                  </ul>
+                  <Link
+                    href={`/${locale}/login`}
+                    className="block w-full py-3 px-4 bg-gray-200 text-gray-900 font-semibold rounded-lg hover:bg-gray-300 transition-colors text-center"
+                    aria-label="Get started with free plan"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              </ScrollAnimation>
+
+              {/* Professional Tier - Featured */}
+              <ScrollAnimation delay={200}>
+                <div className="bg-gradient-to-br from-[#cc3399] to-purple-600 rounded-2xl p-8 border-2 border-[#cc3399] shadow-2xl transform scale-105 relative">
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                      Most Popular
+                    </span>
+                  </div>
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-white mb-2">Professional</h3>
+                    <div className="text-4xl font-bold text-white mb-2">$29</div>
+                    <p className="text-white/90">For regular users</p>
+                  </div>
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-start text-white">
+                      <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>Unlimited transcriptions</span>
+                    </li>
+                    <li className="flex items-start text-white">
+                      <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>60 hours/month included</span>
+                    </li>
+                    <li className="flex items-start text-white">
+                      <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>All 6 analysis types</span>
+                    </li>
+                    <li className="flex items-start text-white">
+                      <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>3GB max file size</span>
+                    </li>
+                    <li className="flex items-start text-white">
+                      <CheckCircle className="h-5 w-5 text-yellow-400 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>Priority processing</span>
+                    </li>
+                  </ul>
+                  <Link
+                    href={`/${locale}/pricing`}
+                    className="block w-full py-3 px-4 bg-white text-[#cc3399] font-semibold rounded-lg hover:bg-gray-100 transition-colors text-center"
+                    aria-label="Start professional plan free trial"
+                  >
+                    Start Free Trial
+                  </Link>
+                </div>
+              </ScrollAnimation>
+
+              {/* Pay-As-You-Go Tier */}
+              <ScrollAnimation animation="slideRight" delay={400}>
+                <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-600 transition-all hover-lift">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Pay-As-You-Go</h3>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">$1.50</div>
+                    <p className="text-gray-700">Per hour of audio</p>
+                  </div>
+                  <ul className="space-y-3 mb-8">
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>Credits never expire</span>
+                    </li>
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>All 6 analysis types</span>
+                    </li>
+                    <li className="flex items-start text-gray-700">
+                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <span>Perfect for occasional use</span>
+                    </li>
+                  </ul>
+                  <Link
+                    href={`/${locale}/pricing`}
+                    className="block w-full py-3 px-4 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors text-center"
+                    aria-label="View pay-as-you-go pricing"
+                  >
+                    Buy Credits
+                  </Link>
+                </div>
+              </ScrollAnimation>
+            </div>
+
+            {/* View Full Pricing CTA */}
+            <ScrollAnimation className="text-center mt-12" delay={600}>
+              <Link
+                href={`/${locale}/pricing`}
+                className="inline-flex items-center text-[#cc3399] font-semibold text-lg hover:text-[#b82d89] transition-colors"
+                aria-label="View full pricing details and comparison"
+              >
+                View full pricing details
                 <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
               </Link>
             </ScrollAnimation>
