@@ -1095,8 +1095,8 @@
           "overageRate": "$0.50 per additional hour",
           "overage": "Overage: $0.50/hour",
           "fileSize": "5GB max file size",
-          "analyses": "All 6 analysis types",
-          "allAnalyses": "All 6 analysis types",
+          "analyses": "All analysis types",
+          "allAnalyses": "All analysis types",
           "onDemandAnalyses": "10 on-demand analyses/month",
           "storage": "Unlimited storage",
           "sharing": "Advanced sharing features",
@@ -1124,7 +1124,7 @@
           "minimum": "Minimum purchase",
           "rate": "Flexible hourly rate",
           "fileSize": "1GB max file size",
-          "analyses": "All 6 analysis types",
+          "analyses": "All analysis types",
           "onDemandAnalyses": "Credits per analysis",
           "storage": "180 days storage",
           "support": "Email support"
@@ -1261,7 +1261,7 @@
       "features": {
         "title": "What's Next?",
         "upload": "Upload your first audio file",
-        "explore": "Explore all 6 analysis types",
+        "explore": "Explore all analysis types",
         "share": "Share transcripts with your team"
       }
     },
