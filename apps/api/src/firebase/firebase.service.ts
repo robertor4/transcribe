@@ -391,39 +391,7 @@ export class FirebaseService implements OnModuleInit {
     }
   }
 
-  async createUser(user: {
-    uid: string;
-    email: string;
-    displayName?: string;
-    photoURL?: string;
-  }) {
-    // Filter out undefined values
-    const userData: any = {
-      uid: user.uid,
-      email: user.email,
-      role: 'user',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    };
-
-    if (user.displayName !== undefined && user.displayName !== null) {
-      userData.displayName = user.displayName;
-    }
-
-    if (user.photoURL !== undefined && user.photoURL !== null) {
-      userData.photoURL = user.photoURL;
-    }
-
-    await this.db
-      .collection('users')
-      .doc(user.uid)
-      .set(userData, { merge: true });
-  }
-
-  async getUser(uid: string) {
-    const doc = await this.db.collection('users').doc(uid).get();
-    return doc.exists ? doc.data() : null;
-  }
+  // OLD createUser and getUser methods removed - see NEW implementations below (lines 579+)
 
   // Summary Comments CRUD Operations
   async addSummaryComment(

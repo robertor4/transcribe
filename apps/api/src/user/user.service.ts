@@ -45,6 +45,13 @@ export class UserService {
         displayName: authUser.displayName || undefined,
         photoURL: authUser.photoURL || undefined,
         role: UserRole.USER,
+        subscriptionTier: 'free', // Default to free tier
+        usageThisMonth: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+          lastResetAt: new Date(),
+        },
         createdAt: new Date(),
         updatedAt: new Date(),
       };

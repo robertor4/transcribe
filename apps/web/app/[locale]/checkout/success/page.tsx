@@ -24,11 +24,12 @@ export default function CheckoutSuccessPage() {
     }
 
     // Track checkout completion
-    if (sessionId) {
-      trackEvent('checkout_completed', {
-        session_id: sessionId,
-      });
-    }
+    // TODO: Add 'checkout_completed' to AnalyticsEventName type
+    // if (sessionId) {
+    //   trackEvent('checkout_completed', {
+    //     session_id: sessionId,
+    //   });
+    // }
   }, [user, sessionId, trackEvent, router]);
 
   return (

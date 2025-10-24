@@ -8,8 +8,8 @@ import {
   UseGuards,
   Logger,
   BadRequestException,
-  RawBodyRequest,
 } from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
 import { Request } from 'express';
 import { StripeService } from './stripe.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
@@ -177,7 +177,7 @@ export class StripeController {
         subscription: {
           id: subscription.id,
           status: subscription.status,
-          currentPeriodEnd: subscription.current_period_end,
+          currentPeriodEnd: (subscription as any).current_period_end,
         },
       };
     } catch (error) {
@@ -213,10 +213,10 @@ export class StripeController {
         subscription: {
           id: subscription.id,
           status: subscription.status,
-          currentPeriodStart: subscription.current_period_start,
-          currentPeriodEnd: subscription.current_period_end,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
-          cancelAt: subscription.cancel_at,
+          currentPeriodStart: (subscription as any).current_period_start,
+          currentPeriodEnd: (subscription as any).current_period_end,
+          cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
+          cancelAt: (subscription as any).cancel_at,
         },
         tier: userData.subscriptionTier,
       };

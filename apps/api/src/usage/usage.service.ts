@@ -1,12 +1,12 @@
 import {
   Injectable,
   Logger,
-  PaymentRequiredException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../firebase/firebase.service';
 import { SUBSCRIPTION_TIERS } from '@transcribe/shared';
+import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
 
 @Injectable()
 export class UsageService {

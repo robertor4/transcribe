@@ -1053,6 +1053,7 @@
     "tiers": {
       "free": {
         "name": "Free",
+        "title": "Free",
         "price": "Free",
         "description": "Perfect for trying out Neural Summary",
         "cta": "Get Started",
@@ -1061,12 +1062,18 @@
           "duration": "30 minutes max per file",
           "fileSize": "100MB max file size",
           "analyses": "Basic summary only",
+          "coreAnalyses": "4 core analyses included",
+          "onDemand": "2 on-demand analyses/month",
+          "translation": "Translation features",
+          "sharing": "Share transcripts",
+          "batch": "Batch processing",
           "storage": "90 days storage",
           "support": "Community support"
         }
       },
       "professional": {
         "name": "Professional",
+        "title": "Professional",
         "price": "$29",
         "priceAnnual": "$261",
         "period": "/month",
@@ -1075,26 +1082,40 @@
         "badge": "Most Popular",
         "features": {
           "transcriptions": "Unlimited transcriptions",
+          "hours": "60 hours/month included",
+          "unlimited": "Unlimited transcriptions",
           "duration": "60 hours/month included",
           "overageRate": "$0.50 per additional hour",
+          "overage": "Overage: $0.50/hour",
           "fileSize": "3GB max file size",
           "analyses": "All 6 analysis types",
+          "allAnalyses": "All 6 analysis types",
           "onDemandAnalyses": "10 on-demand analyses/month",
           "storage": "Unlimited storage",
           "sharing": "Advanced sharing features",
+          "advancedSharing": "Advanced sharing & collaboration",
+          "translation": "Translation to 50+ languages",
+          "batch": "Batch processing",
           "priority": "Priority processing",
           "support": "Priority email support"
         }
       },
       "payg": {
         "name": "Pay-As-You-Go",
+        "title": "Pay-As-You-Go",
         "price": "$1.50",
         "period": "/hour",
+        "priceUnit": "/hour",
         "description": "Perfect for occasional use",
         "cta": "Buy Credits",
         "features": {
           "transcriptions": "Unlimited transcriptions",
           "credits": "Credits never expire",
+          "noSubscription": "No subscription required",
+          "allFeatures": "All features included",
+          "noExpiry": "Credits never expire",
+          "minimum": "Minimum purchase",
+          "rate": "Flexible hourly rate",
           "fileSize": "1GB max file size",
           "analyses": "All 6 analysis types",
           "onDemandAnalyses": "Credits per analysis",
@@ -1103,20 +1124,41 @@
         }
       }
     },
+    "hero": {
+      "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout."
+    },
+    "finalCta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of professionals using Neural Summary",
+      "button": "Start Free Trial"
+    },
     "comparison": {
-      "title": "Compare Plans",
-      "subtitle": "Find the perfect plan for your needs",
+      "feature": "Feature",
+      "tiers": {
+        "free": "Free",
+        "professional": "Professional",
+        "payg": "Pay-As-You-Go"
+      },
+      "categories": {
+        "basics": "Basics",
+        "analyses": "Analysis & Features",
+        "features": "Additional Features"
+      },
       "features": {
         "transcriptions": "Transcriptions per month",
-        "duration": "Audio duration included",
+        "duration": "Max duration per file",
         "fileSize": "Max file size",
-        "analyses": "Analysis types",
-        "onDemandAnalyses": "On-demand analyses",
-        "storage": "Storage retention",
+        "hours": "Monthly hours included",
+        "coreAnalyses": "Core analyses",
+        "onDemand": "On-demand analyses",
+        "translation": "Translation",
         "sharing": "Sharing features",
+        "batch": "Batch processing",
         "priority": "Priority processing",
-        "support": "Support level"
+        "api": "API access"
       },
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
       "values": {
         "unlimited": "Unlimited",
         "basic": "Basic",

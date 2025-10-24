@@ -34,9 +34,7 @@ export class StripeService {
       throw new Error('STRIPE_SECRET_KEY is not configured');
     }
 
-    this.stripe = new Stripe(apiKey, {
-      apiVersion: '2024-11-20.acacia', // Latest API version
-    });
+    this.stripe = new Stripe(apiKey);
 
     this.logger.log('Stripe service initialized');
   }
@@ -116,7 +114,7 @@ export class StripeService {
       success_url: successUrl,
       cancel_url: cancelUrl,
       locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto', // auto-detect
-      currency_options: currency ? { [currency]: { enabled: true } } : undefined,
+      // Multi-currency handled automatically by Stripe Adaptive Pricing (configured in Dashboard)
       allow_promotion_codes: true, // Allow discount codes
       billing_address_collection: 'auto',
       automatic_tax: {
@@ -369,9 +367,9 @@ export class StripeService {
 
     const updates: any = {
       subscriptionStatus: subscription.status as any,
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
+      currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+      cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
       updatedAt: new Date(),
     };
 
