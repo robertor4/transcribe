@@ -220,6 +220,12 @@ export class StripeService {
 
   /**
    * Update subscription (upgrade/downgrade)
+   *
+   * TODO: Implement proper downgrade logic (Phase 2)
+   * - Upgrades: Immediate with prorated charge (current behavior is correct)
+   * - Downgrades: Schedule for end of billing period (not implemented yet)
+   * For now, both upgrades and downgrades happen immediately with prorations.
+   * See: https://stripe.com/docs/billing/subscriptions/upgrade-downgrade
    */
   async updateSubscription(
     subscriptionId: string,
@@ -230,6 +236,9 @@ export class StripeService {
     const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
     const currentItem = subscription.items.data[0];
 
+    // TODO: Detect if this is an upgrade or downgrade by comparing prices
+    // If downgrade, use proration_behavior: 'none' and set proration_date to period end
+
     const updatedSubscription = await this.stripe.subscriptions.update(subscriptionId, {
       items: [
         {
@@ -237,7 +246,7 @@ export class StripeService {
           price: newPriceId,
         },
       ],
-      proration_behavior: 'always_invoice', // Pro-rate immediately
+      proration_behavior: 'always_invoice', // Pro-rate immediately (both upgrades and downgrades for now)
     });
 
     return updatedSubscription;

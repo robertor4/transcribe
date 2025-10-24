@@ -12,7 +12,7 @@ export function FeatureComparisonTable() {
       items: [
         { name: t('features.transcriptions'), free: '3/month', pro: 'Unlimited', payg: 'Credit-based' },
         { name: t('features.duration'), free: '30 min', pro: 'Unlimited', payg: 'Unlimited' },
-        { name: t('features.fileSize'), free: '100MB', pro: '5GB', payg: '1GB' },
+        { name: t('features.fileSize'), free: '100MB', pro: '5GB', payg: '5GB' },
         { name: t('features.hours'), free: '-', pro: '60 hours/month', payg: 'Pay per use' },
       ],
     },
@@ -30,7 +30,7 @@ export function FeatureComparisonTable() {
         { name: t('features.sharing'), free: 'Basic', pro: 'Advanced', payg: 'Advanced' },
         { name: t('features.batch'), free: false, pro: true, payg: true },
         { name: t('features.priority'), free: false, pro: true, payg: true },
-        { name: t('features.api'), free: 'Coming soon', pro: 'Coming soon', payg: 'Coming soon' },
+        { name: t('features.api'), free: false, pro: 'Coming soon', payg: 'Coming soon' },
       ],
     },
   ];

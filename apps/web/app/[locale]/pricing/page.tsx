@@ -3,23 +3,19 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { PricingCard } from '@/components/pricing/PricingCard';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { PricingFAQ } from '@/components/pricing/PricingFAQ';
 import { BillingToggle } from '@/components/pricing/BillingToggle';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { MobileNav } from '@/components/MobileNav';
-import { ArrowRight, ChevronDown, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
+import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
+import { ArrowRight, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import Link from 'next/link';
 
 export default function PricingPage() {
   const params = useParams();
   const locale = params.locale as string;
-  const { user } = useAuth();
   const t = useTranslations('pricing');
-  const tCommon = useTranslations('common');
-  const tLanding = useTranslations('landing');
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
 
@@ -80,83 +76,7 @@ export default function PricingPage() {
 
   return (
     <>
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-          <div className="flex items-center justify-between h-16">
-            <Link href={`/${locale}/landing`} className="flex items-center">
-              <img
-                src="/assets/NS-symbol.webp"
-                alt="Neural Summary"
-                className="h-8 w-auto mr-2 sm:mr-3"
-                width={32}
-                height={32}
-              />
-              <div>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                  {tCommon('appName')}
-                </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{tLanding('hero.byline')}</p>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link
-                href={`/${locale}/landing#features`}
-                className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
-                aria-label="View features"
-              >
-                {tLanding('nav.features')}
-              </Link>
-              <Link
-                href={`/${locale}/pricing`}
-                className="text-[#cc3399] hover:text-[#b82d89] font-medium transition-colors"
-                aria-label="View pricing plans"
-              >
-                {tLanding('nav.pricing')}
-              </Link>
-              <button
-                onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
-                aria-label="View FAQ"
-              >
-                {tLanding('nav.faq')}
-              </button>
-              <LanguageSwitcher />
-              {user ? (
-                <Link
-                  href={`/${locale}/dashboard`}
-                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
-                  aria-label="Go to Dashboard"
-                >
-                  Go to Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href={`/${locale}/login`}
-                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
-                    aria-label="Log in to Neural Summary"
-                  >
-                    {tLanding('nav.login')}
-                  </Link>
-                  <Link
-                    href={`/${locale}/login`}
-                    className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
-                    aria-label="Get started with Neural Summary"
-                  >
-                    {tLanding('nav.getStarted')}
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Mobile Navigation */}
-            <MobileNav locale={locale} />
-          </div>
-        </nav>
-      </header>
+      <PublicHeader locale={locale} showFeaturesLink={true} />
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
@@ -263,6 +183,8 @@ export default function PricingPage() {
         </div>
       </section>
       </div>
+
+      <PublicFooter locale={locale} />
     </>
   );
 }
