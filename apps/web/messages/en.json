@@ -1123,7 +1123,7 @@
           "noExpiry": "Credits never expire",
           "minimum": "Minimum purchase",
           "rate": "Flexible hourly rate",
-          "fileSize": "1GB max file size",
+          "fileSize": "5GB max file size",
           "analyses": "All analysis types",
           "onDemandAnalyses": "Credits per analysis",
           "storage": "180 days storage",
@@ -1132,9 +1132,9 @@
       }
     },
     "finalCta": {
-      "title": "Ready to get started?",
-      "subtitle": "Join thousands of professionals using Neural Summary",
-      "button": "Start Free Trial"
+      "title": "Start transcribing smarter",
+      "subtitle": "No credit card required for free plan",
+      "button": "Get Started Free"
     },
     "comparison": {
       "feature": "Feature",

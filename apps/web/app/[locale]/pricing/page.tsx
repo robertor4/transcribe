@@ -254,7 +254,7 @@ export default function PricingPage() {
             {t('finalCta.subtitle')}
           </p>
           <Link
-            href="/login"
+            href={`/${locale}/signup`}
             className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transition-all"
           >
             {t('finalCta.button')}
