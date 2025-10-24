@@ -16,12 +16,12 @@ export class StripeService {
   // Price IDs for different tiers and billing periods
   private priceIds = {
     professional: {
-      monthly: process.env.STRIPE_PRICE_PROF_MONTHLY,
-      annual: process.env.STRIPE_PRICE_PROF_ANNUAL,
+      monthly: process.env.STRIPE_PRICE_PROFESSIONAL_MONTHLY,
+      annual: process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL,
     },
     business: {
-      monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY,
-      annual: process.env.STRIPE_PRICE_BIZ_ANNUAL,
+      monthly: process.env.STRIPE_PRICE_BUSINESS_MONTHLY,
+      annual: process.env.STRIPE_PRICE_BUSINESS_ANNUAL,
     },
   };
 
