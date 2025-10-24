@@ -16,7 +16,7 @@ export default function SharedTranscriptionPage() {
   const params = useParams();
   const t = useTranslations('shared');
   const shareCode = params.shareCode as string;
-  
+
   const [transcription, setTranscription] = useState<SharedTranscriptionView | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -24,22 +24,28 @@ export default function SharedTranscriptionPage() {
   const [passwordRequired, setPasswordRequired] = useState(false);
   const [passwordSubmitted, setPasswordSubmitted] = useState(false);
 
+  // Fix hydration mismatch: compute year once on mount
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   const formatDate = (date: Date | string) => {
+    // Fix hydration: ensure consistent date formatting between server and client
     const d = new Date(date);
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    const formatted = d.toLocaleDateString('en-US', options);
-    
-    // Add ordinal suffix to day
+    const month = d.toLocaleString('en-US', { month: 'long' });
     const day = d.getDate();
+    const year = d.getFullYear();
+
+    // Add ordinal suffix to day
     const suffix = ['th', 'st', 'nd', 'rd'][
       day % 10 > 3 ? 0 : (day % 100 - day % 10 !== 10) ? day % 10 : 0
     ];
-    
-    return formatted.replace(/\d+,/, `${day}${suffix},`);
+
+    return `${month} ${day}${suffix}, ${year}`;
   };
 
   const fetchSharedTranscription = useCallback(async (withPassword?: string, incrementView: boolean = false) => {
@@ -213,9 +219,13 @@ export default function SharedTranscriptionPage() {
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
                 <span>{transcription.sharedBy}</span>
-                <span className="text-gray-400">·</span>
-                <span>{formatDate(transcription.createdAt)}</span>
-                {transcription.viewCount !== undefined && (
+                {mounted && (
+                  <>
+                    <span className="text-gray-400">·</span>
+                    <span>{formatDate(transcription.createdAt)}</span>
+                  </>
+                )}
+                {mounted && transcription.viewCount !== undefined && (
                   <>
                     <span className="text-gray-400">·</span>
                     <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
@@ -257,7 +267,9 @@ export default function SharedTranscriptionPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-sm text-gray-600">
             <p>{t('footer.poweredBy')}</p>
-            <p className="mt-2">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+            {currentYear && (
+              <p className="mt-2">{t('footer.copyright', { year: currentYear })}</p>
+            )}
           </div>
         </div>
       </div>
