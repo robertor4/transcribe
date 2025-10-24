@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Hero Spacing**: Increased top padding to pt-32 for better separation from header
   - **Comparison Table**: Changed API access from X marks to "Coming soon" text to communicate future roadmap
   - **Navigation**: Removed "View detailed comparison" scroll button (users naturally scroll to see cards)
+  - **Trust Badges Removed**: Removed all three trust badges from pricing page hero (misleading since credit card IS required for paid tiers)
+  - **Professional CTA**: Changed "Start Free Trial" to "Get Started" (no trial system implemented yet)
+  - **EUR Pricing**: Added automatic EUR pricing for non-English locales (nl, de, fr, es) - Professional: €27/month or €20/month annual, PAYG: €1.40/hour
+  - **File Size Fix**: Corrected Professional tier max file size from 3GB to 5GB (matches actual system limits)
+  - **Analysis Types**: Updated "All 6 analysis types" to "All analysis types" (future-proof, system has 8+ types)
 
 ### Added
 - **Pricing Page Enhancements**: Complete UI/UX overhaul for improved conversion rates (estimated +15-30%)
