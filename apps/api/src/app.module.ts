@@ -8,6 +8,8 @@ import { TranscriptionModule } from './transcription/transcription.module';
 import { WebSocketModule } from './websocket/websocket.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { StripeModule } from './stripe/stripe.module';
+import { UsageModule } from './usage/usage.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { AuthModule } from './auth/auth.module';
     TranscriptionModule,
     UserModule,
     AuthModule,
+    StripeModule,
+    UsageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
