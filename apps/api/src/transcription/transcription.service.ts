@@ -28,6 +28,7 @@ import {
   SharedTranscriptionView,
   ShareContentOptions,
   BatchUploadResponse,
+  SUPPORTED_LANGUAGES,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -122,6 +123,14 @@ export class TranscriptionService {
     await this.transcriptionQueue.add('transcribe', job, {
       priority: job.priority,
       attempts: job.maxRetries,
+      removeOnComplete: {
+        age: 24 * 3600, // Keep completed jobs for 24 hours
+        count: 1000, // Max 1000 completed jobs
+      },
+      removeOnFail: {
+        age: 7 * 24 * 3600, // Keep failed jobs for 7 days (for debugging)
+        count: 5000, // Max 5000 failed jobs
+      },
     });
 
     return { ...transcription, id: transcriptionId };
@@ -216,6 +225,14 @@ export class TranscriptionService {
         await this.transcriptionQueue.add('transcribe', job, {
           priority: job.priority,
           attempts: job.maxRetries,
+          removeOnComplete: {
+            age: 24 * 3600, // Keep completed jobs for 24 hours
+            count: 1000, // Max 1000 completed jobs
+          },
+          removeOnFail: {
+            age: 7 * 24 * 3600, // Keep failed jobs for 7 days (for debugging)
+            count: 5000, // Max 5000 failed jobs
+          },
         });
 
         // Clean up temporary files
@@ -1701,7 +1718,6 @@ ${transcription}`;
     }
 
     // Get language name
-    const { SUPPORTED_LANGUAGES } = await import('@transcribe/shared');
     const targetLang = SUPPORTED_LANGUAGES.find(
       (l) => l.code === targetLanguage,
     );
@@ -1728,6 +1744,9 @@ ${transcription}`;
     }
 
     // Translate all available analyses
+    // Use coreAnalyses (new structure) if available, otherwise fall back to analyses (old structure)
+    const analysesSource = transcription.coreAnalyses || transcription.analyses;
+
     const analysisKeys: string[] = [
       'summary',
       'communicationStyles',
@@ -1738,11 +1757,15 @@ ${transcription}`;
       'custom',
     ];
 
+    this.logger.log(`[Translation Debug] Using ${transcription.coreAnalyses ? 'coreAnalyses' : 'analyses'}`);
+    this.logger.log(`[Translation Debug] Available keys:`, JSON.stringify(Object.keys(analysesSource || {})));
+
     const analysisTranslations: Record<string, Promise<string>> = {};
-    if (transcription.analyses) {
+    if (analysesSource) {
       for (const key of analysisKeys) {
         const analysisValue =
-          transcription.analyses[key as keyof typeof transcription.analyses];
+          analysesSource[key as keyof typeof analysesSource];
+        this.logger.log(`[Translation Debug] Analysis ${key}: ${analysisValue ? 'EXISTS' : 'MISSING'}`);
         if (analysisValue) {
           analysisTranslations[key] = this.translateText(
             analysisValue,
@@ -1752,6 +1775,8 @@ ${transcription}`;
           translationPromises.push(analysisTranslations[key]);
         }
       }
+    } else {
+      this.logger.warn(`[Translation Debug] No analyses found (neither coreAnalyses nor analyses)`);
     }
 
     // Execute all translations in parallel
@@ -1778,7 +1803,7 @@ ${transcription}`;
       translatedBy: 'gpt-5-mini' as const,
     };
 
-    // Save translation to Firestore
+    // Save core analyses translation to Firestore
     const translations = transcription.translations || {};
     translations[targetLanguage] = translationData;
 
@@ -1786,6 +1811,65 @@ ${transcription}`;
       translations,
       updatedAt: new Date(),
     });
+
+    // Translate and update on-demand analyses (stored in separate collection)
+    if (transcription.generatedAnalysisIds && transcription.generatedAnalysisIds.length > 0) {
+      this.logger.log(
+        `Translating ${transcription.generatedAnalysisIds.length} on-demand analyses for transcription ${transcriptionId}`,
+      );
+
+      // Fetch all generated analyses for this transcription
+      const generatedAnalyses = await this.firebaseService.getGeneratedAnalyses(
+        transcriptionId,
+        transcription.userId,
+      );
+
+      if (generatedAnalyses.length > 0) {
+        // Translate all on-demand analyses in parallel
+        const analysisTranslationPromises = generatedAnalyses.map(async (analysis) => {
+          // Skip if already translated
+          if (analysis.translations && analysis.translations[targetLanguage]) {
+            this.logger.log(
+              `On-demand analysis ${analysis.id} already has ${targetLanguage} translation, skipping`,
+            );
+            return;
+          }
+
+          try {
+            // Translate the analysis content
+            const translatedContent = await this.translateText(
+              analysis.content,
+              targetLang.name,
+              `${analysis.templateName} analysis`,
+            );
+
+            // Update the analysis document with translation
+            const updatedTranslations = analysis.translations || {};
+            updatedTranslations[targetLanguage] = translatedContent;
+
+            await this.firebaseService.updateGeneratedAnalysis(analysis.id, {
+              translations: updatedTranslations,
+              updatedAt: new Date(),
+            });
+
+            this.logger.log(
+              `Translated on-demand analysis ${analysis.id} (${analysis.templateName}) to ${targetLang.name}`,
+            );
+          } catch (error) {
+            this.logger.error(
+              `Failed to translate on-demand analysis ${analysis.id}:`,
+              error,
+            );
+            // Continue with other translations even if one fails
+          }
+        });
+
+        await Promise.all(analysisTranslationPromises);
+        this.logger.log(
+          `Completed translation of on-demand analyses to ${targetLang.name}`,
+        );
+      }
+    }
 
     this.logger.log(
       `Translation to ${targetLang.name} completed for transcription ${transcriptionId}`,
