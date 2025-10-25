@@ -1080,5 +1080,14 @@
     "noDeadline": "Keine Frist",
     "notSpecified": "Nicht spezifiziert",
     "none": "Keine"
+  },
+  "usage": {
+    "yourUsage": "Ihr Verbrauch",
+    "resetsOn": "Wird zurückgesetzt am",
+    "upgradePlan": "Plan upgraden",
+    "transcriptions": "Transkriptionen",
+    "hours": "Stunden",
+    "remaining": "verbleibend",
+    "onDemandAnalyses": "On-Demand-Analysen"
   }
 }

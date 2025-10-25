@@ -5,6 +5,9 @@ import { Loader2, Plus, Trash2, Sparkles, Copy, Check, Clock, Cpu, Zap } from 'l
 import { AnalysisTemplate, GeneratedAnalysis, Transcription } from '@transcribe/shared';
 import { transcriptionApi } from '@/lib/api';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
+import { useUsage } from '@/contexts/UsageContext';
+import { QuotaExceededModal } from '@/components/paywall/QuotaExceededModal';
+import axios from 'axios';
 
 interface MoreAnalysesTabProps {
   transcriptionId: string;
@@ -15,6 +18,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   transcriptionId,
   transcription,
 }) => {
+  const { refreshUsage, usageStats } = useUsage();
   const [templates, setTemplates] = useState<AnalysisTemplate[]>([]);
   const [generatedAnalyses, setGeneratedAnalyses] = useState<GeneratedAnalysis[]>([]);
   const [selectedAnalysisId, setSelectedAnalysisId] = useState<string | null>(null);
@@ -24,6 +28,11 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [mobileView, setMobileView] = useState<'templates' | 'analyses'>('templates');
+  const [quotaModal, setQuotaModal] = useState<{
+    isOpen: boolean;
+    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits';
+    details?: { current?: number; limit?: number; required?: number };
+  }>({ isOpen: false, quotaType: 'on_demand_analyses' });
 
   // Load templates and user's generated analyses
   useEffect(() => {
@@ -73,11 +82,44 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
       if (response.success && response.data) {
         setGeneratedAnalyses([response.data, ...generatedAnalyses]);
         setSelectedAnalysisId(response.data.id);
+
+        // Refresh usage stats to update the UI
+        await refreshUsage();
       }
     } catch (err) {
       console.error('Failed to generate analysis:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to generate analysis. Please try again.';
-      setError(errorMessage);
+
+      // Check if this is a quota exceeded error (HTTP 402)
+      if (axios.isAxiosError(err) && err.response?.status === 402) {
+        const errorCode = err.response?.data?.errorCode;
+        const errorDetails = err.response?.data?.details;
+
+        // Map error code to quota type
+        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' = 'on_demand_analyses';
+
+        if (errorCode === 'QUOTA_EXCEEDED_ON_DEMAND_ANALYSES') {
+          quotaType = 'on_demand_analyses';
+        } else if (errorCode === 'QUOTA_EXCEEDED_TRANSCRIPTIONS') {
+          quotaType = 'transcriptions';
+        } else if (errorCode === 'QUOTA_EXCEEDED_DURATION') {
+          quotaType = 'duration';
+        } else if (errorCode === 'QUOTA_EXCEEDED_FILESIZE') {
+          quotaType = 'filesize';
+        } else if (errorCode === 'QUOTA_EXCEEDED_PAYG_CREDITS') {
+          quotaType = 'payg_credits';
+        }
+
+        // Show quota exceeded modal
+        setQuotaModal({
+          isOpen: true,
+          quotaType,
+          details: errorDetails,
+        });
+      } else {
+        // Show generic error for other errors
+        const errorMessage = err instanceof Error ? err.message : 'Failed to generate analysis. Please try again.';
+        setError(errorMessage);
+      }
     } finally {
       setIsGenerating(null);
     }
@@ -389,6 +431,15 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
         )}
       </div>
       </div>
+
+      {/* Quota Exceeded Modal */}
+      <QuotaExceededModal
+        isOpen={quotaModal.isOpen}
+        onClose={() => setQuotaModal({ ...quotaModal, isOpen: false })}
+        quotaType={quotaModal.quotaType}
+        currentTier={usageStats?.tier || 'free'}
+        details={quotaModal.details}
+      />
     </div>
   );
 };

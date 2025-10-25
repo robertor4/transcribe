@@ -3,18 +3,24 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { useTranslations } from 'next-intl';
-import { LogOut, Settings, User as UserIcon, ChevronDown } from 'lucide-react';
+import { LogOut, Settings, User as UserIcon, ChevronDown, Shield } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { NotificationToggle } from '@/components/NotificationToggle';
+import { UsageIndicator } from '@/components/paywall/UsageIndicator';
+import { UserRole } from '@transcribe/shared';
 
 export function UserProfileMenu() {
   const { user, logout } = useAuth();
+  const { usageStats } = useUsage();
   const router = useRouter();
   const tAuth = useTranslations('auth');
   const tSettings = useTranslations('settings');
   const tCommon = useTranslations('common');
+  const tUsage = useTranslations('usage');
   const [isOpen, setIsOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -43,6 +49,35 @@ export function UserProfileMenu() {
     }
   }, [isOpen]);
 
+  // Fetch user profile to check if admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const token = await user.getIdToken();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsAdmin(data.data?.role === UserRole.ADMIN);
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
@@ -57,6 +92,16 @@ export function UserProfileMenu() {
   const handleProfileClick = () => {
     setIsOpen(false);
     router.push('/settings/profile');
+  };
+
+  const handleAdminPanelClick = () => {
+    setIsOpen(false);
+    router.push('/admin');
+  };
+
+  const handleUpgradeClick = () => {
+    setIsOpen(false);
+    router.push('/pricing');
   };
 
   if (!user) return null;
@@ -141,12 +186,100 @@ export function UserProfileMenu() {
             </div>
           </div>
 
+          {/* Usage Stats Section */}
+          {usageStats && (
+            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {tUsage('yourUsage')} ({usageStats.tier})
+                </span>
+              </div>
+
+              {/* Primary metric based on tier */}
+              {usageStats.tier === 'free' && (
+                <>
+                  {/* Transcriptions */}
+                  <UsageIndicator
+                    current={usageStats.usage.transcriptions}
+                    limit={usageStats.limits.transcriptions}
+                    unit=""
+                    label={tUsage('transcriptions')}
+                    percentUsed={usageStats.percentUsed}
+                    showWarning={false}
+                  />
+
+                  {/* On-Demand Analyses */}
+                  <UsageIndicator
+                    current={usageStats.usage.onDemandAnalyses}
+                    limit={usageStats.limits.onDemandAnalyses}
+                    unit=""
+                    label={tUsage('onDemandAnalyses')}
+                    percentUsed={
+                      (usageStats.usage.onDemandAnalyses /
+                        (usageStats.limits.onDemandAnalyses || 1)) *
+                      100
+                    }
+                    showWarning={false}
+                  />
+                </>
+              )}
+
+              {(usageStats.tier === 'professional' || usageStats.tier === 'business') && (
+                <UsageIndicator
+                  current={usageStats.usage.hours}
+                  limit={usageStats.limits.hours}
+                  unit=""
+                  label={tUsage('hours')}
+                  percentUsed={usageStats.percentUsed}
+                  showWarning={false}
+                />
+              )}
+
+              {usageStats.tier === 'payg' && (
+                <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {usageStats.paygCredits?.toFixed(1) || '0.0'} {tUsage('hours')}
+                  </span>{' '}
+                  {tUsage('remaining')}
+                </div>
+              )}
+
+              {/* Reset date */}
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                {tUsage('resetsOn')} {new Date(usageStats.resetDate).toLocaleDateString()}
+              </p>
+
+              {/* Upgrade prompt if approaching limit */}
+              {usageStats.percentUsed >= 70 && usageStats.tier === 'free' && (
+                <button
+                  onClick={handleUpgradeClick}
+                  className="mt-3 w-full px-3 py-1.5 bg-[#cc3399] text-white text-xs font-medium rounded-md hover:bg-[#b82d89] transition-colors"
+                >
+                  {tUsage('upgradePlan')}
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Menu Items */}
           <div className="py-2">
+            {/* Admin Panel (only for admins) */}
+            {isAdmin && (
+              <div className="pb-2 mb-2 border-b border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={handleAdminPanelClick}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-gray-700 transition-colors rounded-md"
+                >
+                  <Shield className="h-5 w-5 text-[#cc3399]" />
+                  <span className="font-medium text-[#cc3399]">Admin Panel</span>
+                </button>
+              </div>
+            )}
+
             {/* Profile */}
             <button
               onClick={handleProfileClick}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-md"
             >
               <UserIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
               <span>{tSettings('profile')}</span>
@@ -155,7 +288,7 @@ export function UserProfileMenu() {
             {/* Settings */}
             <button
               onClick={handleSettingsClick}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-md"
             >
               <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
               <span>{tSettings('title')}</span>

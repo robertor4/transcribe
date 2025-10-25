@@ -462,8 +462,20 @@ export class UsageService {
     cost?: number;
   }): Promise<void> {
     const db = this.firebaseService['db'];
+
+    // Filter out undefined values to avoid Firestore validation errors
+    const filteredRecord = Object.entries(record).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as any,
+    );
+
     await db.collection('usageRecords').add({
-      ...record,
+      ...filteredRecord,
       createdAt: new Date(),
     });
   }

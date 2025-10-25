@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { PricingCard } from '@/components/pricing/PricingCard';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { PricingFAQ } from '@/components/pricing/PricingFAQ';
@@ -15,9 +16,30 @@ import Link from 'next/link';
 export default function PricingPage() {
   const params = useParams();
   const locale = params.locale as string;
+  const router = useRouter();
+  const { user } = useAuth();
   const t = useTranslations('pricing');
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+
+  // Helper function to get the appropriate CTA link based on authentication
+  const getCtaLink = (tier: string) => {
+    if (tier === 'free') {
+      // Free tier always goes to signup
+      return `/${locale}/signup`;
+    }
+
+    if (!user) {
+      // Not authenticated: go to signup with redirect back to pricing
+      return `/${locale}/signup?redirect=/${locale}/pricing`;
+    }
+
+    // Authenticated: go directly to checkout
+    if (tier === 'professional') {
+      return `/${locale}/checkout/professional?cycle=${billingCycle}`;
+    }
+    return `/${locale}/checkout/${tier}`;
+  };
 
   // Currency and pricing based on locale
   const isEuro = locale !== 'en';
@@ -106,7 +128,7 @@ export default function PricingPage() {
               description={t('tiers.free.description')}
               features={freeFeatures}
               ctaText={t('tiers.free.cta')}
-              ctaLink="/login"
+              ctaLink={getCtaLink('free')}
             />
 
             {/* Professional Tier */}
@@ -120,7 +142,7 @@ export default function PricingPage() {
               featured={true}
               features={professionalFeatures}
               ctaText={t('tiers.professional.cta')}
-              ctaLink={`/checkout/professional?cycle=${billingCycle}`}
+              ctaLink={getCtaLink('professional')}
               showGuarantee={true}
               guaranteeText={t('tiers.professional.guarantee')}
               currencySymbol={currencySymbol}
@@ -136,7 +158,7 @@ export default function PricingPage() {
               description={t('tiers.payg.description')}
               features={paygFeatures}
               ctaText={t('tiers.payg.cta')}
-              ctaLink="/checkout/payg"
+              ctaLink={getCtaLink('payg')}
               currencySymbol={currencySymbol}
               currency={currency}
             />

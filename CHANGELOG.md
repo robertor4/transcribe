@@ -7,6 +7,118 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **CRITICAL: Quota Enforcement on Upload**: Fixed quota checking to run AFTER file parsing
+  - Free tier users can now properly be blocked from uploading files exceeding 30-minute duration limit
+  - Free tier users can now be blocked from exceeding 3 transcriptions/month limit
+  - Moved quota checks into controller methods (after FileInterceptor) instead of using guards
+  - Root cause: Guards run BEFORE interceptors, so file wasn't parsed yet when guard ran
+  - Previous approach using `SubscriptionGuard` failed silently because `request.file` was undefined
+  - Both `/upload` and `/upload-batch` endpoints now check quotas after file validation
+  - Added `estimateDuration()` method to controller for duration estimation
+  - Fixes issue where 74-minute file was processed on free account that should have been rejected
+  - Fixes issue where users could exceed transcription count limits (e.g., 5/3 transcriptions)
+- **Quota Exceeded User Experience**: Replaced generic error messages with beautiful upgrade modals
+  - Shows `QuotaExceededModal` when users hit any quota limit (transcriptions, duration, filesize, analyses)
+  - Modal displays current usage, limit, tier-specific messaging, and direct link to pricing page
+  - Integrated in `MoreAnalysesTab` for on-demand analysis quotas
+  - Integrated in `FileUploader` for transcription upload quotas
+  - All quota error codes properly detected and mapped to quota types
+  - Fixed axios error interceptor to preserve original error structure (was transforming to plain objects)
+  - Frontend now correctly detects HTTP 402 status and shows modal instead of generic "Upload failed"
+
+### Changed
+- **Landing Page Dark Mode Support**: Updated landing page to use shared PublicHeader component and added comprehensive dark mode styling
+  - Replaced inline header with reusable PublicHeader component (consistent with pricing page)
+  - Added dark mode variants to all major sections (Value Proposition, Benefits, How It Works, etc.)
+  - Updated text colors, backgrounds, and gradients for proper dark mode contrast
+  - Improved visual consistency across public-facing pages
+
+### Fixed
+- **ThemeToggle Hover Effect**: Fixed dark mode hover state for theme toggle button
+  - Changed `dark:hover:bg-gray-800` to `dark:hover:bg-gray-700` to match UserProfileMenu
+  - Hover effect now visible in dark mode (was same color as header background)
+
+### Added
+- **Account Deletion System**: Complete user account deletion with soft/hard delete options
+  - **Soft Delete (Default)**: Marks user as deleted while preserving all data for potential recovery
+    - Sets `isDeleted: true` and `deletedAt` timestamp in user document
+    - Preserves transcriptions, analyses, storage files, and Stripe data
+    - Allows account recovery by contacting support
+  - **Hard Delete (Optional)**: Permanently removes all user data (GDPR-compliant)
+    - Deletes all user transcriptions from Firestore
+    - Deletes all generated analyses
+    - Deletes all storage files from Firebase Storage
+    - Deletes Firestore user document
+    - Deletes Firebase Auth account
+    - Returns statistics of deleted items (transcriptions, analyses, files)
+  - **API Endpoint**: `DELETE /api/user/me?hardDelete=true` (requires authentication)
+  - **Backend Services**:
+    - `FirebaseService.softDeleteUser()` - Mark user as deleted
+    - `FirebaseService.deleteUser()` - Hard delete user document
+    - `FirebaseService.deleteUserTranscriptions()` - Batch delete transcriptions
+    - `FirebaseService.deleteUserGeneratedAnalyses()` - Batch delete analyses
+    - `FirebaseService.deleteUserStorageFiles()` - Delete all files in user's storage path
+    - `UserService.deleteAccount()` - Orchestrates complete deletion process
+  - **Type Updates**: Added `isDeleted` and `deletedAt` fields to User interface
+- **Admin System**: Complete admin panel for user management
+  - **Admin Role**: Added `ADMIN` role to UserRole enum (existing: `USER`)
+  - **Admin Guard**: Backend guard to restrict endpoints to admin users only
+  - **Admin Endpoints** (`/api/admin/*` - requires authentication + admin role):
+    - `GET /admin/users` - List all users in the system
+    - `GET /admin/users/tier/:tier` - Filter users by subscription tier
+    - `GET /admin/users/:userId` - Get detailed user information
+    - `DELETE /admin/users/:userId?hardDelete=true` - Delete any user (soft/hard)
+  - **Admin Panel UI** (`/admin` route):
+    - User list table with sorting and filtering
+    - Statistics dashboard (total users, tier breakdown, deleted count)
+    - Soft delete (preserve data) and hard delete (permanent) actions
+    - Visual indicators for deleted users and admin accounts
+    - Protection against deleting admin accounts
+    - Accessible from user profile menu (Shield icon, only visible to admins)
+  - **User Profile Menu**: Added "Admin Panel" link with Shield icon (only visible to admin users)
+  - **Admin Scripts**:
+    - `scripts/set-admin.js` - Promote users to admin role
+    - `scripts/sync-auth-users.js` - Sync Firebase Auth users to Firestore (fixes missing users in admin panel)
+    - `scripts/migrate-to-subscription-tiers.js` - Safe migration to new subscription tier system (backward compatible)
+  - **Current Admin**: Set `dreamone4@gmail.com` as system administrator
+- **Subscription Tier Migration**: Migrated all users to new subscription system
+  - Added `subscriptionTier` field to all 11 users (set to 'free')
+  - Added `usageThisMonth` tracking object to all users
+  - Backward compatible: Old `subscription.type` field preserved for production
+  - No breaking changes: Production code continues working with old fields
+
+### Fixed
+- **User Creation Error**: Fixed Firestore validation error when creating users with undefined fields
+  - Filter out undefined values (e.g., `photoURL`) before saving to Firestore
+  - Prevents error: "Cannot use undefined as a Firestore value"
+  - Affects email/password signups where some profile fields are not provided
+- **Admin Panel Date Display**: Fixed "Invalid Date" error in admin panel user list
+  - Convert Firestore Timestamps to JavaScript Date objects in `getAllUsers()` and `getUsersByTier()`
+  - Properly serialize dates (createdAt, updatedAt, deletedAt, subscription dates) for JSON response
+- **Missing Users in Admin Panel**: Fixed admin panel showing only 9 of 12 users
+  - Created `scripts/sync-auth-users.js` to sync Firebase Auth users to Firestore
+  - Synced 3 missing users: atmo.sharmaine@gmail.com, dreamone4+test@gmail.com, test-unverified-1755698574137@example.com
+  - Admin panel now shows all 12 users from Firebase Auth
+- **Admin Panel UX Improvements**: Enhanced navigation and visual hierarchy
+  - Moved "Back to Dashboard" button to top-right corner (next to Refresh)
+  - Clean, uncluttered title area with proper visual hierarchy
+  - Full dark mode support for all admin panel components (stats, table, badges, buttons)
+  - Responsive design: button text hides on mobile for both action buttons
+- **User Profile Menu Spacing**: Fixed inconsistent padding/margins in menu items
+  - Admin Panel button now has proper bottom padding and margin matching other items
+  - Added rounded hover states (`rounded-md`) to all menu buttons for better visual feedback
+  - Wrapped Admin Panel in container div with border-bottom for proper separation
+- **File Uploader Dark Mode**: Fixed poor contrast and visibility in dark mode
+  - Error messages: Added dark variants (`dark:bg-red-900/20`, `dark:border-red-800`, `dark:text-red-300`)
+  - Selected file cards: Changed from white to dark gray (`dark:bg-gray-700`, `dark:border-gray-600`)
+  - File names: Light colored text in dark mode (`dark:text-gray-100`)
+  - "Add more files" dropzone: Dark background with proper contrast (`dark:bg-gray-700`)
+  - Processing mode buttons: Dark backgrounds and borders (`dark:bg-gray-800`, `dark:border-gray-600`)
+  - Context textarea: Dark background and proper text/placeholder colors
+  - Upload button disabled state: Dark gray background (`dark:bg-gray-600`)
+  - Merge info box: Dark blue variant (`dark:bg-blue-900/20`, `dark:border-blue-800`)
+
 ### Changed
 - **Pricing Page Polish**: Refinements based on user feedback for better UX and clarity
   - **Billing Toggle**: Redesigned as iOS-style switch (pink knob on gray track), defaults to Annual for better value proposition

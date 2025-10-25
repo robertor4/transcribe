@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import Link from 'next/link';
 
-export default function CheckoutSuccessPage() {
+export default function CheckoutSuccessPage({ params }: { params: { locale: string } }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -19,7 +19,8 @@ export default function CheckoutSuccessPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/login');
+      // Don't redirect - user should already be authenticated
+      // This state shouldn't happen in normal flow
       return;
     }
 
@@ -64,7 +65,7 @@ export default function CheckoutSuccessPage() {
         </div>
 
         <Link
-          href="/dashboard"
+          href={`/${params.locale}/dashboard`}
           className="inline-flex items-center px-8 py-3 bg-[#cc3399] text-white font-semibold rounded-lg hover:bg-[#b82d89] transition-colors"
         >
           {t('cta')}

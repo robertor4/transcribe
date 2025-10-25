@@ -31,6 +31,10 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 
+  // NEW: Soft delete fields
+  isDeleted?: boolean; // True if account is soft-deleted
+  deletedAt?: Date; // When the account was soft-deleted
+
   // NEW: Subscription fields
   subscriptionTier: 'free' | 'professional' | 'payg';
   stripeCustomerId?: string;

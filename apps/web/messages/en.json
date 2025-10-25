@@ -658,10 +658,10 @@
       "titleHighlight": "clarity.",
       "subtitle": "Neural Summary transforms hours of audio into clear, structured notes, decisions, and next steps — in seconds.",
       "cta": {
-        "primary": "Start your free trial",
+        "primary": "Start Free Forever",
         "secondary": "See how it works"
       },
-      "guarantee": "Takes less than 2 minutes • No credit card • Instant setup",
+      "guarantee": "Always free plan available • No credit card required • Takes 2 minutes",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
@@ -1256,16 +1256,16 @@
       "tryAgain": "Try Again"
     },
     "success": {
-      "title": "Welcome to Neural Summary!",
-      "subtitle": "Your subscription is now active",
-      "message": "Thank you for subscribing! You now have access to all Professional features.",
-      "cta": "Go to Dashboard",
-      "features": {
+      "title": "Payment Successful!",
+      "description": "Thank you for subscribing! Your account has been upgraded and you now have access to all premium features.",
+      "nextSteps": {
         "title": "What's Next?",
-        "upload": "Upload your first audio file",
-        "explore": "Explore all analysis types",
-        "share": "Share transcripts with your team"
-      }
+        "step1": "Upload your first audio file",
+        "step2": "Explore all analysis types",
+        "step3": "Share transcripts with your team"
+      },
+      "cta": "Go to Dashboard",
+      "receiptNotice": "A receipt has been sent to your email address."
     },
     "cancel": {
       "title": "Checkout Cancelled",
@@ -1618,5 +1618,14 @@
         "notification": "For material changes, we will notify you via email or through a prominent notice on our Service."
       }
     }
+  },
+  "usage": {
+    "yourUsage": "Your Usage",
+    "resetsOn": "Resets on",
+    "upgradePlan": "Upgrade Plan",
+    "transcriptions": "Transcriptions",
+    "hours": "Hours",
+    "remaining": "remaining",
+    "onDemandAnalyses": "On-Demand Analyses"
   }
 }

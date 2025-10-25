@@ -53,7 +53,7 @@ export function ThemeToggle() {
       className="
         p-2 rounded-lg
         text-gray-700 dark:text-gray-300
-        hover:bg-gray-100 dark:hover:bg-gray-800
+        hover:bg-gray-100 dark:hover:bg-gray-700
         transition-colors
         focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2
       "

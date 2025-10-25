@@ -21,8 +21,10 @@ import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
+import { UsageService } from '../usage/usage.service';
 import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { SubscriptionGuard } from '../guards/subscription.guard';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -45,6 +47,7 @@ export class TranscriptionController {
     private readonly transcriptionService: TranscriptionService,
     private readonly templateService: AnalysisTemplateService,
     private readonly onDemandAnalysisService: OnDemandAnalysisService,
+    private readonly usageService: UsageService,
   ) {}
 
   // Public endpoint for shared transcripts (no auth required)
@@ -116,6 +119,11 @@ export class TranscriptionController {
       throw new BadRequestException('File size exceeds limit');
     }
 
+    // Check quota before processing
+    const fileSizeBytes = file.size;
+    const estimatedDurationMinutes = this.estimateDuration(fileSizeBytes, file.mimetype);
+    await this.usageService.checkQuota(req.user.uid, fileSizeBytes, estimatedDurationMinutes);
+
     const transcription = await this.transcriptionService.createTranscription(
       req.user.uid,
       file,
@@ -179,6 +187,13 @@ export class TranscriptionController {
           `File size exceeds limit: ${file.originalname}`,
         );
       }
+    }
+
+    // Check quota for each file before processing
+    for (const file of files) {
+      const fileSizeBytes = file.size;
+      const estimatedDurationMinutes = this.estimateDuration(fileSizeBytes, file.mimetype);
+      await this.usageService.checkQuota(req.user.uid, fileSizeBytes, estimatedDurationMinutes);
     }
 
     const shouldMerge = mergeFiles === 'true';
@@ -593,11 +608,17 @@ export class TranscriptionController {
       throw new BadRequestException('Template ID is required');
     }
 
+    // Check quota before generating
+    await this.usageService.checkOnDemandAnalysisQuota(req.user.uid);
+
     const analysis = await this.onDemandAnalysisService.generateFromTemplate(
       transcriptionId,
       templateId,
       req.user.uid,
     );
+
+    // Track usage after successful generation
+    await this.usageService.trackOnDemandAnalysis(req.user.uid, analysis.id);
 
     return {
       success: true,
@@ -641,5 +662,36 @@ export class TranscriptionController {
       success: true,
       message: 'Analysis deleted successfully',
     };
+  }
+
+  /**
+   * Estimate audio duration based on file size and mime type
+   * This is a rough estimate - actual duration will be determined after transcription
+   */
+  private estimateDuration(fileSizeBytes: number, mimeType: string): number {
+    const fileSizeMB = fileSizeBytes / (1024 * 1024);
+
+    // Different compression rates for different formats
+    // These are rough estimates in MB per minute
+    const compressionRates: Record<string, number> = {
+      'audio/mp3': 1.0, // ~1MB per minute
+      'audio/mpeg': 1.0,
+      'audio/m4a': 0.8, // Better compression
+      'audio/x-m4a': 0.8,
+      'audio/mp4': 0.8,
+      'audio/wav': 10.0, // Uncompressed, ~10MB per minute
+      'audio/flac': 6.0, // Lossless, ~6MB per minute
+      'audio/ogg': 0.7,
+      'audio/webm': 0.7,
+      'video/mp4': 2.0, // Video files tend to be larger
+      'video/webm': 1.5,
+      default: 1.0, // Default assumption
+    };
+
+    const rate = compressionRates[mimeType] || compressionRates.default;
+    const estimatedMinutes = Math.ceil(fileSizeMB / rate);
+
+    // Cap estimate at reasonable max (e.g., 8 hours = 480 minutes)
+    return Math.min(estimatedMinutes, 480);
   }
 }

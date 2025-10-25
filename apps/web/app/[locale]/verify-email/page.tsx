@@ -13,13 +13,18 @@ export default function VerifyEmailPage() {
   const [success, setSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [checkingVerification, setCheckingVerification] = useState(false);
-  
-  const { user } = useAuth();
+
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
   const tAuth = useTranslations('auth');
 
   // Check verification status periodically
   useEffect(() => {
+    // Don't redirect while still loading auth state
+    if (loading) {
+      return;
+    }
+
     if (!user) {
       router.push('/login');
       return;
@@ -46,7 +51,7 @@ export default function VerifyEmailPage() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [user, router]);
+  }, [user, loading, router]);
 
   // Handle cooldown timer
   useEffect(() => {
@@ -85,6 +90,20 @@ export default function VerifyEmailPage() {
     }
   };
 
+  // Show loading state only while auth is initializing
+  // If not loading and no user, the useEffect will redirect to login
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#cc3399] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no user after loading completes, show nothing (useEffect will redirect)
   if (!user) {
     return null;
   }
@@ -94,9 +113,11 @@ export default function VerifyEmailPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-6">
-            <div className="bg-[#cc3399] bg-opacity-10 p-4 rounded-full">
-              <Mail className="h-12 w-12 text-[#cc3399]" />
-            </div>
+            <img
+              src="/assets/neural-summary-logo.webp"
+              alt="Neural Summary"
+              className="h-24 w-auto"
+            />
           </div>
           
           {success ? (

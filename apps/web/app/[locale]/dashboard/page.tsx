@@ -11,6 +11,7 @@ import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { UsageBadge } from '@/components/UsageBadge';
 import { FileAudio, Upload, Info, Mic } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
@@ -223,6 +224,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <UsageBadge />
               <ThemeToggle />
               <UserProfileMenu />
             </div>

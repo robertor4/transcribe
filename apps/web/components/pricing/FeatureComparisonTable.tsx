@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Check, X, Minus, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -105,8 +106,8 @@ export function FeatureComparisonTable() {
         </thead>
         <tbody>
           {features.map((category, categoryIndex) => (
-            <>
-              <tr key={`category-${categoryIndex}`}>
+            <React.Fragment key={`category-${categoryIndex}`}>
+              <tr>
                 <td
                   colSpan={4}
                   className="py-4 px-6 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
@@ -133,7 +134,7 @@ export function FeatureComparisonTable() {
                   </td>
                 </tr>
               ))}
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>
