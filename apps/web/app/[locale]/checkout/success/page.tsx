@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, ArrowRight } from 'lucide-react';
@@ -8,30 +8,21 @@ import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import Link from 'next/link';
 
-export default function CheckoutSuccessPage({ params }: { params: { locale: string } }) {
+export default function CheckoutSuccessPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const t = useTranslations('checkout.success');
   const { trackEvent } = useAnalytics();
 
-  const sessionId = searchParams.get('session_id');
-
-  useEffect(() => {
-    if (!user) {
-      // Don't redirect - user should already be authenticated
-      // This state shouldn't happen in normal flow
-      return;
-    }
-
-    // Track checkout completion
-    // TODO: Add 'checkout_completed' to AnalyticsEventName type
-    // if (sessionId) {
-    //   trackEvent('checkout_completed', {
-    //     session_id: sessionId,
-    //   });
-    // }
-  }, [user, sessionId, trackEvent, router]);
+  // Note: Subscription sync happens via Stripe webhooks
+  // In development, use Stripe CLI: stripe listen --forward-to localhost:3001/stripe/webhook
+  // See docs/STRIPE_CLI_SETUP.md for details
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
@@ -65,7 +56,7 @@ export default function CheckoutSuccessPage({ params }: { params: { locale: stri
         </div>
 
         <Link
-          href={`/${params.locale}/dashboard`}
+          href={`/${locale}/dashboard`}
           className="inline-flex items-center px-8 py-3 bg-[#cc3399] text-white font-semibold rounded-lg hover:bg-[#b82d89] transition-colors"
         >
           {t('cta')}

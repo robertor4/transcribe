@@ -1,9 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { json } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true, // Enable raw body for all requests
+  });
+
+  // The rawBody option above stores raw body in req.rawBody automatically
+  // This is needed for Stripe webhook signature verification
 
   // In production, use FRONTEND_URL; in development, use NEXT_PUBLIC_APP_URL
   const corsOrigin =

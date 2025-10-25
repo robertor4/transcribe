@@ -120,6 +120,9 @@ export class StripeService {
       automatic_tax: {
         enabled: true, // Stripe Tax for automatic VAT/sales tax
       },
+      customer_update: {
+        address: 'auto', // Save address entered in checkout to customer
+      },
       metadata: {
         userId,
         tier,
@@ -184,6 +187,9 @@ export class StripeService {
       locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
       automatic_tax: {
         enabled: true,
+      },
+      customer_update: {
+        address: 'auto', // Save address entered in checkout to customer
       },
       metadata: {
         userId,
@@ -337,15 +343,21 @@ export class StripeService {
       const subscriptionId = session.subscription as string;
       const tier = session.metadata?.tier as 'professional' | 'business';
 
-      // Update user with subscription info
+      // Update user with subscription info and reset usage
       await this.firebaseService.updateUser(userId, {
         subscriptionTier: tier,
         stripeSubscriptionId: subscriptionId,
         subscriptionStatus: 'active',
+        usageThisMonth: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+          lastResetAt: new Date(),
+        },
         updatedAt: new Date(),
       });
 
-      this.logger.log(`User ${userId} upgraded to ${tier}`);
+      this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
     } else if (session.mode === 'payment' && session.metadata?.type === 'payg') {
       // Add PAYG credits
       const hours = parseInt(session.metadata.hours || '0', 10);

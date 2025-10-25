@@ -7,10 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Queue Health Monitoring**: Automatic stale job detection and recovery on application restart
+  - **QueueHealthService**: New service that runs on app initialization to check for stale jobs
+  - **Stale Job Detection**: Identifies transcriptions marked as PROCESSING in Firestore but not in Redis queue
+  - **Automatic Recovery**: Notifies users when their jobs resume after server restart
+  - **Queue Statistics**: Logs detailed queue metrics (waiting, active, completed, failed, delayed jobs)
+  - **Health Check API**: `getQueueHealth()` method for monitoring endpoints
+  - **Location**: `apps/api/src/queue/queue-health.service.ts`
+- **Job Cleanup Configuration**: Automatic removal of old jobs to prevent Redis memory bloat
+  - **Completed Jobs**: Retained for 24 hours or max 1000 jobs (whichever limit is reached first)
+  - **Failed Jobs**: Retained for 7 days or max 5000 jobs (for debugging)
+  - **Configurable Retention**: Optional environment variables for custom retention policies
+  - **Global Defaults**: Applied at Bull queue initialization in `app.module.ts`
+  - **Per-Job Override**: Cleanup options specified when adding jobs to queue
+- **Queue Configuration Variables**: Optional environment variables for job retention tuning
+  - `QUEUE_COMPLETED_JOB_AGE`: How long to keep completed jobs (seconds, default: 86400 = 24h)
+  - `QUEUE_COMPLETED_JOB_COUNT`: Max completed jobs to retain (default: 1000)
+  - `QUEUE_FAILED_JOB_AGE`: How long to keep failed jobs (seconds, default: 604800 = 7 days)
+  - `QUEUE_FAILED_JOB_COUNT`: Max failed jobs to retain (default: 5000)
+
+### Changed
+- **Comprehensive Translation System**: Implemented full translation support for both core and on-demand analyses
+  - **Architecture**: Store translations in each `GeneratedAnalysis` document for clean data locality
+  - **Backend**: Enhanced `translateTranscription()` to fetch and translate all on-demand analyses
+  - **Types**: Added `translations?: { [languageCode: string]: string }` field to `GeneratedAnalysis` interface
+  - **Frontend**: Updated `MoreAnalysesTab` to display translated content when language is switched
+  - **Parallel Translation**: All on-demand analyses translated in parallel for efficiency
+  - **Skip Logic**: Avoids re-translating already translated analyses
+  - **Error Handling**: Individual analysis translation failures don't block other translations
+  - **User Experience**: Language switching now works seamlessly across all analysis types (core + on-demand)
+  - **Data Lifecycle**: Translations automatically cleaned up when analysis is deleted
+  - **Testing**: Comprehensive e2e test suite (`apps/api/test/translation.e2e-spec.ts`) verifies full translation flow
+- **Stripe Subscription Flow**: Simplified to webhook-only approach for both development and production
+  - **REMOVED** manual sync endpoint (`/stripe/sync-subscription`) - eliminated potential security risk
+  - **REMOVED** frontend manual sync logic from checkout success page
+  - Development now uses Stripe CLI for webhook forwarding (identical to production workflow)
+  - Created comprehensive setup guide: `docs/STRIPE_CLI_SETUP.md`
+  - Updated subscription flow documentation to reflect webhook-only approach
+  - Eliminates code path divergence between dev and production
+  - Prevents quota gaming vulnerability from repeated manual syncs
+  - Production-ready with no workarounds or temporary solutions
+
 ### Fixed
+- **Translation Missing Analyses**: Fixed translations returning empty analyses object
+  - Translation code was looking for `transcription.analyses` but current structure uses `transcription.coreAnalyses`
+  - Updated to check for `coreAnalyses` first, then fall back to `analyses` (for backwards compatibility)
+  - Now correctly translates summary, action items, communication styles, and other analyses
+  - Fixes issue where translated transcriptions showed no summary or analysis content
+- **Stripe Webhook Raw Body Configuration**: Fixed "Missing raw body for webhook verification" error
+  - Enabled NestJS `rawBody: true` option to preserve raw body for all requests
+  - Raw body stored in `req.rawBody` for Stripe signature verification
+  - Uses built-in NestJS feature (not custom Express middleware) to avoid conflicts
+  - Fixes issue preventing webhooks from working in development and production
+  - Critical for Stripe CLI webhook forwarding and production webhook endpoints
+- **UserProfileMenu Upgrade Button Visibility**: Fixed upgrade button not showing for new free tier users
+  - Changed condition from `percentUsed >= 70 && tier === 'free'` to just `tier === 'free'`
+  - Upgrade button now always visible for free tier users, not just when approaching quota limits
+  - Makes upgrade path more discoverable for users with low usage
+- **Usage Reset on Subscription Upgrade**: Fixed usage not resetting when upgrading to paid subscription
+  - When user upgrades from free to paid tier, usage now resets to 0 (hours, transcriptions, analyses)
+  - Reset date is set to today's date instead of keeping the old free tier reset date
+  - Applied via webhook handler (`checkout.session.completed`)
+  - Fixes issue where users saw incorrect usage carryover and future reset dates after upgrading
+- **Usage Reset Date Format**: Changed date format from ambiguous MM/DD/YYYY to clear dd-MMM-yyyy format
+  - Example: "11/1/2025" now displays as "01-Nov-2025"
+  - Improves clarity for international users and eliminates confusion between US and European date formats
+  - Applied to UserProfileMenu usage stats display
 - **Stripe Checkout Tax Configuration**: Enabled automatic tax calculation in all environments
   - Configured business address and tax registrations in Stripe dashboard (test mode)
   - Automatic tax now enabled for both test and production environments
+  - Added `customer_update.address: 'auto'` to save customer address from checkout
   - Applied to both subscription and PAYG checkout sessions
   - Test environment now matches production for accurate tax testing
 - **CRITICAL: Quota Enforcement on Upload**: Fixed quota checking to run AFTER file parsing
@@ -31,6 +98,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All quota error codes properly detected and mapped to quota types
   - Fixed axios error interceptor to preserve original error structure (was transforming to plain objects)
   - Frontend now correctly detects HTTP 402 status and shows modal instead of generic "Upload failed"
+
+### Added
+- **Stripe Subscription Flow Documentation**: Comprehensive technical documentation for subscription system
+  - Created `docs/STRIPE_SUBSCRIPTION_FLOW.md` with complete subscription lifecycle diagrams
+  - 4 detailed Mermaid sequence diagrams covering all subscription scenarios
+  - In-depth comparison of webhook (production) vs manual sync (development) approaches
+  - Production readiness analysis with identified issues and mitigation strategies
+  - Pre-deployment and post-deployment checklists for production launch
+  - Covers: initial checkout, monthly billing, cancellations, plan changes, error handling
 
 ### Changed
 - **Landing Page Dark Mode Support**: Updated landing page to use shared PublicHeader component and added comprehensive dark mode styling

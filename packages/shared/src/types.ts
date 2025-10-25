@@ -132,6 +132,9 @@ export interface GeneratedAnalysis {
   };
   generatedAt: Date;
   generationTimeMs?: number;
+  translations?: {
+    [languageCode: string]: string; // Translated content for each language (e.g., { 'en': '...', 'es': '...' })
+  };
 }
 
 export interface TranslationData {

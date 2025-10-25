@@ -12,11 +12,13 @@ import axios from 'axios';
 interface MoreAnalysesTabProps {
   transcriptionId: string;
   transcription: Transcription;
+  selectedLanguage?: string; // Language code (e.g., 'en', 'es', 'original')
 }
 
 export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   transcriptionId,
   transcription,
+  selectedLanguage = 'original',
 }) => {
   const { refreshUsage, usageStats } = useUsage();
   const [templates, setTemplates] = useState<AnalysisTemplate[]>([]);
@@ -400,7 +402,15 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
               </div>
             </div>
             <div className="prose prose-sm dark:prose-invert max-w-none">
-              <AnalysisContentRenderer content={selectedAnalysis.content} />
+              <AnalysisContentRenderer
+                content={
+                  // Use translated content if available and not in original language
+                  selectedLanguage !== 'original' &&
+                  selectedAnalysis.translations?.[selectedLanguage]
+                    ? selectedAnalysis.translations[selectedLanguage]
+                    : selectedAnalysis.content
+                }
+              />
             </div>
           </div>
         ) : (

@@ -246,11 +246,15 @@ export function UserProfileMenu() {
 
               {/* Reset date */}
               <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                {tUsage('resetsOn')} {new Date(usageStats.resetDate).toLocaleDateString()}
+                {tUsage('resetsOn')} {new Date(usageStats.resetDate).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric'
+                }).replace(/ /g, '-')}
               </p>
 
-              {/* Upgrade prompt if approaching limit */}
-              {usageStats.percentUsed >= 70 && usageStats.tier === 'free' && (
+              {/* Upgrade prompt for free tier users */}
+              {usageStats.tier === 'free' && (
                 <button
                   onClick={handleUpgradeClick}
                   className="mt-3 w-full px-3 py-1.5 bg-[#cc3399] text-white text-xs font-medium rounded-md hover:bg-[#b82d89] transition-colors"

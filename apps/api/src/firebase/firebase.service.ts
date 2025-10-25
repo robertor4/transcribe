@@ -879,6 +879,19 @@ export class FirebaseService implements OnModuleInit {
   }
 
   /**
+   * Update a generated analysis document
+   */
+  async updateGeneratedAnalysis(
+    analysisId: string,
+    data: any,
+  ): Promise<void> {
+    await this.db
+      .collection('generatedAnalyses')
+      .doc(analysisId)
+      .update(data);
+  }
+
+  /**
    * Delete a generated analysis
    */
   async deleteGeneratedAnalysis(analysisId: string): Promise<void> {
