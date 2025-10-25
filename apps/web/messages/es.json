@@ -1100,5 +1100,14 @@
     "noDeadline": "Sin fecha límite",
     "notSpecified": "No especificado",
     "none": "Ninguna"
+  },
+  "usage": {
+    "yourUsage": "Su Uso",
+    "resetsOn": "Se restablece el",
+    "upgradePlan": "Actualizar Plan",
+    "transcriptions": "Transcripciones",
+    "hours": "Horas",
+    "remaining": "restante",
+    "onDemandAnalyses": "Análisis bajo demanda"
   }
 }

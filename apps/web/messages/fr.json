@@ -1080,5 +1080,14 @@
     "noDeadline": "Pas d'échéance",
     "notSpecified": "Non spécifié",
     "none": "Aucune"
+  },
+  "usage": {
+    "yourUsage": "Votre Utilisation",
+    "resetsOn": "Réinitialisé le",
+    "upgradePlan": "Mettre à niveau",
+    "transcriptions": "Transcriptions",
+    "hours": "Heures",
+    "remaining": "restant",
+    "onDemandAnalyses": "Analyses à la demande"
   }
 }

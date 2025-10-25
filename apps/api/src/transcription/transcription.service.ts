@@ -36,6 +36,7 @@ import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
 import { EmailService } from '../email/email.service';
+import { UsageService } from '../usage/usage.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -54,6 +55,8 @@ export class TranscriptionService {
     private assemblyAIService: AssemblyAIService,
     @Inject(forwardRef(() => EmailService))
     private emailService: EmailService,
+    @Inject(forwardRef(() => UsageService))
+    private usageService: UsageService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
@@ -305,6 +308,7 @@ export class TranscriptionService {
     speakerSegments?: SpeakerSegment[];
     transcriptWithSpeakers?: string;
     speakerCount?: number;
+    durationSeconds?: number;
   }> {
     try {
       // Always use AssemblyAI as primary service for transcription and diarization
@@ -348,6 +352,7 @@ export class TranscriptionService {
     speakerSegments?: SpeakerSegment[];
     transcriptWithSpeakers?: string;
     speakerCount?: number;
+    durationSeconds?: number;
   }> {
     try {
       this.logger.log('Starting transcription with AssemblyAI...');
@@ -411,6 +416,7 @@ export class TranscriptionService {
         speakerSegments: result.speakerSegments,
         transcriptWithSpeakers: result.transcriptWithSpeakers,
         speakerCount: result.speakerCount,
+        durationSeconds: result.durationSeconds,
       };
     } catch (error) {
       this.logger.error('Error transcribing with AssemblyAI:', error);

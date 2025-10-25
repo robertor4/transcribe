@@ -117,7 +117,7 @@ npm run setup         # Install all dependencies and build shared package
    - Small files (<25MB): Direct to Whisper API
    - Large files (>25MB): FFmpeg splits → Parallel chunk processing → Ordered merge
 3. **Real-time Updates**: Socket.io broadcasts progress per chunk → Client receives updates
-4. **Polling Fallback**: Automatic API polling when WebSocket fails (see [WebSocket Resilience](docs/WEBSOCKET_RESILIENCE.md))
+4. **Polling Fallback**: Automatic API polling when WebSocket fails (see [WebSocket Resilience](docs/2025-10-21_WEBSOCKET_RESILIENCE.md))
 5. **Data Storage**: Transcription metadata in Firestore, audio files in Firebase Storage with 5-hour signed URLs
 
 ### Key Architectural Patterns
@@ -220,7 +220,7 @@ socket.emit('transcription_failed', { jobId, error });
 - **Extended timeout** from 5 to 10 minutes for long transcriptions
 - **Connection health tracking** with automatic recovery
 
-**See full documentation:** [WebSocket Resilience Guide](docs/WEBSOCKET_RESILIENCE.md)
+**See full documentation:** [WebSocket Resilience Guide](docs/2025-10-21_WEBSOCKET_RESILIENCE.md)
 
 ### Email Service (Gmail SMTP with Domain Alias)
 - **Service**: Gmail SMTP with App Password for transactional emails
@@ -309,7 +309,7 @@ bash scripts/cleanup-docker.sh
 ssh root@<server> 'bash -s' < scripts/check-disk-space.sh
 ```
 
-**Full documentation:** [Disk Space Management Guide](docs/DISK_SPACE_MANAGEMENT.md)
+**Full documentation:** [Disk Space Management Guide](docs/2025-10-23_DISK_SPACE_MANAGEMENT.md)
 
 ### FFmpeg Not Found
 AudioSplitter checks multiple paths: /usr/bin, /usr/local/bin, /opt/homebrew/bin
@@ -326,7 +326,7 @@ npm run redis:stop && npm run redis:start  # Restart
 ssh root@<server> 'bash -s' < scripts/diagnose-redis.sh
 ```
 
-**Full documentation:** [Redis Troubleshooting Guide](docs/REDIS_TROUBLESHOOTING.md)
+**Full documentation:** [Redis Troubleshooting Guide](docs/2025-10-23_REDIS_TROUBLESHOOTING.md)
 
 ### Port Conflicts
 - Backend: 3001 (configurable via PORT env)

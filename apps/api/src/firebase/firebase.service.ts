@@ -391,39 +391,7 @@ export class FirebaseService implements OnModuleInit {
     }
   }
 
-  async createUser(user: {
-    uid: string;
-    email: string;
-    displayName?: string;
-    photoURL?: string;
-  }) {
-    // Filter out undefined values
-    const userData: any = {
-      uid: user.uid,
-      email: user.email,
-      role: 'user',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    };
-
-    if (user.displayName !== undefined && user.displayName !== null) {
-      userData.displayName = user.displayName;
-    }
-
-    if (user.photoURL !== undefined && user.photoURL !== null) {
-      userData.photoURL = user.photoURL;
-    }
-
-    await this.db
-      .collection('users')
-      .doc(user.uid)
-      .set(userData, { merge: true });
-  }
-
-  async getUser(uid: string) {
-    const doc = await this.db.collection('users').doc(uid).get();
-    return doc.exists ? doc.data() : null;
-  }
+  // OLD createUser and getUser methods removed - see NEW implementations below (lines 579+)
 
   // Summary Comments CRUD Operations
   async addSummaryComment(
@@ -575,6 +543,264 @@ export class FirebaseService implements OnModuleInit {
     }
   }
 
+  // NEW: Get full user data from Firestore (including subscription info)
+  async getUser(userId: string): Promise<any> {
+    try {
+      const userDoc = await this.db.collection('users').doc(userId).get();
+      if (!userDoc.exists) {
+        return null;
+      }
+      return { uid: userId, ...userDoc.data() };
+    } catch (error) {
+      this.logger.error(`Error fetching user from Firestore ${userId}:`, error);
+      return null;
+    }
+  }
+
+  // NEW: Create user document in Firestore
+  async createUser(userData: any): Promise<void> {
+    try {
+      // Filter out undefined values to avoid Firestore validation errors
+      const filteredUserData = Object.entries(userData).reduce(
+        (acc, [key, value]) => {
+          if (value !== undefined) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as any,
+      );
+
+      await this.db.collection('users').doc(userData.uid).set({
+        ...filteredUserData,
+        subscriptionTier: 'free', // Default to free tier
+        usageThisMonth: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+          lastResetAt: new Date(),
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      this.logger.log(`Created user document for ${userData.uid}`);
+    } catch (error) {
+      this.logger.error(`Error creating user document:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Update user document in Firestore
+  async updateUser(userId: string, updates: any): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).update({
+        ...updates,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      this.logger.error(`Error updating user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Soft delete user (mark as deleted, preserve data)
+  async softDeleteUser(userId: string): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).update({
+        deletedAt: new Date(),
+        isDeleted: true,
+        updatedAt: new Date(),
+      });
+      this.logger.log(`Soft deleted user document for ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error soft deleting user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Hard delete user document from Firestore
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).delete();
+      this.logger.log(`Hard deleted user document for ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error hard deleting user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  // NEW: Delete all user transcriptions
+  async deleteUserTranscriptions(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .get();
+
+      let deletedCount = 0;
+      const batch = this.db.batch();
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        deletedCount++;
+      });
+
+      await batch.commit();
+      this.logger.log(
+        `Deleted ${deletedCount} transcriptions for user ${userId}`,
+      );
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(
+        `Error deleting transcriptions for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // NEW: Delete all user generated analyses
+  async deleteUserGeneratedAnalyses(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.db
+        .collection('generatedAnalyses')
+        .where('userId', '==', userId)
+        .get();
+
+      let deletedCount = 0;
+      const batch = this.db.batch();
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        deletedCount++;
+      });
+
+      await batch.commit();
+      this.logger.log(
+        `Deleted ${deletedCount} generated analyses for user ${userId}`,
+      );
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(
+        `Error deleting generated analyses for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // NEW: Delete all user storage files
+  async deleteUserStorageFiles(userId: string): Promise<number> {
+    try {
+      const bucket = this.storage.bucket();
+      const [files] = await bucket.getFiles({ prefix: `users/${userId}/` });
+
+      let deletedCount = 0;
+      for (const file of files) {
+        await file.delete();
+        deletedCount++;
+      }
+
+      this.logger.log(`Deleted ${deletedCount} storage files for user ${userId}`);
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(
+        `Error deleting storage files for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  // NEW: Get user by Stripe customer ID
+  async getUserByStripeCustomerId(customerId: string): Promise<any> {
+    try {
+      const snapshot = await this.db
+        .collection('users')
+        .where('stripeCustomerId', '==', customerId)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        return null;
+      }
+
+      const doc = snapshot.docs[0];
+      return { uid: doc.id, ...doc.data() };
+    } catch (error) {
+      this.logger.error(`Error fetching user by Stripe customer ID ${customerId}:`, error);
+      return null;
+    }
+  }
+
+  // NEW: Get all users (for migration/batch operations)
+  async getAllUsers(): Promise<any[]> {
+    try {
+      const snapshot = await this.db.collection('users').get();
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt,
+          updatedAt: data.updatedAt?.toDate
+            ? data.updatedAt.toDate()
+            : data.updatedAt,
+          deletedAt: data.deletedAt?.toDate
+            ? data.deletedAt.toDate()
+            : data.deletedAt,
+          currentPeriodStart: data.currentPeriodStart?.toDate
+            ? data.currentPeriodStart.toDate()
+            : data.currentPeriodStart,
+          currentPeriodEnd: data.currentPeriodEnd?.toDate
+            ? data.currentPeriodEnd.toDate()
+            : data.currentPeriodEnd,
+        };
+      });
+    } catch (error) {
+      this.logger.error('Error fetching all users:', error);
+      return [];
+    }
+  }
+
+  // NEW: Get users by subscription tier
+  async getUsersByTier(tier: string): Promise<any[]> {
+    try {
+      const snapshot = await this.db
+        .collection('users')
+        .where('subscriptionTier', '==', tier)
+        .get();
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt,
+          updatedAt: data.updatedAt?.toDate
+            ? data.updatedAt.toDate()
+            : data.updatedAt,
+          deletedAt: data.deletedAt?.toDate
+            ? data.deletedAt.toDate()
+            : data.deletedAt,
+          currentPeriodStart: data.currentPeriodStart?.toDate
+            ? data.currentPeriodStart.toDate()
+            : data.currentPeriodStart,
+          currentPeriodEnd: data.currentPeriodEnd?.toDate
+            ? data.currentPeriodEnd.toDate()
+            : data.currentPeriodEnd,
+        };
+      });
+    } catch (error) {
+      this.logger.error(`Error fetching users by tier ${tier}:`, error);
+      return [];
+    }
+  }
+
   async deleteShareInfo(transcriptionId: string): Promise<void> {
     await this.db.collection('transcriptions').doc(transcriptionId).update({
       shareToken: admin.firestore.FieldValue.delete(),
@@ -650,6 +876,19 @@ export class FirebaseService implements OnModuleInit {
         ? data.generatedAt.toDate()
         : data.generatedAt,
     };
+  }
+
+  /**
+   * Update a generated analysis document
+   */
+  async updateGeneratedAnalysis(
+    analysisId: string,
+    data: any,
+  ): Promise<void> {
+    await this.db
+      .collection('generatedAnalyses')
+      .doc(analysisId)
+      .update(data);
   }
 
   /**
