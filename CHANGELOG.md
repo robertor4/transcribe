@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- **Stripe Checkout Error**: Disabled automatic tax calculation in test mode
-  - Stripe requires a valid business address to enable automatic tax in test mode
-  - Automatic tax now only enabled in production environment
-  - Fixed both subscription and PAYG checkout sessions
-  - Allows testing checkout flow without configuring business address in Stripe dashboard
+- **Stripe Checkout Tax Configuration**: Enabled automatic tax calculation in all environments
+  - Configured business address and tax registrations in Stripe dashboard (test mode)
+  - Automatic tax now enabled for both test and production environments
+  - Applied to both subscription and PAYG checkout sessions
+  - Test environment now matches production for accurate tax testing
 - **CRITICAL: Quota Enforcement on Upload**: Fixed quota checking to run AFTER file parsing
   - Free tier users can now properly be blocked from uploading files exceeding 30-minute duration limit
   - Free tier users can now be blocked from exceeding 3 transcriptions/month limit
