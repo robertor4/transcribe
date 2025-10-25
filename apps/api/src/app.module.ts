@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { StripeModule } from './stripe/stripe.module';
 import { UsageModule } from './usage/usage.module';
 import { AdminModule } from './admin/admin.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -24,9 +25,20 @@ import { AdminModule } from './admin/admin.module';
         port: parseInt(process.env.REDIS_PORT || '6379'),
         password: process.env.REDIS_PASSWORD,
       },
+      defaultJobOptions: {
+        removeOnComplete: {
+          age: parseInt(process.env.QUEUE_COMPLETED_JOB_AGE || '86400'), // 24 hours default
+          count: parseInt(process.env.QUEUE_COMPLETED_JOB_COUNT || '1000'), // 1000 jobs default
+        },
+        removeOnFail: {
+          age: parseInt(process.env.QUEUE_FAILED_JOB_AGE || '604800'), // 7 days default
+          count: parseInt(process.env.QUEUE_FAILED_JOB_COUNT || '5000'), // 5000 jobs default
+        },
+      },
     }),
     FirebaseModule,
     WebSocketModule,
+    QueueModule,
     TranscriptionModule,
     UserModule,
     AuthModule,
