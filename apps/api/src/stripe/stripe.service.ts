@@ -117,9 +117,12 @@ export class StripeService {
       // Multi-currency handled automatically by Stripe Adaptive Pricing (configured in Dashboard)
       allow_promotion_codes: true, // Allow discount codes
       billing_address_collection: 'auto',
-      automatic_tax: {
-        enabled: true, // Stripe Tax for automatic VAT/sales tax
-      },
+      // Automatic tax only in production (requires business address in Stripe settings)
+      ...(process.env.NODE_ENV === 'production' && {
+        automatic_tax: {
+          enabled: true, // Stripe Tax for automatic VAT/sales tax
+        },
+      }),
       metadata: {
         userId,
         tier,
@@ -182,9 +185,12 @@ export class StripeService {
       success_url: successUrl,
       cancel_url: cancelUrl,
       locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
-      automatic_tax: {
-        enabled: true,
-      },
+      // Automatic tax only in production (requires business address in Stripe settings)
+      ...(process.env.NODE_ENV === 'production' && {
+        automatic_tax: {
+          enabled: true,
+        },
+      }),
       metadata: {
         userId,
         type: 'payg',
