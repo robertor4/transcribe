@@ -8,6 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { EmailVerificationService } from './email-verification.service';
 import { UserService } from '../user/user.service';
@@ -35,6 +36,7 @@ export class AuthController {
   ) {}
 
   @Post('signup')
+  @Throttle({ short: { limit: 3, ttl: 60000 } }) // 3 signups per minute
   async signup(
     @Body() dto: SignupDto,
   ): Promise<ApiResponse<{ message: string }>> {
@@ -55,6 +57,7 @@ export class AuthController {
 
   @Post('verify-email')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 300000 } }) // 5 attempts per 5 minutes
   async verifyEmail(
     @Req() req: Request,
     @Body() dto: VerifyEmailDto,
@@ -81,6 +84,7 @@ export class AuthController {
 
   @Post('resend-verification')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 resends per 10 minutes
   async resendVerification(
     @Req() req: Request,
   ): Promise<ApiResponse<{ message: string }>> {
@@ -115,6 +119,7 @@ export class AuthController {
 
   @Post('send-verification-code')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 sends per 10 minutes
   async sendVerificationCode(
     @Req() req: Request,
   ): Promise<ApiResponse<{ message: string }>> {

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import * as admin from 'firebase-admin';
@@ -29,10 +29,14 @@ describe('Translation System (e2e)', () => {
   let authToken: string;
   let userId: string;
   let transcriptionId: string;
-  let generatedAnalysisIds: string[] = [];
+  const generatedAnalysisIds: string[] = [];
 
   // Test audio file path
-  const testAudioPath = path.join(__dirname, 'data', 'Neural Summary Radio Commercial.mp3');
+  const testAudioPath = path.join(
+    __dirname,
+    'data',
+    'Neural Summary Radio Commercial.mp3',
+  );
 
   beforeAll(async () => {
     // Create NestJS application FIRST (this initializes Firebase Admin SDK)
@@ -42,7 +46,9 @@ describe('Translation System (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideGuard(require('../src/auth/firebase-auth.guard').FirebaseAuthGuard)
+      .overrideGuard(
+        require('../src/auth/firebase-auth.guard').FirebaseAuthGuard,
+      )
       .useValue({
         canActivate: (context: any) => {
           const request = context.switchToHttp().getRequest();
@@ -60,6 +66,19 @@ describe('Translation System (e2e)', () => {
     app = moduleFixture.createNestApplication({
       rawBody: true, // Enable raw body for Stripe webhooks
     });
+
+    // Apply global validation pipe (same as in main.ts)
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    );
+
     await app.init();
 
     console.log(`✓ Test app initialized`);
@@ -77,22 +96,26 @@ describe('Translation System (e2e)', () => {
       const customToken = await admin.auth().createCustomToken(userId);
 
       // Create user document in Firestore
-      await admin.firestore().collection('users').doc(userId).set({
-        uid: userId,
-        email: testEmail,
-        displayName: 'Test User',
-        emailVerified: true,
-        subscriptionTier: 'free',
-        subscriptionStatus: 'none',
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await admin
+        .firestore()
+        .collection('users')
+        .doc(userId)
+        .set({
+          uid: userId,
+          email: testEmail,
+          displayName: 'Test User',
+          emailVerified: true,
+          subscriptionTier: 'free',
+          subscriptionStatus: 'none',
+          usageThisMonth: {
+            hours: 0,
+            transcriptions: 0,
+            onDemandAnalyses: 0,
+            lastResetAt: new Date(),
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
 
       authToken = customToken;
 
@@ -110,7 +133,8 @@ describe('Translation System (e2e)', () => {
       if (userId) {
         // Delete transcription (will cascade delete analyses via Firestore triggers)
         if (transcriptionId) {
-          await admin.firestore()
+          await admin
+            .firestore()
             .collection('transcriptions')
             .doc(transcriptionId)
             .delete();
@@ -119,20 +143,20 @@ describe('Translation System (e2e)', () => {
 
         // Delete generated analyses
         for (const analysisId of generatedAnalysisIds) {
-          await admin.firestore()
+          await admin
+            .firestore()
             .collection('generatedAnalyses')
             .doc(analysisId)
             .delete();
         }
         if (generatedAnalysisIds.length > 0) {
-          console.log(`✓ Deleted ${generatedAnalysisIds.length} generated analyses`);
+          console.log(
+            `✓ Deleted ${generatedAnalysisIds.length} generated analyses`,
+          );
         }
 
         // Delete user document from Firestore
-        await admin.firestore()
-          .collection('users')
-          .doc(userId)
-          .delete();
+        await admin.firestore().collection('users').doc(userId).delete();
         console.log(`✓ Deleted user document from Firestore`);
 
         // Delete user from Firebase Auth
@@ -187,8 +211,10 @@ describe('Translation System (e2e)', () => {
         const result = response.body;
 
         if (!result.success || !result.data) {
-          console.log(`  [Attempt ${attempts}/${maxAttempts}] Invalid response format`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          console.log(
+            `  [Attempt ${attempts}/${maxAttempts}] Invalid response format`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, 5000));
           continue;
         }
 
@@ -202,18 +228,26 @@ describe('Translation System (e2e)', () => {
             completed = true;
             console.log(`✓ Transcription completed: ${transcriptionId}`);
             console.log(`  Duration: ${latest.duration}s`);
-            console.log(`  Transcript length: ${latest.transcriptText?.length || 0} chars`);
-            console.log(`  Analyses: ${Object.keys(latest.coreAnalyses || {}).join(', ')}`);
+            console.log(
+              `  Transcript length: ${latest.transcriptText?.length || 0} chars`,
+            );
+            console.log(
+              `  Analyses: ${Object.keys(latest.coreAnalyses || {}).join(', ')}`,
+            );
           } else if (latest.status === 'failed') {
             throw new Error(`Transcription failed: ${latest.errorMessage}`);
           } else {
             // Still processing
-            console.log(`  [Attempt ${attempts}/${maxAttempts}] Status: ${latest.status}...`);
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+            console.log(
+              `  [Attempt ${attempts}/${maxAttempts}] Status: ${latest.status}...`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 5000)); // Wait 5 seconds
           }
         } else {
-          console.log(`  [Attempt ${attempts}/${maxAttempts}] No transcriptions yet...`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          console.log(
+            `  [Attempt ${attempts}/${maxAttempts}] No transcriptions yet...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
       }
 
@@ -238,7 +272,9 @@ describe('Translation System (e2e)', () => {
       expect(response.body.data.length).toBeGreaterThan(0);
 
       console.log(`✓ Found ${response.body.data.length} analysis templates`);
-      console.log(`  Templates: ${response.body.data.map((t: any) => t.name).join(', ')}`);
+      console.log(
+        `  Templates: ${response.body.data.map((t: any) => t.name).join(', ')}`,
+      );
     });
 
     it('should generate first on-demand analysis (Emotional Intelligence)', async () => {
@@ -249,7 +285,7 @@ describe('Translation System (e2e)', () => {
         .expect(200);
 
       const emotionalIntelTemplate = templatesResponse.body.data.find(
-        (t: any) => t.name === 'Emotional Intelligence'
+        (t: any) => t.name === 'Emotional Intelligence',
       );
 
       if (!emotionalIntelTemplate) {
@@ -271,7 +307,9 @@ describe('Translation System (e2e)', () => {
 
       generatedAnalysisIds.push(response.body.data.id);
       console.log(`✓ Generated analysis: ${response.body.data.templateName}`);
-      console.log(`  Content length: ${response.body.data.content?.length || 0} chars`);
+      console.log(
+        `  Content length: ${response.body.data.content?.length || 0} chars`,
+      );
     }, 120000); // 2 minute timeout
 
     it('should generate second on-demand analysis (Key Insights)', async () => {
@@ -282,7 +320,7 @@ describe('Translation System (e2e)', () => {
         .expect(200);
 
       const keyInsightsTemplate = templatesResponse.body.data.find(
-        (t: any) => t.name === 'Key Insights'
+        (t: any) => t.name === 'Key Insights',
       );
 
       if (!keyInsightsTemplate) {
@@ -304,7 +342,9 @@ describe('Translation System (e2e)', () => {
 
       generatedAnalysisIds.push(response.body.data.id);
       console.log(`✓ Generated analysis: ${response.body.data.templateName}`);
-      console.log(`  Content length: ${response.body.data.content?.length || 0} chars`);
+      console.log(
+        `  Content length: ${response.body.data.content?.length || 0} chars`,
+      );
     }, 120000); // 2 minute timeout
   });
 
@@ -328,8 +368,12 @@ describe('Translation System (e2e)', () => {
       expect(analyses).toBeDefined();
 
       console.log(`✓ Translation to Spanish completed`);
-      console.log(`  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`);
-      console.log(`  Translated analyses: ${Object.keys(analyses || {}).join(', ')}`);
+      console.log(
+        `  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`,
+      );
+      console.log(
+        `  Translated analyses: ${Object.keys(analyses || {}).join(', ')}`,
+      );
 
       // Check summary contains Spanish text (basic check)
       if (analyses.summary) {
@@ -358,11 +402,15 @@ describe('Translation System (e2e)', () => {
       expect(Array.isArray(response.body.data)).toBe(true);
 
       const analysesWithTranslations = response.body.data.filter(
-        (analysis: any) => analysis.translations && analysis.translations.es
+        (analysis: any) => analysis.translations && analysis.translations.es,
       );
 
-      console.log(`✓ On-demand analyses checked: ${response.body.data.length} total`);
-      console.log(`  Analyses with Spanish translation: ${analysesWithTranslations.length}`);
+      console.log(
+        `✓ On-demand analyses checked: ${response.body.data.length} total`,
+      );
+      console.log(
+        `  Analyses with Spanish translation: ${analysesWithTranslations.length}`,
+      );
 
       // Verify each generated analysis has Spanish translation
       for (const analysis of response.body.data) {
@@ -371,7 +419,9 @@ describe('Translation System (e2e)', () => {
         expect(typeof analysis.translations.es).toBe('string');
         expect(analysis.translations.es.length).toBeGreaterThan(0);
 
-        console.log(`  ✓ ${analysis.templateName}: ${analysis.translations.es.length} chars`);
+        console.log(
+          `  ✓ ${analysis.templateName}: ${analysis.translations.es.length} chars`,
+        );
 
         // Verify it's different from original (basic check)
         expect(analysis.translations.es).not.toBe(analysis.content);
@@ -397,27 +447,38 @@ describe('Translation System (e2e)', () => {
       expect(response.body.data).toHaveProperty('analyses');
 
       console.log(`✓ Translation to French completed`);
-      console.log(`  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`);
-      console.log(`  Translated analyses: ${Object.keys(response.body.data.analyses || {}).join(', ')}`);
+      console.log(
+        `  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`,
+      );
+      console.log(
+        `  Translated analyses: ${Object.keys(response.body.data.analyses || {}).join(', ')}`,
+      );
     }, 180000); // 3 minute timeout
 
     it('should verify on-demand analyses have French translations', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/transcriptions/${transcriptionId}/analysis`)
+        .get(`/transcriptions/${transcriptionId}/analyses`)
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       console.log(`✓ On-demand analyses checked for French translations`);
 
+      // Verify response structure (API response has success/data wrapper)
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body).toHaveProperty('data');
+      const analyses = response.body.data;
+
       // Verify each generated analysis has both Spanish AND French translations
-      for (const analysis of response.body) {
+      for (const analysis of analyses) {
         expect(analysis).toHaveProperty('translations');
         expect(analysis.translations).toHaveProperty('es'); // Spanish from previous test
         expect(analysis.translations).toHaveProperty('fr'); // French from this test
         expect(typeof analysis.translations.fr).toBe('string');
         expect(analysis.translations.fr.length).toBeGreaterThan(0);
 
-        console.log(`  ✓ ${analysis.templateName}: ES=${analysis.translations.es.length} chars, FR=${analysis.translations.fr.length} chars`);
+        console.log(
+          `  ✓ ${analysis.templateName}: ES=${analysis.translations.es.length} chars, FR=${analysis.translations.fr.length} chars`,
+        );
 
         // Verify French is different from Spanish and original
         expect(analysis.translations.fr).not.toBe(analysis.content);
@@ -444,7 +505,8 @@ describe('Translation System (e2e)', () => {
 
     it('should verify Firestore structure is correct', async () => {
       // Directly check Firestore to verify data structure
-      const transcriptionDoc = await admin.firestore()
+      const transcriptionDoc = await admin
+        .firestore()
         .collection('transcriptions')
         .doc(transcriptionId)
         .get();
@@ -457,11 +519,14 @@ describe('Translation System (e2e)', () => {
       expect(transcriptionData?.translations.fr).toBeDefined();
 
       console.log(`✓ Firestore transcription structure verified`);
-      console.log(`  Languages: ${Object.keys(transcriptionData?.translations || {}).join(', ')}`);
+      console.log(
+        `  Languages: ${Object.keys(transcriptionData?.translations || {}).join(', ')}`,
+      );
 
       // Check GeneratedAnalysis documents
       for (const analysisId of generatedAnalysisIds) {
-        const analysisDoc = await admin.firestore()
+        const analysisDoc = await admin
+          .firestore()
           .collection('generatedAnalyses')
           .doc(analysisId)
           .get();
@@ -473,7 +538,9 @@ describe('Translation System (e2e)', () => {
         expect(analysisData?.translations.es).toBeDefined();
         expect(analysisData?.translations.fr).toBeDefined();
 
-        console.log(`  ✓ Analysis ${analysisData?.templateName}: ${Object.keys(analysisData?.translations || {}).join(', ')}`);
+        console.log(
+          `  ✓ Analysis ${analysisData?.templateName}: ${Object.keys(analysisData?.translations || {}).join(', ')}`,
+        );
       }
     });
   });

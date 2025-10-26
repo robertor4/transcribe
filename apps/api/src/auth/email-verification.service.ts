@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 
 interface VerificationCode {
   code: string;
@@ -15,6 +16,7 @@ export class EmailVerificationService {
   private readonly logger = new Logger(EmailVerificationService.name);
   private readonly MAX_ATTEMPTS = 5;
   private readonly CODE_EXPIRY_MINUTES = 15;
+  private readonly BCRYPT_SALT_ROUNDS = 12; // Secure salt rounds for bcrypt
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -31,7 +33,7 @@ export class EmailVerificationService {
   async storeVerificationCode(userId: string, email: string): Promise<string> {
     try {
       const code = this.generateVerificationCode();
-      const hashedCode = this.hashCode(code);
+      const hashedCode = await this.hashCode(code);
 
       const verificationData: Omit<VerificationCode, 'code'> & {
         code: string;
@@ -71,26 +73,26 @@ export class EmailVerificationService {
 
       const data = doc.data() as VerificationCode;
 
-      // Check if code has expired
+      // Check expiry and attempts BEFORE verifying hash (prevent timing attacks)
       if (new Date() > new Date(data.expiresAt)) {
         await this.deleteVerificationCode(userId);
         return false;
       }
 
-      // Check if max attempts exceeded
       if (data.attempts >= this.MAX_ATTEMPTS) {
         await this.deleteVerificationCode(userId);
         return false;
       }
 
-      // Increment attempts
+      // Increment attempts before verification
       await doc.ref.update({
         attempts: data.attempts + 1,
       });
 
-      // Verify the code
-      const hashedProvidedCode = this.hashCode(providedCode);
-      if (hashedProvidedCode === data.code) {
+      // Verify using bcrypt (constant-time comparison)
+      const isValid = await this.verifyCodeHash(providedCode, data.code);
+
+      if (isValid) {
         // Mark user as verified
         await this.markUserAsVerified(userId);
         await this.deleteVerificationCode(userId);
@@ -174,13 +176,22 @@ export class EmailVerificationService {
   }
 
   /**
-   * Hash the verification code for secure storage
+   * Hash verification code using bcrypt (secure, slow hashing)
+   * @param code - Verification code to hash
+   * @returns Hashed code
    */
-  private hashCode(code: string): string {
-    return crypto
-      .createHash('sha256')
-      .update(code + process.env.JWT_SECRET)
-      .digest('hex');
+  private async hashCode(code: string): Promise<string> {
+    return bcrypt.hash(code, this.BCRYPT_SALT_ROUNDS);
+  }
+
+  /**
+   * Verify code against hash using bcrypt (constant-time comparison)
+   * @param code - Plain text code
+   * @param hash - Hashed code from database
+   * @returns True if code matches hash
+   */
+  private async verifyCodeHash(code: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(code, hash);
   }
 
   /**
