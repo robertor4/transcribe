@@ -1459,10 +1459,7 @@ ${fullCustomPrompt}`;
         filteredAnalyses.communicationStyles =
           analysesSource.communicationStyles;
       }
-      if (
-        contentOptions.includeActionItems &&
-        analysesSource.actionItems
-      ) {
+      if (contentOptions.includeActionItems && analysesSource.actionItems) {
         filteredAnalyses.actionItems = analysesSource.actionItems;
       }
       if (
@@ -1486,10 +1483,7 @@ ${fullCustomPrompt}`;
         filteredAnalyses.personalDevelopment =
           analysesSource.personalDevelopment;
       }
-      if (
-        contentOptions.includeCustomAnalysis &&
-        analysesSource.custom
-      ) {
+      if (contentOptions.includeCustomAnalysis && analysesSource.custom) {
         filteredAnalyses.custom = analysesSource.custom;
       }
     }
@@ -1763,15 +1757,22 @@ ${transcription}`;
       'custom',
     ];
 
-    this.logger.log(`[Translation Debug] Using ${transcription.coreAnalyses ? 'coreAnalyses' : 'analyses'}`);
-    this.logger.log(`[Translation Debug] Available keys:`, JSON.stringify(Object.keys(analysesSource || {})));
+    this.logger.log(
+      `[Translation Debug] Using ${transcription.coreAnalyses ? 'coreAnalyses' : 'analyses'}`,
+    );
+    this.logger.log(
+      `[Translation Debug] Available keys:`,
+      JSON.stringify(Object.keys(analysesSource || {})),
+    );
 
     const analysisTranslations: Record<string, Promise<string>> = {};
     if (analysesSource) {
       for (const key of analysisKeys) {
         const analysisValue =
           analysesSource[key as keyof typeof analysesSource];
-        this.logger.log(`[Translation Debug] Analysis ${key}: ${analysisValue ? 'EXISTS' : 'MISSING'}`);
+        this.logger.log(
+          `[Translation Debug] Analysis ${key}: ${analysisValue ? 'EXISTS' : 'MISSING'}`,
+        );
         if (analysisValue) {
           analysisTranslations[key] = this.translateText(
             analysisValue,
@@ -1782,7 +1783,9 @@ ${transcription}`;
         }
       }
     } else {
-      this.logger.warn(`[Translation Debug] No analyses found (neither coreAnalyses nor analyses)`);
+      this.logger.warn(
+        `[Translation Debug] No analyses found (neither coreAnalyses nor analyses)`,
+      );
     }
 
     // Execute all translations in parallel
@@ -1819,7 +1822,10 @@ ${transcription}`;
     });
 
     // Translate and update on-demand analyses (stored in separate collection)
-    if (transcription.generatedAnalysisIds && transcription.generatedAnalysisIds.length > 0) {
+    if (
+      transcription.generatedAnalysisIds &&
+      transcription.generatedAnalysisIds.length > 0
+    ) {
       this.logger.log(
         `Translating ${transcription.generatedAnalysisIds.length} on-demand analyses for transcription ${transcriptionId}`,
       );
@@ -1832,43 +1838,48 @@ ${transcription}`;
 
       if (generatedAnalyses.length > 0) {
         // Translate all on-demand analyses in parallel
-        const analysisTranslationPromises = generatedAnalyses.map(async (analysis) => {
-          // Skip if already translated
-          if (analysis.translations && analysis.translations[targetLanguage]) {
-            this.logger.log(
-              `On-demand analysis ${analysis.id} already has ${targetLanguage} translation, skipping`,
-            );
-            return;
-          }
+        const analysisTranslationPromises = generatedAnalyses.map(
+          async (analysis) => {
+            // Skip if already translated
+            if (
+              analysis.translations &&
+              analysis.translations[targetLanguage]
+            ) {
+              this.logger.log(
+                `On-demand analysis ${analysis.id} already has ${targetLanguage} translation, skipping`,
+              );
+              return;
+            }
 
-          try {
-            // Translate the analysis content
-            const translatedContent = await this.translateText(
-              analysis.content,
-              targetLang.name,
-              `${analysis.templateName} analysis`,
-            );
+            try {
+              // Translate the analysis content
+              const translatedContent = await this.translateText(
+                analysis.content,
+                targetLang.name,
+                `${analysis.templateName} analysis`,
+              );
 
-            // Update the analysis document with translation
-            const updatedTranslations = analysis.translations || {};
-            updatedTranslations[targetLanguage] = translatedContent;
+              // Update the analysis document with translation
+              const updatedTranslations = analysis.translations || {};
+              updatedTranslations[targetLanguage] = translatedContent;
 
-            await this.firebaseService.updateGeneratedAnalysis(analysis.id, {
-              translations: updatedTranslations,
-              updatedAt: new Date(),
-            });
+              await this.firebaseService.updateGeneratedAnalysis(analysis.id, {
+                translations: updatedTranslations,
+                updatedAt: new Date(),
+              });
 
-            this.logger.log(
-              `Translated on-demand analysis ${analysis.id} (${analysis.templateName}) to ${targetLang.name}`,
-            );
-          } catch (error) {
-            this.logger.error(
-              `Failed to translate on-demand analysis ${analysis.id}:`,
-              error,
-            );
-            // Continue with other translations even if one fails
-          }
-        });
+              this.logger.log(
+                `Translated on-demand analysis ${analysis.id} (${analysis.templateName}) to ${targetLang.name}`,
+              );
+            } catch (error) {
+              this.logger.error(
+                `Failed to translate on-demand analysis ${analysis.id}:`,
+                error,
+              );
+              // Continue with other translations even if one fails
+            }
+          },
+        );
 
         await Promise.all(analysisTranslationPromises);
         this.logger.log(
