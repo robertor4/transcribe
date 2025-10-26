@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Admin Usage Bypass**: Admin users can now bypass all subscription and usage restrictions
+  - Admins skip file size limits, duration limits, transcription counts, and on-demand analysis quotas
+  - Implemented at both guard level (SubscriptionGuard, OnDemandAnalysisGuard) and service level (UsageService)
+  - Provides defense-in-depth security with dual bypass checks
+  - All admin bypass actions are logged for audit trail
+  - Locations: `apps/api/src/guards/subscription.guard.ts:34-41,135-142`, `apps/api/src/usage/usage.service.ts:30-36,211-217`
 - **Security Test Suite**: Comprehensive e2e security tests verifying all security fixes
   - Rate limiting enforcement tests (verified: 10 req/sec limit working)
   - Password validation tests (verified: 6/6 weak passwords rejected)

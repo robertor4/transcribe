@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../firebase/firebase.service';
-import { SUBSCRIPTION_TIERS } from '@transcribe/shared';
+import { SUBSCRIPTION_TIERS, UserRole } from '@transcribe/shared';
 import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
 
 @Injectable()
@@ -25,6 +25,14 @@ export class UsageService {
     const user = await this.firebaseService.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Admin bypass - skip all quota checks for admin users
+    if (user.role === UserRole.ADMIN) {
+      this.logger.log(
+        `Admin bypass: Skipping quota check for admin user ${userId}`,
+      );
+      return;
     }
 
     const tier = user.subscriptionTier || 'free';
@@ -198,6 +206,14 @@ export class UsageService {
     const user = await this.firebaseService.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Admin bypass - skip all quota checks for admin users
+    if (user.role === UserRole.ADMIN) {
+      this.logger.log(
+        `Admin bypass: Skipping on-demand analysis quota check for admin user ${userId}`,
+      );
+      return;
     }
 
     const tier = user.subscriptionTier || 'free';

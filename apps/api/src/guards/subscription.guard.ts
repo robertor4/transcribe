@@ -6,7 +6,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UsageService } from '../usage/usage.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
+import { UserRole } from '@transcribe/shared';
 
 /**
  * Subscription Guard - Enforces quota limits before allowing transcription
@@ -16,7 +18,10 @@ import { PaymentRequiredException } from '../common/exceptions/payment-required.
 export class SubscriptionGuard implements CanActivate {
   private readonly logger = new Logger(SubscriptionGuard.name);
 
-  constructor(private usageService: UsageService) {}
+  constructor(
+    private usageService: UsageService,
+    private firebaseService: FirebaseService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -24,6 +29,15 @@ export class SubscriptionGuard implements CanActivate {
 
     if (!user) {
       throw new UnauthorizedException('User not authenticated');
+    }
+
+    // Check if user is admin - bypass all quota checks
+    const userProfile = await this.firebaseService.getUser(user.uid);
+    if (userProfile?.role === UserRole.ADMIN) {
+      this.logger.log(
+        `Admin bypass: Skipping quota check for admin user ${user.uid}`,
+      );
+      return true;
     }
 
     // Extract file info from request
@@ -105,7 +119,10 @@ export class SubscriptionGuard implements CanActivate {
 export class OnDemandAnalysisGuard implements CanActivate {
   private readonly logger = new Logger(OnDemandAnalysisGuard.name);
 
-  constructor(private usageService: UsageService) {}
+  constructor(
+    private usageService: UsageService,
+    private firebaseService: FirebaseService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -113,6 +130,15 @@ export class OnDemandAnalysisGuard implements CanActivate {
 
     if (!user) {
       throw new UnauthorizedException('User not authenticated');
+    }
+
+    // Check if user is admin - bypass all quota checks
+    const userProfile = await this.firebaseService.getUser(user.uid);
+    if (userProfile?.role === UserRole.ADMIN) {
+      this.logger.log(
+        `Admin bypass: Skipping on-demand analysis quota check for admin user ${user.uid}`,
+      );
+      return true;
     }
 
     this.logger.log(`Checking on-demand analysis quota for user ${user.uid}`);
