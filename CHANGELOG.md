@@ -8,6 +8,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Subscription Management UI**: Users can now view and manage their subscriptions from the settings page
+  - Enabled subscription menu item in settings navigation (previously disabled as "Coming soon")
+  - Page displays current plan (Free/Professional/PAYG) with comprehensive subscription details
+  - Shows subscription status (Active/Trialing/etc) with color-coded badges
+  - Displays billing cycle information: period start date and renewal date
+  - Shows usage statistics with visual progress bars for hours/transcriptions
+  - Displays billing history with invoice download links
+  - Allows Professional users to cancel subscriptions (cancels at period end)
+  - Added PAYG credit purchase link for pay-as-you-go users
+  - Location: `apps/web/app/[locale]/settings/layout.tsx:73-78`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:199-249`
+- **Critical Firebase Documentation**: Added comprehensive guide distinguishing Firebase Auth vs Firestore user data
+  - Documents `getUserById()` (Auth only - no subscription data) vs `getUser()` (full Firestore document)
+  - Explains common bug pattern where wrong method causes silent failures
+  - Provides code examples showing correct vs incorrect usage
+  - Lists files that commonly need `getUser()` for subscription checks
+  - Location: `CLAUDE.md:142-178`
+
+### Fixed
+- **CRITICAL: Subscription Data Retrieval Bug**: Fixed 6 instances where Stripe controller used wrong Firebase method
+  - Changed `getUserById()` (Auth only) to `getUser()` (Firestore with subscription data)
+  - Affected endpoints: create-checkout-session, create-payg-session, cancel-subscription, update-subscription, subscription, billing-history
+  - Bug caused subscription page to show "Free" tier even for paying Professional users
+  - Location: `apps/api/src/stripe/stripe.controller.ts:50,102,141,181,229,274`
+- **Stripe Subscription Period Dates**: Fixed billing period dates not displaying on subscription page
+  - Modern Stripe subscriptions store `current_period_start` and `current_period_end` in `items.data[0]`, not at root level
+  - Updated controller to extract dates from subscription items with fallback to start_date/billing_cycle_anchor
+  - Now correctly displays billing period start and renewal dates for all subscription types
+  - Implemented consistent date formatting (dd-MMM-yyyy format, e.g., "26-Oct-2025") across subscription page and billing history
+  - Location: `apps/api/src/stripe/stripe.controller.ts:245-249`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:60-67,235,247,408`
+- **Subscription Page API Integration**: Fixed incorrect API endpoint path
+  - Changed `/usage/stats` to `/user/usage-stats` (the actual endpoint)
+  - Added null-safe handling with optional chaining for all usage stats properties
+  - Fixed API response wrapper handling: `setUsageStats(usageData.data || usageData)`
+  - Location: `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:78,97`
+- **Translation Keys**: Added 13 missing translation keys for subscription management
+  - Added: usageThisMonth, hoursUsed, transcriptionsUsed, buyMoreCredits, noBillingHistory
+  - Added: downloadInvoice, overageWarning, overageCharge, upgrade, hours, nextBilling, status, billingPeriodStart
+  - Fixed incorrect translation key references: `currentPlan` → `currentPlan.title`, `billingHistory` → `billingHistory.title`
+  - Location: `apps/web/messages/en.json:1375-1394`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:162,331`
+- **Date Formatting**: Fixed "Invalid Date" error when subscription details unavailable
+  - Added null check for `currentPeriodEnd` before rendering date
+  - Prevents date rendering when Stripe API returns fallback data
+  - Location: `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:199`
+- **Stripe API Error Handling**: Gracefully handle Stripe API failures without breaking subscription page
+  - Changed from throwing 400 BadRequest to returning fallback data with warnings
+  - Handles cases where test subscriptions exist in Firestore but can't be retrieved with live Stripe keys
+  - Subscription endpoint returns tier from Firestore even if Stripe API fails
+  - Billing history endpoint returns empty array instead of error
+  - Frontend checks response status and handles failures gracefully with console warnings
+  - Location: `apps/api/src/stripe/stripe.controller.ts:257-268,307-317`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:86-112`
+
+### Added
 - **Admin Usage Bypass**: Admin users can now bypass all subscription and usage restrictions
   - Admins skip file size limits, duration limits, transcription counts, and on-demand analysis quotas
   - Implemented at both guard level (SubscriptionGuard, OnDemandAnalysisGuard) and service level (UsageService)

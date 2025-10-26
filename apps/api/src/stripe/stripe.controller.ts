@@ -46,8 +46,8 @@ export class StripeController {
     const cancelUrl = dto.cancelUrl || `${frontendUrl}/pricing`;
 
     try {
-      // Get full user record from Firebase to include displayName
-      const userData = await this.stripeService['firebaseService'].getUserById(
+      // Get full user record from Firestore to include displayName
+      const userData = await this.stripeService['firebaseService'].getUser(
         user.uid,
       );
 
@@ -98,8 +98,8 @@ export class StripeController {
     }
 
     try {
-      // Get full user record from Firebase to include displayName
-      const userData = await this.stripeService['firebaseService'].getUserById(
+      // Get full user record from Firestore to include displayName
+      const userData = await this.stripeService['firebaseService'].getUser(
         user.uid,
       );
 
@@ -137,8 +137,8 @@ export class StripeController {
   async cancelSubscription(@Req() req: any) {
     const user = req.user;
 
-    // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUserById(
+    // Get user's subscription ID from Firestore
+    const userData = await this.stripeService['firebaseService'].getUser(
       user.uid,
     );
     if (!userData?.stripeSubscriptionId) {
@@ -178,7 +178,7 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUserById(
+    const userData = await this.stripeService['firebaseService'].getUser(
       user.uid,
     );
     if (!userData?.stripeSubscriptionId) {
@@ -226,7 +226,7 @@ export class StripeController {
   async getSubscription(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUserById(
+    const userData = await this.stripeService['firebaseService'].getUser(
       user.uid,
     );
     if (!userData?.stripeSubscriptionId) {
@@ -242,24 +242,39 @@ export class StripeController {
         userData.stripeSubscriptionId,
       );
 
+      // Extract current period dates from subscription items
+      // In modern Stripe subscriptions, these are in items.data[0]
+      const firstItem = subscription.items?.data?.[0];
+      const currentPeriodStart = firstItem?.current_period_start || subscription.start_date || subscription.created;
+      const currentPeriodEnd = firstItem?.current_period_end || subscription.billing_cycle_anchor;
+
+      this.logger.log(
+        `Subscription ${subscription.id}: Period ${new Date(currentPeriodStart * 1000).toISOString()} - ${new Date(currentPeriodEnd * 1000).toISOString()}`,
+      );
+
       return {
         success: true,
         subscription: {
           id: subscription.id,
           status: subscription.status,
-          currentPeriodStart: (subscription as any).current_period_start,
-          currentPeriodEnd: (subscription as any).current_period_end,
-          cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
-          cancelAt: (subscription as any).cancel_at,
+          currentPeriodStart: currentPeriodStart,
+          currentPeriodEnd: currentPeriodEnd,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          cancelAt: subscription.cancel_at,
         },
         tier: userData.subscriptionTier,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to get subscription: ${error.message}`,
-        error.stack,
+      this.logger.warn(
+        `Failed to fetch subscription from Stripe (ID: ${userData.stripeSubscriptionId}): ${error.message}. This may be a test subscription with live keys, or a deleted subscription.`,
       );
-      throw new BadRequestException('Failed to get subscription details');
+      // Return fallback data with tier info from Firestore
+      return {
+        success: true,
+        subscription: null,
+        tier: userData.subscriptionTier || 'free',
+        warning: 'Subscription details unavailable from Stripe',
+      };
     }
   }
 
@@ -271,7 +286,7 @@ export class StripeController {
   async getBillingHistory(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUserById(
+    const userData = await this.stripeService['firebaseService'].getUser(
       user.uid,
     );
     if (!userData?.stripeCustomerId) {
@@ -300,11 +315,15 @@ export class StripeController {
         })),
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to get billing history: ${error.message}`,
-        error.stack,
+      this.logger.warn(
+        `Failed to fetch billing history from Stripe (Customer ID: ${userData.stripeCustomerId}): ${error.message}. This may be a test customer with live keys, or a deleted customer.`,
       );
-      throw new BadRequestException('Failed to get billing history');
+      // Return empty billing history instead of throwing error
+      return {
+        success: true,
+        invoices: [],
+        warning: 'Billing history unavailable from Stripe',
+      };
     }
   }
 

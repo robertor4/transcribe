@@ -139,6 +139,74 @@ npm run setup         # Install all dependencies and build shared package
 - File access via temporary signed URLs (5-hour expiration)
 - WebSocket authentication via JWT tokens
 
+#### Firebase Auth vs Firestore User Data
+**CRITICAL DISTINCTION** - Always use the correct method to access user data:
+
+**Firebase Auth (`getUserById()`):**
+- Located at: `apps/api/src/firebase/firebase.service.ts:531`
+- **Only** contains basic authentication data:
+  - `uid`, `email`, `emailVerified`, `displayName`, `photoURL`
+- **Does NOT include** subscription or business data
+- Use for: Authentication checks only
+
+**Firestore User Document (`getUser()`):**
+- Located at: `apps/api/src/firebase/firebase.service.ts:547`
+- Contains **complete user profile** from Firestore:
+  - All Auth fields PLUS:
+  - `subscriptionTier`, `subscriptionStatus`, `stripeCustomerId`, `stripeSubscriptionId`
+  - `role`, `usageStats`, `paygCredits`, etc.
+- Use for: Any business logic requiring subscription/usage data
+
+**Common Bug Pattern:**
+Using `getUserById()` when subscription data is needed will cause features to fail silently, showing "free" tier even for paid users.
+
+**Example Fix:**
+```typescript
+// ❌ WRONG - Only gets auth data
+const userData = await this.firebaseService.getUserById(user.uid);
+if (!userData?.stripeSubscriptionId) { ... }
+
+// ✅ CORRECT - Gets full Firestore document
+const userData = await this.firebaseService.getUser(user.uid);
+if (!userData?.stripeSubscriptionId) { ... }
+```
+
+**Files that commonly need `getUser()`:**
+- `apps/api/src/stripe/stripe.controller.ts` (all methods)
+- `apps/api/src/guards/subscription.guard.ts`
+- `apps/api/src/usage/usage.service.ts`
+- Any controller/service checking subscription status or limits
+
+## External API Integration Best Practices
+
+**CRITICAL: Always Verify Latest API Documentation**
+
+When implementing or debugging integrations with external APIs (Stripe, OpenAI, AssemblyAI, Firebase, etc.), **ALWAYS** check the most recent official API documentation online before making assumptions about:
+
+- Endpoint URLs and paths
+- Request/response data structures
+- Field names and data types (e.g., camelCase vs snake_case)
+- Nested object structures
+- Authentication methods
+- API versions and breaking changes
+
+**Why This Matters:**
+- Third-party services frequently update their APIs
+- Data structures evolve (e.g., Stripe moved `current_period_start/end` from root to `items.data[0]`)
+- Documentation may be outdated in AI training data
+- Field names and nesting can change between API versions
+
+**Example Lessons Learned:**
+- **Stripe Subscriptions**: Modern Stripe subscription objects store `current_period_start` and `current_period_end` in `items.data[0]`, not at the root level as in older versions
+- Always use `WebFetch` or `WebSearch` tools to verify current API structure when debugging integration issues
+- Don't assume field locations based on older documentation or examples
+
+**Process:**
+1. When implementing: Check latest API docs first
+2. When debugging: Verify actual API response structure (log full objects)
+3. When unsure: Search for recent examples or changelog updates
+4. Always handle API evolution gracefully with fallbacks
+
 ## Critical Implementation Details
 
 ### GPT-5 Model Configuration

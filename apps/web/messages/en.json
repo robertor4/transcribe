@@ -1378,7 +1378,20 @@
     "cancelAtPeriodEnd": "Scheduled for cancellation",
     "cancelSubscription": "Cancel Subscription",
     "cancelDescription": "Cancelling will downgrade your account to the Free plan at the end of your current billing period. You can continue using Professional features until then.",
-    "cancelButton": "Cancel Subscription"
+    "cancelButton": "Cancel Subscription",
+    "usageThisMonth": "Usage This Month",
+    "hoursUsed": "Hours Used",
+    "transcriptionsUsed": "Transcriptions",
+    "buyMoreCredits": "Buy More Credits",
+    "noBillingHistory": "No billing history yet",
+    "downloadInvoice": "Download Invoice",
+    "overageWarning": "Overage Usage",
+    "overageCharge": "Estimated overage charge",
+    "upgrade": "Upgrade Plan",
+    "hours": "hours",
+    "nextBilling": "Renews on",
+    "status": "Status",
+    "billingPeriodStart": "Billing period started"
   },
   "paywall": {
     "quotaExceeded": {

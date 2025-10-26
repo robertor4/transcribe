@@ -57,6 +57,15 @@ export default function SubscriptionPage() {
   const [billingHistory, setBillingHistory] = useState<Invoice[]>([]);
   const [cancelling, setCancelling] = useState(false);
 
+  // Format date as dd-MMM-yyyy (e.g., 26-Oct-2025)
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   useEffect(() => {
     if (user) {
       loadSubscriptionData();
@@ -67,13 +76,15 @@ export default function SubscriptionPage() {
     try {
       setLoading(true);
       const token = await user?.getIdToken();
+      console.log('Current user UID:', user?.uid);
+      console.log('Current user email:', user?.email);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
       const [subResponse, usageResponse, historyResponse] = await Promise.all([
         fetch(`${apiUrl}/stripe/subscription`, {
           headers: { 'Authorization': `Bearer ${token}` },
         }),
-        fetch(`${apiUrl}/usage/stats`, {
+        fetch(`${apiUrl}/user/usage-stats`, {
           headers: { 'Authorization': `Bearer ${token}` },
         }),
         fetch(`${apiUrl}/stripe/billing-history`, {
@@ -81,13 +92,36 @@ export default function SubscriptionPage() {
         }),
       ]);
 
-      const subData = await subResponse.json();
-      const usageData = await usageResponse.json();
-      const historyData = await historyResponse.json();
+      // Handle subscription data (may fail if Stripe subscription doesn't exist)
+      if (subResponse.ok) {
+        const subData = await subResponse.json();
+        console.log('Subscription data:', subData);
+        console.log('Subscription object:', subData.subscription);
+        console.log('Current period start:', subData.subscription?.currentPeriodStart);
+        console.log('Current period end:', subData.subscription?.currentPeriodEnd);
+        setSubscription(subData);
+      } else {
+        console.warn('Failed to load subscription details:', subResponse.status);
+        // Still allow page to render with basic tier info from usage stats
+      }
 
-      setSubscription(subData);
-      setUsageStats(usageData);
-      setBillingHistory(historyData.invoices || []);
+      // Handle usage stats
+      if (usageResponse.ok) {
+        const usageData = await usageResponse.json();
+        console.log('Usage data:', usageData);
+        // Handle API response wrapper format
+        setUsageStats(usageData.data || usageData);
+      }
+
+      // Handle billing history (may fail if no Stripe customer exists)
+      if (historyResponse.ok) {
+        const historyData = await historyResponse.json();
+        console.log('Billing history:', historyData);
+        setBillingHistory(historyData.invoices || []);
+      } else {
+        console.warn('Failed to load billing history:', historyResponse.status);
+        setBillingHistory([]);
+      }
     } catch (error) {
       console.error('Failed to load subscription data:', error);
     } finally {
@@ -151,7 +185,7 @@ export default function SubscriptionPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              {t('currentPlan')}
+              {t('currentPlan.title')}
             </h2>
             <div className="flex items-center gap-2">
               <Award className="h-5 w-5 text-[#cc3399]" />
@@ -174,17 +208,52 @@ export default function SubscriptionPage() {
           )}
         </div>
 
-        {subscription?.subscription && (
-          <div className="space-y-2 text-gray-700 dark:text-gray-300">
-            <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
-              <span>
-                {t('nextBilling')}: {new Date(subscription.subscription.currentPeriodEnd * 1000).toLocaleDateString()}
-              </span>
-            </div>
+        {/* Subscription Details */}
+        {(isProfessional || tier === 'business') && subscription?.subscription && (
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+            {/* Subscription Status */}
+            {subscription.subscription.status && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">{t('status')}:</span>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  subscription.subscription.status === 'active'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                    : subscription.subscription.status === 'trialing'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                }`}>
+                  {subscription.subscription.status.charAt(0).toUpperCase() + subscription.subscription.status.slice(1)}
+                </span>
+              </div>
+            )}
+
+            {/* Billing Cycle Start */}
+            {subscription.subscription.currentPeriodStart && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">{t('billingPeriodStart')}:</span>
+                <span className="text-gray-800 dark:text-gray-200 font-medium">
+                  {formatDate(subscription.subscription.currentPeriodStart)}
+                </span>
+              </div>
+            )}
+
+            {/* Next Billing Date */}
+            {subscription.subscription.currentPeriodEnd && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600 dark:text-gray-400">{t('nextBilling')}:</span>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <span className="text-gray-800 dark:text-gray-200 font-medium">
+                    {formatDate(subscription.subscription.currentPeriodEnd)}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Cancellation Notice */}
             {subscription.subscription.cancelAtPeriodEnd && (
-              <div className="flex items-center text-orange-600 dark:text-orange-400">
-                <AlertCircle className="h-5 w-5 mr-2" />
+              <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 text-sm bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span>{t('cancelAtPeriodEnd')}</span>
               </div>
             )}
@@ -218,7 +287,7 @@ export default function SubscriptionPage() {
           </h2>
 
           {/* Hours (Professional/Business) */}
-          {(isProfessional || tier === 'business') && usageStats.limits.hours && (
+          {(isProfessional || tier === 'business') && usageStats?.limits?.hours && (
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -242,7 +311,7 @@ export default function SubscriptionPage() {
           )}
 
           {/* Transcriptions (Free) */}
-          {isFree && usageStats.limits.transcriptions && (
+          {isFree && usageStats?.limits?.transcriptions && (
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -266,7 +335,7 @@ export default function SubscriptionPage() {
           )}
 
           {/* On-Demand Analyses (Free) */}
-          {isFree && usageStats.limits.onDemandAnalyses && (
+          {isFree && usageStats?.limits?.onDemandAnalyses && (
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -286,7 +355,7 @@ export default function SubscriptionPage() {
           )}
 
           {/* Overage Warning */}
-          {usageStats.overage.hours > 0 && (
+          {usageStats?.overage?.hours > 0 && (
             <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
               <div className="flex items-center text-orange-700 dark:text-orange-300">
                 <AlertCircle className="h-5 w-5 mr-2" />
@@ -301,7 +370,7 @@ export default function SubscriptionPage() {
           )}
 
           {/* Usage Warnings */}
-          {usageStats.warnings.length > 0 && (
+          {usageStats?.warnings && usageStats.warnings.length > 0 && (
             <div className="mt-4 space-y-2">
               {usageStats.warnings.map((warning, index) => (
                 <div
@@ -320,7 +389,7 @@ export default function SubscriptionPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
           <CreditCard className="h-5 w-5 mr-2 text-[#cc3399]" />
-          {t('billingHistory')}
+          {t('billingHistory.title')}
         </h2>
         {billingHistory.length === 0 ? (
           <p className="text-gray-700 dark:text-gray-300">{t('noBillingHistory')}</p>
@@ -336,7 +405,7 @@ export default function SubscriptionPage() {
                     ${(invoice.amount / 100).toFixed(2)} {invoice.currency.toUpperCase()}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {new Date(invoice.created * 1000).toLocaleDateString()}
+                    {formatDate(invoice.created)}
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">
