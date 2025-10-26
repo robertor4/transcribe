@@ -71,10 +71,10 @@ export default function SettingsLayout({
     },
     {
       name: t('subscription'),
-      href: `/dashboard/settings/subscription`,
+      href: `/settings/subscription`,
       icon: CreditCard,
       current: pathname?.includes('/settings/subscription'),
-      disabled: false, // Enabled - points to functional subscription management page
+      disabled: false,
     },
   ];
 
