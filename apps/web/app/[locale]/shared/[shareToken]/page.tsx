@@ -10,6 +10,8 @@ import {
   Loader2,
   FileText,
   AlertCircle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export default function SharedTranscriptionPage() {
@@ -23,6 +25,7 @@ export default function SharedTranscriptionPage() {
   const [password, setPassword] = useState('');
   const [passwordRequired, setPasswordRequired] = useState(false);
   const [passwordSubmitted, setPasswordSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -137,15 +140,29 @@ export default function SharedTranscriptionPage() {
           </div>
           
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('enterPassword')}
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] hover:border-gray-400 transition-colors text-gray-800 placeholder:text-gray-500"
-              autoFocus
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('enterPassword')}
+                className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] hover:border-gray-400 transition-colors text-gray-800 placeholder:text-gray-500"
+                autoFocus
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                )}
+              </button>
+            </div>
             <button
               type="submit"
               className="w-full bg-[#cc3399] text-white py-3 rounded-lg hover:bg-[#b82d89] transition-colors"

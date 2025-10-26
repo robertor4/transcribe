@@ -138,6 +138,8 @@ export function UserProfileMenu() {
             src={user.photoURL}
             alt={user.displayName || user.email || 'User'}
             className="h-8 w-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
           />
         ) : (
           <div className="h-8 w-8 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-sm font-semibold">
@@ -167,6 +169,8 @@ export function UserProfileMenu() {
                   src={user.photoURL}
                   alt={user.displayName || user.email || 'User'}
                   className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
                 />
               ) : (
                 <div className="h-10 w-10 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-base font-semibold">

@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { 
-  Shield, 
-  Key, 
-  Trash2, 
+import {
+  Shield,
+  Key,
+  Trash2,
   Download,
   AlertTriangle,
   CheckCircle,
   AlertCircle,
   Loader2,
-  LogIn
+  LogIn,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { 
@@ -37,11 +39,15 @@ export default function AccountSettingsPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
-  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // Delete account state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
   
   // Check if user has password provider
   const hasPasswordProvider = authUser?.providerData?.some(
@@ -224,39 +230,81 @@ export default function AccountSettingsPage() {
                   <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('currentPassword')}
                   </label>
-                  <input
-                    type="password"
-                    id="current-password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                  />
+                  <div className="mt-1 relative">
+                    <input
+                      type={showCurrentPassword ? "text" : "password"}
+                      id="current-password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      aria-label={showCurrentPassword ? t('hidePassword') : t('showPassword')}
+                    >
+                      {showCurrentPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('newPassword')}
                   </label>
-                  <input
-                    type="password"
-                    id="new-password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                  />
+                  <div className="mt-1 relative">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      id="new-password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      aria-label={showNewPassword ? t('hidePassword') : t('showPassword')}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
                   <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('confirmPassword')}
                   </label>
-                  <input
-                    type="password"
-                    id="confirm-password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                  />
+                  <div className="mt-1 relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      id="confirm-password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="block w-full pr-10 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      aria-label={showConfirmPassword ? t('hidePassword') : t('showPassword')}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 
                 <button
@@ -329,13 +377,27 @@ export default function AccountSettingsPage() {
                     <label htmlFor="delete-password" className="block text-sm font-medium text-red-700 dark:text-red-400">
                       {t('enterPasswordToConfirm')}
                     </label>
-                    <input
-                      type="password"
-                      id="delete-password"
-                      value={deletePassword}
-                      onChange={(e) => setDeletePassword(e.target.value)}
-                      className="mt-1 block w-full rounded-md border-red-300 dark:border-red-700 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                    />
+                    <div className="mt-1 relative">
+                      <input
+                        type={showDeletePassword ? "text" : "password"}
+                        id="delete-password"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        className="block w-full pr-10 rounded-md border-red-300 dark:border-red-700 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowDeletePassword(!showDeletePassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        aria-label={showDeletePassword ? t('hidePassword') : t('showPassword')}
+                      >
+                        {showDeletePassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
                 

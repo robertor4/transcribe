@@ -49,7 +49,7 @@ export default function ProfileSettingsPage() {
 
   const handleSave = async () => {
     if (!authUser) return;
-    
+
     setError(null);
     setSuccess(false);
     setSaving(true);
@@ -60,12 +60,13 @@ export default function ProfileSettingsPage() {
         photoURL: photoURL.trim() || undefined,
       });
 
-      // Note: Firebase Auth v9+ doesn't have updateProfile on the user object
-      // Profile updates are handled through the backend API which updates Firestore
+      // Reload the Firebase Auth user to get the updated profile
+      // This ensures the photoURL and displayName are synced across the app
+      await authUser.reload();
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-      
+
       // Reload profile to get updated data
       await loadUserProfile();
     } catch (err) {
