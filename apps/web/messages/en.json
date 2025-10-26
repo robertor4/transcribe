@@ -1371,7 +1371,14 @@
         "comments": "Additional comments (optional)",
         "submit": "Submit & Cancel"
       }
-    }
+    },
+    "cancelConfirm": "Are you sure you want to cancel your subscription? You'll retain access until the end of your billing period.",
+    "cancelSuccess": "Your subscription has been cancelled successfully. You'll retain access until the end of your current billing period.",
+    "cancelError": "Failed to cancel subscription. Please try again or contact support.",
+    "cancelAtPeriodEnd": "Scheduled for cancellation",
+    "cancelSubscription": "Cancel Subscription",
+    "cancelDescription": "Cancelling will downgrade your account to the Free plan at the end of your current billing period. You can continue using Professional features until then.",
+    "cancelButton": "Cancel Subscription"
   },
   "paywall": {
     "quotaExceeded": {
