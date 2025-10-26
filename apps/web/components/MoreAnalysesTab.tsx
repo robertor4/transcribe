@@ -447,7 +447,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
         isOpen={quotaModal.isOpen}
         onClose={() => setQuotaModal({ ...quotaModal, isOpen: false })}
         quotaType={quotaModal.quotaType}
-        currentTier={usageStats?.tier || 'free'}
+        currentTier={(usageStats?.tier as 'free' | 'professional' | 'payg') || 'free'}
         details={quotaModal.details}
       />
     </div>
