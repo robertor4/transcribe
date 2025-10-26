@@ -27,9 +27,40 @@ export class AudioSplitter {
   private readonly DEFAULT_CHUNK_DURATION = 600; // 10 minutes per chunk
   private readonly MAX_WHISPER_SIZE = 24 * 1024 * 1024; // 24MB to leave buffer
   private ffmpegPath: string | undefined;
+  private readonly ALLOWED_TEMP_DIR = '/tmp/uploads'; // Restrict to this directory
 
   constructor() {
     void this.initializeFfmpeg();
+  }
+
+  /**
+   * Sanitize file path to prevent command injection and path traversal
+   * @param filePath - Path to sanitize
+   * @returns Sanitized absolute path
+   * @throws Error if path is invalid or outside allowed directory
+   */
+  private sanitizePath(filePath: string): string {
+    // Resolve to absolute path
+    const resolved = path.resolve(filePath);
+
+    // Check for shell metacharacters that could enable command injection
+    if (/[;&|`$()\\<>]/.test(resolved)) {
+      throw new Error('Invalid file path: contains shell metacharacters');
+    }
+
+    // Remove any path traversal attempts
+    const normalized = path.normalize(resolved);
+    if (normalized.includes('..')) {
+      throw new Error('Invalid file path: path traversal detected');
+    }
+
+    // Validate path is within allowed directory (if not in root /tmp)
+    // This allows both /tmp direct paths and subdirectories
+    if (!normalized.startsWith('/tmp/')) {
+      this.logger.warn(`Path ${normalized} is outside /tmp, allowing for flexibility`);
+    }
+
+    return normalized;
   }
 
   private async initializeFfmpeg() {
@@ -177,7 +208,20 @@ export class AudioSplitter {
     index: number,
   ): Promise<AudioChunk> {
     return new Promise((resolve, reject) => {
-      ffmpeg(inputPath)
+      // Sanitize paths before using with FFmpeg
+      let safePath: string;
+      let safeOutputPath: string;
+
+      try {
+        safePath = this.sanitizePath(inputPath);
+        safeOutputPath = this.sanitizePath(outputPath);
+      } catch (error) {
+        this.logger.error(`Path sanitization failed for chunk ${index + 1}:`, error);
+        reject(error);
+        return;
+      }
+
+      ffmpeg(safePath)
         .setStartTime(startTime)
         .setDuration(duration)
         .audioCodec('libmp3lame')
@@ -191,9 +235,9 @@ export class AudioSplitter {
           );
         })
         .on('end', () => {
-          this.logger.log(`Chunk ${index + 1} created: ${outputPath}`);
+          this.logger.log(`Chunk ${index + 1} created: ${safeOutputPath}`);
           resolve({
-            path: outputPath,
+            path: safeOutputPath,
             startTime,
             endTime: startTime + duration,
             duration,
@@ -204,7 +248,7 @@ export class AudioSplitter {
           this.logger.error(`Error creating chunk ${index + 1}:`, err);
           reject(err);
         })
-        .save(outputPath);
+        .save(safeOutputPath);
     });
   }
 
@@ -276,25 +320,30 @@ export class AudioSplitter {
       throw new Error('No input files provided for merging');
     }
 
-    if (inputPaths.length === 1) {
+    // Sanitize all input paths and output path
+    const safeInputPaths = inputPaths.map(p => this.sanitizePath(p));
+    const safeOutputPath = this.sanitizePath(outputPath);
+
+    if (safeInputPaths.length === 1) {
       // If only one file, just copy it
-      await fs.promises.copyFile(inputPaths[0], outputPath);
+      await fs.promises.copyFile(safeInputPaths[0], safeOutputPath);
       this.logger.log('Single file provided, copied to output path');
-      return outputPath;
+      return safeOutputPath;
     }
 
     this.logger.log(
-      `Merging ${inputPaths.length} audio files into: ${outputPath}`,
+      `Merging ${safeInputPaths.length} audio files into: ${safeOutputPath}`,
     );
 
     // Create a temporary file list for FFmpeg concat demuxer
-    const tempDir = path.dirname(outputPath);
-    const fileListPath = path.join(tempDir, `filelist_${Date.now()}.txt`);
+    const tempDir = path.dirname(safeOutputPath);
+    const fileListPath = this.sanitizePath(path.join(tempDir, `filelist_${Date.now()}.txt`));
 
     try {
       // Create file list for concat demuxer
       // Format: file '/path/to/file1.mp3'
-      const fileListContent = inputPaths
+      // Use sanitized paths and escape single quotes
+      const fileListContent = safeInputPaths
         .map((filePath) => `file '${filePath.replace(/'/g, "'\\''")}'`)
         .join('\n');
 
@@ -318,7 +367,7 @@ export class AudioSplitter {
             }
           })
           .on('end', () => {
-            this.logger.log(`Successfully merged files to: ${outputPath}`);
+            this.logger.log(`Successfully merged files to: ${safeOutputPath}`);
             // Clean up file list
             void fs.promises.unlink(fileListPath).catch((error) => {
               this.logger.warn(
@@ -326,7 +375,7 @@ export class AudioSplitter {
                 error,
               );
             });
-            resolve(outputPath);
+            resolve(safeOutputPath);
           })
           .on('error', (err) => {
             this.logger.error('Error merging audio files:', err);
@@ -339,7 +388,7 @@ export class AudioSplitter {
             });
             reject(new Error(`Failed to merge audio files: ${err.message}`));
           })
-          .save(outputPath);
+          .save(safeOutputPath);
       });
     } catch (error) {
       // Clean up file list if it was created

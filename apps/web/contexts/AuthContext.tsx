@@ -47,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [hasRedirectedToVerify, setHasRedirectedToVerify] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -58,19 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Get the refreshed user
           const refreshedUser = auth.currentUser;
           setUser(refreshedUser);
-          
-          // Check email verification and redirect if needed
-          if (refreshedUser && !refreshedUser.emailVerified && typeof window !== 'undefined') {
-            const currentPath = window.location.pathname;
-            // Don't redirect if already on verify-email page
-            if (!currentPath.includes('/verify-email')) {
-              window.location.href = '/verify-email';
-              return;
-            }
+
+          // Don't auto-redirect for unverified users - let pages handle it individually
+          // This prevents redirect loops and flickering
+
+          // Connect WebSocket only for verified users
+          if (refreshedUser && refreshedUser.emailVerified) {
+            await websocketService.connect();
           }
-          
-          // Connect WebSocket when user is authenticated
-          await websocketService.connect();
         } catch (error) {
           setUser(user);
         }

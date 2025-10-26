@@ -10,6 +10,8 @@ import {
   Lock,
   Loader2,
   AlertCircle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export default function SharedTranscriptionPage() {
@@ -23,6 +25,7 @@ export default function SharedTranscriptionPage() {
   const [password, setPassword] = useState('');
   const [passwordRequired, setPasswordRequired] = useState(false);
   const [passwordSubmitted, setPasswordSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Fix hydration mismatch: compute year once on mount
   const [currentYear, setCurrentYear] = useState<number | null>(null);
@@ -161,16 +164,28 @@ export default function SharedTranscriptionPage() {
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <div>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('enterPassword')}
-                className="w-full px-4 py-3 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                className="w-full px-4 py-3 pr-12 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
                 autoFocus
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                )}
+              </button>
             </div>
 
             <button

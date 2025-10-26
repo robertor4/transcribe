@@ -11,6 +11,8 @@ import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
 import { EmailModule } from '../email/email.module';
 import { UserModule } from '../user/user.module';
+import { UsageModule } from '../usage/usage.module';
+import { SubscriptionGuard } from '../guards/subscription.guard';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
 @Module({
@@ -21,6 +23,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     AssemblyAIModule,
     EmailModule,
     UserModule,
+    UsageModule,
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),
@@ -34,6 +37,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     TranscriptionProcessor,
     AnalysisTemplateService,
     OnDemandAnalysisService,
+    SubscriptionGuard,
   ],
   exports: [
     TranscriptionService,

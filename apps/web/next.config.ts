@@ -8,6 +8,23 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Allow external images from Google and Firebase
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.firebasestorage.app',
+      },
+    ],
+  },
   // Fix COOP issues with OAuth popups
   async headers() {
     return [
@@ -17,6 +34,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin-allow-popups', // Allow OAuth popups
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'no-referrer-when-downgrade', // Allow loading Google profile images
           },
         ],
       },

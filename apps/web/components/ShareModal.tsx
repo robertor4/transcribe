@@ -27,6 +27,7 @@ import {
   TrendingUp,
   Sparkles,
   Eye,
+  EyeOff,
   Plus,
 } from 'lucide-react';
 import QRCode from 'qrcode';
@@ -63,6 +64,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [expirationOption, setExpirationOption] = useState<string>('7days');
   const [enablePassword, setEnablePassword] = useState(false);
   const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState(false);
   
   // Content selection
   const [contentPreset, setContentPreset] = useState<string>('complete');
@@ -747,13 +749,27 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </span>
                   </label>
                   {enablePassword && (
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder={t('enterPassword')}
-                      className="mt-2 w-full px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
-                    />
+                    <div className="mt-2 relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={t('enterPassword')}
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { useUsage } from '@/contexts/UsageContext';
 import {
   Upload,
   X,
@@ -19,12 +20,14 @@ import {
   Loader2
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import { 
-  SUPPORTED_AUDIO_FORMATS, 
+import {
+  SUPPORTED_AUDIO_FORMATS,
   MAX_FILE_SIZE,
   formatFileSize,
   isValidAudioFile
 } from '@transcribe/shared';
+import { QuotaExceededModal } from '@/components/paywall/QuotaExceededModal';
+import axios from 'axios';
 
 interface FileUploaderProps {
   onUploadComplete?: (transcriptionId: string, fileName?: string) => void;
@@ -33,12 +36,18 @@ interface FileUploaderProps {
 export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) => {
   const t = useTranslations('upload');
   const { trackEvent } = useAnalytics();
+  const { usageStats } = useUsage();
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [context, setContext] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [quotaModal, setQuotaModal] = useState<{
+    isOpen: boolean;
+    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits';
+    details?: { current?: number; limit?: number; required?: number };
+  }>({ isOpen: false, quotaType: 'transcriptions' });
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     // Clear previous errors
@@ -216,15 +225,51 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
       setContext('');
       setProcessingMode('individual');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      setErrors([errorMessage]);
+      // Check if this is a quota exceeded error (HTTP 402)
+      if (axios.isAxiosError(error) && error.response?.status === 402) {
+        const errorCode = error.response?.data?.errorCode;
+        const errorDetails = error.response?.data?.details;
 
-      // Track upload failure
-      trackEvent('upload_failed', {
-        error_message: errorMessage,
-        file_count: files.length,
-        processing_mode: processingMode
-      });
+        // Map error code to quota type
+        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' = 'transcriptions';
+
+        if (errorCode === 'QUOTA_EXCEEDED_TRANSCRIPTIONS') {
+          quotaType = 'transcriptions';
+        } else if (errorCode === 'QUOTA_EXCEEDED_DURATION') {
+          quotaType = 'duration';
+        } else if (errorCode === 'QUOTA_EXCEEDED_FILESIZE') {
+          quotaType = 'filesize';
+        } else if (errorCode === 'QUOTA_EXCEEDED_PAYG_CREDITS') {
+          quotaType = 'payg_credits';
+        } else if (errorCode === 'QUOTA_EXCEEDED_ON_DEMAND_ANALYSES') {
+          quotaType = 'on_demand_analyses';
+        }
+
+        // Show quota exceeded modal
+        setQuotaModal({
+          isOpen: true,
+          quotaType,
+          details: errorDetails,
+        });
+
+        // Track upload failure with quota info
+        trackEvent('upload_failed', {
+          error_message: `Quota exceeded: ${quotaType}`,
+          file_count: files.length,
+          processing_mode: processingMode
+        });
+      } else {
+        // Show generic error for other errors
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        setErrors([errorMessage]);
+
+        // Track upload failure
+        trackEvent('upload_failed', {
+          error_message: errorMessage,
+          file_count: files.length,
+          processing_mode: processingMode
+        });
+      }
     } finally {
       setUploading(false);
     }
@@ -234,12 +279,12 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
     <div className="space-y-6">
       {/* Error Messages */}
       {errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
           <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
             <div className="flex-1">
-              <h3 className="text-sm font-medium text-red-800">{t('uploadErrors')}</h3>
-              <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
+              <h3 className="text-sm font-medium text-red-800 dark:text-red-300">{t('uploadErrors')}</h3>
+              <ul className="mt-1 text-sm text-red-700 dark:text-red-400 list-disc list-inside">
                 {errors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
@@ -338,10 +383,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragEnd={handleDragEnd}
                   className={`
-                    flex items-center justify-between bg-white border rounded-lg p-3 transition-all
+                    flex items-center justify-between bg-white dark:bg-gray-700 border rounded-lg p-3 transition-all
                     ${draggedIndex === index
-                      ? 'border-[#cc3399] bg-pink-50'
-                      : 'border-gray-200 hover:border-[#cc3399]'
+                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-[#cc3399]'
                     }
                     ${files.length > 1 ? 'cursor-move' : ''}
                   `}
@@ -361,7 +406,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                               {index + 1}
                             </span>
                           )}
-                          <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{file.name}</p>
                         </div>
                         <p className="text-xs text-gray-600 dark:text-gray-400">{formatFileSize(file.size)}</p>
                       </div>
@@ -370,7 +415,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   <div className="flex items-center ml-3">
                     <button
                       onClick={() => removeFile(index)}
-                      className="text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded"
+                      className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
                       title={t('removeFile') || 'Remove file'}
                       type="button"
                     >
@@ -389,16 +434,16 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               className={`
                 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
                 transition-all duration-200
-                ${isDragActive 
-                  ? 'border-[#cc3399] bg-pink-50' 
-                  : 'border-gray-300 hover:border-[#cc3399] bg-white hover:bg-pink-50/20'
+                ${isDragActive
+                  ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] bg-white dark:bg-gray-700 hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
                 }
               `}
             >
               <input {...getInputProps()} />
               <div className="flex items-center justify-center space-x-2">
                 <Upload className="h-5 w-5 text-[#cc3399]" />
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('dropMoreFiles') || 'Add more files'}
                 </p>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -419,15 +464,15 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
           {/* Processing Mode Toggle - Only shown when multiple files */}
           {files.length > 1 && (
-            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+            <div className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-700">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 {t('processingMode')}
               </label>
               {processingMode === 'merged' && (
-                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-blue-800">
+                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-blue-800 dark:text-blue-300">
                       {t('mergeOrderMatters') || 'Files will be merged in the order shown above. Drag to reorder them chronologically.'}
                     </p>
                   </div>
@@ -440,14 +485,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   className={`
                     flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
                     ${processingMode === 'individual'
-                      ? 'border-[#cc3399] bg-pink-50 text-gray-900'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#cc3399] hover:bg-pink-50/20'
+                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-2 mb-1">
-                    <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
-                    <span className="font-semibold text-sm text-gray-900">{t('processIndividually')}</span>
+                    <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#cc3399]' : 'text-gray-600 dark:text-gray-400'}`} />
+                    <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('processIndividually')}</span>
                   </div>
                   <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processIndividuallyDesc')}</span>
                 </button>
@@ -458,14 +503,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   className={`
                     flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
                     ${processingMode === 'merged'
-                      ? 'border-[#cc3399] bg-pink-50 text-gray-900'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-[#cc3399] hover:bg-pink-50/20'
+                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-2 mb-1">
-                    <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#cc3399]' : 'text-gray-600'}`} />
-                    <span className="font-semibold text-sm text-gray-900">{t('processMerged')}</span>
+                    <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#cc3399]' : 'text-gray-600 dark:text-gray-400'}`} />
+                    <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('processMerged')}</span>
                   </div>
                   <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processMergedDesc')}</span>
                 </button>
@@ -475,7 +520,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
 
           {/* Context Input - Simplified */}
           <div>
-            <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="context" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {files.length > 1
                 ? (processingMode === 'merged' ? t('contextForMerged') : t('contextForAll'))
                 : t('addContext')}
@@ -497,7 +542,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             className={`
               w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center
               ${uploading
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 : 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
               }
             `}
@@ -583,6 +628,15 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           </div>
         </div>
       </details>
+
+      {/* Quota Exceeded Modal */}
+      <QuotaExceededModal
+        isOpen={quotaModal.isOpen}
+        onClose={() => setQuotaModal({ ...quotaModal, isOpen: false })}
+        quotaType={quotaModal.quotaType}
+        currentTier={(usageStats?.tier as 'free' | 'professional' | 'payg') || 'free'}
+        details={quotaModal.details}
+      />
     </div>
   );
 };

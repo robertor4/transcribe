@@ -17,12 +17,18 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
+import { UsageService } from '../usage/usage.service';
 import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { SubscriptionGuard } from '../guards/subscription.guard';
+import { PaginationDto } from './dto/pagination.dto';
+import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
+import { CreateShareLinkDto, UpdateShareSettingsDto, SendShareEmailDto } from './dto/share-link.dto';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -45,10 +51,12 @@ export class TranscriptionController {
     private readonly transcriptionService: TranscriptionService,
     private readonly templateService: AnalysisTemplateService,
     private readonly onDemandAnalysisService: OnDemandAnalysisService,
+    private readonly usageService: UsageService,
   ) {}
 
   // Public endpoint for shared transcripts (no auth required)
   @Get('shared/:shareToken')
+  @Throttle({ short: { limit: 30, ttl: 60000 } }) // 30 views per minute (public)
   async getSharedTranscription(
     @Param('shareToken') shareToken: string,
     @Query('password') password?: string,
@@ -76,6 +84,7 @@ export class TranscriptionController {
 
   @Post('upload')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 uploads per minute
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {
@@ -116,6 +125,18 @@ export class TranscriptionController {
       throw new BadRequestException('File size exceeds limit');
     }
 
+    // Check quota before processing
+    const fileSizeBytes = file.size;
+    const estimatedDurationMinutes = this.estimateDuration(
+      fileSizeBytes,
+      file.mimetype,
+    );
+    await this.usageService.checkQuota(
+      req.user.uid,
+      fileSizeBytes,
+      estimatedDurationMinutes,
+    );
+
     const transcription = await this.transcriptionService.createTranscription(
       req.user.uid,
       file,
@@ -133,6 +154,7 @@ export class TranscriptionController {
 
   @Post('upload-batch')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 2, ttl: 60000 } }) // 2 batch uploads per minute
   @UseInterceptors(
     FilesInterceptor('files', 3, {
       limits: {
@@ -181,6 +203,20 @@ export class TranscriptionController {
       }
     }
 
+    // Check quota for each file before processing
+    for (const file of files) {
+      const fileSizeBytes = file.size;
+      const estimatedDurationMinutes = this.estimateDuration(
+        fileSizeBytes,
+        file.mimetype,
+      );
+      await this.usageService.checkQuota(
+        req.user.uid,
+        fileSizeBytes,
+        estimatedDurationMinutes,
+      );
+    }
+
     const shouldMerge = mergeFiles === 'true';
     const result = await this.transcriptionService.createBatchTranscription(
       req.user.uid,
@@ -204,13 +240,12 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async getTranscriptions(
     @Req() req: Request & { user: any },
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('pageSize', ParseIntPipe) pageSize = 20,
+    @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponse<PaginatedResponse<Transcription>>> {
     const result = await this.transcriptionService.getTranscriptions(
       req.user.uid,
-      page,
-      pageSize,
+      paginationDto.page,
+      paginationDto.pageSize,
     );
 
     return {
@@ -318,14 +353,21 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async addComment(
     @Param('id') transcriptionId: string,
-    @Body() commentData: { position: any; content: string },
+    @Body() dto: AddCommentDto,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<SummaryComment>> {
+    // Sanitize content to prevent XSS
+    const DOMPurify = (await import('isomorphic-dompurify')).default;
+    const sanitizedContent = DOMPurify.sanitize(dto.content, {
+      ALLOWED_TAGS: [],  // Strip all HTML
+      ALLOWED_ATTR: [],
+    });
+
     const comment = await this.transcriptionService.addSummaryComment(
       transcriptionId,
       req.user.uid,
-      commentData.position,
-      commentData.content,
+      dto.position,
+      sanitizedContent,
     );
 
     return {
@@ -357,9 +399,19 @@ export class TranscriptionController {
   async updateComment(
     @Param('id') transcriptionId: string,
     @Param('commentId') commentId: string,
-    @Body() updates: { content?: string; resolved?: boolean },
+    @Body() dto: UpdateCommentDto,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<SummaryComment>> {
+    // Sanitize content if provided
+    const updates: any = { ...dto };
+    if (dto.content) {
+      const DOMPurify = (await import('isomorphic-dompurify')).default;
+      updates.content = DOMPurify.sanitize(dto.content, {
+        ALLOWED_TAGS: [],
+        ALLOWED_ATTR: [],
+      });
+    }
+
     const comment = await this.transcriptionService.updateSummaryComment(
       transcriptionId,
       commentId,
@@ -418,15 +470,16 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async createShareLink(
     @Param('id') transcriptionId: string,
-    @Body()
-    shareSettings: {
-      expiresAt?: Date;
-      maxViews?: number;
-      password?: string;
-      contentOptions?: ShareContentOptions;
-    },
+    @Body() dto: CreateShareLinkDto,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<{ shareToken: string; shareUrl: string }>> {
+    // Hash password before storing if provided
+    const shareSettings: any = { ...dto };
+    if (dto.password) {
+      const bcrypt = await import('bcrypt');
+      shareSettings.password = await bcrypt.hash(dto.password, 10);
+    }
+
     const result = await this.transcriptionService.createShareLink(
       transcriptionId,
       req.user.uid,
@@ -461,15 +514,16 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async updateShareSettings(
     @Param('id') transcriptionId: string,
-    @Body()
-    shareSettings: {
-      expiresAt?: Date;
-      maxViews?: number;
-      password?: string;
-      contentOptions?: ShareContentOptions;
-    },
+    @Body() dto: UpdateShareSettingsDto,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse> {
+    // Hash password before storing if provided
+    const shareSettings: any = { ...dto };
+    if (dto.password) {
+      const bcrypt = await import('bcrypt');
+      shareSettings.password = await bcrypt.hash(dto.password, 10);
+    }
+
     await this.transcriptionService.updateShareSettings(
       transcriptionId,
       req.user.uid,
@@ -484,21 +538,16 @@ export class TranscriptionController {
 
   @Post(':id/share/email')
   @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 10, ttl: 3600000 } }) // 10 emails per hour
   async sendShareEmail(
     @Param('id') transcriptionId: string,
-    @Body()
-    emailRequest: {
-      recipientEmail: string;
-      recipientName?: string;
-      message?: string;
-      senderName?: string;
-    },
+    @Body() dto: SendShareEmailDto,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse> {
     const success = await this.transcriptionService.sendShareEmail(
       transcriptionId,
       req.user.uid,
-      emailRequest,
+      dto,
     );
 
     if (!success) {
@@ -593,11 +642,17 @@ export class TranscriptionController {
       throw new BadRequestException('Template ID is required');
     }
 
+    // Check quota before generating
+    await this.usageService.checkOnDemandAnalysisQuota(req.user.uid);
+
     const analysis = await this.onDemandAnalysisService.generateFromTemplate(
       transcriptionId,
       templateId,
       req.user.uid,
     );
+
+    // Track usage after successful generation
+    await this.usageService.trackOnDemandAnalysis(req.user.uid, analysis.id);
 
     return {
       success: true,
@@ -641,5 +696,36 @@ export class TranscriptionController {
       success: true,
       message: 'Analysis deleted successfully',
     };
+  }
+
+  /**
+   * Estimate audio duration based on file size and mime type
+   * This is a rough estimate - actual duration will be determined after transcription
+   */
+  private estimateDuration(fileSizeBytes: number, mimeType: string): number {
+    const fileSizeMB = fileSizeBytes / (1024 * 1024);
+
+    // Different compression rates for different formats
+    // These are rough estimates in MB per minute
+    const compressionRates: Record<string, number> = {
+      'audio/mp3': 1.0, // ~1MB per minute
+      'audio/mpeg': 1.0,
+      'audio/m4a': 0.8, // Better compression
+      'audio/x-m4a': 0.8,
+      'audio/mp4': 0.8,
+      'audio/wav': 10.0, // Uncompressed, ~10MB per minute
+      'audio/flac': 6.0, // Lossless, ~6MB per minute
+      'audio/ogg': 0.7,
+      'audio/webm': 0.7,
+      'video/mp4': 2.0, // Video files tend to be larger
+      'video/webm': 1.5,
+      default: 1.0, // Default assumption
+    };
+
+    const rate = compressionRates[mimeType] || compressionRates.default;
+    const estimatedMinutes = Math.ceil(fileSizeMB / rate);
+
+    // Cap estimate at reasonable max (e.g., 8 hours = 480 minutes)
+    return Math.min(estimatedMinutes, 480);
   }
 }

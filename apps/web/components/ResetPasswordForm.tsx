@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Lock, AlertCircle, Loader2, CheckCircle, Check, X } from 'lucide-react';
+import { Lock, AlertCircle, Loader2, CheckCircle, Check, X, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface PasswordStrength {
@@ -24,6 +24,8 @@ export default function ResetPasswordForm() {
   const [email, setEmail] = useState('');
   const [oobCode, setOobCode] = useState('');
   const [resetComplete, setResetComplete] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
     minLength: false,
     hasUppercase: false,
@@ -215,14 +217,26 @@ export default function ResetPasswordForm() {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="new-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
               placeholder={tAuth('enterNewPassword')}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              aria-label={showPassword ? tAuth('hidePassword') : tAuth('showPassword')}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+              )}
+            </button>
           </div>
         </div>
 
@@ -237,14 +251,26 @@ export default function ResetPasswordForm() {
             <input
               id="confirmPassword"
               name="confirmPassword"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               autoComplete="new-password"
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
               placeholder={tAuth('confirmYourPassword')}
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              aria-label={showConfirmPassword ? tAuth('hidePassword') : tAuth('showPassword')}
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+              ) : (
+                <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+              )}
+            </button>
           </div>
         </div>
 

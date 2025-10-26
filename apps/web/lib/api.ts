@@ -94,14 +94,9 @@ api.interceptors.response.use(
       }
     }
     
-    // Make sure we always return a proper error object
-    const errorToReturn = error.response?.data || {
-      status: error.response?.status || 500,
-      message: error.message || 'An unknown error occurred',
-      originalError: error
-    };
-    
-    return Promise.reject(errorToReturn);
+    // Return the original axios error to preserve error.response.status
+    // This allows components to check error.response?.status === 402 for quota errors
+    return Promise.reject(error);
   }
 );
 

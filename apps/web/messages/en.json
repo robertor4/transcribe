@@ -40,6 +40,8 @@
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "displayName": "Full Name",
     "enterYourName": "Enter your full name",
     "enterYourEmail": "Enter your email address",
@@ -557,7 +559,7 @@
       "autoDelete": "Auto-delete Transcriptions",
       "autoDeleteDescription": "Automatically delete old transcriptions after a certain period",
       "never": "Never",
-      "days": "{{count}} days",
+      "days": "{count} days",
       "comingSoon": "Coming soon",
       "saving": "Saving...",
       "saveChanges": "Save Changes"
@@ -575,6 +577,8 @@
       "confirmPassword": "Confirm New Password",
       "updatePassword": "Update Password",
       "changingPassword": "Changing...",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 6 characters",
       "notAuthenticated": "Not authenticated",
@@ -658,10 +662,10 @@
       "titleHighlight": "clarity.",
       "subtitle": "Neural Summary transforms hours of audio into clear, structured notes, decisions, and next steps — in seconds.",
       "cta": {
-        "primary": "Start your free trial",
+        "primary": "Start Free Forever",
         "secondary": "See how it works"
       },
-      "guarantee": "Takes less than 2 minutes • No credit card • Instant setup",
+      "guarantee": "Always free plan available • No credit card required • Takes 2 minutes",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
@@ -879,6 +883,8 @@
     "never": "Never",
     "passwordProtect": "Password Protect",
     "enterPassword": "Enter password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "createLink": "Create Share Link",
     "creating": "Creating...",
     "linkCreated": "Share Link Created",
@@ -911,6 +917,8 @@
     "passwordRequired": "Password Required",
     "passwordDescription": "This transcript is password protected. Please enter the password to view it.",
     "enterPassword": "Enter password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "submit": "Submit",
     "error": {
       "title": "Access Error",
@@ -1036,6 +1044,373 @@
         "title": "Amendments to Terms",
         "content": "We reserve the right to modify these Terms at any time. We will notify users of any material changes by posting the new Terms on this page and updating the 'Effective Date'."
       }
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Pricing - Neural Summary",
+      "description": "Choose the perfect plan for your transcription needs. From free to enterprise, we have a plan that fits your workflow."
+    },
+    "hero": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "Choose the plan that fits your needs. Start free, upgrade anytime.",
+      "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout.",
+      "annual": "Annual",
+      "monthly": "Monthly",
+      "save25": "Save 25%",
+      "noCreditCard": "No credit card required",
+      "freeTrial": "14-day free trial",
+      "viewComparison": "View detailed comparison"
+    },
+    "tiers": {
+      "free": {
+        "name": "Free",
+        "title": "Free",
+        "price": "Free",
+        "description": "Perfect for trying out Neural Summary",
+        "cta": "Get Started",
+        "features": {
+          "transcriptions": "3 transcriptions/month",
+          "duration": "30 minutes max per file",
+          "fileSize": "100MB max file size",
+          "analyses": "Basic summary only",
+          "coreAnalyses": "4 core analyses included",
+          "onDemand": "2 on-demand analyses/month",
+          "translation": "Translation features",
+          "sharing": "Share transcripts",
+          "batch": "Batch processing",
+          "storage": "90 days storage",
+          "support": "Community support"
+        }
+      },
+      "professional": {
+        "name": "Professional",
+        "title": "Professional",
+        "price": "$29",
+        "priceAnnual": "$261",
+        "period": "/month",
+        "description": "For professionals who transcribe regularly",
+        "cta": "Get Started",
+        "badge": "Most Popular",
+        "recommended": "RECOMMENDED",
+        "guarantee": "30-day money-back guarantee",
+        "saveAnnual": "Save $87/year",
+        "features": {
+          "transcriptions": "Unlimited transcriptions",
+          "hours": "60 hours/month included",
+          "unlimited": "Unlimited transcriptions",
+          "duration": "60 hours/month included",
+          "overageRate": "$0.50 per additional hour",
+          "overage": "Overage: $0.50/hour",
+          "fileSize": "5GB max file size",
+          "analyses": "All analysis types",
+          "allAnalyses": "All analysis types",
+          "onDemandAnalyses": "Unlimited on-demand analyses",
+          "storage": "Unlimited storage",
+          "sharing": "Advanced sharing features",
+          "advancedSharing": "Advanced sharing & collaboration",
+          "translation": "Translation to 50+ languages",
+          "batch": "Batch processing",
+          "priority": "Priority processing",
+          "support": "Priority email support"
+        }
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "title": "Pay-As-You-Go",
+        "price": "$1.50",
+        "period": "/hour",
+        "priceUnit": "/hour",
+        "description": "Perfect for occasional use",
+        "cta": "Buy Credits",
+        "features": {
+          "transcriptions": "Unlimited transcriptions",
+          "credits": "Credits never expire",
+          "noSubscription": "No subscription required",
+          "allFeatures": "All features included",
+          "noExpiry": "Credits never expire",
+          "minimum": "Minimum purchase",
+          "rate": "Flexible hourly rate",
+          "fileSize": "5GB max file size",
+          "analyses": "All analysis types",
+          "onDemandAnalyses": "Credits per analysis",
+          "storage": "180 days storage",
+          "support": "Email support"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Start transcribing smarter",
+      "subtitle": "No credit card required for free plan",
+      "button": "Get Started Free"
+    },
+    "comparison": {
+      "feature": "Feature",
+      "tiers": {
+        "free": "Free",
+        "professional": "Professional",
+        "payg": "Pay-As-You-Go"
+      },
+      "categories": {
+        "basics": "Basics",
+        "analyses": "Analysis & Features",
+        "features": "Additional Features"
+      },
+      "features": {
+        "transcriptions": "Transcriptions per month",
+        "duration": "Max duration per file",
+        "fileSize": "Max file size",
+        "hours": "Monthly hours included",
+        "coreAnalyses": "Core analyses",
+        "onDemand": "On-demand analyses",
+        "translation": "Translation",
+        "sharing": "Sharing features",
+        "batch": "Batch processing",
+        "priority": "Priority processing",
+        "api": "API access"
+      },
+      "title": "Compare Plans",
+      "subtitle": "Find the perfect plan for your needs",
+      "values": {
+        "unlimited": "Unlimited",
+        "basic": "Basic",
+        "advanced": "Advanced",
+        "priority": "Priority",
+        "community": "Community",
+        "email": "Email",
+        "priorityEmail": "Priority Email"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "questions": {
+        "cost": {
+          "question": "What exactly does transcription cost?",
+          "answer": "Professional plan includes 60 hours/month for $29. Additional hours are $0.50 each. Pay-As-You-Go is $1.50/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
+        },
+        "overage": {
+          "question": "What happens if I exceed my monthly limit?",
+          "answer": "Professional users are automatically charged $0.50 per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
+        },
+        "cancel": {
+          "question": "Can I cancel my subscription anytime?",
+          "answer": "Yes! You can cancel anytime. Your subscription remains active until the end of your billing period, and you won't be charged again."
+        },
+        "currency": {
+          "question": "What currencies do you support?",
+          "answer": "We support 15+ currencies including USD, EUR, GBP, CAD, AUD, JPY, and more. Prices are automatically converted to your local currency."
+        },
+        "upgrade": {
+          "question": "Can I upgrade or downgrade my plan?",
+          "answer": "Yes! Upgrades take effect immediately with prorated charges. Downgrades take effect at the end of your current billing period, so you can use your current plan until then."
+        },
+        "payg": {
+          "question": "How do Pay-As-You-Go credits work?",
+          "answer": "Credits cost $1.50 per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of professionals using Neural Summary to save time and improve their work.",
+      "button": "Start Free Trial"
+    },
+    "featureCategories": {
+      "transcription": "Transcription",
+      "analysis": "Analysis",
+      "collaboration": "Collaboration",
+      "support": "Support"
+    }
+  },
+  "checkout": {
+    "metadata": {
+      "title": "Checkout - Neural Summary",
+      "description": "Complete your subscription to Neural Summary"
+    },
+    "title": "Complete Your Subscription",
+    "subtitle": "You're one step away from unlimited transcriptions",
+    "selectedPlan": "Selected Plan",
+    "billingCycle": "Billing Cycle",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save25": "Save 25%",
+    "summary": {
+      "title": "Order Summary",
+      "plan": "Plan",
+      "billing": "Billing",
+      "total": "Total",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "billedMonthly": "Billed monthly",
+      "billedAnnually": "Billed annually"
+    },
+    "features": {
+      "title": "What's Included"
+    },
+    "secure": {
+      "title": "Secure Payment",
+      "description": "Your payment information is encrypted and secure. We use Stripe for payment processing."
+    },
+    "cta": "Continue to Payment",
+    "processing": "Processing...",
+    "loadingStripe": "Loading secure checkout...",
+    "redirecting": "Redirecting to secure checkout...",
+    "error": {
+      "title": "Checkout Error",
+      "description": "There was an error loading the checkout page. Please try again.",
+      "invalidTier": "Invalid subscription tier",
+      "sessionFailed": "Failed to create checkout session",
+      "backToPricing": "Back to Pricing",
+      "tryAgain": "Try Again"
+    },
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Thank you for subscribing! Your account has been upgraded and you now have access to all premium features.",
+      "nextSteps": {
+        "title": "What's Next?",
+        "step1": "Upload your first audio file",
+        "step2": "Explore all analysis types",
+        "step3": "Share transcripts with your team"
+      },
+      "cta": "Go to Dashboard",
+      "receiptNotice": "A receipt has been sent to your email address."
+    },
+    "cancel": {
+      "title": "Checkout Cancelled",
+      "subtitle": "Your subscription was not completed",
+      "message": "No charges were made to your account. You can try again anytime.",
+      "cta": "View Pricing",
+      "support": "Need help? Contact our support team."
+    }
+  },
+  "subscription": {
+    "metadata": {
+      "title": "Subscription & Billing - Neural Summary",
+      "description": "Manage your subscription, view usage, and billing history"
+    },
+    "title": "Subscription & Billing",
+    "loading": "Loading subscription details...",
+    "error": {
+      "loadFailed": "Failed to load subscription details",
+      "updateFailed": "Failed to update subscription",
+      "cancelFailed": "Failed to cancel subscription",
+      "retry": "Try Again"
+    },
+    "currentPlan": {
+      "title": "Current Plan",
+      "free": "Free Plan",
+      "professional": "Professional Plan",
+      "payg": "Pay-As-You-Go",
+      "status": {
+        "active": "Active",
+        "cancelled": "Cancelled",
+        "pastDue": "Past Due",
+        "trialing": "Trial"
+      },
+      "billingCycle": "Billing Cycle",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "nextBilling": "Next Billing Date",
+      "cancelAt": "Cancels On",
+      "amount": "Amount"
+    },
+    "usage": {
+      "title": "Usage This Month",
+      "transcriptions": "Transcriptions",
+      "hours": "Hours",
+      "onDemandAnalyses": "On-Demand Analyses",
+      "resetDate": "Resets on",
+      "paygCredits": "Available Credits",
+      "buyMore": "Buy More Credits",
+      "overage": {
+        "title": "Overage Charges",
+        "description": "You've used {hours} hours over your 60-hour limit this month",
+        "rate": "Additional hours are charged at $0.50/hour",
+        "total": "Estimated overage charge",
+        "nextBill": "Will be added to your next bill on {date}"
+      }
+    },
+    "actions": {
+      "upgrade": "Upgrade Plan",
+      "changePlan": "Change Plan",
+      "cancel": "Cancel Subscription",
+      "reactivate": "Reactivate Subscription",
+      "manageBilling": "Manage Billing",
+      "viewInvoices": "View Invoices"
+    },
+    "billingHistory": {
+      "title": "Billing History",
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "invoice": "Invoice",
+      "download": "Download",
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "empty": "No billing history yet"
+    },
+    "cancelModal": {
+      "title": "Cancel Subscription",
+      "description": "Are you sure you want to cancel your subscription?",
+      "warning": "You'll lose access to Professional features at the end of your billing period on {date}.",
+      "keepAccess": "You'll keep access until",
+      "confirm": "Yes, Cancel Subscription",
+      "cancel": "Keep Subscription",
+      "cancelling": "Cancelling...",
+      "success": "Subscription cancelled successfully",
+      "feedback": {
+        "title": "We're sorry to see you go",
+        "question": "What's the main reason for cancelling?",
+        "tooExpensive": "Too expensive",
+        "notUsing": "Not using it enough",
+        "missingFeatures": "Missing features",
+        "foundAlternative": "Found alternative",
+        "other": "Other",
+        "comments": "Additional comments (optional)",
+        "submit": "Submit & Cancel"
+      }
+    }
+  },
+  "paywall": {
+    "quotaExceeded": {
+      "transcriptions": {
+        "title": "Monthly Limit Reached",
+        "description": "You've used all 3 free transcriptions this month. Upgrade to Professional for unlimited transcriptions."
+      },
+      "duration": {
+        "title": "Audio Too Long",
+        "description": "This file exceeds your plan's duration limit. Upgrade to process longer audio files."
+      },
+      "filesize": {
+        "title": "File Too Large",
+        "description": "This file exceeds your plan's file size limit. Upgrade to process larger files."
+      },
+      "paygCredits": {
+        "title": "Insufficient Credits",
+        "description": "You don't have enough credits for this transcription. Purchase more credits to continue."
+      },
+      "onDemandAnalyses": {
+        "title": "Analysis Limit Reached",
+        "description": "You've used all your on-demand analyses this month. Upgrade to get more analyses or wait until next month."
+      },
+      "current": "Current usage",
+      "limit": "Your limit",
+      "required": "Required",
+      "upgradeButton": "Upgrade Plan",
+      "buyCreditsButton": "Buy Credits",
+      "cancelButton": "Cancel"
+    },
+    "usageIndicator": {
+      "approaching": "Approaching limit - consider upgrading soon",
+      "exceeded": "Limit exceeded - upgrade to continue",
+      "unlimited": "Unlimited"
+    },
+    "upgradePrompt": {
+      "title": "Upgrade to Professional",
+      "defaultMessage": "Unlock unlimited transcriptions, longer audio files, and advanced analysis features.",
+      "cta": "View Plans"
     }
   },
   "privacy": {
@@ -1251,5 +1626,14 @@
         "notification": "For material changes, we will notify you via email or through a prominent notice on our Service."
       }
     }
+  },
+  "usage": {
+    "yourUsage": "Your Usage",
+    "resetsOn": "Resets on",
+    "upgradePlan": "Upgrade Plan",
+    "transcriptions": "Transcriptions",
+    "hours": "Hours",
+    "remaining": "remaining",
+    "onDemandAnalyses": "On-Demand Analyses"
   }
 }

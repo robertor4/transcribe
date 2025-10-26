@@ -90,8 +90,13 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
     setIsTranslating(true);
     try {
       const response = await transcriptionApi.translate(transcriptionId, languageCode);
+      console.log('[Translation] Response:', response);
+
       if (response.success && response.data) {
         const translationData = response.data as TranslationData;
+        console.log('[Translation] Translation data:', translationData);
+        console.log('[Translation] Analyses:', translationData.analyses);
+
         setSelectedLanguage(languageCode);
         setCurrentAnalyses({
           ...translationData.analyses,
@@ -563,6 +568,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
           <MoreAnalysesTab
             transcriptionId={transcriptionId}
             transcription={transcription}
+            selectedLanguage={selectedLanguage}
           />
         )}
       </div>

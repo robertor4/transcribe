@@ -1123,5 +1123,14 @@
         "notification": "Voor materiële wijzigingen zullen wij u via e-mail of door een prominente kennisgeving op onze Service op de hoogte stellen."
       }
     }
+  },
+  "usage": {
+    "yourUsage": "Uw Verbruik",
+    "resetsOn": "Wordt gereset op",
+    "upgradePlan": "Upgrade Abonnement",
+    "transcriptions": "Transcripties",
+    "hours": "Uren",
+    "remaining": "resterend",
+    "onDemandAnalyses": "On-Demand Analyses"
   }
 }

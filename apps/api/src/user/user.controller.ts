@@ -1,13 +1,31 @@
-import { Controller, Get, Put, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Delete,
+  Body,
+  Query,
+  UseGuards,
+  Req,
+  Logger,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { UserService } from './user.service';
+import { UsageService } from '../usage/usage.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { ApiResponse, User } from '@transcribe/shared';
 
 @Controller('user')
 @UseGuards(FirebaseAuthGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  private readonly logger = new Logger(UserController.name);
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly usageService: UsageService,
+    private readonly firebaseService: FirebaseService,
+  ) {}
 
   @Get('profile')
   async getProfile(@Req() req: Request): Promise<ApiResponse<User>> {
@@ -73,6 +91,135 @@ export class UserController {
     return {
       success: true,
       data: updatedUser,
+    };
+  }
+
+  /**
+   * Get usage statistics for current user
+   * Includes tier, usage counts, limits, and reset date
+   */
+  @Get('usage-stats')
+  async getUsageStats(@Req() req: Request): Promise<
+    ApiResponse<{
+      tier: string;
+      usage: {
+        hours: number;
+        transcriptions: number;
+        onDemandAnalyses: number;
+      };
+      limits: {
+        transcriptions?: number;
+        hours?: number;
+        onDemandAnalyses?: number;
+      };
+      overage: {
+        hours: number;
+        amount: number;
+      };
+      percentUsed: number;
+      warnings: string[];
+      paygCredits?: number;
+      resetDate: Date;
+    }>
+  > {
+    const userId = (req as any).user.uid;
+
+    // Get usage stats from UsageService
+    const stats = await this.usageService.getUsageStats(userId);
+
+    // Get user to access paygCredits and calculate reset date
+    const user = await this.firebaseService.getUser(userId);
+
+    // Calculate reset date (first day of next month)
+    let lastReset = user?.usageThisMonth?.lastResetAt || new Date();
+
+    // Convert Firestore Timestamp to Date if needed
+    if (lastReset && typeof lastReset.toDate === 'function') {
+      lastReset = lastReset.toDate();
+    }
+
+    // Defensive: If lastResetAt is before 2020 (e.g., Unix epoch), use current date
+    const validResetDate =
+      lastReset.getTime() < new Date('2020-01-01').getTime()
+        ? new Date()
+        : lastReset;
+
+    const nextReset = new Date(validResetDate);
+    nextReset.setMonth(nextReset.getMonth() + 1);
+    nextReset.setDate(1); // First day of next month
+
+    return {
+      success: true,
+      data: {
+        ...stats,
+        paygCredits: user?.paygCredits,
+        resetDate: nextReset,
+      },
+    };
+  }
+
+  /**
+   * Delete user account
+   * @query hardDelete - If 'true', permanently delete all user data (default: soft delete)
+   *
+   * SOFT DELETE (default):
+   * - Marks user as deleted in Firestore
+   * - Preserves all user data (transcriptions, analyses, files)
+   * - Preserves Stripe subscription (no cancellation)
+   * - Account can be recovered
+   *
+   * HARD DELETE (hardDelete=true):
+   * - Deletes all transcriptions
+   * - Deletes all generated analyses
+   * - Deletes all storage files
+   * - Cancels Stripe subscription and deletes customer (when implemented)
+   * - Deletes Firestore user document
+   * - Deletes Firebase Auth account
+   * - IRREVERSIBLE - no recovery possible
+   */
+  @Delete('me')
+  async deleteAccount(
+    @Req() req: Request,
+    @Query('hardDelete') hardDelete?: string,
+  ): Promise<
+    ApiResponse<{
+      success: boolean;
+      deletionType: 'soft' | 'hard';
+      deletedData: {
+        transcriptions?: number;
+        analyses?: number;
+        storageFiles?: number;
+        authAccount?: boolean;
+        firestoreUser?: boolean;
+      };
+      message: string;
+    }>
+  > {
+    const userId = (req as any).user.uid;
+    const userEmail = (req as any).user.email;
+    const isHardDelete = hardDelete === 'true';
+
+    this.logger.log(
+      `Account deletion requested for user ${userId} (${userEmail}) - Type: ${isHardDelete ? 'HARD' : 'SOFT'}`,
+    );
+
+    const result = await this.userService.deleteAccount(userId, isHardDelete);
+
+    const message = isHardDelete
+      ? `Account permanently deleted. All data has been removed and cannot be recovered.`
+      : `Account deactivated. Your data has been preserved and can be recovered by contacting support.`;
+
+    this.logger.log(
+      `Account deletion completed for user ${userId} - Result:`,
+      result,
+    );
+
+    return {
+      success: true,
+      data: {
+        ...result,
+        message,
+      },
     };
   }
 }
