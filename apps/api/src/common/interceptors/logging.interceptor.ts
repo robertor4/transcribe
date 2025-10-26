@@ -30,6 +30,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, url, ip, headers } = request;
     const userAgent = headers['user-agent'] || 'unknown';
     const userId = (request as any).user?.uid || 'anonymous';
+    const clientIp = ip || 'unknown';
     const startTime = Date.now();
 
     // Track the response
@@ -44,7 +45,7 @@ export class LoggingInterceptor implements NestInterceptor {
           method,
           url,
           userId,
-          ip,
+          clientIp,
           userAgent,
           duration,
         );
@@ -59,7 +60,7 @@ export class LoggingInterceptor implements NestInterceptor {
           method,
           url,
           userId,
-          ip,
+          clientIp,
           userAgent,
           duration,
           error,
