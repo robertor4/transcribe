@@ -17,7 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Displays billing history with invoice download links
   - Allows Professional users to cancel subscriptions (cancels at period end)
   - Added PAYG credit purchase link for pay-as-you-go users
-  - Location: `apps/web/app/[locale]/settings/layout.tsx:73-78`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx:199-249`
+  - **Back navigation button** for easy return to previous page
+  - **Optimized dark mode** with semi-transparent cards, backdrop blur, and softer shadows for better readability
+  - Location: `apps/web/app/[locale]/settings/layout.tsx:73-78`, `apps/web/app/[locale]/dashboard/settings/subscription/page.tsx`
 - **Critical Firebase Documentation**: Added comprehensive guide distinguishing Firebase Auth vs Firestore user data
   - Documents `getUserById()` (Auth only - no subscription data) vs `getUser()` (full Firestore document)
   - Explains common bug pattern where wrong method causes silent failures

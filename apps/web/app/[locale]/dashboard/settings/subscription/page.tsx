@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
+import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface SubscriptionData {
   subscription: {
@@ -50,6 +51,7 @@ interface Invoice {
 
 export default function SubscriptionPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const t = useTranslations('subscription');
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
@@ -176,12 +178,21 @@ export default function SubscriptionPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+      {/* Back Navigation */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 mb-6 transition-colors"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span className="text-sm font-medium">Back</span>
+      </button>
+
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
         {t('title')}
       </h1>
 
       {/* Current Plan */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-md dark:shadow-gray-900/50 p-6 mb-6 border border-gray-200 dark:border-gray-700/50">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -280,7 +291,7 @@ export default function SubscriptionPage() {
 
       {/* Usage Stats */}
       {usageStats && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-md dark:shadow-gray-900/50 p-6 mb-6 border border-gray-200 dark:border-gray-700/50">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <TrendingUp className="h-5 w-5 mr-2 text-[#cc3399]" />
             {t('usageThisMonth')}
@@ -386,7 +397,7 @@ export default function SubscriptionPage() {
       )}
 
       {/* Billing History */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-md dark:shadow-gray-900/50 p-6 mb-6 border border-gray-200 dark:border-gray-700/50">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
           <CreditCard className="h-5 w-5 mr-2 text-[#cc3399]" />
           {t('billingHistory.title')}
@@ -398,7 +409,7 @@ export default function SubscriptionPage() {
             {billingHistory.map((invoice) => (
               <div
                 key={invoice.id}
-                className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3"
+                className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700/50 pb-3 last:border-0"
               >
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
@@ -437,7 +448,7 @@ export default function SubscriptionPage() {
 
       {/* Cancel Subscription */}
       {isProfessional && subscription?.subscription && !subscription.subscription.cancelAtPeriodEnd && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-md dark:shadow-gray-900/50 p-6 border border-gray-200 dark:border-gray-700/50">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             {t('cancelSubscription')}
           </h2>
