@@ -34,7 +34,10 @@ export class SubscriptionGuard implements CanActivate {
     }
 
     const fileSizeBytes = file.size;
-    const estimatedDurationMinutes = this.estimateDuration(fileSizeBytes, file.mimetype);
+    const estimatedDurationMinutes = this.estimateDuration(
+      fileSizeBytes,
+      file.mimetype,
+    );
 
     this.logger.log(
       `Checking quota for user ${user.uid}: file size ${(fileSizeBytes / (1024 * 1024)).toFixed(2)}MB, estimated ${estimatedDurationMinutes} minutes`,
@@ -42,12 +45,18 @@ export class SubscriptionGuard implements CanActivate {
 
     try {
       // Check quota using UsageService
-      await this.usageService.checkQuota(user.uid, fileSizeBytes, estimatedDurationMinutes);
+      await this.usageService.checkQuota(
+        user.uid,
+        fileSizeBytes,
+        estimatedDurationMinutes,
+      );
       return true;
     } catch (error) {
       // If it's a PaymentRequiredException, re-throw with additional details
       if (error instanceof PaymentRequiredException) {
-        this.logger.warn(`Quota exceeded for user ${user.uid}: ${error.message}`);
+        this.logger.warn(
+          `Quota exceeded for user ${user.uid}: ${error.message}`,
+        );
         throw error;
       }
       // Other errors should fail closed
@@ -113,10 +122,15 @@ export class OnDemandAnalysisGuard implements CanActivate {
       return true;
     } catch (error) {
       if (error instanceof PaymentRequiredException) {
-        this.logger.warn(`On-demand analysis quota exceeded for user ${user.uid}: ${error.message}`);
+        this.logger.warn(
+          `On-demand analysis quota exceeded for user ${user.uid}: ${error.message}`,
+        );
         throw error;
       }
-      this.logger.error(`Error checking on-demand analysis quota for user ${user.uid}:`, error);
+      this.logger.error(
+        `Error checking on-demand analysis quota for user ${user.uid}:`,
+        error,
+      );
       throw error;
     }
   }

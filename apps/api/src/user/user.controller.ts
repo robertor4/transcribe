@@ -99,9 +99,7 @@ export class UserController {
    * Includes tier, usage counts, limits, and reset date
    */
   @Get('usage-stats')
-  async getUsageStats(
-    @Req() req: Request,
-  ): Promise<
+  async getUsageStats(@Req() req: Request): Promise<
     ApiResponse<{
       tier: string;
       usage: {

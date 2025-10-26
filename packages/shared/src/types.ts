@@ -467,7 +467,7 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
 // NEW: Subscription and pricing types
 
 export interface SubscriptionTier {
-  id: 'free' | 'professional' | 'business' | 'enterprise';
+  id: 'free' | 'payg' | 'professional' | 'business' | 'enterprise';
   name: string;
   price: {
     monthly?: number;
@@ -533,6 +533,27 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       translation: false,
       advancedSharing: false,
       batchUpload: false,
+      priorityProcessing: false,
+      apiAccess: false,
+    },
+  },
+  payg: {
+    id: 'payg',
+    name: 'Pay As You Go',
+    price: {}, // $1.50 per hour
+    limits: {
+      transcriptionsPerMonth: undefined, // unlimited
+      hoursPerMonth: undefined, // based on purchased credits
+      maxFileDuration: undefined, // unlimited
+      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
+      onDemandAnalysesPerMonth: undefined, // unlimited
+    },
+    features: {
+      coreAnalyses: true,
+      onDemandAnalyses: true,
+      translation: true,
+      advancedSharing: true,
+      batchUpload: true,
       priorityProcessing: false,
       apiAccess: false,
     },

@@ -36,7 +36,10 @@ export class UsageScheduler {
           await this.usageService.resetMonthlyUsage(user.uid);
           resetCount++;
         } catch (error) {
-          this.logger.error(`Failed to reset usage for user ${user.uid}:`, error.message);
+          this.logger.error(
+            `Failed to reset usage for user ${user.uid}:`,
+            error.message,
+          );
           errorCount++;
         }
       }
@@ -59,16 +62,22 @@ export class UsageScheduler {
     timeZone: 'UTC',
   })
   async handleOverageCharges() {
-    this.logger.log('Checking for Professional/Business tier overage charges...');
+    this.logger.log(
+      'Checking for Professional/Business tier overage charges...',
+    );
     const startTime = Date.now();
 
     try {
       // Get all Professional and Business tier users
-      const professionalUsers = await this.firebaseService.getUsersByTier('professional');
-      const businessUsers = await this.firebaseService.getUsersByTier('business');
+      const professionalUsers =
+        await this.firebaseService.getUsersByTier('professional');
+      const businessUsers =
+        await this.firebaseService.getUsersByTier('business');
       const allUsers = [...professionalUsers, ...businessUsers];
 
-      this.logger.log(`Found ${allUsers.length} Professional/Business users to check`);
+      this.logger.log(
+        `Found ${allUsers.length} Professional/Business users to check`,
+      );
 
       let chargedCount = 0;
       let skippedCount = 0;
@@ -79,7 +88,11 @@ export class UsageScheduler {
           const overage = await this.usageService.calculateOverage(user.uid);
 
           // Only charge if there's actual overage and user has Stripe customer ID
-          if (overage.hours > 0 && overage.amount > 0 && user.stripeCustomerId) {
+          if (
+            overage.hours > 0 &&
+            overage.amount > 0 &&
+            user.stripeCustomerId
+          ) {
             this.logger.log(
               `User ${user.uid} has overage: ${overage.hours.toFixed(2)} hours ($${(overage.amount / 100).toFixed(2)})`,
             );
@@ -96,7 +109,10 @@ export class UsageScheduler {
             skippedCount++;
           }
         } catch (error) {
-          this.logger.error(`Failed to process overage for user ${user.uid}:`, error.message);
+          this.logger.error(
+            `Failed to process overage for user ${user.uid}:`,
+            error.message,
+          );
           errorCount++;
         }
       }
@@ -125,8 +141,10 @@ export class UsageScheduler {
     try {
       // Get all users with active subscriptions
       const freeUsers = await this.firebaseService.getUsersByTier('free');
-      const professionalUsers = await this.firebaseService.getUsersByTier('professional');
-      const businessUsers = await this.firebaseService.getUsersByTier('business');
+      const professionalUsers =
+        await this.firebaseService.getUsersByTier('professional');
+      const businessUsers =
+        await this.firebaseService.getUsersByTier('business');
       const allUsers = [...freeUsers, ...professionalUsers, ...businessUsers];
 
       this.logger.log(`Checking ${allUsers.length} users for usage warnings`);
@@ -149,7 +167,10 @@ export class UsageScheduler {
             warningsCount++;
           }
         } catch (error) {
-          this.logger.error(`Failed to check usage for user ${user.uid}:`, error.message);
+          this.logger.error(
+            `Failed to check usage for user ${user.uid}:`,
+            error.message,
+          );
         }
       }
 

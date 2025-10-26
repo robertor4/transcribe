@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StripeService } from '../stripe/stripe.service';
 import { User, UserRole } from '@transcribe/shared';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(
+    private firebaseService: FirebaseService,
+    private stripeService: StripeService,
+  ) {}
 
   async getUserProfile(userId: string): Promise<User | null> {
     try {
@@ -80,7 +84,7 @@ export class UserService {
         user = await this.createUserProfile(userId);
       }
 
-      // Update profile
+      // Update profile in Firestore
       const updates = {
         ...profile,
         updatedAt: new Date(),
@@ -90,6 +94,20 @@ export class UserService {
         .collection('users')
         .doc(userId)
         .update(updates);
+
+      // Also update Firebase Auth profile to keep them in sync
+      // This ensures photoURL and displayName are reflected in the user object
+      const authUpdates: { displayName?: string; photoURL?: string } = {};
+      if (profile.displayName !== undefined) {
+        authUpdates.displayName = profile.displayName;
+      }
+      if (profile.photoURL !== undefined) {
+        authUpdates.photoURL = profile.photoURL;
+      }
+
+      if (Object.keys(authUpdates).length > 0) {
+        await this.firebaseService.auth.updateUser(userId, authUpdates);
+      }
 
       // Return updated user
       const updatedUser = await this.getUserProfile(userId);
@@ -255,16 +273,38 @@ export class UserService {
         // 4. Cancel Stripe subscription and delete customer
         const user = await this.getUserProfile(userId);
         if (user) {
-          // Note: Stripe integration would go here
-          // if (user.stripeSubscriptionId) {
-          //   await this.stripeService.cancelSubscription(user.stripeSubscriptionId);
-          // }
-          // if (user.stripeCustomerId) {
-          //   await this.stripeService.deleteCustomer(user.stripeCustomerId);
-          // }
-          this.logger.log(
-            `Stripe cleanup would happen here (not implemented yet)`,
-          );
+          // Cancel active subscription immediately (if exists)
+          if (user.stripeSubscriptionId) {
+            try {
+              await this.stripeService.cancelSubscription(
+                user.stripeSubscriptionId,
+                false, // Cancel immediately, not at period end
+              );
+              this.logger.log(
+                `Cancelled Stripe subscription ${user.stripeSubscriptionId} for user ${userId}`,
+              );
+            } catch (error: any) {
+              this.logger.warn(
+                `Failed to cancel subscription ${user.stripeSubscriptionId}: ${error.message}`,
+              );
+              // Continue with deletion even if subscription cancel fails
+            }
+          }
+
+          // Delete Stripe customer (this also deletes all associated subscriptions, payment methods, etc.)
+          if (user.stripeCustomerId) {
+            try {
+              await this.stripeService.deleteCustomer(user.stripeCustomerId);
+              this.logger.log(
+                `Deleted Stripe customer ${user.stripeCustomerId} for user ${userId}`,
+              );
+            } catch (error: any) {
+              this.logger.warn(
+                `Failed to delete Stripe customer ${user.stripeCustomerId}: ${error.message}`,
+              );
+              // Continue with deletion even if customer delete fails
+            }
+          }
         }
 
         // 5. Delete Firestore user document

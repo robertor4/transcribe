@@ -37,12 +37,20 @@ export class StripeController {
     @Body() dto: CreateCheckoutSessionDto,
   ) {
     const user = req.user;
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
-    const successUrl = dto.successUrl || `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const successUrl =
+      dto.successUrl ||
+      `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = dto.cancelUrl || `${frontendUrl}/pricing`;
 
     try {
+      // Get full user record from Firebase to include displayName
+      const userData = await this.stripeService['firebaseService'].getUserById(
+        user.uid,
+      );
+
       const session = await this.stripeService.createCheckoutSession(
         user.uid,
         user.email,
@@ -52,6 +60,7 @@ export class StripeController {
         cancelUrl,
         dto.locale,
         dto.currency,
+        userData?.displayName,
       );
 
       return {
@@ -60,7 +69,10 @@ export class StripeController {
         url: session.url,
       };
     } catch (error) {
-      this.logger.error(`Failed to create checkout session: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to create checkout session: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to create checkout session');
     }
   }
@@ -70,14 +82,14 @@ export class StripeController {
    */
   @Post('create-payg-session')
   @UseGuards(FirebaseAuthGuard)
-  async createPaygSession(
-    @Req() req: any,
-    @Body() dto: CreatePaygSessionDto,
-  ) {
+  async createPaygSession(@Req() req: any, @Body() dto: CreatePaygSessionDto) {
     const user = req.user;
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
-    const successUrl = dto.successUrl || `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const successUrl =
+      dto.successUrl ||
+      `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = dto.cancelUrl || `${frontendUrl}/pricing`;
 
     // Validate minimum purchase
@@ -86,6 +98,11 @@ export class StripeController {
     }
 
     try {
+      // Get full user record from Firebase to include displayName
+      const userData = await this.stripeService['firebaseService'].getUserById(
+        user.uid,
+      );
+
       const session = await this.stripeService.createPaygCheckoutSession(
         user.uid,
         user.email,
@@ -95,6 +112,7 @@ export class StripeController {
         cancelUrl,
         dto.locale,
         dto.currency,
+        userData?.displayName,
       );
 
       return {
@@ -103,7 +121,10 @@ export class StripeController {
         url: session.url,
       };
     } catch (error) {
-      this.logger.error(`Failed to create PAYG session: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to create PAYG session: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to create PAYG checkout session');
     }
   }
@@ -117,7 +138,9 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUserById(user.uid);
+    const userData = await this.stripeService['firebaseService'].getUserById(
+      user.uid,
+    );
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -130,11 +153,15 @@ export class StripeController {
 
       return {
         success: true,
-        message: 'Subscription will be cancelled at the end of the billing period',
+        message:
+          'Subscription will be cancelled at the end of the billing period',
         cancelAt: subscription.cancel_at,
       };
     } catch (error) {
-      this.logger.error(`Failed to cancel subscription: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to cancel subscription: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to cancel subscription');
     }
   }
@@ -151,7 +178,9 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUserById(user.uid);
+    const userData = await this.stripeService['firebaseService'].getUserById(
+      user.uid,
+    );
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -181,7 +210,10 @@ export class StripeController {
         },
       };
     } catch (error) {
-      this.logger.error(`Failed to update subscription: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to update subscription: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to update subscription');
     }
   }
@@ -194,7 +226,9 @@ export class StripeController {
   async getSubscription(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUserById(user.uid);
+    const userData = await this.stripeService['firebaseService'].getUserById(
+      user.uid,
+    );
     if (!userData?.stripeSubscriptionId) {
       return {
         success: true,
@@ -221,7 +255,10 @@ export class StripeController {
         tier: userData.subscriptionTier,
       };
     } catch (error) {
-      this.logger.error(`Failed to get subscription: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to get subscription: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to get subscription details');
     }
   }
@@ -234,7 +271,9 @@ export class StripeController {
   async getBillingHistory(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUserById(user.uid);
+    const userData = await this.stripeService['firebaseService'].getUserById(
+      user.uid,
+    );
     if (!userData?.stripeCustomerId) {
       return {
         success: true,
@@ -261,7 +300,10 @@ export class StripeController {
         })),
       };
     } catch (error) {
-      this.logger.error(`Failed to get billing history: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to get billing history: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to get billing history');
     }
   }

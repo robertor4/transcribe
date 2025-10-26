@@ -571,18 +571,21 @@ export class FirebaseService implements OnModuleInit {
         {} as any,
       );
 
-      await this.db.collection('users').doc(userData.uid).set({
-        ...filteredUserData,
-        subscriptionTier: 'free', // Default to free tier
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      await this.db
+        .collection('users')
+        .doc(userData.uid)
+        .set({
+          ...filteredUserData,
+          subscriptionTier: 'free', // Default to free tier
+          usageThisMonth: {
+            hours: 0,
+            transcriptions: 0,
+            onDemandAnalyses: 0,
+            lastResetAt: new Date(),
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
       this.logger.log(`Created user document for ${userData.uid}`);
     } catch (error) {
       this.logger.error(`Error creating user document:`, error);
@@ -593,10 +596,13 @@ export class FirebaseService implements OnModuleInit {
   // NEW: Update user document in Firestore
   async updateUser(userId: string, updates: any): Promise<void> {
     try {
-      await this.db.collection('users').doc(userId).update({
-        ...updates,
-        updatedAt: new Date(),
-      });
+      await this.db
+        .collection('users')
+        .doc(userId)
+        .update({
+          ...updates,
+          updatedAt: new Date(),
+        });
     } catch (error) {
       this.logger.error(`Error updating user ${userId}:`, error);
       throw error;
@@ -701,7 +707,9 @@ export class FirebaseService implements OnModuleInit {
         deletedCount++;
       }
 
-      this.logger.log(`Deleted ${deletedCount} storage files for user ${userId}`);
+      this.logger.log(
+        `Deleted ${deletedCount} storage files for user ${userId}`,
+      );
       return deletedCount;
     } catch (error) {
       this.logger.error(
@@ -728,7 +736,10 @@ export class FirebaseService implements OnModuleInit {
       const doc = snapshot.docs[0];
       return { uid: doc.id, ...doc.data() };
     } catch (error) {
-      this.logger.error(`Error fetching user by Stripe customer ID ${customerId}:`, error);
+      this.logger.error(
+        `Error fetching user by Stripe customer ID ${customerId}:`,
+        error,
+      );
       return null;
     }
   }
@@ -881,14 +892,8 @@ export class FirebaseService implements OnModuleInit {
   /**
    * Update a generated analysis document
    */
-  async updateGeneratedAnalysis(
-    analysisId: string,
-    data: any,
-  ): Promise<void> {
-    await this.db
-      .collection('generatedAnalyses')
-      .doc(analysisId)
-      .update(data);
+  async updateGeneratedAnalysis(analysisId: string, data: any): Promise<void> {
+    await this.db.collection('generatedAnalyses').doc(analysisId).update(data);
   }
 
   /**

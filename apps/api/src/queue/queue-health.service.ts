@@ -16,7 +16,9 @@ export class QueueHealthService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    this.logger.log('Queue Health Service initialized - checking for stale jobs');
+    this.logger.log(
+      'Queue Health Service initialized - checking for stale jobs',
+    );
     await this.checkStaleJobs();
     await this.logQueueStatistics();
   }
@@ -34,16 +36,13 @@ export class QueueHealthService implements OnModuleInit {
         activeJobs.map((job: Job) => job.data.transcriptionId),
       );
 
-      this.logger.log(
-        `Found ${activeJobs.length} active jobs in Redis queue`,
-      );
+      this.logger.log(`Found ${activeJobs.length} active jobs in Redis queue`);
 
       // Query Firestore for transcriptions marked as PROCESSING
-      const processingTranscriptions =
-        await this.firebaseService.firestore
-          .collection('transcriptions')
-          .where('status', '==', TranscriptionStatus.PROCESSING)
-          .get();
+      const processingTranscriptions = await this.firebaseService.firestore
+        .collection('transcriptions')
+        .where('status', '==', TranscriptionStatus.PROCESSING)
+        .get();
 
       this.logger.log(
         `Found ${processingTranscriptions.size} transcriptions with PROCESSING status in Firestore`,

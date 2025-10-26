@@ -19,9 +19,15 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') });
 if (!admin.apps.length) {
   const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-  if (!privateKey || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL) {
+  if (
+    !privateKey ||
+    !process.env.FIREBASE_PROJECT_ID ||
+    !process.env.FIREBASE_CLIENT_EMAIL
+  ) {
     console.error('❌ Missing Firebase credentials in environment variables');
-    console.error('Required: FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL');
+    console.error(
+      'Required: FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL',
+    );
     process.exit(1);
   }
 
@@ -55,7 +61,8 @@ async function cleanupTestData() {
 
         try {
           // Delete user's transcriptions
-          const transcriptionsSnapshot = await admin.firestore()
+          const transcriptionsSnapshot = await admin
+            .firestore()
             .collection('transcriptions')
             .where('userId', '==', user.uid)
             .get();
@@ -67,7 +74,8 @@ async function cleanupTestData() {
           }
 
           // Delete user's generated analyses
-          const analysesSnapshot = await admin.firestore()
+          const analysesSnapshot = await admin
+            .firestore()
             .collection('generatedAnalyses')
             .where('userId', '==', user.uid)
             .get();
@@ -79,10 +87,7 @@ async function cleanupTestData() {
           }
 
           // Delete user document
-          await admin.firestore()
-            .collection('users')
-            .doc(user.uid)
-            .delete();
+          await admin.firestore().collection('users').doc(user.uid).delete();
           console.log(`  ✓ Deleted user document from Firestore`);
 
           // Delete user from Auth

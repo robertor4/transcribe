@@ -50,7 +50,9 @@ export class StripeService {
     // Check if user already has a Stripe customer ID
     const user = await this.firebaseService.getUserById(userId);
     if (user?.stripeCustomerId) {
-      this.logger.log(`User ${userId} already has Stripe customer: ${user.stripeCustomerId}`);
+      this.logger.log(
+        `User ${userId} already has Stripe customer: ${user.stripeCustomerId}`,
+      );
       return user.stripeCustomerId;
     }
 
@@ -70,7 +72,9 @@ export class StripeService {
       updatedAt: new Date(),
     });
 
-    this.logger.log(`Created Stripe customer ${customer.id} for user ${userId}`);
+    this.logger.log(
+      `Created Stripe customer ${customer.id} for user ${userId}`,
+    );
     return customer.id;
   }
 
@@ -87,18 +91,21 @@ export class StripeService {
     cancelUrl: string,
     locale?: string,
     currency?: string,
+    userName?: string,
   ): Promise<Stripe.Checkout.Session> {
     this.logger.log(
       `Creating checkout session for user ${userId}, tier: ${tier}, billing: ${billing}, currency: ${currency || 'auto'}`,
     );
 
     // Get or create customer
-    const customerId = await this.getOrCreateCustomer(userId, email);
+    const customerId = await this.getOrCreateCustomer(userId, email, userName);
 
     // Get price ID for tier and billing period
     const priceId = this.priceIds[tier]?.[billing];
     if (!priceId) {
-      throw new BadRequestException(`Invalid tier or billing period: ${tier}/${billing}`);
+      throw new BadRequestException(
+        `Invalid tier or billing period: ${tier}/${billing}`,
+      );
     }
 
     // Create checkout session
@@ -157,13 +164,14 @@ export class StripeService {
     cancelUrl: string,
     locale?: string,
     currency?: string,
+    userName?: string,
   ): Promise<Stripe.Checkout.Session> {
     this.logger.log(
       `Creating PAYG checkout for user ${userId}, amount: $${amount / 100}, hours: ${hours}, currency: ${currency || 'auto'}`,
     );
 
     // Get or create customer
-    const customerId = await this.getOrCreateCustomer(userId, email);
+    const customerId = await this.getOrCreateCustomer(userId, email, userName);
 
     // Create checkout session for one-time payment
     const session = await this.stripe.checkout.sessions.create({
@@ -213,15 +221,38 @@ export class StripeService {
       `Cancelling subscription ${subscriptionId}, at period end: ${cancelAtPeriodEnd}`,
     );
 
-    const subscription = await this.stripe.subscriptions.update(subscriptionId, {
-      cancel_at_period_end: cancelAtPeriodEnd,
-    });
+    const subscription = await this.stripe.subscriptions.update(
+      subscriptionId,
+      {
+        cancel_at_period_end: cancelAtPeriodEnd,
+      },
+    );
 
     if (!cancelAtPeriodEnd) {
       await this.stripe.subscriptions.cancel(subscriptionId);
     }
 
     return subscription;
+  }
+
+  /**
+   * Delete Stripe customer (for account deletion)
+   * NOTE: This permanently deletes the customer and all associated data
+   */
+  async deleteCustomer(customerId: string): Promise<void> {
+    this.logger.log(`Deleting Stripe customer ${customerId}`);
+
+    try {
+      await this.stripe.customers.del(customerId);
+      this.logger.log(`Successfully deleted Stripe customer ${customerId}`);
+    } catch (error: any) {
+      // If customer doesn't exist, log and continue (idempotent)
+      if (error?.statusCode === 404 || error?.code === 'resource_missing') {
+        this.logger.warn(`Stripe customer ${customerId} not found, may already be deleted`);
+        return;
+      }
+      throw error;
+    }
   }
 
   /**
@@ -237,23 +268,29 @@ export class StripeService {
     subscriptionId: string,
     newPriceId: string,
   ): Promise<Stripe.Subscription> {
-    this.logger.log(`Updating subscription ${subscriptionId} to price ${newPriceId}`);
+    this.logger.log(
+      `Updating subscription ${subscriptionId} to price ${newPriceId}`,
+    );
 
-    const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+    const subscription =
+      await this.stripe.subscriptions.retrieve(subscriptionId);
     const currentItem = subscription.items.data[0];
 
     // TODO: Detect if this is an upgrade or downgrade by comparing prices
     // If downgrade, use proration_behavior: 'none' and set proration_date to period end
 
-    const updatedSubscription = await this.stripe.subscriptions.update(subscriptionId, {
-      items: [
-        {
-          id: currentItem.id,
-          price: newPriceId,
-        },
-      ],
-      proration_behavior: 'always_invoice', // Pro-rate immediately (both upgrades and downgrades for now)
-    });
+    const updatedSubscription = await this.stripe.subscriptions.update(
+      subscriptionId,
+      {
+        items: [
+          {
+            id: currentItem.id,
+            price: newPriceId,
+          },
+        ],
+        proration_behavior: 'always_invoice', // Pro-rate immediately (both upgrades and downgrades for now)
+      },
+    );
 
     return updatedSubscription;
   }
@@ -266,7 +303,9 @@ export class StripeService {
     hours: number,
     amount: number, // in cents
   ): Promise<Stripe.InvoiceItem> {
-    this.logger.log(`Creating overage charge for customer ${customerId}: ${hours} hours, $${amount / 100}`);
+    this.logger.log(
+      `Creating overage charge for customer ${customerId}: ${hours} hours, $${amount / 100}`,
+    );
 
     const invoiceItem = await this.stripe.invoiceItems.create({
       customer: customerId,
@@ -311,15 +350,23 @@ export class StripeService {
     payload: Buffer,
     signature: string,
   ): Promise<Stripe.Event> {
-    const webhookSecret = this.configService.get<string>('STRIPE_WEBHOOK_SECRET');
+    const webhookSecret = this.configService.get<string>(
+      'STRIPE_WEBHOOK_SECRET',
+    );
     if (!webhookSecret) {
       throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
     }
 
     try {
-      return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      return this.stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        webhookSecret,
+      );
     } catch (error) {
-      this.logger.error(`Webhook signature verification failed: ${error.message}`);
+      this.logger.error(
+        `Webhook signature verification failed: ${error.message}`,
+      );
       throw new BadRequestException('Invalid webhook signature');
     }
   }
@@ -358,7 +405,10 @@ export class StripeService {
       });
 
       this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
-    } else if (session.mode === 'payment' && session.metadata?.type === 'payg') {
+    } else if (
+      session.mode === 'payment' &&
+      session.metadata?.type === 'payg'
+    ) {
       // Add PAYG credits
       const hours = parseInt(session.metadata.hours || '0', 10);
       const user = await this.firebaseService.getUserById(userId);
@@ -377,19 +427,27 @@ export class StripeService {
   /**
    * Handle customer.subscription.updated webhook
    */
-  async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
+  async handleSubscriptionUpdated(
+    subscription: Stripe.Subscription,
+  ): Promise<void> {
     const userId = subscription.metadata?.userId;
     if (!userId) {
       this.logger.error('Subscription missing userId in metadata');
       return;
     }
 
-    this.logger.log(`Processing subscription update for user ${userId}: ${subscription.status}`);
+    this.logger.log(
+      `Processing subscription update for user ${userId}: ${subscription.status}`,
+    );
 
     const updates: any = {
       subscriptionStatus: subscription.status as any,
-      currentPeriodStart: new Date((subscription as any).current_period_start * 1000),
-      currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
+      currentPeriodStart: new Date(
+        (subscription as any).current_period_start * 1000,
+      ),
+      currentPeriodEnd: new Date(
+        (subscription as any).current_period_end * 1000,
+      ),
       cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
       updatedAt: new Date(),
     };
@@ -411,7 +469,9 @@ export class StripeService {
   /**
    * Handle customer.subscription.deleted webhook
    */
-  async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
+  async handleSubscriptionDeleted(
+    subscription: Stripe.Subscription,
+  ): Promise<void> {
     const userId = subscription.metadata?.userId;
     if (!userId) {
       this.logger.error('Subscription missing userId in metadata');
@@ -439,10 +499,13 @@ export class StripeService {
    */
   async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
     const customerId = invoice.customer as string;
-    this.logger.log(`Payment succeeded for customer ${customerId}, invoice: ${invoice.id}`);
+    this.logger.log(
+      `Payment succeeded for customer ${customerId}, invoice: ${invoice.id}`,
+    );
 
     // Find user by customer ID
-    const user = await this.firebaseService.getUserByStripeCustomerId(customerId);
+    const user =
+      await this.firebaseService.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
@@ -460,7 +523,9 @@ export class StripeService {
         updatedAt: new Date(),
       });
 
-      this.logger.log(`Reset monthly usage for user ${user.uid} (new billing cycle)`);
+      this.logger.log(
+        `Reset monthly usage for user ${user.uid} (new billing cycle)`,
+      );
     }
   }
 
@@ -469,10 +534,13 @@ export class StripeService {
    */
   async handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
     const customerId = invoice.customer as string;
-    this.logger.error(`Payment failed for customer ${customerId}, invoice: ${invoice.id}`);
+    this.logger.error(
+      `Payment failed for customer ${customerId}, invoice: ${invoice.id}`,
+    );
 
     // Find user by customer ID
-    const user = await this.firebaseService.getUserByStripeCustomerId(customerId);
+    const user =
+      await this.firebaseService.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
@@ -492,7 +560,9 @@ export class StripeService {
    * Get supported currencies with their conversion rates
    * Used for displaying pricing in multiple currencies
    */
-  async getSupportedCurrencies(): Promise<Array<{ code: string; name: string; symbol: string }>> {
+  async getSupportedCurrencies(): Promise<
+    Array<{ code: string; name: string; symbol: string }>
+  > {
     return [
       { code: 'USD', name: 'US Dollar', symbol: '$' },
       { code: 'EUR', name: 'Euro', symbol: '€' },

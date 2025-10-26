@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../firebase/firebase.service';
 import { SUBSCRIPTION_TIERS } from '@transcribe/shared';
@@ -81,7 +77,9 @@ export class UsageService {
         tierLimits.limits.maxFileSize &&
         fileSizeBytes > tierLimits.limits.maxFileSize
       ) {
-        const maxSizeMB = Math.floor(tierLimits.limits.maxFileSize / (1024 * 1024));
+        const maxSizeMB = Math.floor(
+          tierLimits.limits.maxFileSize / (1024 * 1024),
+        );
         throw new PaymentRequiredException(
           `File size exceeds free tier limit (${maxSizeMB}MB). Upgrade to Professional for larger files (up to 5GB).`,
           'QUOTA_EXCEEDED_FILESIZE',
@@ -99,7 +97,8 @@ export class UsageService {
         usage.hours + estimatedHours > tierLimits.limits.hoursPerMonth
       ) {
         // Professional users can go over - they'll be charged overages at $0.50/hour
-        const overage = usage.hours + estimatedHours - tierLimits.limits.hoursPerMonth;
+        const overage =
+          usage.hours + estimatedHours - tierLimits.limits.hoursPerMonth;
         const overageCost = overage * 0.5;
         this.logger.warn(
           `User ${userId} will exceed Professional quota (${tierLimits.limits.hoursPerMonth} hours). Overage: ${overage.toFixed(2)} hours ($${overageCost.toFixed(2)})`,
@@ -120,7 +119,9 @@ export class UsageService {
         tierLimits.limits.maxFileSize &&
         fileSizeBytes > tierLimits.limits.maxFileSize
       ) {
-        const maxSizeGB = Math.floor(tierLimits.limits.maxFileSize / (1024 * 1024 * 1024));
+        const maxSizeGB = Math.floor(
+          tierLimits.limits.maxFileSize / (1024 * 1024 * 1024),
+        );
         throw new PaymentRequiredException(
           `File size exceeds Professional tier limit (${maxSizeGB}GB). Contact support for Enterprise tier.`,
           'QUOTA_EXCEEDED_FILESIZE',
@@ -136,7 +137,8 @@ export class UsageService {
         tierLimits.limits.hoursPerMonth &&
         usage.hours + estimatedHours > tierLimits.limits.hoursPerMonth
       ) {
-        const overage = usage.hours + estimatedHours - tierLimits.limits.hoursPerMonth;
+        const overage =
+          usage.hours + estimatedHours - tierLimits.limits.hoursPerMonth;
         this.logger.warn(
           `User ${userId} will exceed Business quota (${tierLimits.limits.hoursPerMonth} hours). Overage: ${overage.toFixed(2)} hours`,
         );
@@ -147,7 +149,9 @@ export class UsageService {
         tierLimits.limits.maxFileSize &&
         fileSizeBytes > tierLimits.limits.maxFileSize
       ) {
-        const maxSizeGB = Math.floor(tierLimits.limits.maxFileSize / (1024 * 1024 * 1024));
+        const maxSizeGB = Math.floor(
+          tierLimits.limits.maxFileSize / (1024 * 1024 * 1024),
+        );
         throw new PaymentRequiredException(
           `File size exceeds Business tier limit (${maxSizeGB}GB). Contact support for Enterprise tier.`,
           'QUOTA_EXCEEDED_FILESIZE',
@@ -173,7 +177,9 @@ export class UsageService {
         tierLimits.limits.maxFileSize &&
         fileSizeBytes > tierLimits.limits.maxFileSize
       ) {
-        const maxSizeGB = Math.floor(tierLimits.limits.maxFileSize / (1024 * 1024 * 1024));
+        const maxSizeGB = Math.floor(
+          tierLimits.limits.maxFileSize / (1024 * 1024 * 1024),
+        );
         throw new PaymentRequiredException(
           `File size exceeds PAYG tier limit (${maxSizeGB}GB). Contact support for Enterprise tier.`,
           'QUOTA_EXCEEDED_FILESIZE',
@@ -218,7 +224,9 @@ export class UsageService {
     }
 
     // Professional, Business, Enterprise: unlimited on-demand analyses
-    this.logger.log(`On-demand analysis quota check passed for user ${userId} (${tier})`);
+    this.logger.log(
+      `On-demand analysis quota check passed for user ${userId} (${tier})`,
+    );
   }
 
   /**
@@ -292,7 +300,10 @@ export class UsageService {
   /**
    * Track on-demand analysis generation
    */
-  async trackOnDemandAnalysis(userId: string, analysisId: string): Promise<void> {
+  async trackOnDemandAnalysis(
+    userId: string,
+    analysisId: string,
+  ): Promise<void> {
     const user = await this.firebaseService.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -337,12 +348,16 @@ export class UsageService {
       return { hours: 0, amount: 0 };
     }
 
-    const usage = user.usageThisMonth || { hours: 0, transcriptions: 0, onDemandAnalyses: 0 };
+    const usage = user.usageThisMonth || {
+      hours: 0,
+      transcriptions: 0,
+      onDemandAnalyses: 0,
+    };
     const monthlyLimit = tierLimits.limits.hoursPerMonth || 0;
     const overage = Math.max(0, usage.hours - monthlyLimit);
 
     // $0.50 per hour overage
-    const overageCost = Math.ceil(overage * 0.50 * 100); // in cents
+    const overageCost = Math.ceil(overage * 0.5 * 100); // in cents
 
     this.logger.log(
       `Calculated overage for user ${userId}: ${overage.toFixed(2)} hours = $${(overageCost / 100).toFixed(2)}`,
@@ -415,7 +430,10 @@ export class UsageService {
     let percentUsed = 0;
     if (tier === 'free' && limits.transcriptions) {
       percentUsed = (usage.transcriptions / limits.transcriptions) * 100;
-    } else if ((tier === 'professional' || tier === 'business') && limits.hours) {
+    } else if (
+      (tier === 'professional' || tier === 'business') &&
+      limits.hours
+    ) {
       percentUsed = (usage.hours / limits.hours) * 100;
     }
 
@@ -425,7 +443,9 @@ export class UsageService {
     // Generate warnings
     const warnings: string[] = [];
     if (percentUsed >= 80 && percentUsed < 100) {
-      warnings.push(`You've used ${Math.floor(percentUsed)}% of your monthly quota`);
+      warnings.push(
+        `You've used ${Math.floor(percentUsed)}% of your monthly quota`,
+      );
     }
     if (percentUsed >= 100) {
       warnings.push('You have exceeded your monthly quota');
@@ -436,7 +456,9 @@ export class UsageService {
       );
     }
     if (tier === 'payg' && user.paygCredits && user.paygCredits < 5) {
-      warnings.push(`Low PAYG credits: ${user.paygCredits.toFixed(2)} hours remaining`);
+      warnings.push(
+        `Low PAYG credits: ${user.paygCredits.toFixed(2)} hours remaining`,
+      );
     }
 
     return {
