@@ -29,6 +29,7 @@ import {
   ShareContentOptions,
   BatchUploadResponse,
   SUPPORTED_LANGUAGES,
+  GeneratedAnalysis,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -1249,17 +1250,15 @@ ${fullCustomPrompt}`;
     if (settings?.contentOptions) {
       shareSettings.contentOptions = settings.contentOptions;
     } else {
-      // Default to sharing everything for backward compatibility
+      // Default to sharing core analyses only (on-demand analyses excluded by default)
       shareSettings.contentOptions = {
         includeTranscript: true,
         includeSummary: true,
         includeCommunicationStyles: true,
         includeActionItems: true,
-        includeEmotionalIntelligence: true,
-        includeInfluencePersuasion: true,
-        includePersonalDevelopment: true,
-        includeCustomAnalysis: true,
         includeSpeakerInfo: true,
+        includeOnDemandAnalyses: false,
+        selectedAnalysisIds: [],
       };
     }
 
@@ -1421,17 +1420,15 @@ ${fullCustomPrompt}`;
     const user = await this.firebaseService.getUserById(transcription.userId);
     const sharedBy = user?.displayName || user?.email || 'Anonymous';
 
-    // Get content options (default to all if not specified for backward compatibility)
+    // Get content options (default to core analyses for backward compatibility)
     const contentOptions = settings.contentOptions || {
       includeTranscript: true,
       includeSummary: true,
       includeCommunicationStyles: true,
       includeActionItems: true,
-      includeEmotionalIntelligence: true,
-      includeInfluencePersuasion: true,
-      includePersonalDevelopment: true,
-      includeCustomAnalysis: true,
       includeSpeakerInfo: true,
+      includeOnDemandAnalyses: false,
+      selectedAnalysisIds: [],
     };
 
     // Filter analyses based on content options
@@ -1462,29 +1459,28 @@ ${fullCustomPrompt}`;
       if (contentOptions.includeActionItems && analysesSource.actionItems) {
         filteredAnalyses.actionItems = analysesSource.actionItems;
       }
+    }
+
+    // Fetch on-demand analyses if requested
+    let sharedOnDemandAnalyses: GeneratedAnalysis[] = [];
+    if (contentOptions.includeOnDemandAnalyses) {
+      const allGeneratedAnalyses =
+        await this.firebaseService.getGeneratedAnalyses(
+          transcription.id,
+          transcription.userId,
+        );
+
+      // Filter by selected IDs if specified
       if (
-        contentOptions.includeEmotionalIntelligence &&
-        analysesSource.emotionalIntelligence
+        contentOptions.selectedAnalysisIds &&
+        contentOptions.selectedAnalysisIds.length > 0
       ) {
-        filteredAnalyses.emotionalIntelligence =
-          analysesSource.emotionalIntelligence;
-      }
-      if (
-        contentOptions.includeInfluencePersuasion &&
-        analysesSource.influencePersuasion
-      ) {
-        filteredAnalyses.influencePersuasion =
-          analysesSource.influencePersuasion;
-      }
-      if (
-        contentOptions.includePersonalDevelopment &&
-        analysesSource.personalDevelopment
-      ) {
-        filteredAnalyses.personalDevelopment =
-          analysesSource.personalDevelopment;
-      }
-      if (contentOptions.includeCustomAnalysis && analysesSource.custom) {
-        filteredAnalyses.custom = analysesSource.custom;
+        sharedOnDemandAnalyses = allGeneratedAnalyses.filter((analysis) =>
+          contentOptions.selectedAnalysisIds!.includes(analysis.id),
+        );
+      } else {
+        // Share all on-demand analyses
+        sharedOnDemandAnalyses = allGeneratedAnalyses;
       }
     }
 
@@ -1497,6 +1493,7 @@ ${fullCustomPrompt}`;
         ? transcription.transcriptText
         : undefined,
       analyses: filteredAnalyses,
+      generatedAnalyses: sharedOnDemandAnalyses,
       speakerSegments: contentOptions.includeSpeakerInfo
         ? transcription.speakerSegments
         : undefined,

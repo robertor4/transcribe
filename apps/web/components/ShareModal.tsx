@@ -73,11 +73,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     includeSummary: true,
     includeCommunicationStyles: true,
     includeActionItems: true,
-    includeEmotionalIntelligence: true,
-    includeInfluencePersuasion: true,
-    includePersonalDevelopment: true,
-    includeCustomAnalysis: true,
     includeSpeakerInfo: true,
+    includeOnDemandAnalyses: true,
+    selectedAnalysisIds: [],
   });
   
   // Email functionality
@@ -150,16 +148,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   }, [transcription, isOpen]);
 
   const determinePreset = (options: ShareContentOptions) => {
-    const allTrue = Object.values(options).every(v => v === true);
-    const summaryOnly = options.includeSummary && !options.includeTranscript && 
+    const allTrue = options.includeTranscript && options.includeSummary &&
+      options.includeCommunicationStyles && options.includeActionItems &&
+      options.includeSpeakerInfo && options.includeOnDemandAnalyses;
+    const summaryOnly = options.includeSummary && !options.includeTranscript &&
       !options.includeCommunicationStyles && !options.includeActionItems &&
-      !options.includeEmotionalIntelligence && !options.includeInfluencePersuasion &&
-      !options.includePersonalDevelopment && !options.includeCustomAnalysis;
+      !options.includeSpeakerInfo && !options.includeOnDemandAnalyses;
     const summaryAndTranscript = options.includeSummary && options.includeTranscript &&
       !options.includeCommunicationStyles && !options.includeActionItems &&
-      !options.includeEmotionalIntelligence && !options.includeInfluencePersuasion &&
-      !options.includePersonalDevelopment && !options.includeCustomAnalysis;
-    
+      !options.includeOnDemandAnalyses;
+
     if (allTrue) setContentPreset('complete');
     else if (summaryOnly) setContentPreset('summary');
     else if (summaryAndTranscript) setContentPreset('summaryTranscript');
@@ -176,11 +174,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           includeSummary: true,
           includeCommunicationStyles: false,
           includeActionItems: false,
-          includeEmotionalIntelligence: false,
-          includeInfluencePersuasion: false,
-          includePersonalDevelopment: false,
-          includeCustomAnalysis: false,
           includeSpeakerInfo: false,
+          includeOnDemandAnalyses: false,
+          selectedAnalysisIds: [],
         });
         break;
       case 'summaryTranscript':
@@ -189,11 +185,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           includeSummary: true,
           includeCommunicationStyles: false,
           includeActionItems: false,
-          includeEmotionalIntelligence: false,
-          includeInfluencePersuasion: false,
-          includePersonalDevelopment: false,
-          includeCustomAnalysis: false,
           includeSpeakerInfo: true,
+          includeOnDemandAnalyses: false,
+          selectedAnalysisIds: [],
         });
         break;
       case 'complete':
@@ -202,11 +196,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           includeSummary: true,
           includeCommunicationStyles: true,
           includeActionItems: true,
-          includeEmotionalIntelligence: true,
-          includeInfluencePersuasion: true,
-          includePersonalDevelopment: true,
-          includeCustomAnalysis: true,
           includeSpeakerInfo: true,
+          includeOnDemandAnalyses: true,
+          selectedAnalysisIds: [],
         });
         break;
     }
@@ -499,11 +491,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     if (contentOptions.includeTranscript) selected.push(t('includeTranscript'));
     if (contentOptions.includeActionItems) selected.push(t('includeActionItems'));
     if (contentOptions.includeCommunicationStyles) selected.push(t('includeCommunication'));
-    if (contentOptions.includeEmotionalIntelligence) selected.push(t('includeEmotionalIQ'));
-    if (contentOptions.includeInfluencePersuasion) selected.push(t('includeInfluence'));
-    if (contentOptions.includePersonalDevelopment) selected.push(t('includeDevelopment'));
     if (contentOptions.includeSpeakerInfo) selected.push(t('includeSpeakerInfo'));
-    
+    if (contentOptions.includeOnDemandAnalyses) selected.push(t('includeOnDemandAnalyses'));
+
     if (selected.length === 0) return t('noContentSelected');
     if (selected.length > 3) return `${selected.length} ${t('itemsSelected')}`;
     return selected.join(', ');
@@ -643,45 +633,24 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
                       <input
                         type="checkbox"
-                        checked={contentOptions.includeEmotionalIntelligence}
-                        onChange={() => handleContentOptionChange('includeEmotionalIntelligence')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
-                      />
-                      <Brain className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeEmotionalIQ')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeInfluencePersuasion}
-                        onChange={() => handleContentOptionChange('includeInfluencePersuasion')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
-                      />
-                      <Target className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeInfluence')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includePersonalDevelopment}
-                        onChange={() => handleContentOptionChange('includePersonalDevelopment')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
-                      />
-                      <TrendingUp className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeDevelopment')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
                         checked={contentOptions.includeSpeakerInfo}
                         onChange={() => handleContentOptionChange('includeSpeakerInfo')}
                         className="w-4 h-4 text-[#cc3399] rounded"
                       />
                       <Users className="w-4 h-4 text-gray-700 dark:text-gray-400" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSpeakerInfo')}</span>
+                    </label>
+
+                    {/* On-Demand Analyses Toggle */}
+                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={contentOptions.includeOnDemandAnalyses}
+                        onChange={() => handleContentOptionChange('includeOnDemandAnalyses')}
+                        className="w-4 h-4 text-[#cc3399] rounded"
+                      />
+                      <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeOnDemandAnalyses')}</span>
                     </label>
                   </div>
                 )}

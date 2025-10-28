@@ -264,12 +264,13 @@ export default function SharedTranscriptionPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             {/* Analysis Tabs - includes transcript as a tab */}
-            {(transcription.analyses || transcription.transcriptText) && (
+            {(transcription.analyses || transcription.transcriptText || transcription.generatedAnalyses) && (
               <AnalysisTabs
                 analyses={{
                   ...transcription.analyses,
                   transcript: transcription.transcriptText
                 } as AnalysisResults}
+                generatedAnalyses={transcription.generatedAnalyses}
                 speakerSegments={transcription.speakerSegments}
               />
             )}

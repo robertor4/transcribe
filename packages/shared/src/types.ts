@@ -323,15 +323,16 @@ export interface AnalysisTypeInfo {
 }
 
 export interface ShareContentOptions {
+  // Core analyses (always generated)
   includeTranscript: boolean;
   includeSummary: boolean;
   includeCommunicationStyles: boolean;
   includeActionItems: boolean;
-  includeEmotionalIntelligence: boolean;
-  includeInfluencePersuasion: boolean;
-  includePersonalDevelopment: boolean;
-  includeCustomAnalysis: boolean;
   includeSpeakerInfo: boolean;
+
+  // On-demand analyses (user-requested, stored in generatedAnalyses collection)
+  includeOnDemandAnalyses: boolean;  // Master toggle for all on-demand analyses
+  selectedAnalysisIds?: string[];     // Specific GeneratedAnalysis IDs to share (empty = share all)
 }
 
 export interface SharedEmailRecord {
@@ -360,7 +361,8 @@ export interface SharedTranscriptionView {
   fileName: string;
   title?: string;
   transcriptText?: string;
-  analyses?: Partial<AnalysisResults>;
+  analyses?: Partial<AnalysisResults>;  // Core analyses (legacy + new coreAnalyses)
+  generatedAnalyses?: GeneratedAnalysis[];  // On-demand analyses from separate collection
   speakerSegments?: SpeakerSegment[];
   speakers?: Speaker[];
   createdAt: Date;

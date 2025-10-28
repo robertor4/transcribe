@@ -74,6 +74,9 @@ GMAIL_AUTH_USER=your-gmail@gmail.com
 GMAIL_FROM_EMAIL=noreply@neuralsummary.com
 GMAIL_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
 
+# Traefik / Let's Encrypt (REQUIRED)
+ACME_EMAIL=admin@neuralsummary.com
+
 # Frontend Configuration
 FRONTEND_URL=https://neuralsummary.com
 
@@ -196,16 +199,28 @@ docker-compose -f docker-compose.prod.yml up -d --build [service]
 
 ### SSL Certificate Issues
 
+If you see "TRAEFIK DEFAULT CERT" instead of a Let's Encrypt certificate:
+
 ```bash
-# Check Traefik logs
-docker logs transcribe-traefik | grep -i cert
+# Run comprehensive diagnostic script
+./scripts/check-traefik-certs.sh
 
-# Verify DNS
-nslookup neuralsummary.com
+# Most common fix: Ensure ACME_EMAIL is set in .env.production
+ssh root@94.130.27.115
+cd /opt/transcribe
+echo "ACME_EMAIL=admin@neuralsummary.com" >> .env.production
+docker-compose -f docker-compose.prod.yml restart traefik
 
-# Check certificate
-curl -I https://neuralsummary.com
+# Monitor certificate acquisition
+docker logs -f transcribe-traefik | grep -i acme
+
+# If rate limited, reset certificate volume
+docker-compose -f docker-compose.prod.yml stop traefik
+docker volume rm transcribe_traefik-certificates
+docker-compose -f docker-compose.prod.yml up -d traefik
 ```
+
+For detailed troubleshooting, see the [Traefik Certificate Diagnostic Tool](scripts/check-traefik-certs.sh).
 
 ### WebSocket Connection Issues
 

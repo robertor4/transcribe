@@ -8,6 +8,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Traefik Certificate Diagnostic Tool**: Added comprehensive diagnostic script for SSL certificate troubleshooting
+  - Checks ACME_EMAIL configuration in .env.production
+  - Verifies Traefik container status and certificate volume
+  - Analyzes acme.json file size and permissions
+  - Scans logs for ACME errors
+  - Tests DNS resolution and port 80 accessibility
+  - Validates current SSL certificate issuer (Let's Encrypt vs default)
+  - Checks dashboard security (port 8080 should not be exposed)
+  - Provides actionable recommendations for certificate issues
+  - Location: `scripts/check-traefik-certs.sh`
+- **ACME_EMAIL Environment Variable**: Added required Let's Encrypt email configuration
+  - Added to `.env.production.example` with documentation
+  - Documented in `DEPLOYMENT.md` as required configuration
+  - Added comprehensive troubleshooting guide in `CLAUDE.md`
+  - Email used for Let's Encrypt certificate registration and renewal notifications
+  - Locations: `.env.production.example:51-55`, `DEPLOYMENT.md:77-78`, `CLAUDE.md:415-478`
+
+### Changed
+- **Traefik Security Hardening**: Removed insecure dashboard exposure
+  - Removed `--api.insecure=true` flag from Traefik configuration
+  - Removed port 8080 public exposure (dashboard no longer accessible)
+  - Prevents exposure of internal routing configuration and service health status
+  - Location: `docker-compose.prod.yml:18-30`
+- **SSL Certificate Troubleshooting Documentation**: Enhanced deployment and project documentation
+  - Added step-by-step SSL troubleshooting to `DEPLOYMENT.md` with reference to diagnostic script
+  - Added detailed Traefik certificate troubleshooting section to `CLAUDE.md` covering common issues and fixes
+  - Documented rate limiting workarounds using Let's Encrypt staging environment
+  - Locations: `DEPLOYMENT.md:200-223`, `CLAUDE.md:415-478`
+
+### Fixed
+- **Traefik Default Certificate Issue**: Resolved self-signed certificate problem
+  - Root cause: Missing ACME_EMAIL environment variable prevented Let's Encrypt registration
+  - Solution: Added ACME_EMAIL configuration requirement to all documentation
+  - Added diagnostic script to quickly identify and fix certificate issues
+  - Removed insecure dashboard that could expose misconfiguration details
+
+### Changed
+- **Share Feature: On-Demand Analyses Support**: Updated share functionality to support new core/on-demand analyses structure
+  - Removed obsolete analysis checkboxes (Emotional Intelligence, Influence & Persuasion, Personal Development, Custom)
+  - Added single "On-Demand Analyses" toggle to include all user-generated analyses in shared links
+  - Updated "Complete Analysis" preset to include core analyses + all on-demand analyses
+  - Backend now fetches on-demand analyses from `generatedAnalyses` collection when sharing
+  - Shared view page displays on-demand analyses as separate tabs with metadata (model, generation time, tokens)
+  - Updated all 5 translation files (en, nl, de, fr, es) with new "includeOnDemandAnalyses" key
+  - Locations: `packages/shared/src/types.ts:325-336,359-372`, `apps/api/src/transcription/transcription.service.ts:1249-1261,1423-1484`, `apps/web/components/ShareModal.tsx:69-79,169-205,488-500,597-656`, `apps/web/app/s/[shareCode]/page.tsx:267-275`, `apps/web/components/AnalysisTabs.tsx:24,32-41,287-310,601-647`
+
+### Added
 - **Subscription Management UI**: Users can now view and manage their subscriptions from the settings page
   - Enabled subscription menu item in settings navigation (previously disabled as "Coming soon")
   - Page displays current plan (Free/Professional/PAYG) with comprehensive subscription details

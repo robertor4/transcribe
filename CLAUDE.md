@@ -412,6 +412,71 @@ Always rebuild shared package after modifications:
 npm run build:shared
 ```
 
+### Traefik Default Certificate (Self-Signed SSL)
+
+**Issue:** Website shows "TRAEFIK DEFAULT CERT" instead of Let's Encrypt certificate
+
+**Root Causes:**
+1. **ACME_EMAIL not configured** - Most common issue
+2. **Port 80 blocked** - HTTP challenge requires port 80 accessible
+3. **Let's Encrypt rate limiting** - Too many failed attempts
+4. **Certificate volume corruption** - acme.json file issues
+
+**Quick Fix:**
+```bash
+# 1. Run diagnostic script (highly recommended)
+./scripts/check-traefik-certs.sh
+
+# 2. Add ACME_EMAIL to production environment
+ssh root@94.130.27.115
+cd /opt/transcribe
+echo "ACME_EMAIL=admin@neuralsummary.com" >> .env.production
+
+# 3. Restart Traefik to apply changes
+docker-compose -f docker-compose.prod.yml restart traefik
+
+# 4. Monitor certificate acquisition
+docker logs -f transcribe-traefik | grep -i acme
+```
+
+**If Still Failing - Reset Certificates:**
+```bash
+# Stop Traefik
+docker-compose -f docker-compose.prod.yml stop traefik
+
+# Remove certificate volume
+docker volume rm transcribe_traefik-certificates
+
+# Recreate with fresh volume
+docker-compose -f docker-compose.prod.yml up -d traefik
+
+# Watch logs for certificate issuance
+docker logs -f transcribe-traefik
+```
+
+**Verify Let's Encrypt Certificate:**
+```bash
+# Check certificate issuer (should show "Let's Encrypt")
+curl -vI https://neuralsummary.com 2>&1 | grep "issuer:"
+
+# Or use OpenSSL
+echo | openssl s_client -servername neuralsummary.com -connect neuralsummary.com:443 2>/dev/null | openssl x509 -noout -issuer
+```
+
+**Rate Limit Troubleshooting:**
+If you hit Let's Encrypt rate limits (50 certs/domain/week), use staging:
+
+Add to [docker-compose.prod.yml](docker-compose.prod.yml:*) Traefik command section:
+```yaml
+- "--certificatesresolvers.letsencrypt.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+```
+
+Test with staging, then remove this line for production certs.
+
+**Security Note:** The insecure Traefik dashboard (port 8080) has been removed for production security.
+
+**Full diagnostic tool:** [scripts/check-traefik-certs.sh](scripts/check-traefik-certs.sh)
+
 ## UI Design Guidelines
 
 ### Brand Colors

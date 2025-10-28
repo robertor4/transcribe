@@ -21,7 +21,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { AnalysisResults, ANALYSIS_TYPE_INFO, SUPPORTED_LANGUAGES, Transcription, TranslationData } from '@transcribe/shared';
+import { AnalysisResults, ANALYSIS_TYPE_INFO, SUPPORTED_LANGUAGES, Transcription, TranslationData, GeneratedAnalysis } from '@transcribe/shared';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
 import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
@@ -33,11 +33,12 @@ interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId?: string;
   transcription?: Transcription;
+  generatedAnalyses?: GeneratedAnalysis[];
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
 }
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSegments, transcriptionId, transcription }) => {
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses'>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
@@ -279,6 +280,31 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
                 >
                   <Icon className={`h-4 w-4 ${colors.icon}`} />
                   <span>{info.label}</span>
+                </button>
+              );
+            })}
+
+            {/* On-Demand Generated Analyses Tabs */}
+            {generatedAnalyses && generatedAnalyses.map((analysis) => {
+              const isActive = activeTab === `generated-${analysis.id}`;
+              const colors = getTabColors('text-blue-600 dark:text-blue-400', isActive);
+
+              return (
+                <button
+                  key={`generated-${analysis.id}`}
+                  data-active={isActive}
+                  onClick={() => setActiveTab(`generated-${analysis.id}` as any)}
+                  className={`
+                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    transition-all duration-200 border-b-2
+                    ${isActive ? 'border-blue-600 dark:border-blue-400' : 'border-transparent'}
+                    ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}
+                    ${!isActive && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
+                  `}
+                  title={analysis.templateName}
+                >
+                  <Sparkles className={`h-4 w-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                  <span>{analysis.templateName}</span>
                 </button>
               );
             })}
@@ -571,6 +597,54 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, speakerSeg
             selectedLanguage={selectedLanguage}
           />
         )}
+
+        {/* Generated Analyses Content */}
+        {generatedAnalyses && generatedAnalyses.map((analysis) => {
+          if (activeTab !== `generated-${analysis.id}`) return null;
+
+          return (
+            <div key={`content-${analysis.id}`}>
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 mb-6">
+                <button
+                  onClick={() => handleCopy(analysis.content, `generated-${analysis.id}`)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                  title="Copy to clipboard"
+                >
+                  {copiedTab === `generated-${analysis.id}` ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <span className="text-green-600 dark:text-green-400">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <AnalysisContentRenderer content={analysis.content} />
+              </div>
+
+              {/* Metadata */}
+              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                  <span>Model: {analysis.model}</span>
+                  {analysis.generationTimeMs && (
+                    <span>Generated in {(analysis.generationTimeMs / 1000).toFixed(2)}s</span>
+                  )}
+                  {analysis.tokenUsage && (
+                    <span>Tokens: {analysis.tokenUsage.total}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
