@@ -63,6 +63,62 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
     }
   };
 
+  const formatTimelineTranscript = (segments: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>): string => {
+    if (!segments || segments.length === 0) return '';
+
+    // Helper to format time as MM:SS or HH:MM:SS
+    const formatTime = (seconds: number): string => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+
+      if (hours > 0) {
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+      return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    // Helper to format duration as "Xm Ys" or "Xs"
+    const formatDuration = (startTime: number, endTime: number): string => {
+      const duration = endTime - startTime;
+      if (duration < 60) {
+        return `${Math.floor(duration)}s`;
+      }
+      const minutes = Math.floor(duration / 60);
+      const seconds = Math.floor(duration % 60);
+      return `${minutes}m ${seconds}s`;
+    };
+
+    // Group consecutive segments by same speaker
+    const groupedSegments: Array<{ speakerTag: string; startTime: number; endTime: number; text: string }> = [];
+
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      const lastGroup = groupedSegments[groupedSegments.length - 1];
+
+      if (lastGroup && lastGroup.speakerTag === segment.speakerTag) {
+        // Merge with previous segment
+        lastGroup.endTime = segment.endTime;
+        lastGroup.text += ' ' + segment.text;
+      } else {
+        // Create new group
+        groupedSegments.push({
+          speakerTag: segment.speakerTag,
+          startTime: segment.startTime,
+          endTime: segment.endTime,
+          text: segment.text
+        });
+      }
+    }
+
+    // Format as markdown-style text
+    return groupedSegments.map(group => {
+      const timestamp = formatTime(group.startTime);
+      const duration = formatDuration(group.startTime, group.endTime);
+      return `${timestamp} ${group.speakerTag} (${duration})\n${group.text}`;
+    }).join('\n\n');
+  };
+
   const handleLanguageChange = async (languageCode: string) => {
     if (!transcriptionId) return;
 
@@ -526,7 +582,14 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                       </>
                     )}
                     <button
-                      onClick={() => handleCopy(content || '', info.key)}
+                      onClick={() => {
+                        // For transcript tab in timeline mode, use formatted output
+                        if (info.key === 'transcript' && transcriptView === 'timeline' && speakerSegments && speakerSegments.length > 0) {
+                          handleCopy(formatTimelineTranscript(speakerSegments), info.key);
+                        } else {
+                          handleCopy(content || '', info.key);
+                        }
+                      }}
                       className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
                       title={`Copy ${info.label}`}
                       disabled={!content}

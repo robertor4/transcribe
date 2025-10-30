@@ -184,7 +184,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg ${className}`}>
+    <div className={`bg-white dark:bg-transparent rounded-lg ${className}`}>
       {/* Search Bar */}
       <div className="mb-6">
         <div className="relative">
@@ -304,7 +304,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
             <div
               key={groupIndex}
               id={`segment-${group.segments[0].index}`}
-              className="relative transition-all"
+              className="relative transition-all mb-6"
             >
               {/* Timeline connector */}
               <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
@@ -318,7 +318,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
               </div>
               
               {/* Content card */}
-              <div className={`ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-3`}>
+              <div className={`ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${colors.avatar} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}>
@@ -348,7 +348,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                   )}
                 </div>
 
-                <div className="text-sm text-gray-700 dark:text-gray-300">
+                <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
                   {isExpanded ? (
                     <div className="space-y-2">
                       {group.segments.map(({ segment, index }) => (
@@ -364,7 +364,7 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm whitespace-pre-wrap">
+                    <p className="text-sm whitespace-pre-wrap m-0">
                       {highlightText(group.text, searchQuery)}
                     </p>
                   )}

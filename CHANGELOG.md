@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Context-Aware Copy for Timeline View**: Copy button in Full Transcript tab now formats output based on current view mode
+  - Timeline mode: Copies formatted markdown-style text with timestamps, speaker tags, and durations
+  - Raw mode: Copies plain transcript text (original behavior)
+  - Format example: `0:00 Speaker A (1m 4s)\n[transcript text]`
+  - Locations: `apps/web/components/AnalysisTabs.tsx:66-120` (formatter), `:587-590` (copy logic)
 - **Parallel Transcription Job Processing**: Enabled configurable concurrent job processing for faster batch transcription
   - Added `TRANSCRIPTION_CONCURRENCY` environment variable (default: 2 jobs simultaneously)
   - Increased Redis memory from 256MB to 512MB to support parallel processing
@@ -54,6 +59,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locations: `DEPLOYMENT.md:200-223`, `CLAUDE.md:415-478`
 
 ### Fixed
+- **Timeline View UI Spacing Issues**: Fixed margin and padding issues in transcript timeline view
+  - Added proper bottom spacing (`mb-6`) between consecutive speaker cards for better visual separation
+  - Increased speaker card padding from `p-3` to `p-4` for better content breathing room
+  - Fixed text content too close to bottom border by adding `mb-2` to transcript text container
+  - Made dark mode background transparent to blend with page background
+  - Locations: `apps/web/components/TranscriptTimeline.tsx:187`, `:307`, `:321`, `:351`, `:367`
 - **Multiple File Upload UI State Management**: Resolved confusing UI behavior during batch file uploads
   - Issue: When uploading 3+ files individually, UI initially showed incorrect filenames, duplicate progress updates, and flickering cards before eventually correcting itself
   - Root cause: Synchronous rapid-fire state updates causing race conditions between API fetches, WebSocket events, and UI re-renders
