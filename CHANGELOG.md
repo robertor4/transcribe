@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locations: `.env.production.example:51-55`, `DEPLOYMENT.md:77-78`, `CLAUDE.md:415-478`
 
 ### Changed
+- **Auto-generated Transcription Titles**: Optimized for better scanning and readability
+  - Changed auto-generated titles from long descriptive headings to concise 5-7 word titles
+  - Added `generateShortTitle()` method using gpt-5-mini to intelligently condense extracted H1 headings
+  - Skips API call if heading is already 7 words or less (cost optimization)
+  - Falls back to smart truncation (first 7 words + ellipsis) if API fails
+  - Preserves original language for multi-language support
+  - Cost impact: ~$0.000006 per transcription (negligible)
+  - Locations: `apps/api/src/transcription/transcription.service.ts:925-975`, `apps/api/src/transcription/transcription.processor.ts:122-137`
 - **Traefik Security Hardening**: Removed insecure dashboard exposure
   - Removed `--api.insecure=true` flag from Traefik configuration
   - Removed port 8080 public exposure (dashboard no longer accessible)

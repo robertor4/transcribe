@@ -922,6 +922,58 @@ ${fullCustomPrompt}`;
     }
   }
 
+  async generateShortTitle(fullTitle: string): Promise<string> {
+    try {
+      // Count words in the title
+      const wordCount = fullTitle.trim().split(/\s+/).length;
+
+      // If title is already 7 words or less, use as-is
+      if (wordCount <= 7) {
+        this.logger.log(
+          `Title already concise (${wordCount} words), skipping API call`,
+        );
+        return fullTitle;
+      }
+
+      this.logger.log(
+        `Generating short title for: "${fullTitle}" (${wordCount} words)`,
+      );
+
+      // Use gpt-5-mini for cost efficiency
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-5-mini',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a title optimization expert. Create concise, scannable titles that preserve the core meaning.',
+          },
+          {
+            role: 'user',
+            content: `Shorten this heading to 5-7 words maximum while preserving the core meaning and language:\n\n"${fullTitle}"\n\nReturn ONLY the shortened title, nothing else. Keep the same language as the original.`,
+          },
+        ],
+        max_completion_tokens: 30,
+      });
+
+      const shortTitle =
+        completion.choices[0].message.content?.trim() || fullTitle;
+
+      this.logger.log(`Short title generated: "${shortTitle}"`);
+
+      return shortTitle;
+    } catch (error) {
+      this.logger.error('Error generating short title, using fallback:', error);
+
+      // Fallback: Take first 7 words and add ellipsis if truncated
+      const words = fullTitle.trim().split(/\s+/);
+      if (words.length > 7) {
+        return words.slice(0, 7).join(' ') + '...';
+      }
+      return fullTitle;
+    }
+  }
+
   async updateTitle(
     userId: string,
     transcriptionId: string,

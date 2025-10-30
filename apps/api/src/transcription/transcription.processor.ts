@@ -119,12 +119,20 @@ export class TranscriptionProcessor {
       // For backward compatibility, keep the summary field
       const summary = coreAnalyses.summary;
 
-      // Extract title from the summary
+      // Extract title from the summary and generate a short version
       const extractedTitle =
         this.transcriptionService.extractTitleFromSummary(summary);
+      let finalTitle: string | undefined;
       if (extractedTitle) {
         this.logger.log(
           `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
+        );
+        // Generate a shorter, more scannable title (5-7 words)
+        finalTitle = await this.transcriptionService.generateShortTitle(
+          extractedTitle,
+        );
+        this.logger.log(
+          `Short title for transcription ${transcriptionId}: ${finalTitle}`,
         );
       }
 
@@ -171,9 +179,9 @@ export class TranscriptionProcessor {
         updatedAt: new Date(),
       };
 
-      // Add the extracted title if available
-      if (extractedTitle) {
-        updateData.title = extractedTitle;
+      // Add the short title if available
+      if (finalTitle) {
+        updateData.title = finalTitle;
       }
 
       if (detectedLanguage) {
