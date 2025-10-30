@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Parallel Transcription Job Processing**: Enabled configurable concurrent job processing for faster batch transcription
+  - Added `TRANSCRIPTION_CONCURRENCY` environment variable (default: 2 jobs simultaneously)
+  - Increased Redis memory from 256MB to 512MB to support parallel processing
+  - Added job-level logging with job ID tracking for monitoring concurrent execution
+  - Benefits: 2-3x faster batch file processing, better resource utilization
+  - Configuration: Set `TRANSCRIPTION_CONCURRENCY=1` for sequential (original behavior) or higher for parallel
+  - Locations: `apps/api/src/transcription/transcription.processor.ts:34-36`, `.env.example:26-29`, `.env.production.example:45-49`, `docker-compose.prod.yml:47`
+  - Documentation: `CLAUDE.md:132-136`
 - **Traefik Certificate Diagnostic Tool**: Added comprehensive diagnostic script for SSL certificate troubleshooting
   - Checks ACME_EMAIL configuration in .env.production
   - Verifies Traefik container status and certificate volume

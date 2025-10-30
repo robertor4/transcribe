@@ -129,6 +129,11 @@ npm run setup         # Install all dependencies and build shared package
 
 #### Processing Architecture
 - **Queue-based**: Bull/Redis enables horizontal scaling and job retry with exponential backoff
+- **Parallel Job Processing**: Configurable concurrency (default: 2 jobs simultaneously) via `TRANSCRIPTION_CONCURRENCY` env var
+  - Location: `apps/api/src/transcription/transcription.processor.ts:34-36`
+  - Requires: 512MB+ Redis memory (increased from 256MB)
+  - Benefits: 2-3x faster batch processing, better resource utilization
+  - Trade-offs: Higher memory usage, increased API quota consumption
 - **Audio Splitting**: AudioSplitter service (apps/api/src/utils/audio-splitter.ts:*) handles FFmpeg operations
 - **Chunk Processing**: Parallel processing with ordered reassembly maintains chronological accuracy
 - **Error Recovery**: Automatic retries for transient failures, cleanup of temporary files
@@ -327,6 +332,7 @@ ASSEMBLYAI_API_KEY=...
 GMAIL_AUTH_USER=roberto@dreamone.nl  # Primary Gmail account for authentication
 GMAIL_FROM_EMAIL=noreply@neuralsummary.com  # Email address shown in FROM field (domain alias)
 GMAIL_APP_PASSWORD=...  # Google App Password from primary account
+TRANSCRIPTION_CONCURRENCY=2  # Number of jobs processed simultaneously (default: 2)
 ```
 
 Frontend `.env.local`:

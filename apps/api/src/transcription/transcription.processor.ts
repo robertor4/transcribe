@@ -24,14 +24,25 @@ export class TranscriptionProcessor {
     private emailService: EmailService,
     private userService: UserService,
     private usageService: UsageService,
-  ) {}
+  ) {
+    const concurrency = parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10);
+    this.logger.log(
+      `Transcription processor initialized with concurrency: ${concurrency} (${concurrency > 1 ? 'parallel' : 'sequential'} processing)`,
+    );
+  }
 
-  @Process('transcribe')
+  @Process({
+    name: 'transcribe',
+    concurrency: parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10),
+  })
   async handleTranscription(job: Job<TranscriptionJob>) {
     const { transcriptionId, userId, fileUrl, analysisType, context } =
       job.data;
 
-    this.logger.log(`Processing transcription job ${transcriptionId}`);
+    const concurrency = parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10);
+    this.logger.log(
+      `[Job ${job.id}] Processing transcription ${transcriptionId} (concurrency: ${concurrency})`,
+    );
 
     try {
       // Update status to processing
@@ -275,11 +286,11 @@ export class TranscriptionProcessor {
       }
 
       this.logger.log(
-        `Transcription job ${transcriptionId} completed successfully`,
+        `[Job ${job.id}] Transcription ${transcriptionId} completed successfully`,
       );
     } catch (error) {
       this.logger.error(
-        `Error processing transcription job ${transcriptionId}:`,
+        `[Job ${job.id}] Error processing transcription ${transcriptionId}:`,
         error,
       );
 
