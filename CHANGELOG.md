@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Translations in Shared Transcripts**: Shared transcripts now automatically include all available translations
+  - All translations automatically included when creating share link (zero configuration needed)
+  - Recipients see transcript in sender's preferred language by default
+  - Recipients can switch between available translations via language dropdown (read-only mode)
+  - No translation API calls from recipients - translations pre-loaded in shared view
+  - Added `translations` and `preferredTranslationLanguage` fields to `SharedTranscriptionView` type
+  - Backend automatically includes all translations when serving shared transcripts
+  - Frontend uses read-only translation mode in shared pages (no re-translation allowed)
+  - Locations: `packages/shared/src/types.ts:373-374`, `apps/api/src/transcription/transcription.service.ts:1559-1562`, `apps/web/components/AnalysisTabs.tsx:39,128-145,600-621`, `apps/web/app/s/[shareCode]/page.tsx:275-276`, `apps/web/app/[locale]/shared/[shareToken]/page.tsx:244-245`
+  - Tests: `apps/api/test/translation.e2e-spec.ts:625-701`
+- **Translation Language Preference Persistence**: System now remembers user's preferred translation language per transcription
+  - Added `preferredTranslationLanguage` field to Transcription model for storing user's language preference
+  - Backend automatically saves preference when user translates to any language
+  - Frontend auto-loads preferred language when reopening a transcription
+  - Added PATCH `/transcriptions/:id/translation-preference` endpoint for explicit preference updates
+  - Preference persists across browser sessions and applies per-transcription (not global)
+  - Works seamlessly with existing translations (no re-translation needed when switching languages)
+  - Locations: `packages/shared/src/types.ts:193`, `apps/api/src/transcription/transcription.service.ts:1870,2037-2059`, `apps/api/src/transcription/transcription.controller.ts:627-644`, `apps/web/components/AnalysisTabs.tsx:122-200,218-238`, `apps/web/lib/api.ts:209-211`
+  - Tests: `apps/api/test/translation.e2e-spec.ts:548-623`
 - **Context-Aware Copy for Timeline View**: Copy button in Full Transcript tab now formats output based on current view mode
   - Timeline mode: Copies formatted markdown-style text with timestamps, speaker tags, and durations
   - Raw mode: Copies plain transcript text (original behavior)
@@ -39,6 +58,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locations: `.env.production.example:51-55`, `DEPLOYMENT.md:77-78`, `CLAUDE.md:415-478`
 
 ### Changed
+- **Enhanced AI Service Logging**: Improved log messages to show which AI models and services are being used
+  - Transcription logs now specify "AssemblyAI (speaker diarization + language detection)" or "OpenAI Whisper API (with auto-chunking)"
+  - Analysis logs show GPT model selection: "GPT-5 (summary) + GPT-5/GPT-5-mini (secondary)" with quality mode
+  - Translation logs specify "using GPT-5-mini" for clarity
+  - Fallback logs explicitly mention "OpenAI Whisper API" when AssemblyAI fails
+  - Locations: `apps/api/src/transcription/transcription.service.ts:359-361,447-449,685-687,1783-1785`
 - **Auto-generated Transcription Titles**: Optimized for better scanning and readability
   - Changed auto-generated titles from long descriptive headings to concise 5-7 word titles
   - Added `generateShortTitle()` method using gpt-5-mini to intelligently condense extracted H1 headings
@@ -57,8 +82,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added detailed Traefik certificate troubleshooting section to `CLAUDE.md` covering common issues and fixes
   - Documented rate limiting workarounds using Let's Encrypt staging environment
   - Locations: `DEPLOYMENT.md:200-223`, `CLAUDE.md:415-478`
+- **Shared Transcript UI Simplification**: Removed Details and More Analyses tabs from shared transcripts
+  - Details tab (processing information) only relevant to transcript author, not recipients
+  - More Analyses tab (on-demand generation) requires authentication and shouldn't be exposed in public shares
+  - Both tabs now hidden when `readOnlyMode={true}` is set on AnalysisTabs component
+  - Locations: `apps/web/components/AnalysisTabs.tsx:430,448,706,722`
 
 ### Fixed
+- **Shared Transcript Details Tab Error**: Fixed runtime error "Cannot read properties of undefined (reading 'charAt')" on shared transcript Details tab
+  - Made Status field conditional since SharedTranscriptionView type doesn't include status field
+  - Details tab now gracefully handles missing status for shared/read-only transcriptions
+  - Location: `apps/web/components/TranscriptionDetails.tsx:40`
+  - Note: Details tab subsequently removed entirely from shared views (see Changed section above)
 - **Timeline View UI Spacing Issues**: Fixed margin and padding issues in transcript timeline view
   - Added proper bottom spacing (`mb-6`) between consecutive speaker cards for better visual separation
   - Increased speaker card padding from `p-3` to `p-4` for better content breathing room

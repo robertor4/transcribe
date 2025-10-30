@@ -544,4 +544,159 @@ describe('Translation System (e2e)', () => {
       }
     });
   });
+
+  describe('6. Verify Translation Preference Persistence', () => {
+    it('should have auto-saved preferred language after Spanish translation', async () => {
+      // Verify that the backend auto-saved the preference when translating to Spanish
+      const transcriptionDoc = await admin
+        .firestore()
+        .collection('transcriptions')
+        .doc(transcriptionId)
+        .get();
+
+      const transcriptionData = transcriptionDoc.data();
+
+      // After translating to French (last translation), preference should be 'fr'
+      expect(transcriptionData).toBeDefined();
+      expect(transcriptionData?.preferredTranslationLanguage).toBe('fr');
+
+      console.log(`✓ Preferred language auto-saved: ${transcriptionData?.preferredTranslationLanguage}`);
+    });
+
+    it('should update preferred language to original', async () => {
+      const response = await request(app.getHttpServer())
+        .patch(`/transcriptions/${transcriptionId}/translation-preference`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ languageCode: 'original' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+
+      // Verify in Firestore
+      const transcriptionDoc = await admin
+        .firestore()
+        .collection('transcriptions')
+        .doc(transcriptionId)
+        .get();
+
+      const transcriptionData = transcriptionDoc.data();
+      expect(transcriptionData?.preferredTranslationLanguage).toBe('original');
+
+      console.log(`✓ Preferred language updated to: original`);
+    });
+
+    it('should update preferred language to Spanish', async () => {
+      const response = await request(app.getHttpServer())
+        .patch(`/transcriptions/${transcriptionId}/translation-preference`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ languageCode: 'es' })
+        .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+
+      // Verify in Firestore
+      const transcriptionDoc = await admin
+        .firestore()
+        .collection('transcriptions')
+        .doc(transcriptionId)
+        .get();
+
+      const transcriptionData = transcriptionDoc.data();
+      expect(transcriptionData?.preferredTranslationLanguage).toBe('es');
+
+      console.log(`✓ Preferred language updated to: es`);
+    });
+
+    it('should persist preference across API fetches', async () => {
+      // Fetch the transcription via API
+      const response = await request(app.getHttpServer())
+        .get(`/transcriptions/${transcriptionId}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body.data).toBeDefined();
+      expect(response.body.data.preferredTranslationLanguage).toBe('es');
+
+      console.log(`✓ Preferred language persists in API responses: ${response.body.data.preferredTranslationLanguage}`);
+    });
+  });
+
+  describe('7. Verify Translations in Shared Transcripts', () => {
+    let shareToken: string;
+
+    it('should create share link for transcription with translations', async () => {
+      const response = await request(app.getHttpServer())
+        .post(`/transcriptions/${transcriptionId}/share`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          contentOptions: {
+            includeTranscript: true,
+            includeSummary: true,
+            includeActionItems: true,
+            includeCommunicationStyles: true,
+          }
+        })
+        .expect(201);
+
+      expect(response.body).toHaveProperty('success', true);
+      expect(response.body.data).toHaveProperty('shareToken');
+      shareToken = response.body.data.shareToken;
+
+      console.log(`✓ Share link created: ${shareToken}`);
+    });
+
+    it('should retrieve shared transcript with all translations included', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/transcriptions/shared/${shareToken}`)
+        .expect(200);
+
+      const sharedData = response.body.data;
+
+      expect(sharedData).toHaveProperty('translations');
+      expect(sharedData.translations).toBeDefined();
+      expect(sharedData.translations).toHaveProperty('es'); // Spanish
+      expect(sharedData.translations).toHaveProperty('fr'); // French
+      expect(sharedData).toHaveProperty('preferredTranslationLanguage', 'es');
+
+      console.log(`✓ Shared transcript includes translations: ${Object.keys(sharedData.translations).join(', ')}`);
+      console.log(`✓ Preferred language: ${sharedData.preferredTranslationLanguage}`);
+    });
+
+    it('should include translated analyses in shared translations', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/transcriptions/shared/${shareToken}`)
+        .expect(200);
+
+      const sharedData = response.body.data;
+      const spanishTranslation = sharedData.translations.es;
+
+      expect(spanishTranslation).toBeDefined();
+      expect(spanishTranslation.language).toBe('es');
+      expect(spanishTranslation.analyses).toBeDefined();
+      expect(spanishTranslation.analyses.summary).toBeDefined();
+      expect(spanishTranslation.transcriptText).toBeDefined();
+
+      console.log(`✓ Spanish translation includes all analyses`);
+    });
+
+    it('should include French translation with different content', async () => {
+      const response = await request(app.getHttpServer())
+        .get(`/transcriptions/shared/${shareToken}`)
+        .expect(200);
+
+      const sharedData = response.body.data;
+      const frenchTranslation = sharedData.translations.fr;
+      const spanishTranslation = sharedData.translations.es;
+
+      expect(frenchTranslation).toBeDefined();
+      expect(frenchTranslation.language).toBe('fr');
+      expect(frenchTranslation.analyses.summary).toBeDefined();
+
+      // Verify French is different from Spanish
+      expect(frenchTranslation.analyses.summary).not.toBe(spanishTranslation.analyses.summary);
+
+      console.log(`✓ French translation verified (different from Spanish)`);
+    });
+  });
 });

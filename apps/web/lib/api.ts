@@ -206,6 +206,10 @@ export const transcriptionApi = {
     return api.delete(`/transcriptions/${id}/translations/${language}`);
   },
 
+  updateTranslationPreference: async (id: string, languageCode: string): Promise<ApiResponse> => {
+    return api.patch(`/transcriptions/${id}/translation-preference`, { languageCode });
+  },
+
   // On-Demand Analysis API methods
   getAnalysisTemplates: async (): Promise<ApiResponse<AnalysisTemplate[]>> => {
     return api.get('/transcriptions/analysis-templates');

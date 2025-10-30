@@ -230,7 +230,6 @@ export default function SharedTranscriptionPage() {
           {(transcription.analyses || transcription.transcriptText) && (
             <div>
               <AnalysisTabs
-                transcriptionId={transcription.id}
                 analyses={{
                   // The backend already filters analyses based on contentOptions
                   // We just need to add the transcript if it was provided
@@ -242,6 +241,8 @@ export default function SharedTranscriptionPage() {
                 }}
                 speakerSegments={transcription.speakerSegments}
                 speakers={transcription.speakers}
+                transcription={transcription as any}
+                readOnlyMode={true}
               />
             </div>
           )}

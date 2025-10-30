@@ -190,6 +190,7 @@ export interface Transcription {
   sharedWith?: SharedEmailRecord[]; // Email addresses this transcript was shared with (cleared when shareToken is revoked)
   // Translation fields
   translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
+  preferredTranslationLanguage?: string; // User's preferred language for this transcription (e.g., 'es', 'fr', or 'original')
 }
 
 export interface TranscriptionJob {
@@ -369,6 +370,8 @@ export interface SharedTranscriptionView {
   sharedBy?: string;
   viewCount?: number;
   contentOptions?: ShareContentOptions;
+  translations?: Record<string, TranslationData>; // All available translations at time of sharing
+  preferredTranslationLanguage?: string; // Sender's preferred language (e.g., 'es', 'fr', or 'original')
 }
 
 export interface TranslateRequest {

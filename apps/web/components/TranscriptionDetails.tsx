@@ -37,7 +37,7 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
         { label: 'Created', value: formatDate(transcription.createdAt) },
         { label: 'Last Updated', value: formatDate(transcription.updatedAt) },
         ...(transcription.completedAt ? [{ label: 'Completed', value: formatDate(transcription.completedAt) }] : []),
-        { label: 'Status', value: transcription.status.charAt(0).toUpperCase() + transcription.status.slice(1) },
+        ...(transcription.status ? [{ label: 'Status', value: transcription.status.charAt(0).toUpperCase() + transcription.status.slice(1) }] : []),
       ]
     },
     {

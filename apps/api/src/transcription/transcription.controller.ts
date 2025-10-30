@@ -4,6 +4,7 @@ import {
   Get,
   Delete,
   Put,
+  Patch,
   Param,
   Query,
   Body,
@@ -621,6 +622,25 @@ export class TranscriptionController {
     return {
       success: true,
       message: 'Translation deleted successfully',
+    };
+  }
+
+  @Patch(':id/translation-preference')
+  @UseGuards(FirebaseAuthGuard)
+  async updateTranslationPreference(
+    @Param('id') transcriptionId: string,
+    @Body('languageCode') languageCode: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse> {
+    await this.transcriptionService.updateTranslationPreference(
+      transcriptionId,
+      req.user.uid,
+      languageCode,
+    );
+
+    return {
+      success: true,
+      message: 'Translation preference updated successfully',
     };
   }
 

@@ -317,12 +317,12 @@ export class TranscriptionService {
       return await this.transcribeWithAssemblyAI(fileUrl, context, onProgress);
     } catch (error) {
       this.logger.warn(
-        'AssemblyAI transcription failed, falling back to Whisper:',
+        'AssemblyAI transcription failed, falling back to OpenAI Whisper API:',
         error,
       );
 
       if (onProgress) {
-        onProgress(10, 'Using fallback transcription service...');
+        onProgress(10, 'Using fallback transcription service (OpenAI Whisper)...');
       }
 
       // Fallback to Whisper (without speaker diarization)
@@ -356,7 +356,9 @@ export class TranscriptionService {
     durationSeconds?: number;
   }> {
     try {
-      this.logger.log('Starting transcription with AssemblyAI...');
+      this.logger.log(
+        'Starting transcription with AssemblyAI (speaker diarization + language detection)',
+      );
 
       if (onProgress) {
         onProgress(10, 'Uploading audio to AssemblyAI...');
@@ -442,6 +444,10 @@ export class TranscriptionService {
     onProgress?: (progress: number, message: string) => void,
   ): Promise<{ text: string; language?: string }> {
     try {
+      this.logger.log(
+        'Starting transcription with OpenAI Whisper API (with auto-chunking for large files)',
+      );
+
       // Download file from Firebase Storage
       const fileBuffer = await this.firebaseService.downloadFile(fileUrl);
 
@@ -675,12 +681,14 @@ ${fullCustomPrompt}`;
     language?: string,
   ): Promise<any> {
     try {
-      this.logger.log('Generating all analyses in parallel...');
-
       // Determine if we should use high-quality mode based on env or transcript length
       const qualityMode = this.configService.get('QUALITY_MODE') || 'balanced';
       const useHighQuality =
         qualityMode === 'premium' || transcriptionText.length > 10000;
+
+      this.logger.log(
+        `Generating analyses using GPT-5 (summary) + ${useHighQuality ? 'GPT-5' : 'GPT-5-mini'} (secondary analyses) - Quality mode: ${qualityMode}`,
+      );
 
       // Generate all analyses in parallel for efficiency
       // Use generateSummaryWithModel for critical analyses with GPT-5
@@ -1556,6 +1564,10 @@ ${fullCustomPrompt}`;
       sharedBy,
       viewCount: finalViewCount,
       contentOptions,
+      // Include all available translations (automatically shared)
+      translations: transcription.translations || undefined,
+      preferredTranslationLanguage:
+        transcription.preferredTranslationLanguage || undefined,
     };
 
     return sharedView;
@@ -1775,7 +1787,7 @@ ${transcription}`;
     }
 
     this.logger.log(
-      `Translating transcription ${transcriptionId} to ${targetLang.name}`,
+      `Translating transcription ${transcriptionId} to ${targetLang.name} using GPT-5-mini`,
     );
 
     // Translate transcript and all analyses in parallel using GPT-5-mini for cost efficiency
@@ -1806,22 +1818,11 @@ ${transcription}`;
       'custom',
     ];
 
-    this.logger.log(
-      `[Translation Debug] Using ${transcription.coreAnalyses ? 'coreAnalyses' : 'analyses'}`,
-    );
-    this.logger.log(
-      `[Translation Debug] Available keys:`,
-      JSON.stringify(Object.keys(analysesSource || {})),
-    );
-
     const analysisTranslations: Record<string, Promise<string>> = {};
     if (analysesSource) {
       for (const key of analysisKeys) {
         const analysisValue =
           analysesSource[key as keyof typeof analysesSource];
-        this.logger.log(
-          `[Translation Debug] Analysis ${key}: ${analysisValue ? 'EXISTS' : 'MISSING'}`,
-        );
         if (analysisValue) {
           analysisTranslations[key] = this.translateText(
             analysisValue,
@@ -1831,10 +1832,6 @@ ${transcription}`;
           translationPromises.push(analysisTranslations[key]);
         }
       }
-    } else {
-      this.logger.warn(
-        `[Translation Debug] No analyses found (neither coreAnalyses nor analyses)`,
-      );
     }
 
     // Execute all translations in parallel
@@ -1867,6 +1864,7 @@ ${transcription}`;
 
     await this.firebaseService.updateTranscription(transcriptionId, {
       translations,
+      preferredTranslationLanguage: targetLanguage, // Auto-save user's language preference
       updatedAt: new Date(),
     });
 
@@ -2030,6 +2028,30 @@ CRITICAL INSTRUCTIONS:
 
     this.logger.log(
       `Deleted translation for language ${language} from transcription ${transcriptionId}`,
+    );
+  }
+
+  async updateTranslationPreference(
+    transcriptionId: string,
+    userId: string,
+    languageCode: string,
+  ): Promise<void> {
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Update the preferred translation language
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      preferredTranslationLanguage: languageCode,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(
+      `Updated translation preference to ${languageCode} for transcription ${transcriptionId}`,
     );
   }
 }

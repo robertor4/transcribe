@@ -36,9 +36,10 @@ interface AnalysisTabsProps {
   generatedAnalyses?: GeneratedAnalysis[];
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
+  readOnlyMode?: boolean; // Disable translation API calls for shared/public views
 }
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription }) => {
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription, readOnlyMode }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses'>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
@@ -120,15 +121,46 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
   };
 
   const handleLanguageChange = async (languageCode: string) => {
-    if (!transcriptionId) return;
-
     setShowLanguageDropdown(false);
     setTranslationError(null);
 
-    // If switching to original, reset to original analyses
+    // NEW: For shared/read-only mode, only switch to existing translations (no API calls)
+    if (readOnlyMode) {
+      if (languageCode === 'original') {
+        setSelectedLanguage('original');
+        setCurrentAnalyses(analyses);
+        return;
+      }
+
+      // Switch to existing translation
+      const existingTranslation = transcription?.translations?.[languageCode];
+      if (existingTranslation) {
+        setSelectedLanguage(languageCode);
+        setCurrentAnalyses({
+          ...existingTranslation.analyses,
+          transcript: existingTranslation.transcriptText
+        });
+      }
+      return; // Don't proceed to API calls in read-only mode
+    }
+
+    // Authenticated user mode - requires transcriptionId for API calls
+    if (!transcriptionId) return;
+
+    // If switching to original, reset to original analyses and save preference
     if (languageCode === 'original') {
       setSelectedLanguage('original');
       setCurrentAnalyses(analyses);
+
+      // Save preference for "original" language
+      try {
+        await transcriptionApi.updateTranslationPreference(transcriptionId, 'original');
+        if (transcription) {
+          transcription.preferredTranslationLanguage = 'original';
+        }
+      } catch (error) {
+        console.error('Failed to update preference:', error);
+      }
       return;
     }
 
@@ -140,19 +172,26 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         ...existingTranslation.analyses,
         transcript: existingTranslation.transcriptText
       });
+
+      // Save preference when switching to existing translation
+      try {
+        await transcriptionApi.updateTranslationPreference(transcriptionId, languageCode);
+        if (transcription) {
+          transcription.preferredTranslationLanguage = languageCode;
+        }
+      } catch (error) {
+        console.error('Failed to update preference:', error);
+      }
       return;
     }
 
-    // Create new translation
+    // Create new translation (preference is auto-saved by backend during translation)
     setIsTranslating(true);
     try {
       const response = await transcriptionApi.translate(transcriptionId, languageCode);
-      console.log('[Translation] Response:', response);
 
       if (response.success && response.data) {
         const translationData = response.data as TranslationData;
-        console.log('[Translation] Translation data:', translationData);
-        console.log('[Translation] Analyses:', translationData.analyses);
 
         setSelectedLanguage(languageCode);
         setCurrentAnalyses({
@@ -160,10 +199,11 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
           transcript: translationData.transcriptText
         });
 
-        // Update the transcription object with the new translation
+        // Update the transcription object with the new translation and preference
         if (transcription) {
           transcription.translations = transcription.translations || {};
           transcription.translations[languageCode] = translationData;
+          transcription.preferredTranslationLanguage = languageCode; // Backend auto-saves this, but update locally too
         }
       }
     } catch (error) {
@@ -214,6 +254,27 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
       activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, [activeTab]);
+
+  // Auto-load preferred translation language on mount
+  useEffect(() => {
+    const preferredLang = transcription?.preferredTranslationLanguage;
+
+    // Only auto-load if:
+    // 1. There's a preferred language set
+    // 2. It's not 'original' (which is the default)
+    // 3. The translation exists in the transcription
+    // 4. We're currently showing 'original' (to avoid overriding user's current selection)
+    if (preferredLang && preferredLang !== 'original' && selectedLanguage === 'original') {
+      const translation = transcription?.translations?.[preferredLang];
+      if (translation) {
+        setSelectedLanguage(preferredLang);
+        setCurrentAnalyses({
+          ...translation.analyses,
+          transcript: translation.transcriptText
+        });
+      }
+    }
+  }, [transcription]); // Only run when transcription changes (on mount or update)
 
   // Get translated languages
   const translatedLanguages = transcription?.translations
@@ -365,8 +426,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
               );
             })}
 
-            {/* More Analyses Tab - render before Details */}
-            {transcriptionId && transcription && (
+            {/* More Analyses Tab - render before Details (only for authors, not in read-only mode) */}
+            {transcriptionId && transcription && !readOnlyMode && (
               <button
                 data-active={activeTab === 'moreAnalyses'}
                 onClick={() => setActiveTab('moreAnalyses')}
@@ -383,8 +444,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
               </button>
             )}
 
-            {/* Details Tab - render last */}
-            {transcription && (() => {
+            {/* Details Tab - render last (only for authors, not in read-only mode) */}
+            {transcription && !readOnlyMode && (() => {
               const detailsInfo = ANALYSIS_TYPE_INFO.find(info => info.key === 'details');
               if (!detailsInfo) return null;
 
@@ -527,25 +588,29 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                                   </>
                                 )}
 
-                                {/* Available Languages */}
-                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-2 mt-2 border-t border-gray-200 dark:border-gray-700">
-                                  Translate to...
-                                </div>
-                                {SUPPORTED_LANGUAGES.filter(
-                                  lang => !translatedLanguages.includes(lang.code)
-                                ).slice(0, 10).map((lang) => (
-                                  <button
-                                    key={lang.code}
-                                    onClick={() => handleLanguageChange(lang.code)}
-                                    className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <Languages className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                      <span>{lang.name}</span>
-                                      <span className="text-xs text-gray-500 dark:text-gray-400">{lang.nativeName}</span>
+                                {/* Available Languages - Only show in authenticated mode */}
+                                {!readOnlyMode && (
+                                  <>
+                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase px-3 py-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+                                      Translate to...
                                     </div>
-                                  </button>
-                                ))}
+                                    {SUPPORTED_LANGUAGES.filter(
+                                      lang => !translatedLanguages.includes(lang.code)
+                                    ).slice(0, 10).map((lang) => (
+                                      <button
+                                        key={lang.code}
+                                        onClick={() => handleLanguageChange(lang.code)}
+                                        className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <Languages className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                          <span>{lang.name}</span>
+                                          <span className="text-xs text-gray-500 dark:text-gray-400">{lang.nativeName}</span>
+                                        </div>
+                                      </button>
+                                    ))}
+                                  </>
+                                )}
                               </div>
                             </div>
                           </>
@@ -637,7 +702,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                 ) : info.key === 'actionItems' ? (
                   <ActionItemsTable content={content || ''} />
                 ) : info.key === 'details' ? (
-                  transcription ? (
+                  // Details tab should never render in read-only mode (filtered out from tabs)
+                  transcription && !readOnlyMode ? (
                     <TranscriptionDetails transcription={transcription} />
                   ) : (
                     <div className="text-center text-gray-500 dark:text-gray-400 py-8">
@@ -652,8 +718,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
           );
         })}
 
-        {/* More Analyses Tab Content */}
-        {activeTab === 'moreAnalyses' && transcriptionId && transcription && (
+        {/* More Analyses Tab Content (only for authors, not in read-only mode) */}
+        {activeTab === 'moreAnalyses' && transcriptionId && transcription && !readOnlyMode && (
           <MoreAnalysesTab
             transcriptionId={transcriptionId}
             transcription={transcription}
