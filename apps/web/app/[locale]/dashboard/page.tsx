@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   const [pendingCompletedIds, setPendingCompletedIds] = useState<string[]>([]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingIdsRef = useRef<string[]>([]); // Track pending IDs in ref for immediate access
 
   useEffect(() => {
     const checkAuthState = async () => {
@@ -170,7 +171,8 @@ export default function DashboardPage() {
     // Subscribe to updates for this transcription
     websocketService.subscribeToTranscription(transcriptionId);
 
-    // Add to pending IDs list
+    // Add to pending IDs in both state and ref
+    pendingIdsRef.current = [...pendingIdsRef.current, transcriptionId];
     setPendingCompletedIds(prev => [...prev, transcriptionId]);
 
     // Switch to history tab to see progress (only on first upload)
@@ -182,10 +184,21 @@ export default function DashboardPage() {
       clearTimeout(debounceTimerRef.current);
     }
 
-    // Set new timer - will trigger TranscriptionList fetch only once after all uploads settle
+    // Set new timer - will trigger TranscriptionList fetch for all pending IDs after uploads settle
     debounceTimerRef.current = setTimeout(() => {
-      setLastCompletedId(transcriptionId); // Use the most recent ID
-      setPendingCompletedIds([]); // Clear pending IDs
+      // Get all pending IDs from ref (has most recent state)
+      const idsToFetch = [...pendingIdsRef.current];
+
+      // Trigger fetches for all pending transcriptions with staggered timing
+      idsToFetch.forEach((id, index) => {
+        setTimeout(() => {
+          setLastCompletedId(id);
+        }, index * 100); // 100ms between each fetch to avoid overwhelming the API
+      });
+
+      // Clear pending IDs
+      pendingIdsRef.current = [];
+      setPendingCompletedIds([]);
       debounceTimerRef.current = null;
     }, 300); // 300ms debounce delay
   };

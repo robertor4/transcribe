@@ -706,6 +706,13 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       progress={progress.progress || 0}
                       stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
                     />
+                  ) : transcription.status === TranscriptionStatus.PROCESSING && !progress && !isStuck ? (
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Starting...
+                      </span>
+                    </div>
                   ) : isStuck ? (
                     <div className="flex items-center space-x-2">
                       <Loader2 className="h-4 w-4 text-orange-500 dark:text-orange-400 animate-spin" />
