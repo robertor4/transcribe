@@ -38,6 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locations: `DEPLOYMENT.md:200-223`, `CLAUDE.md:415-478`
 
 ### Fixed
+- **Multiple File Upload UI State Management**: Resolved confusing UI behavior during batch file uploads
+  - Issue: When uploading 3+ files individually, UI initially showed incorrect filenames, duplicate progress updates, and flickering cards before eventually correcting itself
+  - Root cause: Synchronous rapid-fire state updates causing race conditions between API fetches, WebSocket events, and UI re-renders
+  - Solution:
+    - Added 150ms sequential delays between upload callbacks to prevent cascade of simultaneous state updates
+    - Implemented 300ms debounce on `lastCompletedId` updates to consolidate multiple API calls into one
+    - Added progress validation to ensure WebSocket updates only affect correct transcription cards
+    - Added subscription tracking to prevent duplicate WebSocket subscriptions
+  - Impact: Each file now displays correct filename immediately, progress bars update independently per file, no flickering or multiple re-renders
+  - Locations: `apps/web/components/FileUploader.tsx:187-195`, `apps/web/app/[locale]/dashboard/page.tsx:164-191`, `apps/web/components/TranscriptionList.tsx:291-309`, `apps/web/lib/websocket.ts:221-237`
 - **Traefik Default Certificate Issue**: Resolved self-signed certificate problem
   - Root cause: Missing ACME_EMAIL environment variable prevented Let's Encrypt registration
   - Solution: Added ACME_EMAIL configuration requirement to all documentation

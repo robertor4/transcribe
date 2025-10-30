@@ -17,6 +17,7 @@ class WebSocketService {
   private isReconnecting = false;
   private connectionHealthy = false;
   private lastEventTime: Map<string, number> = new Map(); // Track last event time per transcription
+  private subscribedTranscriptions: Set<string> = new Set(); // Track subscribed transcription IDs
 
   async connect() {
     if (this.socket?.connected) return;
@@ -173,6 +174,7 @@ class WebSocketService {
     this.isReconnecting = false;
     this.connectionHealthy = false;
     this.lastEventTime.clear();
+    this.subscribedTranscriptions.clear();
   }
 
   /**
@@ -218,11 +220,21 @@ class WebSocketService {
   }
 
   subscribeToTranscription(transcriptionId: string) {
+    // Avoid duplicate subscriptions
+    if (this.subscribedTranscriptions.has(transcriptionId)) {
+      console.log('[WebSocket] Already subscribed to transcription:', transcriptionId);
+      return;
+    }
+
     this.socket?.emit(WEBSOCKET_EVENTS.SUBSCRIBE_TRANSCRIPTION, transcriptionId);
+    this.subscribedTranscriptions.add(transcriptionId);
+    console.log('[WebSocket] Subscribed to transcription:', transcriptionId);
   }
 
   unsubscribeFromTranscription(transcriptionId: string) {
     this.socket?.emit(WEBSOCKET_EVENTS.UNSUBSCRIBE_TRANSCRIPTION, transcriptionId);
+    this.subscribedTranscriptions.delete(transcriptionId);
+    console.log('[WebSocket] Unsubscribed from transcription:', transcriptionId);
   }
 
   on(event: string, callback: (data: unknown) => void) {

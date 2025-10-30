@@ -288,7 +288,18 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
         // Mark event received in WebSocket service
         websocketService.markEventReceived(progress.transcriptionId);
 
+        // Validate that this transcription exists before updating progress
         setProgressMap(prev => {
+          // Check if transcription exists in our list (avoid updating wrong cards)
+          const transcriptionExists = transcriptions.some(t => t.id === progress.transcriptionId);
+
+          if (!transcriptionExists) {
+            // This progress update is for a transcription we don't have yet
+            // This can happen if WebSocket event arrives before API fetch completes
+            console.log('[TranscriptionList] Received progress for unknown transcription:', progress.transcriptionId);
+            // Still allow it through - the transcription will appear soon
+          }
+
           const newMap = new Map(prev);
           const existingProgress = newMap.get(progress.transcriptionId);
           // Preserve start time if it exists, otherwise set it

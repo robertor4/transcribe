@@ -184,10 +184,15 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         if (response?.success && response.data && onUploadComplete) {
           const { transcriptionIds, fileNames, merged } = response.data;
 
-          // Call onUploadComplete for each transcription
-          transcriptionIds.forEach((id, index) => {
-            onUploadComplete(id, fileNames[index]);
-          });
+          // Call onUploadComplete for each transcription with delays to prevent race conditions
+          // This ensures UI state updates happen sequentially rather than all at once
+          for (let i = 0; i < transcriptionIds.length; i++) {
+            if (i > 0) {
+              // Add 150ms delay between callbacks (except for first one)
+              await new Promise(resolve => setTimeout(resolve, 150));
+            }
+            onUploadComplete(transcriptionIds[i], fileNames[i]);
+          }
 
           // Track successful upload
           trackEvent('batch_transcription_completed', {

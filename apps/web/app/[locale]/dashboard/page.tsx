@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
@@ -27,7 +27,9 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
-  
+  const [pendingCompletedIds, setPendingCompletedIds] = useState<string[]>([]);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     const checkAuthState = async () => {
       if (!loading) {
@@ -164,13 +166,28 @@ export default function DashboardPage() {
     if (fileName) {
       setActiveTranscriptions(prev => new Map(prev).set(transcriptionId, fileName));
     }
-    
+
     // Subscribe to updates for this transcription
     websocketService.subscribeToTranscription(transcriptionId);
 
-    // Switch to history tab to see progress
+    // Add to pending IDs list
+    setPendingCompletedIds(prev => [...prev, transcriptionId]);
+
+    // Switch to history tab to see progress (only on first upload)
     setActiveTab('history');
-    setLastCompletedId(transcriptionId);
+
+    // Debounce the lastCompletedId update to prevent multiple rapid API calls
+    // Clear any existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timer - will trigger TranscriptionList fetch only once after all uploads settle
+    debounceTimerRef.current = setTimeout(() => {
+      setLastCompletedId(transcriptionId); // Use the most recent ID
+      setPendingCompletedIds([]); // Clear pending IDs
+      debounceTimerRef.current = null;
+    }, 300); // 300ms debounce delay
   };
 
   // Show loading state while checking auth
