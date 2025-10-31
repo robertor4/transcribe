@@ -9,18 +9,16 @@ import { LogOut, Settings, User as UserIcon, ChevronDown, Shield } from 'lucide-
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { NotificationToggle } from '@/components/NotificationToggle';
 import { UsageIndicator } from '@/components/paywall/UsageIndicator';
-import { UserRole } from '@transcribe/shared';
 
 export function UserProfileMenu() {
   const { user, logout } = useAuth();
-  const { usageStats } = useUsage();
+  const { usageStats, isAdmin } = useUsage();
   const router = useRouter();
   const tAuth = useTranslations('auth');
   const tSettings = useTranslations('settings');
   const tCommon = useTranslations('common');
   const tUsage = useTranslations('usage');
   const [isOpen, setIsOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -48,35 +46,6 @@ export function UserProfileMenu() {
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen]);
-
-  // Fetch user profile to check if admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-
-      try {
-        const token = await user.getIdToken();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsAdmin(data.data?.role === UserRole.ADMIN);
-        }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user]);
 
   const handleLogout = async () => {
     setIsOpen(false);
@@ -190,8 +159,8 @@ export function UserProfileMenu() {
             </div>
           </div>
 
-          {/* Usage Stats Section */}
-          {usageStats && (
+          {/* Usage Stats Section - Hidden for admins */}
+          {usageStats && !isAdmin && (
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -50,6 +51,7 @@ interface Invoice {
 
 export default function SubscriptionPage() {
   const { user } = useAuth();
+  const { isAdmin } = useUsage();
   const t = useTranslations('subscription');
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
@@ -281,8 +283,8 @@ export default function SubscriptionPage() {
         )}
       </div>
 
-      {/* Usage Stats */}
-      {usageStats && (
+      {/* Usage Stats - Hidden for admins */}
+      {usageStats && !isAdmin && (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
             <TrendingUp className="h-5 w-5 mr-2 text-[#cc3399]" />

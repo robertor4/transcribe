@@ -4,7 +4,12 @@ import { useUsage } from '@/contexts/UsageContext';
 import { Loader2, TrendingUp } from 'lucide-react';
 
 export function UsageBadge() {
-  const { usageStats, loading } = useUsage();
+  const { usageStats, loading, isAdmin } = useUsage();
+
+  // Hide usage badge for admin users
+  if (isAdmin) {
+    return null;
+  }
 
   if (loading || !usageStats) {
     return (
