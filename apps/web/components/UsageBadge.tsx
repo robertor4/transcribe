@@ -11,12 +11,18 @@ export function UsageBadge() {
     return null;
   }
 
-  if (loading || !usageStats) {
+  // Show spinner only while actively loading (not when error occurred)
+  if (loading) {
     return (
       <div className="hidden sm:flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-full">
         <Loader2 className="h-3 w-3 animate-spin text-gray-500 dark:text-gray-400" />
       </div>
     );
+  }
+
+  // If no usage stats after loading, don't show anything (shouldn't happen with fallback)
+  if (!usageStats) {
+    return null;
   }
 
   const { tier, usage, limits, percentUsed, paygCredits } = usageStats;

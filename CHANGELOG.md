@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **New User Usage Display**: Fixed infinite spinner and missing usage information for newly registered users
+  - Backend now automatically creates user profile with default free tier stats when fetching usage data
+  - Modified `/user/usage-stats` endpoint to call `getUserProfile()` first, ensuring Firestore user document exists
+  - Added default free tier fallback stats in UsageContext when API fails (0/3 transcriptions, 0/1 hours, 0/3 analyses)
+  - Improved UsageBadge loading state to differentiate between loading and error states
+  - Updated UserProfileMenu to reliably show usage section for non-admin users with fallback data
+  - New users now immediately see "0/3 transcriptions (Free)" instead of infinite loading spinner
+  - Locations: `apps/api/src/user/user.controller.ts:127-128`, `apps/web/contexts/UsageContext.tsx:106-126,131-151`, `apps/web/components/UsageBadge.tsx:14-26`, `apps/web/components/UserProfileMenu.tsx:163`
 - **Stripe 100% Discount Coupon Payment Collection**: Fixed Stripe checkout requiring credit card details even when using 100% discount founding member coupons
   - Added `payment_method_collection: 'if_required'` to checkout session configuration
   - Stripe now skips payment collection when total is $0 after applying coupon

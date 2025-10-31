@@ -103,10 +103,52 @@ export function UsageProvider({ children }: { children: ReactNode }) {
       } else {
         console.error('Failed to fetch usage stats:', response.statusText);
         setError('Failed to fetch usage stats');
+        // Set default free tier stats as fallback for new users
+        setUsageStats({
+          tier: 'free',
+          usage: {
+            hours: 0,
+            transcriptions: 0,
+            onDemandAnalyses: 0,
+          },
+          limits: {
+            transcriptions: 3,
+            hours: 1,
+            onDemandAnalyses: 3,
+          },
+          overage: {
+            hours: 0,
+            amount: 0,
+          },
+          percentUsed: 0,
+          warnings: [],
+          resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
+        });
       }
     } catch (err: any) {
       console.error('Error fetching usage stats:', err);
       setError(err.message);
+      // Set default free tier stats as fallback for new users
+      setUsageStats({
+        tier: 'free',
+        usage: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+        },
+        limits: {
+          transcriptions: 3,
+          hours: 1,
+          onDemandAnalyses: 3,
+        },
+        overage: {
+          hours: 0,
+          amount: 0,
+        },
+        percentUsed: 0,
+        warnings: [],
+        resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
+      });
     } finally {
       setLoading(false);
     }

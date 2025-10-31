@@ -124,18 +124,18 @@ export class UserController {
   > {
     const userId = (req as any).user.uid;
 
+    // Ensure user profile exists (auto-creates with defaults for new users)
+    const user = await this.userService.getUserProfile(userId);
+
     // Get usage stats from UsageService
     const stats = await this.usageService.getUsageStats(userId);
-
-    // Get user to access paygCredits and calculate reset date
-    const user = await this.firebaseService.getUser(userId);
 
     // Calculate reset date (first day of next month)
     let lastReset = user?.usageThisMonth?.lastResetAt || new Date();
 
     // Convert Firestore Timestamp to Date if needed
-    if (lastReset && typeof lastReset.toDate === 'function') {
-      lastReset = lastReset.toDate();
+    if (lastReset && typeof (lastReset as any).toDate === 'function') {
+      lastReset = (lastReset as any).toDate();
     }
 
     // Defensive: If lastResetAt is before 2020 (e.g., Unix epoch), use current date

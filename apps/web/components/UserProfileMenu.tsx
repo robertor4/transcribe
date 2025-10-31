@@ -159,8 +159,8 @@ export function UserProfileMenu() {
             </div>
           </div>
 
-          {/* Usage Stats Section - Hidden for admins */}
-          {usageStats && !isAdmin && (
+          {/* Usage Stats Section - Hidden for admins, shown for all other users */}
+          {!isAdmin && usageStats && (
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
