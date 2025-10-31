@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Cost Estimation Feature Planning Document**: Comprehensive implementation plan for AI API cost tracking and admin analytics
+  - Detailed plan for capturing token usage from OpenAI API (GPT-5, GPT-5-mini, Whisper)
+  - Cost calculator service design with current pricing models ($1.25/1M input, $10/1M output for GPT-5)
+  - Admin panel design with cost dashboard, transcriptions table, and detailed breakdowns
+  - Migration strategy for backfilling historical transcription costs
+  - 4-phase implementation roadmap with 8-12 hour estimate
+  - Location: `docs/PLAN_COST_ESTIMATION_FEATURE.md`
 - **Last Login Tracking for Admin Panel**: Added automatic tracking and display of user login timestamps
   - Added `lastLogin?: Date` field to User interface for recording authentication timestamps
   - Implemented automatic login tracking in Firebase auth guard with 1-hour throttling to minimize Firestore writes
