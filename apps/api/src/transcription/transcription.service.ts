@@ -2054,4 +2054,273 @@ CRITICAL INSTRUCTIONS:
       `Updated translation preference to ${languageCode} for transcription ${transcriptionId}`,
     );
   }
+
+  /**
+   * Correct transcript using AI with natural language instructions
+   * Supports preview mode and apply mode
+   */
+  async correctTranscriptWithAI(
+    userId: string,
+    transcriptionId: string,
+    instructions: string,
+    previewOnly: boolean = true,
+  ): Promise<any> {
+    this.logger.log(
+      `Correcting transcript ${transcriptionId} for user ${userId}, previewOnly: ${previewOnly}`,
+    );
+
+    // Fetch transcription and validate ownership
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Validate transcript exists and is completed
+    if (!transcription.transcriptText || transcription.status !== 'completed') {
+      throw new BadRequestException(
+        'Transcription must be completed before correction',
+      );
+    }
+
+    // Use transcriptWithSpeakers if available, otherwise fallback to transcriptText
+    const originalTranscript =
+      transcription.transcriptWithSpeakers || transcription.transcriptText;
+
+    // Call OpenAI with correction prompt
+    this.logger.log('Calling OpenAI for transcript correction...');
+    const completion = await this.openai.chat.completions.create({
+      model: 'gpt-4o-mini', // Use mini for cost efficiency
+      messages: [
+        {
+          role: 'system',
+          content: prompts.CORRECTION_SYSTEM_PROMPT,
+        },
+        {
+          role: 'user',
+          content: prompts.CORRECTION_USER_PROMPT(
+            originalTranscript,
+            instructions,
+          ),
+        },
+      ],
+      temperature: 0.3, // Low temperature for consistent corrections
+      max_tokens: 16000, // Sufficient for most transcripts
+    });
+
+    const correctedTranscript = completion.choices[0]?.message?.content?.trim();
+    if (!correctedTranscript) {
+      throw new BadRequestException('Failed to generate corrected transcript');
+    }
+
+    this.logger.log('Transcript correction completed');
+
+    // Parse corrected transcript into segments (if original had speakers)
+    const originalSegments = transcription.speakerSegments || [];
+    const correctedSegments =
+      originalSegments.length > 0
+        ? this.applyCorrectionsToSegments(originalSegments, correctedTranscript)
+        : [];
+
+    // If preview only, generate diff and return
+    if (previewOnly) {
+      const diff =
+        originalSegments.length > 0
+          ? this.generateDiff(originalSegments, correctedSegments)
+          : [];
+
+      return {
+        original: originalTranscript,
+        corrected: correctedTranscript,
+        diff,
+        summary: {
+          totalChanges: diff.length,
+          affectedSegments: diff.length,
+        },
+      };
+    }
+
+    // Apply mode: Save changes and clean up
+    this.logger.log('Applying transcript corrections...');
+
+    // Get existing translations for tracking what was cleared
+    const existingTranslations = Object.keys(
+      transcription.translations || {},
+    );
+
+    // Delete custom analyses
+    const deletedAnalysisIds =
+      await this.firebaseService.deleteGeneratedAnalysesByTranscription(
+        transcriptionId,
+        userId,
+      );
+
+    // Update transcription with corrected text
+    const updates: any = {
+      transcriptText: correctedTranscript,
+      transcriptWithSpeakers: correctedTranscript,
+      translations: {}, // Clear all translations
+      generatedAnalysisIds: [], // Clear custom analysis references
+      updatedAt: new Date(),
+    };
+
+    // Only update speakerSegments if we have them
+    if (correctedSegments.length > 0) {
+      updates.speakerSegments = correctedSegments;
+    }
+
+    await this.firebaseService.updateTranscription(transcriptionId, updates);
+
+    // Fetch updated transcription for response
+    const updatedTranscription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+
+    this.logger.log(
+      `Transcript correction applied successfully. Deleted ${deletedAnalysisIds.length} custom analyses, cleared ${existingTranslations.length} translations`,
+    );
+
+    return {
+      success: true,
+      transcription: updatedTranscription,
+      deletedAnalysisIds,
+      clearedTranslations: existingTranslations,
+    };
+  }
+
+  /**
+   * Apply corrections from corrected text to speaker segments
+   * Parses corrected text by speaker labels and updates segment text
+   */
+  private applyCorrectionsToSegments(
+    originalSegments: SpeakerSegment[],
+    correctedText: string,
+  ): SpeakerSegment[] {
+    // Parse corrected text into speaker segments
+    // Match pattern: "Speaker N: text" or "Speaker A: text"
+    const regex = /(Speaker [A-Z0-9]+):\s*/gi;
+    const parts = correctedText.split(regex).filter((p) => p.trim());
+
+    const parsedSegments: Array<{ speakerTag: string; text: string }> = [];
+    for (let i = 0; i < parts.length; i += 2) {
+      if (i + 1 < parts.length) {
+        parsedSegments.push({
+          speakerTag: parts[i].trim(),
+          text: parts[i + 1].trim(),
+        });
+      }
+    }
+
+    // Match parsed segments to original by order and speaker tag
+    const updatedSegments = originalSegments.map((original, index) => {
+      const parsed = parsedSegments[index];
+
+      // If structure mismatch, keep original
+      if (
+        !parsed ||
+        parsed.speakerTag.toLowerCase() !== original.speakerTag.toLowerCase()
+      ) {
+        this.logger.warn(
+          `Segment mismatch at index ${index}, preserving original`,
+        );
+        return original;
+      }
+
+      // Update only the text field, preserve timestamps and metadata
+      return {
+        ...original,
+        text: parsed.text,
+      };
+    });
+
+    return updatedSegments;
+  }
+
+  /**
+   * Generate diff between original and corrected segments
+   */
+  private generateDiff(
+    originalSegments: SpeakerSegment[],
+    correctedSegments: SpeakerSegment[],
+  ): any[] {
+    const diff: any[] = [];
+
+    originalSegments.forEach((original, index) => {
+      const corrected = correctedSegments[index];
+
+      // Only include segments where text changed
+      if (corrected && original.text !== corrected.text) {
+        diff.push({
+          segmentIndex: index,
+          speakerTag: original.speakerTag,
+          timestamp: this.formatTime(original.startTime),
+          oldText: original.text,
+          newText: corrected.text,
+        });
+      }
+    });
+
+    return diff;
+  }
+
+  /**
+   * Format time in seconds to MM:SS format
+   */
+  private formatTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Regenerate core analyses for a transcription
+   * Used after transcript corrections to update analyses with corrected text
+   */
+  async regenerateCoreAnalysesForTranscription(
+    userId: string,
+    transcriptionId: string,
+  ): Promise<any> {
+    this.logger.log(
+      `Regenerating core analyses for transcription ${transcriptionId}`,
+    );
+
+    // Fetch transcription and validate ownership
+    const transcription = await this.firebaseService.getTranscription(
+      userId,
+      transcriptionId,
+    );
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found or access denied');
+    }
+
+    // Validate transcript exists and is completed
+    if (!transcription.transcriptText || transcription.status !== 'completed') {
+      throw new BadRequestException(
+        'Transcription must be completed before regenerating analyses',
+      );
+    }
+
+    // Generate new core analyses using the corrected transcript
+    const coreAnalyses = await this.generateCoreAnalyses(
+      transcription.transcriptText,
+      undefined, // no context
+      transcription.detectedLanguage,
+    );
+
+    // Update transcription with new core analyses
+    await this.firebaseService.updateTranscription(transcriptionId, {
+      coreAnalyses,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(
+      `Core analyses regenerated successfully for transcription ${transcriptionId}`,
+    );
+
+    // Fetch and return updated transcription
+    return this.firebaseService.getTranscription(userId, transcriptionId);
+  }
 }

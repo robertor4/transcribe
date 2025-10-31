@@ -30,6 +30,11 @@ import { SubscriptionGuard } from '../guards/subscription.guard';
 import { PaginationDto } from './dto/pagination.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
 import { CreateShareLinkDto, UpdateShareSettingsDto, SendShareEmailDto } from './dto/share-link.dto';
+import type {
+  CorrectTranscriptRequest,
+  CorrectionPreview,
+  CorrectionApplyResponse,
+} from '@transcribe/shared';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -463,6 +468,63 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Summary regeneration started',
+    };
+  }
+
+  @Post(':id/correct-transcript')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 corrections per minute
+  async correctTranscript(
+    @Param('id') transcriptionId: string,
+    @Body() dto: CorrectTranscriptRequest,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> {
+    // Validate instructions
+    if (!dto.instructions || dto.instructions.trim().length === 0) {
+      throw new BadRequestException('Instructions are required');
+    }
+
+    if (dto.instructions.length > 2000) {
+      throw new BadRequestException(
+        'Instructions must be less than 2000 characters',
+      );
+    }
+
+    // Default to preview mode if not specified
+    const previewOnly = dto.previewOnly !== false;
+
+    const result = await this.transcriptionService.correctTranscriptWithAI(
+      req.user.uid,
+      transcriptionId,
+      dto.instructions.trim(),
+      previewOnly,
+    );
+
+    return {
+      success: true,
+      data: result,
+      message: previewOnly
+        ? 'Preview generated successfully'
+        : 'Transcript corrected successfully',
+    };
+  }
+
+  @Post(':id/regenerate-core-analyses')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 regenerations per minute
+  async regenerateCoreAnalyses(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    const transcription = await this.transcriptionService.regenerateCoreAnalysesForTranscription(
+      req.user.uid,
+      transcriptionId,
+    );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'Core analyses regenerated successfully',
     };
   }
 

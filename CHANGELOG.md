@@ -8,6 +8,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Future Enhancements Documentation**: Created comprehensive backlog document for Transcript Correction feature
+  - 16 enhancement categories covering UX, collaboration, AI, mobile, analytics, security
+  - Prioritization matrix (high/low impact × high/low effort)
+  - Recommended 4-quarter roadmap for 2026
+  - Effort estimates and success criteria for each enhancement
+  - Location: `docs/TRANSCRIPT_CORRECTION_FUTURE_ENHANCEMENTS.md`
+- **Dark Mode Support for Transcript Correction Modal**: Added comprehensive dark mode styling to correction feature
+  - Updated `TranscriptCorrectionModal` with dark mode classes for all UI elements
+  - Updated `DiffViewer` component with dark mode support for diff display
+  - Covers modal backdrop, headers, inputs, buttons, success/error/warning banners, and footer
+  - Uses established dark mode patterns: `dark:bg-gray-800`, `dark:text-gray-100`, semantic colors with 30% opacity
+  - All interactive elements (hover, focus states) properly styled for both light and dark modes
+  - Locations: `apps/web/components/TranscriptCorrectionModal.tsx`, `apps/web/components/DiffViewer.tsx`
+- **Re-run Core Analyses from Details Tab**: Added permanent UI button to regenerate core analyses at any time
+  - New "Re-run Core Analyses" section at top of Details tab with explanation and button
+  - Useful for users who skipped regeneration after transcript corrections or want to update analyses
+  - Shows loading state during regeneration (~15-20 seconds)
+  - Displays success/error messages with auto-dismiss (5 seconds for success)
+  - Automatically refreshes parent component to show updated analyses in other tabs
+  - Integrated with existing `POST /transcriptions/:id/regenerate-core-analyses` endpoint
+  - Fully dark mode compatible
+  - Locations: `apps/web/components/TranscriptionDetails.tsx`, `apps/web/components/AnalysisTabs.tsx:712-715`
+
+### Fixed
+- **Runtime Error in Full Transcript Tab**: Fixed `onTranscriptionUpdate is not defined` error when navigating to Full Transcript tab
+  - Added `onTranscriptionUpdate` prop to `AnalysisTabs` interface
+  - Created `handleTranscriptionUpdate()` callback in `TranscriptionList` component to refresh transcription after corrections
+  - Properly passed callback to `AnalysisTabs` and `TranscriptTimeline` components
+  - Fixed TypeScript error: `transcription.id` possibly undefined by using `transcriptionId` prop instead
+  - Locations: `apps/web/components/AnalysisTabs.tsx:40,43,685-687`, `apps/web/components/TranscriptionList.tsx:435-447,869`
+- **AI-Powered Transcript Correction (Complete)**: Full-stack feature for fixing transcription errors using natural language instructions
+  - **Backend (Phase 1 ✅)**:
+    - New endpoint: `POST /transcriptions/:id/correct-transcript` with preview and apply modes
+    - **Preview Mode** (`previewOnly: true`): Returns diff showing all proposed changes without saving
+    - **Apply Mode** (`previewOnly: false`): Saves corrections, clears translations, and deletes custom analyses
+    - **Iterative Workflow**: Users can refine instructions and preview multiple times before applying
+    - Uses GPT-4o-mini for cost-efficient corrections (~$0.003 per 5K word transcript)
+    - Preserves speaker segments, timestamps, and formatting structure
+    - **New Types**: `CorrectTranscriptRequest`, `TranscriptDiff`, `CorrectionPreview`, `CorrectionApplyResponse`
+    - **Rate Limiting**: 10 corrections per minute per user
+    - **Tests**: Comprehensive unit test suite with 16 tests covering validation, preview/apply modes, OpenAI integration, and helper methods (all passing ✅)
+    - Locations: `apps/api/src/transcription/transcription.controller.ts:472-508`, `apps/api/src/transcription/transcription.service.ts:2058-2276`, `apps/api/src/transcription/prompts.ts:339-369`, `apps/api/src/firebase/firebase.service.ts:937-959`, `packages/shared/src/types.ts:640-670`, `apps/api/src/transcription/transcript-correction.spec.ts`
+  - **Frontend (Phase 2 ✅)**:
+    - **TranscriptCorrectionModal**: Full-featured modal with iterative preview workflow
+      - Natural language instruction input with character counter (max 2000 chars)
+      - Preview button generates diff without saving
+      - "Preview Again" button allows refining instructions
+      - Confirmation dialog warns about deleted translations/analyses
+      - Apply button saves changes and triggers onSuccess callback
+    - **DiffViewer Component**: Color-coded diff display
+      - Collapsible/expandable segments
+      - Red background for removed text (strikethrough)
+      - Green background for added text
+      - Shows speaker tag, timestamp, and change summary
+      - "Expand All" / "Collapse All" toggle
+    - **UI Integration**: "Fix" button added to transcript views
+      - Added to `TranscriptTimeline` component (primary transcript view)
+      - Added to `TranscriptWithSpeakers` component
+      - Brand-colored button (pink #cc3399) with pencil icon
+      - Positioned next to search bar for easy access
+    - **API Client**: New method `transcriptionApi.correctTranscript(id, instructions, previewOnly)`
+    - Locations: `apps/web/components/TranscriptCorrectionModal.tsx`, `apps/web/components/DiffViewer.tsx`, `apps/web/components/TranscriptTimeline.tsx:4-5,27,220-226,391-401`, `apps/web/components/TranscriptWithSpeakers.tsx:5-6,13,25,124-130,214-224`, `apps/web/components/AnalysisTabs.tsx:683-687`, `apps/web/lib/api.ts:3-11,238-248`
+  - **Re-run Core Analyses (Phase 3 ✅)**:
+    - **Backend Endpoint**: `POST /transcriptions/:id/regenerate-core-analyses`
+      - Regenerates Summary, Action Items, and Communication analyses using corrected transcript
+      - Validates transcription ownership and completion status
+      - Uses existing `generateCoreAnalyses()` method with detected language
+      - **Rate Limiting**: 5 regenerations per minute per user
+      - Locations: `apps/api/src/transcription/transcription.controller.ts:512-529`, `apps/api/src/transcription/transcription.service.ts:2278-2325`
+    - **Success Screen in Modal**: After correction is applied
+      - Green success banner showing deleted analyses and cleared translations count
+      - Prominent "🔄 Re-run Analyses Now" button to regenerate core analyses
+      - "Skip for Now" option for users who want to regenerate later
+      - Loading state during regeneration (15-20 seconds)
+      - Success alert on completion with auto-close
+      - Automatically refreshes parent component to show updated analyses
+    - **API Client**: New method `transcriptionApi.regenerateCoreAnalyses(id)`
+    - **Complete User Flow**: Fix transcript → Preview → Apply → Re-run analyses → See updated Summary/Action Items/Communication
+    - Locations: `apps/web/components/TranscriptCorrectionModal.tsx:28-32,112-154,180-233`, `apps/web/lib/api.ts:250-252`
 
 ### Changed
 

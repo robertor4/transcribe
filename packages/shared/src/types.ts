@@ -636,3 +636,35 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     },
   },
 };
+
+// Transcript Correction Types
+
+export interface CorrectTranscriptRequest {
+  instructions: string;
+  previewOnly?: boolean; // Default: true
+}
+
+export interface TranscriptDiff {
+  segmentIndex: number;
+  speakerTag: string;
+  timestamp: string; // Formatted like "1:23"
+  oldText: string;
+  newText: string;
+}
+
+export interface CorrectionPreview {
+  original: string; // Full original transcript
+  corrected: string; // Full corrected transcript
+  diff: TranscriptDiff[]; // Only changed segments
+  summary: {
+    totalChanges: number; // Number of text changes
+    affectedSegments: number; // Number of segments changed
+  };
+}
+
+export interface CorrectionApplyResponse {
+  success: boolean;
+  transcription: Transcription; // Updated transcript object
+  deletedAnalysisIds: string[]; // IDs of deleted custom analyses
+  clearedTranslations: string[]; // Language codes that were cleared (e.g., ['es', 'fr'])
+}

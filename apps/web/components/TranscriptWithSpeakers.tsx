@@ -2,21 +2,27 @@
 
 import React, { useState } from 'react';
 import { SpeakerSegment } from '@transcribe/shared';
-import { User, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { User, Clock, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import TranscriptCorrectionModal from './TranscriptCorrectionModal';
 
 interface TranscriptWithSpeakersProps {
+  transcriptionId: string;
   segments?: SpeakerSegment[];
   transcriptWithSpeakers?: string;
   className?: string;
+  onRefresh?: () => void; // Callback to refresh transcription after correction
 }
 
-export default function TranscriptWithSpeakers({ 
-  segments, 
+export default function TranscriptWithSpeakers({
+  transcriptionId,
+  segments,
   transcriptWithSpeakers,
-  className = '' 
+  className = '',
+  onRefresh,
 }: TranscriptWithSpeakersProps) {
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [showTimestamps, setShowTimestamps] = useState(false);
+  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
 
   if (!segments || segments.length === 0) {
     // Fall back to formatted transcript if no segments
@@ -114,13 +120,22 @@ export default function TranscriptWithSpeakers({
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Transcript with Speakers</h3>
-        <button
-          onClick={() => setShowTimestamps(!showTimestamps)}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1"
-        >
-          <Clock className="w-4 h-4" />
-          {showTimestamps ? 'Hide' : 'Show'} Timestamps
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsCorrectionModalOpen(true)}
+            className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 rounded px-2 py-1"
+          >
+            <Pencil className="w-4 h-4" />
+            Fix
+          </button>
+          <button
+            onClick={() => setShowTimestamps(!showTimestamps)}
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600/20 rounded px-2 py-1"
+          >
+            <Clock className="w-4 h-4" />
+            {showTimestamps ? 'Hide' : 'Show'} Timestamps
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -195,6 +210,18 @@ export default function TranscriptWithSpeakers({
           {segments.length} segments • {formatTime(segments[segments.length - 1].endTime)} total duration
         </div>
       )}
+
+      {/* Transcript Correction Modal */}
+      <TranscriptCorrectionModal
+        transcriptionId={transcriptionId}
+        isOpen={isCorrectionModalOpen}
+        onClose={() => setIsCorrectionModalOpen(false)}
+        onSuccess={() => {
+          if (onRefresh) {
+            onRefresh();
+          }
+        }}
+      />
     </div>
   );
 }
