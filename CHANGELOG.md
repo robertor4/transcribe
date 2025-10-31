@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+### Security
+
+### Removed
+
+---
+
+## [2.0.0] - 2025-10-31
+
+### Changed
+- **README.md Comprehensive Update**: Updated README to reflect all major features and recent changes
+  - Updated Core Features section to highlight on-demand analyses system (15+ templates)
+  - Added parallel job processing and WebSocket resilience features
+  - Updated Translation & Collaboration section with preference persistence and auto-shared translations
+  - Enhanced Security & Compliance section with security hardening details
+  - Added Subscription & Billing feature section
+  - Updated Tech Stack sections (Backend, Infrastructure) with current architecture
+  - Added comprehensive API endpoint documentation (40+ endpoints across 7 categories)
+  - Added Subscription Tiers & Limits section with Free/Professional/PAYG details
+  - Enhanced Translation Support section with new features
+  - Expanded Troubleshooting section with production diagnostics
+  - Added processing configuration to environment variables
+  - Updated "How It Works" section to reflect current workflow
+  - Location: `README.md`
+
 ### Fixed
 - **New User Usage Display**: Fixed infinite spinner and missing usage information for newly registered users
   - Backend now automatically creates user profile with default free tier stats when fetching usage data
