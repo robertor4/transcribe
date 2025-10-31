@@ -35,6 +35,9 @@ export interface User {
   isDeleted?: boolean; // True if account is soft-deleted
   deletedAt?: Date; // When the account was soft-deleted
 
+  // NEW: Last login tracking
+  lastLogin?: Date; // When user last authenticated
+
   // NEW: Subscription fields
   subscriptionTier: 'free' | 'professional' | 'payg';
   stripeCustomerId?: string;

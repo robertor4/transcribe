@@ -14,6 +14,42 @@ export default function AdminPanel() {
   const [error, setError] = useState<string | null>(null);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
+  // Format last login with relative time
+  const formatLastLogin = (lastLogin?: Date) => {
+    if (!lastLogin) {
+      return <span className="text-gray-500 dark:text-gray-500 italic">Never</span>;
+    }
+
+    const date = new Date(lastLogin);
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return <span className="text-gray-500 dark:text-gray-500 italic">Never</span>;
+    }
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    let relativeTime = '';
+    if (diffHours < 1) {
+      relativeTime = 'Just now';
+    } else if (diffHours < 24) {
+      relativeTime = `${diffHours}h ago`;
+    } else if (diffDays < 7) {
+      relativeTime = `${diffDays}d ago`;
+    } else {
+      relativeTime = date.toLocaleDateString();
+    }
+
+    return (
+      <span className="text-gray-700 dark:text-gray-300" title={date.toLocaleString()}>
+        {relativeTime}
+      </span>
+    );
+  };
+
   // Check if user is admin
   useEffect(() => {
     if (!authLoading && !user) {
@@ -210,6 +246,9 @@ export default function AdminPanel() {
                     Created
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    Last Login
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
@@ -252,6 +291,9 @@ export default function AdminPanel() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                       {new Date(u.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {formatLastLogin(u.lastLogin)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {u.isDeleted ? (

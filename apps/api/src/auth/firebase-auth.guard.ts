@@ -8,6 +8,9 @@ import { FirebaseService } from '../firebase/firebase.service';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
+  // Throttle login updates to once per hour (reduces Firestore writes)
+  private readonly LOGIN_UPDATE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
+
   constructor(private firebaseService: FirebaseService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -40,6 +43,14 @@ export class FirebaseAuthGuard implements CanActivate {
           displayName: decodedToken.name || undefined,
           photoURL: decodedToken.picture || undefined,
         });
+      } else {
+        // Update lastLogin timestamp (throttled to once per hour)
+        const shouldUpdateLogin = this.shouldUpdateLastLogin(user.lastLogin);
+        if (shouldUpdateLogin) {
+          await this.firebaseService.updateUser(decodedToken.uid, {
+            lastLogin: new Date(),
+          });
+        }
       }
 
       return true;
@@ -51,5 +62,23 @@ export class FirebaseAuthGuard implements CanActivate {
 
       throw new UnauthorizedException('Invalid or expired token');
     }
+  }
+
+  /**
+   * Determines if lastLogin should be updated based on throttling threshold
+   * @param lastLogin The user's last login timestamp
+   * @returns true if lastLogin should be updated, false otherwise
+   */
+  private shouldUpdateLastLogin(lastLogin?: Date): boolean {
+    if (!lastLogin) {
+      return true; // First login or no previous login recorded
+    }
+
+    const now = Date.now();
+    const lastLoginTime = lastLogin instanceof Date ? lastLogin.getTime() : new Date(lastLogin).getTime();
+    const timeSinceLastLogin = now - lastLoginTime;
+
+    // Update if more than threshold has passed since last login
+    return timeSinceLastLogin >= this.LOGIN_UPDATE_THRESHOLD_MS;
   }
 }

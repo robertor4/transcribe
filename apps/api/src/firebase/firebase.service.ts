@@ -550,7 +550,29 @@ export class FirebaseService implements OnModuleInit {
       if (!userDoc.exists) {
         return null;
       }
-      return { uid: userId, ...userDoc.data() };
+      const data = userDoc.data();
+      return {
+        uid: userId,
+        ...data,
+        createdAt: data.createdAt?.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt,
+        updatedAt: data.updatedAt?.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt,
+        deletedAt: data.deletedAt?.toDate
+          ? data.deletedAt.toDate()
+          : data.deletedAt,
+        lastLogin: data.lastLogin?.toDate
+          ? data.lastLogin.toDate()
+          : data.lastLogin,
+        currentPeriodStart: data.currentPeriodStart?.toDate
+          ? data.currentPeriodStart.toDate()
+          : data.currentPeriodStart,
+        currentPeriodEnd: data.currentPeriodEnd?.toDate
+          ? data.currentPeriodEnd.toDate()
+          : data.currentPeriodEnd,
+      };
     } catch (error) {
       this.logger.error(`Error fetching user from Firestore ${userId}:`, error);
       return null;
@@ -762,6 +784,9 @@ export class FirebaseService implements OnModuleInit {
           deletedAt: data.deletedAt?.toDate
             ? data.deletedAt.toDate()
             : data.deletedAt,
+          lastLogin: data.lastLogin?.toDate
+            ? data.lastLogin.toDate()
+            : data.lastLogin,
           currentPeriodStart: data.currentPeriodStart?.toDate
             ? data.currentPeriodStart.toDate()
             : data.currentPeriodStart,
@@ -798,6 +823,9 @@ export class FirebaseService implements OnModuleInit {
           deletedAt: data.deletedAt?.toDate
             ? data.deletedAt.toDate()
             : data.deletedAt,
+          lastLogin: data.lastLogin?.toDate
+            ? data.lastLogin.toDate()
+            : data.lastLogin,
           currentPeriodStart: data.currentPeriodStart?.toDate
             ? data.currentPeriodStart.toDate()
             : data.currentPeriodStart,

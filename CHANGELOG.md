@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Last Login Tracking for Admin Panel**: Added automatic tracking and display of user login timestamps
+  - Added `lastLogin?: Date` field to User interface for recording authentication timestamps
+  - Implemented automatic login tracking in Firebase auth guard with 1-hour throttling to minimize Firestore writes
+  - Added "Last Login" column to admin panel user table with relative time display (e.g., "2h ago", "3d ago")
+  - Shows "Never" for users who haven't logged in since feature deployment or for invalid dates
+  - Tooltip displays full timestamp on hover for precise login time
+  - Fixed Firebase Timestamp conversion in `getUser()`, `getAllUsers()`, and `getUsersByTier()` methods
+  - Locations: `packages/shared/src/types.ts:38-39`, `apps/api/src/auth/firebase-auth.guard.ts:11-83`, `apps/api/src/firebase/firebase.service.ts:566-567,765-767,804-806`, `apps/web/app/[locale]/admin/page.tsx:17-51,212-214,289-291`
 - **Translations in Shared Transcripts**: Shared transcripts now automatically include all available translations
   - All translations automatically included when creating share link (zero configuration needed)
   - Recipients see transcript in sender's preferred language by default
