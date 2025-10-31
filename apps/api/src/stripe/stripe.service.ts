@@ -123,6 +123,7 @@ export class StripeService {
       locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto', // auto-detect
       // Multi-currency handled automatically by Stripe Adaptive Pricing (configured in Dashboard)
       allow_promotion_codes: true, // Allow discount codes
+      payment_method_collection: 'if_required', // Skip payment collection if total is $0 (e.g., 100% discount coupon)
       billing_address_collection: 'auto',
       automatic_tax: {
         enabled: true, // Stripe Tax for automatic VAT/sales tax

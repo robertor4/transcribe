@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Stripe 100% Discount Coupon Payment Collection**: Fixed Stripe checkout requiring credit card details even when using 100% discount founding member coupons
+  - Added `payment_method_collection: 'if_required'` to checkout session configuration
+  - Stripe now skips payment collection when total is $0 after applying coupon
+  - Founding members can now subscribe without entering payment details
+  - Regular subscriptions still collect payment method normally
+  - Location: `apps/api/src/stripe/stripe.service.ts:126`
+
 ### Added
 - **Cost Estimation Feature Planning Document**: Comprehensive implementation plan for AI API cost tracking and admin analytics
   - Detailed plan for capturing token usage from OpenAI API (GPT-5, GPT-5-mini, Whisper)
