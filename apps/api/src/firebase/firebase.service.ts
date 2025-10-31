@@ -551,6 +551,9 @@ export class FirebaseService implements OnModuleInit {
         return null;
       }
       const data = userDoc.data();
+      if (!data) {
+        return null;
+      }
       return {
         uid: userId,
         ...data,
