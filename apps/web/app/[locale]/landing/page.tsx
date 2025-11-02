@@ -33,6 +33,41 @@ export default function LandingPage() {
   const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
   const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
 
+  // Smooth scroll handler with custom easing for smoother animation
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const targetElement = document.getElementById(targetId);
+    if (!targetElement) return;
+
+    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 1200; // 1.2 seconds for smoother feel
+    let start: number | null = null;
+
+    // Easing function: easeInOutQuart - industry standard for smooth scroll (used by Apple, Google)
+    const easeInOutQuart = (t: number): number => {
+      return t < 0.5
+        ? 8 * t * t * t * t
+        : 1 - Math.pow(-2 * t + 2, 4) / 2;
+    };
+
+    const animation = (currentTime: number) => {
+      if (start === null) start = currentTime;
+      const timeElapsed = currentTime - start;
+      const progress = Math.min(timeElapsed / duration, 1);
+      const ease = easeInOutQuart(progress);
+
+      window.scrollTo(0, startPosition + distance * ease);
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+
+    requestAnimationFrame(animation);
+  };
+
   return (
     <>
       <PublicHeader locale={locale} />
@@ -63,26 +98,26 @@ export default function LandingPage() {
                 {/* Trust Indicators */}
                 <ScrollAnimation className="flex flex-wrap justify-center items-center gap-3 sm:gap-4" delay={200}>
                   <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Users className="h-5 w-5 mr-1.5 text-[#ff66cc]" aria-hidden="true" />
-                    <span className="text-sm font-medium text-white">{t('landing.hero.trustIndicators.users')}</span>
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-[#ff66cc]" aria-hidden="true" />
+                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.users')}</span>
                   </div>
                   <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Star className="h-5 w-5 mr-1.5 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                    <span className="text-sm font-medium text-white">{t('landing.hero.trustIndicators.rating')}</span>
+                    <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-yellow-400 fill-yellow-400" aria-hidden="true" />
+                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.rating')}</span>
                   </div>
                   <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Shield className="h-5 w-5 mr-1.5 text-green-400" aria-hidden="true" />
-                    <span className="text-sm font-medium text-white">{t('landing.hero.trustIndicators.certified')}</span>
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-green-400" aria-hidden="true" />
+                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.certified')}</span>
                   </div>
                 </ScrollAnimation>
 
                 {/* Main Headline */}
                 <ScrollAnimation delay={300}>
-                  <h2 className="text-5xl md:text-7xl font-bold text-white leading-tight drop-shadow-lg">
+                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight drop-shadow-lg">
                     {t('landing.hero.title')}{' '}
                     <span className="text-[#ff66cc]">{t('landing.hero.titleHighlight')}</span>
                   </h2>
-                  <p className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto mt-8 drop-shadow-md">
+                  <p className="text-lg sm:text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto mt-8 drop-shadow-md">
                     {t('landing.hero.subtitle')}
                   </p>
                 </ScrollAnimation>
@@ -99,6 +134,7 @@ export default function LandingPage() {
                   </Link>
                   <a
                     href="#how-it-works"
+                    onClick={(e) => handleSmoothScroll(e, 'how-it-works')}
                     className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
                     aria-label="Learn how Neural Summary works"
                   >
@@ -116,7 +152,7 @@ export default function LandingPage() {
         </section>
 
         {/* Value Proposition Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900" aria-labelledby="value-prop-heading">
+        <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900" aria-labelledby="value-prop-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <ScrollAnimation>
@@ -368,7 +404,7 @@ export default function LandingPage() {
         {/* Credibility & Social Proof Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="security-heading">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <ScrollAnimation>
                 <h2 id="security-heading" className="text-4xl font-bold text-gray-900 mb-4">
                   {t('landing.security.title')}
@@ -379,114 +415,78 @@ export default function LandingPage() {
               </ScrollAnimation>
             </div>
 
-            <ScrollAnimation className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-8 md:p-12 mb-8">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <div className="mb-6">
-                    <div className="flex items-center mb-2">
-                      <Shield className="h-8 w-8 text-green-600 mr-3" aria-hidden="true" />
-                      <h3 className="text-2xl font-bold text-gray-900">
-                        {t('landing.security.compliance.title')}
-                      </h3>
-                    </div>
-                    <p className="text-lg text-gray-700">
-                      {t('landing.security.compliance.description')}
-                    </p>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                      <div>
-                        <p className="font-semibold text-gray-900">{t('landing.security.encryption.title')}</p>
-                        <p className="text-sm text-gray-600">{t('landing.security.encryption.description')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                      <div>
-                        <p className="font-semibold text-gray-900">{t('landing.security.retention.title')}</p>
-                        <p className="text-sm text-gray-600">{t('landing.security.retention.description')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                      <div>
-                        <p className="font-semibold text-gray-900">{t('landing.security.compliance.title')}</p>
-                        <p className="text-sm text-gray-600">{t('landing.security.compliance.description')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
-                      <div>
-                        <p className="font-semibold text-gray-900">{t('landing.security.audit.title')}</p>
-                        <p className="text-sm text-gray-600">{t('landing.security.audit.description')}</p>
-                      </div>
-                    </div>
-                  </div>
+            {/* Two-column layout with image and features side-by-side */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+              {/* Left column: Image */}
+              <ScrollAnimation animation="slideLeft">
+                <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                  <img
+                    src="/assets/images/security-data-protection.webp"
+                    alt="Privacy-first data protection"
+                    className="w-full h-auto"
+                    width={512}
+                    height={384}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-green-900/20 to-transparent"></div>
                 </div>
-                <div className="space-y-6">
-                  <div className="relative rounded-xl overflow-hidden shadow-xl">
-                    <img 
-                      src="/assets/images/security-data-protection.webp"
-                      alt="Enterprise-grade security and data protection"
-                      className="w-full h-auto"
-                      width={512}
-                      height={384}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-green-900/20 to-transparent"></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Lock className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
-                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.ssl')}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Shield className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
-                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.soc2')}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
-                      <Award className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
-                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.gdpr')}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-3 text-center shadow-sm hover-scale transition-all-smooth">
-                      <CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-1" aria-hidden="true" />
-                      <p className="text-xs text-gray-700 font-medium">{t('landing.security.badges.hipaa')}</p>
+              </ScrollAnimation>
+
+              {/* Right column: Security features stacked */}
+              <div className="space-y-6">
+                <ScrollAnimation animation="slideRight">
+                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
+                    <div className="flex items-start">
+                      <div className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Shield className="h-7 w-7 text-green-600" aria-hidden="true" />
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {t('landing.security.encryption.title')}
+                        </h3>
+                        <p className="text-gray-700">
+                          {t('landing.security.encryption.description')}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ScrollAnimation>
+
+                <ScrollAnimation animation="slideRight" delay={100}>
+                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
+                    <div className="flex items-start">
+                      <div className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Lock className="h-7 w-7 text-blue-600" aria-hidden="true" />
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {t('landing.security.retention.title')}
+                        </h3>
+                        <p className="text-gray-700">
+                          {t('landing.security.retention.description')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimation>
+
+                <ScrollAnimation animation="slideRight" delay={200}>
+                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
+                    <div className="flex items-start">
+                      <div className="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-7 w-7 text-purple-600" aria-hidden="true" />
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {t('landing.security.compliance.title')}
+                        </h3>
+                        <p className="text-gray-700">
+                          {t('landing.security.compliance.description')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimation>
               </div>
-            </ScrollAnimation>
-
-            <div className="grid md:grid-cols-3 gap-8 mt-12">
-              <ScrollAnimation className="bg-white rounded-xl shadow-md p-6 text-center" animation="slideLeft">
-                <Brain className="h-12 w-12 text-[#cc3399] mx-auto mb-4" aria-hidden="true" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('landing.security.technology.title')}
-                </h3>
-                <p className="text-gray-700 text-sm">
-                  {t('landing.security.technology.description')}
-                </p>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="bg-white rounded-xl shadow-md p-6 text-center" delay={200}>
-                <Award className="h-12 w-12 text-green-600 mx-auto mb-4" aria-hidden="true" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('landing.security.useCases.title')}
-                </h3>
-                <p className="text-gray-700 text-sm">
-                  {t('landing.security.useCases.description')}
-                </p>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="bg-white rounded-xl shadow-md p-6 text-center" animation="slideRight" delay={400}>
-                <Lock className="h-12 w-12 text-blue-600 mx-auto mb-4" aria-hidden="true" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('landing.security.audit.title')}
-                </h3>
-                <p className="text-gray-700 text-sm">
-                  {t('landing.security.audit.description')}
-                </p>
-              </ScrollAnimation>
             </div>
           </div>
         </section>
@@ -595,7 +595,7 @@ export default function LandingPage() {
 
               {/* Professional Tier - Featured */}
               <ScrollAnimation delay={200}>
-                <div className="bg-gradient-to-br from-[#cc3399] to-purple-600 rounded-2xl p-8 border-2 border-[#cc3399] shadow-2xl transform scale-105 relative">
+                <div className="bg-gradient-to-br from-[#cc3399] to-purple-600 rounded-2xl p-8 border-2 border-[#cc3399] shadow-2xl transform scale-100 md:scale-105 relative">
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
                       {t('landing.pricingTeaser.professional.badge')}
@@ -817,7 +817,7 @@ export default function LandingPage() {
         {/* Footer */}
         <footer className="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8" aria-label="Footer">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('landing.footer.product.title')}</h3>
                 <ul className="space-y-2 text-sm">
