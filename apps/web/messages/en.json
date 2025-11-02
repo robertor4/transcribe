@@ -825,7 +825,6 @@
       "subtitle": "Start free, upgrade when you're ready. No hidden fees, no surprises.",
       "free": {
         "name": "Free",
-        "price": "$0",
         "description": "Perfect for trying out",
         "features": {
           "transcriptions": "3 transcriptions/month",
@@ -836,7 +835,6 @@
       },
       "professional": {
         "name": "Professional",
-        "price": "$29",
         "description": "For regular users",
         "badge": "Most Popular",
         "features": {
@@ -850,7 +848,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1.50",
         "description": "Per hour of audio",
         "features": {
           "credits": "Credits never expire",
@@ -1137,8 +1134,8 @@
           "hours": "60 hours/month included",
           "unlimited": "Unlimited transcriptions",
           "duration": "60 hours/month included",
-          "overageRate": "$0.50 per additional hour",
-          "overage": "Overage: $0.50/hour",
+          "overageRate": "{overageRate} per additional hour",
+          "overage": "Overage: {overageRate}/hour",
           "fileSize": "5GB max file size",
           "analyses": "All analysis types",
           "allAnalyses": "All analysis types",
@@ -1221,11 +1218,11 @@
       "questions": {
         "cost": {
           "question": "What exactly does transcription cost?",
-          "answer": "Professional plan includes 60 hours/month for $29. Additional hours are $0.50 each. Pay-As-You-Go is $1.50/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
+          "answer": "Professional plan includes 60 hours/month for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
         },
         "overage": {
           "question": "What happens if I exceed my monthly limit?",
-          "answer": "Professional users are automatically charged $0.50 per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
+          "answer": "Professional users are automatically charged {overageRate} per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
         },
         "cancel": {
           "question": "Can I cancel my subscription anytime?",
@@ -1241,7 +1238,7 @@
         },
         "payg": {
           "question": "How do Pay-As-You-Go credits work?",
-          "answer": "Credits cost $1.50 per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
+          "answer": "Credits cost {paygPrice} per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
         }
       }
     },
@@ -1360,7 +1357,7 @@
       "overage": {
         "title": "Overage Charges",
         "description": "You've used {hours} hours over your 60-hour limit this month",
-        "rate": "Additional hours are charged at $0.50/hour",
+        "rate": "Additional hours are charged at {overageRate}/hour",
         "total": "Estimated overage charge",
         "nextBill": "Will be added to your next bill on {date}"
       }

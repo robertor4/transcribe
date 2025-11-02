@@ -35,6 +35,12 @@ export const BASE_PRICING = {
 } as const;
 
 /**
+ * Overage rate for Professional plan (USD)
+ * Charged per hour over the 60-hour monthly limit
+ */
+export const OVERAGE_RATE_USD = 0.50;
+
+/**
  * Pay-as-you-go package tiers in USD
  * Each package offers bulk pricing for audio transcription hours
  */

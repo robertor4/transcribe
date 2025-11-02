@@ -3,19 +3,29 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { getPricingForLocale, formatPriceLocale, OVERAGE_RATE_USD } from '@transcribe/shared';
 
 export function PricingFAQ() {
   const t = useTranslations('pricing.faq');
+  const params = useParams();
+  const locale = params.locale as string;
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  // Calculate locale-specific prices
+  const pricing = getPricingForLocale(locale);
+  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, 0);
+  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, 2);
+  const overageRate = formatPriceLocale(OVERAGE_RATE_USD * pricing.currencyMultiplier, locale, 2);
 
   const faqs = [
     {
       question: t('questions.cost.question'),
-      answer: t('questions.cost.answer'),
+      answer: t('questions.cost.answer', { professionalPrice, paygPrice, overageRate }),
     },
     {
       question: t('questions.overage.question'),
-      answer: t('questions.overage.answer'),
+      answer: t('questions.overage.answer', { overageRate }),
     },
     {
       question: t('questions.cancel.question'),
@@ -31,7 +41,7 @@ export function PricingFAQ() {
     },
     {
       question: t('questions.payg.question'),
-      answer: t('questions.payg.answer'),
+      answer: t('questions.payg.answer', { paygPrice }),
     },
   ];
 

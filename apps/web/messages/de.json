@@ -838,7 +838,6 @@
       "subtitle": "Starten Sie kostenlos, upgraden Sie wenn Sie bereit sind. Keine versteckten Gebühren, keine Überraschungen.",
       "free": {
         "name": "Kostenlos",
-        "price": "$0",
         "description": "Perfekt zum Ausprobieren",
         "features": {
           "transcriptions": "3 Transkriptionen/Monat",
@@ -849,7 +848,6 @@
       },
       "professional": {
         "name": "Professionell",
-        "price": "$29",
         "description": "Für regelmäßige Nutzer",
         "badge": "Am beliebtesten",
         "features": {
@@ -863,7 +861,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1,50",
         "description": "Pro Stunde Audio",
         "features": {
           "credits": "Guthaben verfällt nie",
@@ -1377,8 +1374,8 @@
           "hours": "60 Stunden/Monat enthalten",
           "unlimited": "Unbegrenzte Transkriptionen",
           "duration": "60 Stunden/Monat enthalten",
-          "overageRate": "$0,50 pro zusätzliche Stunde",
-          "overage": "Überschreitung: $0,50/Stunde",
+          "overageRate": "{overageRate} pro zusätzliche Stunde",
+          "overage": "Überschreitung: {overageRate}/Stunde",
           "fileSize": "5GB max Dateigröße",
           "analyses": "Alle Analysetypen",
           "allAnalyses": "Alle Analysetypen",
@@ -1461,11 +1458,11 @@
       "questions": {
         "cost": {
           "question": "Was kostet die Transkription genau?",
-          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für $29. Zusätzliche Stunden kosten $0,50 pro Stück. Pay-As-You-Go ist $1,50/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
+          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für {professionalPrice}. Zusätzliche Stunden kosten {overageRate} pro Stück. Pay-As-You-Go ist {paygPrice}/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
         },
         "overage": {
           "question": "Was passiert, wenn ich mein monatliches Limit überschreite?",
-          "answer": "Professional-Nutzer werden automatisch $0,50 pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
+          "answer": "Professional-Nutzer werden automatisch {overageRate} pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
         },
         "cancel": {
           "question": "Kann ich jederzeit kündigen?",
@@ -1481,7 +1478,7 @@
         },
         "payg": {
           "question": "Wie funktionieren Pay-As-You-Go-Credits?",
-          "answer": "Credits kosten $1,50 pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
+          "answer": "Credits kosten {paygPrice} pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
         }
       }
     },
@@ -1600,7 +1597,7 @@
       "overage": {
         "title": "Überschreitungsgebühren",
         "description": "Sie haben {hours} Stunden über Ihr Limit von 60 Stunden diesen Monat genutzt",
-        "rate": "Zusätzliche Stunden werden mit $0,50/Stunde berechnet",
+        "rate": "Zusätzliche Stunden werden mit {overageRate}/Stunde berechnet",
         "total": "Geschätzte Überschreitungsgebühren",
         "nextBill": "Wird Ihrer nächsten Rechnung am {date} hinzugefügt"
       }

@@ -43,6 +43,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Solution: Made decimal places dynamic based on tier (PAYG: 2 decimals, subscriptions: 0 decimals)
   - Now correctly shows: English "$1.50/hour", Dutch "€ 1,40/uur", German "1,40 €/Stunde"
   - Location: `apps/web/components/pricing/PricingCard.tsx:51`
+- **Complete Hardcoded Price Removal**: Eliminated ALL hardcoded prices from translations and made them dynamically calculated
+  - **Problem**: FAQs, landing page pricing teasers, and dashboard usage sections had hardcoded USD/EUR prices that didn't update based on locale
+  - **Solution**: Replaced hardcoded values with placeholders and pass locale-specific formatted prices as interpolation values
+  - **Changes**:
+    - Added `OVERAGE_RATE_USD` constant to `packages/shared/src/pricing.ts` for Professional plan overage rate ($0.50/hour)
+    - Updated FAQ answers in all 5 languages to use `{professionalPrice}`, `{paygPrice}`, `{overageRate}` placeholders
+    - Updated landing page pricing teaser to remove `price` keys and calculate prices dynamically
+    - Updated dashboard usage overage rate strings to use `{overageRate}` placeholder
+    - Modified `PricingFAQ.tsx` to calculate and pass locale-aware prices using `formatPriceLocale()`
+    - Modified `landing/page.tsx` to calculate `freePrice`, `professionalPrice`, `paygPrice` and display them directly
+  - **Result**: All prices now display correctly in user's locale (e.g., German FAQ shows "27 €" not "$29")
+  - **Files affected**:
+    - `packages/shared/src/pricing.ts` (added OVERAGE_RATE_USD constant)
+    - `apps/web/messages/{en,de,nl,fr,es}.json` (FAQ, pricing teaser, dashboard usage strings)
+    - `apps/web/components/pricing/PricingFAQ.tsx` (added price calculations and interpolation)
+    - `apps/web/app/[locale]/landing/page.tsx` (added price calculations for teaser section)
 
 ### Removed
 - **"How It Works" Tab from Dashboard**: Removed the "How It Works" tab and its associated component from the dashboard

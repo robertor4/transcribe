@@ -859,7 +859,6 @@
       "subtitle": "Begin gratis, upgrade wanneer je klaar bent. Geen verborgen kosten, geen verrassingen.",
       "free": {
         "name": "Gratis",
-        "price": "$0",
         "description": "Perfect om uit te proberen",
         "features": {
           "transcriptions": "3 transcripties/maand",
@@ -870,7 +869,6 @@
       },
       "professional": {
         "name": "Professioneel",
-        "price": "$29",
         "description": "Voor regelmatige gebruikers",
         "badge": "Meest populair",
         "features": {
@@ -884,7 +882,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1,50",
         "description": "Per uur audio",
         "features": {
           "credits": "Tegoed vervalt nooit",
@@ -1392,8 +1389,8 @@
           "hours": "60 uur/maand inbegrepen",
           "unlimited": "Onbeperkte transcripties",
           "duration": "60 uur/maand inbegrepen",
-          "overageRate": "$0.50 per extra uur",
-          "overage": "Overschrijding: $0.50/uur",
+          "overageRate": "{overageRate} per extra uur",
+          "overage": "Overschrijding: {overageRate}/uur",
           "fileSize": "Max 5GB bestandsgrootte",
           "analyses": "Alle analysetypes",
           "allAnalyses": "Alle analysetypes",
@@ -1476,11 +1473,11 @@
       "questions": {
         "cost": {
           "question": "Wat kost transcriptie precies?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand al vanaf €20. Pay-As-You-Go is €1,40/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
+          "answer": "Professioneel abonnement bevat 60 uur/maand voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
-          "answer": "Professionele gebruikers worden automatisch $0.50 per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
+          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
         },
         "cancel": {
           "question": "Kan ik mijn abonnement altijd opzeggen?",
@@ -1496,7 +1493,7 @@
         },
         "payg": {
           "question": "Hoe werkt Pay-As-You-Go tegoed?",
-          "answer": "Tegoed kost $1.50 per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
+          "answer": "Tegoed kost {paygPrice} per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
         }
       }
     },
@@ -1615,7 +1612,7 @@
       "overage": {
         "title": "Overschrijdingskosten",
         "description": "Je hebt {hours} uur boven je 60-uur limiet deze maand gebruikt",
-        "rate": "Extra uren worden in rekening gebracht tegen $0.50/uur",
+        "rate": "Extra uren worden in rekening gebracht tegen {overageRate}/uur",
         "total": "Geschatte overschrijdingskosten",
         "nextBill": "Wordt toegevoegd aan je volgende factuur op {date}"
       }

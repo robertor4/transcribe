@@ -705,7 +705,6 @@
       "subtitle": "Comienza gratis, mejora cuando estés listo. Sin costos ocultos, sin sorpresas.",
       "free": {
         "name": "Gratis",
-        "price": "$0",
         "description": "Perfecto para probar",
         "features": {
           "transcriptions": "3 transcripciones/mes",
@@ -716,7 +715,6 @@
       },
       "professional": {
         "name": "Profesional",
-        "price": "$29",
         "description": "Para usuarios regulares",
         "badge": "Más popular",
         "features": {
@@ -730,7 +728,6 @@
       },
       "payg": {
         "name": "Paga según uses",
-        "price": "$1,50",
         "description": "Por hora de audio",
         "features": {
           "credits": "Los créditos nunca expiran",
@@ -1395,8 +1392,8 @@
           "hours": "60 horas/mes incluidas",
           "unlimited": "Transcripciones ilimitadas",
           "duration": "60 horas/mes incluidas",
-          "overageRate": "$0,50 por hora adicional",
-          "overage": "Excedente: $0,50/hora",
+          "overageRate": "{overageRate} por hora adicional",
+          "overage": "Excedente: {overageRate}/hora",
           "fileSize": "5GB tamaño máx de archivo",
           "analyses": "Todos los tipos de análisis",
           "allAnalyses": "Todos los tipos de análisis",
@@ -1479,11 +1476,11 @@
       "questions": {
         "cost": {
           "question": "¿Cuánto cuesta exactamente la transcripción?",
-          "answer": "El plan Profesional incluye 60 horas/mes por $29. Las horas adicionales cuestan $0,50 cada una. Paga según uses es $1,50/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
+          "answer": "El plan Profesional incluye 60 horas/mes por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
         },
         "overage": {
           "question": "¿Qué pasa si excedo mi límite mensual?",
-          "answer": "Los usuarios Profesionales se les cobra automáticamente $0,50 por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
+          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
         },
         "cancel": {
           "question": "¿Puedo cancelar en cualquier momento?",
@@ -1499,7 +1496,7 @@
         },
         "payg": {
           "question": "¿Cómo funcionan los créditos de Paga según uses?",
-          "answer": "Los créditos cuestan $1,50 por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
+          "answer": "Los créditos cuestan {paygPrice} por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
         }
       }
     },
@@ -1618,7 +1615,7 @@
       "overage": {
         "title": "Cargos por excedente",
         "description": "Ha usado {hours} horas más allá de su límite de 60 horas este mes",
-        "rate": "Las horas adicionales se cobran a $0,50/hora",
+        "rate": "Las horas adicionales se cobran a {overageRate}/hora",
         "total": "Cargos por excedente estimados",
         "nextBill": "Se agregará a su próxima factura el {date}"
       }
