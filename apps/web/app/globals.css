@@ -178,7 +178,7 @@ body {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(60px);
   }
   to {
     opacity: 1;
@@ -198,7 +198,7 @@ body {
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(-100px);
   }
   to {
     opacity: 1;
@@ -209,7 +209,7 @@ body {
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
@@ -276,19 +276,19 @@ body {
 
 /* Animation Utility Classes */
 .animate-fadeUp {
-  animation: fadeUp 0.6s ease-out forwards;
+  animation: fadeUp 1s ease-out forwards;
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.8s ease-out forwards;
+  animation: fadeIn 1s ease-out forwards;
 }
 
 .animate-slideInLeft {
-  animation: slideInLeft 0.6s ease-out forwards;
+  animation: slideInLeft 1s ease-out forwards;
 }
 
 .animate-slideInRight {
-  animation: slideInRight 0.6s ease-out forwards;
+  animation: slideInRight 1s ease-out forwards;
 }
 
 .animate-float {
@@ -401,14 +401,14 @@ body {
 /* Initial hidden state for scroll animations */
 .scroll-hidden {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(80px);
 }
 
 /* Scroll animation keyframes */
 @keyframes scrollFadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(80px);
   }
   to {
     opacity: 1;
@@ -428,7 +428,7 @@ body {
 @keyframes scrollSlideLeft {
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-100px);
   }
   to {
     opacity: 1;
@@ -439,7 +439,7 @@ body {
 @keyframes scrollSlideRight {
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
@@ -460,41 +460,41 @@ body {
 
 /* Scroll animation classes */
 .scroll-fade-up {
-  animation: scrollFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scrollFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .scroll-fade-in {
-  animation: scrollFadeIn 1s ease-out forwards;
+  animation: scrollFadeIn 1.2s ease-out forwards;
 }
 
 .scroll-slide-left {
-  animation: scrollSlideLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scrollSlideLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .scroll-slide-right {
-  animation: scrollSlideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scrollSlideRight 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .scroll-scale {
-  animation: scrollScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scrollScale 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Staggered scroll animations for groups */
 .scroll-stagger > * {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(80px);
 }
 
 .scroll-stagger.in-view > * {
-  animation: scrollFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scrollFadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .scroll-stagger.in-view > *:nth-child(1) { animation-delay: 0ms; }
-.scroll-stagger.in-view > *:nth-child(2) { animation-delay: 100ms; }
-.scroll-stagger.in-view > *:nth-child(3) { animation-delay: 200ms; }
-.scroll-stagger.in-view > *:nth-child(4) { animation-delay: 300ms; }
-.scroll-stagger.in-view > *:nth-child(5) { animation-delay: 400ms; }
-.scroll-stagger.in-view > *:nth-child(6) { animation-delay: 500ms; }
+.scroll-stagger.in-view > *:nth-child(2) { animation-delay: 150ms; }
+.scroll-stagger.in-view > *:nth-child(3) { animation-delay: 300ms; }
+.scroll-stagger.in-view > *:nth-child(4) { animation-delay: 450ms; }
+.scroll-stagger.in-view > *:nth-child(5) { animation-delay: 600ms; }
+.scroll-stagger.in-view > *:nth-child(6) { animation-delay: 750ms; }
 
 /* Accessibility - Respect User Preferences */
 @media (prefers-reduced-motion: reduce) {
