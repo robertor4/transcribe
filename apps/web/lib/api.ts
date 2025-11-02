@@ -1,6 +1,15 @@
 import axios from 'axios';
 import { auth } from './firebase';
-import { ApiResponse, AnalysisType, AnalysisTemplate, GeneratedAnalysis } from '@transcribe/shared';
+import {
+  ApiResponse,
+  AnalysisType,
+  AnalysisTemplate,
+  GeneratedAnalysis,
+  CorrectTranscriptRequest,
+  CorrectionPreview,
+  CorrectionApplyResponse,
+  RoutingPlan,
+} from '@transcribe/shared';
 import { getApiUrl } from './config';
 
 const API_URL = getApiUrl();
@@ -225,6 +234,31 @@ export const transcriptionApi = {
 
   deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/analyses/${analysisId}`);
+  },
+
+  // Transcript Correction API methods
+  analyzeCorrections: async (
+    id: string,
+    instructions: string,
+  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> => {
+    return api.post(`/transcriptions/${id}/analyze-corrections`, {
+      instructions,
+    });
+  },
+
+  correctTranscript: async (
+    id: string,
+    instructions: string,
+    previewOnly: boolean = true,
+  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> => {
+    return api.post(`/transcriptions/${id}/correct-transcript`, {
+      instructions,
+      previewOnly,
+    });
+  },
+
+  regenerateCoreAnalyses: async (id: string): Promise<ApiResponse<unknown>> => {
+    return api.post(`/transcriptions/${id}/regenerate-core-analyses`);
   },
 };
 

@@ -335,3 +335,35 @@ ${fullPrompt}`;
 
   return `${fullPrompt}\n\n---\nTRANSCRIPT:\n${transcription}`;
 }
+
+// Transcript Correction Prompts
+
+export const CORRECTION_SYSTEM_PROMPT = `You are a transcript correction assistant. Your job is to apply user instructions to fix errors in transcripts while preserving the original structure and meaning.
+
+CRITICAL RULES:
+1. Only make changes explicitly described in the user's instructions
+2. Preserve all speaker labels exactly (e.g., "Speaker 1:", "Speaker 2:", "Speaker A:", etc.)
+3. Maintain original timestamps and formatting structure
+4. Do not add, remove, or rephrase content beyond the requested corrections
+5. Apply changes consistently across ALL occurrences
+6. Preserve punctuation and capitalization unless instructed otherwise
+7. Keep the exact same number of speaker segments and their order
+
+OUTPUT FORMAT:
+Return ONLY the corrected transcript in the exact same format as the input. Each speaker segment should maintain the pattern:
+Speaker N: [text]
+
+Do not add explanations, comments, or metadata - return only the corrected transcript text.`;
+
+export const CORRECTION_USER_PROMPT = (
+  transcript: string,
+  instructions: string,
+): string => {
+  return `ORIGINAL TRANSCRIPT:
+${transcript}
+
+CORRECTION INSTRUCTIONS:
+${instructions}
+
+Provide the corrected transcript below (preserving all speaker labels and structure):`;
+};
