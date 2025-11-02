@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- **"How It Works" Tab from Dashboard**: Removed the "How It Works" tab and its associated component from the dashboard
+  - Deleted `HowItWorks` component (`apps/web/components/HowItWorks.tsx`)
+  - Removed tab navigation button and content rendering from dashboard page
+  - Dashboard now has 3 tabs: Upload, History, and Recording Guide
+  - Location: `apps/web/app/[locale]/dashboard/page.tsx`
+
 ### Added
 - **AI-First Intelligent Routing for Transcript Corrections**: Implemented smart correction routing system that dramatically improves performance and eliminates token truncation issues
   - **Backend**: New `TranscriptCorrectionRouterService` analyzes correction requests and routes to regex (instant) or AI (contextual)

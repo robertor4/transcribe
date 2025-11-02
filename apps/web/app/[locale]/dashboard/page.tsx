@@ -7,12 +7,11 @@ import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { auth } from '@/lib/firebase';
 import { FileUploader } from '@/components/FileUploader';
 import { TranscriptionList } from '@/components/TranscriptionList';
-import { HowItWorks } from '@/components/HowItWorks';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UsageBadge } from '@/components/UsageBadge';
-import { FileAudio, Upload, Info, Mic } from 'lucide-react';
+import { FileAudio, Upload, Mic } from 'lucide-react';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
@@ -24,7 +23,7 @@ export default function DashboardPage() {
   const { trackEvent } = useAnalytics();
   const tDashboard = useTranslations('dashboard');
   const tCommon = useTranslations('common');
-  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'how-it-works' | 'recording-guide'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'recording-guide'>('upload');
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   const [pendingCompletedIds, setPendingCompletedIds] = useState<string[]>([]);
@@ -321,24 +320,6 @@ export default function DashboardPage() {
                 {tDashboard('recordingGuide')}
               </div>
             </button>
-            <button
-              onClick={() => {
-                setActiveTab('how-it-works');
-                trackEvent('dashboard_viewed', { tab: 'how-it-works' });
-              }}
-              className={`
-                py-2 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'how-it-works'
-                  ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                }
-              `}
-            >
-              <div className="flex items-center">
-                <Info className="h-5 w-5 mr-2" />
-                {tDashboard('howItWorks')}
-              </div>
-            </button>
           </nav>
         </div>
 
@@ -357,10 +338,6 @@ export default function DashboardPage() {
                 {tDashboard('yourTranscriptions')}
               </h2>
               <TranscriptionList lastCompletedId={lastCompletedId} />
-            </div>
-          ) : activeTab === 'how-it-works' ? (
-            <div>
-              <HowItWorks onStartTranscribing={() => setActiveTab('upload')} />
             </div>
           ) : activeTab === 'recording-guide' ? (
             <div>
