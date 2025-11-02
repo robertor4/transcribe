@@ -10,15 +10,21 @@ interface ScrollAnimationProps {
   animation?: 'fadeUp' | 'fadeIn' | 'slideLeft' | 'slideRight' | 'scale';
 }
 
-export default function ScrollAnimation({ 
-  children, 
-  className = '', 
+export default function ScrollAnimation({
+  children,
+  className = '',
   delay = 0,
   threshold = 0.1,
   animation = 'fadeUp'
 }: ScrollAnimationProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Set mounted state immediately to prevent FOUC
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -57,10 +63,13 @@ export default function ScrollAnimation({
     scale: 'scroll-scale'
   };
 
+  // Always start hidden to prevent FOUC, only show animation class when visible
+  const stateClass = isVisible ? animationClasses[animation] : 'scroll-hidden';
+
   return (
     <div
       ref={ref}
-      className={`${className} ${isVisible ? animationClasses[animation] : 'scroll-hidden'}`}
+      className={`${className} scroll-hidden ${isMounted ? stateClass : ''}`}
       style={{
         animationDelay: isVisible ? `${delay}ms` : undefined
       }}

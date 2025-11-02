@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Enhanced Landing Page Micro-Animations**: Improved animation smoothness and visual impact for better user experience
+  - Increased vertical movement distance: fadeUp animations from 20-30px → 60-80px (3x distance)
+  - Increased horizontal movement distance: slideLeft/Right animations from 30-50px → 80-100px (2x distance)
+  - Extended animation durations: from 0.6-0.8s → 1.0-1.2s for smoother perception and eye tracking
+  - Increased stagger delays: from 100ms → 150ms increments for better cascading rhythm
+  - Benefits: More perceptible element movement, smoother transitions, professional polish matching modern web standards
+  - Location: `apps/web/app/globals.css` (lines 178-497)
 - **Centralized Pricing Configuration with Locale-Aware Formatting**: Moved all pricing data to shared package with proper internationalization
   - Created `packages/shared/src/pricing.ts` with comprehensive pricing utilities
     - Base USD pricing for all tiers (Professional: $29/month, $261/year; PAYG: $1.50/hour)
@@ -38,6 +45,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Location: `packages/shared/src/pricing.ts`, `packages/shared/src/types.ts`, `packages/shared/src/index.ts`, `apps/web/components/pricing/PricingCard.tsx`
 
 ### Fixed
+- **Eliminated FOUC (Flash of Unstyled Content) in Scroll Animations**: Fixed jerky "flash → snap → animate" effect on landing page
+  - Issue: Elements briefly appeared in final position before snapping back to hidden state, then animating in
+  - Root cause: React hydration timing - elements rendered before `scroll-hidden` class was applied
+  - Solution: Always apply `scroll-hidden` class initially, with mount state guard to prevent class conflicts
+  - Result: Smooth, professional animations with no visible content flash or snap-back effect
+  - Location: `apps/web/components/ScrollAnimation.tsx` (lines 22-27, 67, 72)
 - **PAYG Price Display**: Fixed Pay-As-You-Go hourly pricing to show 2 decimal places instead of rounding to whole numbers
   - Issue: PAYG price displayed as "€ 1" instead of "€ 1,40" in Dutch locale
   - Solution: Made decimal places dynamic based on tier (PAYG: 2 decimals, subscriptions: 0 decimals)
