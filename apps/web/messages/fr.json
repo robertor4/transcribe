@@ -1365,15 +1365,12 @@
       "professional": {
         "name": "Professionnel",
         "title": "Professionnel",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/mois",
         "description": "Pour les professionnels qui transcrivent régulièrement",
         "cta": "Commencer",
         "badge": "Le plus populaire",
         "recommended": "RECOMMANDÉ",
         "guarantee": "Garantie satisfait ou remboursé 30 jours",
-        "saveAnnual": "Économisez $87/an",
         "features": {
           "transcriptions": "Transcriptions illimitées",
           "hours": "60 heures/mois incluses",
@@ -1397,8 +1394,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1,50",
-        "period": "/heure",
         "priceUnit": "/heure",
         "description": "Parfait pour une utilisation occasionnelle",
         "cta": "Acheter des crédits",

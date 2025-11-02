@@ -1384,15 +1384,12 @@
       "professional": {
         "name": "Profesional",
         "title": "Profesional",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/mes",
         "description": "Para profesionales que transcriben regularmente",
         "cta": "Comenzar",
         "badge": "Más popular",
         "recommended": "RECOMENDADO",
         "guarantee": "Garantía de devolución de dinero de 30 días",
-        "saveAnnual": "Ahorre $87/año",
         "features": {
           "transcriptions": "Transcripciones ilimitadas",
           "hours": "60 horas/mes incluidas",
@@ -1416,8 +1413,6 @@
       "payg": {
         "name": "Paga según uses",
         "title": "Paga según uses",
-        "price": "$1,50",
-        "period": "/hora",
         "priceUnit": "/hora",
         "description": "Perfecto para uso ocasional",
         "cta": "Comprar créditos",

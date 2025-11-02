@@ -302,7 +302,7 @@
     },
     "step2": {
       "title": "AI-transcriptie",
-      "description": "Onze geavanceerde AI aangedreven door OpenAI Whisper transcribeert je audio met hoge nauwkeurigheid en detecteert automatisch meerdere talen."
+      "description": "Onze geavanceerde AI aangedreven technologie transformeert je audio in notules met hoge nauwkeurigheid en detecteert automatisch meerdere talen."
     },
     "step3": {
       "title": "Slimme samenvatting",
@@ -484,7 +484,7 @@
     },
     "videoCall": {
       "title": "Een videogesprek of vergadering opnemen?",
-      "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij extraheren en transcriberen de audio!"
+      "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij transformeren de audio!"
     }
   },
   "notifications": {
@@ -1031,7 +1031,7 @@
         "content": "Neural Summary biedt AI-aangedreven audiotranscriptie en intelligente analyseservices. Ons platform omvat:",
         "features": {
           "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
-          "analysis": "Intelligente samenvatting en analyse van getranscribeerde inhoud",
+          "analysis": "Intelligente samenvatting en analyse van de inhoud",
           "storage": "Veilige cloudopslag van uw transcripties en audiobestanden",
           "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
         }
@@ -1381,15 +1381,12 @@
       "professional": {
         "name": "Professioneel",
         "title": "Professioneel",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/maand",
-        "description": "Voor professionals die regelmatig transcriberen",
+        "description": "Voor professionals die regelmatig notities maken",
         "cta": "Aan de slag",
         "badge": "Meest populair",
         "recommended": "AANBEVOLEN",
         "guarantee": "30 dagen geld-terug-garantie",
-        "saveAnnual": "Bespaar $87/jaar",
         "features": {
           "transcriptions": "Onbeperkte transcripties",
           "hours": "60 uur/maand inbegrepen",
@@ -1413,8 +1410,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1.50",
-        "period": "/uur",
         "priceUnit": "/uur",
         "description": "Perfect voor incidenteel gebruik",
         "cta": "Koop tegoed",
@@ -1435,7 +1430,7 @@
       }
     },
     "finalCta": {
-      "title": "Begin slimmer te transcriberen",
+      "title": "Begin slimmer te notuleren",
       "subtitle": "Geen creditcard vereist voor gratis abonnement",
       "button": "Start gratis"
     },
@@ -1481,7 +1476,7 @@
       "questions": {
         "cost": {
           "question": "Wat kost transcriptie precies?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand voor $29. Extra uren kosten $0.50 elk. Pay-As-You-Go is $1.50/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
+          "answer": "Professioneel abonnement bevat 60 uur/maand al vanaf €20. Pay-As-You-Go is €1,40/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",

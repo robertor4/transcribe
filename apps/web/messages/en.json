@@ -1126,15 +1126,12 @@
       "professional": {
         "name": "Professional",
         "title": "Professional",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/month",
         "description": "For professionals who transcribe regularly",
         "cta": "Get Started",
         "badge": "Most Popular",
         "recommended": "RECOMMENDED",
         "guarantee": "30-day money-back guarantee",
-        "saveAnnual": "Save $87/year",
         "features": {
           "transcriptions": "Unlimited transcriptions",
           "hours": "60 hours/month included",
@@ -1158,8 +1155,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1.50",
-        "period": "/hour",
         "priceUnit": "/hour",
         "description": "Perfect for occasional use",
         "cta": "Buy Credits",
