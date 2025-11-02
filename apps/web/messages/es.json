@@ -1468,7 +1468,11 @@
         "priority": "Prioritario",
         "community": "Comunidad",
         "email": "Correo",
-        "priorityEmail": "Correo prioritario"
+        "priorityEmail": "Correo prioritario",
+        "hoursIncluded": "60 horas/mes",
+        "payPerUse": "Pago por uso",
+        "creditBased": "Basado en créditos",
+        "comingSoon": "Próximamente"
       }
     },
     "faq": {

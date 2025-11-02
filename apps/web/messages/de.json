@@ -1450,7 +1450,11 @@
         "priority": "Bevorzugt",
         "community": "Community",
         "email": "E-Mail",
-        "priorityEmail": "Bevorzugte E-Mail"
+        "priorityEmail": "Bevorzugte E-Mail",
+        "hoursIncluded": "60 Stunden/Monat",
+        "payPerUse": "Nutzungsbasiert",
+        "creditBased": "Kreditbasiert",
+        "comingSoon": "Demnächst verfügbar"
       }
     },
     "faq": {

@@ -1449,7 +1449,11 @@
         "priority": "Priorité",
         "community": "Communauté",
         "email": "E-mail",
-        "priorityEmail": "E-mail prioritaire"
+        "priorityEmail": "E-mail prioritaire",
+        "hoursIncluded": "60 heures/mois",
+        "payPerUse": "Paiement à l'utilisation",
+        "creditBased": "Basé sur les crédits",
+        "comingSoon": "Prochainement"
       }
     },
     "faq": {

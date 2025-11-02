@@ -1465,7 +1465,11 @@
         "priority": "Prioriteit",
         "community": "Community",
         "email": "E-mail",
-        "priorityEmail": "Prioriteit e-mail"
+        "priorityEmail": "Prioriteit e-mail",
+        "hoursIncluded": "60 uur/maand",
+        "payPerUse": "Betaal per gebruik",
+        "creditBased": "Op basis van tegoed",
+        "comingSoon": "Binnenkort beschikbaar"
       }
     },
     "faq": {
