@@ -769,8 +769,8 @@
         "rating": "durchschnittlich mit 4,9 / 5 bewertet"
       },
       "compliance": {
-        "title": "Gebaut mit Enterprise-Grade-Sicherheit",
-        "description": "DSGVO, SOC 2 Type II und HIPAA konform"
+        "title": "HIPAA-konforme Verarbeitung",
+        "description": "Medizinische Datenschutzstandards für alle Ihre sensiblen Gespräche"
       },
       "useCases": {
         "title": "Vertraut von Profis",
@@ -787,10 +787,6 @@
       "retention": {
         "title": "SOC 2 Type II zertifizierte Infrastruktur",
         "description": "Enterprise-Grade-Sicherheit mit kontinuierlicher Compliance-Überwachung"
-      },
-      "compliance": {
-        "title": "HIPAA-konforme Verarbeitung",
-        "description": "Medizinische Datenschutzstandards für alle Ihre sensiblen Gespräche"
       },
       "audit": {
         "title": "Zero-Knowledge-Architektur",
@@ -838,7 +834,6 @@
       "subtitle": "Starten Sie kostenlos, upgraden Sie wenn Sie bereit sind. Keine versteckten Gebühren, keine Überraschungen.",
       "free": {
         "name": "Kostenlos",
-        "price": "$0",
         "description": "Perfekt zum Ausprobieren",
         "features": {
           "transcriptions": "3 Transkriptionen/Monat",
@@ -849,7 +844,6 @@
       },
       "professional": {
         "name": "Professionell",
-        "price": "$29",
         "description": "Für regelmäßige Nutzer",
         "badge": "Am beliebtesten",
         "features": {
@@ -863,7 +857,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1,50",
         "description": "Pro Stunde Audio",
         "features": {
           "credits": "Guthaben verfällt nie",
@@ -1340,7 +1333,8 @@
       "save25": "Sparen Sie 25%",
       "noCreditCard": "Keine Kreditkarte erforderlich",
       "freeTrial": "14 Tage kostenlose Testversion",
-      "viewComparison": "Detaillierten Vergleich ansehen"
+      "viewComparison": "Detaillierten Vergleich ansehen",
+      "billedAnnually": "Jährlich abgerechnet ({amount}/Jahr)"
     },
     "tiers": {
       "free": {
@@ -1361,27 +1355,25 @@
           "batch": "Batch-Verarbeitung",
           "storage": "90 Tage Speicherung",
           "support": "Community-Support"
-        }
+        },
+        "period": "/Monat"
       },
       "professional": {
         "name": "Professionell",
         "title": "Professionell",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/Monat",
         "description": "Für Profis, die regelmäßig transkribieren",
         "cta": "Loslegen",
         "badge": "Am beliebtesten",
         "recommended": "EMPFOHLEN",
         "guarantee": "30 Tage Geld-zurück-Garantie",
-        "saveAnnual": "Sparen Sie $87/Jahr",
         "features": {
           "transcriptions": "Unbegrenzte Transkriptionen",
           "hours": "60 Stunden/Monat enthalten",
           "unlimited": "Unbegrenzte Transkriptionen",
           "duration": "60 Stunden/Monat enthalten",
-          "overageRate": "$0,50 pro zusätzliche Stunde",
-          "overage": "Überschreitung: $0,50/Stunde",
+          "overageRate": "{overageRate} pro zusätzliche Stunde",
+          "overage": "Überschreitung: {overageRate}/Stunde",
           "fileSize": "5GB max Dateigröße",
           "analyses": "Alle Analysetypen",
           "allAnalyses": "Alle Analysetypen",
@@ -1398,8 +1390,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1,50",
-        "period": "/Stunde",
         "priceUnit": "/Stunde",
         "description": "Perfekt für gelegentliche Nutzung",
         "cta": "Credits kaufen",
@@ -1458,7 +1448,11 @@
         "priority": "Bevorzugt",
         "community": "Community",
         "email": "E-Mail",
-        "priorityEmail": "Bevorzugte E-Mail"
+        "priorityEmail": "Bevorzugte E-Mail",
+        "hoursIncluded": "60 Stunden/Monat",
+        "payPerUse": "Nutzungsbasiert",
+        "creditBased": "Kreditbasiert",
+        "comingSoon": "Demnächst verfügbar"
       }
     },
     "faq": {
@@ -1466,11 +1460,11 @@
       "questions": {
         "cost": {
           "question": "Was kostet die Transkription genau?",
-          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für $29. Zusätzliche Stunden kosten $0,50 pro Stück. Pay-As-You-Go ist $1,50/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
+          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für {professionalPrice}. Zusätzliche Stunden kosten {overageRate} pro Stück. Pay-As-You-Go ist {paygPrice}/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
         },
         "overage": {
           "question": "Was passiert, wenn ich mein monatliches Limit überschreite?",
-          "answer": "Professional-Nutzer werden automatisch $0,50 pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
+          "answer": "Professional-Nutzer werden automatisch {overageRate} pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
         },
         "cancel": {
           "question": "Kann ich jederzeit kündigen?",
@@ -1486,7 +1480,7 @@
         },
         "payg": {
           "question": "Wie funktionieren Pay-As-You-Go-Credits?",
-          "answer": "Credits kosten $1,50 pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
+          "answer": "Credits kosten {paygPrice} pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
         }
       }
     },
@@ -1605,7 +1599,7 @@
       "overage": {
         "title": "Überschreitungsgebühren",
         "description": "Sie haben {hours} Stunden über Ihr Limit von 60 Stunden diesen Monat genutzt",
-        "rate": "Zusätzliche Stunden werden mit $0,50/Stunde berechnet",
+        "rate": "Zusätzliche Stunden werden mit {overageRate}/Stunde berechnet",
         "total": "Geschätzte Überschreitungsgebühren",
         "nextBill": "Wird Ihrer nächsten Rechnung am {date} hinzugefügt"
       }

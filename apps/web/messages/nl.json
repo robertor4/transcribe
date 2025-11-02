@@ -302,7 +302,7 @@
     },
     "step2": {
       "title": "AI-transcriptie",
-      "description": "Onze geavanceerde AI aangedreven door OpenAI Whisper transcribeert je audio met hoge nauwkeurigheid en detecteert automatisch meerdere talen."
+      "description": "Onze geavanceerde AI aangedreven technologie transformeert je audio in notules met hoge nauwkeurigheid en detecteert automatisch meerdere talen."
     },
     "step3": {
       "title": "Slimme samenvatting",
@@ -339,12 +339,7 @@
         "description": "We ondersteunen M4A, MP3, WAV en andere gangbare formaten. Hogere kwaliteitsformaten geven betere resultaten."
       }
     },
-    "recommendedApps": {
-      "title": "Aanbevolen opname-apps",
-      "ios": "iOS: Dictafoon, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Aanbevolen apps:",
     "proTips": {
       "title": "Pro opnametips voor de beste resultaten",
       "audioQuality": "Audiokwaliteit:",
@@ -359,7 +354,6 @@
     "recordingInstructions": "Opname-instructies per apparaat",
     "stepByStep": "Stap-voor-stap instructies:",
     "quickTips": "Snelle tips:",
-    "recommendedApps": "Aanbevolen apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -484,7 +478,7 @@
     },
     "videoCall": {
       "title": "Een videogesprek of vergadering opnemen?",
-      "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij extraheren en transcriberen de audio!"
+      "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij transformeren de audio!"
     }
   },
   "notifications": {
@@ -859,7 +853,6 @@
       "subtitle": "Begin gratis, upgrade wanneer je klaar bent. Geen verborgen kosten, geen verrassingen.",
       "free": {
         "name": "Gratis",
-        "price": "$0",
         "description": "Perfect om uit te proberen",
         "features": {
           "transcriptions": "3 transcripties/maand",
@@ -870,7 +863,6 @@
       },
       "professional": {
         "name": "Professioneel",
-        "price": "$29",
         "description": "Voor regelmatige gebruikers",
         "badge": "Meest populair",
         "features": {
@@ -884,7 +876,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1,50",
         "description": "Per uur audio",
         "features": {
           "credits": "Tegoed vervalt nooit",
@@ -1031,7 +1022,7 @@
         "content": "Neural Summary biedt AI-aangedreven audiotranscriptie en intelligente analyseservices. Ons platform omvat:",
         "features": {
           "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
-          "analysis": "Intelligente samenvatting en analyse van getranscribeerde inhoud",
+          "analysis": "Intelligente samenvatting en analyse van de inhoud",
           "storage": "Veilige cloudopslag van uw transcripties en audiobestanden",
           "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
         }
@@ -1355,7 +1346,8 @@
       "save25": "Bespaar 25%",
       "noCreditCard": "Geen creditcard vereist",
       "freeTrial": "14 dagen gratis proef",
-      "viewComparison": "Bekijk gedetailleerde vergelijking"
+      "viewComparison": "Bekijk gedetailleerde vergelijking",
+      "billedAnnually": "Jaarlijks gefactureerd ({amount}/jaar)"
     },
     "tiers": {
       "free": {
@@ -1376,27 +1368,25 @@
           "batch": "Batchverwerking",
           "storage": "90 dagen opslag",
           "support": "Community ondersteuning"
-        }
+        },
+        "period": "/maand"
       },
       "professional": {
         "name": "Professioneel",
         "title": "Professioneel",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/maand",
-        "description": "Voor professionals die regelmatig transcriberen",
+        "description": "Voor professionals die regelmatig notities maken",
         "cta": "Aan de slag",
         "badge": "Meest populair",
         "recommended": "AANBEVOLEN",
         "guarantee": "30 dagen geld-terug-garantie",
-        "saveAnnual": "Bespaar $87/jaar",
         "features": {
           "transcriptions": "Onbeperkte transcripties",
           "hours": "60 uur/maand inbegrepen",
           "unlimited": "Onbeperkte transcripties",
           "duration": "60 uur/maand inbegrepen",
-          "overageRate": "$0.50 per extra uur",
-          "overage": "Overschrijding: $0.50/uur",
+          "overageRate": "{overageRate} per extra uur",
+          "overage": "Overschrijding: {overageRate}/uur",
           "fileSize": "Max 5GB bestandsgrootte",
           "analyses": "Alle analysetypes",
           "allAnalyses": "Alle analysetypes",
@@ -1413,8 +1403,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1.50",
-        "period": "/uur",
         "priceUnit": "/uur",
         "description": "Perfect voor incidenteel gebruik",
         "cta": "Koop tegoed",
@@ -1435,7 +1423,7 @@
       }
     },
     "finalCta": {
-      "title": "Begin slimmer te transcriberen",
+      "title": "Begin slimmer te notuleren",
       "subtitle": "Geen creditcard vereist voor gratis abonnement",
       "button": "Start gratis"
     },
@@ -1473,7 +1461,11 @@
         "priority": "Prioriteit",
         "community": "Community",
         "email": "E-mail",
-        "priorityEmail": "Prioriteit e-mail"
+        "priorityEmail": "Prioriteit e-mail",
+        "hoursIncluded": "60 uur/maand",
+        "payPerUse": "Betaal per gebruik",
+        "creditBased": "Op basis van tegoed",
+        "comingSoon": "Binnenkort beschikbaar"
       }
     },
     "faq": {
@@ -1481,11 +1473,11 @@
       "questions": {
         "cost": {
           "question": "Wat kost transcriptie precies?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand voor $29. Extra uren kosten $0.50 elk. Pay-As-You-Go is $1.50/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
+          "answer": "Professioneel abonnement bevat 60 uur/maand voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
-          "answer": "Professionele gebruikers worden automatisch $0.50 per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
+          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
         },
         "cancel": {
           "question": "Kan ik mijn abonnement altijd opzeggen?",
@@ -1501,7 +1493,7 @@
         },
         "payg": {
           "question": "Hoe werkt Pay-As-You-Go tegoed?",
-          "answer": "Tegoed kost $1.50 per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
+          "answer": "Tegoed kost {paygPrice} per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
         }
       }
     },
@@ -1620,7 +1612,7 @@
       "overage": {
         "title": "Overschrijdingskosten",
         "description": "Je hebt {hours} uur boven je 60-uur limiet deze maand gebruikt",
-        "rate": "Extra uren worden in rekening gebracht tegen $0.50/uur",
+        "rate": "Extra uren worden in rekening gebracht tegen {overageRate}/uur",
         "total": "Geschatte overschrijdingskosten",
         "nextBill": "Wordt toegevoegd aan je volgende factuur op {date}"
       }

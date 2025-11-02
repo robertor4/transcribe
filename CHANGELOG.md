@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Centralized Pricing Configuration with Locale-Aware Formatting**: Moved all pricing data to shared package with proper internationalization
+  - Created `packages/shared/src/pricing.ts` with comprehensive pricing utilities
+    - Base USD pricing for all tiers (Professional: $29/month, $261/year; PAYG: $1.50/hour)
+    - PAYG package configurations (10h/$15, 20h/$30, 33h/$50, 67h/$100)
+    - Currency conversion rates (USD to EUR: 0.92x, extensible for future currencies)
+    - Locale-to-currency mapping (en→USD, nl/de/fr/es→EUR)
+    - **NEW**: Locale-aware number formatting using `Intl.NumberFormat` API
+      - `formatPriceLocale(amount, locale)` - Formats prices with proper decimal separators, thousands separators, and currency symbols
+      - English (en-US): `$29`, `$1.50` (dot for decimals, comma for thousands)
+      - Dutch (nl-NL): `€ 27`, `€ 1,40` (comma for decimals, dot for thousands, space after symbol)
+      - German (de-DE): `27 €`, `1,40 €` (comma for decimals, symbol after amount)
+      - French (fr-FR): `27 €`, `1,40 €` (comma for decimals, symbol after amount)
+      - Spanish (es-ES): `27 €`, `1,40 €` (comma for decimals, symbol after amount)
+    - Utility functions: `getPricingForLocale()`, `getCurrencyForLocale()`, `getPaygPackages()`, `formatPriceLocale()`, `formatPrice()` (deprecated), `calculateAnnualSavings()`
+  - Updated `SUBSCRIPTION_TIERS` in `packages/shared/src/types.ts` to reference centralized pricing constants
+  - Updated presentation layer for locale-aware formatting:
+    - `apps/web/components/pricing/PricingCard.tsx` now uses `formatPriceLocale()` with locale parameter
+    - `apps/web/app/[locale]/pricing/page.tsx` passes locale to all PricingCard components
+    - Billing notes (annual pricing) also use locale-aware formatting
+  - Removed hardcoded prices from frontend:
+    - `apps/web/app/[locale]/pricing/page.tsx` now imports from `@transcribe/shared`
+    - `apps/web/app/[locale]/checkout/[tier]/page.tsx` uses `getMinimumPaygPackage()` for PAYG checkout
+  - Cleaned up all translation files to remove price values:
+    - Removed `price`, `priceAnnual`, `saveAnnual` keys from `pricing.tiers.professional` in all 5 languages
+    - Removed `price`, `period` keys from `pricing.tiers.payg` in all 5 languages
+    - Kept descriptive text like tier names, features, and UI labels
+  - Benefits: Single source of truth, type-safe pricing, easy price updates, consistent currency conversion, proper locale-specific number formatting
+  - Location: `packages/shared/src/pricing.ts`, `packages/shared/src/types.ts`, `packages/shared/src/index.ts`, `apps/web/components/pricing/PricingCard.tsx`
+
+### Fixed
+- **PAYG Price Display**: Fixed Pay-As-You-Go hourly pricing to show 2 decimal places instead of rounding to whole numbers
+  - Issue: PAYG price displayed as "€ 1" instead of "€ 1,40" in Dutch locale
+  - Solution: Made decimal places dynamic based on tier (PAYG: 2 decimals, subscriptions: 0 decimals)
+  - Now correctly shows: English "$1.50/hour", Dutch "€ 1,40/uur", German "1,40 €/Stunde"
+  - Location: `apps/web/components/pricing/PricingCard.tsx:51`
+- **Complete Hardcoded Price Removal**: Eliminated ALL hardcoded prices from translations and made them dynamically calculated
+  - **Problem**: FAQs, landing page pricing teasers, and dashboard usage sections had hardcoded USD/EUR prices that didn't update based on locale
+  - **Solution**: Replaced hardcoded values with placeholders and pass locale-specific formatted prices as interpolation values
+  - **Changes**:
+    - Added `OVERAGE_RATE_USD` constant to `packages/shared/src/pricing.ts` for Professional plan overage rate ($0.50/hour)
+    - Updated FAQ answers in all 5 languages to use `{professionalPrice}`, `{paygPrice}`, `{overageRate}` placeholders
+    - Updated landing page pricing teaser to remove `price` keys and calculate prices dynamically
+    - Updated dashboard usage overage rate strings to use `{overageRate}` placeholder
+    - Modified `PricingFAQ.tsx` to calculate and pass locale-aware prices using `formatPriceLocale()`
+    - Modified `landing/page.tsx` to calculate `freePrice`, `professionalPrice`, `paygPrice` and display them directly
+  - **Result**: All prices now display correctly in user's locale (e.g., German FAQ shows "27 €" not "$29")
+  - **Files affected**:
+    - `packages/shared/src/pricing.ts` (added OVERAGE_RATE_USD constant)
+    - `apps/web/messages/{en,de,nl,fr,es}.json` (FAQ, pricing teaser, dashboard usage strings)
+    - `apps/web/components/pricing/PricingFAQ.tsx` (added price calculations and interpolation)
+    - `apps/web/app/[locale]/landing/page.tsx` (added price calculations for teaser section)
+
 ### Removed
 - **"How It Works" Tab from Dashboard**: Removed the "How It Works" tab and its associated component from the dashboard
   - Deleted `HowItWorks` component (`apps/web/components/HowItWorks.tsx`)

@@ -12,6 +12,7 @@ import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { ArrowRight, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import Link from 'next/link';
+import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
 
 export default function PricingPage() {
   const params = useParams();
@@ -41,20 +42,9 @@ export default function PricingPage() {
     return `/${locale}/checkout/${tier}`;
   };
 
-  // Currency and pricing based on locale
-  const isEuro = locale !== 'en';
-  const currencySymbol = isEuro ? '€' : '$';
-  const currency = isEuro ? 'EUR' : 'USD';
-
-  // Pricing (approximate EUR conversion: 1 USD ≈ 0.92 EUR)
-  const pricing = {
-    professional: {
-      monthly: isEuro ? 27 : 29,
-      annual: isEuro ? 20 : 21.75,
-      annualTotal: isEuro ? 240 : 261,
-    },
-    payg: isEuro ? 1.40 : 1.50,
-  };
+  // Get pricing and currency info from centralized utility
+  const pricing = getPricingForLocale(locale);
+  const { code: currency, symbol: currencySymbol } = getCurrencyForLocale(locale);
 
   // Standardized feature lists for each tier with icons and categories
   const freeFeatures = [
@@ -64,7 +54,7 @@ export default function PricingPage() {
     { text: t('tiers.free.features.coreAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.onDemand'), included: true, note: '2/month', category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.translation'), included: false, icon: Globe, category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.sharing'), included: true, note: 'Basic', icon: Share2, category: t('featureCategories.collaboration') },
+    { text: t('tiers.free.features.sharing'), included: true, note: t('comparison.values.basic'), icon: Share2, category: t('featureCategories.collaboration') },
     { text: t('tiers.free.features.batch'), included: false, category: t('featureCategories.collaboration') },
     { text: t('tiers.professional.features.priority'), included: false, icon: Zap, category: t('featureCategories.collaboration') },
     { text: t('tiers.free.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
@@ -124,19 +114,21 @@ export default function PricingPage() {
             <PricingCard
               tier="free"
               price={0}
+              priceUnit={t('tiers.free.period')}
               title={t('tiers.free.title')}
               description={t('tiers.free.description')}
               features={freeFeatures}
               ctaText={t('tiers.free.cta')}
               ctaLink={getCtaLink('free')}
+              locale={locale}
             />
 
             {/* Professional Tier */}
             <PricingCard
               tier="professional"
-              price={billingCycle === 'monthly' ? pricing.professional.monthly : pricing.professional.annual}
-              priceUnit="/month"
-              billingNote={billingCycle === 'annual' ? `Billed annually (${currencySymbol}${pricing.professional.annualTotal}/year)` : undefined}
+              price={billingCycle === 'monthly' ? pricing.professional.monthly : pricing.professional.annualMonthly}
+              priceUnit={t('tiers.professional.period')}
+              billingNote={billingCycle === 'annual' ? t('hero.billedAnnually', { amount: formatPriceLocale(pricing.professional.annual, locale) }) : undefined}
               title={t('tiers.professional.title')}
               description={t('tiers.professional.description')}
               featured={true}
@@ -145,6 +137,7 @@ export default function PricingPage() {
               ctaLink={getCtaLink('professional')}
               showGuarantee={true}
               guaranteeText={t('tiers.professional.guarantee')}
+              locale={locale}
               currencySymbol={currencySymbol}
               currency={currency}
             />
@@ -152,13 +145,14 @@ export default function PricingPage() {
             {/* Pay-As-You-Go */}
             <PricingCard
               tier="payg"
-              price={pricing.payg}
+              price={pricing.payg.hourly}
               priceUnit={t('tiers.payg.priceUnit')}
               title={t('tiers.payg.title')}
               description={t('tiers.payg.description')}
               features={paygFeatures}
               ctaText={t('tiers.payg.cta')}
               ctaLink={getCtaLink('payg')}
+              locale={locale}
               currencySymbol={currencySymbol}
               currency={currency}
             />

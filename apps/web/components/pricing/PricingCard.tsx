@@ -1,6 +1,7 @@
 import { Check, X, Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
+import { formatPriceLocale } from '@transcribe/shared';
 
 interface Feature {
   text: string;
@@ -20,8 +21,9 @@ interface PricingCardProps {
   features: Feature[];
   ctaText: string;
   ctaLink: string;
-  currency?: string;
-  currencySymbol?: string;
+  locale: string; // Locale code for proper number formatting
+  currency?: string; // Kept for backwards compatibility
+  currencySymbol?: string; // Kept for backwards compatibility
   showGuarantee?: boolean;
   guaranteeText?: string;
   billingNote?: string;
@@ -37,12 +39,18 @@ export function PricingCard({
   features,
   ctaText,
   ctaLink,
+  locale,
   currency = 'USD',
   currencySymbol = '$',
   showGuarantee = false,
   guaranteeText,
   billingNote,
 }: PricingCardProps) {
+  // Use locale-aware formatting for the price
+  // PAYG uses 2 decimals (e.g., €1.40/hour), subscription tiers use 0 decimals (e.g., €27/month)
+  const decimals = tier === 'payg' ? 2 : 0;
+  const formattedPrice = formatPriceLocale(price, locale, { decimals });
+
   return (
     <div
       className={`
@@ -71,7 +79,7 @@ export function PricingCard({
       <div className="mb-6">
         <div className="flex items-baseline">
           <span className="text-5xl font-bold text-gray-900 dark:text-white">
-            {currencySymbol}{price}
+            {formattedPrice}
           </span>
           <span className="text-gray-700 dark:text-gray-300 ml-2">
             {priceUnit}
@@ -80,11 +88,6 @@ export function PricingCard({
         {billingNote && (
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             {billingNote}
-          </p>
-        )}
-        {currency !== 'USD' && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Prices automatically converted to {currency}
           </p>
         )}
       </div>

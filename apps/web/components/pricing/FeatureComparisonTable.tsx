@@ -7,31 +7,35 @@ import { useTranslations } from 'next-intl';
 export function FeatureComparisonTable() {
   const t = useTranslations('pricing.comparison');
 
+  // Get translated special values for comparison
+  const unlimitedText = t('values.unlimited');
+  const comingSoonText = t('values.comingSoon');
+
   const features = [
     {
       category: t('categories.basics'),
       items: [
-        { name: t('features.transcriptions'), free: '3/month', pro: 'Unlimited', payg: 'Credit-based' },
-        { name: t('features.duration'), free: '30 min', pro: 'Unlimited', payg: 'Unlimited' },
+        { name: t('features.transcriptions'), free: '3/month', pro: t('values.unlimited'), payg: t('values.creditBased') },
+        { name: t('features.duration'), free: '30 min', pro: t('values.unlimited'), payg: t('values.unlimited') },
         { name: t('features.fileSize'), free: '100MB', pro: '5GB', payg: '5GB' },
-        { name: t('features.hours'), free: '-', pro: '60 hours/month', payg: 'Pay per use' },
+        { name: t('features.hours'), free: '-', pro: t('values.hoursIncluded'), payg: t('values.payPerUse') },
       ],
     },
     {
       category: t('categories.analyses'),
       items: [
         { name: t('features.coreAnalyses'), free: true, pro: true, payg: true },
-        { name: t('features.onDemand'), free: '2/month', pro: 'Unlimited', payg: 'Unlimited' },
+        { name: t('features.onDemand'), free: '2/month', pro: t('values.unlimited'), payg: t('values.unlimited') },
         { name: t('features.translation'), free: false, pro: true, payg: true },
       ],
     },
     {
       category: t('categories.features'),
       items: [
-        { name: t('features.sharing'), free: 'Basic', pro: 'Advanced', payg: 'Advanced' },
+        { name: t('features.sharing'), free: t('values.basic'), pro: t('values.advanced'), payg: t('values.advanced') },
         { name: t('features.batch'), free: false, pro: true, payg: true },
         { name: t('features.priority'), free: false, pro: true, payg: true },
-        { name: t('features.api'), free: false, pro: 'Coming soon', payg: 'Coming soon' },
+        { name: t('features.api'), free: false, pro: t('values.comingSoon'), payg: t('values.comingSoon') },
       ],
     },
   ];
@@ -57,7 +61,7 @@ export function FeatureComparisonTable() {
         </div>
       );
     }
-    if (value === 'Unlimited') {
+    if (value === unlimitedText) {
       return (
         <div className="flex items-center justify-center gap-1">
           <Sparkles className={`h-4 w-4 ${isPro ? 'text-[#cc3399]' : 'text-purple-500'}`} />
@@ -67,7 +71,7 @@ export function FeatureComparisonTable() {
         </div>
       );
     }
-    if (value.includes('Coming soon')) {
+    if (value === comingSoonText || value.toLowerCase().includes('coming soon') || value.toLowerCase().includes('binnenkort') || value.toLowerCase().includes('prochainement') || value.toLowerCase().includes('próximamente') || value.toLowerCase().includes('demnächst')) {
       return (
         <span className="text-sm italic text-gray-500 dark:text-gray-500">
           {value}

@@ -766,8 +766,8 @@
         "rating": "notés en moyenne 4,9 / 5"
       },
       "compliance": {
-        "title": "Construit avec une sécurité de niveau entreprise",
-        "description": "Conforme RGPD, SOC 2 Type II et HIPAA"
+        "title": "Traitement conforme HIPAA",
+        "description": "Standards de confidentialité médicaux pour toutes vos conversations sensibles"
       },
       "useCases": {
         "title": "Approuvé par les professionnels",
@@ -784,10 +784,6 @@
       "retention": {
         "title": "Infrastructure certifiée SOC 2 Type II",
         "description": "Sécurité de niveau entreprise avec surveillance continue de la conformité"
-      },
-      "compliance": {
-        "title": "Traitement conforme HIPAA",
-        "description": "Standards de confidentialité médicaux pour toutes vos conversations sensibles"
       },
       "audit": {
         "title": "Architecture zéro-connaissance",
@@ -835,7 +831,6 @@
       "subtitle": "Commencez gratuitement, passez à la version supérieure quand vous êtes prêt. Pas de frais cachés, pas de surprises.",
       "free": {
         "name": "Gratuit",
-        "price": "$0",
         "description": "Parfait pour essayer",
         "features": {
           "transcriptions": "3 transcriptions/mois",
@@ -846,7 +841,6 @@
       },
       "professional": {
         "name": "Professionnel",
-        "price": "$29",
         "description": "Pour les utilisateurs réguliers",
         "badge": "Le plus populaire",
         "features": {
@@ -860,7 +854,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1,50",
         "description": "Par heure d'audio",
         "features": {
           "credits": "Les crédits n'expirent jamais",
@@ -1284,24 +1277,28 @@
     "confirmRevoke": "Êtes-vous sûr de vouloir révoquer ce lien de partage? Les personnes avec le lien ne pourront plus accéder à cette transcription."
   },
   "shared": {
-    "title": "Transcription Partagée",
-    "loadingTranscript": "Chargement de la transcription...",
-    "enterPassword": "Entrer le Mot de Passe",
-    "passwordRequired": "Cette transcription est protégée par mot de passe.",
-    "password": "Mot de passe",
+    "loading": "Chargement de la transcription...",
+    "passwordRequired": "Mot de passe requis",
+    "passwordDescription": "Cette transcription est protégée par mot de passe. Veuillez entrer le mot de passe pour la voir.",
+    "enterPassword": "Entrer le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "submit": "Soumettre",
-    "invalidPassword": "Mot de passe invalide",
-    "transcriptNotFound": "Transcription non trouvée",
-    "transcriptExpired": "Ce lien de partage a expiré",
-    "transcriptRevoked": "Ce lien de partage a été révoqué",
-    "errorLoading": "Erreur lors du chargement de la transcription",
+    "error": {
+      "title": "Erreur d'accès",
+      "invalidLink": "Ce lien de partage est invalide ou a expiré.",
+      "notFound": "Transcription non trouvée.",
+      "loadFailed": "Échec du chargement de la transcription."
+    },
     "sharedBy": "Partagé par",
-    "sharedOn": "Partagé le",
-    "downloadTranscript": "Télécharger la Transcription",
-    "playRecording": "Lire l'Enregistrement",
-    "backToTop": "Retour en haut",
-    "noAnalysisAvailable": "Aucune analyse disponible",
-    "noTranscriptAvailable": "Aucune transcription disponible"
+    "views": "Vues",
+    "readOnly": "Lecture seule",
+    "analysis": "Analyse",
+    "transcript": "Transcription complète",
+    "footer": {
+      "poweredBy": "Propulsé par Neural Summary",
+      "copyright": "© {year} Neural Summary. Tous droits réservés."
+    }
   },
   "cookieConsent": {
     "title": "Nous utilisons des cookies pour améliorer votre expérience",
@@ -1339,7 +1336,8 @@
       "save25": "Économisez 25%",
       "noCreditCard": "Aucune carte de crédit requise",
       "freeTrial": "Essai gratuit de 14 jours",
-      "viewComparison": "Voir la comparaison détaillée"
+      "viewComparison": "Voir la comparaison détaillée",
+      "billedAnnually": "Facturé annuellement ({amount}/an)"
     },
     "tiers": {
       "free": {
@@ -1360,27 +1358,25 @@
           "batch": "Traitement par lots",
           "storage": "90 jours de stockage",
           "support": "Support communautaire"
-        }
+        },
+        "period": "/mois"
       },
       "professional": {
         "name": "Professionnel",
         "title": "Professionnel",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/mois",
         "description": "Pour les professionnels qui transcrivent régulièrement",
         "cta": "Commencer",
         "badge": "Le plus populaire",
         "recommended": "RECOMMANDÉ",
         "guarantee": "Garantie satisfait ou remboursé 30 jours",
-        "saveAnnual": "Économisez $87/an",
         "features": {
           "transcriptions": "Transcriptions illimitées",
           "hours": "60 heures/mois incluses",
           "unlimited": "Transcriptions illimitées",
           "duration": "60 heures/mois incluses",
-          "overageRate": "$0,50 par heure supplémentaire",
-          "overage": "Dépassement : $0,50/heure",
+          "overageRate": "{overageRate} par heure supplémentaire",
+          "overage": "Dépassement : {overageRate}/heure",
           "fileSize": "5GB taille de fichier max",
           "analyses": "Tous les types d'analyse",
           "allAnalyses": "Tous les types d'analyse",
@@ -1397,8 +1393,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1,50",
-        "period": "/heure",
         "priceUnit": "/heure",
         "description": "Parfait pour une utilisation occasionnelle",
         "cta": "Acheter des crédits",
@@ -1457,7 +1451,11 @@
         "priority": "Priorité",
         "community": "Communauté",
         "email": "E-mail",
-        "priorityEmail": "E-mail prioritaire"
+        "priorityEmail": "E-mail prioritaire",
+        "hoursIncluded": "60 heures/mois",
+        "payPerUse": "Paiement à l'utilisation",
+        "creditBased": "Basé sur les crédits",
+        "comingSoon": "Prochainement"
       }
     },
     "faq": {
@@ -1465,11 +1463,11 @@
       "questions": {
         "cost": {
           "question": "Combien coûte exactement la transcription ?",
-          "answer": "Le plan Professionnel inclut 60 heures/mois pour $29. Les heures supplémentaires coûtent $0,50 chacune. Pay-As-You-Go est à $1,50/heure avec des crédits qui n'expirent jamais. Le plan Gratuit inclut 3 transcriptions/mois (30 min max chacune)."
+          "answer": "Le plan Professionnel inclut 60 heures/mois pour {professionalPrice}. Les heures supplémentaires coûtent {overageRate} chacune. Pay-As-You-Go est à {paygPrice}/heure avec des crédits qui n'expirent jamais. Le plan Gratuit inclut 3 transcriptions/mois (30 min max chacune)."
         },
         "overage": {
           "question": "Que se passe-t-il si je dépasse ma limite mensuelle ?",
-          "answer": "Les utilisateurs Professionnels sont automatiquement facturés $0,50 par heure supplémentaire. Les utilisateurs Gratuits doivent passer à la version supérieure pour continuer. Les utilisateurs Pay-As-You-Go achètent simplement plus de crédits."
+          "answer": "Les utilisateurs Professionnels sont automatiquement facturés {overageRate} par heure supplémentaire. Les utilisateurs Gratuits doivent passer à la version supérieure pour continuer. Les utilisateurs Pay-As-You-Go achètent simplement plus de crédits."
         },
         "cancel": {
           "question": "Puis-je annuler mon abonnement à tout moment ?",
@@ -1485,7 +1483,7 @@
         },
         "payg": {
           "question": "Comment fonctionnent les crédits Pay-As-You-Go ?",
-          "answer": "Les crédits coûtent $1,50 par heure de transcription. Ils n'expirent jamais et peuvent être utilisés à tout moment. Parfait pour les besoins occasionnels de transcription."
+          "answer": "Les crédits coûtent {paygPrice} par heure de transcription. Ils n'expirent jamais et peuvent être utilisés à tout moment. Parfait pour les besoins occasionnels de transcription."
         }
       }
     },
@@ -1604,7 +1602,7 @@
       "overage": {
         "title": "Frais de dépassement",
         "description": "Vous avez utilisé {hours} heures au-delà de votre limite de 60 heures ce mois",
-        "rate": "Les heures supplémentaires sont facturées à $0,50/heure",
+        "rate": "Les heures supplémentaires sont facturées à {overageRate}/heure",
         "total": "Frais de dépassement estimés",
         "nextBill": "Sera ajouté à votre prochaine facture le {date}"
       }
@@ -1710,30 +1708,6 @@
       "title": "Passer au plan Professionnel",
       "defaultMessage": "Débloquez des transcriptions illimitées, des fichiers audio plus longs et des fonctionnalités d'analyse avancées.",
       "cta": "Voir les plans"
-    }
-  },
-  "shared": {
-    "loading": "Chargement de la transcription...",
-    "passwordRequired": "Mot de passe requis",
-    "passwordDescription": "Cette transcription est protégée par mot de passe. Veuillez entrer le mot de passe pour la voir.",
-    "enterPassword": "Entrer le mot de passe",
-    "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe",
-    "submit": "Soumettre",
-    "error": {
-      "title": "Erreur d'accès",
-      "invalidLink": "Ce lien de partage est invalide ou a expiré.",
-      "notFound": "Transcription non trouvée.",
-      "loadFailed": "Échec du chargement de la transcription."
-    },
-    "sharedBy": "Partagé par",
-    "views": "Vues",
-    "readOnly": "Lecture seule",
-    "analysis": "Analyse",
-    "transcript": "Transcription complète",
-    "footer": {
-      "poweredBy": "Propulsé par Neural Summary",
-      "copyright": "© {year} Neural Summary. Tous droits réservés."
     }
   },
   "analyses": {

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getMinimumPaygPackage } from '@transcribe/shared';
 
 export default function CheckoutPage() {
   const params = useParams();
@@ -57,9 +58,10 @@ export default function CheckoutPage() {
 
       if (tier === 'payg') {
         endpoint = '/stripe/create-payg-session';
+        const minimumPackage = getMinimumPaygPackage('USD'); // Backend always uses USD for Stripe
         payload = {
-          amount: 15, // $15 minimum
-          hours: 10, // 10 hours
+          amount: minimumPackage.price,
+          hours: minimumPackage.hours,
           successUrl,
           cancelUrl,
         };

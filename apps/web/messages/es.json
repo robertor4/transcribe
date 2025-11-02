@@ -510,7 +510,137 @@
     "export": "Exportar datos",
     "deleteAccount": "Eliminar cuenta",
     "saveChanges": "Guardar cambios",
-    "changesSaved": "Cambios guardados exitosamente"
+    "changesSaved": "Cambios guardados exitosamente",
+    "backToDashboard": "Volver al panel de control",
+    "comingSoon": "Próximamente",
+    "profilePage": {
+      "title": "Información del perfil",
+      "description": "Administre su información personal y configuración del perfil.",
+      "loadError": "Error al cargar el perfil",
+      "saveError": "Error al guardar el perfil",
+      "saveSuccess": "Perfil actualizado exitosamente",
+      "profilePhoto": "Foto de perfil",
+      "photoURLPlaceholder": "Ingrese la URL de la imagen",
+      "photoURLHelp": "Ingrese una URL de imagen para usar como foto de perfil",
+      "displayName": "Nombre para mostrar",
+      "displayNamePlaceholder": "Ingrese su nombre",
+      "email": "Dirección de correo electrónico",
+      "emailHelp": "Su dirección de correo no se puede cambiar",
+      "verified": "Verificado",
+      "notVerified": "No verificado - Haga clic para reenviar",
+      "verificationError": "Error al enviar correo de verificación",
+      "accountCreated": "Cuenta creada",
+      "subscription": "Suscripción",
+      "expiresOn": "Expira el",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "notificationsPage": {
+      "title": "Configuración de notificaciones",
+      "description": "Configure cómo recibe notificaciones sobre sus transcripciones.",
+      "loadError": "Error al cargar configuración",
+      "saveError": "Error al guardar configuración",
+      "saveSuccess": "Configuración actualizada exitosamente",
+      "emailNotifications": "Notificaciones por correo",
+      "enableEmailNotifications": "Habilitar notificaciones por correo",
+      "enableEmailDescription": "Recibir actualizaciones por correo sobre sus transcripciones",
+      "transcriptionComplete": "Transcripción completada",
+      "transcriptionCompleteDescription": "Ser notificado cuando su transcripción esté lista",
+      "digestFrequency": "Frecuencia de correos",
+      "digestDescription": "Con qué frecuencia recibir notificaciones por correo",
+      "digest": {
+        "immediate": "Inmediato",
+        "daily": "Resumen diario",
+        "weekly": "Resumen semanal"
+      },
+      "browserNotifications": "Notificaciones del navegador",
+      "enableBrowserNotifications": "Habilitar notificaciones del navegador",
+      "enableBrowserDescription": "Mostrar notificaciones de escritorio cuando esta pestaña está en segundo plano",
+      "browserPermissionDenied": "El permiso de notificación del navegador ha sido denegado",
+      "browserPermissionBlocked": "Las notificaciones del navegador están bloqueadas. Por favor habilítelas en la configuración de su navegador.",
+      "browserNotificationTypes": "Recibirá notificaciones para:",
+      "notificationType": {
+        "transcriptionComplete": "Finalización de transcripción",
+        "transcriptionFailed": "Fallos de transcripción",
+        "transcriptionProgress": "Actualizaciones de progreso de procesamiento"
+      },
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "preferencesPage": {
+      "title": "Preferencias",
+      "description": "Personalice su experiencia y configuraciones predeterminadas.",
+      "loadError": "Error al cargar preferencias",
+      "saveError": "Error al guardar preferencias",
+      "saveSuccess": "Preferencias actualizadas exitosamente",
+      "languageSettings": "Configuración de idioma",
+      "interfaceLanguage": "Idioma de la interfaz",
+      "interfaceLanguageDescription": "Elija su idioma preferido para la aplicación",
+      "summaryLanguage": "Idioma del resumen",
+      "summaryLanguageDescription": "Idioma predeterminado para resúmenes de transcripción",
+      "autoDetect": "Detección automática",
+      "transcriptionDefaults": "Configuraciones predeterminadas de transcripción",
+      "defaultContext": "Contexto predeterminado",
+      "defaultContextDescription": "Contexto a usar para todas las nuevas transcripciones",
+      "defaultContextPlaceholder": "Ingrese contexto predeterminado para sus transcripciones...",
+      "autoDelete": "Eliminación automática de transcripciones",
+      "autoDeleteDescription": "Eliminar automáticamente transcripciones antiguas después de cierto período",
+      "never": "Nunca",
+      "days": "{count} días",
+      "comingSoon": "Próximamente",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "accountPage": {
+      "title": "Configuración de la cuenta",
+      "description": "Administre la seguridad de su cuenta y sus datos.",
+      "security": "Seguridad",
+      "connectedAccounts": "Cuentas conectadas",
+      "emailPassword": "Correo electrónico y contraseña",
+      "googleAccount": "Cuenta de Google",
+      "changePassword": "Cambiar contraseña",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "updatePassword": "Actualizar contraseña",
+      "changingPassword": "Cambiando...",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "notAuthenticated": "No autenticado",
+      "incorrectPassword": "Contraseña incorrecta",
+      "requiresRecentLogin": "Por favor vuelva a iniciar sesión para realizar esta acción",
+      "passwordChangeError": "Error al cambiar la contraseña",
+      "passwordChangeSuccess": "Contraseña cambiada exitosamente",
+      "dataManagement": "Gestión de datos",
+      "exportData": "Exportar sus datos",
+      "exportDataDescription": "Descargue todos sus datos incluyendo transcripciones y configuraciones",
+      "downloadData": "Descargar datos",
+      "exportComingSoon": "Función de exportación de datos próximamente",
+      "dangerZone": "Zona de peligro",
+      "deleteAccountWarning": "Una vez que elimine su cuenta, no hay vuelta atrás. Todos sus datos serán eliminados permanentemente.",
+      "deleteAccount": "Eliminar cuenta",
+      "deleteConfirmTitle": "¿Está absolutamente seguro?",
+      "deleteConfirmMessage": "Esta acción no se puede deshacer. Esto eliminará permanentemente su cuenta y todos los datos asociados.",
+      "enterPasswordToConfirm": "Ingrese su contraseña para confirmar",
+      "confirmDelete": "Sí, eliminar mi cuenta",
+      "deletingAccount": "Eliminando...",
+      "deleteAccountError": "Error al eliminar la cuenta",
+      "cancel": "Cancelar"
+    },
+    "subscriptionPage": {
+      "title": "Suscripción y facturación",
+      "description": "Administre su plan de suscripción e información de facturación.",
+      "comingSoon": "Administración de suscripciones próximamente",
+      "comingSoonDescription": "Estamos trabajando para traerle planes de suscripción flexibles con funciones mejoradas. ¡Manténgase atento!",
+      "availablePlans": "Planes disponibles",
+      "currentPlan": "Plan actual",
+      "upgrade": "Actualizar",
+      "needMore": "¿Necesita más?",
+      "enterpriseDescription": "Para equipos grandes y organizaciones con requisitos personalizados.",
+      "contactSales": "Contactar ventas"
+    }
   },
   "languages": {
     "en": "English",
@@ -636,8 +766,8 @@
         "rating": "calificados en promedio con 4.9 / 5"
       },
       "compliance": {
-        "title": "Construido con seguridad de nivel empresarial",
-        "description": "Conforme a GDPR, SOC 2 Type II y HIPAA"
+        "title": "Procesamiento conforme a HIPAA",
+        "description": "Estándares de privacidad médicos para todas tus conversaciones sensibles"
       },
       "useCases": {
         "title": "Confiado por profesionales",
@@ -654,10 +784,6 @@
       "retention": {
         "title": "Infraestructura certificada SOC 2 Type II",
         "description": "Seguridad de nivel empresarial con monitoreo continuo de cumplimiento"
-      },
-      "compliance": {
-        "title": "Procesamiento conforme a HIPAA",
-        "description": "Estándares de privacidad médicos para todas tus conversaciones sensibles"
       },
       "audit": {
         "title": "Arquitectura de conocimiento cero",
@@ -705,7 +831,6 @@
       "subtitle": "Comienza gratis, mejora cuando estés listo. Sin costos ocultos, sin sorpresas.",
       "free": {
         "name": "Gratis",
-        "price": "$0",
         "description": "Perfecto para probar",
         "features": {
           "transcriptions": "3 transcripciones/mes",
@@ -716,7 +841,6 @@
       },
       "professional": {
         "name": "Profesional",
-        "price": "$29",
         "description": "Para usuarios regulares",
         "badge": "Más popular",
         "features": {
@@ -730,7 +854,6 @@
       },
       "payg": {
         "name": "Paga según uses",
-        "price": "$1,50",
         "description": "Por hora de audio",
         "features": {
           "credits": "Los créditos nunca expiran",
@@ -1157,7 +1280,7 @@
     "title": "Transcripción Compartida",
     "loadingTranscript": "Cargando transcripción...",
     "enterPassword": "Introducir Contraseña",
-    "passwordRequired": "Esta transcripción está protegida con contraseña.",
+    "passwordRequired": "Contraseña requerida",
     "password": "Contraseña",
     "submit": "Enviar",
     "invalidPassword": "Contraseña inválida",
@@ -1173,18 +1296,15 @@
     "noAnalysisAvailable": "No hay análisis disponible",
     "noTranscriptAvailable": "No hay transcripción disponible",
     "loading": "Cargando transcripción...",
-    "passwordRequired": "Contraseña requerida",
     "passwordDescription": "Esta transcripción está protegida con contraseña. Ingrese la contraseña para verla.",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
-    "submit": "Enviar",
     "error": {
       "title": "Error de acceso",
       "invalidLink": "Este enlace para compartir es inválido o ha expirado.",
       "notFound": "Transcripción no encontrada.",
       "loadFailed": "Error al cargar la transcripción."
     },
-    "sharedBy": "Compartido por",
     "views": "Vistas",
     "readOnly": "Solo lectura",
     "analysis": "Análisis",
@@ -1192,156 +1312,6 @@
     "footer": {
       "poweredBy": "Powered by Neural Summary",
       "copyright": "© {year} Neural Summary. Todos los derechos reservados."
-    }
-  },
-  "settings": {
-    "title": "Configuración",
-    "profile": "Perfil",
-    "preferences": "Preferencias",
-    "language": "Idioma",
-    "theme": "Tema",
-    "notifications": "Notificaciones",
-    "privacy": "Privacidad",
-    "security": "Seguridad",
-    "account": "Cuenta",
-    "subscription": "Suscripción",
-    "billing": "Facturación",
-    "usage": "Uso",
-    "apiKeys": "Claves API",
-    "integrations": "Integraciones",
-    "export": "Exportar datos",
-    "deleteAccount": "Eliminar cuenta",
-    "saveChanges": "Guardar cambios",
-    "changesSaved": "Cambios guardados exitosamente",
-    "backToDashboard": "Volver al panel de control",
-    "comingSoon": "Próximamente",
-    "profilePage": {
-      "title": "Información del perfil",
-      "description": "Administre su información personal y configuración del perfil.",
-      "loadError": "Error al cargar el perfil",
-      "saveError": "Error al guardar el perfil",
-      "saveSuccess": "Perfil actualizado exitosamente",
-      "profilePhoto": "Foto de perfil",
-      "photoURLPlaceholder": "Ingrese la URL de la imagen",
-      "photoURLHelp": "Ingrese una URL de imagen para usar como foto de perfil",
-      "displayName": "Nombre para mostrar",
-      "displayNamePlaceholder": "Ingrese su nombre",
-      "email": "Dirección de correo electrónico",
-      "emailHelp": "Su dirección de correo no se puede cambiar",
-      "verified": "Verificado",
-      "notVerified": "No verificado - Haga clic para reenviar",
-      "verificationError": "Error al enviar correo de verificación",
-      "accountCreated": "Cuenta creada",
-      "subscription": "Suscripción",
-      "expiresOn": "Expira el",
-      "saving": "Guardando...",
-      "saveChanges": "Guardar cambios"
-    },
-    "notificationsPage": {
-      "title": "Configuración de notificaciones",
-      "description": "Configure cómo recibe notificaciones sobre sus transcripciones.",
-      "loadError": "Error al cargar configuración",
-      "saveError": "Error al guardar configuración",
-      "saveSuccess": "Configuración actualizada exitosamente",
-      "emailNotifications": "Notificaciones por correo",
-      "enableEmailNotifications": "Habilitar notificaciones por correo",
-      "enableEmailDescription": "Recibir actualizaciones por correo sobre sus transcripciones",
-      "transcriptionComplete": "Transcripción completada",
-      "transcriptionCompleteDescription": "Ser notificado cuando su transcripción esté lista",
-      "digestFrequency": "Frecuencia de correos",
-      "digestDescription": "Con qué frecuencia recibir notificaciones por correo",
-      "digest": {
-        "immediate": "Inmediato",
-        "daily": "Resumen diario",
-        "weekly": "Resumen semanal"
-      },
-      "browserNotifications": "Notificaciones del navegador",
-      "enableBrowserNotifications": "Habilitar notificaciones del navegador",
-      "enableBrowserDescription": "Mostrar notificaciones de escritorio cuando esta pestaña está en segundo plano",
-      "browserPermissionDenied": "El permiso de notificación del navegador ha sido denegado",
-      "browserPermissionBlocked": "Las notificaciones del navegador están bloqueadas. Por favor habilítelas en la configuración de su navegador.",
-      "browserNotificationTypes": "Recibirá notificaciones para:",
-      "notificationType": {
-        "transcriptionComplete": "Finalización de transcripción",
-        "transcriptionFailed": "Fallos de transcripción",
-        "transcriptionProgress": "Actualizaciones de progreso de procesamiento"
-      },
-      "saving": "Guardando...",
-      "saveChanges": "Guardar cambios"
-    },
-    "preferencesPage": {
-      "title": "Preferencias",
-      "description": "Personalice su experiencia y configuraciones predeterminadas.",
-      "loadError": "Error al cargar preferencias",
-      "saveError": "Error al guardar preferencias",
-      "saveSuccess": "Preferencias actualizadas exitosamente",
-      "languageSettings": "Configuración de idioma",
-      "interfaceLanguage": "Idioma de la interfaz",
-      "interfaceLanguageDescription": "Elija su idioma preferido para la aplicación",
-      "summaryLanguage": "Idioma del resumen",
-      "summaryLanguageDescription": "Idioma predeterminado para resúmenes de transcripción",
-      "autoDetect": "Detección automática",
-      "transcriptionDefaults": "Configuraciones predeterminadas de transcripción",
-      "defaultContext": "Contexto predeterminado",
-      "defaultContextDescription": "Contexto a usar para todas las nuevas transcripciones",
-      "defaultContextPlaceholder": "Ingrese contexto predeterminado para sus transcripciones...",
-      "autoDelete": "Eliminación automática de transcripciones",
-      "autoDeleteDescription": "Eliminar automáticamente transcripciones antiguas después de cierto período",
-      "never": "Nunca",
-      "days": "{count} días",
-      "comingSoon": "Próximamente",
-      "saving": "Guardando...",
-      "saveChanges": "Guardar cambios"
-    },
-    "accountPage": {
-      "title": "Configuración de la cuenta",
-      "description": "Administre la seguridad de su cuenta y sus datos.",
-      "security": "Seguridad",
-      "connectedAccounts": "Cuentas conectadas",
-      "emailPassword": "Correo electrónico y contraseña",
-      "googleAccount": "Cuenta de Google",
-      "changePassword": "Cambiar contraseña",
-      "currentPassword": "Contraseña actual",
-      "newPassword": "Nueva contraseña",
-      "confirmPassword": "Confirmar nueva contraseña",
-      "updatePassword": "Actualizar contraseña",
-      "changingPassword": "Cambiando...",
-      "showPassword": "Mostrar contraseña",
-      "hidePassword": "Ocultar contraseña",
-      "passwordMismatch": "Las contraseñas no coinciden",
-      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
-      "notAuthenticated": "No autenticado",
-      "incorrectPassword": "Contraseña incorrecta",
-      "requiresRecentLogin": "Por favor vuelva a iniciar sesión para realizar esta acción",
-      "passwordChangeError": "Error al cambiar la contraseña",
-      "passwordChangeSuccess": "Contraseña cambiada exitosamente",
-      "dataManagement": "Gestión de datos",
-      "exportData": "Exportar sus datos",
-      "exportDataDescription": "Descargue todos sus datos incluyendo transcripciones y configuraciones",
-      "downloadData": "Descargar datos",
-      "exportComingSoon": "Función de exportación de datos próximamente",
-      "dangerZone": "Zona de peligro",
-      "deleteAccountWarning": "Una vez que elimine su cuenta, no hay vuelta atrás. Todos sus datos serán eliminados permanentemente.",
-      "deleteAccount": "Eliminar cuenta",
-      "deleteConfirmTitle": "¿Está absolutamente seguro?",
-      "deleteConfirmMessage": "Esta acción no se puede deshacer. Esto eliminará permanentemente su cuenta y todos los datos asociados.",
-      "enterPasswordToConfirm": "Ingrese su contraseña para confirmar",
-      "confirmDelete": "Sí, eliminar mi cuenta",
-      "deletingAccount": "Eliminando...",
-      "deleteAccountError": "Error al eliminar la cuenta",
-      "cancel": "Cancelar"
-    },
-    "subscriptionPage": {
-      "title": "Suscripción y facturación",
-      "description": "Administre su plan de suscripción e información de facturación.",
-      "comingSoon": "Administración de suscripciones próximamente",
-      "comingSoonDescription": "Estamos trabajando para traerle planes de suscripción flexibles con funciones mejoradas. ¡Manténgase atento!",
-      "availablePlans": "Planes disponibles",
-      "currentPlan": "Plan actual",
-      "upgrade": "Actualizar",
-      "needMore": "¿Necesita más?",
-      "enterpriseDescription": "Para equipos grandes y organizaciones con requisitos personalizados.",
-      "contactSales": "Contactar ventas"
     }
   },
   "pricing": {
@@ -1358,7 +1328,8 @@
       "save25": "Ahorre 25%",
       "noCreditCard": "No se requiere tarjeta de crédito",
       "freeTrial": "Prueba gratuita de 14 días",
-      "viewComparison": "Ver comparación detallada"
+      "viewComparison": "Ver comparación detallada",
+      "billedAnnually": "Facturado anualmente ({amount}/año)"
     },
     "tiers": {
       "free": {
@@ -1379,27 +1350,25 @@
           "batch": "Procesamiento por lotes",
           "storage": "90 días de almacenamiento",
           "support": "Soporte comunitario"
-        }
+        },
+        "period": "/mes"
       },
       "professional": {
         "name": "Profesional",
         "title": "Profesional",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/mes",
         "description": "Para profesionales que transcriben regularmente",
         "cta": "Comenzar",
         "badge": "Más popular",
         "recommended": "RECOMENDADO",
         "guarantee": "Garantía de devolución de dinero de 30 días",
-        "saveAnnual": "Ahorre $87/año",
         "features": {
           "transcriptions": "Transcripciones ilimitadas",
           "hours": "60 horas/mes incluidas",
           "unlimited": "Transcripciones ilimitadas",
           "duration": "60 horas/mes incluidas",
-          "overageRate": "$0,50 por hora adicional",
-          "overage": "Excedente: $0,50/hora",
+          "overageRate": "{overageRate} por hora adicional",
+          "overage": "Excedente: {overageRate}/hora",
           "fileSize": "5GB tamaño máx de archivo",
           "analyses": "Todos los tipos de análisis",
           "allAnalyses": "Todos los tipos de análisis",
@@ -1416,8 +1385,6 @@
       "payg": {
         "name": "Paga según uses",
         "title": "Paga según uses",
-        "price": "$1,50",
-        "period": "/hora",
         "priceUnit": "/hora",
         "description": "Perfecto para uso ocasional",
         "cta": "Comprar créditos",
@@ -1476,7 +1443,11 @@
         "priority": "Prioritario",
         "community": "Comunidad",
         "email": "Correo",
-        "priorityEmail": "Correo prioritario"
+        "priorityEmail": "Correo prioritario",
+        "hoursIncluded": "60 horas/mes",
+        "payPerUse": "Pago por uso",
+        "creditBased": "Basado en créditos",
+        "comingSoon": "Próximamente"
       }
     },
     "faq": {
@@ -1484,11 +1455,11 @@
       "questions": {
         "cost": {
           "question": "¿Cuánto cuesta exactamente la transcripción?",
-          "answer": "El plan Profesional incluye 60 horas/mes por $29. Las horas adicionales cuestan $0,50 cada una. Paga según uses es $1,50/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
+          "answer": "El plan Profesional incluye 60 horas/mes por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
         },
         "overage": {
           "question": "¿Qué pasa si excedo mi límite mensual?",
-          "answer": "Los usuarios Profesionales se les cobra automáticamente $0,50 por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
+          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
         },
         "cancel": {
           "question": "¿Puedo cancelar en cualquier momento?",
@@ -1504,7 +1475,7 @@
         },
         "payg": {
           "question": "¿Cómo funcionan los créditos de Paga según uses?",
-          "answer": "Los créditos cuestan $1,50 por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
+          "answer": "Los créditos cuestan {paygPrice} por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
         }
       }
     },
@@ -1623,7 +1594,7 @@
       "overage": {
         "title": "Cargos por excedente",
         "description": "Ha usado {hours} horas más allá de su límite de 60 horas este mes",
-        "rate": "Las horas adicionales se cobran a $0,50/hora",
+        "rate": "Las horas adicionales se cobran a {overageRate}/hora",
         "total": "Cargos por excedente estimados",
         "nextBill": "Se agregará a su próxima factura el {date}"
       }

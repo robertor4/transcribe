@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { PublicHeader } from '@/components/PublicHeader';
 import ScrollAnimation from '@/components/ScrollAnimation';
+import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
 import {
   Shield,
   Brain,
@@ -25,6 +26,12 @@ export default function LandingPage() {
   const params = useParams();
   const locale = params.locale as string;
   const t = useTranslations();
+
+  // Calculate locale-specific prices for pricing teaser
+  const pricing = getPricingForLocale(locale);
+  const freePrice = formatPriceLocale(0, locale, { decimals: 0 });
+  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
+  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
 
   return (
     <>
@@ -559,7 +566,7 @@ export default function LandingPage() {
                 <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-[#cc3399] transition-all hover-lift">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('landing.pricingTeaser.free.name')}</h3>
-                    <div className="text-4xl font-bold text-gray-900 mb-2">{t('landing.pricingTeaser.free.price')}</div>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">{freePrice}</div>
                     <p className="text-gray-700">{t('landing.pricingTeaser.free.description')}</p>
                   </div>
                   <ul className="space-y-3 mb-8">
@@ -596,7 +603,7 @@ export default function LandingPage() {
                   </div>
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-white mb-2">{t('landing.pricingTeaser.professional.name')}</h3>
-                    <div className="text-4xl font-bold text-white mb-2">{t('landing.pricingTeaser.professional.price')}</div>
+                    <div className="text-4xl font-bold text-white mb-2">{professionalPrice}</div>
                     <p className="text-white/90">{t('landing.pricingTeaser.professional.description')}</p>
                   </div>
                   <ul className="space-y-3 mb-8">
@@ -636,7 +643,7 @@ export default function LandingPage() {
                 <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-600 transition-all hover-lift">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('landing.pricingTeaser.payg.name')}</h3>
-                    <div className="text-4xl font-bold text-gray-900 mb-2">{t('landing.pricingTeaser.payg.price')}</div>
+                    <div className="text-4xl font-bold text-gray-900 mb-2">{paygPrice}</div>
                     <p className="text-gray-700">{t('landing.pricingTeaser.payg.description')}</p>
                   </div>
                   <ul className="space-y-3 mb-8">

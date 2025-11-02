@@ -1,3 +1,5 @@
+import { BASE_PRICING } from './pricing';
+
 export enum TranscriptionStatus {
   PENDING = 'pending',
   PROCESSING = 'processing',
@@ -549,7 +551,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   payg: {
     id: 'payg',
     name: 'Pay As You Go',
-    price: {}, // $1.50 per hour
+    price: {}, // PAYG pricing available in BASE_PRICING.usd.payg
     limits: {
       transcriptionsPerMonth: undefined, // unlimited
       hoursPerMonth: undefined, // based on purchased credits
@@ -570,10 +572,7 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
   professional: {
     id: 'professional',
     name: 'Professional',
-    price: {
-      monthly: 29,
-      annual: 290, // 17% discount (2 months free)
-    },
+    price: BASE_PRICING.usd.professional, // Reference centralized pricing
     limits: {
       transcriptionsPerMonth: undefined, // unlimited
       hoursPerMonth: 60,

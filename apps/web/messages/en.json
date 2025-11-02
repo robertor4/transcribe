@@ -21,8 +21,6 @@
     "upload": "Upload",
     "edit": "Edit",
     "view": "View",
-    "save": "Save",
-    "cancel": "Cancel",
     "copy": "Copy",
     "copied": "Copied!",
     "share": "Share",
@@ -341,12 +339,7 @@
         "description": "We support M4A, MP3, WAV, and other common formats. Higher quality formats yield better results."
       }
     },
-    "recommendedApps": {
-      "title": "Recommended Recording Apps",
-      "ios": "iOS: Voice Memos, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Recommended apps:",
     "proTips": {
       "title": "Pro recording tips for best results",
       "audioQuality": "Audio quality:",
@@ -361,7 +354,6 @@
     "recordingInstructions": "Recording instructions by device",
     "stepByStep": "Step-by-step instructions:",
     "quickTips": "Quick tips:",
-    "recommendedApps": "Recommended apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -379,9 +371,18 @@
           "Consider using AirPods or external mic for better quality"
         ],
         "apps": [
-          { "name": "Voice Memos", "description": "Built-in, simple, and reliable" },
-          { "name": "Just Press Record", "description": "Cloud sync across Apple devices" },
-          { "name": "Recorder", "description": "Simple and easy to use" }
+          {
+            "name": "Voice Memos",
+            "description": "Built-in, simple, and reliable"
+          },
+          {
+            "name": "Just Press Record",
+            "description": "Cloud sync across Apple devices"
+          },
+          {
+            "name": "Recorder",
+            "description": "Simple and easy to use"
+          }
         ]
       },
       "android": {
@@ -400,9 +401,18 @@
           "Keep the device steady during recording"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Simple and effective" },
-          { "name": "Easy Voice Recorder", "description": "High quality with cloud backup" },
-          { "name": "Smart Recorder", "description": "Automatic noise reduction" }
+          {
+            "name": "Voice Recorder",
+            "description": "Simple and effective"
+          },
+          {
+            "name": "Easy Voice Recorder",
+            "description": "High quality with cloud backup"
+          },
+          {
+            "name": "Smart Recorder",
+            "description": "Automatic noise reduction"
+          }
         ]
       },
       "mac": {
@@ -421,9 +431,18 @@
           "Record in a room with soft furnishings to reduce echo"
         ],
         "apps": [
-          { "name": "QuickTime Player", "description": "Built-in and reliable" },
-          { "name": "Audacity", "description": "Free, professional audio editing" },
-          { "name": "GarageBand", "description": "Advanced features for music and podcasting" }
+          {
+            "name": "QuickTime Player",
+            "description": "Built-in and reliable"
+          },
+          {
+            "name": "Audacity",
+            "description": "Free, professional audio editing"
+          },
+          {
+            "name": "GarageBand",
+            "description": "Advanced features for music and podcasting"
+          }
         ]
       },
       "windows": {
@@ -442,9 +461,18 @@
           "Position the microphone away from keyboard and mouse"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Built-in Windows app" },
-          { "name": "Audacity", "description": "Free, cross-platform audio editor" },
-          { "name": "OBS Studio", "description": "Advanced recording with multiple sources" }
+          {
+            "name": "Voice Recorder",
+            "description": "Built-in Windows app"
+          },
+          {
+            "name": "Audacity",
+            "description": "Free, cross-platform audio editor"
+          },
+          {
+            "name": "OBS Studio",
+            "description": "Advanced recording with multiple sources"
+          }
         ]
       }
     },
@@ -825,7 +853,6 @@
       "subtitle": "Start free, upgrade when you're ready. No hidden fees, no surprises.",
       "free": {
         "name": "Free",
-        "price": "$0",
         "description": "Perfect for trying out",
         "features": {
           "transcriptions": "3 transcriptions/month",
@@ -836,7 +863,6 @@
       },
       "professional": {
         "name": "Professional",
-        "price": "$29",
         "description": "For regular users",
         "badge": "Most Popular",
         "features": {
@@ -850,7 +876,6 @@
       },
       "payg": {
         "name": "Pay-As-You-Go",
-        "price": "$1.50",
         "description": "Per hour of audio",
         "features": {
           "credits": "Credits never expire",
@@ -1100,7 +1125,8 @@
       "save25": "Save 25%",
       "noCreditCard": "No credit card required",
       "freeTrial": "14-day free trial",
-      "viewComparison": "View detailed comparison"
+      "viewComparison": "View detailed comparison",
+      "billedAnnually": "Billed annually ({amount}/year)"
     },
     "tiers": {
       "free": {
@@ -1121,27 +1147,25 @@
           "batch": "Batch processing",
           "storage": "90 days storage",
           "support": "Community support"
-        }
+        },
+        "period": "/month"
       },
       "professional": {
         "name": "Professional",
         "title": "Professional",
-        "price": "$29",
-        "priceAnnual": "$261",
         "period": "/month",
         "description": "For professionals who transcribe regularly",
         "cta": "Get Started",
         "badge": "Most Popular",
         "recommended": "RECOMMENDED",
         "guarantee": "30-day money-back guarantee",
-        "saveAnnual": "Save $87/year",
         "features": {
           "transcriptions": "Unlimited transcriptions",
           "hours": "60 hours/month included",
           "unlimited": "Unlimited transcriptions",
           "duration": "60 hours/month included",
-          "overageRate": "$0.50 per additional hour",
-          "overage": "Overage: $0.50/hour",
+          "overageRate": "{overageRate} per additional hour",
+          "overage": "Overage: {overageRate}/hour",
           "fileSize": "5GB max file size",
           "analyses": "All analysis types",
           "allAnalyses": "All analysis types",
@@ -1158,8 +1182,6 @@
       "payg": {
         "name": "Pay-As-You-Go",
         "title": "Pay-As-You-Go",
-        "price": "$1.50",
-        "period": "/hour",
         "priceUnit": "/hour",
         "description": "Perfect for occasional use",
         "cta": "Buy Credits",
@@ -1218,7 +1240,11 @@
         "priority": "Priority",
         "community": "Community",
         "email": "Email",
-        "priorityEmail": "Priority Email"
+        "priorityEmail": "Priority Email",
+        "hoursIncluded": "60 hours/month",
+        "payPerUse": "Pay per use",
+        "creditBased": "Credit-based",
+        "comingSoon": "Coming soon"
       }
     },
     "faq": {
@@ -1226,11 +1252,11 @@
       "questions": {
         "cost": {
           "question": "What exactly does transcription cost?",
-          "answer": "Professional plan includes 60 hours/month for $29. Additional hours are $0.50 each. Pay-As-You-Go is $1.50/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
+          "answer": "Professional plan includes 60 hours/month for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
         },
         "overage": {
           "question": "What happens if I exceed my monthly limit?",
-          "answer": "Professional users are automatically charged $0.50 per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
+          "answer": "Professional users are automatically charged {overageRate} per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
         },
         "cancel": {
           "question": "Can I cancel my subscription anytime?",
@@ -1246,7 +1272,7 @@
         },
         "payg": {
           "question": "How do Pay-As-You-Go credits work?",
-          "answer": "Credits cost $1.50 per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
+          "answer": "Credits cost {paygPrice} per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
         }
       }
     },
@@ -1365,7 +1391,7 @@
       "overage": {
         "title": "Overage Charges",
         "description": "You've used {hours} hours over your 60-hour limit this month",
-        "rate": "Additional hours are charged at $0.50/hour",
+        "rate": "Additional hours are charged at {overageRate}/hour",
         "total": "Estimated overage charge",
         "nextBill": "Will be added to your next bill on {date}"
       }
