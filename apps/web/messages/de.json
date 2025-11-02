@@ -11,6 +11,7 @@
     "close": "Schließen",
     "back": "Zurück",
     "next": "Weiter",
+    "previous": "Zurück",
     "submit": "Absenden",
     "search": "Suchen",
     "filter": "Filtern",
@@ -37,6 +38,13 @@
     "email": "E-Mail",
     "password": "Passwort",
     "confirmPassword": "Passwort bestätigen",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen",
+    "displayName": "Vollständiger Name",
+    "enterYourName": "Geben Sie Ihren vollständigen Namen ein",
+    "enterYourEmail": "Geben Sie Ihre E-Mail-Adresse ein",
+    "createPassword": "Passwort erstellen",
+    "confirmYourPassword": "Passwort bestätigen",
     "forgotPassword": "Passwort vergessen?",
     "resetPassword": "Passwort zurücksetzen",
     "signInWithGoogle": "Mit Google anmelden",
@@ -90,6 +98,7 @@
     "howItWorks": "So funktioniert's",
     "recordingGuide": "Aufnahmeanleitung",
     "howToRecord": "Wie Sie Audio auf jedem Gerät aufnehmen",
+    "settings": "Einstellungen",
     "noTranscriptions": "Noch keine Transkriptionen",
     "uploadYourFirst": "Laden Sie Ihre erste Audiodatei hoch, um zu beginnen"
   },
@@ -110,6 +119,29 @@
     "maxFileSize": "Maximale Dateigröße: 5GB",
     "selectFile": "Audiodatei auswählen",
     "addContext": "Kontext hinzufügen (Optional)",
+    "dropMoreFiles": "Weitere Dateien hinzufügen",
+    "orClickToAddMore": "oder klicken zum Durchsuchen",
+    "maxFilesSelected": "Maximale Anzahl an Dateien ausgewählt (3)",
+    "processingMode": "Verarbeitungsmodus",
+    "processIndividually": "Einzeln verarbeiten",
+    "processIndividuallyDesc": "Erstelle individuelle Transkripte für jede Datei",
+    "processMerged": "Dateien zusammenführen",
+    "processMergedDesc": "Zu einem Gespräch kombinieren",
+    "fileOrder": "Dateireihenfolge",
+    "mergingFiles": "{count} Dateien zusammenführen...",
+    "contextForAll": "Kontext (gilt für alle Dateien)",
+    "contextForMerged": "Kontext für zusammengeführtes Gespräch",
+    "dragToReorder": "Zum Neuordnen ziehen",
+    "moveUp": "Nach oben verschieben",
+    "moveDown": "Nach unten verschieben",
+    "removeFile": "Datei entfernen",
+    "firstFile": "Erste Datei",
+    "lastFile": "Letzte Datei",
+    "mergeOrderMatters": "Dateien werden in der obigen Reihenfolge zusammengeführt. Ziehen Sie sie chronologisch neu zu ordnen.",
+    "analysisType": "Analysetype (Optional)",
+    "analysisTypeHelp": "Wählen Sie, wie die KI Ihr Gespräch analysieren soll",
+    "customInstructions": "Benutzerdefinierte Analyseanweisungen",
+    "customInstructionsHelp": "Geben Sie spezifische Anweisungen, wie die KI Ihr Gespräch analysieren soll",
     "boostAccuracy": "🎯 Steigern Sie die Genauigkeit um 40% mit nur einer Zeile Kontext",
     "contextStats": "93% der Nutzer, die Kontext hinzufügen, berichten von besseren Ergebnissen • Dauert nur 10 Sekunden",
     "contextPlaceholder": "Beispiel: 'Marketing-Meeting mit John und Sarah über Q4-Strategie' oder 'Medizinische Beratung zur Diabetes-Behandlung'",
@@ -143,6 +175,21 @@
     "speakClearlyNormalPace": "Klar und in normalem Tempo sprechen",
     "addContextForTechnicalTerms": "Kontext für technische Begriffe hinzufügen",
     "uploadMultipleFilesAtOnce": "Mehrere Dateien gleichzeitig hochladen",
+    "analysisTypes": {
+      "summary": "Zusammenfassung",
+      "summaryDescription": "Executive-Übersicht mit Kernpunkten und Aktionspunkten",
+      "communication_styles": "Kommunikationsstile",
+      "communication_stylesDescription": "Analysiert Sprechmuster, Tonfall und Interaktionsdynamik",
+      "action_items": "Aktionspunkte",
+      "action_itemsDescription": "Extrahiert aufgaben, Verantwortlichkeiten und Fristen",
+      "emotional_intelligence": "Emotionale Intelligenz",
+      "emotional_intelligenceDescription": "Bewertet emotionalen Ton, Empathie und Beziehungsdynamik",
+      "influence_persuasion": "Einfluss & Überzeugung",
+      "influence_persuasionDescription": "Identifiziert Überzeugungstechniken, Argumentationsmuster und verwendete Einflussstrategien",
+      "personal_development": "Persönliche Entwicklung",
+      "personal_developmentDescription": "Schlägt Coaching-Möglichkeiten, zu entwickelnde Fähigkeiten und Bereiche für berufliches Wachstum vor",
+      "customDescription": "Verwenden Sie das Kontextfeld unten, um spezifische Anweisungen für Ihre benutzerdefinierte Analyse zu geben"
+    },
     "error": {
       "fileSize": "Dateigröße überschreitet 5GB-Limit",
       "fileTooLarge": "Datei zu groß (max 100MB)",
@@ -151,7 +198,10 @@
       "unsupportedFormat": "Nicht unterstütztes Format (Typ: {type})",
       "invalidFileType": "Ungültiger Dateityp. Unterstützte Formate: {formats}",
       "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
-      "processingFailed": "Verarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut."
+      "processingFailed": "Verarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "maxFilesReached": "Maximal 3 Dateien gleichzeitig erlaubt",
+      "duplicateFile": "Diese Datei ist bereits ausgewählt",
+      "tooManyFiles": "Es können nur {max} Dateien gleichzeitig hochgeladen werden"
     }
   },
   "transcription": {
@@ -204,7 +254,10 @@
     "failedToUpdateTitle": "Aktualisierung des Titels fehlgeschlagen",
     "close": "Schließen",
     "view": "Ansehen",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "share": "Teilen",
+    "loadingMore": "Mehr laden...",
+    "noMoreTranscriptions": "Sie haben das Ende erreicht"
   },
   "howItWorks": {
     "title": "So funktioniert's",
@@ -252,7 +305,12 @@
         "description": "Wir unterstützen M4A, MP3, WAV und andere gängige Formate. Höhere Qualitätsformate liefern bessere Ergebnisse."
       }
     },
-    "recommendedApps": "Empfohlene Apps:",
+    "recommendedApps": {
+      "title": "Empfohlene Aufnahme-Apps",
+      "ios": "iOS: Sprachmemos, Just Press Record",
+      "android": "Android: Voice Recorder, Easy Voice Recorder",
+      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    },
     "proTips": {
       "title": "Profi-Aufnahmetipps für beste Ergebnisse",
       "audioQuality": "Audioqualität:",
@@ -424,7 +482,137 @@
     "export": "Daten exportieren",
     "deleteAccount": "Konto löschen",
     "saveChanges": "Änderungen speichern",
-    "changesSaved": "Änderungen erfolgreich gespeichert"
+    "changesSaved": "Änderungen erfolgreich gespeichert",
+    "backToDashboard": "Zurück zum Dashboard",
+    "comingSoon": "Bald verfügbar",
+    "profilePage": {
+      "title": "Profilinformationen",
+      "description": "Verwalten Sie Ihre persönlichen Informationen und Profileinstellungen.",
+      "loadError": "Laden des Profils fehlgeschlagen",
+      "saveError": "Speichern des Profils fehlgeschlagen",
+      "saveSuccess": "Profil erfolgreich aktualisiert",
+      "profilePhoto": "Profilfoto",
+      "photoURLPlaceholder": "Bild-URL eingeben",
+      "photoURLHelp": "Geben Sie eine URL zu einem Bild ein, das als Profilfoto verwendet werden soll",
+      "displayName": "Anzeigename",
+      "displayNamePlaceholder": "Geben Sie Ihren Namen ein",
+      "email": "E-Mail-Adresse",
+      "emailHelp": "Ihre E-Mail-Adresse kann nicht geändert werden",
+      "verified": "Verifiziert",
+      "notVerified": "Nicht verifiziert - Klicken zum erneuten Senden",
+      "verificationError": "Senden der Verif ikations-E-Mail fehlgeschlagen",
+      "accountCreated": "Konto erstellt",
+      "subscription": "Abonnement",
+      "expiresOn": "Läuft ab am",
+      "saving": "Speichern...",
+      "saveChanges": "Änderungen speichern"
+    },
+    "notificationsPage": {
+      "title": "Benachrichtigungseinstellungen",
+      "description": "Konfigurieren Sie, wie Sie Benachrichtigungen über Ihre Transkriptionen erhalten.",
+      "loadError": "Laden der Einstellungen fehlgeschlagen",
+      "saveError": "Speichern der Einstellungen fehlgeschlagen",
+      "saveSuccess": "Einstellungen erfolgreich aktualisiert",
+      "emailNotifications": "E-Mail-Benachrichtigungen",
+      "enableEmailNotifications": "E-Mail-Benachrichtigungen aktivieren",
+      "enableEmailDescription": "E-Mail-Updates über Ihre Transkriptionen erhalten",
+      "transcriptionComplete": "Transkription abgeschlossen",
+      "transcriptionCompleteDescription": "Benachrichtigung erhalten, wenn Ihre Transkription fertig ist",
+      "digestFrequency": "E-Mail-Häufigkeit",
+      "digestDescription": "Wie oft E-Mail-Benachrichtigungen erhalten",
+      "digest": {
+        "immediate": "Sofort",
+        "daily": "Tägliche Zusammenfassung",
+        "weekly": "Wöchentliche Zusammenfassung"
+      },
+      "browserNotifications": "Browser-Benachrichtigungen",
+      "enableBrowserNotifications": "Browser-Benachrichtigungen aktivieren",
+      "enableBrowserDescription": "Desktop-Benachrichtigungen anzeigen, wenn dieser Tab im Hintergrund ist",
+      "browserPermissionDenied": "Browser-Benachrichtigungsberechtigung verweigert",
+      "browserPermissionBlocked": "Browser-Benachrichtigungen sind blockiert. Aktivieren Sie sie in Ihren Browsereinstellungen.",
+      "browserNotificationTypes": "Sie erhalten Benachrichtigungen für:",
+      "notificationType": {
+        "transcriptionComplete": "Transkriptionsabschluss",
+        "transcriptionFailed": "Transkriptionsfehler",
+        "transcriptionProgress": "Verarbeitungsfortschritt-Updates"
+      },
+      "saving": "Speichern...",
+      "saveChanges": "Änderungen speichern"
+    },
+    "preferencesPage": {
+      "title": "Einstellungen",
+      "description": "Passen Sie Ihre Erfahrung und Standardeinstellungen an.",
+      "loadError": "Laden der Einstellungen fehlgeschlagen",
+      "saveError": "Speichern der Einstellungen fehlgeschlagen",
+      "saveSuccess": "Einstellungen erfolgreich aktualisiert",
+      "languageSettings": "Spracheinstellungen",
+      "interfaceLanguage": "Oberflächensprache",
+      "interfaceLanguageDescription": "Wählen Sie Ihre bevorzugte Sprache für die Anwendung",
+      "summaryLanguage": "Zusammenfassungssprache",
+      "summaryLanguageDescription": "Standardsprache für Transkriptionszusammenfassungen",
+      "autoDetect": "Automatisch erkennen",
+      "transcriptionDefaults": "Transkriptionsstandards",
+      "defaultContext": "Standardkontext",
+      "defaultContextDescription": "Kontext für alle neuen Transkriptionen verwenden",
+      "defaultContextPlaceholder": "Standardkontext für Ihre Transkriptionen eingeben...",
+      "autoDelete": "Transkriptionen automatisch löschen",
+      "autoDeleteDescription": "Alte Transkriptionen nach einer bestimmten Zeit automatisch löschen",
+      "never": "Nie",
+      "days": "{count} Tage",
+      "comingSoon": "Bald verfügbar",
+      "saving": "Speichern...",
+      "saveChanges": "Änderungen speichern"
+    },
+    "accountPage": {
+      "title": "Kontoeinstellungen",
+      "description": "Verwalten Sie Ihre Kontosicherheit und Daten.",
+      "security": "Sicherheit",
+      "connectedAccounts": "Verbundene Konten",
+      "emailPassword": "E-Mail & Passwort",
+      "googleAccount": "Google-Konto",
+      "changePassword": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "updatePassword": "Passwort aktualisieren",
+      "changingPassword": "Ändern...",
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort verbergen",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+      "notAuthenticated": "Nicht authentifiziert",
+      "incorrectPassword": "Falsches Passwort",
+      "requiresRecentLogin": "Melden Sie sich erneut an, um diese Aktion durchzuführen",
+      "passwordChangeError": "Passwort ändern fehlgeschlagen",
+      "passwordChangeSuccess": "Passwort erfolgreich geändert",
+      "dataManagement": "Datenverwaltung",
+      "exportData": "Ihre Daten exportieren",
+      "exportDataDescription": "Laden Sie alle Ihre Daten einschließlich Transkriptionen und Einstellungen herunter",
+      "downloadData": "Daten herunterladen",
+      "exportComingSoon": "Datenexport-Funktion bald verfügbar",
+      "dangerZone": "Gefahrenzone",
+      "deleteAccountWarning": "Sobald Sie Ihr Konto löschen, gibt es kein Zurück mehr. Alle Ihre Daten werden dauerhaft gelöscht.",
+      "deleteAccount": "Konto löschen",
+      "deleteConfirmTitle": "Sind Sie absolut sicher?",
+      "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Dies wird Ihr Konto und alle zugehörigen Daten dauerhaft löschen.",
+      "enterPasswordToConfirm": "Geben Sie Ihr Passwort zur Bestätigung ein",
+      "confirmDelete": "Ja, mein Konto löschen",
+      "deletingAccount": "Löschen...",
+      "deleteAccountError": "Löschen des Kontos fehlgeschlagen",
+      "cancel": "Abbrechen"
+    },
+    "subscriptionPage": {
+      "title": "Abonnement & Abrechnung",
+      "description": "Verwalten Sie Ihr Abonnement und Rechnungsdetails.",
+      "comingSoon": "Abonnementverwaltung bald verfügbar",
+      "comingSoonDescription": "Wir arbeiten daran, Ihnen flexible Abonnements mit erweiterten Funktionen zu bringen. Bleiben Sie dran!",
+      "availablePlans": "Verfügbare Pläne",
+      "currentPlan": "Aktueller Plan",
+      "upgrade": "Upgraden",
+      "needMore": "Mehr benötigt?",
+      "enterpriseDescription": "Für große Teams und Organisationen mit benutzerdefinierten Anforderungen.",
+      "contactSales": "Vertrieb kontaktieren"
+    }
   },
   "languages": {
     "en": "English",
@@ -452,10 +640,10 @@
       "titleHighlight": "Klarheit zu verwandeln.",
       "subtitle": "Neural Summary verwandelt stundenlange Audio in klare, strukturierte Notizen, Entscheidungen und nächste Schritte — in Sekunden.",
       "cta": {
-        "primary": "Starten Sie Ihre kostenlose Testversion",
+        "primary": "Kostenlos für immer starten",
         "secondary": "So funktioniert's"
       },
-      "guarantee": "Dauert weniger als 2 Minuten • Keine Kreditkarte • Sofortige Einrichtung",
+      "guarantee": "Immer kostenloser Plan verfügbar • Keine Kreditkarte erforderlich • Dauert 2 Minuten",
       "features": {
         "saveTime": "Sparen Sie 10+ Stunden/Woche",
         "accuracy": "99,5% Genauigkeit",
@@ -527,19 +715,19 @@
       }
     },
     "howItWorks": {
-      "title": "3 einfache Schritte zu perfekten Transkriptionen",
+      "title": "So funktioniert's",
       "subtitle": "Beginnen Sie in weniger als 60 Sekunden",
       "step1": {
-        "title": "Überall aufnehmen",
-        "description": "Verwenden Sie Ihr Telefon, Zoom oder jede Aufnahme-App. Wir unterstützen alle wichtigen Audioformate einschließlich M4A, MP3, WAV und mehr."
+        "title": "Audio hochladen oder aufnehmen",
+        "description": "Verwenden Sie Ihr Telefon, Zoom oder jede Aufnahme-App. Wir unterstützen alle wichtigen Audioformate — Meetings, Anrufe, Podcasts oder Interviews."
       },
       "step2": {
-        "title": "KI verarbeitet sofort",
-        "description": "Unsere fortschrittliche KI transkribiert mit 99,5% Genauigkeit und verarbeitet technische Begriffe und mehrere Sprecher perfekt."
+        "title": "Neural Summary verarbeiten lassen",
+        "description": "Unsere KI hört zu, versteht den Kontext und extrahiert Kernpunkte — alles automatisch mit 99,5% Genauigkeit."
       },
       "step3": {
-        "title": "Perfekte Ergebnisse erhalten",
-        "description": "Erhalten Sie eine vollständige Transkription und Executive-Zusammenfassung mit Kernpunkten. Exportieren, teilen oder in Ihren Workflow integrieren."
+        "title": "Sofort strukturierte Ergebnisse erhalten",
+        "description": "Komplett mit Executive-Zusammenfassungen, Highlights und Aktionspunkten. Es ist wie ein Vollzeit-Analyst — ohne Gehaltskosten."
       }
     },
     "security": {
@@ -589,14 +777,14 @@
       "title": "Geschätzt von Profis weltweit",
       "rating": "4,9/5 aus über 2.000 Bewertungen",
       "testimonial1": {
-        "quote": "Dieses Tool hat meinen Meeting-Workflow revolutioniert. Ich kann mich auf das Gespräch konzentrieren, anstatt Notizen zu machen. Die Zusammenfassungen sind unglaublich genau.",
+        "quote": "Dieses Tool hat völlig verändert, wie ich Meetings handle — endlich gehe ich mit Klarheit raus.",
         "author": "Sarah Martinez",
-        "role": "Produktmanagerin"
+        "role": "Leiterin Strategie"
       },
       "testimonial2": {
-        "quote": "Die Genauigkeit ist unglaublich. Es verarbeitet technische Begriffe und mehrere Sprecher perfekt. Spart mir jede Woche Stunden an Transkriptionsarbeit.",
+        "quote": "Ich kann mich auf meine Klienten konzentrieren, nicht aufs Tippen.",
         "author": "Dr. James Liu",
-        "role": "Forschungsdirektor"
+        "role": "Klinischer Forscher"
       },
       "testimonial3": {
         "quote": "Als Journalist ist dieses Tool unbezahlbar. Ich kann natürlich Interviews führen und innerhalb von Minuten perfekte Transkriptionen erhalten. Ein Gamechanger!",
@@ -605,18 +793,65 @@
       }
     },
     "cta": {
-      "title": "Bereit, jede Woche Stunden zu sparen?",
-      "subtitle": "Schließen Sie sich über 10.000 Profis an, die ihren Workflow mit Neural Summary transformiert haben. Starten Sie noch heute Ihre kostenlose Testversion - keine Kreditkarte erforderlich.",
-      "button": "Kostenlose Testversion starten",
+      "title": "Bereit, Ihre Zeit zurückzugewinnen und nie wieder einen Einblick zu verlieren?",
+      "subtitle": "Schließen Sie sich Tausenden von Profis an, die Neural Summary nutzen, um smarter zu arbeiten, besser zu kommunizieren und schneller zu entscheiden.",
+      "button": "Starten Sie Ihre kostenlose Testversion",
       "benefits": {
-        "free": "3 kostenlose Transkriptionen",
-        "noCard": "Keine Kreditkarte",
+        "free": "Keine Kreditkarte",
+        "noCard": "Sofortiger Zugang",
         "cancel": "Jederzeit kündbar"
       }
     },
+    "pricingTeaser": {
+      "title": "Einfache, transparente Preise",
+      "subtitle": "Starten Sie kostenlos, upgraden Sie wenn Sie bereit sind. Keine versteckten Gebühren, keine Überraschungen.",
+      "free": {
+        "name": "Kostenlos",
+        "price": "$0",
+        "description": "Perfekt zum Ausprobieren",
+        "features": {
+          "transcriptions": "3 Transkriptionen/Monat",
+          "duration": "Max 30 Min. pro Datei",
+          "summary": "Basiszusammenfassung"
+        },
+        "cta": "Loslegen"
+      },
+      "professional": {
+        "name": "Professionell",
+        "price": "$29",
+        "description": "Für regelmäßige Nutzer",
+        "badge": "Am beliebtesten",
+        "features": {
+          "transcriptions": "Unbegrenzte Transkriptionen",
+          "hours": "60 Stunden/Monat inklusive",
+          "analyses": "Alle 6 Analysetypen",
+          "fileSize": "Max 3GB Dateigröße",
+          "priority": "Prioritätsverarbeitung"
+        },
+        "cta": "Kostenlose Testversion starten"
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "price": "$1,50",
+        "description": "Pro Stunde Audio",
+        "features": {
+          "credits": "Guthaben verfällt nie",
+          "analyses": "Alle 6 Analysetypen",
+          "occasional": "Perfekt für gelegentliche Nutzung"
+        },
+        "cta": "Guthaben kaufen"
+      },
+      "viewFullPricing": "Vollständige Preisdetails anzeigen"
+    },
     "nav": {
       "login": "Anmelden",
-      "getStarted": "Loslegen"
+      "getStarted": "Loslegen",
+      "dashboard": "Zum Dashboard",
+      "menu": "Menü",
+      "language": "Sprache",
+      "features": "Funktionen",
+      "pricing": "Preise",
+      "faq": "FAQ"
     },
     "footer": {
       "product": {
@@ -1018,15 +1253,27 @@
     "expiresOn": "Läuft ab",
     "passwordProtected": "Passwortgeschützt",
     "scanQR": "QR-Code scannen zum Teilen",
+    "showQRCode": "QR-Code anzeigen",
     "confirmRevoke": "Sind Sie sicher, dass Sie diesen Freigabelink widerrufen möchten? Personen mit dem Link können nicht mehr auf dieses Transkript zugreifen."
   },
   "shared": {
     "title": "Geteiltes Transkript",
+    "loading": "Transkript laden...",
     "loadingTranscript": "Transkript wird geladen...",
+    "passwordRequired": "Passwort erforderlich",
+    "passwordDescription": "Dieses Transkript ist passwortgeschützt. Geben Sie das Passwort ein, um es anzuzeigen.",
     "enterPassword": "Passwort eingeben",
-    "passwordRequired": "Dieses Transkript ist passwortgeschützt.",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen",
     "password": "Passwort",
     "submit": "Absenden",
+    "error": {
+      "title": "Zugriffsfehler",
+      "invalidLink": "Dieser Freigabelink ist ungültig oder abgelaufen.",
+      "notFound": "Transkript nicht gefunden.",
+      "generic": "Beim Laden des Transkripts ist ein Fehler aufgetreten.",
+      "backToHome": "Zurück zur Startseite"
+    },
     "invalidPassword": "Ungültiges Passwort",
     "transcriptNotFound": "Transkript nicht gefunden",
     "transcriptExpired": "Dieser Freigabelink ist abgelaufen",
