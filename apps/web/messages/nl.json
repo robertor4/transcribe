@@ -854,9 +854,51 @@
         "cancel": "Altijd opzegbaar"
       }
     },
+    "pricingTeaser": {
+      "title": "Eenvoudige, transparante prijzen",
+      "subtitle": "Begin gratis, upgrade wanneer je klaar bent. Geen verborgen kosten, geen verrassingen.",
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "description": "Perfect om uit te proberen",
+        "features": {
+          "transcriptions": "3 transcripties/maand",
+          "duration": "Max 30 min per bestand",
+          "summary": "Basissamenvatting"
+        },
+        "cta": "Aan de slag"
+      },
+      "professional": {
+        "name": "Professioneel",
+        "price": "$29",
+        "description": "Voor regelmatige gebruikers",
+        "badge": "Meest populair",
+        "features": {
+          "transcriptions": "Onbeperkte transcripties",
+          "hours": "60 uur/maand inbegrepen",
+          "analyses": "Alle 6 analysetypes",
+          "fileSize": "Max 3GB bestandsgrootte",
+          "priority": "Prioriteitsverwerking"
+        },
+        "cta": "Start gratis proef"
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "price": "$1,50",
+        "description": "Per uur audio",
+        "features": {
+          "credits": "Tegoed vervalt nooit",
+          "analyses": "Alle 6 analysetypes",
+          "occasional": "Perfect voor incidenteel gebruik"
+        },
+        "cta": "Koop tegoed"
+      },
+      "viewFullPricing": "Bekijk volledige prijsdetails"
+    },
     "nav": {
       "login": "Inloggen",
       "getStarted": "Aan de slag",
+      "dashboard": "Naar Dashboard",
       "menu": "Menu",
       "language": "Taal",
       "features": "Kenmerken",

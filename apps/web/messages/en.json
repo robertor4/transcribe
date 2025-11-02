@@ -820,9 +820,51 @@
         "cancel": "Cancel anytime"
       }
     },
+    "pricingTeaser": {
+      "title": "Simple, transparent pricing",
+      "subtitle": "Start free, upgrade when you're ready. No hidden fees, no surprises.",
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "description": "Perfect for trying out",
+        "features": {
+          "transcriptions": "3 transcriptions/month",
+          "duration": "30 min max per file",
+          "summary": "Basic summary"
+        },
+        "cta": "Get Started"
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$29",
+        "description": "For regular users",
+        "badge": "Most Popular",
+        "features": {
+          "transcriptions": "Unlimited transcriptions",
+          "hours": "60 hours/month included",
+          "analyses": "All 6 analysis types",
+          "fileSize": "3GB max file size",
+          "priority": "Priority processing"
+        },
+        "cta": "Start Free Trial"
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "price": "$1.50",
+        "description": "Per hour of audio",
+        "features": {
+          "credits": "Credits never expire",
+          "analyses": "All 6 analysis types",
+          "occasional": "Perfect for occasional use"
+        },
+        "cta": "Buy Credits"
+      },
+      "viewFullPricing": "View full pricing details"
+    },
     "nav": {
       "login": "Log in",
       "getStarted": "Get Started",
+      "dashboard": "Go to Dashboard",
       "menu": "Menu",
       "language": "Language",
       "features": "Features",

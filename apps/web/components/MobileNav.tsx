@@ -76,7 +76,7 @@ export function MobileNav({ locale }: MobileNavProps) {
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-lg transition-colors"
                 >
-                  Go to Dashboard
+                  {t('nav.dashboard')}
                 </Link>
               ) : (
                 <>

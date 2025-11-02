@@ -60,7 +60,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
                 aria-label="Go to Dashboard"
               >
-                Go to Dashboard
+                {t('landing.nav.dashboard')}
               </Link>
             ) : (
               <>
