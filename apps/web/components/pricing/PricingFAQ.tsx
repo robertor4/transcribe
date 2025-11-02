@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { getPricingForLocale, formatPriceLocale, OVERAGE_RATE_USD } from '@transcribe/shared';
+import { getPricingForLocale, formatPriceLocale, OVERAGE_RATE_USD, getCurrencyForLocale, convertFromUsd } from '@transcribe/shared';
 
 export function PricingFAQ() {
   const t = useTranslations('pricing.faq');
@@ -14,9 +14,11 @@ export function PricingFAQ() {
 
   // Calculate locale-specific prices
   const pricing = getPricingForLocale(locale);
-  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, 0);
-  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, 2);
-  const overageRate = formatPriceLocale(OVERAGE_RATE_USD * pricing.currencyMultiplier, locale, 2);
+  const currency = getCurrencyForLocale(locale);
+  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
+  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
+  const overageRateConverted = convertFromUsd(OVERAGE_RATE_USD, currency.code);
+  const overageRate = formatPriceLocale(overageRateConverted, locale, { decimals: 2 });
 
   const faqs = [
     {

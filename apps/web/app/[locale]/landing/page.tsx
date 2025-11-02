@@ -29,9 +29,9 @@ export default function LandingPage() {
 
   // Calculate locale-specific prices for pricing teaser
   const pricing = getPricingForLocale(locale);
-  const freePrice = formatPriceLocale(0, locale, 0);
-  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, 0);
-  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, 2);
+  const freePrice = formatPriceLocale(0, locale, { decimals: 0 });
+  const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
+  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
 
   return (
     <>
