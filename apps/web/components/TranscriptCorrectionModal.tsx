@@ -31,6 +31,7 @@ export default function TranscriptCorrectionModal({
   const [showSuccess, setShowSuccess] = useState(false);
   const [applyResult, setApplyResult] = useState<CorrectionApplyResponse | null>(null);
 
+  // Generate preview with corrections
   const handlePreview = async () => {
     if (!instructions.trim()) {
       setError('Please enter correction instructions');
@@ -77,7 +78,6 @@ export default function TranscriptCorrectionModal({
 
     setError(null);
     setIsApplying(true);
-    setShowConfirmation(false);
 
     try {
       const response = await transcriptionApi.correctTranscript(
@@ -89,7 +89,8 @@ export default function TranscriptCorrectionModal({
       if (response.success) {
         const applyResponse = response.data as CorrectionApplyResponse;
 
-        // Show success screen with re-run button
+        // Hide confirmation and show success screen
+        setShowConfirmation(false);
         setApplyResult(applyResponse);
         setShowSuccess(true);
         setPreview(null);
@@ -180,32 +181,32 @@ export default function TranscriptCorrectionModal({
           {showSuccess && applyResult ? (
             <div className="space-y-6">
               {/* Success Banner */}
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-900/50 p-6 text-center">
-                <div className="mx-auto w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6 text-green-700 dark:text-green-400" />
+              <div className="text-center py-6">
+                <div className="mx-auto w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   ✅ Transcript Corrected Successfully!
                 </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {applyResult.deletedAnalysisIds.length} custom analyses deleted •{' '}
                   {applyResult.clearedTranslations.length} translations cleared
                 </p>
               </div>
 
               {/* Re-run Analyses Section */}
-              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-900/50 p-6">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   🔄 Next Step: Re-run Core Analyses
                 </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Update your Summary, Action Items, and Communication analyses based on the corrected transcript.
                 </p>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleRegenerateAnalyses}
                     disabled={isRegenerating}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors disabled:opacity-50 font-medium"
                   >
                     {isRegenerating && <Loader2 className="h-4 w-4 animate-spin" />}
                     {isRegenerating ? 'Regenerating...' : 'Re-run Analyses Now'}
@@ -213,21 +214,21 @@ export default function TranscriptCorrectionModal({
                   <button
                     onClick={handleSkipRegenerate}
                     disabled={isRegenerating}
-                    className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/20"
+                    className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     Skip for Now
                   </button>
                 </div>
-                <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">
+                <p className="mt-3 text-xs text-gray-500 dark:text-gray-500">
                   You can manually regenerate translations and custom analyses later if needed.
                 </p>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 p-4 flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-red-700 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-900 dark:text-red-300">{error}</p>
+                <div className="border-l-4 border-red-500 bg-red-50/30 dark:bg-red-900/10 pl-4 py-3 flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-gray-900 dark:text-gray-100">{error}</p>
                 </div>
               )}
             </div>
@@ -242,9 +243,9 @@ export default function TranscriptCorrectionModal({
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Example: Change all instances of 'John' to 'Jon' and fix 'Acme' to 'ACME Corporation'"
-              className="w-full rounded-lg border border-gray-400 dark:border-gray-600 px-4 py-3 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 focus:outline-none transition-colors"
+              className="w-full rounded-lg border border-gray-400 dark:border-gray-600 px-4 py-3 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               rows={4}
-              disabled={isLoadingPreview || isApplying}
+              disabled={isLoadingPreview || isApplying || !!preview}
             />
             <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
               {instructions.length}/2000 characters
@@ -253,9 +254,9 @@ export default function TranscriptCorrectionModal({
 
           {/* Example Prompts */}
           {!preview && (
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-900/50 p-4">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                Example corrections:
+            <div className="border-l-4 border-blue-400 bg-blue-50/30 dark:bg-blue-900/10 pl-4 py-3">
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                EXAMPLE CORRECTIONS
               </p>
               <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li>• "Change all instances of 'John' to 'Jon'"</li>
@@ -265,45 +266,45 @@ export default function TranscriptCorrectionModal({
             </div>
           )}
 
+          {/* Loading State for Processing */}
+          {isLoadingPreview && !preview && (
+            <div className="text-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-[#cc3399] mx-auto mb-4" />
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                Processing Corrections...
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Applying your corrections to the transcript. This may take a few moments.
+              </p>
+            </div>
+          )}
+
           {/* Error Message */}
           {error && (
-            <div className="rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 p-4 flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-700 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-900 dark:text-red-300">{error}</p>
+            <div className="border-l-4 border-red-500 bg-red-50/30 dark:bg-red-900/10 pl-4 py-3 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-gray-900 dark:text-gray-100">{error}</p>
             </div>
           )}
 
           {/* Preview */}
           {preview && !isLoadingPreview && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Preview Changes
-              </h3>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                  Preview Changes
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    {preview.summary.affectedSegments} {preview.summary.affectedSegments === 1 ? 'segment' : 'segments'}
+                  </span>{' '}
+                  will be modified with {preview.summary.totalChanges} {preview.summary.totalChanges === 1 ? 'change' : 'changes'}
+                </p>
+              </div>
               <DiffViewer diff={preview.diff} summary={preview.summary} />
             </div>
           )}
 
-          {/* Confirmation Warning */}
-          {showConfirmation && (
-            <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-900/50 p-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-700 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                    Warning: This action will:
-                  </p>
-                  <ul className="text-sm text-gray-800 dark:text-gray-200 space-y-1">
-                    <li>• Delete all existing translations</li>
-                    <li>• Delete all custom (on-demand) analyses</li>
-                    <li>• Update the transcript with corrected text</li>
-                  </ul>
-                  <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-                    You can manually re-translate and regenerate analyses after applying corrections.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
             </>
           )}
         </div>
@@ -322,11 +323,11 @@ export default function TranscriptCorrectionModal({
           <div className="flex items-center gap-3">
             {preview && !showConfirmation && (
               <button
-                onClick={handlePreview}
+                onClick={() => setPreview(null)}
                 className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400/20"
                 disabled={isLoadingPreview || isApplying}
               >
-                Preview Again
+                Back to Instructions
               </button>
             )}
 
@@ -337,7 +338,7 @@ export default function TranscriptCorrectionModal({
                 disabled={isLoadingPreview || !instructions.trim()}
               >
                 {isLoadingPreview && <Loader2 className="h-4 w-4 animate-spin" />}
-                Preview Changes
+                {isLoadingPreview ? 'Generating Preview...' : 'Preview Changes'}
               </button>
             )}
 
@@ -349,18 +350,68 @@ export default function TranscriptCorrectionModal({
                 Apply Changes
               </button>
             )}
-
-            {showConfirmation && (
-              <button
-                onClick={handleApply}
-                className="rounded-lg bg-red-600 px-6 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                disabled={isApplying}
-              >
-                {isApplying && <Loader2 className="h-4 w-4 animate-spin" />}
-                Confirm & Apply
-              </button>
-            )}
           </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal Overlay */}
+        {showConfirmation && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/60 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 p-6 shadow-2xl">
+              {/* Warning Icon */}
+              <div className="mx-auto w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mb-4">
+                <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-500" />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-lg font-semibold text-center text-gray-900 dark:text-gray-100 mb-4">
+                Confirm Transcript Correction
+              </h3>
+
+              {/* Warning Message */}
+              <div className="mb-6">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                  This action will permanently:
+                </p>
+                <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+                  <li>• Delete all existing translations</li>
+                  <li>• Delete all custom (on-demand) analyses</li>
+                  <li>• Update the transcript with corrected text</li>
+                </ul>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+                  You can manually regenerate these after applying corrections.
+                </p>
+              </div>
+
+              {/* Loading State */}
+              {isApplying && (
+                <div className="mb-4 flex items-center justify-center gap-3 text-[#cc3399]">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Applying corrections...
+                  </p>
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowConfirmation(false)}
+                  disabled={isApplying}
+                  className="flex-1 px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleApply}
+                  disabled={isApplying}
+                  className="flex-1 px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  {isApplying && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Confirm & Apply
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

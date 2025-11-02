@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { SpeakerSegment } from '@transcribe/shared';
-import { User, Clock, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { User, Clock, ChevronDown, ChevronUp, Pencil, Info } from 'lucide-react';
 import TranscriptCorrectionModal from './TranscriptCorrectionModal';
 
 interface TranscriptWithSpeakersProps {
@@ -121,13 +121,27 @@ export default function TranscriptWithSpeakers({
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Transcript with Speakers</h3>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsCorrectionModalOpen(true)}
-            className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 rounded px-2 py-1"
-          >
-            <Pencil className="w-4 h-4" />
-            Fix
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setIsCorrectionModalOpen(true)}
+              className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 rounded px-2 py-1"
+            >
+              <Pencil className="w-4 h-4" />
+              Fix
+            </button>
+
+            {/* Info Icon with Tooltip */}
+            <div className="group relative">
+              <Info className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
+
+              {/* Tooltip */}
+              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg">
+                Correct speaker names, typos, and mistakes using AI
+                <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></span>
+              </span>
+            </div>
+          </div>
+
           <button
             onClick={() => setShowTimestamps(!showTimestamps)}
             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600/20 rounded px-2 py-1"

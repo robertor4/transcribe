@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { TranscriptDiff } from '@transcribe/shared';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import * as Diff from 'diff';
 
 interface DiffViewerProps {
   diff: TranscriptDiff[];
@@ -10,6 +11,59 @@ interface DiffViewerProps {
     totalChanges: number;
     affectedSegments: number;
   };
+}
+
+/**
+ * Renders word-level diff highlighting between old and new text
+ */
+function renderWordDiff(oldText: string, newText: string, type: 'removed' | 'added') {
+  const changes = Diff.diffWords(oldText, newText);
+
+  return (
+    <div className="text-sm leading-relaxed">
+      {changes.map((part, index) => {
+        if (type === 'removed') {
+          // For removed section, show removed (red) and unchanged (normal)
+          if (part.removed) {
+            return (
+              <span
+                key={index}
+                className="bg-red-200 dark:bg-red-900/50 text-red-900 dark:text-red-200 px-0.5 rounded"
+              >
+                {part.value}
+              </span>
+            );
+          } else if (!part.added) {
+            return (
+              <span key={index} className="text-gray-700 dark:text-gray-300">
+                {part.value}
+              </span>
+            );
+          }
+          return null;
+        } else {
+          // For added section, show added (green) and unchanged (normal)
+          if (part.added) {
+            return (
+              <span
+                key={index}
+                className="bg-green-200 dark:bg-green-900/50 text-green-900 dark:text-green-200 px-0.5 rounded"
+              >
+                {part.value}
+              </span>
+            );
+          } else if (!part.removed) {
+            return (
+              <span key={index} className="text-gray-700 dark:text-gray-300">
+                {part.value}
+              </span>
+            );
+          }
+          return null;
+        }
+      })}
+    </div>
+  );
 }
 
 export default function DiffViewer({ diff, summary }: DiffViewerProps) {
@@ -103,28 +157,24 @@ export default function DiffViewer({ diff, summary }: DiffViewerProps) {
               {/* Content */}
               {isExpanded && (
                 <div className="border-t border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3 space-y-2">
-                  {/* Old Text (Removed) */}
+                  {/* Old Text (Removed) - with word-level highlighting */}
                   <div className="rounded bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 p-3">
-                    <div className="mb-1 flex items-center gap-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <span className="text-xs font-semibold text-red-800 dark:text-red-300">
                         − Removed
                       </span>
                     </div>
-                    <p className="text-sm text-red-900 dark:text-red-300 line-through">
-                      {change.oldText}
-                    </p>
+                    {renderWordDiff(change.oldText, change.newText, 'removed')}
                   </div>
 
-                  {/* New Text (Added) */}
+                  {/* New Text (Added) - with word-level highlighting */}
                   <div className="rounded bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-900/50 p-3">
-                    <div className="mb-1 flex items-center gap-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <span className="text-xs font-semibold text-green-800 dark:text-green-300">
                         + Added
                       </span>
                     </div>
-                    <p className="text-sm text-green-900 dark:text-green-300">
-                      {change.newText}
-                    </p>
+                    {renderWordDiff(change.oldText, change.newText, 'added')}
                   </div>
                 </div>
               )}

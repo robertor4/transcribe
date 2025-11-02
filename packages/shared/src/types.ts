@@ -172,6 +172,7 @@ export interface Transcription {
   analyses?: AnalysisResults; // All analysis results - DEPRECATED, use coreAnalyses
   // NEW: Core analyses generated automatically
   coreAnalyses?: CoreAnalyses;
+  coreAnalysesOutdated?: boolean; // True when transcript corrected but analyses not regenerated
   // NEW: References to on-demand analyses
   generatedAnalysisIds?: string[]; // Array of GeneratedAnalysis IDs
   error?: string;
@@ -667,4 +668,38 @@ export interface CorrectionApplyResponse {
   transcription: Transcription; // Updated transcript object
   deletedAnalysisIds: string[]; // IDs of deleted custom analyses
   clearedTranslations: string[]; // Language codes that were cleared (e.g., ['es', 'fr'])
+}
+
+// AI-First Intelligent Routing Types
+export interface SimpleReplacement {
+  find: string;
+  replace: string;
+  caseSensitive: boolean;
+  estimatedMatches: number;
+  confidence: 'high' | 'medium' | 'low';
+}
+
+export interface ComplexCorrection {
+  description: string;
+  affectedSegmentIndices: number[];
+  speakerTag?: string;
+  reason: string;
+}
+
+export interface RoutingPlan {
+  simpleReplacements: SimpleReplacement[];
+  complexCorrections: ComplexCorrection[];
+  estimatedTime: {
+    regex: string;
+    ai: string;
+    total: string;
+  };
+  summary: {
+    totalCorrections: number;
+    simpleCount: number;
+    complexCount: number;
+    totalSegmentsAffected: number;
+    totalSegments: number;
+    percentageAffected: string;
+  };
 }

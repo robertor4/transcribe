@@ -38,6 +38,11 @@ import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
 import { EmailService } from '../email/email.service';
 import { UsageService } from '../usage/usage.service';
+import {
+  TranscriptCorrectionRouterService,
+  RoutingPlan,
+  ComplexCorrection,
+} from './transcript-correction-router.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -58,6 +63,7 @@ export class TranscriptionService {
     private emailService: EmailService,
     @Inject(forwardRef(() => UsageService))
     private usageService: UsageService,
+    private correctionRouter: TranscriptCorrectionRouterService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
@@ -2056,7 +2062,7 @@ CRITICAL INSTRUCTIONS:
   }
 
   /**
-   * Correct transcript using AI with natural language instructions
+   * Correct transcript using AI-First intelligent routing
    * Supports preview mode and apply mode
    */
   async correctTranscriptWithAI(
@@ -2064,6 +2070,7 @@ CRITICAL INSTRUCTIONS:
     transcriptionId: string,
     instructions: string,
     previewOnly: boolean = true,
+    routingPlan?: RoutingPlan, // Optional: can be provided to skip routing phase
   ): Promise<any> {
     this.logger.log(
       `Correcting transcript ${transcriptionId} for user ${userId}, previewOnly: ${previewOnly}`,
@@ -2085,95 +2092,230 @@ CRITICAL INSTRUCTIONS:
       );
     }
 
-    // Use transcriptWithSpeakers if available, otherwise fallback to transcriptText
-    const originalTranscript =
-      transcription.transcriptWithSpeakers || transcription.transcriptText;
+    const segments = transcription.speakerSegments || [];
 
-    // Call OpenAI with correction prompt
-    this.logger.log('Calling OpenAI for transcript correction...');
-    const completion = await this.openai.chat.completions.create({
-      model: 'gpt-4o-mini', // Use mini for cost efficiency
-      messages: [
-        {
-          role: 'system',
-          content: prompts.CORRECTION_SYSTEM_PROMPT,
-        },
-        {
-          role: 'user',
-          content: prompts.CORRECTION_USER_PROMPT(
-            originalTranscript,
-            instructions,
-          ),
-        },
-      ],
-      temperature: 0.3, // Low temperature for consistent corrections
-      max_tokens: 16000, // Sufficient for most transcripts
-    });
-
-    const correctedTranscript = completion.choices[0]?.message?.content?.trim();
-    if (!correctedTranscript) {
-      throw new BadRequestException('Failed to generate corrected transcript');
+    if (segments.length === 0) {
+      throw new BadRequestException('No speaker segments available for correction');
     }
 
-    this.logger.log('Transcript correction completed');
+    // Phase 1: Routing analysis (if not provided)
+    const plan =
+      routingPlan ||
+      (await this.correctionRouter.analyzeAndRoute(
+        segments,
+        instructions,
+        transcription.detectedLanguage || 'en',
+        transcription.duration,
+      ));
 
-    // Parse corrected transcript into segments (if original had speakers)
-    const originalSegments = transcription.speakerSegments || [];
-    const correctedSegments =
-      originalSegments.length > 0
-        ? this.applyCorrectionsToSegments(originalSegments, correctedTranscript)
-        : [];
+    // Phase 3: Parallel execution
+    const [regexResult, aiResult] = await Promise.all([
+      // Path A: Simple replacements (instant)
+      Promise.resolve(
+        this.correctionRouter.applySimpleReplacements(segments, plan.simpleReplacements),
+      ),
 
-    // If preview only, generate diff and return
+      // Path B: Complex corrections (AI-powered)
+      plan.complexCorrections.length > 0
+        ? this.applyComplexCorrections(segments, plan.complexCorrections, instructions)
+        : Promise.resolve(new Map<number, string>()),
+    ]);
+
+    // Phase 4: Merge results
+    const mergedSegments = this.correctionRouter.mergeResults(
+      segments,
+      regexResult.correctedSegments,
+      aiResult,
+    );
+
+    // Generate diff
+    const diff = this.generateDiff(segments, mergedSegments);
+
     if (previewOnly) {
-      const diff =
-        originalSegments.length > 0
-          ? this.generateDiff(originalSegments, correctedSegments)
-          : [];
-
       return {
-        original: originalTranscript,
-        corrected: correctedTranscript,
+        original: this.reconstructTranscriptFromSegments(segments),
+        corrected: this.reconstructTranscriptFromSegments(mergedSegments),
         diff,
         summary: {
           totalChanges: diff.length,
-          affectedSegments: diff.length,
+          affectedSegments: new Set([...diff.map((d) => d.segmentIndex)]).size,
+          method: 'intelligent-routing',
+          routingPlan: plan,
         },
       };
     }
 
     // Apply mode: Save changes and clean up
+    return this.applyCorrection(transcriptionId, userId, transcription, mergedSegments);
+  }
+
+  /**
+   * Apply complex corrections using AI on affected segments only
+   */
+  private async applyComplexCorrections(
+    allSegments: SpeakerSegment[],
+    complexCorrections: ComplexCorrection[],
+    originalInstructions: string,
+  ): Promise<Map<number, string>> {
+    this.logger.log(`Applying ${complexCorrections.length} complex corrections with AI...`);
+
+    // Flatten all affected segment indices
+    const affectedIndices = [
+      ...new Set(complexCorrections.flatMap((c) => c.affectedSegmentIndices)),
+    ].sort((a, b) => a - b);
+
+    if (affectedIndices.length === 0) {
+      return new Map();
+    }
+
+    // Extract affected segments with context (previous/next for continuity)
+    const segmentsWithContext = affectedIndices.map((index) => {
+      const prev = index > 0 ? allSegments[index - 1] : null;
+      const current = allSegments[index];
+      const next = index < allSegments.length - 1 ? allSegments[index + 1] : null;
+
+      return {
+        index,
+        context: {
+          previous: prev ? `${prev.speakerTag}: ${prev.text}` : null,
+          current: `${current.speakerTag}: ${current.text}`,
+          next: next ? `${next.speakerTag}: ${next.text}` : null,
+        },
+      };
+    });
+
+    // Build focused correction prompt
+    const correctionDetails = complexCorrections
+      .map((c) => `- ${c.description} (Reason: ${c.reason})`)
+      .join('\n');
+
+    const segmentsList = segmentsWithContext
+      .map(
+        (s) => `[${s.index}]
+${s.context.previous ? `  Context (before): ${s.context.previous}` : ''}
+  Target: ${s.context.current}
+${s.context.next ? `  Context (after): ${s.context.next}` : ''}`,
+      )
+      .join('\n\n');
+
+    const prompt = `You are correcting specific segments of a transcript based on user instructions.
+
+ORIGINAL USER REQUEST:
+${originalInstructions}
+
+CORRECTIONS TO APPLY:
+${correctionDetails}
+
+SEGMENTS TO CORRECT (with context):
+${segmentsList}
+
+TASK: Return ONLY the corrected text for each target segment, maintaining the exact format:
+
+[index] Speaker Tag: corrected text
+
+IMPORTANT:
+- Return ALL segments in the same order
+- Keep speaker tags unchanged
+- Only modify the spoken text based on user instructions
+- Maintain natural flow and context
+- Do not add or remove segments`;
+
+    try {
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a transcript correction assistant. Return only the corrected segments in the exact format requested.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.3,
+        max_tokens: Math.min(affectedIndices.length * 250, 16000),
+      });
+
+      const responseText = completion.choices[0]?.message?.content?.trim();
+      if (!responseText) {
+        throw new Error('Empty response from AI correction');
+      }
+
+      // Parse AI response
+      const correctedMap = new Map<number, string>();
+      const lines = responseText.split('\n').filter((line) => line.trim());
+
+      for (const line of lines) {
+        const match = line.match(/^\[(\d+)\]\s+(.+?):\s+(.+)$/);
+        if (match) {
+          const index = parseInt(match[1]);
+          const correctedText = match[3].trim();
+          correctedMap.set(index, correctedText);
+        }
+      }
+
+      this.logger.log(`Complex corrections complete: ${correctedMap.size} segments corrected`);
+
+      return correctedMap;
+    } catch (error) {
+      this.logger.error('Complex correction failed:', error);
+      throw new Error('Failed to apply complex corrections');
+    }
+  }
+
+  /**
+   * Reconstruct full transcript from speaker segments
+   */
+  private reconstructTranscriptFromSegments(segments: SpeakerSegment[]): string {
+    let currentSpeaker = '';
+    const lines: string[] = [];
+
+    for (const segment of segments) {
+      if (segment.speakerTag !== currentSpeaker) {
+        currentSpeaker = segment.speakerTag;
+        lines.push(`${segment.speakerTag}: ${segment.text}`);
+      } else {
+        lines.push(segment.text);
+      }
+    }
+
+    return lines.join('\n\n');
+  }
+
+  /**
+   * Apply correction to Firestore
+   */
+  private async applyCorrection(
+    transcriptionId: string,
+    userId: string,
+    transcription: any,
+    correctedSegments: SpeakerSegment[],
+  ): Promise<any> {
     this.logger.log('Applying transcript corrections...');
 
+    const correctedTranscript = this.reconstructTranscriptFromSegments(correctedSegments);
+
     // Get existing translations for tracking what was cleared
-    const existingTranslations = Object.keys(
-      transcription.translations || {},
-    );
+    const existingTranslations = Object.keys(transcription.translations || {});
 
     // Delete custom analyses
     const deletedAnalysisIds =
-      await this.firebaseService.deleteGeneratedAnalysesByTranscription(
-        transcriptionId,
-        userId,
-      );
+      await this.firebaseService.deleteGeneratedAnalysesByTranscription(transcriptionId, userId);
 
-    // Update transcription with corrected text
-    const updates: any = {
+    // Update Firestore
+    await this.firebaseService.updateTranscription(transcriptionId, {
       transcriptText: correctedTranscript,
       transcriptWithSpeakers: correctedTranscript,
-      translations: {}, // Clear all translations
-      generatedAnalysisIds: [], // Clear custom analysis references
+      speakerSegments: correctedSegments,
+      translations: {},
+      generatedAnalysisIds: [],
+      coreAnalysesOutdated: true, // Mark core analyses as stale
       updatedAt: new Date(),
-    };
+    });
 
-    // Only update speakerSegments if we have them
-    if (correctedSegments.length > 0) {
-      updates.speakerSegments = correctedSegments;
-    }
-
-    await this.firebaseService.updateTranscription(transcriptionId, updates);
-
-    // Fetch updated transcription for response
+    // Fetch updated transcription
     const updatedTranscription = await this.firebaseService.getTranscription(
       userId,
       transcriptionId,
@@ -2313,6 +2455,7 @@ CRITICAL INSTRUCTIONS:
     // Update transcription with new core analyses
     await this.firebaseService.updateTranscription(transcriptionId, {
       coreAnalyses,
+      coreAnalysesOutdated: false, // Clear stale flag
       updatedAt: new Date(),
     });
 

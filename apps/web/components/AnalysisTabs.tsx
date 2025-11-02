@@ -27,6 +27,7 @@ import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
 import { TranscriptionDetails } from './TranscriptionDetails';
 import { MoreAnalysesTab } from './MoreAnalysesTab';
+import OutdatedAnalysisWarning from './OutdatedAnalysisWarning';
 import { transcriptionApi } from '@/lib/api';
 
 interface AnalysisTabsProps {
@@ -674,6 +675,23 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                     </button>
               </div>
 
+              {/* Outdated Analysis Warning - Show below action buttons for affected tabs */}
+              {transcription?.coreAnalysesOutdated && transcriptionId && (
+                (info.key === 'summary' || info.key === 'actionItems' || info.key === 'communicationStyles') && (
+                  <div className="mb-6">
+                    <OutdatedAnalysisWarning
+                      analysisType={
+                        info.key === 'summary' ? 'Summary' :
+                        info.key === 'actionItems' ? 'Action Items' :
+                        'Communication Styles'
+                      }
+                      transcriptionId={transcriptionId}
+                      onRegenerate={() => onTranscriptionUpdate?.()}
+                    />
+                  </div>
+                )
+              )}
+
               {/* Analysis Content */}
               <div>
                 {info.key === 'transcript' ? (
@@ -718,6 +736,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                       No transcription data available
                     </div>
                   )
+                ) : info.key === 'communicationStyles' ? (
+                  <AnalysisContentRenderer content={content || ''} />
                 ) : (
                   <AnalysisContentRenderer content={content || ''} />
                 )}

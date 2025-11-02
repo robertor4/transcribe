@@ -8,6 +8,7 @@ import {
   CorrectTranscriptRequest,
   CorrectionPreview,
   CorrectionApplyResponse,
+  RoutingPlan,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -236,6 +237,15 @@ export const transcriptionApi = {
   },
 
   // Transcript Correction API methods
+  analyzeCorrections: async (
+    id: string,
+    instructions: string,
+  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> => {
+    return api.post(`/transcriptions/${id}/analyze-corrections`, {
+      instructions,
+    });
+  },
+
   correctTranscript: async (
     id: string,
     instructions: string,
