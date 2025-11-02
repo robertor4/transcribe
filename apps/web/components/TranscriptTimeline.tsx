@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X, Pencil, Info } from 'lucide-react';
+import TranscriptCorrectionModal from './TranscriptCorrectionModal';
 
 interface SpeakerSegment {
   speakerTag: string;
@@ -12,15 +13,18 @@ interface SpeakerSegment {
 }
 
 interface TranscriptTimelineProps {
+  transcriptionId: string;
   segments: SpeakerSegment[];
   className?: string;
+  onRefresh?: () => void;
 }
 
-export default function TranscriptTimeline({ segments, className = '' }: TranscriptTimelineProps) {
+export default function TranscriptTimeline({ transcriptionId, segments, className = '', onRefresh }: TranscriptTimelineProps) {
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Set<number>>(new Set());
+  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   const totalDuration = segments.length > 0 ? segments[segments.length - 1].endTime : 0;
@@ -185,9 +189,9 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
 
   return (
     <div className={`bg-white dark:bg-transparent rounded-lg ${className}`}>
-      {/* Search Bar */}
-      <div className="mb-6">
-        <div className="relative">
+      {/* Header with Search and Fix Button */}
+      <div className="mb-6 flex items-center gap-3">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
           <input
             type="text"
@@ -210,6 +214,28 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
               </button>
             </div>
           )}
+        </div>
+
+        {/* Fix Button with Info Icon */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCorrectionModalOpen(true)}
+            className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 text-sm font-medium"
+          >
+            <Pencil className="w-4 h-4" />
+            Fix
+          </button>
+
+          {/* Info Icon with Tooltip */}
+          <div className="group relative">
+            <Info className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
+
+            {/* Tooltip */}
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg">
+              Correct speaker names, typos, and mistakes using AI
+              <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></span>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -374,6 +400,18 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
           );
         })}
       </div>
+
+      {/* Transcript Correction Modal */}
+      <TranscriptCorrectionModal
+        transcriptionId={transcriptionId}
+        isOpen={isCorrectionModalOpen}
+        onClose={() => setIsCorrectionModalOpen(false)}
+        onSuccess={() => {
+          if (onRefresh) {
+            onRefresh();
+          }
+        }}
+      />
     </div>
   );
 }

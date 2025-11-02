@@ -6,6 +6,7 @@ import { Clock, FileAudio, Globe, HardDrive, Users, MessageSquare } from 'lucide
 
 interface TranscriptionDetailsProps {
   transcription: Transcription;
+  onRefresh?: () => void;
 }
 
 export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ transcription }) => {

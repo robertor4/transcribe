@@ -935,6 +935,30 @@ export class FirebaseService implements OnModuleInit {
   }
 
   /**
+   * Delete all generated analyses for a transcription
+   * Returns array of deleted analysis IDs
+   */
+  async deleteGeneratedAnalysesByTranscription(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<string[]> {
+    const snapshot = await this.db
+      .collection('generatedAnalyses')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('userId', '==', userId)
+      .get();
+
+    const deletedIds: string[] = [];
+    const deletePromises = snapshot.docs.map(async (doc) => {
+      deletedIds.push(doc.id);
+      await doc.ref.delete();
+    });
+
+    await Promise.all(deletePromises);
+    return deletedIds;
+  }
+
+  /**
    * Add analysis reference to transcription
    */
   async addAnalysisReference(

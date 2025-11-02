@@ -432,6 +432,20 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
     }
   };
 
+  const handleTranscriptionUpdate = useCallback(async (transcriptionId: string) => {
+    try {
+      const response = await transcriptionApi.get(transcriptionId);
+      if (response.success && response.data) {
+        const updatedTranscription = response.data as Transcription;
+        setTranscriptions(prev =>
+          prev.map(t => t.id === transcriptionId ? updatedTranscription : t)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to refresh transcription:', error);
+    }
+  }, []);
+
   const handleCopy = async (text: string, id: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -852,6 +866,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
                       transcription={transcription}
                       speakerSegments={transcription.speakerSegments}
                       speakers={transcription.speakers}
+                      onTranscriptionUpdate={() => handleTranscriptionUpdate(transcription.id)}
                     />
                   </div>
                 ) : (

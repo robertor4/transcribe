@@ -27,6 +27,7 @@ import TranscriptTimeline from './TranscriptTimeline';
 import { ActionItemsTable } from './ActionItemsTable';
 import { TranscriptionDetails } from './TranscriptionDetails';
 import { MoreAnalysesTab } from './MoreAnalysesTab';
+import OutdatedAnalysisWarning from './OutdatedAnalysisWarning';
 import { transcriptionApi } from '@/lib/api';
 
 interface AnalysisTabsProps {
@@ -37,9 +38,10 @@ interface AnalysisTabsProps {
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
   readOnlyMode?: boolean; // Disable translation API calls for shared/public views
+  onTranscriptionUpdate?: () => void; // Callback to refresh transcription after corrections
 }
 
-export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription, readOnlyMode }) => {
+export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription, readOnlyMode, onTranscriptionUpdate }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses'>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
@@ -673,6 +675,23 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                     </button>
               </div>
 
+              {/* Outdated Analysis Warning - Show below action buttons for affected tabs */}
+              {transcription?.coreAnalysesOutdated && transcriptionId && (
+                (info.key === 'summary' || info.key === 'actionItems' || info.key === 'communicationStyles') && (
+                  <div className="mb-6">
+                    <OutdatedAnalysisWarning
+                      analysisType={
+                        info.key === 'summary' ? 'Summary' :
+                        info.key === 'actionItems' ? 'Action Items' :
+                        'Communication Styles'
+                      }
+                      transcriptionId={transcriptionId}
+                      onRegenerate={() => onTranscriptionUpdate?.()}
+                    />
+                  </div>
+                )
+              )}
+
               {/* Analysis Content */}
               <div>
                 {info.key === 'transcript' ? (
@@ -680,7 +699,11 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                     {/* Show timeline or raw view for original language with speaker segments */}
                     {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 ? (
                       transcriptView === 'timeline' ? (
-                        <TranscriptTimeline segments={speakerSegments} />
+                        <TranscriptTimeline
+                          transcriptionId={transcriptionId!}
+                          segments={speakerSegments}
+                          onRefresh={onTranscriptionUpdate}
+                        />
                       ) : (
                         <div>
                           <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-mono">
@@ -704,12 +727,17 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                 ) : info.key === 'details' ? (
                   // Details tab should never render in read-only mode (filtered out from tabs)
                   transcription && !readOnlyMode ? (
-                    <TranscriptionDetails transcription={transcription} />
+                    <TranscriptionDetails
+                      transcription={transcription}
+                      onRefresh={onTranscriptionUpdate}
+                    />
                   ) : (
                     <div className="text-center text-gray-500 dark:text-gray-400 py-8">
                       No transcription data available
                     </div>
                   )
+                ) : info.key === 'communicationStyles' ? (
+                  <AnalysisContentRenderer content={content || ''} />
                 ) : (
                   <AnalysisContentRenderer content={content || ''} />
                 )}

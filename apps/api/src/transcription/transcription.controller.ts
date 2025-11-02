@@ -24,12 +24,18 @@ import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { UsageService } from '../usage/usage.service';
+import { TranscriptCorrectionRouterService, RoutingPlan } from './transcript-correction-router.service';
 import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { PaginationDto } from './dto/pagination.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
 import { CreateShareLinkDto, UpdateShareSettingsDto, SendShareEmailDto } from './dto/share-link.dto';
+import type {
+  CorrectTranscriptRequest,
+  CorrectionPreview,
+  CorrectionApplyResponse,
+} from '@transcribe/shared';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -53,6 +59,7 @@ export class TranscriptionController {
     private readonly templateService: AnalysisTemplateService,
     private readonly onDemandAnalysisService: OnDemandAnalysisService,
     private readonly usageService: UsageService,
+    private readonly correctionRouter: TranscriptCorrectionRouterService,
   ) {}
 
   // Public endpoint for shared transcripts (no auth required)
@@ -463,6 +470,116 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Summary regeneration started',
+    };
+  }
+
+  /**
+   * NEW: Analyze correction request and return routing plan (Phase 1)
+   */
+  @Post(':id/analyze-corrections')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 20, ttl: 60000 } }) // 20 analyses per minute
+  async analyzeCorrections(
+    @Param('id') transcriptionId: string,
+    @Body() dto: { instructions: string },
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> {
+    // Validate instructions
+    if (!dto.instructions || dto.instructions.trim().length === 0) {
+      throw new BadRequestException('Instructions are required');
+    }
+
+    if (dto.instructions.length > 2000) {
+      throw new BadRequestException(
+        'Instructions must be less than 2000 characters',
+      );
+    }
+
+    // Get transcription
+    const transcription = await this.transcriptionService.getTranscription(
+      req.user.uid,
+      transcriptionId,
+    );
+
+    if (!transcription) {
+      throw new BadRequestException('Transcription not found');
+    }
+
+    const segments = transcription.speakerSegments || [];
+
+    if (segments.length === 0) {
+      throw new BadRequestException('No speaker segments available for correction');
+    }
+
+    // Perform routing analysis
+    const routingPlan = await this.correctionRouter.analyzeAndRoute(
+      segments,
+      dto.instructions.trim(),
+      transcription.detectedLanguage || 'en',
+      transcription.duration,
+    );
+
+    return {
+      success: true,
+      data: { routingPlan },
+      message: 'Correction analysis complete',
+    };
+  }
+
+  @Post(':id/correct-transcript')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 corrections per minute
+  async correctTranscript(
+    @Param('id') transcriptionId: string,
+    @Body() dto: CorrectTranscriptRequest,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> {
+    // Validate instructions
+    if (!dto.instructions || dto.instructions.trim().length === 0) {
+      throw new BadRequestException('Instructions are required');
+    }
+
+    if (dto.instructions.length > 2000) {
+      throw new BadRequestException(
+        'Instructions must be less than 2000 characters',
+      );
+    }
+
+    // Default to preview mode if not specified
+    const previewOnly = dto.previewOnly !== false;
+
+    const result = await this.transcriptionService.correctTranscriptWithAI(
+      req.user.uid,
+      transcriptionId,
+      dto.instructions.trim(),
+      previewOnly,
+    );
+
+    return {
+      success: true,
+      data: result,
+      message: previewOnly
+        ? 'Preview generated successfully'
+        : 'Transcript corrected successfully',
+    };
+  }
+
+  @Post(':id/regenerate-core-analyses')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 regenerations per minute
+  async regenerateCoreAnalyses(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    const transcription = await this.transcriptionService.regenerateCoreAnalysesForTranscription(
+      req.user.uid,
+      transcriptionId,
+    );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'Core analyses regenerated successfully',
     };
   }
 

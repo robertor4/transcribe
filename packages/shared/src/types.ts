@@ -172,6 +172,7 @@ export interface Transcription {
   analyses?: AnalysisResults; // All analysis results - DEPRECATED, use coreAnalyses
   // NEW: Core analyses generated automatically
   coreAnalyses?: CoreAnalyses;
+  coreAnalysesOutdated?: boolean; // True when transcript corrected but analyses not regenerated
   // NEW: References to on-demand analyses
   generatedAnalysisIds?: string[]; // Array of GeneratedAnalysis IDs
   error?: string;
@@ -636,3 +637,69 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     },
   },
 };
+
+// Transcript Correction Types
+
+export interface CorrectTranscriptRequest {
+  instructions: string;
+  previewOnly?: boolean; // Default: true
+}
+
+export interface TranscriptDiff {
+  segmentIndex: number;
+  speakerTag: string;
+  timestamp: string; // Formatted like "1:23"
+  oldText: string;
+  newText: string;
+}
+
+export interface CorrectionPreview {
+  original: string; // Full original transcript
+  corrected: string; // Full corrected transcript
+  diff: TranscriptDiff[]; // Only changed segments
+  summary: {
+    totalChanges: number; // Number of text changes
+    affectedSegments: number; // Number of segments changed
+  };
+}
+
+export interface CorrectionApplyResponse {
+  success: boolean;
+  transcription: Transcription; // Updated transcript object
+  deletedAnalysisIds: string[]; // IDs of deleted custom analyses
+  clearedTranslations: string[]; // Language codes that were cleared (e.g., ['es', 'fr'])
+}
+
+// AI-First Intelligent Routing Types
+export interface SimpleReplacement {
+  find: string;
+  replace: string;
+  caseSensitive: boolean;
+  estimatedMatches: number;
+  confidence: 'high' | 'medium' | 'low';
+}
+
+export interface ComplexCorrection {
+  description: string;
+  affectedSegmentIndices: number[];
+  speakerTag?: string;
+  reason: string;
+}
+
+export interface RoutingPlan {
+  simpleReplacements: SimpleReplacement[];
+  complexCorrections: ComplexCorrection[];
+  estimatedTime: {
+    regex: string;
+    ai: string;
+    total: string;
+  };
+  summary: {
+    totalCorrections: number;
+    simpleCount: number;
+    complexCount: number;
+    totalSegmentsAffected: number;
+    totalSegments: number;
+    percentageAffected: string;
+  };
+}

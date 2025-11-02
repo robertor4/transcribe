@@ -12,6 +12,7 @@
     "open": "Openen",
     "back": "Terug",
     "next": "Volgende",
+    "previous": "Vorige",
     "submit": "Verzenden",
     "search": "Zoeken",
     "filter": "Filteren",
@@ -37,6 +38,8 @@
     "email": "E-mail",
     "password": "Wachtwoord",
     "confirmPassword": "Wachtwoord bevestigen",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen",
     "displayName": "Volledige naam",
     "enterYourName": "Voer je volledige naam in",
     "enterYourEmail": "Voer je e-mailadres in",
@@ -126,6 +129,7 @@
     "howItWorks": "Hoe het werkt",
     "recordingGuide": "Opnamegids",
     "howToRecord": "Hoe je audio opneemt op elk apparaat",
+    "settings": "Instellingen",
     "noTranscriptions": "Nog geen transcripties",
     "uploadYourFirst": "Upload je eerste audiobestand om te beginnen"
   },
@@ -146,6 +150,25 @@
     "maxFileSize": "Maximale bestandsgrootte: 5GB",
     "selectFile": "Selecteer audiobestand",
     "addContext": "Context toevoegen (optioneel)",
+    "dropMoreFiles": "Meer bestanden toevoegen",
+    "orClickToAddMore": "of klik om te bladeren",
+    "maxFilesSelected": "Maximaal aantal bestanden geselecteerd (3)",
+    "processingMode": "Verwerkingsmodus",
+    "processIndividually": "Afzonderlijk verwerken",
+    "processIndividuallyDesc": "Maak individuele transcripten voor elk bestand",
+    "processMerged": "Bestanden samenvoegen",
+    "processMergedDesc": "Combineer tot één gesprek",
+    "fileOrder": "Bestandsvolgorde",
+    "mergingFiles": "{count} bestanden samenvoegen...",
+    "contextForAll": "Context (geldt voor alle bestanden)",
+    "contextForMerged": "Context voor samengevoegd gesprek",
+    "dragToReorder": "Sleep om te herordenen",
+    "moveUp": "Omhoog verplaatsen",
+    "moveDown": "Omlaag verplaatsen",
+    "removeFile": "Bestand verwijderen",
+    "firstFile": "Eerste bestand",
+    "lastFile": "Laatste bestand",
+    "mergeOrderMatters": "Bestanden worden samengevoegd in de bovenstaande volgorde. Sleep om ze chronologisch te herordenen.",
     "analysisType": "Analysetype (optioneel)",
     "analysisTypeHelp": "Kies hoe je wilt dat de AI je gesprek analyseert",
     "customInstructions": "Aangepaste analyse-instructies",
@@ -209,7 +232,10 @@
       "unsupportedFormat": "Niet-ondersteund formaat (type: {type})",
       "invalidFileType": "Ongeldig bestandstype. Ondersteunde formaten: {formats}",
       "uploadFailed": "Upload mislukt. Probeer het opnieuw.",
-      "processingFailed": "Verwerking mislukt. Probeer het opnieuw."
+      "processingFailed": "Verwerking mislukt. Probeer het opnieuw.",
+      "maxFilesReached": "Maximaal 3 bestanden toegestaan tegelijk",
+      "duplicateFile": "Dit bestand is al geselecteerd",
+      "tooManyFiles": "Er kunnen slechts {max} bestanden tegelijk worden geüpload"
     }
   },
   "transcription": {
@@ -263,7 +289,9 @@
     "close": "Sluiten",
     "view": "Bekijken",
     "delete": "Verwijderen",
-    "share": "Delen"
+    "share": "Delen",
+    "loadingMore": "Meer laden...",
+    "noMoreTranscriptions": "Je hebt het einde bereikt"
   },
   "howItWorks": {
     "title": "Hoe het werkt",
@@ -311,7 +339,12 @@
         "description": "We ondersteunen M4A, MP3, WAV en andere gangbare formaten. Hogere kwaliteitsformaten geven betere resultaten."
       }
     },
-    "recommendedApps": "Aanbevolen apps:",
+    "recommendedApps": {
+      "title": "Aanbevolen opname-apps",
+      "ios": "iOS: Dictafoon, Just Press Record",
+      "android": "Android: Voice Recorder, Easy Voice Recorder",
+      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
+    },
     "proTips": {
       "title": "Pro opnametips voor de beste resultaten",
       "audioQuality": "Audiokwaliteit:",
@@ -326,6 +359,7 @@
     "recordingInstructions": "Opname-instructies per apparaat",
     "stepByStep": "Stap-voor-stap instructies:",
     "quickTips": "Snelle tips:",
+    "recommendedApps": "Aanbevolen apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -483,7 +517,137 @@
     "export": "Gegevens exporteren",
     "deleteAccount": "Account verwijderen",
     "saveChanges": "Wijzigingen opslaan",
-    "changesSaved": "Wijzigingen succesvol opgeslagen"
+    "changesSaved": "Wijzigingen succesvol opgeslagen",
+    "backToDashboard": "Terug naar Dashboard",
+    "comingSoon": "Binnenkort beschikbaar",
+    "profilePage": {
+      "title": "Profielinformatie",
+      "description": "Beheer je persoonlijke informatie en profielinstellingen.",
+      "loadError": "Laden van profiel mislukt",
+      "saveError": "Opslaan van profiel mislukt",
+      "saveSuccess": "Profiel succesvol bijgewerkt",
+      "profilePhoto": "Profielfoto",
+      "photoURLPlaceholder": "Voer afbeeldings-URL in",
+      "photoURLHelp": "Voer een URL in naar een afbeelding om als profielfoto te gebruiken",
+      "displayName": "Weergavenaam",
+      "displayNamePlaceholder": "Voer je naam in",
+      "email": "E-mailadres",
+      "emailHelp": "Je e-mailadres kan niet worden gewijzigd",
+      "verified": "Geverifieerd",
+      "notVerified": "Niet geverifieerd - Klik om opnieuw te versturen",
+      "verificationError": "Versturen van verificatie-e-mail mislukt",
+      "accountCreated": "Account aangemaakt",
+      "subscription": "Abonnement",
+      "expiresOn": "Verloopt op",
+      "saving": "Opslaan...",
+      "saveChanges": "Wijzigingen opslaan"
+    },
+    "notificationsPage": {
+      "title": "Meldingsinstellingen",
+      "description": "Configureer hoe je meldingen ontvangt over je transcripties.",
+      "loadError": "Laden van instellingen mislukt",
+      "saveError": "Opslaan van instellingen mislukt",
+      "saveSuccess": "Instellingen succesvol bijgewerkt",
+      "emailNotifications": "E-mailmeldingen",
+      "enableEmailNotifications": "E-mailmeldingen inschakelen",
+      "enableEmailDescription": "Ontvang e-mailupdates over je transcripties",
+      "transcriptionComplete": "Transcriptie voltooid",
+      "transcriptionCompleteDescription": "Ontvang een melding wanneer je transcriptie klaar is",
+      "digestFrequency": "E-mailfrequentie",
+      "digestDescription": "Hoe vaak e-mailmeldingen te ontvangen",
+      "digest": {
+        "immediate": "Onmiddellijk",
+        "daily": "Dagelijkse samenvatting",
+        "weekly": "Wekelijkse samenvatting"
+      },
+      "browserNotifications": "Browsermeldingen",
+      "enableBrowserNotifications": "Browsermeldingen inschakelen",
+      "enableBrowserDescription": "Toon desktopmeldingen wanneer dit tabblad op de achtergrond is",
+      "browserPermissionDenied": "Toestemming voor browsermeldingen is geweigerd",
+      "browserPermissionBlocked": "Browsermeldingen zijn geblokkeerd. Schakel ze in via je browserinstellingen.",
+      "browserNotificationTypes": "Je ontvangt meldingen voor:",
+      "notificationType": {
+        "transcriptionComplete": "Voltooiing van transcriptie",
+        "transcriptionFailed": "Mislukkingen van transcriptie",
+        "transcriptionProgress": "Updates van verwerkingsvoortgang"
+      },
+      "saving": "Opslaan...",
+      "saveChanges": "Wijzigingen opslaan"
+    },
+    "preferencesPage": {
+      "title": "Voorkeuren",
+      "description": "Pas je ervaring en standaardinstellingen aan.",
+      "loadError": "Laden van voorkeuren mislukt",
+      "saveError": "Opslaan van voorkeuren mislukt",
+      "saveSuccess": "Voorkeuren succesvol bijgewerkt",
+      "languageSettings": "Taalinstellingen",
+      "interfaceLanguage": "Interface taal",
+      "interfaceLanguageDescription": "Kies je voorkeurstaal voor de applicatie",
+      "summaryLanguage": "Samenvattingstaal",
+      "summaryLanguageDescription": "Standaardtaal voor transcriptiesamenvattingen",
+      "autoDetect": "Automatisch detecteren",
+      "transcriptionDefaults": "Transcriptiestandaarden",
+      "defaultContext": "Standaard context",
+      "defaultContextDescription": "Context om te gebruiken voor alle nieuwe transcripties",
+      "defaultContextPlaceholder": "Voer standaard context in voor je transcripties...",
+      "autoDelete": "Transcripties automatisch verwijderen",
+      "autoDeleteDescription": "Oude transcripties automatisch verwijderen na een bepaalde periode",
+      "never": "Nooit",
+      "days": "{count} dagen",
+      "comingSoon": "Binnenkort beschikbaar",
+      "saving": "Opslaan...",
+      "saveChanges": "Wijzigingen opslaan"
+    },
+    "accountPage": {
+      "title": "Accountinstellingen",
+      "description": "Beheer je accountbeveiliging en gegevens.",
+      "security": "Beveiliging",
+      "connectedAccounts": "Gekoppelde accounts",
+      "emailPassword": "E-mail & wachtwoord",
+      "googleAccount": "Google-account",
+      "changePassword": "Wachtwoord wijzigen",
+      "currentPassword": "Huidig wachtwoord",
+      "newPassword": "Nieuw wachtwoord",
+      "confirmPassword": "Nieuw wachtwoord bevestigen",
+      "updatePassword": "Wachtwoord bijwerken",
+      "changingPassword": "Wijzigen...",
+      "showPassword": "Wachtwoord tonen",
+      "hidePassword": "Wachtwoord verbergen",
+      "passwordMismatch": "Wachtwoorden komen niet overeen",
+      "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
+      "notAuthenticated": "Niet geauthenticeerd",
+      "incorrectPassword": "Onjuist wachtwoord",
+      "requiresRecentLogin": "Log opnieuw in om deze actie uit te voeren",
+      "passwordChangeError": "Wijzigen van wachtwoord mislukt",
+      "passwordChangeSuccess": "Wachtwoord succesvol gewijzigd",
+      "dataManagement": "Gegevensbeheer",
+      "exportData": "Je gegevens exporteren",
+      "exportDataDescription": "Download al je gegevens inclusief transcripties en instellingen",
+      "downloadData": "Gegevens downloaden",
+      "exportComingSoon": "Gegevensexportfunctie binnenkort beschikbaar",
+      "dangerZone": "Gevarenzone",
+      "deleteAccountWarning": "Zodra je je account verwijdert, is er geen weg terug. Al je gegevens worden permanent verwijderd.",
+      "deleteAccount": "Account verwijderen",
+      "deleteConfirmTitle": "Weet je het absoluut zeker?",
+      "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit zal je account en alle bijbehorende gegevens permanent verwijderen.",
+      "enterPasswordToConfirm": "Voer je wachtwoord in ter bevestiging",
+      "confirmDelete": "Ja, verwijder mijn account",
+      "deletingAccount": "Verwijderen...",
+      "deleteAccountError": "Verwijderen van account mislukt",
+      "cancel": "Annuleren"
+    },
+    "subscriptionPage": {
+      "title": "Abonnement & facturering",
+      "description": "Beheer je abonnement en factuurgegevens.",
+      "comingSoon": "Abonnementsbeheer binnenkort beschikbaar",
+      "comingSoonDescription": "We werken eraan om je flexibele abonnementen met uitgebreide functies te brengen. Blijf op de hoogte!",
+      "availablePlans": "Beschikbare abonnementen",
+      "currentPlan": "Huidig abonnement",
+      "upgrade": "Upgraden",
+      "needMore": "Meer nodig?",
+      "enterpriseDescription": "Voor grote teams en organisaties met aangepaste vereisten.",
+      "contactSales": "Neem contact op met verkoop"
+    }
   },
   "languages": {
     "en": "English",
@@ -532,10 +696,10 @@
       "titleHighlight": "duidelijkheid.",
       "subtitle": "Neural Summary transformeert uren audio in heldere, gestructureerde notities, beslissingen en vervolgstappen — in seconden.",
       "cta": {
-        "primary": "Start je gratis proefperiode",
+        "primary": "Start gratis voor altijd",
         "secondary": "Zie hoe het werkt"
       },
-      "guarantee": "Duurt minder dan 2 minuten • Geen creditcard • Directe opzet",
+      "guarantee": "Altijd gratis abonnement beschikbaar • Geen creditcard vereist • Duurt 2 minuten",
       "features": {
         "saveTime": "Bespaar 10+ uur/week",
         "accuracy": "99.5% nauwkeurigheid",
@@ -607,19 +771,19 @@
       }
     },
     "howItWorks": {
-      "title": "3 eenvoudige stappen naar perfecte transcripties",
+      "title": "Hoe het werkt",
       "subtitle": "Begin in minder dan 60 seconden",
       "step1": {
-        "title": "Neem overal op",
-        "description": "Gebruik je telefoon, Zoom of elke opname-app. We ondersteunen alle grote audioformaten inclusief M4A, MP3, WAV en meer."
+        "title": "Upload of neem audio op",
+        "description": "Gebruik je telefoon, Zoom of elke opname-app. We ondersteunen alle grote audioformaten — vergaderingen, gesprekken, podcasts of interviews."
       },
       "step2": {
-        "title": "AI verwerkt direct",
-        "description": "Onze geavanceerde AI transcribeert met 99.5% nauwkeurigheid, verwerkt technische termen en meerdere sprekers perfect."
+        "title": "Laat Neural Summary het verwerken",
+        "description": "Onze AI luistert, begrijpt de context en extraheert kernpunten — allemaal automatisch met 99,5% nauwkeurigheid."
       },
       "step3": {
-        "title": "Krijg perfecte resultaten",
-        "description": "Ontvang een volledige transcriptie en executive samenvatting met kernpunten. Exporteer, deel of integreer met je workflow."
+        "title": "Ontvang direct gestructureerde resultaten",
+        "description": "Compleet met executive samenvattingen, hoogtepunten en actiepunten. Het is alsof je een fulltime analist hebt — zonder de salariskosten."
       }
     },
     "security": {
@@ -649,10 +813,6 @@
         "title": "SOC 2 Type II gecertificeerde infrastructuur",
         "description": "Enterprise-grade beveiliging met continue compliance monitoring"
       },
-      "compliance": {
-        "title": "HIPAA-conforme verwerking",
-        "description": "Medische privacy standaarden voor al je gevoelige gesprekken"
-      },
       "audit": {
         "title": "Zero-knowledge architectuur",
         "description": "Wij hebben geen toegang tot je gegevens, zelfs als we zouden willen - het is technisch onmogelijk"
@@ -669,14 +829,14 @@
       "title": "Geliefd door professionals wereldwijd",
       "rating": "4.9/5 uit meer dan 2.000 beoordelingen",
       "testimonial1": {
-        "quote": "Deze tool heeft mijn vergaderworkflow gerevolutioneerd. Ik kan me concentreren op het gesprek in plaats van notities te maken. De samenvattingen zijn ongelooflijk nauwkeurig.",
+        "quote": "Deze tool heeft compleet veranderd hoe ik met vergaderingen omga — eindelijk loop ik weg met duidelijkheid.",
         "author": "Sarah Martinez",
-        "role": "Product Manager"
+        "role": "Hoofd Strategie"
       },
       "testimonial2": {
-        "quote": "De nauwkeurigheid is ongelooflijk. Het verwerkt technische termen en meerdere sprekers perfect. Bespaart me uren transcriptiewerk elke week.",
+        "quote": "Ik kan me focussen op mijn cliënten, niet op typen.",
         "author": "Dr. James Liu",
-        "role": "Onderzoeksdirecteur"
+        "role": "Klinisch onderzoeker"
       },
       "testimonial3": {
         "quote": "Als journalist is deze tool onmisbaar. Ik kan natuurlijk interviews afnemen en binnen enkele minuten perfecte transcripties krijgen. Een gamechanger!",
@@ -685,18 +845,23 @@
       }
     },
     "cta": {
-      "title": "Klaar om uren per week te besparen?",
-      "subtitle": "Sluit je aan bij 10.000+ professionals die hun workflow hebben getransformeerd met Neural Summary. Start vandaag je gratis proef - geen creditcard vereist.",
-      "button": "Start gratis proef",
+      "title": "Klaar om je tijd terug te winnen en nooit meer een inzicht te verliezen?",
+      "subtitle": "Sluit je aan bij duizenden professionals die Neural Summary gebruiken om slimmer te werken, beter te communiceren en sneller te beslissen.",
+      "button": "Start je gratis proefperiode",
       "benefits": {
-        "free": "3 gratis transcripties",
-        "noCard": "Geen creditcard",
+        "free": "Geen creditcard",
+        "noCard": "Directe toegang",
         "cancel": "Altijd opzegbaar"
       }
     },
     "nav": {
       "login": "Inloggen",
-      "getStarted": "Aan de slag"
+      "getStarted": "Aan de slag",
+      "menu": "Menu",
+      "language": "Taal",
+      "features": "Kenmerken",
+      "pricing": "Prijzen",
+      "faq": "Veelgestelde vragen"
     },
     "footer": {
       "product": {
@@ -774,6 +939,7 @@
     "expiresOn": "Verloopt op",
     "passwordProtected": "Wachtwoordbeveiligd",
     "scanQR": "Scan QR-code om te delen",
+    "showQRCode": "QR-code tonen",
     "confirmRevoke": "Weet je zeker dat je deze deel link wilt intrekken? Iedereen met de link kan dit transcript niet meer bekijken."
   },
   "shared": {
@@ -781,6 +947,8 @@
     "passwordRequired": "Wachtwoord vereist",
     "passwordDescription": "Dit transcript is beveiligd met een wachtwoord. Voer het wachtwoord in om het te bekijken.",
     "enterPassword": "Voer wachtwoord in",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen",
     "submit": "Verzenden",
     "error": {
       "title": "Toegangsfout",
@@ -1130,5 +1298,392 @@
     "hours": "Uren",
     "remaining": "resterend",
     "onDemandAnalyses": "On-Demand Analyses"
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Prijzen - Neural Summary",
+      "description": "Kies het perfecte abonnement voor je transcriptiebehoeften. Van gratis tot enterprise, we hebben een abonnement dat past bij je workflow."
+    },
+    "hero": {
+      "title": "Eenvoudige, transparante prijzen",
+      "subtitle": "Kies het abonnement dat bij je past. Begin gratis, upgrade wanneer je wilt.",
+      "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij het afrekenen.",
+      "annual": "Jaarlijks",
+      "monthly": "Maandelijks",
+      "save25": "Bespaar 25%",
+      "noCreditCard": "Geen creditcard vereist",
+      "freeTrial": "14 dagen gratis proef",
+      "viewComparison": "Bekijk gedetailleerde vergelijking"
+    },
+    "tiers": {
+      "free": {
+        "name": "Gratis",
+        "title": "Gratis",
+        "price": "Gratis",
+        "description": "Perfect om Neural Summary uit te proberen",
+        "cta": "Aan de slag",
+        "features": {
+          "transcriptions": "3 transcripties/maand",
+          "duration": "Max 30 minuten per bestand",
+          "fileSize": "Max 100MB bestandsgrootte",
+          "analyses": "Alleen basissamenvatting",
+          "coreAnalyses": "4 kernanalyses inbegrepen",
+          "onDemand": "2 on-demand analyses/maand",
+          "translation": "Vertaalfuncties",
+          "sharing": "Transcripten delen",
+          "batch": "Batchverwerking",
+          "storage": "90 dagen opslag",
+          "support": "Community ondersteuning"
+        }
+      },
+      "professional": {
+        "name": "Professioneel",
+        "title": "Professioneel",
+        "price": "$29",
+        "priceAnnual": "$261",
+        "period": "/maand",
+        "description": "Voor professionals die regelmatig transcriberen",
+        "cta": "Aan de slag",
+        "badge": "Meest populair",
+        "recommended": "AANBEVOLEN",
+        "guarantee": "30 dagen geld-terug-garantie",
+        "saveAnnual": "Bespaar $87/jaar",
+        "features": {
+          "transcriptions": "Onbeperkte transcripties",
+          "hours": "60 uur/maand inbegrepen",
+          "unlimited": "Onbeperkte transcripties",
+          "duration": "60 uur/maand inbegrepen",
+          "overageRate": "$0.50 per extra uur",
+          "overage": "Overschrijding: $0.50/uur",
+          "fileSize": "Max 5GB bestandsgrootte",
+          "analyses": "Alle analysetypes",
+          "allAnalyses": "Alle analysetypes",
+          "onDemandAnalyses": "Onbeperkte on-demand analyses",
+          "storage": "Onbeperkte opslag",
+          "sharing": "Geavanceerde deelfuncties",
+          "advancedSharing": "Geavanceerd delen & samenwerken",
+          "translation": "Vertaling naar 50+ talen",
+          "batch": "Batchverwerking",
+          "priority": "Prioriteitsverwerking",
+          "support": "Prioriteit e-mail ondersteuning"
+        }
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "title": "Pay-As-You-Go",
+        "price": "$1.50",
+        "period": "/uur",
+        "priceUnit": "/uur",
+        "description": "Perfect voor incidenteel gebruik",
+        "cta": "Koop tegoed",
+        "features": {
+          "transcriptions": "Onbeperkte transcripties",
+          "credits": "Tegoed vervalt nooit",
+          "noSubscription": "Geen abonnement vereist",
+          "allFeatures": "Alle functies inbegrepen",
+          "noExpiry": "Tegoed vervalt nooit",
+          "minimum": "Minimale aankoop",
+          "rate": "Flexibel uurtarief",
+          "fileSize": "Max 5GB bestandsgrootte",
+          "analyses": "Alle analysetypes",
+          "onDemandAnalyses": "Tegoed per analyse",
+          "storage": "180 dagen opslag",
+          "support": "E-mail ondersteuning"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Begin slimmer te transcriberen",
+      "subtitle": "Geen creditcard vereist voor gratis abonnement",
+      "button": "Start gratis"
+    },
+    "comparison": {
+      "feature": "Functie",
+      "tiers": {
+        "free": "Gratis",
+        "professional": "Professioneel",
+        "payg": "Pay-As-You-Go"
+      },
+      "categories": {
+        "basics": "Basis",
+        "analyses": "Analyse & functies",
+        "features": "Extra functies"
+      },
+      "features": {
+        "transcriptions": "Transcripties per maand",
+        "duration": "Max duur per bestand",
+        "fileSize": "Max bestandsgrootte",
+        "hours": "Maandelijkse uren inbegrepen",
+        "coreAnalyses": "Kernanalyses",
+        "onDemand": "On-demand analyses",
+        "translation": "Vertaling",
+        "sharing": "Deelfuncties",
+        "batch": "Batchverwerking",
+        "priority": "Prioriteitsverwerking",
+        "api": "API-toegang"
+      },
+      "title": "Vergelijk abonnementen",
+      "subtitle": "Vind het perfecte abonnement voor je behoeften",
+      "values": {
+        "unlimited": "Onbeperkt",
+        "basic": "Basis",
+        "advanced": "Geavanceerd",
+        "priority": "Prioriteit",
+        "community": "Community",
+        "email": "E-mail",
+        "priorityEmail": "Prioriteit e-mail"
+      }
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "questions": {
+        "cost": {
+          "question": "Wat kost transcriptie precies?",
+          "answer": "Professioneel abonnement bevat 60 uur/maand voor $29. Extra uren kosten $0.50 elk. Pay-As-You-Go is $1.50/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
+        },
+        "overage": {
+          "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
+          "answer": "Professionele gebruikers worden automatisch $0.50 per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
+        },
+        "cancel": {
+          "question": "Kan ik mijn abonnement altijd opzeggen?",
+          "answer": "Ja! Je kunt altijd opzeggen. Je abonnement blijft actief tot het einde van je factureringsperiode en je wordt niet opnieuw in rekening gebracht."
+        },
+        "currency": {
+          "question": "Welke valuta's ondersteunen jullie?",
+          "answer": "We ondersteunen 15+ valuta's waaronder USD, EUR, GBP, CAD, AUD, JPY en meer. Prijzen worden automatisch omgerekend naar je lokale valuta."
+        },
+        "upgrade": {
+          "question": "Kan ik mijn abonnement upgraden of downgraden?",
+          "answer": "Ja! Upgrades gaan direct in met evenredige kosten. Downgrades gaan in aan het einde van je huidige factureringsperiode, zodat je tot dan je huidige abonnement kunt gebruiken."
+        },
+        "payg": {
+          "question": "Hoe werkt Pay-As-You-Go tegoed?",
+          "answer": "Tegoed kost $1.50 per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
+        }
+      }
+    },
+    "cta": {
+      "title": "Klaar om te beginnen?",
+      "subtitle": "Sluit je aan bij duizenden professionals die Neural Summary gebruiken om tijd te besparen en hun werk te verbeteren.",
+      "button": "Start gratis proef"
+    },
+    "featureCategories": {
+      "transcription": "Transcriptie",
+      "analysis": "Analyse",
+      "collaboration": "Samenwerking",
+      "support": "Ondersteuning"
+    }
+  },
+  "checkout": {
+    "metadata": {
+      "title": "Afrekenen - Neural Summary",
+      "description": "Voltooi je abonnement op Neural Summary"
+    },
+    "title": "Voltooi je abonnement",
+    "subtitle": "Je bent één stap verwijderd van onbeperkte transcripties",
+    "selectedPlan": "Geselecteerd abonnement",
+    "billingCycle": "Factureringscyclus",
+    "monthly": "Maandelijks",
+    "annual": "Jaarlijks",
+    "save25": "Bespaar 25%",
+    "summary": {
+      "title": "Besteloverzicht",
+      "plan": "Abonnement",
+      "billing": "Facturering",
+      "total": "Totaal",
+      "perMonth": "/maand",
+      "perYear": "/jaar",
+      "billedMonthly": "Maandelijks gefactureerd",
+      "billedAnnually": "Jaarlijks gefactureerd"
+    },
+    "features": {
+      "title": "Wat is inbegrepen"
+    },
+    "secure": {
+      "title": "Veilige betaling",
+      "description": "Je betalingsinformatie is versleuteld en veilig. We gebruiken Stripe voor betalingsverwerking."
+    },
+    "cta": "Doorgaan naar betaling",
+    "processing": "Verwerken...",
+    "loadingStripe": "Veilige checkout laden...",
+    "redirecting": "Doorverwijzen naar veilige checkout...",
+    "error": {
+      "title": "Checkout fout",
+      "description": "Er is een fout opgetreden bij het laden van de checkoutpagina. Probeer het opnieuw.",
+      "invalidTier": "Ongeldige abonnementscategorie",
+      "sessionFailed": "Aanmaken van checkout sessie mislukt",
+      "backToPricing": "Terug naar prijzen",
+      "tryAgain": "Probeer opnieuw"
+    },
+    "success": {
+      "title": "Betaling geslaagd!",
+      "description": "Bedankt voor je abonnement! Je account is geüpgraded en je hebt nu toegang tot alle premium functies.",
+      "nextSteps": {
+        "title": "Wat nu?",
+        "step1": "Upload je eerste audiobestand",
+        "step2": "Verken alle analysetypes",
+        "step3": "Deel transcripten met je team"
+      },
+      "cta": "Ga naar Dashboard",
+      "receiptNotice": "Een ontvangstbewijs is naar je e-mailadres verzonden."
+    },
+    "cancel": {
+      "title": "Checkout geannuleerd",
+      "subtitle": "Je abonnement is niet voltooid",
+      "message": "Er zijn geen kosten in rekening gebracht op je account. Je kunt het altijd opnieuw proberen.",
+      "cta": "Bekijk prijzen",
+      "support": "Hulp nodig? Neem contact op met ons ondersteuningsteam."
+    }
+  },
+  "subscription": {
+    "metadata": {
+      "title": "Abonnement & facturering - Neural Summary",
+      "description": "Beheer je abonnement, bekijk gebruik en factureringsgeschiedenis"
+    },
+    "title": "Abonnement & facturering",
+    "loading": "Abonnementsgegevens laden...",
+    "error": {
+      "loadFailed": "Laden van abonnementsgegevens mislukt",
+      "updateFailed": "Bijwerken van abonnement mislukt",
+      "cancelFailed": "Annuleren van abonnement mislukt",
+      "retry": "Probeer opnieuw"
+    },
+    "currentPlan": {
+      "title": "Huidig abonnement",
+      "free": "Gratis abonnement",
+      "professional": "Professioneel abonnement",
+      "payg": "Pay-As-You-Go",
+      "status": {
+        "active": "Actief",
+        "cancelled": "Geannuleerd",
+        "pastDue": "Achterstallig",
+        "trialing": "Proefperiode"
+      },
+      "billingCycle": "Factureringscyclus",
+      "monthly": "Maandelijks",
+      "annual": "Jaarlijks",
+      "nextBilling": "Volgende factuurdatum",
+      "cancelAt": "Annuleert op",
+      "amount": "Bedrag"
+    },
+    "usage": {
+      "title": "Gebruik deze maand",
+      "transcriptions": "Transcripties",
+      "hours": "Uren",
+      "onDemandAnalyses": "On-Demand analyses",
+      "resetDate": "Wordt gereset op",
+      "paygCredits": "Beschikbaar tegoed",
+      "buyMore": "Meer tegoed kopen",
+      "overage": {
+        "title": "Overschrijdingskosten",
+        "description": "Je hebt {hours} uur boven je 60-uur limiet deze maand gebruikt",
+        "rate": "Extra uren worden in rekening gebracht tegen $0.50/uur",
+        "total": "Geschatte overschrijdingskosten",
+        "nextBill": "Wordt toegevoegd aan je volgende factuur op {date}"
+      }
+    },
+    "actions": {
+      "upgrade": "Upgrade abonnement",
+      "changePlan": "Wijzig abonnement",
+      "cancel": "Annuleer abonnement",
+      "reactivate": "Heractiveer abonnement",
+      "manageBilling": "Beheer facturering",
+      "viewInvoices": "Bekijk facturen"
+    },
+    "billingHistory": {
+      "title": "Factureringsgeschiedenis",
+      "date": "Datum",
+      "description": "Beschrijving",
+      "amount": "Bedrag",
+      "status": "Status",
+      "invoice": "Factuur",
+      "download": "Downloaden",
+      "paid": "Betaald",
+      "pending": "In behandeling",
+      "failed": "Mislukt",
+      "empty": "Nog geen factureringsgeschiedenis"
+    },
+    "cancelModal": {
+      "title": "Abonnement annuleren",
+      "description": "Weet je zeker dat je je abonnement wilt annuleren?",
+      "warning": "Je verliest toegang tot professionele functies aan het einde van je factureringsperiode op {date}.",
+      "keepAccess": "Je behoudt toegang tot",
+      "confirm": "Ja, annuleer abonnement",
+      "cancel": "Behoud abonnement",
+      "cancelling": "Annuleren...",
+      "success": "Abonnement succesvol geannuleerd",
+      "feedback": {
+        "title": "Het spijt ons je te zien gaan",
+        "question": "Wat is de belangrijkste reden voor annulering?",
+        "tooExpensive": "Te duur",
+        "notUsing": "Gebruik het niet genoeg",
+        "missingFeatures": "Ontbrekende functies",
+        "foundAlternative": "Alternatief gevonden",
+        "other": "Anders",
+        "comments": "Extra opmerkingen (optioneel)",
+        "submit": "Verzenden & annuleren"
+      }
+    },
+    "cancelConfirm": "Weet je zeker dat je je abonnement wilt annuleren? Je behoudt toegang tot het einde van je factureringsperiode.",
+    "cancelSuccess": "Je abonnement is succesvol geannuleerd. Je behoudt toegang tot het einde van je huidige factureringsperiode.",
+    "cancelError": "Annuleren van abonnement mislukt. Probeer het opnieuw of neem contact op met ondersteuning.",
+    "cancelAtPeriodEnd": "Ingepland voor annulering",
+    "cancelSubscription": "Abonnement annuleren",
+    "cancelDescription": "Annuleren downgradet je account naar het gratis abonnement aan het einde van je huidige factureringsperiode. Je kunt tot dan de professionele functies blijven gebruiken.",
+    "cancelButton": "Abonnement annuleren",
+    "usageThisMonth": "Gebruik deze maand",
+    "hoursUsed": "Gebruikte uren",
+    "transcriptionsUsed": "Transcripties",
+    "buyMoreCredits": "Meer tegoed kopen",
+    "noBillingHistory": "Nog geen factureringsgeschiedenis",
+    "downloadInvoice": "Factuur downloaden",
+    "overageWarning": "Overschrijdingsgebruik",
+    "overageCharge": "Geschatte overschrijdingskosten",
+    "upgrade": "Upgrade abonnement",
+    "hours": "uren",
+    "nextBilling": "Verlengt op",
+    "status": "Status",
+    "billingPeriodStart": "Factureringsperiode gestart"
+  },
+  "paywall": {
+    "quotaExceeded": {
+      "transcriptions": {
+        "title": "Maandlimiet bereikt",
+        "description": "Je hebt alle 3 gratis transcripties deze maand gebruikt. Upgrade naar professioneel voor onbeperkte transcripties."
+      },
+      "duration": {
+        "title": "Audio te lang",
+        "description": "Dit bestand overschrijdt de duurlimiet van je abonnement. Upgrade om langere audiobestanden te verwerken."
+      },
+      "filesize": {
+        "title": "Bestand te groot",
+        "description": "Dit bestand overschrijdt de bestandsgroottelimiet van je abonnement. Upgrade om grotere bestanden te verwerken."
+      },
+      "paygCredits": {
+        "title": "Onvoldoende tegoed",
+        "description": "Je hebt niet genoeg tegoed voor deze transcriptie. Koop meer tegoed om door te gaan."
+      },
+      "onDemandAnalyses": {
+        "title": "Analyselimiet bereikt",
+        "description": "Je hebt al je on-demand analyses deze maand gebruikt. Upgrade voor meer analyses of wacht tot volgende maand."
+      },
+      "current": "Huidig gebruik",
+      "limit": "Je limiet",
+      "required": "Vereist",
+      "upgradeButton": "Upgrade abonnement",
+      "buyCreditsButton": "Koop tegoed",
+      "cancelButton": "Annuleren"
+    },
+    "usageIndicator": {
+      "approaching": "Limiet nadert - overweeg binnenkort te upgraden",
+      "exceeded": "Limiet overschreden - upgrade om door te gaan",
+      "unlimited": "Onbeperkt"
+    },
+    "upgradePrompt": {
+      "title": "Upgrade naar professioneel",
+      "defaultMessage": "Ontgrendel onbeperkte transcripties, langere audiobestanden en geavanceerde analysefuncties.",
+      "cta": "Bekijk abonnementen"
+    }
   }
 }
