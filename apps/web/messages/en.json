@@ -21,8 +21,6 @@
     "upload": "Upload",
     "edit": "Edit",
     "view": "View",
-    "save": "Save",
-    "cancel": "Cancel",
     "copy": "Copy",
     "copied": "Copied!",
     "share": "Share",
@@ -341,12 +339,7 @@
         "description": "We support M4A, MP3, WAV, and other common formats. Higher quality formats yield better results."
       }
     },
-    "recommendedApps": {
-      "title": "Recommended Recording Apps",
-      "ios": "iOS: Voice Memos, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Recommended apps:",
     "proTips": {
       "title": "Pro recording tips for best results",
       "audioQuality": "Audio quality:",
@@ -361,7 +354,6 @@
     "recordingInstructions": "Recording instructions by device",
     "stepByStep": "Step-by-step instructions:",
     "quickTips": "Quick tips:",
-    "recommendedApps": "Recommended apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -379,9 +371,18 @@
           "Consider using AirPods or external mic for better quality"
         ],
         "apps": [
-          { "name": "Voice Memos", "description": "Built-in, simple, and reliable" },
-          { "name": "Just Press Record", "description": "Cloud sync across Apple devices" },
-          { "name": "Recorder", "description": "Simple and easy to use" }
+          {
+            "name": "Voice Memos",
+            "description": "Built-in, simple, and reliable"
+          },
+          {
+            "name": "Just Press Record",
+            "description": "Cloud sync across Apple devices"
+          },
+          {
+            "name": "Recorder",
+            "description": "Simple and easy to use"
+          }
         ]
       },
       "android": {
@@ -400,9 +401,18 @@
           "Keep the device steady during recording"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Simple and effective" },
-          { "name": "Easy Voice Recorder", "description": "High quality with cloud backup" },
-          { "name": "Smart Recorder", "description": "Automatic noise reduction" }
+          {
+            "name": "Voice Recorder",
+            "description": "Simple and effective"
+          },
+          {
+            "name": "Easy Voice Recorder",
+            "description": "High quality with cloud backup"
+          },
+          {
+            "name": "Smart Recorder",
+            "description": "Automatic noise reduction"
+          }
         ]
       },
       "mac": {
@@ -421,9 +431,18 @@
           "Record in a room with soft furnishings to reduce echo"
         ],
         "apps": [
-          { "name": "QuickTime Player", "description": "Built-in and reliable" },
-          { "name": "Audacity", "description": "Free, professional audio editing" },
-          { "name": "GarageBand", "description": "Advanced features for music and podcasting" }
+          {
+            "name": "QuickTime Player",
+            "description": "Built-in and reliable"
+          },
+          {
+            "name": "Audacity",
+            "description": "Free, professional audio editing"
+          },
+          {
+            "name": "GarageBand",
+            "description": "Advanced features for music and podcasting"
+          }
         ]
       },
       "windows": {
@@ -442,9 +461,18 @@
           "Position the microphone away from keyboard and mouse"
         ],
         "apps": [
-          { "name": "Voice Recorder", "description": "Built-in Windows app" },
-          { "name": "Audacity", "description": "Free, cross-platform audio editor" },
-          { "name": "OBS Studio", "description": "Advanced recording with multiple sources" }
+          {
+            "name": "Voice Recorder",
+            "description": "Built-in Windows app"
+          },
+          {
+            "name": "Audacity",
+            "description": "Free, cross-platform audio editor"
+          },
+          {
+            "name": "OBS Studio",
+            "description": "Advanced recording with multiple sources"
+          }
         ]
       }
     },
@@ -1097,7 +1125,8 @@
       "save25": "Save 25%",
       "noCreditCard": "No credit card required",
       "freeTrial": "14-day free trial",
-      "viewComparison": "View detailed comparison"
+      "viewComparison": "View detailed comparison",
+      "billedAnnually": "Billed annually ({amount}/year)"
     },
     "tiers": {
       "free": {
@@ -1118,7 +1147,8 @@
           "batch": "Batch processing",
           "storage": "90 days storage",
           "support": "Community support"
-        }
+        },
+        "period": "/month"
       },
       "professional": {
         "name": "Professional",

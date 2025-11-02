@@ -54,7 +54,7 @@ export default function PricingPage() {
     { text: t('tiers.free.features.coreAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.onDemand'), included: true, note: '2/month', category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.translation'), included: false, icon: Globe, category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.sharing'), included: true, note: 'Basic', icon: Share2, category: t('featureCategories.collaboration') },
+    { text: t('tiers.free.features.sharing'), included: true, note: t('comparison.values.basic'), icon: Share2, category: t('featureCategories.collaboration') },
     { text: t('tiers.free.features.batch'), included: false, category: t('featureCategories.collaboration') },
     { text: t('tiers.professional.features.priority'), included: false, icon: Zap, category: t('featureCategories.collaboration') },
     { text: t('tiers.free.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
@@ -114,6 +114,7 @@ export default function PricingPage() {
             <PricingCard
               tier="free"
               price={0}
+              priceUnit={t('tiers.free.period')}
               title={t('tiers.free.title')}
               description={t('tiers.free.description')}
               features={freeFeatures}
@@ -126,8 +127,8 @@ export default function PricingPage() {
             <PricingCard
               tier="professional"
               price={billingCycle === 'monthly' ? pricing.professional.monthly : pricing.professional.annualMonthly}
-              priceUnit="/month"
-              billingNote={billingCycle === 'annual' ? `Billed annually (${formatPriceLocale(pricing.professional.annual, locale)}/year)` : undefined}
+              priceUnit={t('tiers.professional.period')}
+              billingNote={billingCycle === 'annual' ? t('hero.billedAnnually', { amount: formatPriceLocale(pricing.professional.annual, locale) }) : undefined}
               title={t('tiers.professional.title')}
               description={t('tiers.professional.description')}
               featured={true}

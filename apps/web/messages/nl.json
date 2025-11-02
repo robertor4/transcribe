@@ -339,12 +339,7 @@
         "description": "We ondersteunen M4A, MP3, WAV en andere gangbare formaten. Hogere kwaliteitsformaten geven betere resultaten."
       }
     },
-    "recommendedApps": {
-      "title": "Aanbevolen opname-apps",
-      "ios": "iOS: Dictafoon, Just Press Record",
-      "android": "Android: Voice Recorder, Easy Voice Recorder",
-      "desktop": "Desktop: Audacity, QuickTime (Mac), Voice Recorder (Windows)"
-    },
+    "recommendedApps": "Aanbevolen apps:",
     "proTips": {
       "title": "Pro opnametips voor de beste resultaten",
       "audioQuality": "Audiokwaliteit:",
@@ -359,7 +354,6 @@
     "recordingInstructions": "Opname-instructies per apparaat",
     "stepByStep": "Stap-voor-stap instructies:",
     "quickTips": "Snelle tips:",
-    "recommendedApps": "Aanbevolen apps:",
     "platforms": {
       "ios": {
         "name": "iPhone / iPad",
@@ -1352,7 +1346,8 @@
       "save25": "Bespaar 25%",
       "noCreditCard": "Geen creditcard vereist",
       "freeTrial": "14 dagen gratis proef",
-      "viewComparison": "Bekijk gedetailleerde vergelijking"
+      "viewComparison": "Bekijk gedetailleerde vergelijking",
+      "billedAnnually": "Jaarlijks gefactureerd ({amount}/jaar)"
     },
     "tiers": {
       "free": {
@@ -1373,7 +1368,8 @@
           "batch": "Batchverwerking",
           "storage": "90 dagen opslag",
           "support": "Community ondersteuning"
-        }
+        },
+        "period": "/maand"
       },
       "professional": {
         "name": "Professioneel",

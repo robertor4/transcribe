@@ -769,8 +769,8 @@
         "rating": "durchschnittlich mit 4,9 / 5 bewertet"
       },
       "compliance": {
-        "title": "Gebaut mit Enterprise-Grade-Sicherheit",
-        "description": "DSGVO, SOC 2 Type II und HIPAA konform"
+        "title": "HIPAA-konforme Verarbeitung",
+        "description": "Medizinische Datenschutzstandards für alle Ihre sensiblen Gespräche"
       },
       "useCases": {
         "title": "Vertraut von Profis",
@@ -787,10 +787,6 @@
       "retention": {
         "title": "SOC 2 Type II zertifizierte Infrastruktur",
         "description": "Enterprise-Grade-Sicherheit mit kontinuierlicher Compliance-Überwachung"
-      },
-      "compliance": {
-        "title": "HIPAA-konforme Verarbeitung",
-        "description": "Medizinische Datenschutzstandards für alle Ihre sensiblen Gespräche"
       },
       "audit": {
         "title": "Zero-Knowledge-Architektur",
@@ -1337,7 +1333,8 @@
       "save25": "Sparen Sie 25%",
       "noCreditCard": "Keine Kreditkarte erforderlich",
       "freeTrial": "14 Tage kostenlose Testversion",
-      "viewComparison": "Detaillierten Vergleich ansehen"
+      "viewComparison": "Detaillierten Vergleich ansehen",
+      "billedAnnually": "Jährlich abgerechnet ({amount}/Jahr)"
     },
     "tiers": {
       "free": {
@@ -1358,7 +1355,8 @@
           "batch": "Batch-Verarbeitung",
           "storage": "90 Tage Speicherung",
           "support": "Community-Support"
-        }
+        },
+        "period": "/Monat"
       },
       "professional": {
         "name": "Professionell",

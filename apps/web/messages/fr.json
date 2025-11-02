@@ -766,8 +766,8 @@
         "rating": "notés en moyenne 4,9 / 5"
       },
       "compliance": {
-        "title": "Construit avec une sécurité de niveau entreprise",
-        "description": "Conforme RGPD, SOC 2 Type II et HIPAA"
+        "title": "Traitement conforme HIPAA",
+        "description": "Standards de confidentialité médicaux pour toutes vos conversations sensibles"
       },
       "useCases": {
         "title": "Approuvé par les professionnels",
@@ -784,10 +784,6 @@
       "retention": {
         "title": "Infrastructure certifiée SOC 2 Type II",
         "description": "Sécurité de niveau entreprise avec surveillance continue de la conformité"
-      },
-      "compliance": {
-        "title": "Traitement conforme HIPAA",
-        "description": "Standards de confidentialité médicaux pour toutes vos conversations sensibles"
       },
       "audit": {
         "title": "Architecture zéro-connaissance",
@@ -1281,24 +1277,28 @@
     "confirmRevoke": "Êtes-vous sûr de vouloir révoquer ce lien de partage? Les personnes avec le lien ne pourront plus accéder à cette transcription."
   },
   "shared": {
-    "title": "Transcription Partagée",
-    "loadingTranscript": "Chargement de la transcription...",
-    "enterPassword": "Entrer le Mot de Passe",
-    "passwordRequired": "Cette transcription est protégée par mot de passe.",
-    "password": "Mot de passe",
+    "loading": "Chargement de la transcription...",
+    "passwordRequired": "Mot de passe requis",
+    "passwordDescription": "Cette transcription est protégée par mot de passe. Veuillez entrer le mot de passe pour la voir.",
+    "enterPassword": "Entrer le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "submit": "Soumettre",
-    "invalidPassword": "Mot de passe invalide",
-    "transcriptNotFound": "Transcription non trouvée",
-    "transcriptExpired": "Ce lien de partage a expiré",
-    "transcriptRevoked": "Ce lien de partage a été révoqué",
-    "errorLoading": "Erreur lors du chargement de la transcription",
+    "error": {
+      "title": "Erreur d'accès",
+      "invalidLink": "Ce lien de partage est invalide ou a expiré.",
+      "notFound": "Transcription non trouvée.",
+      "loadFailed": "Échec du chargement de la transcription."
+    },
     "sharedBy": "Partagé par",
-    "sharedOn": "Partagé le",
-    "downloadTranscript": "Télécharger la Transcription",
-    "playRecording": "Lire l'Enregistrement",
-    "backToTop": "Retour en haut",
-    "noAnalysisAvailable": "Aucune analyse disponible",
-    "noTranscriptAvailable": "Aucune transcription disponible"
+    "views": "Vues",
+    "readOnly": "Lecture seule",
+    "analysis": "Analyse",
+    "transcript": "Transcription complète",
+    "footer": {
+      "poweredBy": "Propulsé par Neural Summary",
+      "copyright": "© {year} Neural Summary. Tous droits réservés."
+    }
   },
   "cookieConsent": {
     "title": "Nous utilisons des cookies pour améliorer votre expérience",
@@ -1336,7 +1336,8 @@
       "save25": "Économisez 25%",
       "noCreditCard": "Aucune carte de crédit requise",
       "freeTrial": "Essai gratuit de 14 jours",
-      "viewComparison": "Voir la comparaison détaillée"
+      "viewComparison": "Voir la comparaison détaillée",
+      "billedAnnually": "Facturé annuellement ({amount}/an)"
     },
     "tiers": {
       "free": {
@@ -1357,7 +1358,8 @@
           "batch": "Traitement par lots",
           "storage": "90 jours de stockage",
           "support": "Support communautaire"
-        }
+        },
+        "period": "/mois"
       },
       "professional": {
         "name": "Professionnel",
@@ -1706,30 +1708,6 @@
       "title": "Passer au plan Professionnel",
       "defaultMessage": "Débloquez des transcriptions illimitées, des fichiers audio plus longs et des fonctionnalités d'analyse avancées.",
       "cta": "Voir les plans"
-    }
-  },
-  "shared": {
-    "loading": "Chargement de la transcription...",
-    "passwordRequired": "Mot de passe requis",
-    "passwordDescription": "Cette transcription est protégée par mot de passe. Veuillez entrer le mot de passe pour la voir.",
-    "enterPassword": "Entrer le mot de passe",
-    "showPassword": "Afficher le mot de passe",
-    "hidePassword": "Masquer le mot de passe",
-    "submit": "Soumettre",
-    "error": {
-      "title": "Erreur d'accès",
-      "invalidLink": "Ce lien de partage est invalide ou a expiré.",
-      "notFound": "Transcription non trouvée.",
-      "loadFailed": "Échec du chargement de la transcription."
-    },
-    "sharedBy": "Partagé par",
-    "views": "Vues",
-    "readOnly": "Lecture seule",
-    "analysis": "Analyse",
-    "transcript": "Transcription complète",
-    "footer": {
-      "poweredBy": "Propulsé par Neural Summary",
-      "copyright": "© {year} Neural Summary. Tous droits réservés."
     }
   },
   "analyses": {
