@@ -37,6 +37,13 @@
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "displayName": "Nombre completo",
+    "enterYourName": "Ingrese su nombre completo",
+    "enterYourEmail": "Ingrese su dirección de correo electrónico",
+    "createPassword": "Crear una contraseña",
+    "confirmYourPassword": "Confirme su contraseña",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "resetPassword": "Restablecer contraseña",
     "signInWithGoogle": "Iniciar sesión con Google",
@@ -44,15 +51,46 @@
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "dontHaveAccount": "¿No tienes una cuenta?",
     "createAccount": "Crear cuenta",
+    "createYourAccount": "Crea tu cuenta",
+    "joinThousandsOfUsers": "Únete a miles de usuarios transformando su audio",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Inicia sesión para continuar a Neural Summary",
     "invalidCredentials": "Correo electrónico o contraseña inválidos",
+    "invalidEmail": "Por favor ingrese una dirección de correo electrónico válida",
     "accountCreated": "Cuenta creada exitosamente",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
     "emailAlreadyInUse": "El correo electrónico ya está en uso",
     "weakPassword": "La contraseña debe tener al menos 6 caracteres",
     "userNotFound": "Usuario no encontrado",
     "tooManyRequests": "Demasiadas solicitudes. Por favor, inténtalo más tarde.",
+    "displayNameRequired": "Por favor ingrese su nombre completo",
+    "passwordMinLength": "Al menos 8 caracteres",
+    "passwordUppercase": "Una letra mayúscula",
+    "passwordLowercase": "Una letra minúscula",
+    "passwordNumber": "Un número",
+    "passwordRequirementsNotMet": "Por favor cumpla con todos los requisitos de contraseña",
+    "acceptTermsRequired": "Por favor acepte los términos y condiciones",
+    "iAgreeToThe": "Acepto los",
+    "termsOfService": "Términos de Servicio",
+    "and": "y",
+    "privacyPolicy": "Política de Privacidad",
+    "orContinueWith": "O continuar con",
+    "signupFailed": "Error al crear la cuenta. Por favor intente de nuevo.",
+    "verifyYourEmail": "Verifica tu correo electrónico",
+    "verificationEmailSent": "Hemos enviado un correo de verificación a",
+    "checkYourInbox": "Por favor revise su bandeja de entrada y haga clic en el enlace de verificación para continuar.",
+    "checkYourEmail": "Revise su correo electrónico",
+    "clickVerificationLink": "Haga clic en el enlace de verificación que enviamos para completar su registro.",
+    "enterVerificationCode": "Ingrese el código de 6 dígitos de su correo electrónico",
+    "verifyEmail": "Verificar Correo Electrónico",
+    "emailVerified": "¡Correo Electrónico Verificado!",
+    "redirectingToDashboard": "Redirigiendo a su panel de control...",
+    "invalidVerificationCode": "Código de verificación inválido. Por favor intente de nuevo.",
+    "verificationFailed": "Verificación fallida. Por favor intente de nuevo.",
+    "didntReceiveEmail": "¿No recibió el correo?",
+    "resendEmail": "Reenviar correo",
+    "resendIn": "Reenviar en",
+    "resendFailed": "Error al reenviar el correo. Por favor intente de nuevo.",
     "backToLogin": "Volver al inicio de sesión",
     "backToHome": "Volver al inicio",
     "enterEmailForReset": "Ingrese su dirección de correo electrónico para recibir un enlace de restablecimiento",
@@ -90,6 +128,7 @@
     "howItWorks": "Cómo funciona",
     "recordingGuide": "Guía de grabación",
     "howToRecord": "Cómo grabar audio en cualquier dispositivo",
+    "settings": "Configuración",
     "noTranscriptions": "Aún no hay transcripciones",
     "uploadYourFirst": "Sube tu primer archivo de audio para comenzar"
   },
@@ -110,6 +149,25 @@
     "maxFileSize": "Tamaño máximo del archivo: 5GB",
     "selectFile": "Seleccionar archivo de audio",
     "addContext": "Agregar contexto (Opcional)",
+    "dropMoreFiles": "Agregar más archivos",
+    "orClickToAddMore": "o haz clic para explorar",
+    "maxFilesSelected": "Máximo de archivos seleccionados (3)",
+    "processingMode": "Modo de procesamiento",
+    "processIndividually": "Procesar por separado",
+    "processIndividuallyDesc": "Crear transcripciones individuales para cada archivo",
+    "processMerged": "Fusionar archivos",
+    "processMergedDesc": "Combinar en una conversación",
+    "fileOrder": "Orden de archivos",
+    "mergingFiles": "Fusionando {count} archivos...",
+    "contextForAll": "Contexto (se aplica a todos los archivos)",
+    "contextForMerged": "Contexto para conversación fusionada",
+    "dragToReorder": "Arrastrar para reordenar",
+    "moveUp": "Mover arriba",
+    "moveDown": "Mover abajo",
+    "removeFile": "Eliminar archivo",
+    "firstFile": "Primer archivo",
+    "lastFile": "Último archivo",
+    "mergeOrderMatters": "Los archivos se fusionarán en el orden mostrado arriba. Arrastra para reordenarlos cronológicamente.",
     "analysisType": "Tipo de análisis (Opcional)",
     "analysisTypeHelp": "Elige cómo te gustaría que la IA analice tu conversación",
     "customInstructions": "Instrucciones de análisis personalizado",
@@ -147,6 +205,8 @@
     "speakClearlyNormalPace": "Habla claramente y a ritmo normal",
     "addContextForTechnicalTerms": "Agrega contexto para términos técnicos",
     "uploadMultipleFilesAtOnce": "Sube múltiples archivos a la vez",
+    "comprehensiveAnalysis": "Análisis completo incluido",
+    "comprehensiveAnalysisDescription": "Tu audio será automáticamente analizado desde múltiples perspectivas para darte insights completos:",
     "analysisTypes": {
       "summary": "Resumen (Predeterminado)",
       "communicationStyles": "Estilos de comunicación y mejoras",
@@ -171,7 +231,10 @@
       "unsupportedFormat": "Formato no soportado (tipo: {type})",
       "invalidFileType": "Tipo de archivo inválido. Formatos soportados: {formats}",
       "uploadFailed": "Fallo en la carga. Por favor, inténtalo de nuevo.",
-      "processingFailed": "Fallo en el procesamiento. Por favor, inténtalo de nuevo."
+      "processingFailed": "Fallo en el procesamiento. Por favor, inténtalo de nuevo.",
+      "maxFilesReached": "Máximo de 3 archivos permitidos a la vez",
+      "duplicateFile": "Este archivo ya ha sido seleccionado",
+      "tooManyFiles": "Solo se pueden subir {max} archivos a la vez"
     }
   },
   "transcription": {
@@ -224,7 +287,10 @@
     "failedToUpdateTitle": "Error al actualizar título",
     "close": "Cerrar",
     "view": "Ver",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "share": "Compartir",
+    "loadingMore": "Cargando...",
+    "noMoreTranscriptions": "Has llegado al final"
   },
   "howItWorks": {
     "title": "Cómo funciona",
@@ -634,9 +700,56 @@
         "cancel": "Cancela cuando quieras"
       }
     },
+    "pricingTeaser": {
+      "title": "Precios simples y transparentes",
+      "subtitle": "Comienza gratis, mejora cuando estés listo. Sin costos ocultos, sin sorpresas.",
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "description": "Perfecto para probar",
+        "features": {
+          "transcriptions": "3 transcripciones/mes",
+          "duration": "Máx 30 min por archivo",
+          "summary": "Resumen básico"
+        },
+        "cta": "Comenzar"
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$29",
+        "description": "Para usuarios regulares",
+        "badge": "Más popular",
+        "features": {
+          "transcriptions": "Transcripciones ilimitadas",
+          "hours": "60 horas/mes incluidas",
+          "analyses": "Los 6 tipos de análisis",
+          "fileSize": "Máx 3GB de tamaño de archivo",
+          "priority": "Procesamiento prioritario"
+        },
+        "cta": "Prueba gratuita"
+      },
+      "payg": {
+        "name": "Paga según uses",
+        "price": "$1,50",
+        "description": "Por hora de audio",
+        "features": {
+          "credits": "Los créditos nunca expiran",
+          "analyses": "Los 6 tipos de análisis",
+          "occasional": "Perfecto para uso ocasional"
+        },
+        "cta": "Comprar créditos"
+      },
+      "viewFullPricing": "Ver detalles completos de precios"
+    },
     "nav": {
       "login": "Iniciar sesión",
-      "getStarted": "Comenzar"
+      "getStarted": "Comenzar",
+      "dashboard": "Ir al Panel de Control",
+      "menu": "Menú",
+      "language": "Idioma",
+      "features": "Características",
+      "pricing": "Precios",
+      "faq": "FAQ"
     },
     "footer": {
       "product": {
