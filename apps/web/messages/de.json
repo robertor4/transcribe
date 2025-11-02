@@ -52,15 +52,46 @@
     "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
     "dontHaveAccount": "Haben Sie noch kein Konto?",
     "createAccount": "Konto erstellen",
+    "createYourAccount": "Erstellen Sie Ihr Konto",
+    "joinThousandsOfUsers": "Schließen Sie sich Tausenden von Nutzern an, die ihr Audio transformieren",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Melden Sie sich an, um zu Neural Summary fortzufahren",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "accountCreated": "Konto erfolgreich erstellt",
     "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
     "emailAlreadyInUse": "E-Mail wird bereits verwendet",
     "weakPassword": "Passwort sollte mindestens 6 Zeichen lang sein",
     "userNotFound": "Benutzer nicht gefunden",
     "tooManyRequests": "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
+    "displayNameRequired": "Bitte geben Sie Ihren vollständigen Namen ein",
+    "passwordMinLength": "Mindestens 8 Zeichen",
+    "passwordUppercase": "Ein Großbuchstabe",
+    "passwordLowercase": "Ein Kleinbuchstabe",
+    "passwordNumber": "Eine Zahl",
+    "passwordRequirementsNotMet": "Bitte erfüllen Sie alle Passwort-Anforderungen",
+    "acceptTermsRequired": "Bitte akzeptieren Sie die Nutzungsbedingungen",
+    "iAgreeToThe": "Ich stimme den",
+    "termsOfService": "Nutzungsbedingungen",
+    "and": "und",
+    "privacyPolicy": "Datenschutzerklärung",
+    "orContinueWith": "Oder fortfahren mit",
+    "signupFailed": "Fehler beim Erstellen des Kontos. Bitte versuchen Sie es erneut.",
+    "verifyYourEmail": "Bestätigen Sie Ihre E-Mail",
+    "verificationEmailSent": "Wir haben eine Bestätigungs-E-Mail gesendet an",
+    "checkYourInbox": "Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Bestätigungslink, um fortzufahren.",
+    "checkYourEmail": "Überprüfen Sie Ihre E-Mails",
+    "clickVerificationLink": "Klicken Sie auf den Bestätigungslink, den wir gesendet haben, um Ihre Registrierung abzuschließen.",
+    "enterVerificationCode": "Geben Sie den 6-stelligen Code aus Ihrer E-Mail ein",
+    "verifyEmail": "E-Mail bestätigen",
+    "emailVerified": "E-Mail bestätigt!",
+    "redirectingToDashboard": "Weiterleitung zu Ihrem Dashboard...",
+    "invalidVerificationCode": "Ungültiger Bestätigungscode. Bitte versuchen Sie es erneut.",
+    "verificationFailed": "Bestätigung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "didntReceiveEmail": "Keine E-Mail erhalten?",
+    "resendEmail": "E-Mail erneut senden",
+    "resendIn": "Erneut senden in",
+    "resendFailed": "Fehler beim erneuten Senden der E-Mail. Bitte versuchen Sie es erneut.",
     "backToLogin": "Zurück zur Anmeldung",
     "backToHome": "Zurück zur Startseite",
     "enterEmailForReset": "Geben Sie Ihre E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten",
@@ -1285,7 +1316,402 @@
     "playRecording": "Aufnahme abspielen",
     "backToTop": "Zurück nach oben",
     "noAnalysisAvailable": "Keine Analyse verfügbar",
-    "noTranscriptAvailable": "Kein Transkript verfügbar"
+    "noTranscriptAvailable": "Kein Transkript verfügbar",
+    "views": "Aufrufe",
+    "readOnly": "Nur Lesen",
+    "analysis": "Analyse",
+    "transcript": "Vollständiges Transkript",
+    "footer": {
+      "poweredBy": "Powered by Neural Summary",
+      "copyright": "© {year} Neural Summary. Alle Rechte vorbehalten."
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Preise - Neural Summary",
+      "description": "Wählen Sie den perfekten Plan für Ihre Transkriptionsbedürfnisse. Von kostenlos bis Enterprise haben wir einen Plan, der zu Ihrem Workflow passt."
+    },
+    "hero": {
+      "title": "Einfache, transparente Preise",
+      "subtitle": "Wählen Sie den Plan, der zu Ihnen passt. Starten Sie kostenlos, upgraden Sie jederzeit.",
+      "currencyNotice": "Preise in USD angezeigt. Automatische Umrechnung in Ihre Lokalwährung beim Checkout.",
+      "annual": "Jährlich",
+      "monthly": "Monatlich",
+      "save25": "Sparen Sie 25%",
+      "noCreditCard": "Keine Kreditkarte erforderlich",
+      "freeTrial": "14 Tage kostenlose Testversion",
+      "viewComparison": "Detaillierten Vergleich ansehen"
+    },
+    "tiers": {
+      "free": {
+        "name": "Kostenlos",
+        "title": "Kostenlos",
+        "price": "Kostenlos",
+        "description": "Perfekt zum Ausprobieren von Neural Summary",
+        "cta": "Loslegen",
+        "features": {
+          "transcriptions": "3 Transkriptionen/Monat",
+          "duration": "30 Minuten max pro Datei",
+          "fileSize": "100MB max Dateigröße",
+          "analyses": "Nur Basis-Zusammenfassung",
+          "coreAnalyses": "4 Kern-Analysen enthalten",
+          "onDemand": "2 On-Demand-Analysen/Monat",
+          "translation": "Übersetzungsfunktionen",
+          "sharing": "Transkripte teilen",
+          "batch": "Batch-Verarbeitung",
+          "storage": "90 Tage Speicherung",
+          "support": "Community-Support"
+        }
+      },
+      "professional": {
+        "name": "Professionell",
+        "title": "Professionell",
+        "price": "$29",
+        "priceAnnual": "$261",
+        "period": "/Monat",
+        "description": "Für Profis, die regelmäßig transkribieren",
+        "cta": "Loslegen",
+        "badge": "Am beliebtesten",
+        "recommended": "EMPFOHLEN",
+        "guarantee": "30 Tage Geld-zurück-Garantie",
+        "saveAnnual": "Sparen Sie $87/Jahr",
+        "features": {
+          "transcriptions": "Unbegrenzte Transkriptionen",
+          "hours": "60 Stunden/Monat enthalten",
+          "unlimited": "Unbegrenzte Transkriptionen",
+          "duration": "60 Stunden/Monat enthalten",
+          "overageRate": "$0,50 pro zusätzliche Stunde",
+          "overage": "Überschreitung: $0,50/Stunde",
+          "fileSize": "5GB max Dateigröße",
+          "analyses": "Alle Analysetypen",
+          "allAnalyses": "Alle Analysetypen",
+          "onDemandAnalyses": "Unbegrenzte On-Demand-Analysen",
+          "storage": "Unbegrenzter Speicher",
+          "sharing": "Erweiterte Freigabefunktionen",
+          "advancedSharing": "Erweitertes Teilen & Zusammenarbeit",
+          "translation": "Übersetzung in 50+ Sprachen",
+          "batch": "Batch-Verarbeitung",
+          "priority": "Bevorzugte Verarbeitung",
+          "support": "Bevorzugter E-Mail-Support"
+        }
+      },
+      "payg": {
+        "name": "Pay-As-You-Go",
+        "title": "Pay-As-You-Go",
+        "price": "$1,50",
+        "period": "/Stunde",
+        "priceUnit": "/Stunde",
+        "description": "Perfekt für gelegentliche Nutzung",
+        "cta": "Credits kaufen",
+        "features": {
+          "transcriptions": "Unbegrenzte Transkriptionen",
+          "credits": "Credits verfallen nie",
+          "noSubscription": "Kein Abo erforderlich",
+          "allFeatures": "Alle Funktionen enthalten",
+          "noExpiry": "Credits verfallen nie",
+          "minimum": "Mindestkauf",
+          "rate": "Flexibler Stundensatz",
+          "fileSize": "5GB max Dateigröße",
+          "analyses": "Alle Analysetypen",
+          "onDemandAnalyses": "Credits pro Analyse",
+          "storage": "180 Tage Speicherung",
+          "support": "E-Mail-Support"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Beginnen Sie smart zu transkribieren",
+      "subtitle": "Keine Kreditkarte für kostenlosen Plan erforderlich",
+      "button": "Kostenlos starten"
+    },
+    "comparison": {
+      "feature": "Funktion",
+      "tiers": {
+        "free": "Kostenlos",
+        "professional": "Professionell",
+        "payg": "Pay-As-You-Go"
+      },
+      "categories": {
+        "basics": "Grundlagen",
+        "analyses": "Analyse & Funktionen",
+        "features": "Zusätzliche Funktionen"
+      },
+      "features": {
+        "transcriptions": "Transkriptionen pro Monat",
+        "duration": "Max Dauer pro Datei",
+        "fileSize": "Max Dateigröße",
+        "hours": "Monatliche Stunden enthalten",
+        "coreAnalyses": "Kern-Analysen",
+        "onDemand": "On-Demand-Analysen",
+        "translation": "Übersetzung",
+        "sharing": "Freigabefunktionen",
+        "batch": "Batch-Verarbeitung",
+        "priority": "Bevorzugte Verarbeitung",
+        "api": "API-Zugang"
+      },
+      "title": "Pläne vergleichen",
+      "subtitle": "Finden Sie den perfekten Plan für Ihre Bedürfnisse",
+      "values": {
+        "unlimited": "Unbegrenzt",
+        "basic": "Basis",
+        "advanced": "Erweitert",
+        "priority": "Bevorzugt",
+        "community": "Community",
+        "email": "E-Mail",
+        "priorityEmail": "Bevorzugte E-Mail"
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "questions": {
+        "cost": {
+          "question": "Was kostet die Transkription genau?",
+          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für $29. Zusätzliche Stunden kosten $0,50 pro Stück. Pay-As-You-Go ist $1,50/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
+        },
+        "overage": {
+          "question": "Was passiert, wenn ich mein monatliches Limit überschreite?",
+          "answer": "Professional-Nutzer werden automatisch $0,50 pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
+        },
+        "cancel": {
+          "question": "Kann ich jederzeit kündigen?",
+          "answer": "Ja! Sie können jederzeit kündigen. Ihr Abonnement bleibt bis zum Ende Ihres Abrechnungszeitraums aktiv, und Sie werden nicht mehr belastet."
+        },
+        "currency": {
+          "question": "Welche Währungen unterstützen Sie?",
+          "answer": "Wir unterstützen über 15 Währungen einschließlich USD, EUR, GBP, CAD, AUD, JPY und mehr. Preise werden automatisch in Ihre Lokalwährung umgerechnet."
+        },
+        "upgrade": {
+          "question": "Kann ich meinen Plan wechseln?",
+          "answer": "Ja! Upgrades werden sofort mit anteiliger Abrechnung wirksam. Downgrades werden am Ende Ihres aktuellen Abrechnungszeitraums wirksam, sodass Sie Ihren aktuellen Plan bis dahin nutzen können."
+        },
+        "payg": {
+          "question": "Wie funktionieren Pay-As-You-Go-Credits?",
+          "answer": "Credits kosten $1,50 pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit zum Start?",
+      "subtitle": "Schließen Sie sich Tausenden von Profis an, die Neural Summary nutzen, um Zeit zu sparen und ihre Arbeit zu verbessern.",
+      "button": "Kostenlose Testversion starten"
+    },
+    "featureCategories": {
+      "transcription": "Transkription",
+      "analysis": "Analyse",
+      "collaboration": "Zusammenarbeit",
+      "support": "Support"
+    }
+  },
+  "checkout": {
+    "metadata": {
+      "title": "Checkout - Neural Summary",
+      "description": "Schließen Sie Ihr Neural Summary-Abonnement ab"
+    },
+    "title": "Schließen Sie Ihr Abonnement ab",
+    "subtitle": "Sie sind nur einen Schritt von unbegrenzten Transkriptionen entfernt",
+    "selectedPlan": "Ausgewählter Plan",
+    "billingCycle": "Abrechnungszyklus",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "save25": "Sparen Sie 25%",
+    "summary": {
+      "title": "Bestellübersicht",
+      "plan": "Plan",
+      "billing": "Abrechnung",
+      "total": "Gesamt",
+      "perMonth": "/Monat",
+      "perYear": "/Jahr",
+      "billedMonthly": "Monatlich abgerechnet",
+      "billedAnnually": "Jährlich abgerechnet"
+    },
+    "features": {
+      "title": "Was enthalten ist"
+    },
+    "secure": {
+      "title": "Sichere Zahlung",
+      "description": "Ihre Zahlungsinformationen sind verschlüsselt und sicher. Wir verwenden Stripe für die Zahlungsabwicklung."
+    },
+    "cta": "Weiter zur Zahlung",
+    "processing": "Verarbeitung...",
+    "loadingStripe": "Sichere Zahlung wird geladen...",
+    "redirecting": "Weiterleitung zur sicheren Zahlung...",
+    "error": {
+      "title": "Checkout-Fehler",
+      "description": "Beim Laden der Checkout-Seite ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+      "invalidTier": "Ungültige Abonnementstufe",
+      "sessionFailed": "Checkout-Sitzung konnte nicht erstellt werden",
+      "backToPricing": "Zurück zu Preisen",
+      "tryAgain": "Erneut versuchen"
+    },
+    "success": {
+      "title": "Zahlung erfolgreich!",
+      "description": "Danke für Ihr Abonnement! Ihr Konto wurde aufgewertet und Sie haben jetzt Zugriff auf alle Premium-Funktionen.",
+      "nextSteps": {
+        "title": "Nächste Schritte?",
+        "step1": "Laden Sie Ihre erste Audiodatei hoch",
+        "step2": "Erkunden Sie alle Analysetypen",
+        "step3": "Teilen Sie Transkripte mit Ihrem Team"
+      },
+      "cta": "Zum Dashboard",
+      "receiptNotice": "Eine Quittung wurde an Ihre E-Mail-Adresse gesendet."
+    },
+    "cancel": {
+      "title": "Zahlung abgebrochen",
+      "subtitle": "Ihr Abonnement wurde nicht abgeschlossen",
+      "message": "Ihrem Konto wurden keine Gebühren berechnet. Sie können es jederzeit erneut versuchen.",
+      "cta": "Preise ansehen",
+      "support": "Benötigen Sie Hilfe? Kontaktieren Sie unser Support-Team."
+    }
+  },
+  "subscription": {
+    "metadata": {
+      "title": "Abonnement & Abrechnung - Neural Summary",
+      "description": "Verwalten Sie Ihr Abonnement, sehen Sie Nutzung und Abrechnungsverlauf"
+    },
+    "title": "Abonnement & Abrechnung",
+    "loading": "Abo-Details werden geladen...",
+    "error": {
+      "loadFailed": "Abo-Details konnten nicht geladen werden",
+      "updateFailed": "Abo konnte nicht aktualisiert werden",
+      "cancelFailed": "Abo konnte nicht gekündigt werden",
+      "retry": "Erneut versuchen"
+    },
+    "currentPlan": {
+      "title": "Aktueller Plan",
+      "free": "Kostenloser Plan",
+      "professional": "Professional Plan",
+      "payg": "Pay-As-You-Go",
+      "status": {
+        "active": "Aktiv",
+        "cancelled": "Gekündigt",
+        "pastDue": "Überfällig",
+        "trialing": "Testversion"
+      },
+      "billingCycle": "Abrechnungszyklus",
+      "monthly": "Monatlich",
+      "annual": "Jährlich",
+      "nextBilling": "Nächstes Abrechnungsdatum",
+      "cancelAt": "Gekündigt am",
+      "amount": "Betrag"
+    },
+    "usage": {
+      "title": "Nutzung diesen Monat",
+      "transcriptions": "Transkriptionen",
+      "hours": "Stunden",
+      "onDemandAnalyses": "On-Demand-Analysen",
+      "resetDate": "Zurücksetzen am",
+      "paygCredits": "Verfügbare Credits",
+      "buyMore": "Mehr Credits kaufen",
+      "overage": {
+        "title": "Überschreitungsgebühren",
+        "description": "Sie haben {hours} Stunden über Ihr Limit von 60 Stunden diesen Monat genutzt",
+        "rate": "Zusätzliche Stunden werden mit $0,50/Stunde berechnet",
+        "total": "Geschätzte Überschreitungsgebühren",
+        "nextBill": "Wird Ihrer nächsten Rechnung am {date} hinzugefügt"
+      }
+    },
+    "actions": {
+      "upgrade": "Plan upgraden",
+      "changePlan": "Plan ändern",
+      "cancel": "Abo kündigen",
+      "reactivate": "Abo reaktivieren",
+      "manageBilling": "Abrechnung verwalten",
+      "viewInvoices": "Rechnungen ansehen"
+    },
+    "billingHistory": {
+      "title": "Abrechnungsverlauf",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "amount": "Betrag",
+      "status": "Status",
+      "invoice": "Rechnung",
+      "download": "Herunterladen",
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "failed": "Fehlgeschlagen",
+      "empty": "Noch kein Abrechnungsverlauf"
+    },
+    "cancelModal": {
+      "title": "Abonnement kündigen",
+      "description": "Sind Sie sicher, dass Sie Ihr Abonnement kündigen möchten?",
+      "warning": "Sie verlieren den Zugriff auf Professional-Funktionen am Ende Ihres Abrechnungszeitraums am {date}.",
+      "keepAccess": "Sie behalten Zugriff bis zum",
+      "confirm": "Ja, Abo kündigen",
+      "cancel": "Abo behalten",
+      "cancelling": "Kündigung...",
+      "success": "Abo erfolgreich gekündigt",
+      "feedback": {
+        "title": "Es tut uns leid, Sie gehen zu sehen",
+        "question": "Was ist der Hauptgrund für die Kündigung?",
+        "tooExpensive": "Zu teuer",
+        "notUsing": "Nicht genug genutzt",
+        "missingFeatures": "Fehlende Funktionen",
+        "foundAlternative": "Alternative gefunden",
+        "other": "Andere",
+        "comments": "Zusätzliche Kommentare (optional)",
+        "submit": "Absenden und kündigen"
+      }
+    },
+    "cancelConfirm": "Sind Sie sicher, dass Sie Ihr Abo kündigen möchten? Sie behalten Zugriff bis zum Ende Ihres Abrechnungszeitraums.",
+    "cancelSuccess": "Ihr Abo wurde erfolgreich gekündigt. Sie behalten Zugriff bis zum Ende Ihres aktuellen Abrechnungszeitraums.",
+    "cancelError": "Abo konnte nicht gekündigt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    "cancelAtPeriodEnd": "Zur Kündigung geplant",
+    "cancelSubscription": "Abonnement kündigen",
+    "cancelDescription": "Die Kündigung wird Ihr Konto am Ende Ihres aktuellen Abrechnungszeitraums auf den kostenlosen Plan herunterstufen. Sie können die Professional-Funktionen bis dahin weiter nutzen.",
+    "cancelButton": "Abonnement kündigen",
+    "usageThisMonth": "Nutzung diesen Monat",
+    "hoursUsed": "Genutzte Stunden",
+    "transcriptionsUsed": "Transkriptionen",
+    "buyMoreCredits": "Mehr Credits kaufen",
+    "noBillingHistory": "Noch kein Abrechnungsverlauf",
+    "downloadInvoice": "Rechnung herunterladen",
+    "overageWarning": "Überschreitungsnutzung",
+    "overageCharge": "Geschätzte Überschreitungsgebühren",
+    "upgrade": "Plan upgraden",
+    "hours": "Stunden",
+    "nextBilling": "Verlängert am",
+    "status": "Status",
+    "billingPeriodStart": "Abrechnungszeitraum begonnen"
+  },
+  "paywall": {
+    "quotaExceeded": {
+      "transcriptions": {
+        "title": "Monatliches Limit erreicht",
+        "description": "Sie haben alle 3 kostenlosen Transkriptionen diesen Monat genutzt. Upgraden Sie auf Professional für unbegrenzte Transkriptionen."
+      },
+      "duration": {
+        "title": "Audio zu lang",
+        "description": "Diese Datei überschreitet das Dauerlimit Ihres Plans. Upgraden Sie, um längere Audiodateien zu verarbeiten."
+      },
+      "filesize": {
+        "title": "Datei zu groß",
+        "description": "Diese Datei überschreitet das Größenlimit Ihres Plans. Upgraden Sie, um größere Dateien zu verarbeiten."
+      },
+      "paygCredits": {
+        "title": "Unzureichende Credits",
+        "description": "Sie haben nicht genug Credits für diese Transkription. Kaufen Sie mehr Credits, um fortzufahren."
+      },
+      "onDemandAnalyses": {
+        "title": "Analyse-Limit erreicht",
+        "description": "Sie haben alle Ihre On-Demand-Analysen diesen Monat genutzt. Upgraden Sie für mehr Analysen oder warten Sie bis zum nächsten Monat."
+      },
+      "current": "Aktuelle Nutzung",
+      "limit": "Ihr Limit",
+      "required": "Erforderlich",
+      "upgradeButton": "Plan upgraden",
+      "buyCreditsButton": "Credits kaufen",
+      "cancelButton": "Abbrechen"
+    },
+    "usageIndicator": {
+      "approaching": "Nähert sich Limit - erwägen Sie bald ein Upgrade",
+      "exceeded": "Limit überschritten - upgraden Sie, um fortzufahren",
+      "unlimited": "Unbegrenzt"
+    },
+    "upgradePrompt": {
+      "title": "Auf Professional upgraden",
+      "defaultMessage": "Schalten Sie unbegrenzte Transkriptionen, längere Audiodateien und erweiterte Analysefunktionen frei.",
+      "cta": "Pläne ansehen"
+    }
   },
   "cookieConsent": {
     "title": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern",

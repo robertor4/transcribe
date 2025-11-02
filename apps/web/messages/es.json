@@ -1171,7 +1171,565 @@
     "playRecording": "Reproducir Grabación",
     "backToTop": "Volver arriba",
     "noAnalysisAvailable": "No hay análisis disponible",
-    "noTranscriptAvailable": "No hay transcripción disponible"
+    "noTranscriptAvailable": "No hay transcripción disponible",
+    "loading": "Cargando transcripción...",
+    "passwordRequired": "Contraseña requerida",
+    "passwordDescription": "Esta transcripción está protegida con contraseña. Ingrese la contraseña para verla.",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "submit": "Enviar",
+    "error": {
+      "title": "Error de acceso",
+      "invalidLink": "Este enlace para compartir es inválido o ha expirado.",
+      "notFound": "Transcripción no encontrada.",
+      "loadFailed": "Error al cargar la transcripción."
+    },
+    "sharedBy": "Compartido por",
+    "views": "Vistas",
+    "readOnly": "Solo lectura",
+    "analysis": "Análisis",
+    "transcript": "Transcripción completa",
+    "footer": {
+      "poweredBy": "Powered by Neural Summary",
+      "copyright": "© {year} Neural Summary. Todos los derechos reservados."
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "theme": "Tema",
+    "notifications": "Notificaciones",
+    "privacy": "Privacidad",
+    "security": "Seguridad",
+    "account": "Cuenta",
+    "subscription": "Suscripción",
+    "billing": "Facturación",
+    "usage": "Uso",
+    "apiKeys": "Claves API",
+    "integrations": "Integraciones",
+    "export": "Exportar datos",
+    "deleteAccount": "Eliminar cuenta",
+    "saveChanges": "Guardar cambios",
+    "changesSaved": "Cambios guardados exitosamente",
+    "backToDashboard": "Volver al panel de control",
+    "comingSoon": "Próximamente",
+    "profilePage": {
+      "title": "Información del perfil",
+      "description": "Administre su información personal y configuración del perfil.",
+      "loadError": "Error al cargar el perfil",
+      "saveError": "Error al guardar el perfil",
+      "saveSuccess": "Perfil actualizado exitosamente",
+      "profilePhoto": "Foto de perfil",
+      "photoURLPlaceholder": "Ingrese la URL de la imagen",
+      "photoURLHelp": "Ingrese una URL de imagen para usar como foto de perfil",
+      "displayName": "Nombre para mostrar",
+      "displayNamePlaceholder": "Ingrese su nombre",
+      "email": "Dirección de correo electrónico",
+      "emailHelp": "Su dirección de correo no se puede cambiar",
+      "verified": "Verificado",
+      "notVerified": "No verificado - Haga clic para reenviar",
+      "verificationError": "Error al enviar correo de verificación",
+      "accountCreated": "Cuenta creada",
+      "subscription": "Suscripción",
+      "expiresOn": "Expira el",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "notificationsPage": {
+      "title": "Configuración de notificaciones",
+      "description": "Configure cómo recibe notificaciones sobre sus transcripciones.",
+      "loadError": "Error al cargar configuración",
+      "saveError": "Error al guardar configuración",
+      "saveSuccess": "Configuración actualizada exitosamente",
+      "emailNotifications": "Notificaciones por correo",
+      "enableEmailNotifications": "Habilitar notificaciones por correo",
+      "enableEmailDescription": "Recibir actualizaciones por correo sobre sus transcripciones",
+      "transcriptionComplete": "Transcripción completada",
+      "transcriptionCompleteDescription": "Ser notificado cuando su transcripción esté lista",
+      "digestFrequency": "Frecuencia de correos",
+      "digestDescription": "Con qué frecuencia recibir notificaciones por correo",
+      "digest": {
+        "immediate": "Inmediato",
+        "daily": "Resumen diario",
+        "weekly": "Resumen semanal"
+      },
+      "browserNotifications": "Notificaciones del navegador",
+      "enableBrowserNotifications": "Habilitar notificaciones del navegador",
+      "enableBrowserDescription": "Mostrar notificaciones de escritorio cuando esta pestaña está en segundo plano",
+      "browserPermissionDenied": "El permiso de notificación del navegador ha sido denegado",
+      "browserPermissionBlocked": "Las notificaciones del navegador están bloqueadas. Por favor habilítelas en la configuración de su navegador.",
+      "browserNotificationTypes": "Recibirá notificaciones para:",
+      "notificationType": {
+        "transcriptionComplete": "Finalización de transcripción",
+        "transcriptionFailed": "Fallos de transcripción",
+        "transcriptionProgress": "Actualizaciones de progreso de procesamiento"
+      },
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "preferencesPage": {
+      "title": "Preferencias",
+      "description": "Personalice su experiencia y configuraciones predeterminadas.",
+      "loadError": "Error al cargar preferencias",
+      "saveError": "Error al guardar preferencias",
+      "saveSuccess": "Preferencias actualizadas exitosamente",
+      "languageSettings": "Configuración de idioma",
+      "interfaceLanguage": "Idioma de la interfaz",
+      "interfaceLanguageDescription": "Elija su idioma preferido para la aplicación",
+      "summaryLanguage": "Idioma del resumen",
+      "summaryLanguageDescription": "Idioma predeterminado para resúmenes de transcripción",
+      "autoDetect": "Detección automática",
+      "transcriptionDefaults": "Configuraciones predeterminadas de transcripción",
+      "defaultContext": "Contexto predeterminado",
+      "defaultContextDescription": "Contexto a usar para todas las nuevas transcripciones",
+      "defaultContextPlaceholder": "Ingrese contexto predeterminado para sus transcripciones...",
+      "autoDelete": "Eliminación automática de transcripciones",
+      "autoDeleteDescription": "Eliminar automáticamente transcripciones antiguas después de cierto período",
+      "never": "Nunca",
+      "days": "{count} días",
+      "comingSoon": "Próximamente",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "accountPage": {
+      "title": "Configuración de la cuenta",
+      "description": "Administre la seguridad de su cuenta y sus datos.",
+      "security": "Seguridad",
+      "connectedAccounts": "Cuentas conectadas",
+      "emailPassword": "Correo electrónico y contraseña",
+      "googleAccount": "Cuenta de Google",
+      "changePassword": "Cambiar contraseña",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "updatePassword": "Actualizar contraseña",
+      "changingPassword": "Cambiando...",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "notAuthenticated": "No autenticado",
+      "incorrectPassword": "Contraseña incorrecta",
+      "requiresRecentLogin": "Por favor vuelva a iniciar sesión para realizar esta acción",
+      "passwordChangeError": "Error al cambiar la contraseña",
+      "passwordChangeSuccess": "Contraseña cambiada exitosamente",
+      "dataManagement": "Gestión de datos",
+      "exportData": "Exportar sus datos",
+      "exportDataDescription": "Descargue todos sus datos incluyendo transcripciones y configuraciones",
+      "downloadData": "Descargar datos",
+      "exportComingSoon": "Función de exportación de datos próximamente",
+      "dangerZone": "Zona de peligro",
+      "deleteAccountWarning": "Una vez que elimine su cuenta, no hay vuelta atrás. Todos sus datos serán eliminados permanentemente.",
+      "deleteAccount": "Eliminar cuenta",
+      "deleteConfirmTitle": "¿Está absolutamente seguro?",
+      "deleteConfirmMessage": "Esta acción no se puede deshacer. Esto eliminará permanentemente su cuenta y todos los datos asociados.",
+      "enterPasswordToConfirm": "Ingrese su contraseña para confirmar",
+      "confirmDelete": "Sí, eliminar mi cuenta",
+      "deletingAccount": "Eliminando...",
+      "deleteAccountError": "Error al eliminar la cuenta",
+      "cancel": "Cancelar"
+    },
+    "subscriptionPage": {
+      "title": "Suscripción y facturación",
+      "description": "Administre su plan de suscripción e información de facturación.",
+      "comingSoon": "Administración de suscripciones próximamente",
+      "comingSoonDescription": "Estamos trabajando para traerle planes de suscripción flexibles con funciones mejoradas. ¡Manténgase atento!",
+      "availablePlans": "Planes disponibles",
+      "currentPlan": "Plan actual",
+      "upgrade": "Actualizar",
+      "needMore": "¿Necesita más?",
+      "enterpriseDescription": "Para equipos grandes y organizaciones con requisitos personalizados.",
+      "contactSales": "Contactar ventas"
+    }
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Precios - Neural Summary",
+      "description": "Elija el plan perfecto para sus necesidades de transcripción. Desde gratuito hasta empresa, tenemos un plan que se ajusta a su flujo de trabajo."
+    },
+    "hero": {
+      "title": "Precios simples y transparentes",
+      "subtitle": "Elija el plan que se ajuste a sus necesidades. Comience gratis, actualice en cualquier momento.",
+      "currencyNotice": "Precios mostrados en USD. Se convierten automáticamente a su moneda local al pagar.",
+      "annual": "Anual",
+      "monthly": "Mensual",
+      "save25": "Ahorre 25%",
+      "noCreditCard": "No se requiere tarjeta de crédito",
+      "freeTrial": "Prueba gratuita de 14 días",
+      "viewComparison": "Ver comparación detallada"
+    },
+    "tiers": {
+      "free": {
+        "name": "Gratis",
+        "title": "Gratis",
+        "price": "Gratis",
+        "description": "Perfecto para probar Neural Summary",
+        "cta": "Comenzar",
+        "features": {
+          "transcriptions": "3 transcripciones/mes",
+          "duration": "30 minutos máx por archivo",
+          "fileSize": "100MB tamaño máx de archivo",
+          "analyses": "Solo resumen básico",
+          "coreAnalyses": "4 análisis básicos incluidos",
+          "onDemand": "2 análisis bajo demanda/mes",
+          "translation": "Funciones de traducción",
+          "sharing": "Compartir transcripciones",
+          "batch": "Procesamiento por lotes",
+          "storage": "90 días de almacenamiento",
+          "support": "Soporte comunitario"
+        }
+      },
+      "professional": {
+        "name": "Profesional",
+        "title": "Profesional",
+        "price": "$29",
+        "priceAnnual": "$261",
+        "period": "/mes",
+        "description": "Para profesionales que transcriben regularmente",
+        "cta": "Comenzar",
+        "badge": "Más popular",
+        "recommended": "RECOMENDADO",
+        "guarantee": "Garantía de devolución de dinero de 30 días",
+        "saveAnnual": "Ahorre $87/año",
+        "features": {
+          "transcriptions": "Transcripciones ilimitadas",
+          "hours": "60 horas/mes incluidas",
+          "unlimited": "Transcripciones ilimitadas",
+          "duration": "60 horas/mes incluidas",
+          "overageRate": "$0,50 por hora adicional",
+          "overage": "Excedente: $0,50/hora",
+          "fileSize": "5GB tamaño máx de archivo",
+          "analyses": "Todos los tipos de análisis",
+          "allAnalyses": "Todos los tipos de análisis",
+          "onDemandAnalyses": "Análisis bajo demanda ilimitados",
+          "storage": "Almacenamiento ilimitado",
+          "sharing": "Funciones de compartir avanzadas",
+          "advancedSharing": "Compartir y colaboración avanzados",
+          "translation": "Traducción en 50+ idiomas",
+          "batch": "Procesamiento por lotes",
+          "priority": "Procesamiento prioritario",
+          "support": "Soporte por correo prioritario"
+        }
+      },
+      "payg": {
+        "name": "Paga según uses",
+        "title": "Paga según uses",
+        "price": "$1,50",
+        "period": "/hora",
+        "priceUnit": "/hora",
+        "description": "Perfecto para uso ocasional",
+        "cta": "Comprar créditos",
+        "features": {
+          "transcriptions": "Transcripciones ilimitadas",
+          "credits": "Los créditos nunca expiran",
+          "noSubscription": "No se requiere suscripción",
+          "allFeatures": "Todas las funciones incluidas",
+          "noExpiry": "Los créditos nunca expiran",
+          "minimum": "Compra mínima",
+          "rate": "Tarifa por hora flexible",
+          "fileSize": "5GB tamaño máx de archivo",
+          "analyses": "Todos los tipos de análisis",
+          "onDemandAnalyses": "Créditos por análisis",
+          "storage": "180 días de almacenamiento",
+          "support": "Soporte por correo"
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Comience a transcribir inteligentemente",
+      "subtitle": "No se requiere tarjeta de crédito para el plan gratuito",
+      "button": "Comenzar gratis"
+    },
+    "comparison": {
+      "feature": "Función",
+      "tiers": {
+        "free": "Gratis",
+        "professional": "Profesional",
+        "payg": "Paga según uses"
+      },
+      "categories": {
+        "basics": "Básicos",
+        "analyses": "Análisis y funciones",
+        "features": "Funciones adicionales"
+      },
+      "features": {
+        "transcriptions": "Transcripciones por mes",
+        "duration": "Duración máx por archivo",
+        "fileSize": "Tamaño máx de archivo",
+        "hours": "Horas mensuales incluidas",
+        "coreAnalyses": "Análisis básicos",
+        "onDemand": "Análisis bajo demanda",
+        "translation": "Traducción",
+        "sharing": "Funciones de compartir",
+        "batch": "Procesamiento por lotes",
+        "priority": "Procesamiento prioritario",
+        "api": "Acceso API"
+      },
+      "title": "Comparar planes",
+      "subtitle": "Encuentre el plan perfecto para sus necesidades",
+      "values": {
+        "unlimited": "Ilimitado",
+        "basic": "Básico",
+        "advanced": "Avanzado",
+        "priority": "Prioritario",
+        "community": "Comunidad",
+        "email": "Correo",
+        "priorityEmail": "Correo prioritario"
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "questions": {
+        "cost": {
+          "question": "¿Cuánto cuesta exactamente la transcripción?",
+          "answer": "El plan Profesional incluye 60 horas/mes por $29. Las horas adicionales cuestan $0,50 cada una. Paga según uses es $1,50/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
+        },
+        "overage": {
+          "question": "¿Qué pasa si excedo mi límite mensual?",
+          "answer": "Los usuarios Profesionales se les cobra automáticamente $0,50 por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
+        },
+        "cancel": {
+          "question": "¿Puedo cancelar en cualquier momento?",
+          "answer": "¡Sí! Puede cancelar en cualquier momento. Su suscripción permanece activa hasta el final de su período de facturación, y no se le cobrará más."
+        },
+        "currency": {
+          "question": "¿Qué monedas soportan?",
+          "answer": "Soportamos más de 15 monedas incluyendo USD, EUR, GBP, CAD, AUD, JPY y más. Los precios se convierten automáticamente a su moneda local."
+        },
+        "upgrade": {
+          "question": "¿Puedo cambiar de plan?",
+          "answer": "¡Sí! Las actualizaciones surten efecto inmediatamente con cargo prorrateado. Las rebajas de categoría surten efecto al final de su período de facturación actual, por lo que puede usar su plan actual hasta entonces."
+        },
+        "payg": {
+          "question": "¿Cómo funcionan los créditos de Paga según uses?",
+          "answer": "Los créditos cuestan $1,50 por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
+        }
+      }
+    },
+    "cta": {
+      "title": "¿Listo para comenzar?",
+      "subtitle": "Únase a miles de profesionales que usan Neural Summary para ahorrar tiempo y mejorar su trabajo.",
+      "button": "Comenzar prueba gratuita"
+    },
+    "featureCategories": {
+      "transcription": "Transcripción",
+      "analysis": "Análisis",
+      "collaboration": "Colaboración",
+      "support": "Soporte"
+    }
+  },
+  "checkout": {
+    "metadata": {
+      "title": "Pago - Neural Summary",
+      "description": "Complete su suscripción de Neural Summary"
+    },
+    "title": "Complete su suscripción",
+    "subtitle": "Está a un paso de las transcripciones ilimitadas",
+    "selectedPlan": "Plan seleccionado",
+    "billingCycle": "Ciclo de facturación",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "save25": "Ahorre 25%",
+    "summary": {
+      "title": "Resumen del pedido",
+      "plan": "Plan",
+      "billing": "Facturación",
+      "total": "Total",
+      "perMonth": "/mes",
+      "perYear": "/año",
+      "billedMonthly": "Facturado mensualmente",
+      "billedAnnually": "Facturado anualmente"
+    },
+    "features": {
+      "title": "Qué está incluido"
+    },
+    "secure": {
+      "title": "Pago seguro",
+      "description": "Su información de pago está encriptada y segura. Usamos Stripe para el procesamiento de pagos."
+    },
+    "cta": "Continuar al pago",
+    "processing": "Procesando...",
+    "loadingStripe": "Cargando pago seguro...",
+    "redirecting": "Redirigiendo al pago seguro...",
+    "error": {
+      "title": "Error de pago",
+      "description": "Ocurrió un error al cargar la página de pago. Por favor intente de nuevo.",
+      "invalidTier": "Nivel de suscripción inválido",
+      "sessionFailed": "Error al crear sesión de pago",
+      "backToPricing": "Volver a precios",
+      "tryAgain": "Intentar de nuevo"
+    },
+    "success": {
+      "title": "¡Pago exitoso!",
+      "description": "¡Gracias por su suscripción! Su cuenta ha sido actualizada y ahora tiene acceso a todas las funciones premium.",
+      "nextSteps": {
+        "title": "¿Próximos pasos?",
+        "step1": "Suba su primer archivo de audio",
+        "step2": "Explore todos los tipos de análisis",
+        "step3": "Comparta transcripciones con su equipo"
+      },
+      "cta": "Ir al panel de control",
+      "receiptNotice": "Se ha enviado un recibo a su dirección de correo electrónico."
+    },
+    "cancel": {
+      "title": "Pago cancelado",
+      "subtitle": "Su suscripción no se completó",
+      "message": "No se realizó ningún cargo a su cuenta. Puede intentarlo de nuevo en cualquier momento.",
+      "cta": "Ver precios",
+      "support": "¿Necesita ayuda? Contacte a nuestro equipo de soporte."
+    }
+  },
+  "subscription": {
+    "metadata": {
+      "title": "Suscripción y facturación - Neural Summary",
+      "description": "Administre su suscripción, vea uso e historial de facturación"
+    },
+    "title": "Suscripción y facturación",
+    "loading": "Cargando detalles de suscripción...",
+    "error": {
+      "loadFailed": "Error al cargar detalles de suscripción",
+      "updateFailed": "Error al actualizar suscripción",
+      "cancelFailed": "Error al cancelar suscripción",
+      "retry": "Reintentar"
+    },
+    "currentPlan": {
+      "title": "Plan actual",
+      "free": "Plan Gratis",
+      "professional": "Plan Profesional",
+      "payg": "Paga según uses",
+      "status": {
+        "active": "Activo",
+        "cancelled": "Cancelado",
+        "pastDue": "Vencido",
+        "trialing": "Prueba"
+      },
+      "billingCycle": "Ciclo de facturación",
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "nextBilling": "Próxima fecha de facturación",
+      "cancelAt": "Cancelado el",
+      "amount": "Monto"
+    },
+    "usage": {
+      "title": "Uso este mes",
+      "transcriptions": "Transcripciones",
+      "hours": "Horas",
+      "onDemandAnalyses": "Análisis bajo demanda",
+      "resetDate": "Se reinicia el",
+      "paygCredits": "Créditos disponibles",
+      "buyMore": "Comprar más créditos",
+      "overage": {
+        "title": "Cargos por excedente",
+        "description": "Ha usado {hours} horas más allá de su límite de 60 horas este mes",
+        "rate": "Las horas adicionales se cobran a $0,50/hora",
+        "total": "Cargos por excedente estimados",
+        "nextBill": "Se agregará a su próxima factura el {date}"
+      }
+    },
+    "actions": {
+      "upgrade": "Actualizar plan",
+      "changePlan": "Cambiar plan",
+      "cancel": "Cancelar suscripción",
+      "reactivate": "Reactivar suscripción",
+      "manageBilling": "Administrar facturación",
+      "viewInvoices": "Ver facturas"
+    },
+    "billingHistory": {
+      "title": "Historial de facturación",
+      "date": "Fecha",
+      "description": "Descripción",
+      "amount": "Monto",
+      "status": "Estado",
+      "invoice": "Factura",
+      "download": "Descargar",
+      "paid": "Pagado",
+      "pending": "Pendiente",
+      "failed": "Fallido",
+      "empty": "Aún no hay historial de facturación"
+    },
+    "cancelModal": {
+      "title": "Cancelar suscripción",
+      "description": "¿Está seguro de que desea cancelar su suscripción?",
+      "warning": "Perderá el acceso a las funciones Profesionales al final de su período de facturación el {date}.",
+      "keepAccess": "Mantendrá el acceso hasta el",
+      "confirm": "Sí, cancelar suscripción",
+      "cancel": "Mantener suscripción",
+      "cancelling": "Cancelando...",
+      "success": "Suscripción cancelada exitosamente",
+      "feedback": {
+        "title": "Lamentamos verlo partir",
+        "question": "¿Cuál es la razón principal de la cancelación?",
+        "tooExpensive": "Muy caro",
+        "notUsing": "No se usa lo suficiente",
+        "missingFeatures": "Funciones faltantes",
+        "foundAlternative": "Encontró alternativa",
+        "other": "Otro",
+        "comments": "Comentarios adicionales (opcional)",
+        "submit": "Enviar y cancelar"
+      }
+    },
+    "cancelConfirm": "¿Está seguro de que desea cancelar su suscripción? Mantendrá el acceso hasta el final de su período de facturación.",
+    "cancelSuccess": "Su suscripción ha sido cancelada exitosamente. Mantendrá el acceso hasta el final de su período de facturación actual.",
+    "cancelError": "Error al cancelar suscripción. Por favor intente de nuevo o contacte al soporte.",
+    "cancelAtPeriodEnd": "Programado para cancelación",
+    "cancelSubscription": "Cancelar suscripción",
+    "cancelDescription": "La cancelación rebajará su cuenta al plan Gratis al final de su período de facturación actual. Puede continuar usando las funciones Profesionales hasta entonces.",
+    "cancelButton": "Cancelar suscripción",
+    "usageThisMonth": "Uso este mes",
+    "hoursUsed": "Horas usadas",
+    "transcriptionsUsed": "Transcripciones",
+    "buyMoreCredits": "Comprar más créditos",
+    "noBillingHistory": "Aún no hay historial de facturación",
+    "downloadInvoice": "Descargar factura",
+    "overageWarning": "Uso excedente",
+    "overageCharge": "Cargos por excedente estimados",
+    "upgrade": "Actualizar plan",
+    "hours": "horas",
+    "nextBilling": "Se renueva el",
+    "status": "Estado",
+    "billingPeriodStart": "Período de facturación comenzado"
+  },
+  "paywall": {
+    "quotaExceeded": {
+      "transcriptions": {
+        "title": "Límite mensual alcanzado",
+        "description": "Ha usado todas las 3 transcripciones gratuitas este mes. Actualice al plan Profesional para transcripciones ilimitadas."
+      },
+      "duration": {
+        "title": "Audio demasiado largo",
+        "description": "Este archivo excede el límite de duración de su plan. Actualice para procesar archivos de audio más largos."
+      },
+      "filesize": {
+        "title": "Archivo demasiado grande",
+        "description": "Este archivo excede el límite de tamaño de su plan. Actualice para procesar archivos más grandes."
+      },
+      "paygCredits": {
+        "title": "Créditos insuficientes",
+        "description": "No tiene suficientes créditos para esta transcripción. Compre más créditos para continuar."
+      },
+      "onDemandAnalyses": {
+        "title": "Límite de análisis alcanzado",
+        "description": "Ha usado todos sus análisis bajo demanda este mes. Actualice para obtener más análisis o espere hasta el próximo mes."
+      },
+      "current": "Uso actual",
+      "limit": "Su límite",
+      "required": "Requerido",
+      "upgradeButton": "Actualizar plan",
+      "buyCreditsButton": "Comprar créditos",
+      "cancelButton": "Cancelar"
+    },
+    "usageIndicator": {
+      "approaching": "Acercándose al límite - considere actualizar pronto",
+      "exceeded": "Límite excedido - actualice para continuar",
+      "unlimited": "Ilimitado"
+    },
+    "upgradePrompt": {
+      "title": "Actualizar al plan Profesional",
+      "defaultMessage": "Desbloquee transcripciones ilimitadas, archivos de audio más largos y funciones de análisis avanzadas.",
+      "cta": "Ver planes"
+    }
   },
   "cookieConsent": {
     "title": "Usamos cookies para mejorar tu experiencia",
