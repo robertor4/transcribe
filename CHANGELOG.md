@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Transcription Title Length Issue**: Fixed transcription cards displaying overly long titles instead of concise, scannable titles
+  - **Root Cause**: Summary prompt didn't explicitly limit title word count, GPT-5 was generating descriptive but lengthy H1 headings (12+ words)
+  - **Primary Fix**: Updated summarization prompt to enforce "MAXIMUM 8 words" for main heading
+  - **Secondary Fix**: Strengthened `generateShortTitle()` function with stricter word limits and validation
+    - Changed target from 5-7 words to "MAXIMUM 6 words" for tighter control
+    - Added validation to verify AI-generated titles actually follow word limit
+    - Improved fallback logic to truncate to 6 words + ellipsis if AI fails to comply
+    - Changed acceptance threshold from 7 to 8 words to match prompt guidance
+  - **Example**: "Carrière-interview: van assistant private banker naar Lean Consultant bij ABN AMRO met aantoonbare procesverbeteringen" (12 words) → now generates ~6 word titles
+  - Location: `apps/api/src/transcription/prompts.ts:7`, `apps/api/src/transcription/transcription.service.ts:939-1000`
+
 ### Changed
+- **Improved Dashboard UX**: Redesigned dashboard tab order and empty state for better first-time user experience
+  - **Tab Reordering**: "Transcriptions" tab is now the first/default tab (previously "Upload Audio")
+  - **Enhanced Empty State**: First-time users see welcoming message with clear call-to-action button instead of generic "no transcriptions" text
+  - **Upload Button**: When transcriptions exist, "Upload New Audio" button appears in top-right for quick access
+  - **Auto-Switch After Upload**: After uploading a file, automatically switches to Transcriptions tab to show processing progress
+  - **Internationalization**: Added new translation keys (`emptyStateTitle`, `emptyStateDescription`, `emptyStateButton`, `uploadNewAudio`) to all 5 languages (en, nl, de, fr, es)
+  - Location: `apps/web/app/[locale]/dashboard/page.tsx:26,177-178,265-349`, `apps/web/components/TranscriptionList.tsx:45-53,614-651`, `apps/web/messages/*.json`
 - **Redesigned Security Section Layout on Landing Page**: Changed from single-column to two-column layout for better visual balance and appeal
   - Image now sits in left column (50% width) instead of full-width at top
   - Security features now in right column as stacked horizontal cards instead of 3-column grid
