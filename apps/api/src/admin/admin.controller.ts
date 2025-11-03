@@ -11,7 +11,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { FirebaseService } from '../firebase/firebase.service';
 import { UserService } from '../user/user.service';
-import { ApiResponse, User } from '@transcribe/shared';
+import { ApiResponse, User, UserActivity } from '@transcribe/shared';
 
 /**
  * Admin Controller
@@ -90,6 +90,36 @@ export class AdminController {
     return {
       success: true,
       data: user,
+    };
+  }
+
+  /**
+   * Get comprehensive user activity for audit purposes
+   * @param userId - The user ID to fetch activity for
+   * @returns Complete user activity including transcriptions, analyses, usage, and events
+   */
+  @Get('users/:userId/activity')
+  async getUserActivity(
+    @Param('userId') userId: string,
+  ): Promise<ApiResponse<UserActivity>> {
+    this.logger.log(`Admin: Fetching activity for user ${userId}`);
+
+    const activity = await this.firebaseService.getUserActivity(userId);
+
+    if (!activity) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+
+    this.logger.log(
+      `Admin: Returned activity for ${userId} - ${activity.summary.totalTranscriptions} transcriptions, ${activity.summary.totalAnalysesGenerated} analyses`,
+    );
+
+    return {
+      success: true,
+      data: activity,
     };
   }
 

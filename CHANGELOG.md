@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Firebase service methods: `getUserTranscriptionsForAdmin()`, `getUserAnalysesForAdmin()`, `getUserUsageRecords()`, `getUserActivity()`
   - User rows in admin panel are now clickable with hover effects
   - Full internationalization support (en, nl, de, fr, es)
+  - Graceful error handling: Methods return empty arrays if Firestore composite indexes don't exist yet
+  - **Required Firestore Indexes** (will auto-create on first query):
+    - Collection: `transcriptions`, Fields: `userId` (Ascending), `createdAt` (Descending)
+    - Collection: `generatedAnalyses`, Fields: `userId` (Ascending), `generatedAt` (Descending)
+    - Collection: `usageRecords`, Fields: `userId` (Ascending), `createdAt` (Descending)
   - Locations:
     - Frontend: `apps/web/app/[locale]/admin/users/[userId]/page.tsx`
     - Backend: `apps/api/src/admin/admin.controller.ts:96-124`

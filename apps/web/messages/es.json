@@ -1745,5 +1745,59 @@
     "hours": "Horas",
     "remaining": "restante",
     "onDemandAnalyses": "Análisis bajo demanda"
+  },
+  "admin": {
+    "title": "Panel de administración",
+    "description": "Gestionar usuarios y configuración del sistema",
+    "backToDashboard": "Volver al panel",
+    "userActivity": "Auditoría de actividad de usuario",
+    "activityDescription": "Historial de actividad detallado para",
+    "stats": {
+      "totalUsers": "Total de usuarios",
+      "freeTier": "Nivel gratuito",
+      "professional": "Profesional",
+      "deleted": "Eliminado",
+      "totalTranscriptions": "Total de transcripciones",
+      "hoursProcessed": "Horas procesadas",
+      "analysesGenerated": "Análisis generados",
+      "accountAge": "Edad de la cuenta"
+    },
+    "user": {
+      "tier": "Nivel",
+      "role": "Rol",
+      "status": "Estado",
+      "created": "Creado",
+      "lastLogin": "Último inicio de sesión",
+      "actions": "Acciones",
+      "active": "Activo",
+      "admin": "Administrador",
+      "softDelete": "Eliminación suave (conservar datos)",
+      "hardDelete": "Eliminación permanente"
+    },
+    "activity": {
+      "currentMonthUsage": "Uso del mes actual",
+      "accountEvents": "Eventos de cuenta",
+      "recentTranscriptions": "Transcripciones recientes",
+      "recentAnalyses": "Análisis bajo demanda recientes",
+      "noTranscriptions": "No se encontraron transcripciones",
+      "noAnalyses": "No se encontraron análisis",
+      "loadingActivity": "Cargando actividad...",
+      "fileName": "Nombre del archivo",
+      "duration": "Duración",
+      "model": "Modelo",
+      "generated": "Generado",
+      "templateName": "Nombre de plantilla"
+    },
+    "events": {
+      "created": "Cuenta creada",
+      "login": "Último inicio de sesión",
+      "tierChange": "Cambio de suscripción",
+      "deletion": "Cuenta eliminada"
+    },
+    "errors": {
+      "accessDenied": "Acceso denegado. Se requiere rol de administrador.",
+      "failedToFetch": "Error al obtener datos",
+      "userNotFound": "Usuario no encontrado"
+    }
   }
 }

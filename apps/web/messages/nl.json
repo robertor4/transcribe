@@ -1715,5 +1715,59 @@
       "defaultMessage": "Ontgrendel onbeperkte transcripties, langere audiobestanden en geavanceerde analysefuncties.",
       "cta": "Bekijk abonnementen"
     }
+  },
+  "admin": {
+    "title": "Beheerderspaneel",
+    "description": "Beheer gebruikers en systeeminstellingen",
+    "backToDashboard": "Terug naar Dashboard",
+    "userActivity": "Gebruikersactiviteit Audit",
+    "activityDescription": "Gedetailleerde activiteitsgeschiedenis voor",
+    "stats": {
+      "totalUsers": "Totaal Gebruikers",
+      "freeTier": "Gratis Tier",
+      "professional": "Professioneel",
+      "deleted": "Verwijderd",
+      "totalTranscriptions": "Totaal Transcripties",
+      "hoursProcessed": "Verwerkte Uren",
+      "analysesGenerated": "Gegenereerde Analyses",
+      "accountAge": "Accountleeftijd"
+    },
+    "user": {
+      "tier": "Tier",
+      "role": "Rol",
+      "status": "Status",
+      "created": "Aangemaakt",
+      "lastLogin": "Laatste Login",
+      "actions": "Acties",
+      "active": "Actief",
+      "admin": "Beheerder",
+      "softDelete": "Zacht verwijderen (gegevens behouden)",
+      "hardDelete": "Hard verwijderen (permanent)"
+    },
+    "activity": {
+      "currentMonthUsage": "Gebruik Huidige Maand",
+      "accountEvents": "Accountgebeurtenissen",
+      "recentTranscriptions": "Recente Transcripties",
+      "recentAnalyses": "Recente On-Demand Analyses",
+      "noTranscriptions": "Geen transcripties gevonden",
+      "noAnalyses": "Geen analyses gevonden",
+      "loadingActivity": "Activiteit laden...",
+      "fileName": "Bestandsnaam",
+      "duration": "Duur",
+      "model": "Model",
+      "generated": "Gegenereerd",
+      "templateName": "Sjabloonnaam"
+    },
+    "events": {
+      "created": "Account Aangemaakt",
+      "login": "Laatste Login",
+      "tierChange": "Abonnementswijziging",
+      "deletion": "Account Verwijderd"
+    },
+    "errors": {
+      "accessDenied": "Toegang geweigerd. Beheerdersrol vereist.",
+      "failedToFetch": "Gegevens ophalen mislukt",
+      "userNotFound": "Gebruiker niet gevonden"
+    }
   }
 }

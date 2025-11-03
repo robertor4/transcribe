@@ -1750,5 +1750,59 @@
     "hours": "Stunden",
     "remaining": "verbleibend",
     "onDemandAnalyses": "On-Demand-Analysen"
+  },
+  "admin": {
+    "title": "Admin-Panel",
+    "description": "Benutzer und Systemeinstellungen verwalten",
+    "backToDashboard": "Zurück zum Dashboard",
+    "userActivity": "Benutzeraktivitätsprüfung",
+    "activityDescription": "Detaillierte Aktivitätshistorie für",
+    "stats": {
+      "totalUsers": "Gesamtbenutzer",
+      "freeTier": "Kostenlos-Stufe",
+      "professional": "Professionell",
+      "deleted": "Gelöscht",
+      "totalTranscriptions": "Gesamttranskriptionen",
+      "hoursProcessed": "Verarbeitete Stunden",
+      "analysesGenerated": "Generierte Analysen",
+      "accountAge": "Kontoalter"
+    },
+    "user": {
+      "tier": "Stufe",
+      "role": "Rolle",
+      "status": "Status",
+      "created": "Erstellt",
+      "lastLogin": "Letzte Anmeldung",
+      "actions": "Aktionen",
+      "active": "Aktiv",
+      "admin": "Administrator",
+      "softDelete": "Soft-Löschen (Daten beibehalten)",
+      "hardDelete": "Hard-Löschen (permanent)"
+    },
+    "activity": {
+      "currentMonthUsage": "Aktueller Monatsverbrauch",
+      "accountEvents": "Kontoereignisse",
+      "recentTranscriptions": "Kürzliche Transkriptionen",
+      "recentAnalyses": "Kürzliche On-Demand-Analysen",
+      "noTranscriptions": "Keine Transkriptionen gefunden",
+      "noAnalyses": "Keine Analysen gefunden",
+      "loadingActivity": "Aktivität wird geladen...",
+      "fileName": "Dateiname",
+      "duration": "Dauer",
+      "model": "Modell",
+      "generated": "Generiert",
+      "templateName": "Vorlagenname"
+    },
+    "events": {
+      "created": "Konto erstellt",
+      "login": "Letzte Anmeldung",
+      "tierChange": "Abonnementänderung",
+      "deletion": "Konto gelöscht"
+    },
+    "errors": {
+      "accessDenied": "Zugriff verweigert. Administratorrolle erforderlich.",
+      "failedToFetch": "Daten konnten nicht abgerufen werden",
+      "userNotFound": "Benutzer nicht gefunden"
+    }
   }
 }
