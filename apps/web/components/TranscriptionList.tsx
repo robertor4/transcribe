@@ -48,7 +48,10 @@ interface TranscriptionListProps {
   onNavigateToUpload?: () => void;
 }
 
-export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastCompletedId, onNavigateToUpload }) => {
+export const TranscriptionList: React.FC<TranscriptionListProps> = ({
+  lastCompletedId,
+  onNavigateToUpload
+}) => {
   const t = useTranslations('transcription');
   const tCommon = useTranslations('common');
   const tDashboard = useTranslations('dashboard');
@@ -234,11 +237,14 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
   useEffect(() => {
     if (!lastCompletedId || !user) return;
 
-    const fetchAndUpdateTranscription = async () => {
+    const fetchAndUpdateTranscription = async (retryCount = 0) => {
       try {
+        console.log(`[TranscriptionList] Fetching transcription ${lastCompletedId} (attempt ${retryCount + 1})`);
         const response = await transcriptionApi.get(lastCompletedId);
+
         if (response.success && response.data) {
           const updatedTranscription = response.data as Transcription;
+          console.log(`[TranscriptionList] Successfully fetched transcription ${lastCompletedId}, status: ${updatedTranscription.status}`);
 
           setTranscriptions(prev => {
             // Check if this transcription already exists in the list
@@ -246,17 +252,31 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
 
             if (existingIndex >= 0) {
               // Update existing transcription in place
+              console.log(`[TranscriptionList] Updating existing transcription ${lastCompletedId} in list`);
               return prev.map(t =>
                 t.id === lastCompletedId ? updatedTranscription : t
               );
             } else {
               // New transcription - prepend it to the list
+              console.log(`[TranscriptionList] Adding new transcription ${lastCompletedId} to list`);
               return [updatedTranscription, ...prev];
             }
           });
+        } else {
+          console.warn(`[TranscriptionList] Fetch returned no data for ${lastCompletedId}`);
+          // Retry up to 3 times if we get no data (transcription might not be created yet)
+          if (retryCount < 3) {
+            console.log(`[TranscriptionList] Retrying fetch in ${500 * (retryCount + 1)}ms...`);
+            setTimeout(() => fetchAndUpdateTranscription(retryCount + 1), 500 * (retryCount + 1));
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch completed transcription:', error);
+        console.error(`[TranscriptionList] Failed to fetch transcription ${lastCompletedId}:`, error);
+        // Retry up to 3 times on error
+        if (retryCount < 3) {
+          console.log(`[TranscriptionList] Retrying fetch in ${500 * (retryCount + 1)}ms...`);
+          setTimeout(() => fetchAndUpdateTranscription(retryCount + 1), 500 * (retryCount + 1));
+        }
       }
     };
 
@@ -284,6 +304,11 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
       (data: unknown) => {
         const progress = data as TranscriptionProgress;
+        console.log(`[TranscriptionList] WebSocket progress received for ${progress.transcriptionId}:`, {
+          progress: progress.progress,
+          stage: progress.stage,
+          status: progress.status
+        });
 
         // Notify polling hook that we received an update (resets staleness timer)
         notifyProgress(progress.transcriptionId, progress.progress);
@@ -299,8 +324,10 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
           if (!transcriptionExists) {
             // This progress update is for a transcription we don't have yet
             // This can happen if WebSocket event arrives before API fetch completes
-            console.log('[TranscriptionList] Received progress for unknown transcription:', progress.transcriptionId);
-            // Still allow it through - the transcription will appear soon
+            console.log('[TranscriptionList] Received progress for unknown transcription (not in list yet):', progress.transcriptionId);
+            // The transcription will appear once the scheduled fetch completes
+          } else {
+            console.log(`[TranscriptionList] Updating progress map for ${progress.transcriptionId}`);
           }
 
           const newMap = new Map(prev);

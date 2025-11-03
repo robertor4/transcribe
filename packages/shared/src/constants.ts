@@ -3,6 +3,7 @@ export const SUPPORTED_AUDIO_FORMATS = [
   '.mp3',
   '.wav',
   '.mp4',
+  '.mov',
   '.mpeg',
   '.mpga',
   '.webm',
@@ -23,6 +24,7 @@ export const SUPPORTED_MIME_TYPES = [
   'audio/flac',
   'audio/ogg',
   'video/mp4',
+  'video/quicktime', // .mov files
   'application/octet-stream' // Sometimes m4a files are reported as this
 ];
 

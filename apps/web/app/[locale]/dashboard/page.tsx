@@ -101,7 +101,7 @@ export default function DashboardPage() {
         // Get the file name from our stored map
         const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
         console.log('[Dashboard] File name for transcription:', fileName);
-        
+
         // Send browser notification if enabled
         if (typedProgress.status === 'completed') {
           console.log('[Dashboard] Sending completion notification for:', fileName);
@@ -140,12 +140,12 @@ export default function DashboardPage() {
         console.log('[Dashboard] Received TRANSCRIPTION_FAILED event:', progress);
         const typedProgress = progress as TranscriptionProgress;
         const fileName = activeTranscriptions.get(typedProgress.transcriptionId) || 'your file';
-        
+
         notificationService.sendTranscriptionFailed(
           fileName,
           typedProgress.transcriptionId
         );
-        
+
         // Clean up
         setActiveTranscriptions(prev => {
           const newMap = new Map(prev);
@@ -188,16 +188,17 @@ export default function DashboardPage() {
       const idsToFetch = [...pendingIdsRef.current];
 
       // Trigger fetches for all pending transcriptions with staggered timing
+      // Allow more time for Firestore to create the document (increased from 300ms to 1000ms)
       idsToFetch.forEach((id, index) => {
         setTimeout(() => {
           setLastCompletedId(id);
-        }, index * 100); // 100ms between each fetch to avoid overwhelming the API
+        }, index * 150); // 150ms between each fetch to avoid overwhelming the API
       });
 
       // Clear pending IDs
       pendingIdsRef.current = [];
       debounceTimerRef.current = null;
-    }, 300); // 300ms debounce delay
+    }, 1000); // 1000ms debounce delay (increased to give Firestore time to create document)
   };
 
   // Show loading state while checking auth
@@ -332,6 +333,7 @@ export default function DashboardPage() {
               {tDashboard('yourTranscriptions')}
             </h2>
             <TranscriptionList
+              key={`transcription-list-${activeTab}`}
               lastCompletedId={lastCompletedId}
               onNavigateToUpload={() => setActiveTab('upload')}
             />

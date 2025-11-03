@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Critical: Upload Flow Broken by Tab Optimization**: Fixed transcription cards not appearing after upload
+  - Root cause: CSS-based tab hiding (from commit e5deaea) prevented TranscriptionList from reinitializing
+  - Added `key` prop to TranscriptionList that includes `activeTab` to force remount when switching tabs
+  - This ensures all effects run fresh when returning to history tab after upload
+  - Location: [apps/web/app/[locale]/dashboard/page.tsx:336](apps/web/app/[locale]/dashboard/page.tsx#L336)
+  - Preserves performance optimization (no unnecessary API calls) while fixing the bug
+
 ### Added
+- **MOV Video File Support**: Users can now upload .mov video files (QuickTime format) for transcription
+  - Added `.mov` to supported file formats array ([packages/shared/src/constants.ts:6](packages/shared/src/constants.ts#L6))
+  - Added `video/quicktime` MIME type support ([packages/shared/src/constants.ts:27](packages/shared/src/constants.ts#L27))
+  - Updated frontend file upload dropzone to accept .mov files ([apps/web/components/FileUploader.tsx:129](apps/web/components/FileUploader.tsx#L129))
+  - Both AssemblyAI (primary) and OpenAI Whisper (fallback) support .mov format natively
+  - Useful for iPhone/Mac recordings which default to .mov format
+  - Updated documentation: [CLAUDE.md:266](CLAUDE.md#L266)
+- **Improved Transcription Loading Reliability**: Enhanced robustness of transcription fetching after upload
+  - Increased debounce from 300ms to 1000ms to allow Firestore document creation ([dashboard/page.tsx:201](apps/web/app/[locale]/dashboard/page.tsx#L201))
+  - Added automatic retry logic (up to 3 attempts with exponential backoff) for failed fetches ([TranscriptionList.tsx:268-282](apps/web/components/TranscriptionList.tsx#L268-L282))
+  - Enhanced console logging for debugging upload/fetch flow
 - **Admin User Activity Auditing**: Admins can now click on any user in the admin panel to view comprehensive activity history for audit purposes
   - New user activity detail page displaying:
     - User profile card with tier, role, and status badges

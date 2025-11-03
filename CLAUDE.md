@@ -263,8 +263,8 @@ Create composite index for transcriptions:
 ### Audio Processing Constraints
 - Max file size: 1GB (Free), 3GB (Pro), 5GB (Enterprise)
 - Chunk size: 10 minutes or 25MB (whichever is smaller)
-- Supported formats: M4A, MP3, WAV, MP4, MPEG, MPGA, WebM, FLAC, OGG
-- MIME type handling: Accepts variations like `audio/x-m4a`, `audio/mp4`, `application/octet-stream`
+- Supported formats: M4A, MP3, WAV, MP4, MOV, MPEG, MPGA, WebM, FLAC, OGG
+- MIME type handling: Accepts variations like `audio/x-m4a`, `audio/mp4`, `video/quicktime`, `application/octet-stream`
 
 ### WebSocket Event Protocol & Resilience
 The application uses Socket.io for real-time updates with **automatic polling fallback** for reliability.

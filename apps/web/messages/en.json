@@ -274,6 +274,7 @@
     "status_processing": "Processing",
     "status_completed": "Completed",
     "status_failed": "Failed",
+    "uploadingFile": "Uploading and preparing for transcription...",
     "processingAudio": "Processing audio...",
     "analyzingContent": "Analyzing content...",
     "generatingSummary": "Generating summary...",
