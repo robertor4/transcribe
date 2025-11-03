@@ -126,6 +126,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
     accept: {
       'audio/*': SUPPORTED_AUDIO_FORMATS,
       'video/mp4': ['.mp4'],
+      'video/quicktime': ['.mov'],
     },
     maxSize: MAX_FILE_SIZE,
     multiple: true,
