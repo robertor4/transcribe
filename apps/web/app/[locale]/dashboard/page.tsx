@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
@@ -26,7 +27,6 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'recording-guide'>('history');
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
-  const [pendingCompletedIds, setPendingCompletedIds] = useState<string[]>([]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingIdsRef = useRef<string[]>([]); // Track pending IDs in ref for immediate access
 
@@ -170,9 +170,8 @@ export default function DashboardPage() {
     // Subscribe to updates for this transcription
     websocketService.subscribeToTranscription(transcriptionId);
 
-    // Add to pending IDs in both state and ref
+    // Add to pending IDs in ref for debounced processing
     pendingIdsRef.current = [...pendingIdsRef.current, transcriptionId];
-    setPendingCompletedIds(prev => [...prev, transcriptionId]);
 
     // Switch to history tab to see progress
     setActiveTab('history');
@@ -197,7 +196,6 @@ export default function DashboardPage() {
 
       // Clear pending IDs
       pendingIdsRef.current = [];
-      setPendingCompletedIds([]);
       debounceTimerRef.current = null;
     }, 300); // 300ms debounce delay
   };
@@ -241,10 +239,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <img
+              <Image
                 src="/assets/NS-symbol.webp"
                 alt="Neural Summary Logo"
-                className="h-8 w-auto mr-3"
+                width={32}
+                height={32}
+                className="mr-3"
+                priority
               />
               <div>
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -325,31 +326,32 @@ export default function DashboardPage() {
 
         {/* Tab Content */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          {activeTab === 'history' ? (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {tDashboard('yourTranscriptions')}
-              </h2>
-              <TranscriptionList
-                lastCompletedId={lastCompletedId}
-                onNavigateToUpload={() => setActiveTab('upload')}
-              />
-            </div>
-          ) : activeTab === 'upload' ? (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {tDashboard('uploadAudioFiles')}
-              </h2>
-              <FileUploader onUploadComplete={handleUploadComplete} />
-            </div>
-          ) : activeTab === 'recording-guide' ? (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
-                {tDashboard('howToRecord')}
-              </h2>
-              <RecordingGuide />
-            </div>
-          ) : null}
+          {/* History Tab */}
+          <div className={activeTab === 'history' ? '' : 'hidden'}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              {tDashboard('yourTranscriptions')}
+            </h2>
+            <TranscriptionList
+              lastCompletedId={lastCompletedId}
+              onNavigateToUpload={() => setActiveTab('upload')}
+            />
+          </div>
+
+          {/* Upload Tab */}
+          <div className={activeTab === 'upload' ? '' : 'hidden'}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              {tDashboard('uploadAudioFiles')}
+            </h2>
+            <FileUploader onUploadComplete={handleUploadComplete} />
+          </div>
+
+          {/* Recording Guide Tab */}
+          <div className={activeTab === 'recording-guide' ? '' : 'hidden'}>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
+              {tDashboard('howToRecord')}
+            </h2>
+            <RecordingGuide />
+          </div>
         </div>
       </main>
     </div>

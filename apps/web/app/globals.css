@@ -74,6 +74,7 @@
 /* Smooth scroll behavior for anchor links */
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable; /* Prevent layout shift when scrollbar appears/disappears */
 }
 
 body {
