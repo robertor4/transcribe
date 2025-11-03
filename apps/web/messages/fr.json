@@ -929,6 +929,35 @@
           "sharing": "Capacité de partager les transcriptions avec un accès contrôlé"
         }
       },
+      "pricing": {
+        "title": "Tarification et conditions de paiement",
+        "content": "Nous nous réservons le droit de modifier nos tarifs à tout moment pour refléter les changements de coûts opérationnels, les conditions du marché, les améliorations du service ou d'autres facteurs commerciaux.",
+        "changes": {
+          "title": "Changements de prix",
+          "content": "Nous vous informerons au moins 30 jours à l'avance avant que les changements de prix ne prennent effet pour les abonnements existants. Les nouveaux prix s'appliqueront aux renouvellements après la période de préavis.",
+          "notice": "L'utilisation continue du Service après l'entrée en vigueur d'un changement de prix constitue l'acceptation des nouveaux tarifs."
+        },
+        "billing": {
+          "title": "Facturation et abonnements",
+          "content": "Les frais d'abonnement sont facturés à l'avance sur une base récurrente (mensuellement ou annuellement). Vous êtes responsable du maintien d'informations de paiement valides."
+        }
+      },
+      "fairUse": {
+        "title": "Limites d'utilisation et politique d'utilisation équitable",
+        "content": "Tous les abonnements et l'utilisation sont soumis à notre politique d'utilisation équitable. Nous nous réservons le droit de modifier les limites d'utilisation pour assurer la qualité et la disponibilité du service pour tous les utilisateurs.",
+        "policy": {
+          "title": "Définition de l'utilisation équitable",
+          "content": "L'utilisation équitable signifie utiliser le Service de manière raisonnable conformément à une utilisation personnelle ou professionnelle typique. L'utilisation excessive, abusive ou automatisée qui dégrade les performances du service pour les autres utilisateurs est interdite."
+        },
+        "modifications": {
+          "title": "Modifications des limites d'utilisation",
+          "content": "Nous pouvons ajuster les limites d'utilisation en fonction de la capacité du système, de la prévention des abus, de l'optimisation des coûts ou des améliorations du service. Les utilisateurs seront informés de tout changement important de leurs limites de forfait avec un préavis raisonnable."
+        },
+        "enforcement": {
+          "title": "Application",
+          "content": "Les violations de la politique d'utilisation équitable peuvent entraîner des restrictions d'utilisation temporaires, une suspension de compte ou une résiliation. Nous ferons des efforts raisonnables pour informer les utilisateurs avant de prendre des mesures d'application."
+        }
+      },
       "userObligations": {
         "title": "Obligations et responsabilités des utilisateurs",
         "content": "En tant qu'utilisateur de notre Service, vous acceptez d'utiliser Neural Summary de manière responsable et en conformité avec toutes les lois et réglementations applicables.",

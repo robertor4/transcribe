@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ArrowLeft, FileText, Shield, Scale, Globe, AlertCircle, Mail } from 'lucide-react';
+import { ArrowLeft, FileText, Shield, Scale, Globe, AlertCircle, Mail, DollarSign, TrendingUp } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -116,6 +116,8 @@ export default async function TermsPage({
               <ol className="space-y-1 list-decimal list-inside text-sm text-gray-700">
                 <li><a href="#acceptance" className="hover:text-[#cc3399] transition-colors">{t('sections.acceptance.title')}</a></li>
                 <li><a href="#service-description" className="hover:text-[#cc3399] transition-colors">{t('sections.serviceDescription.title')}</a></li>
+                <li><a href="#pricing" className="hover:text-[#cc3399] transition-colors">{t('sections.pricing.title')}</a></li>
+                <li><a href="#fair-use" className="hover:text-[#cc3399] transition-colors">{t('sections.fairUse.title')}</a></li>
                 <li><a href="#user-obligations" className="hover:text-[#cc3399] transition-colors">{t('sections.userObligations.title')}</a></li>
                 <li><a href="#intellectual-property" className="hover:text-[#cc3399] transition-colors">{t('sections.intellectualProperty.title')}</a></li>
                 <li><a href="#privacy" className="hover:text-[#cc3399] transition-colors">{t('sections.privacy.title')}</a></li>
@@ -158,7 +160,50 @@ export default async function TermsPage({
                 </ul>
               </section>
 
-              {/* 3. User Obligations */}
+              {/* 3. Pricing and Payment Terms */}
+              <section id="pricing">
+                <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                  <DollarSign className="h-5 w-5 text-[#cc3399] mr-2" />
+                  {t('sections.pricing.title')}
+                </h2>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.pricing.content')}</p>
+
+                <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.pricing.changes.title')}</h3>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.pricing.changes.content')}</p>
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3">
+                  <p className="text-sm text-gray-700">{t('sections.pricing.changes.notice')}</p>
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.pricing.billing.title')}</h3>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.pricing.billing.content')}</p>
+              </section>
+
+              {/* 4. Usage Limits and Fair Use Policy */}
+              <section id="fair-use">
+                <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                  <TrendingUp className="h-5 w-5 text-[#cc3399] mr-2" />
+                  {t('sections.fairUse.title')}
+                </h2>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.fairUse.content')}</p>
+
+                <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.fairUse.policy.title')}</h3>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.fairUse.policy.content')}</p>
+
+                <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.fairUse.modifications.title')}</h3>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.fairUse.modifications.content')}</p>
+
+                <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.fairUse.enforcement.title')}</h3>
+                <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.fairUse.enforcement.content')}</p>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-3">
+                  <div className="flex">
+                    <AlertCircle className="h-4 w-4 text-yellow-400 mt-0.5 mr-2 flex-shrink-0" />
+                    <p className="text-sm text-gray-700 font-medium">Fair use ensures quality service for all users. Violations may result in account restrictions.</p>
+                  </div>
+                </div>
+              </section>
+
+              {/* 5. User Obligations */}
               <section id="user-obligations">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t('sections.userObligations.title')}</h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.userObligations.content')}</p>
@@ -172,7 +217,7 @@ export default async function TermsPage({
                 </ul>
               </section>
 
-              {/* 4. Intellectual Property */}
+              {/* 6. Intellectual Property */}
               <section id="intellectual-property">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t('sections.intellectualProperty.title')}</h2>
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('sections.intellectualProperty.ownership.title')}</h3>
@@ -183,7 +228,7 @@ export default async function TermsPage({
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.intellectualProperty.license.content')}</p>
               </section>
 
-              {/* 5. Privacy and Data Protection */}
+              {/* 7. Privacy and Data Protection */}
               <section id="privacy">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t('sections.privacy.title')}</h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.privacy.content')}</p>
@@ -198,7 +243,7 @@ export default async function TermsPage({
                 </ul>
               </section>
 
-              {/* 6. Limitation of Liability */}
+              {/* 8. Limitation of Liability */}
               <section id="liability">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
                   <Scale className="h-5 w-5 text-[#cc3399] mr-2" />
@@ -212,7 +257,7 @@ export default async function TermsPage({
                 </div>
               </section>
 
-              {/* 7. Termination */}
+              {/* 9. Termination */}
               <section id="termination">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t('sections.termination.title')}</h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.termination.content')}</p>
@@ -224,7 +269,7 @@ export default async function TermsPage({
                 </ul>
               </section>
 
-              {/* 8. Governing Law */}
+              {/* 10. Governing Law */}
               <section id="governing-law">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t('sections.governingLaw.title')}</h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.governingLaw.content')}</p>
@@ -236,7 +281,7 @@ export default async function TermsPage({
                 </div>
               </section>
 
-              {/* 9. Contact Information */}
+              {/* 11. Contact Information */}
               <section id="contact">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
                   <Mail className="h-5 w-5 text-[#cc3399] mr-2" />

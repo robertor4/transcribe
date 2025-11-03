@@ -929,6 +929,35 @@
           "sharing": "Capacidad de compartir transcripciones con acceso controlado"
         }
       },
+      "pricing": {
+        "title": "Precios y condiciones de pago",
+        "content": "Nos reservamos el derecho de modificar nuestros precios en cualquier momento para reflejar cambios en los costos operativos, las condiciones del mercado, las mejoras del servicio u otros factores comerciales.",
+        "changes": {
+          "title": "Cambios de precios",
+          "content": "Le notificaremos con al menos 30 días de anticipación antes de que los cambios de precios entren en vigor para las suscripciones existentes. Los nuevos precios se aplicarán a las renovaciones después del período de notificación.",
+          "notice": "El uso continuado del Servicio después de que un cambio de precio entre en vigor constituye la aceptación de los nuevos precios."
+        },
+        "billing": {
+          "title": "Facturación y suscripciones",
+          "content": "Las tarifas de suscripción se facturan por adelantado de forma recurrente (mensual o anualmente). Usted es responsable de mantener información de pago válida."
+        }
+      },
+      "fairUse": {
+        "title": "Límites de uso y política de uso justo",
+        "content": "Todas las suscripciones y el uso están sujetos a nuestra Política de Uso Justo. Nos reservamos el derecho de modificar los límites de uso para garantizar la calidad y disponibilidad del servicio para todos los usuarios.",
+        "policy": {
+          "title": "Definición de uso justo",
+          "content": "Uso justo significa usar el Servicio de manera razonable de acuerdo con el uso personal o comercial típico. El uso excesivo, abusivo o automatizado que degrada el rendimiento del servicio para otros usuarios está prohibido."
+        },
+        "modifications": {
+          "title": "Modificaciones a los límites de uso",
+          "content": "Podemos ajustar los límites de uso según la capacidad del sistema, la prevención de abusos, la optimización de costos o las mejoras del servicio. Los usuarios serán notificados de cualquier cambio importante en los límites de su plan con un aviso previo razonable."
+        },
+        "enforcement": {
+          "title": "Aplicación",
+          "content": "Las violaciones de la Política de Uso Justo pueden resultar en restricciones de uso temporales, suspensión de cuenta o terminación. Haremos esfuerzos razonables para notificar a los usuarios antes de tomar medidas de aplicación."
+        }
+      },
       "userObligations": {
         "title": "Obligaciones y responsabilidades del usuario",
         "content": "Como usuario de nuestro Servicio, usted acepta usar Neural Summary de manera responsable y de conformidad con todas las leyes y regulaciones aplicables.",
