@@ -131,7 +131,11 @@
     "howToRecord": "Hoe je audio opneemt op elk apparaat",
     "settings": "Instellingen",
     "noTranscriptions": "Nog geen transcripties",
-    "uploadYourFirst": "Upload je eerste audiobestand om te beginnen"
+    "uploadYourFirst": "Upload je eerste audiobestand om te beginnen",
+    "uploadNewAudio": "Nieuwe audio uploaden",
+    "emptyStateTitle": "Welkom bij Neural Summary!",
+    "emptyStateDescription": "Je hebt nog geen audiobestanden geüpload. Begin door je eerste opname te uploaden.",
+    "emptyStateButton": "Upload je eerste audio"
   },
   "upload": {
     "title": "Audiobestand uploaden",
@@ -782,14 +786,13 @@
     },
     "security": {
       "title": "Vertrouwd door professionals die precisie en privacy waarderen",
-      "subtitle": "Enterprise-grade beveiliging en compliance",
       "stats": {
         "users": "10.000+ gebruikers wereldwijd",
         "rating": "gemiddeld beoordeeld met 4.9 / 5"
       },
       "compliance": {
-        "title": "Gebouwd met enterprise-grade beveiliging",
-        "description": "GDPR, SOC 2 Type II en HIPAA compliant"
+        "title": "Privacy-first architectuur",
+        "description": "Gebouwd met AVG-compliance en gegevensbescherming in de kern"
       },
       "useCases": {
         "title": "Vertrouwd door professionals",
@@ -804,19 +807,12 @@
         "description": "Audiobestanden worden binnen seconden verwijderd, nooit opgeslagen op onze servers"
       },
       "retention": {
-        "title": "SOC 2 Type II gecertificeerde infrastructuur",
-        "description": "Enterprise-grade beveiliging met continue compliance monitoring"
+        "title": "Beveiligde cloudinfrastructuur",
+        "description": "Je gegevens worden versleuteld tijdens opslag en verzending met industriestandaard protocollen"
       },
       "audit": {
         "title": "Zero-knowledge architectuur",
-        "description": "Wij hebben geen toegang tot je gegevens, zelfs als we zouden willen - het is technisch onmogelijk"
-      },
-      "badges": {
-        "ssl": "256-bit SSL",
-        "soc2": "SOC 2 Type II",
-        "gdpr": "GDPR Conform",
-        "iso": "ISO 27001",
-        "hipaa": "HIPAA Conform"
+        "description": "Je gegevens blijven privé - wij verwerken alleen wat nodig is en verwijderen audio direct"
       }
     },
     "testimonials": {

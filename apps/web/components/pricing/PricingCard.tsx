@@ -58,7 +58,7 @@ export function PricingCard({
         border-2 transition-all duration-200
         ${
           featured
-            ? 'border-[#cc3399] scale-110 shadow-2xl ring-4 ring-[#cc3399]/20'
+            ? 'border-[#cc3399] scale-100 md:scale-110 shadow-2xl ring-4 ring-[#cc3399]/20'
             : 'border-gray-200 dark:border-gray-700 hover:border-[#cc3399]/50'
         }
       `}

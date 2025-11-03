@@ -34,7 +34,8 @@ import {
   X,
   Share2,
   ChevronDown,
-  Globe
+  Globe,
+  Upload
 } from 'lucide-react';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
 import { AnalysisTabs } from './AnalysisTabs';
@@ -44,11 +45,13 @@ import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
 interface TranscriptionListProps {
   lastCompletedId?: string | null;
+  onNavigateToUpload?: () => void;
 }
 
-export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastCompletedId }) => {
+export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastCompletedId, onNavigateToUpload }) => {
   const t = useTranslations('transcription');
   const tCommon = useTranslations('common');
+  const tDashboard = useTranslations('dashboard');
   const { user } = useAuth();
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -611,16 +614,42 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({ lastComple
 
   if (transcriptions.length === 0) {
     return (
-      <div className="text-center py-12">
-        <FileAudio className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-        <p className="text-gray-500 dark:text-gray-400">{t('noTranscriptAvailable')}</p>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">{t('noSummaryAvailable')}</p>
+      <div className="text-center py-16">
+        <FileAudio className="h-16 w-16 text-[#cc3399] mx-auto mb-6" />
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          {tDashboard('emptyStateTitle')}
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto">
+          {tDashboard('emptyStateDescription')}
+        </p>
+        {onNavigateToUpload && (
+          <button
+            onClick={onNavigateToUpload}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md"
+          >
+            <Upload className="h-5 w-5" />
+            {tDashboard('emptyStateButton')}
+          </button>
+        )}
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
+      {/* Upload New Audio Button */}
+      {onNavigateToUpload && transcriptions.length > 0 && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={onNavigateToUpload}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md"
+          >
+            <Upload className="h-4 w-4" />
+            {tDashboard('uploadNewAudio')}
+          </button>
+        </div>
+      )}
+
       {Object.entries(groupedTranscriptions).map(([monthYear, monthTranscriptions]) => (
         <div key={monthYear}>
           {/* Month Divider */}

@@ -90,20 +90,20 @@ export function FeatureComparisonTable() {
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
-            <th className="text-left py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-2/5">
+            <th className="text-left py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-2/5">
               {t('feature')}
             </th>
-            <th className="text-center py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.free')}
             </th>
-            <th className="text-center py-5 px-6 bg-gradient-to-br from-[#cc3399]/10 via-purple-50/50 to-[#cc3399]/10 dark:from-[#cc3399]/20 dark:via-purple-900/20 dark:to-[#cc3399]/20 w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-gradient-to-br from-[#cc3399]/10 via-purple-50/50 to-[#cc3399]/10 dark:from-[#cc3399]/20 dark:via-purple-900/20 dark:to-[#cc3399]/20 w-1/5">
               <div className="flex items-center justify-center gap-2">
-                <span className="text-[#cc3399] dark:text-[#ff66cc] font-bold text-lg">
+                <span className="text-[#cc3399] dark:text-[#ff66cc] font-bold text-sm sm:text-base md:text-lg">
                   {t('tiers.professional')}
                 </span>
               </div>
             </th>
-            <th className="text-center py-5 px-6 text-gray-900 dark:text-white font-bold text-lg w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.payg')}
             </th>
           </tr>
@@ -114,7 +114,7 @@ export function FeatureComparisonTable() {
               <tr>
                 <td
                   colSpan={4}
-                  className="py-4 px-6 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 font-bold text-gray-900 dark:text-white text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
+                  className="py-3 px-2 sm:py-4 sm:px-6 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 font-bold text-gray-900 dark:text-white text-xs sm:text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
                 >
                   {category.category}
                 </td>
@@ -124,16 +124,16 @@ export function FeatureComparisonTable() {
                   key={`item-${categoryIndex}-${itemIndex}`}
                   className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
                 >
-                  <td className="py-4 px-6 text-gray-800 dark:text-gray-200 font-medium border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base border-b border-gray-100 dark:border-gray-800">
                     {item.name}
                   </td>
-                  <td className="py-4 px-6 text-center border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">
                     {renderCell(item.free, false)}
                   </td>
-                  <td className="py-4 px-6 text-center bg-gradient-to-br from-[#cc3399]/5 via-purple-50/30 to-[#cc3399]/5 dark:from-[#cc3399]/10 dark:via-purple-900/10 dark:to-[#cc3399]/10 border-b border-[#cc3399]/10 dark:border-[#cc3399]/20">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-gradient-to-br from-[#cc3399]/5 via-purple-50/30 to-[#cc3399]/5 dark:from-[#cc3399]/10 dark:via-purple-900/10 dark:to-[#cc3399]/10 border-b border-[#cc3399]/10 dark:border-[#cc3399]/20">
                     {renderCell(item.pro, true)}
                   </td>
-                  <td className="py-4 px-6 text-center border-b border-gray-100 dark:border-gray-800">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">
                     {renderCell(item.payg, false)}
                   </td>
                 </tr>

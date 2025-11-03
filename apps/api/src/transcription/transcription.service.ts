@@ -941,8 +941,8 @@ ${fullCustomPrompt}`;
       // Count words in the title
       const wordCount = fullTitle.trim().split(/\s+/).length;
 
-      // If title is already 7 words or less, use as-is
-      if (wordCount <= 7) {
+      // If title is already 8 words or less, use as-is
+      if (wordCount <= 8) {
         this.logger.log(
           `Title already concise (${wordCount} words), skipping API call`,
         );
@@ -960,11 +960,11 @@ ${fullCustomPrompt}`;
           {
             role: 'system',
             content:
-              'You are a title optimization expert. Create concise, scannable titles that preserve the core meaning.',
+              'You are a title optimization expert. Create concise, scannable titles that preserve the core meaning. You MUST follow the word limit strictly.',
           },
           {
             role: 'user',
-            content: `Shorten this heading to 5-7 words maximum while preserving the core meaning and language:\n\n"${fullTitle}"\n\nReturn ONLY the shortened title, nothing else. Keep the same language as the original.`,
+            content: `Shorten this heading to MAXIMUM 6 words while preserving the core meaning and language:\n\n"${fullTitle}"\n\nIMPORTANT: Your response must be 6 words or less. Return ONLY the shortened title, nothing else. Keep the same language as the original.`,
           },
         ],
         max_completion_tokens: 30,
@@ -973,16 +973,27 @@ ${fullCustomPrompt}`;
       const shortTitle =
         completion.choices[0].message.content?.trim() || fullTitle;
 
+      // Verify the shortened title actually follows the word limit
+      const shortTitleWordCount = shortTitle.trim().split(/\s+/).length;
+      if (shortTitleWordCount > 8) {
+        this.logger.warn(
+          `AI-generated title still too long (${shortTitleWordCount} words), applying fallback`,
+        );
+        // Use fallback if AI didn't follow instructions
+        const words = fullTitle.trim().split(/\s+/);
+        return words.slice(0, 6).join(' ') + '...';
+      }
+
       this.logger.log(`Short title generated: "${shortTitle}"`);
 
       return shortTitle;
     } catch (error) {
       this.logger.error('Error generating short title, using fallback:', error);
 
-      // Fallback: Take first 7 words and add ellipsis if truncated
+      // Fallback: Take first 6 words and add ellipsis if truncated
       const words = fullTitle.trim().split(/\s+/);
-      if (words.length > 7) {
-        return words.slice(0, 7).join(' ') + '...';
+      if (words.length > 6) {
+        return words.slice(0, 6).join(' ') + '...';
       }
       return fullTitle;
     }

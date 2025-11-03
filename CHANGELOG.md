@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Transcription Title Length Issue**: Fixed transcription cards displaying overly long titles instead of concise, scannable titles
+  - **Root Cause**: Summary prompt didn't explicitly limit title word count, GPT-5 was generating descriptive but lengthy H1 headings (12+ words)
+  - **Primary Fix**: Updated summarization prompt to enforce "MAXIMUM 8 words" for main heading
+  - **Secondary Fix**: Strengthened `generateShortTitle()` function with stricter word limits and validation
+    - Changed target from 5-7 words to "MAXIMUM 6 words" for tighter control
+    - Added validation to verify AI-generated titles actually follow word limit
+    - Improved fallback logic to truncate to 6 words + ellipsis if AI fails to comply
+    - Changed acceptance threshold from 7 to 8 words to match prompt guidance
+  - **Example**: "Carrière-interview: van assistant private banker naar Lean Consultant bij ABN AMRO met aantoonbare procesverbeteringen" (12 words) → now generates ~6 word titles
+  - Location: `apps/api/src/transcription/prompts.ts:7`, `apps/api/src/transcription/transcription.service.ts:939-1000`
+
+### Changed
+- **Improved Dashboard UX**: Redesigned dashboard tab order and empty state for better first-time user experience
+  - **Tab Reordering**: "Transcriptions" tab is now the first/default tab (previously "Upload Audio")
+  - **Enhanced Empty State**: First-time users see welcoming message with clear call-to-action button instead of generic "no transcriptions" text
+  - **Upload Button**: When transcriptions exist, "Upload New Audio" button appears in top-right for quick access
+  - **Auto-Switch After Upload**: After uploading a file, automatically switches to Transcriptions tab to show processing progress
+  - **Internationalization**: Added new translation keys (`emptyStateTitle`, `emptyStateDescription`, `emptyStateButton`, `uploadNewAudio`) to all 5 languages (en, nl, de, fr, es)
+  - Location: `apps/web/app/[locale]/dashboard/page.tsx:26,177-178,265-349`, `apps/web/components/TranscriptionList.tsx:45-53,614-651`, `apps/web/messages/*.json`
+- **Redesigned Security Section Layout on Landing Page**: Changed from single-column to two-column layout for better visual balance and appeal
+  - Image now sits in left column (50% width) instead of full-width at top
+  - Security features now in right column as stacked horizontal cards instead of 3-column grid
+  - Each feature card uses horizontal layout with icon on left and text on right for better readability
+  - Maintains responsive design with single column on mobile (stacks vertically on smaller screens)
+  - Location: `apps/web/app/[locale]/landing/page.tsx:405-492`
+- **Simplified Security Section on Landing Page**: Toned down marketing claims and improved layout for better honesty and clarity
+  - Removed third-party certification claims (SOC 2, HIPAA, ISO badges) that belong to service providers, not our platform
+  - Simplified section layout: Image now full-width at top, followed by 3 key privacy features in clean grid
+  - Updated messaging to focus on actual features: immediate deletion, secure infrastructure, GDPR compliance
+  - Removed confusing 2x2 grid of certification badges positioned under the image
+  - Updated all 5 language files (en, nl, de, fr, es) with more accurate, less promotional language
+  - Location: `apps/web/app/[locale]/landing/page.tsx:405-469`, `apps/web/messages/*.json`
+
+### Added
+- **Enhanced Smooth Scroll with Industry-Standard Easing for 'See How It Works' Button**: Implemented custom smooth scroll animation with quartic bezier curve
+  - When clicking "See how it works" button, page now smoothly scrolls to the "How It Works" section with elegant easing
+  - **Industry-standard easing**: Uses `easeInOutQuart` (quartic curve) - same easing used by Apple, Google, and modern design systems
+  - **Longer duration**: 1.2 seconds (vs browser default ~0.5s) for more perceptible, elegant animation
+  - **requestAnimationFrame**: GPU-accelerated, frame-perfect animation at 60fps
+  - Added global `scroll-behavior: smooth` CSS for native smooth scrolling on all anchor links
+  - Location: `apps/web/app/[locale]/landing/page.tsx:37-69, 102` and `apps/web/app/globals.css:75-77`
+
+### Fixed
+- **Mobile Menu Visual Issues**: Fixed styling problems in mobile navigation menu
+  - Added explicit background color to header section to eliminate transparent bar between header and nav
+  - Fixed broken anchor links to properly navigate to landing page sections
+  - Added `id="features"` to Value Proposition section for anchor navigation
+  - Changed Features link to `#features` to scroll to "Transform your workflow..." section
+  - Changed Pricing link from hash anchor to proper route `/${locale}/pricing`
+  - Removed non-existent FAQ link from mobile menu
+  - Impact: Clean visual appearance and functional navigation in mobile menu
+  - Location: `apps/web/components/MobileNav.tsx:50, 105`, `apps/web/app/[locale]/landing/page.tsx:155`
+- **Improved Mobile Responsiveness on iPhone 12 Pro (390x844px)**: Fixed multiple layout and overflow issues for better mobile UX
+  - **Pricing Cards**: Changed featured card scaling from `scale-110` to `scale-100 md:scale-110` to prevent horizontal overflow on mobile
+    - Location: `apps/web/components/pricing/PricingCard.tsx:61`
+  - **Feature Comparison Table**: Reduced padding and text sizes for mobile to minimize horizontal scrolling
+    - Headers: Changed from `py-5 px-6` to `py-3 px-2 sm:py-5 sm:px-6` and `text-lg` to `text-sm sm:text-base md:text-lg`
+    - Table cells: Changed from `py-4 px-6` to `py-3 px-2 sm:py-4 sm:px-6` with responsive text sizing
+    - Category headers: Changed from `text-sm` to `text-xs sm:text-sm`
+    - Location: `apps/web/components/pricing/FeatureComparisonTable.tsx:93-140`
+  - **Landing Page Hero Section**: Improved text scaling for narrow screens
+    - Title: Changed from `text-5xl md:text-7xl` to `text-4xl sm:text-5xl md:text-7xl`
+    - Subtitle: Changed from `text-xl md:text-2xl` to `text-lg sm:text-xl md:text-2xl`
+    - Location: `apps/web/app/[locale]/landing/page.tsx:81-87`
+  - **Trust Indicators**: Reduced icon and text sizes on mobile to prevent overflow
+    - Icons: Changed from `h-5 w-5` to `h-4 w-4 sm:h-5 sm:w-5`
+    - Text: Changed from `text-sm` to `text-xs sm:text-sm`
+    - Location: `apps/web/app/[locale]/landing/page.tsx:64-77`
+  - **Pricing Teaser (Landing Page)**: Fixed featured card scaling from `scale-105` to `scale-100 md:scale-105`
+    - Location: `apps/web/app/[locale]/landing/page.tsx:598`
+  - **Footer**: Improved mobile layout from 2 columns to single column stacking
+    - Changed from `grid-cols-2 md:grid-cols-4` to `grid-cols-1 sm:grid-cols-2 md:grid-cols-4`
+    - Location: `apps/web/app/[locale]/landing/page.tsx:820`
+  - Impact: Eliminates horizontal scrolling, improves readability, and provides better touch targets on mobile devices
+
 ### Changed
 - **Enhanced Landing Page Micro-Animations**: Improved animation smoothness and visual impact for better user experience
   - Increased vertical movement distance: fadeUp animations from 20-30px → 60-80px (3x distance)

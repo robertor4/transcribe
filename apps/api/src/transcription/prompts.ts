@@ -4,7 +4,7 @@ import { AnalysisType } from '@transcribe/shared';
 export const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and provide a comprehensive summary.
 
 **CRITICAL FORMATTING RULES:**
-1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title showing what this conversation was about. This should be the specific subject matter and context. Do NOT use a generic label - make the heading itself BE the topic.
+1. START WITH A MAIN HEADING (using #) that is a clear, concise title (MAXIMUM 8 words) showing what this conversation was about. This should be the specific subject matter and context. Do NOT use a generic label - make the heading itself BE the topic. Keep it scannable and brief.
 2. Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns.
 3. If the transcript is in a non-English language, ALL headings and content must be in that same language.
 
