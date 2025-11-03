@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Mobile Responsiveness Improvements**: Comprehensive optimization for mobile devices (screens < 640px)
+  - Analysis tabs now horizontally scrollable with reduced padding and icon sizes on mobile
+  - Action buttons (Language, Copy, Timeline/Raw) stack vertically on mobile for better space utilization
+  - Copy buttons show descriptive text on mobile ("Copy Summary", "Copy Analysis") instead of just "Copy"
+  - Transcription card titles and metadata stack vertically on small screens
+  - Date and translation info arranged in column layout on mobile (no horizontal overflow)
+  - Action buttons (Share, Delete, Expand) use smaller padding and icons on mobile (h-4 w-4 vs h-5 w-5)
+  - Status indicators show abbreviated text on mobile ("Stuck" vs "Stuck Processing")
+  - Dashboard navigation tabs use smaller text and icons with reduced spacing
+  - "Upload New Audio" button expands to full width on mobile
+  - Added mobile utility classes to [globals.css](apps/web/app/globals.css#L91-L121)
+  - Locations: [AnalysisTabs.tsx](apps/web/components/AnalysisTabs.tsx), [TranscriptionList.tsx](apps/web/components/TranscriptionList.tsx), [dashboard/page.tsx](apps/web/app/[locale]/dashboard/page.tsx)
+- **Additional Mobile UX Enhancements**:
+  - Dashboard navigation tabs now horizontally scrollable (no wrapping to second line)
+  - Transcription card titles wrap to multiple lines instead of truncating with ellipsis
+  - Share and Delete buttons hidden behind three-dot menu (MoreVertical) on mobile for cleaner interface
+  - Expand button (ChevronDown) properly centered in circular button with fixed dimensions
+  - Locations: [dashboard/page.tsx:270](apps/web/app/[locale]/dashboard/page.tsx#L270), [TranscriptionList.tsx:744,814-927](apps/web/components/TranscriptionList.tsx)
 - **Translation Feature Scope**: Full Transcript tab now always displays in original language
   - Translation feature now applies to analyses only (Summary, Action Items, Communication Styles, etc.)
   - Full Transcript always shown in original language for authenticity and data integrity

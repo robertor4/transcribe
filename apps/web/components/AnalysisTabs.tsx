@@ -389,7 +389,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   data-active={isActive}
                   onClick={() => setActiveTab(info.key)}
                   className={`
-                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    py-3 px-3 sm:px-4 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0
                     transition-all duration-200 border-b-2
                     ${isActive ? colors.border : 'border-transparent'}
                     ${colors.text}
@@ -397,7 +397,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   `}
                   title={info.description}
                 >
-                  <Icon className={`h-4 w-4 ${colors.icon}`} />
+                  <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${colors.icon}`} />
                   <span>{info.label}</span>
                 </button>
               );
@@ -414,7 +414,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   data-active={isActive}
                   onClick={() => setActiveTab(`generated-${analysis.id}`)}
                   className={`
-                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    py-3 px-3 sm:px-4 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0
                     transition-all duration-200 border-b-2
                     ${isActive ? 'border-blue-600 dark:border-blue-400' : 'border-transparent'}
                     ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}
@@ -422,7 +422,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   `}
                   title={analysis.templateName}
                 >
-                  <Sparkles className={`h-4 w-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                  <Sparkles className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
                   <span>{analysis.templateName}</span>
                 </button>
               );
@@ -434,14 +434,14 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                 data-active={activeTab === 'moreAnalyses'}
                 onClick={() => setActiveTab('moreAnalyses')}
                 className={`
-                  py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                  py-3 px-3 sm:px-4 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0
                   transition-all duration-200 border-b-2
                   ${activeTab === 'moreAnalyses' ? 'border-[#cc3399] text-[#cc3399]' : 'border-transparent text-gray-600 dark:text-gray-400'}
                   ${activeTab !== 'moreAnalyses' && 'hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'}
                 `}
                 title="Generate additional analyses on-demand"
               >
-                <Sparkles className={`h-4 w-4 ${activeTab === 'moreAnalyses' ? 'text-[#cc3399]' : 'text-gray-500 dark:text-gray-400'}`} />
+                <Sparkles className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${activeTab === 'moreAnalyses' ? 'text-[#cc3399]' : 'text-gray-500 dark:text-gray-400'}`} />
                 <span>More Analyses</span>
               </button>
             )}
@@ -461,7 +461,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   data-active={isActive}
                   onClick={() => setActiveTab('details')}
                   className={`
-                    py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
+                    py-3 px-3 sm:px-4 font-medium text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0
                     transition-all duration-200 border-b-2
                     ${isActive ? colors.border : 'border-transparent'}
                     ${colors.text}
@@ -469,7 +469,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   `}
                   title={detailsInfo.description}
                 >
-                  <Icon className={`h-4 w-4 ${colors.icon}`} />
+                  <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${colors.icon}`} />
                   <span>{detailsInfo.label}</span>
                 </button>
               );
@@ -507,25 +507,25 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
           return (
             <div key={info.key}>
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 mb-6">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 mb-6">
                     {/* Language Selector - only show for non-transcript tabs (transcript is always in original language) */}
                     {transcriptionId && transcription && info.key !== 'transcript' && (
-                      <div className="relative">
+                      <div className="relative w-full sm:w-auto order-1 sm:order-none">
                         <button
                           onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
                           disabled={isTranslating}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                          className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 w-full sm:w-auto"
                           title="Change language"
                         >
                           {isTranslating ? (
                             <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              <span>Translating...</span>
+                              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
+                              <span className="text-gray-800 dark:text-gray-200">Translating...</span>
                             </>
                           ) : (
                             <>
-                              <Globe className="h-4 w-4" />
-                              <span>{currentLanguageName}</span>
+                              <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              <span className="text-gray-800 dark:text-gray-200">{currentLanguageName}</span>
                             </>
                           )}
                         </button>
@@ -621,32 +621,32 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                     )}
 
                     {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && (
-                      <>
+                      <div className="flex gap-2 w-full sm:w-auto order-2 sm:order-none">
                         <button
                           onClick={() => setTranscriptView('timeline')}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors border ${
+                          className={`flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-lg transition-colors border flex-1 sm:flex-none ${
                             transcriptView === 'timeline'
                               ? 'text-[#cc3399] bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800'
                               : 'text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                           }`}
                           title="Timeline view"
                         >
-                          <Calendar className="h-4 w-4" />
-                          <span>Timeline</span>
+                          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-gray-800 dark:text-gray-200">Timeline</span>
                         </button>
                         <button
                           onClick={() => setTranscriptView('raw')}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-colors border ${
+                          className={`flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-lg transition-colors border flex-1 sm:flex-none ${
                             transcriptView === 'raw'
                               ? 'text-[#cc3399] bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800'
                               : 'text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
                           }`}
                           title="Raw text view"
                         >
-                          <FileCode className="h-4 w-4" />
-                          <span>Raw</span>
+                          <FileCode className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="text-gray-800 dark:text-gray-200">Raw</span>
                         </button>
-                      </>
+                      </div>
                     )}
                     <button
                       onClick={() => {
@@ -657,19 +657,20 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                           handleCopy(content || '', info.key);
                         }
                       }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                      className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 order-3 sm:order-none w-full sm:w-auto"
                       title={`Copy ${info.label}`}
                       disabled={!content}
                     >
                       {copiedTab === info.key ? (
                         <>
-                          <Check className="h-4 w-4 text-[#cc3399]" />
-                          <span>Copied!</span>
+                          <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#cc3399]" />
+                          <span className="text-gray-800 dark:text-gray-200">Copied!</span>
                         </>
                       ) : (
                         <>
-                          <Copy className="h-4 w-4" />
-                          <span>Copy</span>
+                          <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:inline text-gray-800 dark:text-gray-200">Copy</span>
+                          <span className="sm:hidden text-gray-800 dark:text-gray-200">Copy {info.label}</span>
                         </>
                       )}
                     </button>
@@ -765,18 +766,19 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
               <div className="flex items-center justify-end gap-2 mb-6">
                 <button
                   onClick={() => handleCopy(analysis.content, `generated-${analysis.id}`)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                  className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors border border-gray-200 dark:border-gray-700 w-full sm:w-auto"
                   title="Copy to clipboard"
                 >
                   {copiedTab === `generated-${analysis.id}` ? (
                     <>
-                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600 dark:text-green-400" />
                       <span className="text-green-600 dark:text-green-400">Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="h-4 w-4" />
-                      <span>Copy</span>
+                      <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="hidden sm:inline text-gray-800 dark:text-gray-200">Copy</span>
+                      <span className="sm:hidden text-gray-800 dark:text-gray-200">Copy Analysis</span>
                     </>
                   )}
                 </button>

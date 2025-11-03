@@ -26,7 +26,7 @@ export const AnalysisContentRenderer: React.FC<AnalysisContentRendererProps> = (
   }, [content]);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8">
       <div className="prose prose-gray prose-lg max-w-none prose-p:text-base prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-li:text-base">
         <ReactMarkdown
           remarkPlugins={[remarkGfm, remarkBreaks]}

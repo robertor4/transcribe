@@ -88,6 +88,38 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
+/* Mobile utility classes */
+@media (max-width: 640px) {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+
+  /* Ensure minimum touch target sizes on mobile */
+  button,
+  a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Compact spacing for mobile */
+  .mobile-compact {
+    padding: 0.5rem;
+  }
+
+  /* Text truncation with ellipsis */
+  .mobile-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 /* Custom prose styling to fix color and spacing issues */
 .prose {
   color: #374151 !important; /* gray-700 */
