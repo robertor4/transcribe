@@ -35,7 +35,8 @@ import {
   Share2,
   ChevronDown,
   Globe,
-  Upload
+  Upload,
+  MoreVertical
 } from 'lucide-react';
 import { AnalysisContentRenderer } from './AnalysisContentRenderer';
 import { AnalysisTabs } from './AnalysisTabs';
@@ -67,7 +68,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleValue, setEditingTitleValue] = useState<string>('');
   const [shareModalTranscription, setShareModalTranscription] = useState<Transcription | null>(null);
-  
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
   // Infinite scroll state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -669,9 +671,9 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
         <div className="flex justify-end mb-4">
           <button
             onClick={onNavigateToUpload}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md"
+            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-[#cc3399] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md w-full sm:w-auto"
           >
-            <Upload className="h-4 w-4" />
+            <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {tDashboard('uploadNewAudio')}
           </button>
         </div>
@@ -681,7 +683,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
         <div key={monthYear}>
           {/* Month Divider */}
           <div className="flex items-baseline gap-3 mb-6 pb-2 border-b border-gray-300 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{monthYear}</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{monthYear}</h2>
             <span className="text-xs text-gray-600 dark:text-gray-400">
               {monthTranscriptions.length} {monthTranscriptions.length === 1 ? 'transcription' : 'transcriptions'}
             </span>
@@ -700,7 +702,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
             className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200"
           >
             <div
-              className={`px-5 py-5 ${
+              className={`px-3 py-4 sm:px-5 sm:py-5 ${
                 transcription.status === TranscriptionStatus.COMPLETED && !isExpanded
                   ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-t-lg transition-colors'
                   : ''
@@ -711,113 +713,209 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                 }
               }}
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
                   {editingTitleId === transcription.id ? (
-                    <div className="flex items-center gap-2 flex-1">
-                      <input
-                        type="text"
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
+                      <textarea
                         value={editingTitleValue}
                         onChange={(e) => setEditingTitleValue(e.target.value)}
                         onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
-                        className="text-base font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg px-3 py-1.5 min-w-0 flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                        className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg px-3 py-2 sm:py-1.5 w-full sm:min-w-0 sm:flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 resize-none"
                         placeholder={t('editTitle')}
+                        rows={2}
                         autoFocus
                       />
-                      <button
-                        onClick={() => saveTitle(transcription.id)}
-                        className="p-1 text-green-600 hover:text-green-800 flex-shrink-0"
-                        title={tCommon('save')}
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={cancelEditingTitle}
-                        className="p-1 text-red-600 hover:text-red-800 flex-shrink-0"
-                        title={tCommon('cancel')}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center justify-start gap-2 sm:gap-1.5">
+                        <button
+                          onClick={() => saveTitle(transcription.id)}
+                          className="flex items-center justify-center gap-1.5 px-4 py-2 sm:p-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg sm:rounded transition-colors flex-shrink-0"
+                          title={tCommon('save')}
+                        >
+                          <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <span className="sm:hidden text-sm font-medium">Save</span>
+                        </button>
+                        <button
+                          onClick={cancelEditingTitle}
+                          className="flex items-center justify-center gap-1.5 px-4 py-2 sm:p-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg sm:rounded transition-colors flex-shrink-0"
+                          title={tCommon('cancel')}
+                        >
+                          <X className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <span className="sm:hidden text-sm font-medium">Cancel</span>
+                        </button>
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 min-w-0">
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate min-w-0">
+                    <div className="flex items-start gap-1.5 sm:gap-2 min-w-0 w-full">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 min-w-0 flex-1 break-words">
                         {transcription.title || transcription.fileName}
                       </h3>
+                      {/* Edit button - desktop only */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           startEditingTitle(transcription);
                         }}
-                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0"
+                        className="hidden sm:block p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0 mt-0.5"
                         title={t('editTitle')}
                       >
-                        <Edit3 className="h-4 w-4" />
+                        <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </button>
                     </div>
                   )}
-                  <div className="flex items-center gap-3 mt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1 mt-1">
                     <span className="text-xs text-gray-600 dark:text-gray-400">
                       {formatDate(transcription.createdAt)}
                     </span>
-                    {transcription.translations && Object.keys(transcription.translations).length > 0 && (
+                    {(transcription.detectedLanguage || (transcription.translations && Object.keys(transcription.translations).length > 0)) && (
                       <span className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                        <span>•</span>
+                        <span className="hidden sm:inline">•</span>
                         <Globe className="h-3 w-3" />
-                        <span>{Object.keys(transcription.translations).length} {Object.keys(transcription.translations).length === 1 ? 'translation' : 'translations'}</span>
+                        <span className="flex items-center gap-1">
+                          {transcription.detectedLanguage && (
+                            <span className="font-medium text-gray-700 dark:text-gray-400">
+                              {transcription.detectedLanguage.substring(0, 2).toUpperCase()}
+                            </span>
+                          )}
+                          {transcription.translations && Object.keys(transcription.translations).map((langCode) => (
+                            <span key={langCode} className="flex items-center gap-1">
+                              <span>•</span>
+                              <span className="font-medium text-gray-700 dark:text-gray-400">
+                                {langCode.toUpperCase()}
+                              </span>
+                            </span>
+                          ))}
+                        </span>
                       </span>
                     )}
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-3 flex-shrink-0">
+
+                <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
                   {transcription.status === TranscriptionStatus.PROCESSING && progress && !isStuck ? (
-                    <ProcessingStatus
-                      progress={progress.progress || 0}
-                      stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
-                    />
+                    <div className="min-w-0 flex-1 sm:flex-none">
+                      <ProcessingStatus
+                        progress={progress.progress || 0}
+                        stage={progress.stage as 'uploading' | 'processing' | 'summarizing' || 'processing'}
+                      />
+                    </div>
                   ) : transcription.status === TranscriptionStatus.PROCESSING && !progress && !isStuck ? (
-                    <div className="flex items-center space-x-2">
-                      <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 animate-spin" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500 dark:text-blue-400 animate-spin" />
+                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         Starting...
                       </span>
                     </div>
                   ) : isStuck ? (
-                    <div className="flex items-center space-x-2">
-                      <Loader2 className="h-4 w-4 text-orange-500 dark:text-orange-400 animate-spin" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        Stuck Processing
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 dark:text-orange-400 animate-spin" />
+                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        <span className="hidden sm:inline">Stuck Processing</span>
+                        <span className="sm:hidden">Stuck</span>
                       </span>
                     </div>
                   ) : transcription.status === TranscriptionStatus.FAILED ? (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
                       {getStatusIcon(transcription.status)}
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
                         {getStatusText(transcription.status, transcription.id)}
                       </span>
                     </div>
                   ) : transcription.status === TranscriptionStatus.PENDING ? (
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500 dark:text-yellow-400" />
+                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                         Pending
                       </span>
                     </div>
                   ) : null}
 
+                  {/* Mobile: Dropdown Menu for Actions */}
+                  {(transcription.status === TranscriptionStatus.COMPLETED ||
+                    transcription.status === TranscriptionStatus.FAILED ||
+                    transcription.status === TranscriptionStatus.PENDING ||
+                    isStuck) && (
+                    <div className="relative block sm:hidden">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === transcription.id ? null : transcription.id);
+                        }}
+                        className="flex items-center justify-center p-1.5 text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+                        title="More actions"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </button>
+
+                      {/* Dropdown Menu */}
+                      {openMenuId === transcription.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuId(null);
+                            }}
+                          />
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 py-1">
+                            {/* Edit Title option */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditingTitle(transcription);
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors"
+                            >
+                              <Edit3 className="h-4 w-4" />
+                              <span className="text-gray-800 dark:text-gray-200">{t('editTitle')}</span>
+                            </button>
+                            {transcription.status === TranscriptionStatus.COMPLETED && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShareModalTranscription(transcription);
+                                  setOpenMenuId(null);
+                                }}
+                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              >
+                                <Share2 className="h-4 w-4" />
+                                <span className="text-gray-800 dark:text-gray-200">{t('share')}</span>
+                                {transcription.shareToken && (
+                                  <span className="ml-auto w-2 h-2 bg-green-500 rounded-full"></span>
+                                )}
+                              </button>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpenMenuId(null);
+                                handleDelete(transcription.id);
+                              }}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="text-gray-800 dark:text-gray-200">{t('delete')}</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Desktop: Individual Action Buttons */}
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setShareModalTranscription(transcription);
                       }}
-                      className="p-2 text-gray-500 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all relative"
+                      className="hidden sm:block p-1.5 sm:p-2 text-gray-500 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all relative"
                       title={t('share')}
                     >
-                      <Share2 className="h-5 w-5" />
+                      <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
                       {transcription.shareToken && (
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full"></span>
                       )}
                     </button>
                   )}
@@ -831,20 +929,21 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                         e.stopPropagation();
                         handleDelete(transcription.id);
                       }}
-                      className="p-2 text-gray-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                      className="hidden sm:block p-1.5 sm:p-2 text-gray-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                       title={t('delete')}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   )}
 
+                  {/* Expand/Collapse button */}
                   {transcription.status === TranscriptionStatus.COMPLETED && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setExpandedId(isExpanded ? null : transcription.id);
                       }}
-                      className={`p-2 rounded-full transition-all duration-200 ${
+                      className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-200 ${
                         isExpanded
                           ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                           : 'bg-[#cc3399] text-white hover:bg-[#b82d89] shadow-sm hover:shadow-md active:scale-95'
@@ -852,7 +951,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                       title={isExpanded ? t('hideTranscript') : t('viewTranscription')}
                     >
                       <ChevronDown
-                        className={`h-5 w-5 transition-transform duration-200 ${
+                        className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-200 ${
                           isExpanded ? 'rotate-180' : ''
                         }`}
                       />
@@ -901,7 +1000,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
             )}
 
             {isExpanded && transcription.status === TranscriptionStatus.COMPLETED && (
-              <div className="pt-6 border-t border-gray-200 dark:border-gray-700 px-5">
+              <div className="pt-6 border-t border-gray-200 dark:border-gray-700 px-3 sm:px-5">
                 {/* Show analysis tabs - support both old (analyses) and new (coreAnalyses) formats */}
                 {(transcription.analyses || transcription.coreAnalyses) ? (
                   <div>
