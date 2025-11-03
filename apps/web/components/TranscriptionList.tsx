@@ -699,7 +699,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
               return (
                 <div
                   key={transcription.id}
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200"
+            className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg transition-all duration-200"
           >
             <div
               className={`px-3 py-4 sm:px-5 sm:py-5 ${
@@ -747,16 +747,16 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                     </div>
                   ) : (
                     <div className="flex items-start gap-1.5 sm:gap-2 min-w-0 w-full">
-                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 min-w-0 flex-1 break-words">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 min-w-0 break-words">
                         {transcription.title || transcription.fileName}
                       </h3>
-                      {/* Edit button - desktop only */}
+                      {/* Edit button - desktop only, visible on hover */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           startEditingTitle(transcription);
                         }}
-                        className="hidden sm:block p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors flex-shrink-0 mt-0.5"
+                        className="hidden sm:block p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-all flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100"
                         title={t('editTitle')}
                       >
                         <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
