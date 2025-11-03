@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Translation Feature Scope**: Full Transcript tab now always displays in original language
+  - Translation feature now applies to analyses only (Summary, Action Items, Communication Styles, etc.)
+  - Full Transcript always shown in original language for authenticity and data integrity
+  - Language selector button hidden when viewing Full Transcript tab
+  - Speaker segments (timeline/raw views) always visible regardless of selected translation language
+  - Backend no longer translates `transcriptText` field, reducing translation costs and time
+  - Updated `TranslationData` type to remove `transcriptText` field ([packages/shared/src/types.ts:145-152](packages/shared/src/types.ts#L145-L152))
+  - Modified translation service to skip transcript translation ([apps/api/src/transcription/transcription.service.ts:1809-1862](apps/api/src/transcription/transcription.service.ts#L1809-L1862))
+  - Updated frontend to always use original transcript regardless of selected language ([apps/web/components/AnalysisTabs.tsx:511-512](apps/web/components/AnalysisTabs.tsx#L511-L512))
+  - Fixed speaker segments display logic to show timeline/raw views even when translation is active for analyses ([apps/web/components/AnalysisTabs.tsx:700](apps/web/components/AnalysisTabs.tsx#L700))
+  - Updated e2e tests to verify transcript text is not translated ([apps/api/test/translation.e2e-spec.ts](apps/api/test/translation.e2e-spec.ts))
+  - Benefits: Cost savings, faster translations, preserves original meaning, better UX
+
 ### Fixed
 - **Critical: Upload Flow Broken by Tab Optimization**: Fixed transcription cards not appearing after upload
   - Root cause: CSS-based tab hiding (from commit e5deaea) prevented TranscriptionList from reinitializing

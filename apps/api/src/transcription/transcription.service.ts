@@ -1807,22 +1807,12 @@ ${transcription}`;
     }
 
     this.logger.log(
-      `Translating transcription ${transcriptionId} to ${targetLang.name} using GPT-5-mini`,
+      `Translating analyses for transcription ${transcriptionId} to ${targetLang.name} using GPT-5-mini (transcript text is NOT translated - always shown in original)`,
     );
 
-    // Translate transcript and all analyses in parallel using GPT-5-mini for cost efficiency
+    // Translate all analyses in parallel using GPT-5-mini for cost efficiency
+    // Note: Transcript text is intentionally NOT translated to preserve the original
     const translationPromises: Promise<string>[] = [];
-
-    // Translate transcript
-    if (transcription.transcriptText) {
-      translationPromises.push(
-        this.translateText(
-          transcription.transcriptText,
-          targetLang.name,
-          'transcript',
-        ),
-      );
-    }
 
     // Translate all available analyses
     // Use coreAnalyses (new structure) if available, otherwise fall back to analyses (old structure)
@@ -1857,7 +1847,7 @@ ${transcription}`;
     // Execute all translations in parallel
     await Promise.all(translationPromises);
 
-    // Build translation data object
+    // Build translation data object (analyses only - transcript is NOT translated)
     const translatedAnalyses: any = {};
     for (const key in analysisTranslations) {
       translatedAnalyses[key] = await analysisTranslations[key];
@@ -1866,13 +1856,6 @@ ${transcription}`;
     const translationData = {
       language: targetLanguage,
       languageName: targetLang.name,
-      transcriptText: transcription.transcriptText
-        ? await this.translateText(
-            transcription.transcriptText,
-            targetLang.name,
-            'transcript',
-          )
-        : undefined,
       analyses: translatedAnalyses,
       translatedAt: new Date(),
       translatedBy: 'gpt-5-mini' as const,

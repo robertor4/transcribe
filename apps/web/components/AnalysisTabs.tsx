@@ -134,13 +134,13 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         return;
       }
 
-      // Switch to existing translation
+      // Switch to existing translation (analyses only - transcript always stays original)
       const existingTranslation = transcription?.translations?.[languageCode];
       if (existingTranslation) {
         setSelectedLanguage(languageCode);
         setCurrentAnalyses({
           ...existingTranslation.analyses,
-          transcript: existingTranslation.transcriptText
+          transcript: analyses.transcript // Always use original transcript
         });
       }
       return; // Don't proceed to API calls in read-only mode
@@ -166,13 +166,13 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
       return;
     }
 
-    // Check if translation already exists
+    // Check if translation already exists (analyses only - transcript always stays original)
     const existingTranslation = transcription?.translations?.[languageCode];
     if (existingTranslation) {
       setSelectedLanguage(languageCode);
       setCurrentAnalyses({
         ...existingTranslation.analyses,
-        transcript: existingTranslation.transcriptText
+        transcript: analyses.transcript // Always use original transcript
       });
 
       // Save preference when switching to existing translation
@@ -198,7 +198,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         setSelectedLanguage(languageCode);
         setCurrentAnalyses({
           ...translationData.analyses,
-          transcript: translationData.transcriptText
+          transcript: analyses.transcript // Always use original transcript
         });
 
         // Update the transcription object with the new translation and preference
@@ -272,7 +272,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         setSelectedLanguage(preferredLang);
         setCurrentAnalyses({
           ...translation.analyses,
-          transcript: translation.transcriptText
+          transcript: analyses.transcript // Always use original transcript
         });
       }
     }
@@ -508,8 +508,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
             <div key={info.key}>
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-2 mb-6">
-                    {/* Language Selector - only show if transcriptionId and transcription are available (authenticated context) */}
-                    {transcriptionId && transcription && (
+                    {/* Language Selector - only show for non-transcript tabs (transcript is always in original language) */}
+                    {transcriptionId && transcription && info.key !== 'transcript' && (
                       <div className="relative">
                         <button
                           onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
@@ -620,7 +620,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                       </div>
                     )}
 
-                    {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && selectedLanguage === 'original' && (
+                    {info.key === 'transcript' && speakerSegments && speakerSegments.length > 0 && (
                       <>
                         <button
                           onClick={() => setTranscriptView('timeline')}
@@ -696,8 +696,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
               <div>
                 {info.key === 'transcript' ? (
                   <div className="max-w-5xl mx-auto px-6 lg:px-8">
-                    {/* Show timeline or raw view for original language with speaker segments */}
-                    {selectedLanguage === 'original' && speakerSegments && speakerSegments.length > 0 ? (
+                    {/* Show timeline or raw view if speaker segments exist (transcript is always in original) */}
+                    {speakerSegments && speakerSegments.length > 0 ? (
                       transcriptView === 'timeline' ? (
                         <TranscriptTimeline
                           transcriptionId={transcriptionId!}
@@ -712,7 +712,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                         </div>
                       )
                     ) : (
-                      /* Show plain text for translated language or when no speaker segments */
+                      /* Show plain text when no speaker segments available */
                       <div>
                         <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-mono">
                           {content}
