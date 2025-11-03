@@ -31,11 +31,12 @@ export default function OutdatedAnalysisWarning({
       } else {
         setError('Failed to regenerate analyses. Please try again.');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Regeneration error:', err);
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message ||
-          err.message ||
+        error.response?.data?.message ||
+          error.message ||
           'An error occurred while regenerating analyses'
       );
     } finally {

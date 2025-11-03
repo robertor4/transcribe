@@ -241,7 +241,7 @@ export default function SharedTranscriptionPage() {
                 }}
                 speakerSegments={transcription.speakerSegments}
                 speakers={transcription.speakers}
-                transcription={transcription as any}
+                transcription={transcription}
                 readOnlyMode={true}
               />
             </div>

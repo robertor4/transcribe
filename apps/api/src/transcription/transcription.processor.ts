@@ -25,7 +25,10 @@ export class TranscriptionProcessor {
     private userService: UserService,
     private usageService: UsageService,
   ) {
-    const concurrency = parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10);
+    const concurrency = parseInt(
+      process.env.TRANSCRIPTION_CONCURRENCY || '2',
+      10,
+    );
     this.logger.log(
       `Transcription processor initialized with concurrency: ${concurrency} (${concurrency > 1 ? 'parallel' : 'sequential'} processing)`,
     );
@@ -39,7 +42,10 @@ export class TranscriptionProcessor {
     const { transcriptionId, userId, fileUrl, analysisType, context } =
       job.data;
 
-    const concurrency = parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10);
+    const concurrency = parseInt(
+      process.env.TRANSCRIPTION_CONCURRENCY || '2',
+      10,
+    );
     this.logger.log(
       `[Job ${job.id}] Processing transcription ${transcriptionId} (concurrency: ${concurrency})`,
     );
@@ -128,9 +134,8 @@ export class TranscriptionProcessor {
           `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
         );
         // Generate a shorter, more scannable title (5-7 words)
-        finalTitle = await this.transcriptionService.generateShortTitle(
-          extractedTitle,
-        );
+        finalTitle =
+          await this.transcriptionService.generateShortTitle(extractedTitle);
         this.logger.log(
           `Short title for transcription ${transcriptionId}: ${finalTitle}`,
         );

@@ -74,7 +74,9 @@ describe('TranscriptionService - Transcript Correction', () => {
           useValue: {
             getTranscription: jest.fn(),
             updateTranscription: jest.fn(),
-            deleteGeneratedAnalysesByTranscription: jest.fn().mockResolvedValue(['analysis-1', 'analysis-2']),
+            deleteGeneratedAnalysesByTranscription: jest
+              .fn()
+              .mockResolvedValue(['analysis-1', 'analysis-2']),
           },
         },
         {
@@ -144,8 +146,13 @@ describe('TranscriptionService - Transcript Correction', () => {
       });
 
       it('should throw BadRequestException if transcript text is missing', async () => {
-        const incompleteTrans = { ...mockTranscription, transcriptText: undefined };
-        jest.spyOn(firebaseService, 'getTranscription').mockResolvedValue(incompleteTrans as any);
+        const incompleteTrans = {
+          ...mockTranscription,
+          transcriptText: undefined,
+        };
+        jest
+          .spyOn(firebaseService, 'getTranscription')
+          .mockResolvedValue(incompleteTrans as any);
 
         await expect(
           service.correctTranscriptWithAI(
@@ -167,7 +174,9 @@ describe('TranscriptionService - Transcript Correction', () => {
 
       it('should throw BadRequestException if status is not completed', async () => {
         const pendingTrans = { ...mockTranscription, status: 'processing' };
-        jest.spyOn(firebaseService, 'getTranscription').mockResolvedValue(pendingTrans as any);
+        jest
+          .spyOn(firebaseService, 'getTranscription')
+          .mockResolvedValue(pendingTrans as any);
 
         await expect(
           service.correctTranscriptWithAI(
@@ -182,7 +191,9 @@ describe('TranscriptionService - Transcript Correction', () => {
 
     describe('Preview Mode', () => {
       beforeEach(() => {
-        jest.spyOn(firebaseService, 'getTranscription').mockResolvedValue(mockTranscription as any);
+        jest
+          .spyOn(firebaseService, 'getTranscription')
+          .mockResolvedValue(mockTranscription as any);
       });
 
       it('should return preview with diff without saving', async () => {
@@ -214,7 +225,9 @@ describe('TranscriptionService - Transcript Correction', () => {
 
         // Should NOT save to Firestore
         expect(firebaseService.updateTranscription).not.toHaveBeenCalled();
-        expect(firebaseService.deleteGeneratedAnalysesByTranscription).not.toHaveBeenCalled();
+        expect(
+          firebaseService.deleteGeneratedAnalysesByTranscription,
+        ).not.toHaveBeenCalled();
       });
 
       it('should generate correct diff entries', async () => {
@@ -250,7 +263,9 @@ describe('TranscriptionService - Transcript Correction', () => {
           speakerSegments: [],
           transcriptWithSpeakers: null,
         };
-        jest.spyOn(firebaseService, 'getTranscription').mockResolvedValue(noSpeakerTrans as any);
+        jest
+          .spyOn(firebaseService, 'getTranscription')
+          .mockResolvedValue(noSpeakerTrans as any);
 
         const result = await service.correctTranscriptWithAI(
           'test-user-id',
@@ -266,9 +281,14 @@ describe('TranscriptionService - Transcript Correction', () => {
 
     describe('Apply Mode', () => {
       beforeEach(() => {
-        jest.spyOn(firebaseService, 'getTranscription')
+        jest
+          .spyOn(firebaseService, 'getTranscription')
           .mockResolvedValueOnce(mockTranscription as any) // First call for validation
-          .mockResolvedValueOnce({ ...mockTranscription, translations: {}, generatedAnalysisIds: [] } as any); // Second call after update
+          .mockResolvedValueOnce({
+            ...mockTranscription,
+            translations: {},
+            generatedAnalysisIds: [],
+          } as any); // Second call after update
       });
 
       it('should save corrections and clear translations/analyses', async () => {
@@ -292,10 +312,9 @@ describe('TranscriptionService - Transcript Correction', () => {
         );
 
         // Should delete custom analyses
-        expect(firebaseService.deleteGeneratedAnalysesByTranscription).toHaveBeenCalledWith(
-          'test-transcript-id',
-          'test-user-id',
-        );
+        expect(
+          firebaseService.deleteGeneratedAnalysesByTranscription,
+        ).toHaveBeenCalledWith('test-transcript-id', 'test-user-id');
 
         // Should return success response
         expect(result).toEqual({
@@ -314,7 +333,8 @@ describe('TranscriptionService - Transcript Correction', () => {
           false,
         );
 
-        const updateCall = (firebaseService.updateTranscription as jest.Mock).mock.calls[0][1];
+        const updateCall = (firebaseService.updateTranscription as jest.Mock)
+          .mock.calls[0][1];
         expect(updateCall.speakerSegments).toBeDefined();
         expect(updateCall.speakerSegments).toHaveLength(2);
 
@@ -340,7 +360,9 @@ describe('TranscriptionService - Transcript Correction', () => {
 
     describe('OpenAI Integration', () => {
       beforeEach(() => {
-        jest.spyOn(firebaseService, 'getTranscription').mockResolvedValue(mockTranscription as any);
+        jest
+          .spyOn(firebaseService, 'getTranscription')
+          .mockResolvedValue(mockTranscription as any);
       });
 
       it('should call OpenAI with correct prompts', async () => {
@@ -356,7 +378,9 @@ describe('TranscriptionService - Transcript Correction', () => {
           messages: [
             {
               role: 'system',
-              content: expect.stringContaining('transcript correction assistant'),
+              content: expect.stringContaining(
+                'transcript correction assistant',
+              ),
             },
             {
               role: 'user',
@@ -369,7 +393,9 @@ describe('TranscriptionService - Transcript Correction', () => {
       });
 
       it('should throw BadRequestException if OpenAI fails', async () => {
-        mockOpenAI.chat.completions.create.mockRejectedValue(new Error('OpenAI API error'));
+        mockOpenAI.chat.completions.create.mockRejectedValue(
+          new Error('OpenAI API error'),
+        );
 
         await expect(
           service.correctTranscriptWithAI(
@@ -433,18 +459,51 @@ describe('TranscriptionService - Transcript Correction', () => {
     describe('generateDiff', () => {
       it('should only include changed segments', () => {
         const originalSegments = [
-          { speakerTag: 'Speaker 1', startTime: 0, text: 'Hello John.', confidence: 0.9 },
-          { speakerTag: 'Speaker 2', startTime: 2, text: 'Unchanged text.', confidence: 0.9 },
-          { speakerTag: 'Speaker 3', startTime: 4, text: 'Another change here.', confidence: 0.9 },
+          {
+            speakerTag: 'Speaker 1',
+            startTime: 0,
+            text: 'Hello John.',
+            confidence: 0.9,
+          },
+          {
+            speakerTag: 'Speaker 2',
+            startTime: 2,
+            text: 'Unchanged text.',
+            confidence: 0.9,
+          },
+          {
+            speakerTag: 'Speaker 3',
+            startTime: 4,
+            text: 'Another change here.',
+            confidence: 0.9,
+          },
         ];
 
         const correctedSegments = [
-          { speakerTag: 'Speaker 1', startTime: 0, text: 'Hello Jon.', confidence: 0.9 },
-          { speakerTag: 'Speaker 2', startTime: 2, text: 'Unchanged text.', confidence: 0.9 },
-          { speakerTag: 'Speaker 3', startTime: 4, text: 'Another modification here.', confidence: 0.9 },
+          {
+            speakerTag: 'Speaker 1',
+            startTime: 0,
+            text: 'Hello Jon.',
+            confidence: 0.9,
+          },
+          {
+            speakerTag: 'Speaker 2',
+            startTime: 2,
+            text: 'Unchanged text.',
+            confidence: 0.9,
+          },
+          {
+            speakerTag: 'Speaker 3',
+            startTime: 4,
+            text: 'Another modification here.',
+            confidence: 0.9,
+          },
         ];
 
-        const diff = (service as any).generateDiff(originalSegments, correctedSegments);
+        const diff = (service as any).generateDiff(
+          originalSegments,
+          correctedSegments,
+        );
 
         expect(diff).toHaveLength(2); // Only segments 0 and 2 changed
         expect(diff[0].segmentIndex).toBe(0);

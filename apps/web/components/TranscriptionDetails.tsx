@@ -5,7 +5,7 @@ import { Transcription, formatFileSize, formatDuration } from '@transcribe/share
 import { Clock, FileAudio, Globe, HardDrive, Users, MessageSquare } from 'lucide-react';
 
 interface TranscriptionDetailsProps {
-  transcription: Transcription;
+  transcription: Partial<Transcription> & { id: string };
   onRefresh?: () => void;
 }
 
@@ -16,7 +16,8 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false
     });
   };
 
@@ -25,9 +26,9 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
       title: 'File Information',
       icon: FileAudio,
       items: [
-        { label: 'File Name', value: transcription.fileName },
-        { label: 'File Size', value: formatFileSize(transcription.fileSize) },
-        { label: 'MIME Type', value: transcription.mimeType },
+        ...(transcription.fileName ? [{ label: 'File Name', value: transcription.fileName }] : []),
+        ...(transcription.fileSize ? [{ label: 'File Size', value: formatFileSize(transcription.fileSize) }] : []),
+        ...(transcription.mimeType ? [{ label: 'MIME Type', value: transcription.mimeType }] : []),
         ...(transcription.duration ? [{ label: 'Duration', value: formatDuration(transcription.duration) }] : []),
       ]
     },
@@ -35,8 +36,8 @@ export const TranscriptionDetails: React.FC<TranscriptionDetailsProps> = ({ tran
       title: 'Processing Information',
       icon: Clock,
       items: [
-        { label: 'Created', value: formatDate(transcription.createdAt) },
-        { label: 'Last Updated', value: formatDate(transcription.updatedAt) },
+        ...(transcription.createdAt ? [{ label: 'Created', value: formatDate(transcription.createdAt) }] : []),
+        ...(transcription.updatedAt ? [{ label: 'Last Updated', value: formatDate(transcription.updatedAt) }] : []),
         ...(transcription.completedAt ? [{ label: 'Completed', value: formatDate(transcription.completedAt) }] : []),
         ...(transcription.status ? [{ label: 'Status', value: transcription.status.charAt(0).toUpperCase() + transcription.status.slice(1) }] : []),
       ]

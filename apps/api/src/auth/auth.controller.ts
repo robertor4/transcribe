@@ -12,20 +12,17 @@ import { Throttle } from '@nestjs/throttler';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { EmailVerificationService } from './email-verification.service';
 import { UserService } from '../user/user.service';
-import { ApiResponse } from '@transcribe/shared';
-
-interface SignupDto {
-  email: string;
-  password: string;
-  displayName: string;
-}
+import type { ApiResponse } from '@transcribe/shared';
 
 interface VerifyEmailDto {
   code: string;
 }
 
-interface ResendVerificationDto {
-  email: string;
+interface AuthenticatedRequest extends Request {
+  user: {
+    uid: string;
+    email: string;
+  };
 }
 
 @Controller('auth')
@@ -37,9 +34,7 @@ export class AuthController {
 
   @Post('signup')
   @Throttle({ short: { limit: 3, ttl: 60000 } }) // 3 signups per minute
-  async signup(
-    @Body() dto: SignupDto,
-  ): Promise<ApiResponse<{ message: string }>> {
+  signup(): ApiResponse<{ message: string }> {
     // This endpoint is called after Firebase Auth creates the user
     // We use it to trigger the verification email
     // The actual user creation is handled by Firebase Auth on the frontend
@@ -59,12 +54,12 @@ export class AuthController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ short: { limit: 5, ttl: 300000 } }) // 5 attempts per 5 minutes
   async verifyEmail(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body() dto: VerifyEmailDto,
   ): Promise<ApiResponse<{ verified: boolean }>> {
-    const userId = (req as any).user.uid;
+    const userId: string = req.user.uid;
 
-    const verified = await this.emailVerificationService.verifyCode(
+    const verified: boolean = await this.emailVerificationService.verifyCode(
       userId,
       dto.code,
     );
@@ -86,13 +81,14 @@ export class AuthController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 resends per 10 minutes
   async resendVerification(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ): Promise<ApiResponse<{ message: string }>> {
-    const userId = (req as any).user.uid;
-    const userEmail = (req as any).user.email;
+    const userId: string = req.user.uid;
+    const userEmail: string = req.user.email;
 
     // Check rate limiting
-    const canSend = await this.emailVerificationService.checkRateLimit(userId);
+    const canSend: boolean =
+      await this.emailVerificationService.checkRateLimit(userId);
     if (!canSend) {
       throw new HttpException(
         'Please wait before requesting another verification code',
@@ -101,13 +97,14 @@ export class AuthController {
     }
 
     // Generate and store new code
-    const code = await this.emailVerificationService.storeVerificationCode(
-      userId,
-      userEmail,
-    );
+    const code: string =
+      await this.emailVerificationService.storeVerificationCode(
+        userId,
+        userEmail,
+      );
 
     // Send email
-    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,
@@ -121,19 +118,20 @@ export class AuthController {
   @UseGuards(FirebaseAuthGuard)
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 sends per 10 minutes
   async sendVerificationCode(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ): Promise<ApiResponse<{ message: string }>> {
-    const userId = (req as any).user.uid;
-    const userEmail = (req as any).user.email;
+    const userId: string = req.user.uid;
+    const userEmail: string = req.user.email;
 
     // Generate and store code
-    const code = await this.emailVerificationService.storeVerificationCode(
-      userId,
-      userEmail,
-    );
+    const code: string =
+      await this.emailVerificationService.storeVerificationCode(
+        userId,
+        userEmail,
+      );
 
     // Send email
-    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,

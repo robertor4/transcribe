@@ -56,8 +56,8 @@ export default function UserActivityPage() {
 
       const data = await response.json();
       setActivity(data.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch activity');
     } finally {
       setLoading(false);
     }

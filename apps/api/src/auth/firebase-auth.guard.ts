@@ -75,7 +75,10 @@ export class FirebaseAuthGuard implements CanActivate {
     }
 
     const now = Date.now();
-    const lastLoginTime = lastLogin instanceof Date ? lastLogin.getTime() : new Date(lastLogin).getTime();
+    const lastLoginTime =
+      lastLogin instanceof Date
+        ? lastLogin.getTime()
+        : new Date(lastLogin).getTime();
     const timeSinceLastLogin = now - lastLoginTime;
 
     // Update if more than threshold has passed since last login

@@ -11,7 +11,7 @@ import axios from 'axios';
 
 interface MoreAnalysesTabProps {
   transcriptionId: string;
-  transcription: Transcription;
+  transcription: Partial<Transcription> & { id: string };
   selectedLanguage?: string; // Language code (e.g., 'en', 'es', 'original')
 }
 

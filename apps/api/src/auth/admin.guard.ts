@@ -6,7 +6,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
-import { UserRole } from '@transcribe/shared';
+import { User, UserRole } from '@transcribe/shared';
+
+interface AuthenticatedRequest {
+  user: {
+    uid: string;
+    email: string;
+  };
+}
 
 /**
  * Admin Guard - Ensures user has admin role
@@ -19,8 +26,8 @@ export class AdminGuard implements CanActivate {
   constructor(private firebaseService: FirebaseService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user: { uid: string; email: string } | undefined = request.user;
 
     if (!user || !user.uid) {
       this.logger.warn('AdminGuard: No user found in request');
@@ -28,7 +35,9 @@ export class AdminGuard implements CanActivate {
     }
 
     // Get user profile to check role
-    const userProfile = await this.firebaseService.getUser(user.uid);
+    const userProfile: User | null = await this.firebaseService.getUser(
+      user.uid,
+    );
 
     if (!userProfile) {
       this.logger.warn(`AdminGuard: User profile not found for ${user.uid}`);

@@ -99,15 +99,19 @@ export class TranscriptCorrectionRouterService {
       this.validateRoutingPlan(routingPlan);
 
       // Recalculate totalSegmentsAffected based on actual data (don't trust AI's count)
-      routingPlan.summary.totalSegmentsAffected = this.calculateAffectedSegments(
-        segments,
-        routingPlan.simpleReplacements,
-        routingPlan.complexCorrections,
-      );
+      routingPlan.summary.totalSegmentsAffected =
+        this.calculateAffectedSegments(
+          segments,
+          routingPlan.simpleReplacements,
+          routingPlan.complexCorrections,
+        );
 
       // Recalculate percentage
       routingPlan.summary.percentageAffected =
-        ((routingPlan.summary.totalSegmentsAffected / segments.length) * 100).toFixed(1) + '%';
+        (
+          (routingPlan.summary.totalSegmentsAffected / segments.length) *
+          100
+        ).toFixed(1) + '%';
 
       this.logger.log(
         `Routing analysis complete: ${routingPlan.summary.simpleCount} simple, ${routingPlan.summary.complexCount} complex corrections affecting ${routingPlan.summary.totalSegmentsAffected} segments`,
@@ -129,7 +133,9 @@ export class TranscriptCorrectionRouterService {
     segments: SpeakerSegment[],
     replacements: SimpleReplacement[],
   ): { correctedSegments: SpeakerSegment[]; affectedCount: number } {
-    this.logger.log(`Applying ${replacements.length} simple regex replacements...`);
+    this.logger.log(
+      `Applying ${replacements.length} simple regex replacements...`,
+    );
 
     const correctedSegments = segments.map((segment) => ({ ...segment }));
     let affectedCount = 0;
@@ -148,7 +154,9 @@ export class TranscriptCorrectionRouterService {
       });
     }
 
-    this.logger.log(`Simple replacements complete: ${affectedCount} segments affected`);
+    this.logger.log(
+      `Simple replacements complete: ${affectedCount} segments affected`,
+    );
 
     return { correctedSegments, affectedCount };
   }

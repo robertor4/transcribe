@@ -560,7 +560,9 @@ describe('Translation System (e2e)', () => {
       expect(transcriptionData).toBeDefined();
       expect(transcriptionData?.preferredTranslationLanguage).toBe('fr');
 
-      console.log(`✓ Preferred language auto-saved: ${transcriptionData?.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Preferred language auto-saved: ${transcriptionData?.preferredTranslationLanguage}`,
+      );
     });
 
     it('should update preferred language to original', async () => {
@@ -618,7 +620,9 @@ describe('Translation System (e2e)', () => {
       expect(response.body.data).toBeDefined();
       expect(response.body.data.preferredTranslationLanguage).toBe('es');
 
-      console.log(`✓ Preferred language persists in API responses: ${response.body.data.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Preferred language persists in API responses: ${response.body.data.preferredTranslationLanguage}`,
+      );
     });
   });
 
@@ -635,7 +639,7 @@ describe('Translation System (e2e)', () => {
             includeSummary: true,
             includeActionItems: true,
             includeCommunicationStyles: true,
-          }
+          },
         })
         .expect(201);
 
@@ -659,8 +663,12 @@ describe('Translation System (e2e)', () => {
       expect(sharedData.translations).toHaveProperty('fr'); // French
       expect(sharedData).toHaveProperty('preferredTranslationLanguage', 'es');
 
-      console.log(`✓ Shared transcript includes translations: ${Object.keys(sharedData.translations).join(', ')}`);
-      console.log(`✓ Preferred language: ${sharedData.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Shared transcript includes translations: ${Object.keys(sharedData.translations).join(', ')}`,
+      );
+      console.log(
+        `✓ Preferred language: ${sharedData.preferredTranslationLanguage}`,
+      );
     });
 
     it('should include translated analyses in shared translations', async () => {
@@ -694,7 +702,9 @@ describe('Translation System (e2e)', () => {
       expect(frenchTranslation.analyses.summary).toBeDefined();
 
       // Verify French is different from Spanish
-      expect(frenchTranslation.analyses.summary).not.toBe(spanishTranslation.analyses.summary);
+      expect(frenchTranslation.analyses.summary).not.toBe(
+        spanishTranslation.analyses.summary,
+      );
 
       console.log(`✓ French translation verified (different from Spanish)`);
     });

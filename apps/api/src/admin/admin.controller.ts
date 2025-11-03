@@ -78,7 +78,7 @@ export class AdminController {
   ): Promise<ApiResponse<User>> {
     this.logger.log(`Admin: Fetching user details for ${userId}`);
 
-    const user = await this.firebaseService.getUser(userId);
+    const user: User | null = await this.firebaseService.getUser(userId);
 
     if (!user) {
       return {
@@ -104,7 +104,8 @@ export class AdminController {
   ): Promise<ApiResponse<UserActivity>> {
     this.logger.log(`Admin: Fetching activity for user ${userId}`);
 
-    const activity = await this.firebaseService.getUserActivity(userId);
+    const activity: UserActivity | null =
+      await this.firebaseService.getUserActivity(userId);
 
     if (!activity) {
       return {
@@ -154,8 +155,8 @@ export class AdminController {
     );
 
     // Get user info before deletion for logging
-    const user = await this.firebaseService.getUser(userId);
-    const userEmail = user?.email || 'unknown';
+    const user: User | null = await this.firebaseService.getUser(userId);
+    const userEmail: string = user?.email || 'unknown';
 
     const result = await this.userService.deleteAccount(userId, isHardDelete);
 

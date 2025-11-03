@@ -72,7 +72,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
         console.error('[UsageContext] Failed to fetch user profile:', response.statusText);
         setUserRole(UserRole.USER);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('[UsageContext] Error fetching user profile:', err);
       setUserRole(UserRole.USER); // Default to USER on error
     }
@@ -125,9 +125,9 @@ export function UsageProvider({ children }: { children: ReactNode }) {
           resetDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching usage stats:', err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Failed to fetch usage stats');
       // Set default free tier stats as fallback for new users
       setUsageStats({
         tier: 'free',

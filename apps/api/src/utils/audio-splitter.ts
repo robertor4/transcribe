@@ -57,7 +57,9 @@ export class AudioSplitter {
     // Validate path is within allowed directory (if not in root /tmp)
     // This allows both /tmp direct paths and subdirectories
     if (!normalized.startsWith('/tmp/')) {
-      this.logger.warn(`Path ${normalized} is outside /tmp, allowing for flexibility`);
+      this.logger.warn(
+        `Path ${normalized} is outside /tmp, allowing for flexibility`,
+      );
     }
 
     return normalized;
@@ -216,7 +218,10 @@ export class AudioSplitter {
         safePath = this.sanitizePath(inputPath);
         safeOutputPath = this.sanitizePath(outputPath);
       } catch (error) {
-        this.logger.error(`Path sanitization failed for chunk ${index + 1}:`, error);
+        this.logger.error(
+          `Path sanitization failed for chunk ${index + 1}:`,
+          error,
+        );
         reject(error);
         return;
       }
@@ -321,7 +326,7 @@ export class AudioSplitter {
     }
 
     // Sanitize all input paths and output path
-    const safeInputPaths = inputPaths.map(p => this.sanitizePath(p));
+    const safeInputPaths = inputPaths.map((p) => this.sanitizePath(p));
     const safeOutputPath = this.sanitizePath(outputPath);
 
     if (safeInputPaths.length === 1) {
@@ -337,7 +342,9 @@ export class AudioSplitter {
 
     // Create a temporary file list for FFmpeg concat demuxer
     const tempDir = path.dirname(safeOutputPath);
-    const fileListPath = this.sanitizePath(path.join(tempDir, `filelist_${Date.now()}.txt`));
+    const fileListPath = this.sanitizePath(
+      path.join(tempDir, `filelist_${Date.now()}.txt`),
+    );
 
     try {
       // Create file list for concat demuxer

@@ -49,7 +49,7 @@ export default function CheckoutPage() {
 
       // Determine endpoint and payload based on tier
       let endpoint = '/stripe/create-checkout-session';
-      let payload: any = {
+      let payload: Record<string, string | number> = {
         tier,
         billing: cycle, // Use cycle from URL param
         successUrl,
@@ -89,9 +89,9 @@ export default function CheckoutPage() {
       } else {
         throw new Error('No checkout URL returned');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Checkout error:', err);
-      setError(err.message || 'Failed to create checkout session');
+      setError(err instanceof Error ? err.message : 'Failed to create checkout session');
       setLoading(false);
     }
   }

@@ -58,11 +58,12 @@ export default function TranscriptCorrectionModal({
       } else {
         setError('Failed to generate preview');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Preview error:', err);
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message ||
-          err.message ||
+        error.response?.data?.message ||
+          error.message ||
           'An error occurred while generating preview'
       );
     } finally {
@@ -98,11 +99,12 @@ export default function TranscriptCorrectionModal({
       } else {
         setError('Failed to apply corrections');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Apply error:', err);
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message ||
-          err.message ||
+        error.response?.data?.message ||
+          error.message ||
           'An error occurred while applying corrections'
       );
     } finally {
@@ -127,11 +129,12 @@ export default function TranscriptCorrectionModal({
       } else {
         setError('Failed to regenerate analyses');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Regenerate error:', err);
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
       setError(
-        err.response?.data?.message ||
-          err.message ||
+        error.response?.data?.message ||
+          error.message ||
           'An error occurred while regenerating analyses'
       );
     } finally {
@@ -259,9 +262,9 @@ export default function TranscriptCorrectionModal({
                 EXAMPLE CORRECTIONS
               </p>
               <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                <li>• "Change all instances of 'John' to 'Jon'"</li>
-                <li>• "Fix 'Acme Corp' to 'ACME Corporation'"</li>
-                <li>• "Correct speaker names and company names based on context"</li>
+                <li>• &ldquo;Change all instances of &lsquo;John&rsquo; to &lsquo;Jon&rsquo;&rdquo;</li>
+                <li>• &ldquo;Fix &lsquo;Acme Corp&rsquo; to &lsquo;ACME Corporation&rsquo;&rdquo;</li>
+                <li>• &ldquo;Correct speaker names and company names based on context&rdquo;</li>
               </ul>
             </div>
           )}

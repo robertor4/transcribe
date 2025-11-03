@@ -74,21 +74,25 @@ describe('Security Features (e2e)', () => {
     authToken = await admin.auth().createCustomToken(userId);
 
     // Create user document
-    await admin.firestore().collection('users').doc(userId).set({
-      uid: userId,
-      email: testEmail,
-      displayName: 'Test Security User',
-      emailVerified: true,
-      subscriptionTier: 'free',
-      subscriptionStatus: 'none',
-      usageThisMonth: {
-        hours: 0,
-        transcriptions: 0,
-        onDemandAnalyses: 0,
-      },
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    await admin
+      .firestore()
+      .collection('users')
+      .doc(userId)
+      .set({
+        uid: userId,
+        email: testEmail,
+        displayName: 'Test Security User',
+        emailVerified: true,
+        subscriptionTier: 'free',
+        subscriptionStatus: 'none',
+        usageThisMonth: {
+          hours: 0,
+          transcriptions: 0,
+          onDemandAnalyses: 0,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
     console.log(`✓ Test security user created: ${testEmail} (${userId})`);
   });

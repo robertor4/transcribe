@@ -197,7 +197,7 @@ export class EmailVerificationService {
   /**
    * Send verification email (placeholder - integrate with email service)
    */
-  async sendVerificationEmail(email: string, code: string): Promise<void> {
+  sendVerificationEmail(email: string, code: string): void {
     // This is a placeholder. In production, integrate with:
     // - SendGrid
     // - AWS SES

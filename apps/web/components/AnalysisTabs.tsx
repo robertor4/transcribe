@@ -33,7 +33,7 @@ import { transcriptionApi } from '@/lib/api';
 interface AnalysisTabsProps {
   analyses: AnalysisResults;
   transcriptionId?: string;
-  transcription?: Transcription;
+  transcription?: Partial<Transcription>;
   generatedAnalyses?: GeneratedAnalysis[];
   speakerSegments?: Array<{ speakerTag: string; startTime: number; endTime: number; text: string; confidence?: number }>;
   speakers?: Array<{ speakerId: number; speakerTag: string; totalSpeakingTime: number; wordCount: number; firstAppearance: number }>;
@@ -42,7 +42,7 @@ interface AnalysisTabsProps {
 }
 
 export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription, readOnlyMode, onTranscriptionUpdate }) => {
-  const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses'>('summary');
+  const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses' | string>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
   const [transcriptView, setTranscriptView] = useState<'timeline' | 'raw'>('timeline');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('original');
@@ -412,7 +412,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                 <button
                   key={`generated-${analysis.id}`}
                   data-active={isActive}
-                  onClick={() => setActiveTab(`generated-${analysis.id}` as any)}
+                  onClick={() => setActiveTab(`generated-${analysis.id}`)}
                   className={`
                     py-3 px-4 font-medium text-sm flex items-center gap-2 whitespace-nowrap flex-shrink-0
                     transition-all duration-200 border-b-2
@@ -726,9 +726,9 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                   <ActionItemsTable content={content || ''} />
                 ) : info.key === 'details' ? (
                   // Details tab should never render in read-only mode (filtered out from tabs)
-                  transcription && !readOnlyMode ? (
+                  transcription && transcription.id && !readOnlyMode ? (
                     <TranscriptionDetails
-                      transcription={transcription}
+                      transcription={transcription as Partial<Transcription> & { id: string }}
                       onRefresh={onTranscriptionUpdate}
                     />
                   ) : (
@@ -747,10 +747,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         })}
 
         {/* More Analyses Tab Content (only for authors, not in read-only mode) */}
-        {activeTab === 'moreAnalyses' && transcriptionId && transcription && !readOnlyMode && (
+        {activeTab === 'moreAnalyses' && transcriptionId && transcription && transcription.id && !readOnlyMode && (
           <MoreAnalysesTab
             transcriptionId={transcriptionId}
-            transcription={transcription}
+            transcription={transcription as Partial<Transcription> & { id: string }}
             selectedLanguage={selectedLanguage}
           />
         )}

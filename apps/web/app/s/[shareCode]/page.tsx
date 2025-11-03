@@ -272,7 +272,7 @@ export default function SharedTranscriptionPage() {
                 } as AnalysisResults}
                 generatedAnalyses={transcription.generatedAnalyses}
                 speakerSegments={transcription.speakerSegments}
-                transcription={transcription as any}
+                transcription={transcription}
                 readOnlyMode={true}
               />
             )}
