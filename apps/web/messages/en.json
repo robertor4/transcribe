@@ -1034,6 +1034,35 @@
           "sharing": "Ability to share transcriptions with controlled access"
         }
       },
+      "pricing": {
+        "title": "Pricing and Payment Terms",
+        "content": "We reserve the right to modify our pricing at any time to reflect changes in operational costs, market conditions, service improvements, or other business factors.",
+        "changes": {
+          "title": "Price Changes",
+          "content": "We will provide at least 30 days advance notice before any price changes take effect for existing subscriptions. New pricing will apply to renewals after the notice period.",
+          "notice": "Continued use of the Service after a price change becomes effective constitutes acceptance of the new pricing."
+        },
+        "billing": {
+          "title": "Billing and Subscriptions",
+          "content": "Subscription fees are billed in advance on a recurring basis (monthly or annually). You are responsible for maintaining valid payment information."
+        }
+      },
+      "fairUse": {
+        "title": "Usage Limits and Fair Use Policy",
+        "content": "All subscriptions and usage are subject to our Fair Use Policy. We reserve the right to modify usage limits to ensure service quality and availability for all users.",
+        "policy": {
+          "title": "Fair Use Definition",
+          "content": "Fair use means using the Service in a reasonable manner consistent with typical personal or business use. Excessive, abusive, or automated usage that degrades service performance for other users is prohibited."
+        },
+        "modifications": {
+          "title": "Modifications to Usage Limits",
+          "content": "We may adjust usage limits based on system capacity, abuse prevention, cost optimization, or service improvements. Users will be notified of any material changes to their plan limits with reasonable advance notice."
+        },
+        "enforcement": {
+          "title": "Enforcement",
+          "content": "Violations of the Fair Use Policy may result in temporary usage restrictions, account suspension, or termination. We will make reasonable efforts to notify users before taking enforcement action."
+        }
+      },
       "userObligations": {
         "title": "User Obligations and Responsibilities",
         "content": "As a user of our Service, you agree to use Neural Summary responsibly and in accordance with all applicable laws and regulations.",

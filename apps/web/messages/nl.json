@@ -1025,6 +1025,35 @@
           "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
         }
       },
+      "pricing": {
+        "title": "Prijzen en Betalingsvoorwaarden",
+        "content": "We behouden ons het recht voor om onze prijzen op elk moment te wijzigen om veranderingen in operationele kosten, marktomstandigheden, serviceverbeteringen of andere zakelijke factoren te weerspiegelen.",
+        "changes": {
+          "title": "Prijswijzigingen",
+          "content": "We zullen minimaal 30 dagen van tevoren op de hoogte stellen voordat prijswijzigingen van kracht worden voor bestaande abonnementen. Nieuwe prijzen zijn van toepassing op verlengingen na de kennisgevingsperiode.",
+          "notice": "Voortgezet gebruik van de Service nadat een prijswijziging van kracht is geworden, betekent aanvaarding van de nieuwe prijzen."
+        },
+        "billing": {
+          "title": "Facturering en Abonnementen",
+          "content": "Abonnementskosten worden vooraf gefactureerd op terugkerende basis (maandelijks of jaarlijks). U bent verantwoordelijk voor het bijhouden van geldige betalingsinformatie."
+        }
+      },
+      "fairUse": {
+        "title": "Gebruikslimieten en Fair Use Beleid",
+        "content": "Alle abonnementen en gebruik zijn onderworpen aan ons Fair Use Beleid. We behouden ons het recht voor om gebruikslimieten te wijzigen om de servicekwaliteit en beschikbaarheid voor alle gebruikers te waarborgen.",
+        "policy": {
+          "title": "Fair Use Definitie",
+          "content": "Fair use betekent het gebruik van de Service op een redelijke manier consistent met typisch persoonlijk of zakelijk gebruik. Overmatig, misbruikend of geautomatiseerd gebruik dat de serviceprestaties voor andere gebruikers vermindert, is verboden."
+        },
+        "modifications": {
+          "title": "Wijzigingen aan Gebruikslimieten",
+          "content": "We kunnen gebruikslimieten aanpassen op basis van systeemcapaciteit, misbruikpreventie, kostenoptimalisatie of serviceverbeteringen. Gebruikers worden met redelijke voorafgaande kennisgeving op de hoogte gesteld van materiële wijzigingen aan hun planlimieten."
+        },
+        "enforcement": {
+          "title": "Handhaving",
+          "content": "Schendingen van het Fair Use Beleid kunnen resulteren in tijdelijke gebruiksbeperkingen, accountopschorting of beëindiging. We zullen redelijke inspanningen leveren om gebruikers op de hoogte te stellen voordat handhavingsacties worden ondernomen."
+        }
+      },
       "userObligations": {
         "title": "Verplichtingen en Verantwoordelijkheden van Gebruikers",
         "content": "Als gebruiker van onze Service gaat u akkoord Neural Summary verantwoordelijk en in overeenstemming met alle toepasselijke wetten en regelgeving te gebruiken.",

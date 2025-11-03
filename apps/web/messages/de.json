@@ -932,6 +932,35 @@
           "sharing": "Möglichkeit, Transkriptionen mit kontrolliertem Zugang zu teilen"
         }
       },
+      "pricing": {
+        "title": "Preise und Zahlungsbedingungen",
+        "content": "Wir behalten uns das Recht vor, unsere Preise jederzeit zu ändern, um Änderungen der Betriebskosten, Marktbedingungen, Serviceverbesserungen oder andere geschäftliche Faktoren widerzuspiegeln.",
+        "changes": {
+          "title": "Preisänderungen",
+          "content": "Wir werden Sie mindestens 30 Tage im Voraus benachrichtigen, bevor Preisänderungen für bestehende Abonnements wirksam werden. Neue Preise gelten für Verlängerungen nach Ablauf der Benachrichtigungsfrist.",
+          "notice": "Die fortgesetzte Nutzung des Service nach Inkrafttreten einer Preisänderung stellt die Annahme der neuen Preise dar."
+        },
+        "billing": {
+          "title": "Abrechnung und Abonnements",
+          "content": "Abonnementgebühren werden im Voraus auf wiederkehrender Basis (monatlich oder jährlich) abgerechnet. Sie sind für die Pflege gültiger Zahlungsinformationen verantwortlich."
+        }
+      },
+      "fairUse": {
+        "title": "Nutzungsgrenzen und Fair-Use-Richtlinie",
+        "content": "Alle Abonnements und die Nutzung unterliegen unserer Fair-Use-Richtlinie. Wir behalten uns das Recht vor, Nutzungsgrenzen zu ändern, um die Servicequalität und Verfügbarkeit für alle Nutzer zu gewährleisten.",
+        "policy": {
+          "title": "Fair-Use-Definition",
+          "content": "Fair Use bedeutet die Nutzung des Service in angemessener Weise im Einklang mit typischer persönlicher oder geschäftlicher Nutzung. Übermäßige, missbräuchliche oder automatisierte Nutzung, die die Serviceleistung für andere Nutzer beeinträchtigt, ist verboten."
+        },
+        "modifications": {
+          "title": "Änderungen an Nutzungsgrenzen",
+          "content": "Wir können Nutzungsgrenzen basierend auf Systemkapazität, Missbrauchsprävention, Kostenoptimierung oder Serviceverbesserungen anpassen. Nutzer werden mit angemessener Vorankündigung über wesentliche Änderungen ihrer Planlimits informiert."
+        },
+        "enforcement": {
+          "title": "Durchsetzung",
+          "content": "Verstöße gegen die Fair-Use-Richtlinie können zu vorübergehenden Nutzungsbeschränkungen, Kontosperrung oder Kündigung führen. Wir werden angemessene Anstrengungen unternehmen, um Nutzer vor Durchsetzungsmaßnahmen zu benachrichtigen."
+        }
+      },
       "userObligations": {
         "title": "Nutzerpflichten und Verantwortlichkeiten",
         "content": "Als Nutzer unseres Service verpflichten Sie sich, Neural Summary verantwortungsbewusst und in Übereinstimmung mit allen geltenden Gesetzen und Vorschriften zu verwenden.",

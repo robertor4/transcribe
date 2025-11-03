@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Terms of Use Updates**: Added comprehensive pricing and fair use policy sections
+  - New "Pricing and Payment Terms" section: Right to modify pricing, 30-day notice requirement, billing terms
+  - New "Usage Limits and Fair Use Policy" section: Fair use definition, limit modification rights, enforcement procedures
+  - Added to all 5 supported languages (en, nl, de, fr, es)
+  - Updated table of contents with new sections (now 11 total sections, up from 9)
+  - Added DollarSign and TrendingUp icons for visual clarity
+  - Locations: [apps/web/messages/*.json](apps/web/messages/), [apps/web/app/[locale]/terms/page.tsx](apps/web/app/[locale]/terms/page.tsx)
+
 ### Changed
 - **Mobile Responsiveness Improvements**: Comprehensive optimization for mobile devices (screens < 640px)
   - Analysis tabs now horizontally scrollable with reduced padding and icon sizes on mobile
