@@ -368,7 +368,9 @@ describe('Translation System (e2e)', () => {
       const analyses = response.body.data.analyses;
       expect(analyses).toBeDefined();
 
-      console.log(`✓ Translation to Spanish completed (analyses only, transcript stays original)`);
+      console.log(
+        `✓ Translation to Spanish completed (analyses only, transcript stays original)`,
+      );
       console.log(
         `  Translated analyses: ${Object.keys(analyses || {}).join(', ')}`,
       );
@@ -445,7 +447,9 @@ describe('Translation System (e2e)', () => {
       expect(response.body.data).not.toHaveProperty('transcriptText');
       expect(response.body.data).toHaveProperty('analyses');
 
-      console.log(`✓ Translation to French completed (analyses only, transcript stays original)`);
+      console.log(
+        `✓ Translation to French completed (analyses only, transcript stays original)`,
+      );
       console.log(
         `  Translated analyses: ${Object.keys(response.body.data.analyses || {}).join(', ')}`,
       );
@@ -682,7 +686,9 @@ describe('Translation System (e2e)', () => {
       // Note: transcriptText is intentionally NOT translated (transcript always stays in original language)
       expect(spanishTranslation.transcriptText).toBeUndefined();
 
-      console.log(`✓ Spanish translation includes all analyses (transcript stays original)`);
+      console.log(
+        `✓ Spanish translation includes all analyses (transcript stays original)`,
+      );
     });
 
     it('should include French translation with different content', async () => {
