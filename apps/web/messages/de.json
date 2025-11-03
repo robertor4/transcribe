@@ -131,7 +131,11 @@
     "howToRecord": "Wie Sie Audio auf jedem Gerät aufnehmen",
     "settings": "Einstellungen",
     "noTranscriptions": "Noch keine Transkriptionen",
-    "uploadYourFirst": "Laden Sie Ihre erste Audiodatei hoch, um zu beginnen"
+    "uploadYourFirst": "Laden Sie Ihre erste Audiodatei hoch, um zu beginnen",
+    "uploadNewAudio": "Neue Audio hochladen",
+    "emptyStateTitle": "Willkommen bei Neural Summary!",
+    "emptyStateDescription": "Sie haben noch keine Audiodateien hochgeladen. Beginnen Sie, indem Sie Ihre erste Aufnahme hochladen.",
+    "emptyStateButton": "Laden Sie Ihre erste Audio hoch"
   },
   "upload": {
     "title": "Audiodatei hochladen",

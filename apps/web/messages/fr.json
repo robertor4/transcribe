@@ -130,7 +130,11 @@
     "howToRecord": "Comment enregistrer de l'audio sur n'importe quel appareil",
     "settings": "Paramètres",
     "noTranscriptions": "Aucune transcription pour le moment",
-    "uploadYourFirst": "Téléversez votre premier fichier audio pour commencer"
+    "uploadYourFirst": "Téléversez votre premier fichier audio pour commencer",
+    "uploadNewAudio": "Téléverser un nouvel audio",
+    "emptyStateTitle": "Bienvenue sur Neural Summary !",
+    "emptyStateDescription": "Vous n'avez pas encore téléversé de fichiers audio. Commencez par téléverser votre premier enregistrement.",
+    "emptyStateButton": "Téléverser votre premier audio"
   },
   "upload": {
     "title": "Téléverser un fichier audio",

@@ -23,7 +23,7 @@ export default function DashboardPage() {
   const { trackEvent } = useAnalytics();
   const tDashboard = useTranslations('dashboard');
   const tCommon = useTranslations('common');
-  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'recording-guide'>('upload');
+  const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'recording-guide'>('history');
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   const [pendingCompletedIds, setPendingCompletedIds] = useState<string[]>([]);
@@ -174,7 +174,7 @@ export default function DashboardPage() {
     pendingIdsRef.current = [...pendingIdsRef.current, transcriptionId];
     setPendingCompletedIds(prev => [...prev, transcriptionId]);
 
-    // Switch to history tab to see progress (only on first upload)
+    // Switch to history tab to see progress
     setActiveTab('history');
 
     // Debounce the lastCompletedId update to prevent multiple rapid API calls
@@ -268,24 +268,6 @@ export default function DashboardPage() {
           <nav className="-mb-px flex flex-wrap gap-x-8">
             <button
               onClick={() => {
-                setActiveTab('upload');
-                trackEvent('dashboard_viewed', { tab: 'upload' });
-              }}
-              className={`
-                py-2 px-1 border-b-2 font-medium text-sm
-                ${activeTab === 'upload'
-                  ? 'border-[#cc3399] text-[#cc3399]'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-                }
-              `}
-            >
-              <div className="flex items-center">
-                <Upload className="h-5 w-5 mr-2" />
-                {tDashboard('uploadAudio')}
-              </div>
-            </button>
-            <button
-              onClick={() => {
                 setActiveTab('history');
                 trackEvent('dashboard_viewed', { tab: 'history' });
               }}
@@ -300,6 +282,24 @@ export default function DashboardPage() {
               <div className="flex items-center">
                 <FileAudio className="h-5 w-5 mr-2" />
                 {tDashboard('transcriptionHistory')}
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('upload');
+                trackEvent('dashboard_viewed', { tab: 'upload' });
+              }}
+              className={`
+                py-2 px-1 border-b-2 font-medium text-sm
+                ${activeTab === 'upload'
+                  ? 'border-[#cc3399] text-[#cc3399]'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                }
+              `}
+            >
+              <div className="flex items-center">
+                <Upload className="h-5 w-5 mr-2" />
+                {tDashboard('uploadAudio')}
               </div>
             </button>
             <button
@@ -325,19 +325,22 @@ export default function DashboardPage() {
 
         {/* Tab Content */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          {activeTab === 'upload' ? (
+          {activeTab === 'history' ? (
+            <div>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                {tDashboard('yourTranscriptions')}
+              </h2>
+              <TranscriptionList
+                lastCompletedId={lastCompletedId}
+                onNavigateToUpload={() => setActiveTab('upload')}
+              />
+            </div>
+          ) : activeTab === 'upload' ? (
             <div>
               <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 {tDashboard('uploadAudioFiles')}
               </h2>
               <FileUploader onUploadComplete={handleUploadComplete} />
-            </div>
-          ) : activeTab === 'history' ? (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {tDashboard('yourTranscriptions')}
-              </h2>
-              <TranscriptionList lastCompletedId={lastCompletedId} />
             </div>
           ) : activeTab === 'recording-guide' ? (
             <div>

@@ -131,7 +131,11 @@
     "howToRecord": "Hoe je audio opneemt op elk apparaat",
     "settings": "Instellingen",
     "noTranscriptions": "Nog geen transcripties",
-    "uploadYourFirst": "Upload je eerste audiobestand om te beginnen"
+    "uploadYourFirst": "Upload je eerste audiobestand om te beginnen",
+    "uploadNewAudio": "Nieuwe audio uploaden",
+    "emptyStateTitle": "Welkom bij Neural Summary!",
+    "emptyStateDescription": "Je hebt nog geen audiobestanden geüpload. Begin door je eerste opname te uploaden.",
+    "emptyStateButton": "Upload je eerste audio"
   },
   "upload": {
     "title": "Audiobestand uploaden",

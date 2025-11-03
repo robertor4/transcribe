@@ -130,7 +130,11 @@
     "howToRecord": "Cómo grabar audio en cualquier dispositivo",
     "settings": "Configuración",
     "noTranscriptions": "Aún no hay transcripciones",
-    "uploadYourFirst": "Sube tu primer archivo de audio para comenzar"
+    "uploadYourFirst": "Sube tu primer archivo de audio para comenzar",
+    "uploadNewAudio": "Subir nuevo audio",
+    "emptyStateTitle": "¡Bienvenido a Neural Summary!",
+    "emptyStateDescription": "Aún no has subido ningún archivo de audio. Comienza subiendo tu primera grabación.",
+    "emptyStateButton": "Sube tu primer audio"
   },
   "upload": {
     "title": "Subir archivo de audio",
