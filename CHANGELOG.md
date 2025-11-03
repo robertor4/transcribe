@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Comprehensive Firebase Analytics (GA4) E-commerce Tracking**: Complete implementation for revenue attribution and conversion funnel analysis
+  - **Frontend Events** (15 total):
+    - `view_item_list`: Pricing page with all tiers visible ([pricing/page.tsx:42](apps/web/app/[locale]/pricing/page.tsx#L42))
+    - `view_item`: Individual pricing card views with full product details
+    - `select_item`: CTA button clicks on pricing cards ([PricingCard.tsx:79-89](apps/web/components/pricing/PricingCard.tsx#L79-L89))
+    - `billing_cycle_toggled`: Monthly/annual billing switches ([pricing/page.tsx:52-62](apps/web/app/[locale]/pricing/page.tsx#L52-L62))
+    - `pricing_comparison_viewed` & `pricing_faq_viewed`: Scroll-based engagement tracking with Intersection Observer
+    - `begin_checkout`: Checkout initiation with full item details ([checkout/[tier]/page.tsx:67-73](apps/web/app/[locale]/checkout/[tier]/page.tsx#L67-L73))
+    - `add_payment_info`: Stripe session created successfully
+    - `purchase`: Client-side purchase completion ([checkout/success/page.tsx:65-79](apps/web/app/[locale]/checkout/success/page.tsx#L65-L79))
+    - `checkout_error`: Error tracking for failed checkouts
+  - **Backend Events** (Server-side via GA4 Measurement Protocol):
+    - `purchase`: Server-side validation via Stripe webhooks ([stripe.service.ts:419-426](apps/api/src/stripe/stripe.service.ts#L419-L426))
+    - `recurring_payment_succeeded`: Monthly subscription renewals
+    - `refund`: Subscription cancellations and refunds
+    - `subscription_updated`: Tier upgrades/downgrades
+    - `payment_failed`: Failed payment tracking
+  - **Analytics Infrastructure**:
+    - New `AnalyticsService` for server-side tracking ([apps/api/src/analytics/analytics.service.ts](apps/api/src/analytics/analytics.service.ts))
+    - Type-safe helper utilities for e-commerce parameters ([apps/web/utils/analytics-helpers.ts](apps/web/utils/analytics-helpers.ts))
+    - Enhanced `AnalyticsContext` with 15+ new event types
+    - Debug mode with GA4 validation endpoint in development
+    - Multi-currency support (USD, EUR, GBP, etc.)
+    - GDPR-compliant cookie consent integration
+  - **Documentation**: Comprehensive analytics guide ([docs/ANALYTICS_TRACKING.md](docs/ANALYTICS_TRACKING.md))
+  - **Benefits**: Complete revenue attribution, funnel drop-off analysis, A/B testing foundation, LTV prediction, conversion optimization insights
+  - **Required Environment Variables**:
+    - `GA4_MEASUREMENT_ID`: Firebase measurement ID (frontend & backend)
+    - `GA4_API_SECRET`: Measurement Protocol API secret (backend only)
 - **Admin Manual Usage Reset**: Admins can now manually reset a user's monthly usage via the admin panel
   - New endpoint: `POST /admin/users/:userId/reset-usage` returns previous usage stats
   - Reset button added to user activity page in admin panel ([apps/web/app/[locale]/admin/users/[userId]/page.tsx:338-351](apps/web/app/[locale]/admin/users/[userId]/page.tsx#L338-L351))
@@ -26,6 +55,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Locations: [apps/api/src/main.ts:107](apps/api/src/main.ts#L107), [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts), [apps/api/src/usage/usage.service.ts:493-590](apps/api/src/usage/usage.service.ts#L493-L590), [apps/api/src/usage/usage.controller.ts](apps/api/src/usage/usage.controller.ts)
   - New Firestore collection: `usageResetJobs` (tracks job status, progress, failed users)
   - Benefits: Prevents missed resets, recovers from crashes, no duplicate resets, safe container restarts
+
+### Changed
+- **Landing Page Social Proof**: Removed specific auditable metrics to improve sustainability
+  - Replaced "10,000+ users" with "Trusted by professionals" (hero and security sections)
+  - Replaced "4.9/5 rating" with "Highly rated" (hero section)
+  - Replaced "4.9/5 from 2,000+ reviews" with "Highly rated by professionals" (testimonials section)
+  - Updated translations across all 5 languages (en, nl, de, fr, es)
+  - Benefits: Non-auditable claims, no maintenance burden, industry best practice
+  - Locations: [apps/web/messages/*.json](apps/web/messages/) (landing.hero.trustIndicators, landing.security.stats, landing.testimonials.rating)
 - **Terms of Use Updates**: Added comprehensive pricing and fair use policy sections
   - New "Pricing and Payment Terms" section: Right to modify pricing, 30-day notice requirement, billing terms
   - New "Usage Limits and Fair Use Policy" section: Fair use definition, limit modification rights, enforcement procedures

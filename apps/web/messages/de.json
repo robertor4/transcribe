@@ -669,8 +669,8 @@
     "hero": {
       "byline": "",
       "trustIndicators": {
-        "users": "10.000+ Nutzer",
-        "rating": "4,9/5 Bewertung",
+        "users": "Vertraut von Profis",
+        "rating": "Hoch bewertet",
         "certified": "DSGVO-konform"
       },
       "title": "Bereit, jedes Gespräch in",
@@ -770,8 +770,8 @@
     "security": {
       "title": "Vertraut von Profis, die Präzision und Datenschutz schätzen",
       "stats": {
-        "users": "10.000+ Nutzer weltweit",
-        "rating": "durchschnittlich mit 4,9 / 5 bewertet"
+        "users": "Vertraut von Profis weltweit",
+        "rating": "Hoch bewertet von Nutzern"
       },
       "compliance": {
         "title": "Privacy-First-Architektur",
@@ -800,7 +800,7 @@
     },
     "testimonials": {
       "title": "Geschätzt von Profis weltweit",
-      "rating": "4,9/5 aus über 2.000 Bewertungen",
+      "rating": "Hoch bewertet von Profis",
       "testimonial1": {
         "quote": "Dieses Tool hat völlig verändert, wie ich Meetings handle — endlich gehe ich mit Klarheit raus.",
         "author": "Sarah Martinez",

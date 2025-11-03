@@ -3,19 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { getMinimumPaygPackage } from '@transcribe/shared';
+import { getMinimumPaygPackage, getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
+import { formatBeginCheckoutParams, parsePricingTier, parseBillingCycle } from '@/utils/analytics-helpers';
 
 export default function CheckoutPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const { trackEvent } = useAnalytics();
   const t = useTranslations('checkout');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const tier = params.tier as string;
+  const locale = params.locale as string;
 
   useEffect(() => {
     if (!user) {
@@ -43,9 +47,30 @@ export default function CheckoutPage() {
       const cycle = urlParams.get('cycle') || 'monthly';
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const locale = params.locale as string;
       const successUrl = `${window.location.origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${window.location.origin}/${locale}/pricing`;
+
+      // Get pricing info for analytics
+      const pricing = getPricingForLocale(locale);
+      const { code: currency } = getCurrencyForLocale(locale);
+      const parsedTier = parsePricingTier(tier);
+      const billingCycle = parseBillingCycle(cycle);
+
+      // Calculate price for analytics
+      let price = 0;
+      if (tier === 'professional') {
+        price = cycle === 'annual' ? pricing.professional.annualMonthly : pricing.professional.monthly;
+      } else if (tier === 'payg') {
+        price = getMinimumPaygPackage(currency).price;
+      }
+
+      // Track begin_checkout event
+      const checkoutParams = formatBeginCheckoutParams(parsedTier, price, currency, billingCycle);
+      trackEvent('begin_checkout', {
+        ...checkoutParams,
+        locale: locale,
+        user_id: user?.uid
+      });
 
       // Determine endpoint and payload based on tier
       let endpoint = '/stripe/create-checkout-session';
@@ -83,6 +108,14 @@ export default function CheckoutPage() {
 
       const data = await response.json();
 
+      // Track add_payment_info event (checkout session created successfully)
+      trackEvent('add_payment_info', {
+        ...checkoutParams,
+        locale: locale,
+        session_id: data.sessionId,
+        user_id: user?.uid
+      });
+
       // Redirect to Stripe Checkout
       if (data.url) {
         window.location.href = data.url;
@@ -91,6 +124,15 @@ export default function CheckoutPage() {
       }
     } catch (err) {
       console.error('Checkout error:', err);
+
+      // Track checkout error
+      trackEvent('checkout_error', {
+        error_message: err instanceof Error ? err.message : 'Unknown error',
+        tier: tier,
+        locale: locale,
+        user_id: user?.uid
+      });
+
       setError(err instanceof Error ? err.message : 'Failed to create checkout session');
       setLoading(false);
     }

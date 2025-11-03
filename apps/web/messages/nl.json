@@ -688,8 +688,8 @@
     "hero": {
       "byline": "",
       "trustIndicators": {
-        "users": "10.000+ gebruikers",
-        "rating": "4.9/5 beoordeling",
+        "users": "Vertrouwd door professionals",
+        "rating": "Hoog gewaardeerd",
         "certified": "AVG-compliant"
       },
       "title": "Klaar om elk gesprek om te zetten in",
@@ -789,8 +789,8 @@
     "security": {
       "title": "Vertrouwd door professionals die precisie en privacy waarderen",
       "stats": {
-        "users": "10.000+ gebruikers wereldwijd",
-        "rating": "gemiddeld beoordeeld met 4.9 / 5"
+        "users": "Vertrouwd door professionals wereldwijd",
+        "rating": "Hoog gewaardeerd door gebruikers"
       },
       "compliance": {
         "title": "Privacy-first architectuur",
@@ -819,7 +819,7 @@
     },
     "testimonials": {
       "title": "Geliefd door professionals wereldwijd",
-      "rating": "4.9/5 uit meer dan 2.000 beoordelingen",
+      "rating": "Hoog gewaardeerd door professionals",
       "testimonial1": {
         "quote": "Deze tool heeft compleet veranderd hoe ik met vergaderingen omga — eindelijk loop ik weg met duidelijkheid.",
         "author": "Sarah Martinez",

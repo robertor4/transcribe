@@ -689,8 +689,8 @@
     "hero": {
       "byline": "",
       "trustIndicators": {
-        "users": "10,000+ users",
-        "rating": "4.9/5 rating",
+        "users": "Trusted by professionals",
+        "rating": "Highly rated",
         "certified": "GDPR compliant"
       },
       "title": "Ready to turn every conversation into",
@@ -790,8 +790,8 @@
     "security": {
       "title": "Trusted by professionals who value precision and privacy",
       "stats": {
-        "users": "10,000+ users worldwide",
-        "rating": "rated 4.9 / 5 on average"
+        "users": "Trusted by professionals worldwide",
+        "rating": "Highly rated by users"
       },
       "compliance": {
         "title": "Privacy-first architecture",
@@ -826,7 +826,7 @@
     },
     "testimonials": {
       "title": "Loved by professionals worldwide",
-      "rating": "4.9/5 from 2,000+ reviews",
+      "rating": "Highly rated by professionals",
       "testimonial1": {
         "quote": "This tool has completely changed how I handle meetings — I finally walk away with clarity.",
         "author": "Sarah Martinez",

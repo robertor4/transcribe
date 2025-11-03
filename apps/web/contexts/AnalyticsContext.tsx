@@ -5,7 +5,7 @@ import { logEvent, setUserId, setUserProperties, Analytics } from 'firebase/anal
 import { analytics } from '@/lib/firebase';
 import { User } from 'firebase/auth';
 
-export type AnalyticsEventName = 
+export type AnalyticsEventName =
   // User Journey Events
   | 'signup_started'
   | 'signup_completed'
@@ -16,7 +16,7 @@ export type AnalyticsEventName =
   | 'password_reset_completed'
   | 'subscription_started'
   | 'subscription_cancelled'
-  
+
   // Core Feature Events
   | 'audio_uploaded'
   | 'transcription_started'
@@ -27,25 +27,40 @@ export type AnalyticsEventName =
   | 'summary_generated'
   | 'custom_analysis_requested'
   | 'speaker_detection_enabled'
-  
+
   // Engagement Events
   | 'transcript_shared'
   | 'transcript_downloaded'
   | 'transcript_deleted'
   | 'share_link_created'
   | 'share_link_accessed'
-  
+
   // Performance Events
   | 'upload_failed'
   | 'payment_failed'
   | 'websocket_connected'
   | 'websocket_disconnected'
-  
+
   // Page View Events
   | 'page_view'
   | 'landing_page_viewed'
   | 'dashboard_viewed'
-  | 'pricing_viewed';
+  | 'pricing_viewed'
+
+  // GA4 E-commerce Events (Recommended)
+  | 'view_item_list'          // User views pricing page with all tiers
+  | 'view_item'               // User views specific pricing tier details
+  | 'select_item'             // User clicks CTA button on pricing card
+  | 'begin_checkout'          // User initiates checkout process
+  | 'add_payment_info'        // Checkout session created successfully
+  | 'purchase'                // Payment completed successfully
+  | 'refund'                  // Subscription refunded/cancelled
+
+  // Additional E-commerce Events
+  | 'billing_cycle_toggled'   // User switches between monthly/annual
+  | 'pricing_comparison_viewed' // User views feature comparison table
+  | 'pricing_faq_viewed'      // User views FAQ section
+  | 'checkout_error'          // Error during checkout process;
 
 interface AnalyticsContextType {
   trackEvent: (eventName: AnalyticsEventName, parameters?: Record<string, any>) => void;
