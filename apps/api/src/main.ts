@@ -103,9 +103,13 @@ async function bootstrap() {
     }),
   );
 
+  // Enable graceful shutdown for cron jobs and other cleanup
+  app.enableShutdownHooks();
+
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`API server running on http://localhost:${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('Graceful shutdown enabled');
 }
 bootstrap();

@@ -16,6 +16,7 @@ import {
   Shield,
   TrendingUp,
   AlertCircle,
+  RotateCcw,
 } from 'lucide-react';
 
 export default function UserActivityPage() {
@@ -27,6 +28,7 @@ export default function UserActivityPage() {
   const [activity, setActivity] = useState<UserActivity | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resettingUsage, setResettingUsage] = useState(false);
 
   const fetchActivity = async () => {
     try {
@@ -74,6 +76,48 @@ export default function UserActivityPage() {
       fetchActivity();
     }
   }, [user, userId]);
+
+  const handleResetUsage = async () => {
+    if (!activity) return;
+
+    const confirmMessage = `Are you sure you want to reset the usage for ${activity.user.email}?\n\nCurrent usage:\n- ${activity.summary.monthlyUsage.hours.toFixed(1)} hours\n- ${activity.summary.monthlyUsage.transcriptions} transcriptions\n- ${activity.summary.monthlyUsage.analyses} analyses\n\nThis will give them a fresh start for the current month.`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      setResettingUsage(true);
+      const token = await user?.getIdToken();
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/reset-usage`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to reset usage');
+      }
+
+      const result = await response.json();
+      alert(result.data.message);
+
+      // Refresh activity data to show updated usage
+      await fetchActivity();
+    } catch (err) {
+      alert(`Error: ${err instanceof Error ? err.message : 'Failed to reset usage'}`);
+    } finally {
+      setResettingUsage(false);
+    }
+  };
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -287,9 +331,24 @@ export default function UserActivityPage() {
 
         {/* Monthly Usage */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Current Month Usage
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Current Month Usage
+            </h3>
+            <button
+              onClick={handleResetUsage}
+              disabled={resettingUsage}
+              className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              title="Reset this user's monthly usage"
+            >
+              {resettingUsage ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <RotateCcw className="w-4 h-4" />
+              )}
+              Reset Usage
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">Hours</p>

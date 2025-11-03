@@ -488,6 +488,105 @@ export class UsageService {
   }
 
   /**
+   * Create a new reset job for tracking progress
+   */
+  async createResetJob(yearMonth: string): Promise<string> {
+    const db = this.firebaseService['db'];
+    const jobId = `reset-${yearMonth}`;
+
+    this.logger.log(`Creating reset job: ${jobId}`);
+
+    await db.collection('usageResetJobs').doc(jobId).set({
+      id: jobId,
+      status: 'in_progress',
+      startedAt: new Date(),
+      totalUsers: 0,
+      processedUsers: 0,
+      failedUsers: [],
+      lastProcessedUid: null,
+    });
+
+    return jobId;
+  }
+
+  /**
+   * Update reset job progress (for resumability)
+   */
+  async updateResetJobProgress(
+    jobId: string,
+    processedUsers: number,
+    totalUsers: number,
+    lastProcessedUid: string,
+  ): Promise<void> {
+    const db = this.firebaseService['db'];
+
+    await db.collection('usageResetJobs').doc(jobId).update({
+      processedUsers,
+      totalUsers,
+      lastProcessedUid,
+      updatedAt: new Date(),
+    });
+  }
+
+  /**
+   * Mark reset job as complete
+   */
+  async completeResetJob(jobId: string, failedUsers: string[]): Promise<void> {
+    const db = this.firebaseService['db'];
+
+    this.logger.log(
+      `Completing reset job ${jobId}. Failed users: ${failedUsers.length}`,
+    );
+
+    await db.collection('usageResetJobs').doc(jobId).update({
+      status: 'completed',
+      completedAt: new Date(),
+      failedUsers,
+      updatedAt: new Date(),
+    });
+  }
+
+  /**
+   * Get incomplete reset job (for resuming after crash)
+   */
+  async getIncompleteResetJob(): Promise<any | null> {
+    const db = this.firebaseService['db'];
+
+    const snapshot = await db
+      .collection('usageResetJobs')
+      .where('status', '==', 'in_progress')
+      .orderBy('startedAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const data = snapshot.docs[0].data();
+    this.logger.log(
+      `Found incomplete reset job: ${data.id} (${data.processedUsers}/${data.totalUsers} users)`,
+    );
+
+    return data;
+  }
+
+  /**
+   * Get reset job status by ID
+   */
+  async getResetJobStatus(jobId: string): Promise<any | null> {
+    const db = this.firebaseService['db'];
+
+    const doc = await db.collection('usageResetJobs').doc(jobId).get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return doc.data();
+  }
+
+  /**
    * Create usage record for analytics
    */
   private async createUsageRecord(record: {

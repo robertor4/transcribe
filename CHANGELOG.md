@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Admin Manual Usage Reset**: Admins can now manually reset a user's monthly usage via the admin panel
+  - New endpoint: `POST /admin/users/:userId/reset-usage` returns previous usage stats
+  - Reset button added to user activity page in admin panel ([apps/web/app/[locale]/admin/users/[userId]/page.tsx:338-351](apps/web/app/[locale]/admin/users/[userId]/page.tsx#L338-L351))
+  - Confirmation dialog shows current usage before reset
+  - Success message displays previous usage statistics
+  - Auto-refreshes activity data after reset
+  - Use cases: Give users fresh trial after errors, testing, support intervention
+  - Locations: [apps/api/src/admin/admin.controller.ts:189-233](apps/api/src/admin/admin.controller.ts#L189-L233), [apps/api/src/admin/admin.module.ts](apps/api/src/admin/admin.module.ts)
+- **Usage Reset System Resilience**: Implemented critical resilience improvements for monthly usage reset cron jobs
+  - **Graceful Shutdown**: Application now waits up to 60 seconds for active cron jobs to complete before shutdown
+  - **Missed Job Detection**: On startup, checks if monthly reset was missed (e.g., due to downtime) and automatically runs it
+  - **Transaction/Idempotency**: Reset progress tracked in Firestore `usageResetJobs` collection for resumability after crashes
+  - Progress checkpoints every 10 users allow resuming from last processed user instead of restarting from scratch
+  - All cron jobs (monthly reset, overage check, usage warnings, cleanup) respect shutdown signals
+  - Admin monitoring endpoint: `GET /usage/reset-status` to check current reset job progress
+  - Locations: [apps/api/src/main.ts:107](apps/api/src/main.ts#L107), [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts), [apps/api/src/usage/usage.service.ts:493-590](apps/api/src/usage/usage.service.ts#L493-L590), [apps/api/src/usage/usage.controller.ts](apps/api/src/usage/usage.controller.ts)
+  - New Firestore collection: `usageResetJobs` (tracks job status, progress, failed users)
+  - Benefits: Prevents missed resets, recovers from crashes, no duplicate resets, safe container restarts
+
 ### Changed
 - **Mobile Responsiveness Improvements**: Comprehensive optimization for mobile devices (screens < 640px)
   - Analysis tabs now horizontally scrollable with reduced padding and icon sizes on mobile

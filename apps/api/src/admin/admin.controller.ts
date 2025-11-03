@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Delete,
   Param,
   Query,
@@ -11,6 +12,7 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { FirebaseService } from '../firebase/firebase.service';
 import { UserService } from '../user/user.service';
+import { UsageService } from '../usage/usage.service';
 import { ApiResponse, User, UserActivity } from '@transcribe/shared';
 
 /**
@@ -26,6 +28,7 @@ export class AdminController {
   constructor(
     private readonly firebaseService: FirebaseService,
     private readonly userService: UserService,
+    private readonly usageService: UsageService,
   ) {}
 
   /**
@@ -174,6 +177,55 @@ export class AdminController {
       data: {
         ...result,
         message,
+      },
+    };
+  }
+
+  /**
+   * Reset user's monthly usage (give them a fresh trial/start)
+   * @param userId - The user ID to reset usage for
+   * @returns Reset confirmation with previous usage stats
+   */
+  @Post('users/:userId/reset-usage')
+  async resetUserUsage(@Param('userId') userId: string): Promise<
+    ApiResponse<{
+      previousUsage: {
+        hours: number;
+        transcriptions: number;
+        onDemandAnalyses: number;
+      };
+      message: string;
+    }>
+  > {
+    this.logger.log(`Admin: Resetting usage for user ${userId}`);
+
+    // Get user and current usage before reset
+    const user: User | null = await this.firebaseService.getUser(userId);
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+
+    const previousUsage = user.usageThisMonth || {
+      hours: 0,
+      transcriptions: 0,
+      onDemandAnalyses: 0,
+    };
+
+    // Reset usage
+    await this.usageService.resetMonthlyUsage(userId);
+
+    this.logger.log(
+      `Admin: Reset usage for ${user.email} (${userId}) - Previous: ${previousUsage.hours.toFixed(1)}h, ${previousUsage.transcriptions} transcriptions, ${previousUsage.onDemandAnalyses} analyses`,
+    );
+
+    return {
+      success: true,
+      data: {
+        previousUsage,
+        message: `Usage reset successful for ${user.email}.\n\nPrevious usage:\n- ${previousUsage.hours.toFixed(1)} hours\n- ${previousUsage.transcriptions} transcriptions\n- ${previousUsage.onDemandAnalyses} on-demand analyses\n\nUser now has a fresh start for the current month.`,
       },
     };
   }
