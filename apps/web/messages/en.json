@@ -287,6 +287,8 @@
     "copyToClipboard": "Copy to Clipboard",
     "copyTranscript": "Copy transcript",
     "copySummary": "Copy summary",
+    "fixTranscript": "Fix transcript",
+    "fixTranscriptTooltip": "Correct typos and other mistakes using AI",
     "shareTranscription": "Share Transcription",
     "failedToLoad": "Failed to load transcriptions",
     "failedToDelete": "Failed to delete transcription",

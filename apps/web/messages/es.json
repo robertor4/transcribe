@@ -285,6 +285,8 @@
     "copyToClipboard": "Copiar al portapapeles",
     "copyTranscript": "Copiar transcripción",
     "copySummary": "Copiar resumen",
+    "fixTranscript": "Corregir transcripción",
+    "fixTranscriptTooltip": "Corregir errores tipográficos y otros errores con IA",
     "shareTranscription": "Compartir transcripción",
     "failedToLoad": "Error al cargar transcripciones",
     "failedToDelete": "Error al eliminar transcripción",
