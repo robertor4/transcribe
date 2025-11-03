@@ -1,11 +1,12 @@
 'use client';
 
-import { use, useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
 import Link from 'next/link';
 
 export default function CheckoutSuccessPage({
@@ -19,6 +20,75 @@ export default function CheckoutSuccessPage({
   const { user } = useAuth();
   const t = useTranslations('checkout.success');
   const { trackEvent } = useAnalytics();
+  const [hasPurchaseTracked, setHasPurchaseTracked] = useState(false);
+
+  // Track purchase event on mount (only once)
+  useEffect(() => {
+    if (!user || hasPurchaseTracked) return;
+
+    const sessionId = searchParams.get('session_id');
+    if (!sessionId) return;
+
+    // Track purchase completion
+    // Note: We'll fetch detailed transaction info from the user's Firestore record
+    // which is updated by Stripe webhooks
+    const trackPurchase = async () => {
+      try {
+        // Get user data to determine subscription tier and amount
+        const token = await user.getIdToken();
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+        const response = await fetch(`${apiUrl}/stripe/subscription`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const pricing = getPricingForLocale(locale);
+          const { code: currency } = getCurrencyForLocale(locale);
+
+          // Determine price based on tier
+          let price = 0;
+          let tier = data.tier || 'free';
+
+          if (tier === 'professional') {
+            // Assume monthly for now - Stripe webhooks will have more accurate data
+            price = pricing.professional.monthly;
+          } else if (tier === 'payg') {
+            // PAYG pricing varies - use a default or fetch from session
+            price = 15; // Minimum PAYG package
+          }
+
+          // Track purchase event
+          trackEvent('purchase', {
+            transaction_id: sessionId,
+            value: price,
+            currency: currency,
+            items: [{
+              item_id: `${tier}_subscription`,
+              item_name: `${tier.charAt(0).toUpperCase() + tier.slice(1)} Plan`,
+              item_category: 'Subscription',
+              price: price,
+              quantity: 1
+            }],
+            affiliation: 'Neural Summary',
+            locale: locale,
+            user_id: user.uid
+          });
+
+          setHasPurchaseTracked(true);
+        }
+      } catch (error) {
+        console.error('Error tracking purchase:', error);
+        // Still mark as tracked to avoid repeated attempts
+        setHasPurchaseTracked(true);
+      }
+    };
+
+    trackPurchase();
+  }, [user, searchParams, trackEvent, locale, hasPurchaseTracked]);
 
   // Note: Subscription sync happens via Stripe webhooks
   // In development, use Stripe CLI: stripe listen --forward-to localhost:3001/stripe/webhook

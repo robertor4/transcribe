@@ -666,8 +666,8 @@
     "hero": {
       "byline": "",
       "trustIndicators": {
-        "users": "10,000+ usuarios",
-        "rating": "4.9/5 calificación",
+        "users": "Confiado por profesionales",
+        "rating": "Altamente valorado",
         "certified": "Compatible con RGPD"
       },
       "title": "Listo para convertir cada conversación en",
@@ -767,8 +767,8 @@
     "security": {
       "title": "Confiado por profesionales que valoran la precisión y la privacidad",
       "stats": {
-        "users": "10,000+ usuarios en todo el mundo",
-        "rating": "calificados en promedio con 4.9 / 5"
+        "users": "Confiado por profesionales en todo el mundo",
+        "rating": "Altamente valorado por los usuarios"
       },
       "compliance": {
         "title": "Arquitectura centrada en la privacidad",
@@ -797,7 +797,7 @@
     },
     "testimonials": {
       "title": "Amado por profesionales en todo el mundo",
-      "rating": "4.9/5 de más de 2,000 reseñas",
+      "rating": "Altamente valorado por profesionales",
       "testimonial1": {
         "quote": "Esta herramienta ha revolucionado mi flujo de trabajo en reuniones. Puedo concentrarme en la conversación en lugar de tomar notas. Los resúmenes son increíblemente precisos.",
         "author": "Sarah Martinez",

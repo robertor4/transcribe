@@ -666,8 +666,8 @@
     "hero": {
       "byline": "",
       "trustIndicators": {
-        "users": "10 000+ utilisateurs",
-        "rating": "4,9/5 évaluation",
+        "users": "Approuvé par des professionnels",
+        "rating": "Très bien noté",
         "certified": "Conforme au RGPD"
       },
       "title": "Prêt à transformer chaque conversation en",
@@ -767,8 +767,8 @@
     "security": {
       "title": "Approuvé par les professionnels qui valorisent la précision et la confidentialité",
       "stats": {
-        "users": "10 000+ utilisateurs dans le monde",
-        "rating": "notés en moyenne 4,9 / 5"
+        "users": "Approuvé par des professionnels du monde entier",
+        "rating": "Très bien noté par les utilisateurs"
       },
       "compliance": {
         "title": "Architecture axée sur la confidentialité",
@@ -797,7 +797,7 @@
     },
     "testimonials": {
       "title": "Apprécié par les professionnels du monde entier",
-      "rating": "4,9/5 sur plus de 2 000 avis",
+      "rating": "Très bien noté par les professionnels",
       "testimonial1": {
         "quote": "Cet outil a révolutionné mon flux de travail en réunion. Je peux me concentrer sur la conversation au lieu de prendre des notes. Les résumés sont incroyablement précis.",
         "author": "Sarah Martinez",

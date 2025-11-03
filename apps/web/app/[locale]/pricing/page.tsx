@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { PricingCard } from '@/components/pricing/PricingCard';
 import { FeatureComparisonTable } from '@/components/pricing/FeatureComparisonTable';
 import { PricingFAQ } from '@/components/pricing/PricingFAQ';
@@ -13,15 +14,96 @@ import { PublicFooter } from '@/components/PublicFooter';
 import { ArrowRight, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import Link from 'next/link';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
+import { formatPricingTierItem, getCurrencyFromLocale } from '@/utils/analytics-helpers';
 
 export default function PricingPage() {
   const params = useParams();
   const locale = params.locale as string;
   const router = useRouter();
   const { user } = useAuth();
+  const { trackEvent } = useAnalytics();
   const t = useTranslations('pricing');
 
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+  const [hasTrackedComparison, setHasTrackedComparison] = useState(false);
+  const [hasTrackedFAQ, setHasTrackedFAQ] = useState(false);
+
+  // Get pricing and currency info from centralized utility
+  const pricing = getPricingForLocale(locale);
+  const { code: currency, symbol: currencySymbol } = getCurrencyForLocale(locale);
+
+  // Track page view with all pricing tiers on mount
+  useEffect(() => {
+    // Track view_item_list event with all pricing tiers
+    const items = [
+      formatPricingTierItem('free', 0, currency, 'monthly'),
+      formatPricingTierItem('professional', billingCycle === 'monthly' ? pricing.professional.monthly : pricing.professional.annualMonthly, currency, billingCycle),
+      formatPricingTierItem('payg', pricing.payg.hourly, currency, 'one-time')
+    ];
+
+    trackEvent('view_item_list', {
+      item_list_name: 'Pricing Page',
+      items: items,
+      currency: currency,
+      locale: locale,
+      user_authenticated: !!user
+    });
+  }, [trackEvent, locale, currency, billingCycle, pricing, user]);
+
+  // Track when user scrolls to comparison table or FAQ
+  useEffect(() => {
+    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement;
+
+          if (target.id === 'comparison' && !hasTrackedComparison) {
+            trackEvent('pricing_comparison_viewed', {
+              locale: locale,
+              currency: currency
+            });
+            setHasTrackedComparison(true);
+          }
+
+          if (target.id === 'faq' && !hasTrackedFAQ) {
+            trackEvent('pricing_faq_viewed', {
+              locale: locale,
+              currency: currency
+            });
+            setHasTrackedFAQ(true);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 0.3 // Trigger when 30% of element is visible
+    });
+
+    // Observe comparison and FAQ sections
+    const comparisonSection = document.getElementById('comparison');
+    const faqSection = document.getElementById('faq');
+
+    if (comparisonSection) observer.observe(comparisonSection);
+    if (faqSection) observer.observe(faqSection);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [trackEvent, locale, currency, hasTrackedComparison, hasTrackedFAQ]);
+
+  // Handle billing cycle toggle with analytics
+  const handleBillingToggle = (newCycle: 'monthly' | 'annual') => {
+    setBillingCycle(newCycle);
+
+    // Track billing cycle change
+    trackEvent('billing_cycle_toggled', {
+      previous_cycle: billingCycle,
+      new_cycle: newCycle,
+      currency: currency,
+      locale: locale
+    });
+  };
 
   // Helper function to get the appropriate CTA link based on authentication
   const getCtaLink = (tier: string) => {
@@ -41,10 +123,6 @@ export default function PricingPage() {
     }
     return `/${locale}/checkout/${tier}`;
   };
-
-  // Get pricing and currency info from centralized utility
-  const pricing = getPricingForLocale(locale);
-  const { code: currency, symbol: currencySymbol } = getCurrencyForLocale(locale);
 
   // Standardized feature lists for each tier with icons and categories
   const freeFeatures = [
@@ -102,7 +180,7 @@ export default function PricingPage() {
             </p>
 
             {/* Billing Toggle */}
-            <BillingToggle billingCycle={billingCycle} onToggle={setBillingCycle} />
+            <BillingToggle billingCycle={billingCycle} onToggle={handleBillingToggle} />
           </div>
         </section>
 
@@ -140,6 +218,7 @@ export default function PricingPage() {
               locale={locale}
               currencySymbol={currencySymbol}
               currency={currency}
+              billingCycle={billingCycle}
             />
 
             {/* Pay-As-You-Go */}

@@ -1,7 +1,12 @@
+'use client';
+
 import { Check, X, Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
 import { formatPriceLocale } from '@transcribe/shared';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { useEffect } from 'react';
+import { formatViewItemParams, formatSelectItemParams, parseBillingCycle, type PricingTier, type BillingCycle } from '@/utils/analytics-helpers';
 
 interface Feature {
   text: string;
@@ -27,6 +32,7 @@ interface PricingCardProps {
   showGuarantee?: boolean;
   guaranteeText?: string;
   billingNote?: string;
+  billingCycle?: 'monthly' | 'annual'; // Add billing cycle for analytics
 }
 
 export function PricingCard({
@@ -45,11 +51,42 @@ export function PricingCard({
   showGuarantee = false,
   guaranteeText,
   billingNote,
+  billingCycle = 'monthly',
 }: PricingCardProps) {
+  const { trackEvent } = useAnalytics();
+
   // Use locale-aware formatting for the price
   // PAYG uses 2 decimals (e.g., €1.40/hour), subscription tiers use 0 decimals (e.g., €27/month)
   const decimals = tier === 'payg' ? 2 : 0;
   const formattedPrice = formatPriceLocale(price, locale, { decimals });
+
+  // Determine billing cycle type for analytics
+  const cycle: BillingCycle = tier === 'payg' ? 'one-time' : billingCycle;
+
+  // Track view_item when card becomes visible
+  useEffect(() => {
+    const params = formatViewItemParams(tier as PricingTier, price, currency, cycle);
+
+    trackEvent('view_item', {
+      ...params,
+      locale: locale,
+      tier_name: title,
+      is_featured: featured
+    });
+  }, [tier, price, currency, cycle, locale, title, featured, trackEvent]);
+
+  // Handle CTA click
+  const handleCtaClick = () => {
+    const params = formatSelectItemParams(tier as PricingTier, price, currency, cycle, 'Pricing Page');
+
+    trackEvent('select_item', {
+      ...params,
+      locale: locale,
+      tier_name: title,
+      is_featured: featured,
+      cta_text: ctaText
+    });
+  };
 
   return (
     <div
@@ -94,6 +131,7 @@ export function PricingCard({
 
       <Link
         href={ctaLink}
+        onClick={handleCtaClick}
         className={`
           group flex items-center justify-center gap-2 w-full py-3 px-6 rounded-lg text-center font-semibold transition-all mb-4
           ${

@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { FirebaseService } from '../firebase/firebase.service';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class StripeService {
@@ -28,6 +29,7 @@ export class StripeService {
   constructor(
     private configService: ConfigService,
     private firebaseService: FirebaseService,
+    private analyticsService: AnalyticsService,
   ) {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (!apiKey) {
@@ -392,6 +394,12 @@ export class StripeService {
     if (session.mode === 'subscription') {
       const subscriptionId = session.subscription as string;
       const tier = session.metadata?.tier as 'professional' | 'business';
+      const billing = session.metadata?.billing || 'monthly';
+
+      // Get subscription details to get exact amount
+      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId as string);
+      const amount = subscription.items.data[0]?.price?.unit_amount || 0;
+      const currency = subscription.items.data[0]?.price?.currency || 'usd';
 
       // Update user with subscription info and reset usage
       await this.firebaseService.updateUser(userId, {
@@ -407,6 +415,16 @@ export class StripeService {
         updatedAt: new Date(),
       });
 
+      // Track purchase in GA4 (server-side)
+      await this.analyticsService.trackPurchase(
+        userId,
+        session.id,
+        amount / 100, // Convert cents to dollars
+        currency.toUpperCase(),
+        tier,
+        billing,
+      );
+
       this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
     } else if (
       session.mode === 'payment' &&
@@ -416,12 +434,24 @@ export class StripeService {
       const hours = parseInt(session.metadata.hours || '0', 10);
       const user = await this.firebaseService.getUserById(userId);
       const currentCredits = user?.paygCredits || 0;
+      const amount = session.amount_total || 0;
+      const currency = session.currency || 'usd';
 
       await this.firebaseService.updateUser(userId, {
         subscriptionTier: 'payg',
         paygCredits: currentCredits + hours,
         updatedAt: new Date(),
       });
+
+      // Track PAYG purchase in GA4
+      await this.analyticsService.trackPurchase(
+        userId,
+        session.id,
+        amount / 100,
+        currency.toUpperCase(),
+        'payg',
+        'one-time',
+      );
 
       this.logger.log(`Added ${hours} PAYG credits to user ${userId}`);
     }

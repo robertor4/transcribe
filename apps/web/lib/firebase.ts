@@ -28,6 +28,12 @@ if (typeof window !== 'undefined') {
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);
+
+      // Enable debug mode in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Firebase Analytics] Debug mode enabled for development');
+        // Debug events will be sent to DebugView in Firebase Console
+      }
     }
   });
 }
