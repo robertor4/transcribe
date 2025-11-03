@@ -988,4 +988,201 @@ export class FirebaseService implements OnModuleInit {
           admin.firestore.FieldValue.arrayRemove(analysisId),
       });
   }
+
+  /**
+   * Get user transcriptions for admin activity audit
+   * @param userId - User ID to query
+   * @param limit - Maximum number of transcriptions to return (default: 50)
+   */
+  async getUserTranscriptionsForAdmin(
+    userId: string,
+    limit: number = 50,
+  ): Promise<any[]> {
+    try {
+      const snapshot = await this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .limit(limit)
+        .get();
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+          completedAt: data.completedAt?.toDate?.() || data.completedAt,
+        };
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error fetching user transcriptions: ${error.message}`,
+      );
+      // If composite index doesn't exist, return empty array
+      // Firestore will provide a link to create the index in the error message
+      return [];
+    }
+  }
+
+  /**
+   * Get user generated analyses for admin activity audit
+   * @param userId - User ID to query
+   * @param limit - Maximum number of analyses to return (default: 50)
+   */
+  async getUserAnalysesForAdmin(
+    userId: string,
+    limit: number = 50,
+  ): Promise<any[]> {
+    try {
+      const snapshot = await this.db
+        .collection('generatedAnalyses')
+        .where('userId', '==', userId)
+        .orderBy('generatedAt', 'desc')
+        .limit(limit)
+        .get();
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          generatedAt: data.generatedAt?.toDate?.() || data.generatedAt,
+        };
+      });
+    } catch (error) {
+      this.logger.error(`Error fetching user analyses: ${error.message}`);
+      return [];
+    }
+  }
+
+  /**
+   * Get user usage records for admin activity audit
+   * @param userId - User ID to query
+   * @param limit - Maximum number of records to return (default: 50)
+   */
+  async getUserUsageRecords(userId: string, limit: number = 50): Promise<any[]> {
+    try {
+      const snapshot = await this.db
+        .collection('usageRecords')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .limit(limit)
+        .get();
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        };
+      });
+    } catch (error) {
+      this.logger.error(`Error fetching usage records: ${error.message}`);
+      return [];
+    }
+  }
+
+  /**
+   * Get comprehensive user activity for admin audit
+   * @param userId - User ID to query
+   */
+  async getUserActivity(userId: string): Promise<any> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      return null;
+    }
+
+    // Fetch all activity data in parallel
+    const [transcriptions, analyses, usageRecords] = await Promise.all([
+      this.getUserTranscriptionsForAdmin(userId, 50),
+      this.getUserAnalysesForAdmin(userId, 50),
+      this.getUserUsageRecords(userId, 50),
+    ]);
+
+    // Calculate summary statistics
+    const totalHoursProcessed = transcriptions.reduce((sum, t) => {
+      const durationHours = t.duration ? t.duration / 3600 : 0;
+      return sum + durationHours;
+    }, 0);
+
+    const accountAge = Math.floor(
+      (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    // Build account events timeline
+    const accountEvents: any[] = [];
+
+    // Account creation event
+    accountEvents.push({
+      type: 'created',
+      timestamp: user.createdAt,
+      details: {
+        email: user.email,
+        displayName: user.displayName,
+      },
+    });
+
+    // Last login event
+    if (user.lastLogin) {
+      accountEvents.push({
+        type: 'login',
+        timestamp: user.lastLogin,
+        details: {
+          email: user.email,
+        },
+      });
+    }
+
+    // Subscription/tier change events (inferred from current state)
+    if (user.subscriptionTier && user.subscriptionTier !== 'free') {
+      accountEvents.push({
+        type: 'tier_change',
+        timestamp: user.updatedAt || user.createdAt,
+        details: {
+          tier: user.subscriptionTier,
+          status: user.subscriptionStatus,
+        },
+      });
+    }
+
+    // Deletion event
+    if (user.isDeleted && user.deletedAt) {
+      accountEvents.push({
+        type: 'deletion',
+        timestamp: user.deletedAt,
+        details: {
+          isDeleted: true,
+        },
+      });
+    }
+
+    // Sort events by timestamp (most recent first)
+    accountEvents.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+
+    return {
+      user,
+      summary: {
+        totalTranscriptions: transcriptions.length,
+        totalHoursProcessed,
+        totalAnalysesGenerated: analyses.length,
+        accountAge,
+        lastActive: user.lastLogin,
+        monthlyUsage: {
+          hours: user.usageThisMonth?.hours || 0,
+          transcriptions: user.usageThisMonth?.transcriptions || 0,
+          analyses: user.usageThisMonth?.onDemandAnalyses || 0,
+        },
+      },
+      recentTranscriptions: transcriptions,
+      recentAnalyses: analyses,
+      usageRecords,
+      accountEvents,
+    };
+  }
 }

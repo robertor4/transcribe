@@ -7,7 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Admin User Activity Auditing**: Admins can now click on any user in the admin panel to view comprehensive activity history for audit purposes
+  - New user activity detail page displaying:
+    - User profile card with tier, role, and status badges
+    - Statistics dashboard: total transcriptions, hours processed, analyses generated, account age
+    - Current month usage breakdown (hours, transcriptions, analyses)
+    - Account events timeline (account creation, logins, subscription changes, deletions)
+    - Recent transcriptions table (last 50, with file name, status, duration, creation date)
+    - Recent on-demand analyses table (last 50, with template name, model used, generation date)
+  - Backend API: New `GET /admin/users/:userId/activity` endpoint
+  - Firebase service methods: `getUserTranscriptionsForAdmin()`, `getUserAnalysesForAdmin()`, `getUserUsageRecords()`, `getUserActivity()`
+  - User rows in admin panel are now clickable with hover effects
+  - Full internationalization support (en, nl, de, fr, es)
+  - Graceful error handling: Methods return empty arrays if Firestore composite indexes don't exist yet
+  - **Required Firestore Indexes** (will auto-create on first query):
+    - Collection: `transcriptions`, Fields: `userId` (Ascending), `createdAt` (Descending)
+    - Collection: `generatedAnalyses`, Fields: `userId` (Ascending), `generatedAt` (Descending)
+    - Collection: `usageRecords`, Fields: `userId` (Ascending), `createdAt` (Descending)
+  - Locations:
+    - Frontend: `apps/web/app/[locale]/admin/users/[userId]/page.tsx`
+    - Backend: `apps/api/src/admin/admin.controller.ts:96-124`
+    - Firebase: `apps/api/src/firebase/firebase.service.ts:992-1169`
+    - Types: `packages/shared/src/types.ts:706-733`
+    - Translations: `apps/web/messages/*.json` (admin section)
+
+### Changed
+- **Optimized Dashboard Tab Switching Performance**: Eliminated full data reloads when switching between tabs
+  - Changed from conditional rendering to CSS-based tab hiding (components stay mounted)
+  - Tab switches are now instant with zero API calls or loading states
+  - Preserves all UI state: scroll position, expanded transcriptions, progress bars
+  - Improved UX: Switching between "Transcriptions", "Upload Audio", and "Recording Guide" tabs is now seamless
+  - Fixed TypeScript/ESLint warnings: Removed unused `pendingCompletedIds` state variable, replaced `<img>` with optimized Next.js `<Image />` component
+  - Location: `apps/web/app/[locale]/dashboard/page.tsx:4,28-29,172-198,242-249`
+- **Updated Hero CTA Button Text**: Changed primary call-to-action button from "Start Free Forever" to "Create free account" for clearer action
+  - English: "Create free account"
+  - Dutch: "Maak gratis account aan"
+  - German: "Kostenloses Konto erstellen"
+  - French: "Créer un compte gratuit"
+  - Spanish: "Crear cuenta gratuita"
+  - More direct and action-oriented messaging that clearly indicates account creation
+  - Location: `apps/web/messages/*.json` (all 5 languages: en, nl, de, fr, es)
+
 ### Fixed
+- **Fixed Layout Shift When Switching Dashboard Tabs**: Eliminated horizontal "jumping" when switching between tabs
+  - Root cause: Scrollbar appearance/disappearance caused content to shift left/right by ~15-17px
+  - Solution: Added `scrollbar-gutter: stable` to global HTML element to reserve space for scrollbar at all times
+  - Result: Content width stays consistent across all tabs and entire application, preventing Cumulative Layout Shift (CLS)
+  - Location: `apps/web/app/globals.css:77`
+- **Missing Security Badge Translations**: Added missing translation keys for security compliance badges (SOC 2, GDPR, HIPAA, ISO 27001)
+  - Added `landing.security.badges.soc2`, `landing.security.badges.gdpr`, `landing.security.badges.hipaa`, `landing.security.badges.iso` to all 5 language files
+  - Localized GDPR as "AVG" (Dutch), "DSGVO" (German), "RGPD" (French/Spanish) for native speakers
+  - Fixes translation errors on landing page and footer where these badges are displayed
+  - Location: `apps/web/messages/*.json` (all 5 languages: en, nl, de, fr, es)
 - **Transcription Title Length Issue**: Fixed transcription cards displaying overly long titles instead of concise, scannable titles
   - **Root Cause**: Summary prompt didn't explicitly limit title word count, GPT-5 was generating descriptive but lengthy H1 headings (12+ words)
   - **Primary Fix**: Updated summarization prompt to enforce "MAXIMUM 8 words" for main heading

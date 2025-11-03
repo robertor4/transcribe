@@ -1731,5 +1731,59 @@
     "hours": "Heures",
     "remaining": "restant",
     "onDemandAnalyses": "Analyses à la demande"
+  },
+  "admin": {
+    "title": "Panneau d'administration",
+    "description": "Gérer les utilisateurs et les paramètres système",
+    "backToDashboard": "Retour au tableau de bord",
+    "userActivity": "Audit d'activité utilisateur",
+    "activityDescription": "Historique d'activité détaillé pour",
+    "stats": {
+      "totalUsers": "Total des utilisateurs",
+      "freeTier": "Niveau gratuit",
+      "professional": "Professionnel",
+      "deleted": "Supprimé",
+      "totalTranscriptions": "Total des transcriptions",
+      "hoursProcessed": "Heures traitées",
+      "analysesGenerated": "Analyses générées",
+      "accountAge": "Âge du compte"
+    },
+    "user": {
+      "tier": "Niveau",
+      "role": "Rôle",
+      "status": "Statut",
+      "created": "Créé",
+      "lastLogin": "Dernière connexion",
+      "actions": "Actions",
+      "active": "Actif",
+      "admin": "Administrateur",
+      "softDelete": "Suppression douce (conserver les données)",
+      "hardDelete": "Suppression définitive (permanent)"
+    },
+    "activity": {
+      "currentMonthUsage": "Utilisation du mois en cours",
+      "accountEvents": "Événements du compte",
+      "recentTranscriptions": "Transcriptions récentes",
+      "recentAnalyses": "Analyses à la demande récentes",
+      "noTranscriptions": "Aucune transcription trouvée",
+      "noAnalyses": "Aucune analyse trouvée",
+      "loadingActivity": "Chargement de l'activité...",
+      "fileName": "Nom du fichier",
+      "duration": "Durée",
+      "model": "Modèle",
+      "generated": "Généré",
+      "templateName": "Nom du modèle"
+    },
+    "events": {
+      "created": "Compte créé",
+      "login": "Dernière connexion",
+      "tierChange": "Changement d'abonnement",
+      "deletion": "Compte supprimé"
+    },
+    "errors": {
+      "accessDenied": "Accès refusé. Rôle d'administrateur requis.",
+      "failedToFetch": "Échec de la récupération des données",
+      "userNotFound": "Utilisateur non trouvé"
+    }
   }
 }

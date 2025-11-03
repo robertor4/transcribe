@@ -694,7 +694,7 @@
       "titleHighlight": "clarity.",
       "subtitle": "Neural Summary transforms hours of audio into clear, structured notes, decisions, and next steps — in seconds.",
       "cta": {
-        "primary": "Start Free Forever",
+        "primary": "Create free account",
         "secondary": "See how it works"
       },
       "guarantee": "Always free plan available • No credit card required • Takes 2 minutes",
@@ -813,6 +813,12 @@
       "audit": {
         "title": "Zero-knowledge architecture",
         "description": "Your data remains private - we only process what's necessary and delete audio immediately"
+      },
+      "badges": {
+        "soc2": "SOC 2 Compliant",
+        "gdpr": "GDPR Compliant",
+        "hipaa": "HIPAA Ready",
+        "iso": "ISO 27001"
       }
     },
     "testimonials": {
@@ -1717,5 +1723,59 @@
     "hours": "Hours",
     "remaining": "remaining",
     "onDemandAnalyses": "On-Demand Analyses"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "description": "Manage users and system settings",
+    "backToDashboard": "Back to Dashboard",
+    "userActivity": "User Activity Audit",
+    "activityDescription": "Detailed activity history for",
+    "stats": {
+      "totalUsers": "Total Users",
+      "freeTier": "Free Tier",
+      "professional": "Professional",
+      "deleted": "Deleted",
+      "totalTranscriptions": "Total Transcriptions",
+      "hoursProcessed": "Hours Processed",
+      "analysesGenerated": "Analyses Generated",
+      "accountAge": "Account Age"
+    },
+    "user": {
+      "tier": "Tier",
+      "role": "Role",
+      "status": "Status",
+      "created": "Created",
+      "lastLogin": "Last Login",
+      "actions": "Actions",
+      "active": "Active",
+      "admin": "Admin",
+      "softDelete": "Soft delete (preserve data)",
+      "hardDelete": "Hard delete (permanent)"
+    },
+    "activity": {
+      "currentMonthUsage": "Current Month Usage",
+      "accountEvents": "Account Events",
+      "recentTranscriptions": "Recent Transcriptions",
+      "recentAnalyses": "Recent On-Demand Analyses",
+      "noTranscriptions": "No transcriptions found",
+      "noAnalyses": "No analyses found",
+      "loadingActivity": "Loading activity...",
+      "fileName": "File Name",
+      "duration": "Duration",
+      "model": "Model",
+      "generated": "Generated",
+      "templateName": "Template Name"
+    },
+    "events": {
+      "created": "Account Created",
+      "login": "Last Login",
+      "tierChange": "Subscription Change",
+      "deletion": "Account Deleted"
+    },
+    "errors": {
+      "accessDenied": "Access denied. Admin role required.",
+      "failedToFetch": "Failed to fetch data",
+      "userNotFound": "User not found"
+    }
   }
 }

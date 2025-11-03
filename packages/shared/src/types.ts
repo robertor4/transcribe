@@ -702,3 +702,32 @@ export interface RoutingPlan {
     percentageAffected: string;
   };
 }
+
+// Admin Activity Audit Types
+export interface AccountEvent {
+  type: 'created' | 'login' | 'subscription_change' | 'deletion' | 'tier_change';
+  timestamp: Date;
+  details: Record<string, any>;
+}
+
+export interface UserActivitySummary {
+  totalTranscriptions: number;
+  totalHoursProcessed: number;
+  totalAnalysesGenerated: number;
+  accountAge: number; // days
+  lastActive?: Date;
+  monthlyUsage: {
+    hours: number;
+    transcriptions: number;
+    analyses: number;
+  };
+}
+
+export interface UserActivity {
+  user: User;
+  summary: UserActivitySummary;
+  recentTranscriptions: Transcription[];
+  recentAnalyses: GeneratedAnalysis[];
+  usageRecords: UsageRecord[];
+  accountEvents: AccountEvent[];
+}

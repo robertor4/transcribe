@@ -258,7 +258,11 @@ export default function AdminPanel() {
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {users.map((u) => (
-                  <tr key={u.uid} className={u.isDeleted ? 'bg-red-50 dark:bg-red-900/20' : ''}>
+                  <tr
+                    key={u.uid}
+                    className={`${u.isDeleted ? 'bg-red-50 dark:bg-red-900/20' : ''} hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors`}
+                    onClick={() => router.push(`/admin/users/${u.uid}`)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div>
@@ -311,7 +315,10 @@ export default function AdminPanel() {
                         {u.role !== UserRole.ADMIN && !u.isDeleted && (
                           <>
                             <button
-                              onClick={() => handleDeleteUser(u.uid, false)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteUser(u.uid, false);
+                              }}
                               disabled={deletingUserId === u.uid}
                               className="text-orange-600 hover:text-orange-900 disabled:opacity-50"
                               title="Soft delete (preserve data)"
@@ -319,7 +326,10 @@ export default function AdminPanel() {
                               <UserX className="w-5 h-5" />
                             </button>
                             <button
-                              onClick={() => handleDeleteUser(u.uid, true)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteUser(u.uid, true);
+                              }}
                               disabled={deletingUserId === u.uid}
                               className="text-red-600 hover:text-red-900 disabled:opacity-50"
                               title="Hard delete (permanent)"
