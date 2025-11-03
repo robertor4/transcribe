@@ -328,7 +328,10 @@ export class TranscriptionService {
       );
 
       if (onProgress) {
-        onProgress(10, 'Using fallback transcription service (OpenAI Whisper)...');
+        onProgress(
+          10,
+          'Using fallback transcription service (OpenAI Whisper)...',
+        );
       }
 
       // Fallback to Whisper (without speaker diarization)
@@ -1804,22 +1807,12 @@ ${transcription}`;
     }
 
     this.logger.log(
-      `Translating transcription ${transcriptionId} to ${targetLang.name} using GPT-5-mini`,
+      `Translating analyses for transcription ${transcriptionId} to ${targetLang.name} using GPT-5-mini (transcript text is NOT translated - always shown in original)`,
     );
 
-    // Translate transcript and all analyses in parallel using GPT-5-mini for cost efficiency
+    // Translate all analyses in parallel using GPT-5-mini for cost efficiency
+    // Note: Transcript text is intentionally NOT translated to preserve the original
     const translationPromises: Promise<string>[] = [];
-
-    // Translate transcript
-    if (transcription.transcriptText) {
-      translationPromises.push(
-        this.translateText(
-          transcription.transcriptText,
-          targetLang.name,
-          'transcript',
-        ),
-      );
-    }
 
     // Translate all available analyses
     // Use coreAnalyses (new structure) if available, otherwise fall back to analyses (old structure)
@@ -1854,7 +1847,7 @@ ${transcription}`;
     // Execute all translations in parallel
     await Promise.all(translationPromises);
 
-    // Build translation data object
+    // Build translation data object (analyses only - transcript is NOT translated)
     const translatedAnalyses: any = {};
     for (const key in analysisTranslations) {
       translatedAnalyses[key] = await analysisTranslations[key];
@@ -1863,13 +1856,6 @@ ${transcription}`;
     const translationData = {
       language: targetLanguage,
       languageName: targetLang.name,
-      transcriptText: transcription.transcriptText
-        ? await this.translateText(
-            transcription.transcriptText,
-            targetLang.name,
-            'transcript',
-          )
-        : undefined,
       analyses: translatedAnalyses,
       translatedAt: new Date(),
       translatedBy: 'gpt-5-mini' as const,
@@ -2106,7 +2092,9 @@ CRITICAL INSTRUCTIONS:
     const segments = transcription.speakerSegments || [];
 
     if (segments.length === 0) {
-      throw new BadRequestException('No speaker segments available for correction');
+      throw new BadRequestException(
+        'No speaker segments available for correction',
+      );
     }
 
     // Phase 1: Routing analysis (if not provided)
@@ -2123,12 +2111,19 @@ CRITICAL INSTRUCTIONS:
     const [regexResult, aiResult] = await Promise.all([
       // Path A: Simple replacements (instant)
       Promise.resolve(
-        this.correctionRouter.applySimpleReplacements(segments, plan.simpleReplacements),
+        this.correctionRouter.applySimpleReplacements(
+          segments,
+          plan.simpleReplacements,
+        ),
       ),
 
       // Path B: Complex corrections (AI-powered)
       plan.complexCorrections.length > 0
-        ? this.applyComplexCorrections(segments, plan.complexCorrections, instructions)
+        ? this.applyComplexCorrections(
+            segments,
+            plan.complexCorrections,
+            instructions,
+          )
         : Promise.resolve(new Map<number, string>()),
     ]);
 
@@ -2157,7 +2152,12 @@ CRITICAL INSTRUCTIONS:
     }
 
     // Apply mode: Save changes and clean up
-    return this.applyCorrection(transcriptionId, userId, transcription, mergedSegments);
+    return this.applyCorrection(
+      transcriptionId,
+      userId,
+      transcription,
+      mergedSegments,
+    );
   }
 
   /**
@@ -2168,7 +2168,9 @@ CRITICAL INSTRUCTIONS:
     complexCorrections: ComplexCorrection[],
     originalInstructions: string,
   ): Promise<Map<number, string>> {
-    this.logger.log(`Applying ${complexCorrections.length} complex corrections with AI...`);
+    this.logger.log(
+      `Applying ${complexCorrections.length} complex corrections with AI...`,
+    );
 
     // Flatten all affected segment indices
     const affectedIndices = [
@@ -2183,7 +2185,8 @@ CRITICAL INSTRUCTIONS:
     const segmentsWithContext = affectedIndices.map((index) => {
       const prev = index > 0 ? allSegments[index - 1] : null;
       const current = allSegments[index];
-      const next = index < allSegments.length - 1 ? allSegments[index + 1] : null;
+      const next =
+        index < allSegments.length - 1 ? allSegments[index + 1] : null;
 
       return {
         index,
@@ -2267,7 +2270,9 @@ IMPORTANT:
         }
       }
 
-      this.logger.log(`Complex corrections complete: ${correctedMap.size} segments corrected`);
+      this.logger.log(
+        `Complex corrections complete: ${correctedMap.size} segments corrected`,
+      );
 
       return correctedMap;
     } catch (error) {
@@ -2279,7 +2284,9 @@ IMPORTANT:
   /**
    * Reconstruct full transcript from speaker segments
    */
-  private reconstructTranscriptFromSegments(segments: SpeakerSegment[]): string {
+  private reconstructTranscriptFromSegments(
+    segments: SpeakerSegment[],
+  ): string {
     let currentSpeaker = '';
     const lines: string[] = [];
 
@@ -2306,14 +2313,18 @@ IMPORTANT:
   ): Promise<any> {
     this.logger.log('Applying transcript corrections...');
 
-    const correctedTranscript = this.reconstructTranscriptFromSegments(correctedSegments);
+    const correctedTranscript =
+      this.reconstructTranscriptFromSegments(correctedSegments);
 
     // Get existing translations for tracking what was cleared
     const existingTranslations = Object.keys(transcription.translations || {});
 
     // Delete custom analyses
     const deletedAnalysisIds =
-      await this.firebaseService.deleteGeneratedAnalysesByTranscription(transcriptionId, userId);
+      await this.firebaseService.deleteGeneratedAnalysesByTranscription(
+        transcriptionId,
+        userId,
+      );
 
     // Update Firestore
     await this.firebaseService.updateTranscription(transcriptionId, {

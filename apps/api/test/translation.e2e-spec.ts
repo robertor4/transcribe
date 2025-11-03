@@ -360,16 +360,16 @@ describe('Translation System (e2e)', () => {
       expect(response.body).toHaveProperty('data');
       expect(response.body.data).toHaveProperty('language', 'es');
       expect(response.body.data).toHaveProperty('languageName', 'Spanish');
-      expect(response.body.data).toHaveProperty('transcriptText');
+      // Note: transcriptText is intentionally NOT translated (transcript always stays in original language)
+      expect(response.body.data).not.toHaveProperty('transcriptText');
       expect(response.body.data).toHaveProperty('analyses');
 
       // Verify core analyses are translated
       const analyses = response.body.data.analyses;
       expect(analyses).toBeDefined();
 
-      console.log(`✓ Translation to Spanish completed`);
       console.log(
-        `  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`,
+        `✓ Translation to Spanish completed (analyses only, transcript stays original)`,
       );
       console.log(
         `  Translated analyses: ${Object.keys(analyses || {}).join(', ')}`,
@@ -443,12 +443,12 @@ describe('Translation System (e2e)', () => {
       expect(response.body).toHaveProperty('data');
       expect(response.body.data).toHaveProperty('language', 'fr');
       expect(response.body.data).toHaveProperty('languageName', 'French');
-      expect(response.body.data).toHaveProperty('transcriptText');
+      // Note: transcriptText is intentionally NOT translated (transcript always stays in original language)
+      expect(response.body.data).not.toHaveProperty('transcriptText');
       expect(response.body.data).toHaveProperty('analyses');
 
-      console.log(`✓ Translation to French completed`);
       console.log(
-        `  Transcript length: ${response.body.data.transcriptText?.length || 0} chars`,
+        `✓ Translation to French completed (analyses only, transcript stays original)`,
       );
       console.log(
         `  Translated analyses: ${Object.keys(response.body.data.analyses || {}).join(', ')}`,
@@ -560,7 +560,9 @@ describe('Translation System (e2e)', () => {
       expect(transcriptionData).toBeDefined();
       expect(transcriptionData?.preferredTranslationLanguage).toBe('fr');
 
-      console.log(`✓ Preferred language auto-saved: ${transcriptionData?.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Preferred language auto-saved: ${transcriptionData?.preferredTranslationLanguage}`,
+      );
     });
 
     it('should update preferred language to original', async () => {
@@ -618,7 +620,9 @@ describe('Translation System (e2e)', () => {
       expect(response.body.data).toBeDefined();
       expect(response.body.data.preferredTranslationLanguage).toBe('es');
 
-      console.log(`✓ Preferred language persists in API responses: ${response.body.data.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Preferred language persists in API responses: ${response.body.data.preferredTranslationLanguage}`,
+      );
     });
   });
 
@@ -635,7 +639,7 @@ describe('Translation System (e2e)', () => {
             includeSummary: true,
             includeActionItems: true,
             includeCommunicationStyles: true,
-          }
+          },
         })
         .expect(201);
 
@@ -659,8 +663,12 @@ describe('Translation System (e2e)', () => {
       expect(sharedData.translations).toHaveProperty('fr'); // French
       expect(sharedData).toHaveProperty('preferredTranslationLanguage', 'es');
 
-      console.log(`✓ Shared transcript includes translations: ${Object.keys(sharedData.translations).join(', ')}`);
-      console.log(`✓ Preferred language: ${sharedData.preferredTranslationLanguage}`);
+      console.log(
+        `✓ Shared transcript includes translations: ${Object.keys(sharedData.translations).join(', ')}`,
+      );
+      console.log(
+        `✓ Preferred language: ${sharedData.preferredTranslationLanguage}`,
+      );
     });
 
     it('should include translated analyses in shared translations', async () => {
@@ -675,9 +683,12 @@ describe('Translation System (e2e)', () => {
       expect(spanishTranslation.language).toBe('es');
       expect(spanishTranslation.analyses).toBeDefined();
       expect(spanishTranslation.analyses.summary).toBeDefined();
-      expect(spanishTranslation.transcriptText).toBeDefined();
+      // Note: transcriptText is intentionally NOT translated (transcript always stays in original language)
+      expect(spanishTranslation.transcriptText).toBeUndefined();
 
-      console.log(`✓ Spanish translation includes all analyses`);
+      console.log(
+        `✓ Spanish translation includes all analyses (transcript stays original)`,
+      );
     });
 
     it('should include French translation with different content', async () => {
@@ -694,7 +705,9 @@ describe('Translation System (e2e)', () => {
       expect(frenchTranslation.analyses.summary).toBeDefined();
 
       // Verify French is different from Spanish
-      expect(frenchTranslation.analyses.summary).not.toBe(spanishTranslation.analyses.summary);
+      expect(frenchTranslation.analyses.summary).not.toBe(
+        spanishTranslation.analyses.summary,
+      );
 
       console.log(`✓ French translation verified (different from Spanish)`);
     });

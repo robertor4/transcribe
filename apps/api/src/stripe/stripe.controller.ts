@@ -245,8 +245,12 @@ export class StripeController {
       // Extract current period dates from subscription items
       // In modern Stripe subscriptions, these are in items.data[0]
       const firstItem = subscription.items?.data?.[0];
-      const currentPeriodStart = firstItem?.current_period_start || subscription.start_date || subscription.created;
-      const currentPeriodEnd = firstItem?.current_period_end || subscription.billing_cycle_anchor;
+      const currentPeriodStart =
+        firstItem?.current_period_start ||
+        subscription.start_date ||
+        subscription.created;
+      const currentPeriodEnd =
+        firstItem?.current_period_end || subscription.billing_cycle_anchor;
 
       this.logger.log(
         `Subscription ${subscription.id}: Period ${new Date(currentPeriodStart * 1000).toISOString()} - ${new Date(currentPeriodEnd * 1000).toISOString()}`,

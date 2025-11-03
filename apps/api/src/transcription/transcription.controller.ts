@@ -24,13 +24,20 @@ import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { UsageService } from '../usage/usage.service';
-import { TranscriptCorrectionRouterService, RoutingPlan } from './transcript-correction-router.service';
+import {
+  TranscriptCorrectionRouterService,
+  RoutingPlan,
+} from './transcript-correction-router.service';
 import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { PaginationDto } from './dto/pagination.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
-import { CreateShareLinkDto, UpdateShareSettingsDto, SendShareEmailDto } from './dto/share-link.dto';
+import {
+  CreateShareLinkDto,
+  UpdateShareSettingsDto,
+  SendShareEmailDto,
+} from './dto/share-link.dto';
 import type {
   CorrectTranscriptRequest,
   CorrectionPreview,
@@ -367,7 +374,7 @@ export class TranscriptionController {
     // Sanitize content to prevent XSS
     const DOMPurify = (await import('isomorphic-dompurify')).default;
     const sanitizedContent = DOMPurify.sanitize(dto.content, {
-      ALLOWED_TAGS: [],  // Strip all HTML
+      ALLOWED_TAGS: [], // Strip all HTML
       ALLOWED_ATTR: [],
     });
 
@@ -508,7 +515,9 @@ export class TranscriptionController {
     const segments = transcription.speakerSegments || [];
 
     if (segments.length === 0) {
-      throw new BadRequestException('No speaker segments available for correction');
+      throw new BadRequestException(
+        'No speaker segments available for correction',
+      );
     }
 
     // Perform routing analysis
@@ -571,10 +580,11 @@ export class TranscriptionController {
     @Param('id') transcriptionId: string,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<Transcription>> {
-    const transcription = await this.transcriptionService.regenerateCoreAnalysesForTranscription(
-      req.user.uid,
-      transcriptionId,
-    );
+    const transcription =
+      await this.transcriptionService.regenerateCoreAnalysesForTranscription(
+        req.user.uid,
+        transcriptionId,
+      );
 
     return {
       success: true,

@@ -145,10 +145,10 @@ export interface GeneratedAnalysis {
 export interface TranslationData {
   language: string; // Target language code (e.g., 'es', 'fr', 'de')
   languageName: string; // Human-readable language name (e.g., 'Spanish', 'French')
-  transcriptText?: string; // Translated transcript
-  analyses?: AnalysisResults; // Translated analyses
+  analyses?: AnalysisResults; // Translated analyses (transcript is NOT translated - always shown in original language)
   translatedAt: Date;
   translatedBy: 'gpt-5' | 'gpt-5-mini'; // Model used for translation
+  // Note: transcriptText is intentionally excluded - transcripts are always shown in original language
 }
 
 export interface Transcription {

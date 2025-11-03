@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingIdsRef = useRef<string[]>([]); // Track pending IDs in ref for immediate access
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkAuthState = async () => {
@@ -161,6 +162,15 @@ export default function DashboardPage() {
     };
   }, [activeTranscriptions]);
 
+  // Auto-scroll active tab into view
+  useEffect(() => {
+    if (!tabsContainerRef.current) return;
+    const activeButton = tabsContainerRef.current.querySelector('[data-active="true"]');
+    if (activeButton) {
+      activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activeTab]);
+
   const handleUploadComplete = (transcriptionId: string, fileName?: string) => {
     // Store the file name for this transcription
     if (fileName) {
@@ -264,26 +274,27 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-8">
         {/* Tabs */}
-        <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
-          <nav className="-mb-px flex flex-wrap gap-x-8">
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-8 px-4 sm:px-0">
+          <nav ref={tabsContainerRef} className="-mb-px flex overflow-x-auto scrollbar-hide gap-x-4 sm:gap-x-8">
             <button
               onClick={() => {
                 setActiveTab('history');
                 trackEvent('dashboard_viewed', { tab: 'history' });
               }}
+              data-active={activeTab === 'history'}
               className={`
-                py-2 px-1 border-b-2 font-medium text-sm
+                py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0
                 ${activeTab === 'history'
                   ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
-              <div className="flex items-center">
-                <FileAudio className="h-5 w-5 mr-2" />
-                {tDashboard('transcriptionHistory')}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <FileAudio className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-gray-800 dark:text-gray-200">{tDashboard('transcriptionHistory')}</span>
               </div>
             </button>
             <button
@@ -291,17 +302,18 @@ export default function DashboardPage() {
                 setActiveTab('upload');
                 trackEvent('dashboard_viewed', { tab: 'upload' });
               }}
+              data-active={activeTab === 'upload'}
               className={`
-                py-2 px-1 border-b-2 font-medium text-sm
+                py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0
                 ${activeTab === 'upload'
                   ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
-              <div className="flex items-center">
-                <Upload className="h-5 w-5 mr-2" />
-                {tDashboard('uploadAudio')}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Upload className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-gray-800 dark:text-gray-200">{tDashboard('uploadAudio')}</span>
               </div>
             </button>
             <button
@@ -309,24 +321,25 @@ export default function DashboardPage() {
                 setActiveTab('recording-guide');
                 trackEvent('dashboard_viewed', { tab: 'recording-guide' });
               }}
+              data-active={activeTab === 'recording-guide'}
               className={`
-                py-2 px-1 border-b-2 font-medium text-sm
+                py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0
                 ${activeTab === 'recording-guide'
                   ? 'border-[#cc3399] text-[#cc3399]'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                 }
               `}
             >
-              <div className="flex items-center">
-                <Mic className="h-5 w-5 mr-2" />
-                {tDashboard('recordingGuide')}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-gray-800 dark:text-gray-200">{tDashboard('recordingGuide')}</span>
               </div>
             </button>
           </nav>
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="sm:bg-white sm:dark:bg-gray-800 rounded-lg shadow mx-0 sm:mx-0 p-2 sm:p-6">
           {/* History Tab */}
           <div className={activeTab === 'history' ? '' : 'hidden'}>
             <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">

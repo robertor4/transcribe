@@ -1017,9 +1017,7 @@ export class FirebaseService implements OnModuleInit {
         };
       });
     } catch (error) {
-      this.logger.error(
-        `Error fetching user transcriptions: ${error.message}`,
-      );
+      this.logger.error(`Error fetching user transcriptions: ${error.message}`);
       // If composite index doesn't exist, return empty array
       // Firestore will provide a link to create the index in the error message
       return [];
@@ -1062,7 +1060,10 @@ export class FirebaseService implements OnModuleInit {
    * @param userId - User ID to query
    * @param limit - Maximum number of records to return (default: 50)
    */
-  async getUserUsageRecords(userId: string, limit: number = 50): Promise<any[]> {
+  async getUserUsageRecords(
+    userId: string,
+    limit: number = 50,
+  ): Promise<any[]> {
     try {
       const snapshot = await this.db
         .collection('usageRecords')

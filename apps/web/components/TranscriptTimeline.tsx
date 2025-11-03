@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Search, X, Pencil, Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import TranscriptCorrectionModal from './TranscriptCorrectionModal';
 
 interface SpeakerSegment {
@@ -20,6 +21,7 @@ interface TranscriptTimelineProps {
 }
 
 export default function TranscriptTimeline({ transcriptionId, segments, className = '', onRefresh }: TranscriptTimelineProps) {
+  const t = useTranslations('transcription');
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -223,16 +225,16 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
             className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 text-sm font-medium"
           >
             <Pencil className="w-4 h-4" />
-            Fix
+            {t('fixTranscript')}
           </button>
 
           {/* Info Icon with Tooltip */}
-          <div className="group relative">
+          <div className="group/tooltip relative">
             <Info className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
 
             {/* Tooltip */}
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg">
-              Correct speaker names, typos, and mistakes using AI
+            <span className="invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none z-10 shadow-lg">
+              {t('fixTranscriptTooltip')}
               <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></span>
             </span>
           </div>

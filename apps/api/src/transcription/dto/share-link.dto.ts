@@ -1,4 +1,14 @@
-import { IsOptional, IsString, MinLength, Matches, IsDate, IsNumber, IsObject, IsNotEmpty, MaxLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  MinLength,
+  Matches,
+  IsDate,
+  IsNumber,
+  IsObject,
+  IsNotEmpty,
+  MaxLength,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import type { ShareContentOptions } from '@transcribe/shared';
 
@@ -9,8 +19,9 @@ export class CreateShareLinkDto {
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/,
     {
-      message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)',
-    }
+      message:
+        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)',
+    },
   )
   password?: string;
 

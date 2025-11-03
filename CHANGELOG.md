@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Mobile Responsiveness Improvements**: Comprehensive optimization for mobile devices (screens < 640px)
+  - Analysis tabs now horizontally scrollable with reduced padding and icon sizes on mobile
+  - Action buttons (Language, Copy, Timeline/Raw) stack vertically on mobile for better space utilization
+  - Copy buttons show descriptive text on mobile ("Copy Summary", "Copy Analysis") instead of just "Copy"
+  - Transcription card titles and metadata stack vertically on small screens
+  - Date and translation info arranged in column layout on mobile (no horizontal overflow)
+  - Action buttons (Share, Delete, Expand) use smaller padding and icons on mobile (h-4 w-4 vs h-5 w-5)
+  - Status indicators show abbreviated text on mobile ("Stuck" vs "Stuck Processing")
+  - Dashboard navigation tabs use smaller text and icons with reduced spacing
+  - "Upload New Audio" button expands to full width on mobile
+  - Added mobile utility classes to [globals.css](apps/web/app/globals.css#L91-L121)
+  - Locations: [AnalysisTabs.tsx](apps/web/components/AnalysisTabs.tsx), [TranscriptionList.tsx](apps/web/components/TranscriptionList.tsx), [dashboard/page.tsx](apps/web/app/[locale]/dashboard/page.tsx)
+- **Additional Mobile UX Enhancements**:
+  - Dashboard navigation tabs now horizontally scrollable (no wrapping to second line)
+  - Transcription card titles wrap to multiple lines instead of truncating with ellipsis
+  - Share and Delete buttons hidden behind three-dot menu (MoreVertical) on mobile for cleaner interface
+  - Expand button (ChevronDown) properly centered in circular button with fixed dimensions
+  - Locations: [dashboard/page.tsx:270](apps/web/app/[locale]/dashboard/page.tsx#L270), [TranscriptionList.tsx:744,814-927](apps/web/components/TranscriptionList.tsx)
+- **Translation Feature Scope**: Full Transcript tab now always displays in original language
+  - Translation feature now applies to analyses only (Summary, Action Items, Communication Styles, etc.)
+  - Full Transcript always shown in original language for authenticity and data integrity
+  - Language selector button hidden when viewing Full Transcript tab
+  - Speaker segments (timeline/raw views) always visible regardless of selected translation language
+  - Backend no longer translates `transcriptText` field, reducing translation costs and time
+  - Updated `TranslationData` type to remove `transcriptText` field ([packages/shared/src/types.ts:145-152](packages/shared/src/types.ts#L145-L152))
+  - Modified translation service to skip transcript translation ([apps/api/src/transcription/transcription.service.ts:1809-1862](apps/api/src/transcription/transcription.service.ts#L1809-L1862))
+  - Updated frontend to always use original transcript regardless of selected language ([apps/web/components/AnalysisTabs.tsx:511-512](apps/web/components/AnalysisTabs.tsx#L511-L512))
+  - Fixed speaker segments display logic to show timeline/raw views even when translation is active for analyses ([apps/web/components/AnalysisTabs.tsx:700](apps/web/components/AnalysisTabs.tsx#L700))
+  - Updated e2e tests to verify transcript text is not translated ([apps/api/test/translation.e2e-spec.ts](apps/api/test/translation.e2e-spec.ts))
+  - Benefits: Cost savings, faster translations, preserves original meaning, better UX
+
 ### Fixed
 - **Critical: Upload Flow Broken by Tab Optimization**: Fixed transcription cards not appearing after upload
   - Root cause: CSS-based tab hiding (from commit e5deaea) prevented TranscriptionList from reinitializing

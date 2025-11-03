@@ -86,8 +86,8 @@ export default function AdminPanel() {
 
       const data = await response.json();
       setUsers(data.data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch users');
     } finally {
       setLoading(false);
     }
@@ -135,8 +135,8 @@ export default function AdminPanel() {
 
       // Refresh user list
       await fetchUsers();
-    } catch (err: any) {
-      alert(`Error: ${err.message}`);
+    } catch (err) {
+      alert(`Error: ${err instanceof Error ? err.message : 'Failed to delete user'}`);
     } finally {
       setDeletingUserId(null);
     }

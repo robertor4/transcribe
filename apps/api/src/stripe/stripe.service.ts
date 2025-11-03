@@ -249,7 +249,9 @@ export class StripeService {
     } catch (error: any) {
       // If customer doesn't exist, log and continue (idempotent)
       if (error?.statusCode === 404 || error?.code === 'resource_missing') {
-        this.logger.warn(`Stripe customer ${customerId} not found, may already be deleted`);
+        this.logger.warn(
+          `Stripe customer ${customerId} not found, may already be deleted`,
+        );
         return;
       }
       throw error;

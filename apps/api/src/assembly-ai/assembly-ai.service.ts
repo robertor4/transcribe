@@ -15,6 +15,35 @@ export interface AssemblyAIResult {
   durationSeconds?: number; // Total audio duration in seconds
 }
 
+// Type definitions for AssemblyAI transcript response
+interface AssemblyAIWord {
+  text: string;
+  start: number;
+  end: number;
+  confidence: number;
+}
+
+interface AssemblyAIUtterance {
+  speaker: string;
+  text: string;
+  start: number;
+  end: number;
+  confidence: number;
+  words?: AssemblyAIWord[];
+}
+
+interface AssemblyAITranscript {
+  id: string;
+  status: 'queued' | 'processing' | 'completed' | 'error';
+  text?: string;
+  error?: string;
+  language_code?: string;
+  language_confidence?: number;
+  confidence?: number;
+  audio_duration?: number;
+  utterances?: AssemblyAIUtterance[];
+}
+
 @Injectable()
 export class AssemblyAIService {
   private readonly logger = new Logger(AssemblyAIService.name);
@@ -90,7 +119,7 @@ export class AssemblyAIService {
       }
 
       // Poll for completion with custom polling to send progress updates
-      let completedTranscript;
+      let completedTranscript: AssemblyAITranscript;
       const startTime = Date.now();
       const pollingInterval = 3000; // Poll every 3 seconds
       const pollingTimeout = 600000; // 10 minute timeout
@@ -105,9 +134,9 @@ export class AssemblyAIService {
         }
 
         // Get current status
-        const currentTranscript = await this.client.transcripts.get(
+        const currentTranscript = (await this.client.transcripts.get(
           transcript.id,
-        );
+        )) as AssemblyAITranscript;
 
         // Check if completed
         if (
@@ -191,7 +220,9 @@ export class AssemblyAIService {
     }
   }
 
-  private processTranscriptionResponse(transcript: any): AssemblyAIResult {
+  private processTranscriptionResponse(
+    transcript: AssemblyAITranscript,
+  ): AssemblyAIResult {
     // Map language codes from AssemblyAI to our format
     const languageMap: Record<string, string> = {
       en: 'en-us',
@@ -203,7 +234,7 @@ export class AssemblyAIService {
       es: 'es-es',
     };
 
-    const mappedLanguage = transcript.language_code
+    const mappedLanguage: string | undefined = transcript.language_code
       ? languageMap[transcript.language_code.toLowerCase()] ||
         transcript.language_code
       : undefined;
@@ -219,10 +250,10 @@ export class AssemblyAIService {
 
       for (const utterance of transcript.utterances) {
         // Create or update speaker info
-        const speakerTag = `Speaker ${utterance.speaker}`;
+        const speakerTag: string = `Speaker ${utterance.speaker}`;
         if (!speakerMap.has(speakerTag)) {
           // Convert speaker letter to number (A=1, B=2, etc.) or use the number directly if it's numeric
-          let speakerId = parseInt(utterance.speaker);
+          let speakerId: number = parseInt(utterance.speaker, 10);
           if (isNaN(speakerId)) {
             // If it's a letter, convert to number (A=1, B=2, etc.)
             speakerId = utterance.speaker.toUpperCase().charCodeAt(0) - 64;
@@ -236,8 +267,8 @@ export class AssemblyAIService {
           });
         }
 
-        const speaker = speakerMap.get(speakerTag)!;
-        const duration = (utterance.end - utterance.start) / 1000;
+        const speaker: Speaker = speakerMap.get(speakerTag)!;
+        const duration: number = (utterance.end - utterance.start) / 1000;
         speaker.totalSpeakingTime += duration;
         speaker.wordCount += utterance.words
           ? utterance.words.length

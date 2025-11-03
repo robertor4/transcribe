@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, MaxLength, IsNumber, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsNumber,
+  IsObject,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CommentPositionDto {
