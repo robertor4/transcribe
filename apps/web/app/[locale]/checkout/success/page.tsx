@@ -51,7 +51,7 @@ export default function CheckoutSuccessPage({
 
           // Determine price based on tier
           let price = 0;
-          let tier = data.tier || 'free';
+          const tier = data.tier || 'free';
 
           if (tier === 'professional') {
             // Assume monthly for now - Stripe webhooks will have more accurate data
