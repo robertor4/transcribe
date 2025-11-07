@@ -105,19 +105,32 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
       }
     }
     
-    // Sort items by timeline: Short-term first, then Mid-term, then Long-term
+    // Sort items by critical status first, then by timeline
+    // Critical items appear at top, sorted by timeline within each priority group
     const sortedItems = items.sort((a, b) => {
+      // First sort by critical status (critical items first)
+      if (a.isCritical !== b.isCritical) {
+        return a.isCritical ? -1 : 1;
+      }
+
+      // Then sort by timeline within same critical status
       const getTimelinePriority = (timeline: string) => {
         if (timeline.includes('Short')) return 1;
         if (timeline.includes('Mid')) return 2;
         if (timeline.includes('Long')) return 3;
         return 4; // Not specified goes last
       };
-      
+
       return getTimelinePriority(a.timeline) - getTimelinePriority(b.timeline);
     });
 
-    return { actionItems: sortedItems };
+    // Renumber items sequentially after sorting (1, 2, 3, ...)
+    const renumberedItems = sortedItems.map((item, index) => ({
+      ...item,
+      number: index + 1,
+    }));
+
+    return { actionItems: renumberedItems };
   }, [content, t]);
   
   // If no action items found, fall back to blog-style rendering
