@@ -161,6 +161,9 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider w-12">
                   #
                 </th>
+                <th className="px-3 py-3 text-center text-xs font-medium text-gray-700 dark:text-gray-300 w-10" title="Priority">
+                  <AlertTriangle className="h-3.5 w-3.5 mx-auto text-gray-500 dark:text-gray-400" />
+                </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                   {t('task')}
                 </th>
@@ -187,6 +190,11 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                   <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-medium">
                     {item.number}
                   </td>
+                  <td className="px-3 py-3 text-center">
+                    {item.isCritical && (
+                      <AlertTriangle className="h-4 w-4 mx-auto text-red-600 dark:text-red-500" title={t('critical')} />
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">
                     <div className="space-y-1">
                       <div className="font-medium">{item.task}</div>
@@ -207,7 +215,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                     {item.deadline}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded ${
+                    <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded ${
                       item.timeline.includes('Short')
                         ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                         : item.timeline.includes('Mid')
@@ -215,10 +223,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                         : item.timeline.includes('Long')
                         ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    }`} title={item.isCritical ? `${t('critical')} - ${item.timeline}` : item.timeline}>
-                      {item.isCritical && (
-                        <AlertTriangle className="h-3 w-3 text-red-600 dark:text-red-500" />
-                      )}
+                    }`}>
                       {item.timeline}
                     </span>
                   </td>
