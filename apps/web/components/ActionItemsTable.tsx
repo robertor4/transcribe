@@ -205,7 +205,9 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                   </td>
                   <td className="px-3 py-3 text-center">
                     {item.isCritical && (
-                      <AlertTriangle className="h-4 w-4 mx-auto text-red-600 dark:text-red-500" title={t('critical')} />
+                      <span title={t('critical')} className="inline-block">
+                        <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-500" />
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">
