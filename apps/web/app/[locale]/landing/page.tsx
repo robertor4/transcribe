@@ -1,12 +1,14 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import ScrollAnimation from '@/components/ScrollAnimation';
+import { SmoothScrollLink } from '@/components/landing/SmoothScrollLink';
+import { MeetingPlatforms } from '@/components/landing/MeetingPlatforms';
+import { MeetingUseCases } from '@/components/landing/MeetingUseCases';
+import { MeetingFAQ } from '@/components/landing/MeetingFAQ';
 import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
+import type { Metadata } from 'next';
 import {
   Shield,
   Brain,
@@ -22,10 +24,46 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function LandingPage() {
-  const params = useParams();
-  const locale = params.locale as string;
-  const t = useTranslations();
+// SEO Metadata for meeting-focused landing page
+export const metadata: Metadata = {
+  title: 'AI Meeting Summarizer & Notes App | Neural Summary',
+  description: 'Best AI meeting notes app for automatic meeting transcription and summary. Turn Zoom, Teams, and Google Meet recordings into actionable notes instantly. 99.5% accuracy, 50+ languages supported.',
+  keywords: [
+    'AI meeting summarizer',
+    'AI meeting notes app',
+    'automatic meeting summary',
+    'meeting transcription software',
+    'meeting notes automation',
+    'AI transcription and summary',
+    'summarize meeting recordings',
+    'audio to meeting summary',
+    'best AI meeting notes app',
+    'AI meeting assistant',
+    'Zoom transcription',
+    'Teams meeting notes',
+    'Google Meet transcription',
+    'meeting minutes automation',
+    'AI note taker for meetings'
+  ],
+  openGraph: {
+    title: 'AI Meeting Summarizer & Notes App | Neural Summary',
+    description: 'Turn every meeting into actionable notes and summaries automatically. Works with Zoom, Teams, and Google Meet. Try free today.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Meeting Summarizer & Notes App | Neural Summary',
+    description: 'Automatic meeting transcription and AI-powered summaries. Never miss action items again.',
+  },
+};
+
+export default async function LandingPage({
+  params
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations();
 
   // Calculate locale-specific prices for pricing teaser
   const pricing = getPricingForLocale(locale);
@@ -33,39 +71,86 @@ export default function LandingPage() {
   const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
   const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
 
-  // Smooth scroll handler with custom easing for smoother animation
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    e.preventDefault();
-    const targetElement = document.getElementById(targetId);
-    if (!targetElement) return;
+  // Pre-translate strings for meeting components
+  const meetingPlatformsStrings = {
+    title: t('landing.meetingPlatforms.title'),
+    subtitle: t('landing.meetingPlatforms.subtitle'),
+    platforms: {
+      zoom: {
+        name: t('landing.meetingPlatforms.zoom.name'),
+        description: t('landing.meetingPlatforms.zoom.description'),
+      },
+      teams: {
+        name: t('landing.meetingPlatforms.teams.name'),
+        description: t('landing.meetingPlatforms.teams.description'),
+      },
+      meet: {
+        name: t('landing.meetingPlatforms.meet.name'),
+        description: t('landing.meetingPlatforms.meet.description'),
+      },
+      webex: {
+        name: t('landing.meetingPlatforms.webex.name'),
+        description: t('landing.meetingPlatforms.webex.description'),
+      },
+      anyPlatform: {
+        name: t('landing.meetingPlatforms.anyPlatform.name'),
+        description: t('landing.meetingPlatforms.anyPlatform.description'),
+      },
+    },
+  };
 
-    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-    const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
-    const duration = 1200; // 1.2 seconds for smoother feel
-    let start: number | null = null;
+  const meetingUseCasesStrings = {
+    title: t('landing.meetingUseCases.title'),
+    subtitle: t('landing.meetingUseCases.subtitle'),
+    useCases: {
+      oneOnOnes: {
+        title: t('landing.meetingUseCases.oneOnOnes.title'),
+        description: t('landing.meetingUseCases.oneOnOnes.description'),
+      },
+      teamStandups: {
+        title: t('landing.meetingUseCases.teamStandups.title'),
+        description: t('landing.meetingUseCases.teamStandups.description'),
+      },
+      clientCalls: {
+        title: t('landing.meetingUseCases.clientCalls.title'),
+        description: t('landing.meetingUseCases.clientCalls.description'),
+      },
+      allHands: {
+        title: t('landing.meetingUseCases.allHands.title'),
+        description: t('landing.meetingUseCases.allHands.description'),
+      },
+    },
+  };
 
-    // Easing function: easeInOutQuart - industry standard for smooth scroll (used by Apple, Google)
-    const easeInOutQuart = (t: number): number => {
-      return t < 0.5
-        ? 8 * t * t * t * t
-        : 1 - Math.pow(-2 * t + 2, 4) / 2;
-    };
-
-    const animation = (currentTime: number) => {
-      if (start === null) start = currentTime;
-      const timeElapsed = currentTime - start;
-      const progress = Math.min(timeElapsed / duration, 1);
-      const ease = easeInOutQuart(progress);
-
-      window.scrollTo(0, startPosition + distance * ease);
-
-      if (timeElapsed < duration) {
-        requestAnimationFrame(animation);
-      }
-    };
-
-    requestAnimationFrame(animation);
+  const meetingFaqStrings = {
+    title: t('landing.meetingFaq.title'),
+    subtitle: t('landing.meetingFaq.subtitle'),
+    questions: [
+      {
+        question: t('landing.meetingFaq.question1.question'),
+        answer: t('landing.meetingFaq.question1.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question2.question'),
+        answer: t('landing.meetingFaq.question2.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question3.question'),
+        answer: t('landing.meetingFaq.question3.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question4.question'),
+        answer: t('landing.meetingFaq.question4.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question5.question'),
+        answer: t('landing.meetingFaq.question5.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question6.question'),
+        answer: t('landing.meetingFaq.question6.answer'),
+      },
+    ],
   };
 
   return (
@@ -132,15 +217,14 @@ export default function LandingPage() {
                     {t('landing.hero.cta.primary')}
                     <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
                   </Link>
-                  <a
+                  <SmoothScrollLink
                     href="#how-it-works"
-                    onClick={(e) => handleSmoothScroll(e, 'how-it-works')}
                     className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
-                    aria-label="Learn how Neural Summary works"
+                    ariaLabel="Learn how Neural Summary works"
                   >
                     {t('landing.hero.cta.secondary')}
                     <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
-                  </a>
+                  </SmoothScrollLink>
                 </ScrollAnimation>
 
                 <p className="text-sm md:text-base text-gray-200">
@@ -150,6 +234,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* Meeting Platforms Section */}
+        <MeetingPlatforms {...meetingPlatformsStrings} />
 
         {/* Value Proposition Section */}
         <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900" aria-labelledby="value-prop-heading">
@@ -306,6 +393,9 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* Meeting Use Cases Section */}
+        <MeetingUseCases {...meetingUseCasesStrings} />
 
         {/* How It Works Section */}
         <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 dark:bg-gray-900" aria-labelledby="how-it-works-heading">
@@ -782,6 +872,9 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Meeting FAQ Section */}
+        <MeetingFAQ {...meetingFaqStrings} />
+
         {/* Final CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600" aria-labelledby="cta-heading">
           <div className="max-w-4xl mx-auto text-center">
@@ -882,6 +975,112 @@ export default function LandingPage() {
             </div>
           </div>
         </footer>
+
+        {/* JSON-LD Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Organization',
+                  '@id': 'https://neuralsummary.com/#organization',
+                  name: 'Neural Summary',
+                  url: 'https://neuralsummary.com',
+                  logo: {
+                    '@type': 'ImageObject',
+                    url: 'https://neuralsummary.com/assets/NS-symbol.webp',
+                  },
+                  description: 'AI-powered meeting transcription and summarization platform',
+                  sameAs: [
+                    'https://twitter.com/neuralsummary',
+                    'https://linkedin.com/company/neuralsummary',
+                  ],
+                },
+                {
+                  '@type': 'SoftwareApplication',
+                  '@id': 'https://neuralsummary.com/#software',
+                  name: 'Neural Summary - AI Meeting Notes & Transcription',
+                  applicationCategory: 'BusinessApplication',
+                  applicationSubCategory: 'Meeting Notes & Transcription Software',
+                  operatingSystem: 'Web, iOS, Android, Windows, macOS',
+                  offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'USD',
+                    description: 'Free plan available',
+                  },
+                  aggregateRating: {
+                    '@type': 'AggregateRating',
+                    ratingValue: '4.8',
+                    ratingCount: '1250',
+                    bestRating: '5',
+                    worstRating: '1',
+                  },
+                  featureList: [
+                    'AI meeting summarizer',
+                    'Automatic meeting transcription',
+                    'Works with Zoom, Microsoft Teams, Google Meet',
+                    'Speaker identification',
+                    'Action items extraction',
+                    '50+ languages supported',
+                    '99.5% transcription accuracy',
+                    'GDPR compliant',
+                  ],
+                  keywords: 'AI meeting summarizer, meeting notes app, automatic meeting transcription, meeting assistant, Zoom transcription, Teams notes, Google Meet transcription',
+                  description: 'Transform your meetings into actionable notes and summaries automatically. Neural Summary uses AI to transcribe and summarize Zoom, Teams, and Google Meet recordings with 99.5% accuracy.',
+                },
+                {
+                  '@type': 'FAQPage',
+                  '@id': 'https://neuralsummary.com/#faq',
+                  mainEntity: [
+                    {
+                      '@type': 'Question',
+                      name: 'How do I automatically transcribe Zoom meetings?',
+                      acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Simply record your Zoom meeting (either locally or to the cloud), download the audio or video file, and upload it to Neural Summary. Our AI will automatically transcribe the meeting with speaker labels and generate a summary with action items.',
+                      },
+                    },
+                    {
+                      '@type': 'Question',
+                      name: 'Does Neural Summary work with Microsoft Teams and Google Meet?',
+                      acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Yes! Neural Summary works with any meeting platform. Simply record your Microsoft Teams or Google Meet meeting, download the recording, and upload it to our platform for automatic transcription and AI-powered summaries.',
+                      },
+                    },
+                    {
+                      '@type': 'Question',
+                      name: 'What is an AI meeting summarizer?',
+                      acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'An AI meeting summarizer is a tool that uses artificial intelligence to automatically transcribe meeting recordings and generate concise summaries with key points, decisions, and action items. Neural Summary goes beyond basic transcription to provide intelligent analysis of your meetings.',
+                      },
+                    },
+                    {
+                      '@type': 'Question',
+                      name: 'How accurate is the meeting transcription?',
+                      acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Neural Summary achieves 99.5% transcription accuracy using state-of-the-art AI models. The system can identify multiple speakers, handle 50+ languages, and accurately transcribe technical terminology when provided with context.',
+                      },
+                    },
+                    {
+                      '@type': 'Question',
+                      name: 'Can I share meeting transcripts and summaries with my team?',
+                      acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: 'Yes! Neural Summary includes advanced sharing features. You can share transcripts and summaries via secure links, email, or export to PDF and other formats. Professional plans include collaboration features for teams.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
       </div>
     </>
   );

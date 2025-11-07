@@ -693,14 +693,14 @@
         "rating": "Highly rated",
         "certified": "GDPR compliant"
       },
-      "title": "Ready to turn every conversation into",
-      "titleHighlight": "clarity.",
-      "subtitle": "Neural Summary transforms hours of audio into clear, structured notes, decisions, and next steps — in seconds.",
+      "title": "Turn every meeting into crystal-clear",
+      "titleHighlight": "notes and action items.",
+      "subtitle": "The AI meeting notes app that transforms Zoom, Teams, and Google Meet recordings into actionable summaries — automatically, accurately, and instantly.",
       "cta": {
-        "primary": "Create free account",
+        "primary": "Start free",
         "secondary": "See how it works"
       },
-      "guarantee": "Always free plan available • No credit card required • Takes 2 minutes",
+      "guarantee": "Always free plan available • No credit card required • Works with all meeting platforms",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
@@ -771,20 +771,64 @@
         "record": "Or record directly from any device"
       }
     },
+    "meetingPlatforms": {
+      "title": "Works with Every Meeting Platform",
+      "subtitle": "Record on any platform, get AI-powered meeting notes automatically",
+      "zoom": {
+        "name": "Zoom",
+        "description": "Record locally or to cloud, then upload for instant transcription"
+      },
+      "teams": {
+        "name": "Microsoft Teams",
+        "description": "Download Teams recordings and get AI meeting summaries in minutes"
+      },
+      "meet": {
+        "name": "Google Meet",
+        "description": "Upload Meet recordings for automatic transcription with speaker labels"
+      },
+      "webex": {
+        "name": "WebEx",
+        "description": "Transform WebEx meetings into structured notes and action items"
+      },
+      "anyPlatform": {
+        "name": "Any Platform",
+        "description": "Works with phone recordings, in-person meetings, interviews, and more"
+      }
+    },
+    "meetingUseCases": {
+      "title": "Perfect for Every Type of Meeting",
+      "subtitle": "From quick 1-on-1s to all-hands meetings, never miss important details again",
+      "oneOnOnes": {
+        "title": "1-on-1 Meetings",
+        "description": "Focus on the conversation, not taking notes. Get perfect records of feedback, goals, and commitments."
+      },
+      "teamStandups": {
+        "title": "Team Standups & Syncs",
+        "description": "Keep everyone aligned with automatic meeting minutes and action item tracking."
+      },
+      "clientCalls": {
+        "title": "Client Calls & Sales",
+        "description": "Capture every requirement, question, and commitment. Share polished summaries instantly."
+      },
+      "allHands": {
+        "title": "All-Hands & Town Halls",
+        "description": "Create searchable transcripts for team members who couldn't attend. Never repeat yourself."
+      }
+    },
     "howItWorks": {
       "title": "How It Works",
-      "subtitle": "Get started in under 60 seconds",
+      "subtitle": "From meeting recording to actionable notes in 3 simple steps",
       "step1": {
-        "title": "Upload or record audio",
-        "description": "Use your phone, Zoom, or any recording app. We support all major audio formats — meetings, calls, podcasts, or interviews."
+        "title": "Record your meeting",
+        "description": "Use Zoom, Teams, Google Meet, your phone, or any recording device. All major audio and video formats supported."
       },
       "step2": {
-        "title": "Let Neural Summary process it",
-        "description": "Our AI listens, understands context, and extracts key points — all automatically with 99.5% accuracy."
+        "title": "AI transcribes with speaker labels",
+        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context — even technical jargon."
       },
       "step3": {
-        "title": "Receive structured results instantly",
-        "description": "Complete with executive summaries, highlights, and action items. It's like having a full-time analyst — without the payroll."
+        "title": "Get meeting summary & action items",
+        "description": "Receive structured summaries with key decisions, discussion topics, and action items with owners and deadlines."
       }
     },
     "security": {
@@ -825,31 +869,59 @@
       }
     },
     "testimonials": {
-      "title": "Loved by professionals worldwide",
-      "rating": "Highly rated by professionals",
+      "title": "Loved by teams who value their time",
+      "rating": "Highly rated by meeting professionals",
       "testimonial1": {
-        "quote": "This tool has completely changed how I handle meetings — I finally walk away with clarity.",
-        "author": "Sarah Martinez",
-        "role": "Head of Strategy"
+        "quote": "Our team meetings are 10x more productive now. Everyone gets the summary and action items automatically — no more 'who's taking notes?'",
+        "author": "Michael Chen",
+        "role": "Engineering Manager, Tech Startup"
       },
       "testimonial2": {
-        "quote": "I can focus on my clients, not on typing.",
+        "quote": "I can focus on my clients, not on typing. The meeting summaries are so accurate, I share them directly with stakeholders.",
         "author": "Dr. James Liu",
         "role": "Clinical Researcher"
       },
       "testimonial3": {
-        "quote": "As a journalist, this tool is invaluable. I can conduct interviews naturally and get perfect transcripts within minutes. Game changer!",
-        "author": "Emily Chen",
-        "role": "Senior Journalist"
+        "quote": "I record all my client meetings and get perfect transcripts with action items. It's like having an assistant in every call. Game changer for sales!",
+        "author": "Jennifer Brooks",
+        "role": "Account Executive, SaaS Sales"
+      }
+    },
+    "meetingFaq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know about AI meeting transcription and notes",
+      "question1": {
+        "question": "How do I automatically transcribe Zoom meetings?",
+        "answer": "Simply record your Zoom meeting (either locally or to the cloud), download the audio or video file, and upload it to Neural Summary. Our AI will automatically transcribe the meeting with speaker labels and generate a summary with action items in minutes."
+      },
+      "question2": {
+        "question": "Does it work with Microsoft Teams and Google Meet?",
+        "answer": "Yes! Neural Summary works with any meeting platform. Record your Microsoft Teams or Google Meet meeting, download the recording, and upload it to our platform. We support all major video and audio formats."
+      },
+      "question3": {
+        "question": "Can the AI identify different speakers in meetings?",
+        "answer": "Absolutely! Our AI automatically detects multiple speakers and labels them throughout the transcript. You can also rename speakers after processing for clarity in your meeting notes."
+      },
+      "question4": {
+        "question": "What makes Neural Summary the best AI meeting notes app?",
+        "answer": "Unlike basic transcription tools, Neural Summary goes beyond just converting speech to text. We provide intelligent summaries with key decisions, discussion topics, action items with owners and deadlines, and advanced analysis options — all with 99.5% accuracy and support for 50+ languages."
+      },
+      "question5": {
+        "question": "How long does it take to process a meeting recording?",
+        "answer": "Most meetings are processed in 3-5 minutes, regardless of length. We support files up to 5GB (approximately 50+ hours of audio) and use parallel processing to handle large meetings quickly. You'll receive a notification when your meeting summary is ready."
+      },
+      "question6": {
+        "question": "Can I share meeting transcripts with my team?",
+        "answer": "Yes! Neural Summary includes advanced sharing features. Share transcripts and summaries via secure password-protected links, send via email, or export to PDF, Word, and other formats. Professional plans include unlimited sharing and collaboration features."
       }
     },
     "cta": {
-      "title": "Ready to reclaim your time and never lose another insight?",
-      "subtitle": "Join thousands of professionals using Neural Summary to work smarter, communicate better, and decide faster.",
-      "button": "Start your free trial",
+      "title": "Ready to transform your meetings from time-wasters into action-drivers?",
+      "subtitle": "Join thousands of teams using Neural Summary to capture every decision, action item, and insight — automatically.",
+      "button": "Start free — no credit card required",
       "benefits": {
         "free": "No credit card",
-        "noCard": "Instant access",
+        "noCard": "Works with Zoom, Teams, Meet",
         "cancel": "Cancel anytime"
       }
     },

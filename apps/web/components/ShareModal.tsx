@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { transcriptionApi } from '@/lib/api';
 import { Transcription, ShareContentOptions } from '@transcribe/shared';
 import {
@@ -51,6 +51,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   onShareUpdate,
 }) => {
   const t = useTranslations('share');
+  const locale = useLocale(); // Get current display language
   const [shareUrl, setShareUrl] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -121,9 +122,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   useEffect(() => {
     // Sync local share token with prop
     setLocalShareToken(transcription.shareToken);
-    
+
     if (transcription.shareToken && isOpen) {
-      const url = `${window.location.origin}/s/${transcription.shareToken}`;
+      // Use current display language
+      const url = `${window.location.origin}/${locale}/shared/${transcription.shareToken}`;
       setShareUrl(url);
       generateQRCode(url);
       
@@ -145,7 +147,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       setEnablePassword(false);
       setLocalShareToken(transcription.shareToken);
     }
-  }, [transcription, isOpen]);
+  }, [transcription, isOpen, locale]);
 
   const determinePreset = (options: ShareContentOptions) => {
     const allTrue = options.includeTranscript && options.includeSummary &&
@@ -248,9 +250,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
       const response = await transcriptionApi.createShareLink(transcription.id, settings);
       const shareToken = response.data?.shareToken;
-      // Use the URL from the API response, or construct it if not provided
-      const url = response.data?.shareUrl || `${window.location.origin}/s/${shareToken}`;
-      
+      // Construct locale-aware URL using current display language
+      const url = `${window.location.origin}/${locale}/shared/${shareToken}`;
+
       if (shareToken && url) {
         // Update local state immediately for UI transition
         setLocalShareToken(shareToken);

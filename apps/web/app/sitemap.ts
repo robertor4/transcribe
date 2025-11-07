@@ -15,8 +15,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       path: '/landing',
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
+      changeFrequency: 'daily' as const,
+      priority: 1.0,
     },
     {
       path: '/login',

@@ -704,6 +704,7 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                           transcriptionId={transcriptionId!}
                           segments={speakerSegments}
                           onRefresh={onTranscriptionUpdate}
+                          readOnlyMode={readOnlyMode}
                         />
                       ) : (
                         <div>

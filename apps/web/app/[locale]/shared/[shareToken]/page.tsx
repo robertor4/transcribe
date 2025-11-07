@@ -196,6 +196,17 @@ export default function SharedTranscriptionPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Logo/Branding */}
+          <div className="flex items-center gap-3 mb-6">
+            <img
+              src="/assets/NS-symbol.webp"
+              alt="Neural Summary"
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-semibold text-gray-900">Neural Summary</span>
+          </div>
+
+          {/* Title and Metadata */}
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words">
@@ -214,7 +225,7 @@ export default function SharedTranscriptionPage() {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-md text-xs font-medium text-blue-700">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 border border-pink-200 rounded-md text-xs font-medium text-[#cc3399]">
                 <Lock className="w-3.5 h-3.5" />
                 {t('readOnly')}
               </div>
@@ -224,11 +235,11 @@ export default function SharedTranscriptionPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 sm:p-8">
-          {/* Analysis Tabs - only show content that was explicitly shared */}
-          {(transcription.analyses || transcription.transcriptText) && (
-            <div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="p-6">
+            {/* Analysis Tabs - only show content that was explicitly shared */}
+            {(transcription.analyses || transcription.transcriptText) && (
               <AnalysisTabs
                 analyses={{
                   // The backend already filters analyses based on contentOptions
@@ -244,32 +255,27 @@ export default function SharedTranscriptionPage() {
                 transcription={transcription}
                 readOnlyMode={true}
               />
-            </div>
-          )}
+            )}
 
-          {/* Show message if no content was shared */}
-          {!transcription.analyses && !transcription.transcriptText && (
-            <div className="text-center py-12">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-700">No content available for this shared transcript.</p>
-            </div>
-          )}
+            {/* Show message if no content was shared */}
+            {!transcription.analyses && !transcription.transcriptText && (
+              <div className="text-center py-12">
+                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-700">No content available for this shared transcript.</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>
-            Powered by{' '}
-            <a 
-              href="https://neuralsummary.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-[#cc3399] hover:text-[#b82d89] transition-colors"
-            >
-              Neural Summary
-            </a>
-          </p>
-          <p className="mt-2">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-16 border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-sm text-gray-600">
+            <p>{t('footer.poweredBy')}</p>
+            <p className="mt-2">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
+          </div>
         </div>
       </div>
     </div>

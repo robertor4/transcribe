@@ -12,7 +12,8 @@ interface PublicHeaderProps {
 }
 
 export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderProps) {
-  const t = useTranslations();
+  const tCommon = useTranslations('common');
+  const tLanding = useTranslations('landing');
   const { user } = useAuth();
 
   return (
@@ -29,9 +30,9 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             />
             <div>
               <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-                {t('common.appName')}
+                {tCommon('appName')}
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{t('landing.hero.byline')}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{tLanding('hero.byline')}</p>
             </div>
           </Link>
 
@@ -43,7 +44,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
                 aria-label="View features"
               >
-                {t('landing.nav.features')}
+                {tLanding('nav.features')}
               </Link>
             )}
             <Link
@@ -51,7 +52,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
               className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
               aria-label="View pricing plans"
             >
-              {t('landing.nav.pricing')}
+              {tLanding('nav.pricing')}
             </Link>
             <LanguageSwitcher />
             {user ? (
@@ -60,7 +61,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
                 aria-label="Go to Dashboard"
               >
-                {t('landing.nav.dashboard')}
+                {tLanding('nav.dashboard')}
               </Link>
             ) : (
               <>
@@ -69,14 +70,14 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                   className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
                   aria-label="Log in to Neural Summary"
                 >
-                  {t('landing.nav.login')}
+                  {tLanding('nav.login')}
                 </Link>
                 <Link
                   href={`/${locale}/login`}
                   className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
-                  {t('landing.nav.getStarted')}
+                  {tLanding('nav.getStarted')}
                 </Link>
               </>
             )}

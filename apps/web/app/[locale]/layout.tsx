@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     default: 'Neural Summary - AI-Powered Audio Transcription & Smart Summaries',
     template: '%s | Neural Summary'
   },
-  description: 'Transform audio recordings into accurate transcripts and intelligent summaries with Neural Summary. 99.5% accuracy, 50+ languages, enterprise security. Start free today.',
-  keywords: ['audio transcription', 'AI transcription', 'speech to text', 'meeting notes', 'interview transcription', 'voice notes', 'OpenAI Whisper', 'automatic transcription', 'audio to text converter'],
+  description: 'AI meeting notes app for automatic transcription and summaries. Transform Zoom, Teams, and Google Meet recordings into actionable notes. 99.5% accuracy, 50+ languages, enterprise security.',
+  keywords: ['AI meeting summarizer', 'AI meeting notes app', 'automatic meeting summary', 'meeting transcription software', 'meeting notes automation', 'Zoom transcription', 'Teams meeting notes', 'Google Meet transcription', 'AI transcription', 'speech to text', 'audio transcription', 'interview transcription', 'OpenAI Whisper', 'AI meeting assistant'],
   authors: [{ name: 'Neural Summary' }],
   creator: 'Neural Summary',
   publisher: 'Neural Summary',

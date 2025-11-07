@@ -670,14 +670,14 @@
         "rating": "Altamente valorado",
         "certified": "Compatible con RGPD"
       },
-      "title": "Listo para convertir cada conversación en",
-      "titleHighlight": "claridad.",
-      "subtitle": "Neural Summary transforma horas de audio en notas claras y estructuradas, decisiones y próximos pasos — en segundos.",
+      "title": "Convierte cada reunión en",
+      "titleHighlight": "notas y acciones claras.",
+      "subtitle": "La app de notas de reunión con IA que transforma grabaciones de Zoom, Teams y Google Meet en resúmenes accionables — automáticamente, con precisión e instantáneamente.",
       "cta": {
-        "primary": "Comienza tu prueba gratuita",
+        "primary": "Comenzar gratis",
         "secondary": "Ver cómo funciona"
       },
-      "guarantee": "Toma menos de 2 minutos • Sin tarjeta de crédito • Configuración instantánea",
+      "guarantee": "Plan gratuito siempre disponible • Sin tarjeta de crédito • Funciona con todas las plataformas de reuniones",
       "features": {
         "saveTime": "Ahorra 10+ horas/semana",
         "accuracy": "99.5% de precisión",
@@ -748,20 +748,64 @@
         "record": "O graba directamente desde cualquier dispositivo"
       }
     },
+    "meetingPlatforms": {
+      "title": "Funciona con Todas las Plataformas de Reuniones",
+      "subtitle": "Graba en cualquier plataforma, obtén notas de reunión con IA automáticamente",
+      "zoom": {
+        "name": "Zoom",
+        "description": "Graba localmente o en la nube, luego sube para transcripción instantánea"
+      },
+      "teams": {
+        "name": "Microsoft Teams",
+        "description": "Descarga grabaciones de Teams y obtén resúmenes de reunión con IA en minutos"
+      },
+      "meet": {
+        "name": "Google Meet",
+        "description": "Sube grabaciones de Meet para transcripción automática con etiquetas de hablante"
+      },
+      "webex": {
+        "name": "WebEx",
+        "description": "Transforma reuniones de WebEx en notas estructuradas y tareas pendientes"
+      },
+      "anyPlatform": {
+        "name": "Cualquier Plataforma",
+        "description": "Funciona con grabaciones telefónicas, reuniones presenciales, entrevistas y más"
+      }
+    },
+    "meetingUseCases": {
+      "title": "Perfecto para Todos los Tipos de Reuniones",
+      "subtitle": "Desde reuniones 1-a-1 rápidas hasta reuniones generales, nunca pierdas detalles importantes",
+      "oneOnOnes": {
+        "title": "Reuniones 1-a-1",
+        "description": "Concéntrate en la conversación, no en tomar notas. Obtén registros perfectos de retroalimentación, objetivos y compromisos."
+      },
+      "teamStandups": {
+        "title": "Reuniones de Equipo & Sincronizaciones",
+        "description": "Mantén a todos alineados con actas automáticas y seguimiento de tareas pendientes."
+      },
+      "clientCalls": {
+        "title": "Llamadas con Clientes & Ventas",
+        "description": "Captura cada requisito, pregunta y compromiso. Comparte resúmenes profesionales al instante."
+      },
+      "allHands": {
+        "title": "Reuniones Generales",
+        "description": "Crea transcripciones buscables para miembros del equipo que no pudieron asistir. Nunca te repitas."
+      }
+    },
     "howItWorks": {
-      "title": "3 pasos simples para transcripciones perfectas",
-      "subtitle": "Comienza en menos de 60 segundos",
+      "title": "Cómo Funciona",
+      "subtitle": "De la grabación de reunión a notas accionables en 3 simples pasos",
       "step1": {
-        "title": "Graba en cualquier lugar",
-        "description": "Usa tu teléfono, Zoom o cualquier app de grabación. Soportamos todos los formatos principales incluyendo M4A, MP3, WAV y más."
+        "title": "Graba tu reunión",
+        "description": "Usa Zoom, Teams, Google Meet, tu teléfono o cualquier dispositivo de grabación. Todos los formatos principales de audio y video son compatibles."
       },
       "step2": {
-        "title": "IA procesa al instante",
-        "description": "Nuestra IA avanzada transcribe con 99.5% de precisión, manejando perfectamente términos técnicos y múltiples hablantes."
+        "title": "La IA transcribe con etiquetas de hablante",
+        "description": "Nuestra IA identifica hablantes, transcribe con 99.5% de precisión y entiende el contexto — incluso jerga técnica."
       },
       "step3": {
-        "title": "Obtén resultados perfectos",
-        "description": "Recibe una transcripción completa y resumen ejecutivo con puntos clave. Exporta, comparte o integra con tu flujo de trabajo."
+        "title": "Obtén resumen de reunión y tareas",
+        "description": "Recibe resúmenes estructurados con decisiones clave, temas de discusión y tareas con responsables y plazos."
       }
     },
     "security": {
@@ -796,31 +840,59 @@
       }
     },
     "testimonials": {
-      "title": "Amado por profesionales en todo el mundo",
-      "rating": "Altamente valorado por profesionales",
+      "title": "Amado por equipos que valoran su tiempo",
+      "rating": "Altamente valorado por profesionales de reuniones",
       "testimonial1": {
-        "quote": "Esta herramienta ha revolucionado mi flujo de trabajo en reuniones. Puedo concentrarme en la conversación en lugar de tomar notas. Los resúmenes son increíblemente precisos.",
-        "author": "Sarah Martinez",
-        "role": "Gerente de Producto"
+        "quote": "Nuestras reuniones de equipo ahora son 10x más productivas. Todos reciben automáticamente el resumen y las tareas — no más '¿quién toma notas?'",
+        "author": "Michael Chen",
+        "role": "Gerente de Ingeniería, Startup Tech"
       },
       "testimonial2": {
-        "quote": "La precisión es increíble. Maneja perfectamente términos técnicos y múltiples hablantes. Me ahorra horas de trabajo de transcripción cada semana.",
+        "quote": "Puedo concentrarme en mis clientes, no en escribir. Los resúmenes de reunión son tan precisos que los comparto directamente con las partes interesadas.",
         "author": "Dr. James Liu",
-        "role": "Director de Investigación"
+        "role": "Investigador Clínico"
       },
       "testimonial3": {
-        "quote": "Como periodista, esta herramienta es invaluable. Puedo realizar entrevistas naturalmente y obtener transcripciones perfectas en minutos. ¡Un cambio radical!",
-        "author": "Emily Chen",
-        "role": "Periodista Senior"
+        "quote": "Grabo todas mis llamadas con clientes y obtengo transcripciones perfectas con tareas. Es como tener un asistente en cada llamada. ¡Cambio radical para ventas!",
+        "author": "Jennifer Brooks",
+        "role": "Ejecutiva de Cuentas, SaaS Sales"
+      }
+    },
+    "meetingFaq": {
+      "title": "Preguntas Frecuentes",
+      "subtitle": "Todo lo que necesitas saber sobre transcripción y notas de reunión con IA",
+      "question1": {
+        "question": "¿Cómo transcribo automáticamente reuniones de Zoom?",
+        "answer": "Simplemente graba tu reunión de Zoom (local o en la nube), descarga el archivo de audio o video y súbelo a Neural Summary. Nuestra IA transcribirá automáticamente la reunión con etiquetas de hablante y generará un resumen con tareas en minutos."
+      },
+      "question2": {
+        "question": "¿Funciona con Microsoft Teams y Google Meet?",
+        "answer": "¡Sí! Neural Summary funciona con cualquier plataforma de reuniones. Graba tu reunión de Microsoft Teams o Google Meet, descarga la grabación y súbela a nuestra plataforma. Soportamos todos los formatos principales de video y audio."
+      },
+      "question3": {
+        "question": "¿Puede la IA identificar diferentes hablantes en reuniones?",
+        "answer": "¡Absolutamente! Nuestra IA detecta automáticamente múltiples hablantes y los etiqueta a lo largo de la transcripción. También puedes renombrar hablantes después del procesamiento para mayor claridad en tus notas de reunión."
+      },
+      "question4": {
+        "question": "¿Qué hace de Neural Summary la mejor app de notas de reunión con IA?",
+        "answer": "A diferencia de herramientas de transcripción básicas, Neural Summary va más allá de solo convertir voz en texto. Proporcionamos resúmenes inteligentes con decisiones clave, temas de discusión, tareas con responsables y plazos, y opciones de análisis avanzado — todo con 99.5% de precisión y soporte para 50+ idiomas."
+      },
+      "question5": {
+        "question": "¿Cuánto tiempo toma procesar una grabación de reunión?",
+        "answer": "La mayoría de las reuniones se procesan en 3-5 minutos, independientemente de la duración. Soportamos archivos de hasta 5GB (aproximadamente 50+ horas de audio) y usamos procesamiento paralelo para manejar reuniones grandes rápidamente. Recibirás una notificación cuando tu resumen de reunión esté listo."
+      },
+      "question6": {
+        "question": "¿Puedo compartir transcripciones de reuniones con mi equipo?",
+        "answer": "¡Sí! Neural Summary incluye funciones de compartir avanzadas. Comparte transcripciones y resúmenes mediante enlaces seguros protegidos por contraseña, envía por correo electrónico o exporta a PDF, Word y otros formatos. Los planes profesionales incluyen funciones de compartir y colaboración ilimitadas."
       }
     },
     "cta": {
-      "title": "¿Listo para ahorrar horas cada semana?",
-      "subtitle": "Únete a más de 10,000 profesionales que han transformado su flujo de trabajo con Neural Notes. Comienza tu prueba gratuita hoy - sin tarjeta de crédito.",
-      "button": "Iniciar prueba gratuita",
+      "title": "¿Listo para transformar tus reuniones de desperdicios de tiempo en impulsores de acción?",
+      "subtitle": "Únete a miles de equipos que usan Neural Summary para capturar automáticamente cada decisión, tarea e insight.",
+      "button": "Comenzar gratis — sin tarjeta de crédito",
       "benefits": {
-        "free": "3 transcripciones gratis",
-        "noCard": "Sin tarjeta de crédito",
+        "free": "Sin tarjeta de crédito",
+        "noCard": "Funciona con Zoom, Teams, Meet",
         "cancel": "Cancela cuando quieras"
       }
     },

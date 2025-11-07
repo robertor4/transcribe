@@ -673,14 +673,14 @@
         "rating": "Hoch bewertet",
         "certified": "DSGVO-konform"
       },
-      "title": "Bereit, jedes Gespräch in",
-      "titleHighlight": "Klarheit zu verwandeln.",
-      "subtitle": "Neural Summary verwandelt stundenlange Audio in klare, strukturierte Notizen, Entscheidungen und nächste Schritte — in Sekunden.",
+      "title": "Verwandeln Sie jedes Meeting in kristallklare",
+      "titleHighlight": "Notizen und Aktionspunkte.",
+      "subtitle": "Die KI-Meeting-Notizen-App, die Zoom-, Teams- und Google Meet-Aufzeichnungen automatisch, präzise und sofort in umsetzbare Zusammenfassungen verwandelt.",
       "cta": {
-        "primary": "Kostenlos für immer starten",
+        "primary": "Kostenlos starten",
         "secondary": "So funktioniert's"
       },
-      "guarantee": "Immer kostenloser Plan verfügbar • Keine Kreditkarte erforderlich • Dauert 2 Minuten",
+      "guarantee": "Immer kostenloser Plan verfügbar • Keine Kreditkarte erforderlich • Funktioniert mit allen Meeting-Plattformen",
       "features": {
         "saveTime": "Sparen Sie 10+ Stunden/Woche",
         "accuracy": "99,5% Genauigkeit",
@@ -751,20 +751,64 @@
         "record": "Oder nehmen Sie direkt von jedem Gerät auf"
       }
     },
+    "meetingPlatforms": {
+      "title": "Funktioniert mit Jeder Meeting-Plattform",
+      "subtitle": "Nehmen Sie auf jeder Plattform auf, erhalten Sie automatisch KI-Meeting-Notizen",
+      "zoom": {
+        "name": "Zoom",
+        "description": "Lokal oder in der Cloud aufnehmen, dann für sofortige Transkription hochladen"
+      },
+      "teams": {
+        "name": "Microsoft Teams",
+        "description": "Teams-Aufzeichnungen herunterladen und in Minuten KI-Meeting-Zusammenfassungen erhalten"
+      },
+      "meet": {
+        "name": "Google Meet",
+        "description": "Meet-Aufzeichnungen für automatische Transkription mit Sprecherkennzeichnungen hochladen"
+      },
+      "webex": {
+        "name": "WebEx",
+        "description": "WebEx-Meetings in strukturierte Notizen und Aktionspunkte verwandeln"
+      },
+      "anyPlatform": {
+        "name": "Jede Plattform",
+        "description": "Funktioniert mit Telefonaufnahmen, persönlichen Meetings, Interviews und mehr"
+      }
+    },
+    "meetingUseCases": {
+      "title": "Perfekt für Jeden Meeting-Typ",
+      "subtitle": "Von schnellen Einzelgesprächen bis zu Unternehmensversammlungen, verpassen Sie nie wieder wichtige Details",
+      "oneOnOnes": {
+        "title": "Einzelgespräche",
+        "description": "Konzentrieren Sie sich auf das Gespräch, nicht auf Notizen. Erhalten Sie perfekte Aufzeichnungen von Feedback, Zielen und Verpflichtungen."
+      },
+      "teamStandups": {
+        "title": "Team-Standups & Syncs",
+        "description": "Halten Sie alle auf dem gleichen Stand mit automatischen Protokollen und Aktionspunkt-Tracking."
+      },
+      "clientCalls": {
+        "title": "Kundengespräche & Vertrieb",
+        "description": "Erfassen Sie jede Anforderung, Frage und Verpflichtung. Teilen Sie sofort professionelle Zusammenfassungen."
+      },
+      "allHands": {
+        "title": "Unternehmensversammlungen",
+        "description": "Erstellen Sie durchsuchbare Transkripte für Teammitglieder, die nicht teilnehmen konnten. Wiederholen Sie sich nie."
+      }
+    },
     "howItWorks": {
       "title": "So funktioniert's",
-      "subtitle": "Beginnen Sie in weniger als 60 Sekunden",
+      "subtitle": "Von Meeting-Aufzeichnung zu umsetzbaren Notizen in 3 einfachen Schritten",
       "step1": {
-        "title": "Audio hochladen oder aufnehmen",
-        "description": "Verwenden Sie Ihr Telefon, Zoom oder jede Aufnahme-App. Wir unterstützen alle wichtigen Audioformate — Meetings, Anrufe, Podcasts oder Interviews."
+        "title": "Nehmen Sie Ihr Meeting auf",
+        "description": "Verwenden Sie Zoom, Teams, Google Meet, Ihr Telefon oder jedes Aufnahmegerät. Alle wichtigen Audio- und Videoformate werden unterstützt."
       },
       "step2": {
-        "title": "Neural Summary verarbeiten lassen",
-        "description": "Unsere KI hört zu, versteht den Kontext und extrahiert Kernpunkte — alles automatisch mit 99,5% Genauigkeit."
+        "title": "KI transkribiert mit Sprecherkennzeichnungen",
+        "description": "Unsere KI identifiziert Sprecher, transkribiert mit 99,5% Genauigkeit und versteht Kontext — selbst Fachjargon."
       },
       "step3": {
-        "title": "Sofort strukturierte Ergebnisse erhalten",
-        "description": "Komplett mit Executive-Zusammenfassungen, Highlights und Aktionspunkten. Es ist wie ein Vollzeit-Analyst — ohne Gehaltskosten."
+        "title": "Erhalten Sie Meeting-Zusammenfassung & Aktionspunkte",
+        "description": "Erhalten Sie strukturierte Zusammenfassungen mit wichtigen Entscheidungen, Diskussionsthemen und Aktionspunkten mit Verantwortlichen und Fristen."
       }
     },
     "security": {
@@ -799,31 +843,59 @@
       }
     },
     "testimonials": {
-      "title": "Geschätzt von Profis weltweit",
-      "rating": "Hoch bewertet von Profis",
+      "title": "Geschätzt von Teams, die ihre Zeit wertschätzen",
+      "rating": "Hoch bewertet von Meeting-Profis",
       "testimonial1": {
-        "quote": "Dieses Tool hat völlig verändert, wie ich Meetings handle — endlich gehe ich mit Klarheit raus.",
-        "author": "Sarah Martinez",
-        "role": "Leiterin Strategie"
+        "quote": "Unsere Team-Meetings sind jetzt 10x produktiver. Jeder erhält automatisch die Zusammenfassung und Aktionspunkte — kein 'Wer macht Notizen?' mehr.",
+        "author": "Michael Chen",
+        "role": "Engineering Manager, Tech Startup"
       },
       "testimonial2": {
-        "quote": "Ich kann mich auf meine Klienten konzentrieren, nicht aufs Tippen.",
+        "quote": "Ich kann mich auf meine Klienten konzentrieren, nicht aufs Tippen. Die Meeting-Zusammenfassungen sind so genau, dass ich sie direkt mit Stakeholdern teile.",
         "author": "Dr. James Liu",
         "role": "Klinischer Forscher"
       },
       "testimonial3": {
-        "quote": "Als Journalist ist dieses Tool unbezahlbar. Ich kann natürlich Interviews führen und innerhalb von Minuten perfekte Transkriptionen erhalten. Ein Gamechanger!",
-        "author": "Emily Chen",
-        "role": "Senior Journalistin"
+        "quote": "Ich nehme alle Kundengespräche auf und erhalte perfekte Transkripte mit Aktionspunkten. Es ist wie ein Assistent in jedem Anruf. Gamechanger für Vertrieb!",
+        "author": "Jennifer Brooks",
+        "role": "Account Executive, SaaS Sales"
+      }
+    },
+    "meetingFaq": {
+      "title": "Häufig Gestellte Fragen",
+      "subtitle": "Alles, was Sie über KI-Meeting-Transkription und Notizen wissen müssen",
+      "question1": {
+        "question": "Wie transkribiere ich automatisch Zoom-Meetings?",
+        "answer": "Nehmen Sie einfach Ihr Zoom-Meeting auf (lokal oder in der Cloud), laden Sie die Audio- oder Videodatei herunter und laden Sie sie in Neural Summary hoch. Unsere KI transkribiert das Meeting automatisch mit Sprecherkennzeichnungen und generiert innerhalb von Minuten eine Zusammenfassung mit Aktionspunkten."
+      },
+      "question2": {
+        "question": "Funktioniert es mit Microsoft Teams und Google Meet?",
+        "answer": "Ja! Neural Summary funktioniert mit jeder Meeting-Plattform. Nehmen Sie Ihr Microsoft Teams- oder Google Meet-Meeting auf, laden Sie die Aufzeichnung herunter und laden Sie sie auf unsere Plattform hoch. Wir unterstützen alle wichtigen Video- und Audioformate."
+      },
+      "question3": {
+        "question": "Kann die KI verschiedene Sprecher in Meetings identifizieren?",
+        "answer": "Absolut! Unsere KI erkennt automatisch mehrere Sprecher und kennzeichnet sie im gesamten Transkript. Sie können Sprecher auch nach der Verarbeitung umbenennen, um Klarheit in Ihren Meeting-Notizen zu schaffen."
+      },
+      "question4": {
+        "question": "Was macht Neural Summary zur besten KI-Meeting-Notizen-App?",
+        "answer": "Im Gegensatz zu einfachen Transkriptions-Tools geht Neural Summary über die reine Umwandlung von Sprache in Text hinaus. Wir bieten intelligente Zusammenfassungen mit wichtigen Entscheidungen, Diskussionsthemen, Aktionspunkten mit Verantwortlichen und Fristen sowie erweiterte Analyseoptionen — alles mit 99,5% Genauigkeit und Unterstützung für 50+ Sprachen."
+      },
+      "question5": {
+        "question": "Wie lange dauert die Verarbeitung einer Meeting-Aufzeichnung?",
+        "answer": "Die meisten Meetings werden in 3-5 Minuten verarbeitet, unabhängig von der Länge. Wir unterstützen Dateien bis zu 5 GB (ca. 50+ Stunden Audio) und verwenden parallele Verarbeitung, um große Meetings schnell zu bearbeiten. Sie erhalten eine Benachrichtigung, wenn Ihre Meeting-Zusammenfassung fertig ist."
+      },
+      "question6": {
+        "question": "Kann ich Meeting-Transkripte mit meinem Team teilen?",
+        "answer": "Ja! Neural Summary bietet erweiterte Freigabefunktionen. Teilen Sie Transkripte und Zusammenfassungen über sichere passwortgeschützte Links, senden Sie sie per E-Mail oder exportieren Sie sie in PDF, Word und andere Formate. Professional-Pläne beinhalten unbegrenzte Freigabe- und Kollaborationsfunktionen."
       }
     },
     "cta": {
-      "title": "Bereit, Ihre Zeit zurückzugewinnen und nie wieder einen Einblick zu verlieren?",
-      "subtitle": "Schließen Sie sich Tausenden von Profis an, die Neural Summary nutzen, um smarter zu arbeiten, besser zu kommunizieren und schneller zu entscheiden.",
-      "button": "Starten Sie Ihre kostenlose Testversion",
+      "title": "Bereit, Ihre Meetings von Zeitfressern zu Aktions-Treibern zu verwandeln?",
+      "subtitle": "Schließen Sie sich Tausenden von Teams an, die Neural Summary nutzen, um automatisch jede Entscheidung, jeden Aktionspunkt und jeden Einblick zu erfassen.",
+      "button": "Kostenlos starten — keine Kreditkarte erforderlich",
       "benefits": {
         "free": "Keine Kreditkarte",
-        "noCard": "Sofortiger Zugang",
+        "noCard": "Funktioniert mit Zoom, Teams, Meet",
         "cancel": "Jederzeit kündbar"
       }
     },

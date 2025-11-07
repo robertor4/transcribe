@@ -692,14 +692,14 @@
         "rating": "Hoog gewaardeerd",
         "certified": "AVG-compliant"
       },
-      "title": "Klaar om elk gesprek om te zetten in",
-      "titleHighlight": "duidelijkheid.",
-      "subtitle": "Neural Summary transformeert uren audio in heldere, gestructureerde notities, beslissingen en vervolgstappen — in seconden.",
+      "title": "Zet elke vergadering om in kristalheldere",
+      "titleHighlight": "notities en actiepunten.",
+      "subtitle": "De AI vergadernotities-app die Zoom, Teams en Google Meet-opnames omzet in bruikbare samenvattingen — automatisch, nauwkeurig en direct.",
       "cta": {
-        "primary": "Start gratis voor altijd",
+        "primary": "Start gratis",
         "secondary": "Zie hoe het werkt"
       },
-      "guarantee": "Altijd gratis abonnement beschikbaar • Geen creditcard vereist • Duurt 2 minuten",
+      "guarantee": "Altijd gratis abonnement beschikbaar • Geen creditcard vereist • Werkt met alle vergaderplatforms",
       "features": {
         "saveTime": "Bespaar 10+ uur/week",
         "accuracy": "99.5% nauwkeurigheid",
@@ -770,20 +770,64 @@
         "record": "Of neem direct op vanaf elk apparaat"
       }
     },
+    "meetingPlatforms": {
+      "title": "Werkt met Elk Vergaderplatform",
+      "subtitle": "Neem op in elk platform, krijg automatisch AI-vergadernotities",
+      "zoom": {
+        "name": "Zoom",
+        "description": "Neem lokaal of in de cloud op, upload voor directe transcriptie"
+      },
+      "teams": {
+        "name": "Microsoft Teams",
+        "description": "Download Teams-opnames en krijg binnen enkele minuten AI-vergadersamenvattingen"
+      },
+      "meet": {
+        "name": "Google Meet",
+        "description": "Upload Meet-opnames voor automatische transcriptie met sprekerslabels"
+      },
+      "webex": {
+        "name": "WebEx",
+        "description": "Transformeer WebEx-vergaderingen in gestructureerde notities en actiepunten"
+      },
+      "anyPlatform": {
+        "name": "Elk Platform",
+        "description": "Werkt met telefoonopnames, persoonlijke vergaderingen, interviews en meer"
+      }
+    },
+    "meetingUseCases": {
+      "title": "Perfect voor Elk Type Vergadering",
+      "subtitle": "Van snelle 1-op-1's tot grote teamvergaderingen, mis nooit meer belangrijke details",
+      "oneOnOnes": {
+        "title": "1-op-1 Vergaderingen",
+        "description": "Focus op het gesprek, niet op notities maken. Krijg perfecte verslagen van feedback, doelen en afspraken."
+      },
+      "teamStandups": {
+        "title": "Team Standups & Syncs",
+        "description": "Houd iedereen op één lijn met automatische notulen en actiepunt-tracking."
+      },
+      "clientCalls": {
+        "title": "Klantgesprekken & Verkoop",
+        "description": "Leg elke vereiste, vraag en afspraak vast. Deel direct gepolijste samenvattingen."
+      },
+      "allHands": {
+        "title": "All-Hands & Town Halls",
+        "description": "Maak doorzoekbare transcripten voor teamleden die niet aanwezig konden zijn. Herhaal jezelf nooit meer."
+      }
+    },
     "howItWorks": {
       "title": "Hoe het werkt",
-      "subtitle": "Begin in minder dan 60 seconden",
+      "subtitle": "Van vergaderopname tot bruikbare notities in 3 eenvoudige stappen",
       "step1": {
-        "title": "Upload of neem audio op",
-        "description": "Gebruik je telefoon, Zoom of elke opname-app. We ondersteunen alle grote audioformaten — vergaderingen, gesprekken, podcasts of interviews."
+        "title": "Neem je vergadering op",
+        "description": "Gebruik Zoom, Teams, Google Meet, je telefoon of elk opnameapparaat. Alle grote audio- en videoformaten ondersteund."
       },
       "step2": {
-        "title": "Laat Neural Summary het verwerken",
-        "description": "Onze AI luistert, begrijpt de context en extraheert kernpunten — allemaal automatisch met 99,5% nauwkeurigheid."
+        "title": "AI transcribeert met sprekerslabels",
+        "description": "Onze AI identificeert sprekers, transcribeert met 99,5% nauwkeurigheid en begrijpt context — zelfs technisch jargon."
       },
       "step3": {
-        "title": "Ontvang direct gestructureerde resultaten",
-        "description": "Compleet met executive samenvattingen, hoogtepunten en actiepunten. Het is alsof je een fulltime analist hebt — zonder de salariskosten."
+        "title": "Ontvang vergadersamenvatting & actiepunten",
+        "description": "Ontvang gestructureerde samenvattingen met belangrijke beslissingen, discussieonderwerpen en actiepunten met eigenaren en deadlines."
       }
     },
     "security": {
@@ -818,31 +862,59 @@
       }
     },
     "testimonials": {
-      "title": "Geliefd door professionals wereldwijd",
-      "rating": "Hoog gewaardeerd door professionals",
+      "title": "Geliefd door teams die hun tijd waarderen",
+      "rating": "Hoog gewaardeerd door vergaderprofessionals",
       "testimonial1": {
-        "quote": "Deze tool heeft compleet veranderd hoe ik met vergaderingen omga — eindelijk loop ik weg met duidelijkheid.",
-        "author": "Sarah Martinez",
-        "role": "Hoofd Strategie"
+        "quote": "Onze teamvergaderingen zijn nu 10x productiever. Iedereen krijgt automatisch de samenvatting en actiepunten — geen 'wie maakt de notities?' meer.",
+        "author": "Michael Chen",
+        "role": "Engineering Manager, Tech Startup"
       },
       "testimonial2": {
-        "quote": "Ik kan me focussen op mijn cliënten, niet op typen.",
+        "quote": "Ik kan me focussen op mijn cliënten, niet op typen. De vergadersamenvattingen zijn zo nauwkeurig dat ik ze direct met stakeholders deel.",
         "author": "Dr. James Liu",
-        "role": "Klinisch onderzoeker"
+        "role": "Klinisch Onderzoeker"
       },
       "testimonial3": {
-        "quote": "Als journalist is deze tool onmisbaar. Ik kan natuurlijk interviews afnemen en binnen enkele minuten perfecte transcripties krijgen. Een gamechanger!",
-        "author": "Emily Chen",
-        "role": "Senior Journalist"
+        "quote": "Ik neem al mijn klantgesprekken op en krijg perfecte transcripties met actiepunten. Het is alsof ik een assistent in elk gesprek heb. Gamechanger voor verkoop!",
+        "author": "Jennifer Brooks",
+        "role": "Account Executive, SaaS Sales"
+      }
+    },
+    "meetingFaq": {
+      "title": "Veelgestelde Vragen",
+      "subtitle": "Alles wat je moet weten over AI-vergadertranscriptie en notities",
+      "question1": {
+        "question": "Hoe transcribeer ik automatisch Zoom-vergaderingen?",
+        "answer": "Neem simpelweg je Zoom-vergadering op (lokaal of in de cloud), download het audio- of videobestand en upload het naar Neural Summary. Onze AI transcribeert de vergadering automatisch met sprekerslabels en genereert een samenvatting met actiepunten binnen enkele minuten."
+      },
+      "question2": {
+        "question": "Werkt het met Microsoft Teams en Google Meet?",
+        "answer": "Ja! Neural Summary werkt met elk vergaderplatform. Neem je Microsoft Teams of Google Meet-vergadering op, download de opname en upload deze naar ons platform. We ondersteunen alle grote video- en audioformaten."
+      },
+      "question3": {
+        "question": "Kan de AI verschillende sprekers identificeren in vergaderingen?",
+        "answer": "Absoluut! Onze AI detecteert automatisch meerdere sprekers en labelt ze door het hele transcript. Je kunt sprekers ook hernoemen na verwerking voor duidelijkheid in je vergadernotities."
+      },
+      "question4": {
+        "question": "Wat maakt Neural Summary de beste AI-vergadernotities-app?",
+        "answer": "In tegenstelling tot basale transcriptietools gaat Neural Summary verder dan alleen spraak naar tekst omzetten. We bieden intelligente samenvattingen met belangrijke beslissingen, discussieonderwerpen, actiepunten met eigenaren en deadlines, en geavanceerde analyse-opties — allemaal met 99,5% nauwkeurigheid en ondersteuning voor 50+ talen."
+      },
+      "question5": {
+        "question": "Hoe lang duurt het om een vergaderopname te verwerken?",
+        "answer": "De meeste vergaderingen worden verwerkt in 3-5 minuten, ongeacht de lengte. We ondersteunen bestanden tot 5GB (ongeveer 50+ uur audio) en gebruiken parallelle verwerking om grote vergaderingen snel te verwerken. Je ontvangt een melding wanneer je vergadersamenvatting klaar is."
+      },
+      "question6": {
+        "question": "Kan ik vergadertranscripten delen met mijn team?",
+        "answer": "Ja! Neural Summary heeft geavanceerde deelfuncties. Deel transcripten en samenvattingen via beveiligde wachtwoordbeveiligde links, verstuur via e-mail of exporteer naar PDF, Word en andere formaten. Professionele abonnementen bevatten onbeperkt delen en samenwerkingsfuncties."
       }
     },
     "cta": {
-      "title": "Klaar om je tijd terug te winnen en nooit meer een inzicht te verliezen?",
-      "subtitle": "Sluit je aan bij duizenden professionals die Neural Summary gebruiken om slimmer te werken, beter te communiceren en sneller te beslissen.",
-      "button": "Start je gratis proefperiode",
+      "title": "Klaar om je vergaderingen van tijdverspillers naar actie-drivers te transformeren?",
+      "subtitle": "Sluit je aan bij duizenden teams die Neural Summary gebruiken om automatisch elke beslissing, actiepunt en inzicht vast te leggen.",
+      "button": "Start gratis — geen creditcard vereist",
       "benefits": {
         "free": "Geen creditcard",
-        "noCard": "Directe toegang",
+        "noCard": "Werkt met Zoom, Teams, Meet",
         "cancel": "Altijd opzegbaar"
       }
     },
