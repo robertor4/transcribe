@@ -682,7 +682,8 @@
     "unassigned": "Niet toegewezen",
     "noDeadline": "Geen deadline",
     "notSpecified": "Niet gespecificeerd",
-    "none": "Geen"
+    "none": "Geen",
+    "critical": "Kritiek"
   },
   "landing": {
     "hero": {

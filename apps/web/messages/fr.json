@@ -1824,7 +1824,8 @@
     "unassigned": "Non assigné",
     "noDeadline": "Pas d'échéance",
     "notSpecified": "Non spécifié",
-    "none": "Aucune"
+    "none": "Aucune",
+    "critical": "Critique"
   },
   "usage": {
     "yourUsage": "Votre Utilisation",

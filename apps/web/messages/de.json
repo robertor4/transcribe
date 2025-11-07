@@ -1843,7 +1843,8 @@
     "unassigned": "Nicht zugewiesen",
     "noDeadline": "Keine Frist",
     "notSpecified": "Nicht spezifiziert",
-    "none": "Keine"
+    "none": "Keine",
+    "critical": "Kritisch"
   },
   "usage": {
     "yourUsage": "Ihr Verbrauch",

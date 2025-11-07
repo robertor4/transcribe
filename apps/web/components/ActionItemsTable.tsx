@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, AlertTriangle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -190,19 +190,14 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                   <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">
                     <div className="space-y-1">
                       <div className="font-medium">{item.task}</div>
-                      <div className="flex gap-2 flex-wrap">
-                        {item.isCritical && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
-                            CRITICAL
-                          </span>
-                        )}
-                        {item.needsClarification && (
+                      {item.needsClarification && (
+                        <div className="flex gap-2 flex-wrap">
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
                             <AlertCircle className="h-3 w-3" />
                             NEEDS CLARIFICATION
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
@@ -212,7 +207,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                     {item.deadline}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded ${
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded ${
                       item.timeline.includes('Short')
                         ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                         : item.timeline.includes('Mid')
@@ -220,7 +215,10 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                         : item.timeline.includes('Long')
                         ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    }`}>
+                    }`} title={item.isCritical ? `${t('critical')} - ${item.timeline}` : item.timeline}>
+                      {item.isCritical && (
+                        <AlertTriangle className="h-3 w-3 text-red-600 dark:text-red-500" />
+                      )}
                       {item.timeline}
                     </span>
                   </td>

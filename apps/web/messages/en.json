@@ -683,7 +683,8 @@
     "unassigned": "Unassigned",
     "noDeadline": "No deadline",
     "notSpecified": "Not specified",
-    "none": "None"
+    "none": "None",
+    "critical": "Critical"
   },
   "landing": {
     "hero": {
