@@ -121,13 +121,14 @@ Timeline should be: Short-term, Mid-term, or Long-term (always use these English
 
 Requirements:
 - Use numbered list (1., 2., 3., etc.)
-- Start task descriptions with action verbs
-- Be specific about deliverables
-- Include success criteria where mentioned
+- Keep task descriptions CONCISE (maximum 10-12 words)
+- Start task descriptions with action verbs (e.g., "Review", "Create", "Send", "Schedule")
+- Focus on WHAT needs to be done, not WHY or HOW
+- Remove explanatory phrases like "in order to", "so that", "to ensure", "for the purpose of"
+- Cut success criteria and detailed context - just state the core task
 - Flag unclear items with [NEEDS CLARIFICATION] ONLY in the task description field, never in other fields
 - Mark critical path items with (CRITICAL) in the task description field only
 - For missing deadlines, use a hyphen (-) - do NOT use [NEEDS CLARIFICATION] in the deadline field
-- Note if deadlines are firm vs. targets
 - For dependencies, use a hyphen (-) if there are no dependencies
 - Timeline classification:
   * Short-term: Within 1-2 weeks
@@ -135,6 +136,16 @@ Requirements:
   * Long-term: Beyond 3 months
 - Identify risks (unrealistic timelines, resource gaps)
 - Do NOT add field labels like "Owner:", "Deadline:", etc. in any language
+
+EXAMPLE TRANSFORMATIONS:
+- TOO WORDY: "Summarize lecture segments in your own words during class — write concise, meaningful summaries that reflect understanding; success criteria: increased immediate retention and ability to use notes for exam study"
+- CONCISE: "Summarize lecture segments in own words during class"
+
+- TOO WORDY: "Add flesh to lecture notes within 24 hours — expand skeleton notes for ~10-15 minutes after class so memories are captured; success criteria: notes contain clarified details and personal explanations when reviewed later"
+- CONCISE: "Expand lecture notes within 24 hours"
+
+- TOO WORDY: "Take all lecture notes by hand with pen or pencil — produce handwritten notebooks for each course to force deeper processing"
+- CONCISE: "Take handwritten lecture notes for each course"
 
 Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`;
