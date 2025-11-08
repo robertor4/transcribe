@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Open Graph Metadata Not Showing Transcript Titles in Production**: Fixed server-side API calls failing during metadata generation
+  - **Root Cause**: Missing `API_URL` environment variable for internal Docker network communication
+  - Added `API_URL=http://api:3001` to production environment ([.env.production:37](.env.production#L37))
+  - Server-side metadata generation now uses internal Docker network (`http://api:3001`) instead of failing with relative path
+  - **Impact**: Shared transcript links on social media now show actual transcript titles and AI summaries instead of generic "Shared Transcript"
 - **Open Graph Description Length**: Fixed LinkedIn Post Inspector warning for shared transcripts
   - Ensured all OG descriptions are minimum 100 characters (LinkedIn requirement)
   - Updated fallback description from ~50 to 150+ characters ([apps/web/utils/metadata.ts:154-161](apps/web/utils/metadata.ts#L154-L161))
