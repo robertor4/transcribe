@@ -64,9 +64,11 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/assets/NS-symbol.webp',
+        secureUrl: 'https://neuralsummary.com/assets/NS-symbol.webp',
         width: 1200,
         height: 630,
         alt: 'Neural Summary - AI Transcription Platform',
+        type: 'image/webp',
       }
     ],
   },

@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Open Graph Metadata for Social Sharing**: Comprehensive Open Graph and Twitter Card implementation for better link sharing
+  - **New Metadata Utilities** ([apps/web/utils/metadata.ts](apps/web/utils/metadata.ts)):
+    - Centralized metadata helper functions for consistent OG tags across all pages
+    - Multi-language support for 5 locales (en, nl, de, fr, es) with locale-specific OG tags
+    - `getDefaultMetadata()` - Base metadata with proper locale configuration
+    - `getPageMetadata()` - Page-specific metadata with custom titles/descriptions
+    - `getShareMetadata()` - Dynamic metadata for shared transcripts with summary previews
+    - `getPricingMetadata()` - Pricing page metadata with locale-aware descriptions
+    - `getDashboardMetadata()` - Dashboard metadata with noindex directive for authenticated content
+  - **Dynamic Metadata for Shared Transcripts**:
+    - [apps/web/app/[locale]/shared/[shareToken]/layout.tsx](apps/web/app/[locale]/shared/[shareToken]/layout.tsx): Server-side metadata generation
+    - Fetches transcript title and summary for OG preview when sharing links
+    - Shows actual transcript content in social media previews instead of generic branding
+    - Automatic fallback to generic metadata for password-protected or private transcripts
+  - **Legacy Share Links Metadata**:
+    - [apps/web/app/s/[shareCode]/layout.tsx](apps/web/app/s/[shareCode]/layout.tsx): Updated with OG metadata
+    - Crawlers see proper metadata even before redirect happens
+  - **Pricing Page Metadata**:
+    - [apps/web/app/[locale]/pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx): New layout with pricing-focused OG tags
+    - Multi-language descriptions highlighting subscription tiers and features
+  - **Dashboard Metadata**:
+    - [apps/web/app/[locale]/dashboard/layout.tsx](apps/web/app/[locale]/dashboard/layout.tsx): Added metadata with noindex directive
+    - Prevents indexing of authenticated user content
+  - **Enhanced Root Layout Metadata** ([apps/web/app/[locale]/layout.tsx:57-74](apps/web/app/[locale]/layout.tsx#L57-L74)):
+    - Added `secureUrl` property for HTTPS Open Graph images
+    - Added `type: 'image/webp'` for proper content type declaration
+    - Improved image metadata with explicit width/height (1200x630px)
+  - **OG Tags Implemented**:
+    - `og:type`, `og:locale`, `og:url`, `og:site_name`, `og:title`, `og:description`
+    - `og:image`, `og:image:secure_url`, `og:image:width`, `og:image:height`, `og:image:alt`, `og:image:type`
+    - `twitter:card`, `twitter:title`, `twitter:description`, `twitter:site`, `twitter:creator`, `twitter:image`
+  - **Impact**: When sharing Neural Summary links on social media (Facebook, Twitter, LinkedIn, WhatsApp), previews now show:
+    - Proper logo and branding (1200x630px NS-symbol.webp)
+    - Page-specific titles and descriptions in correct language
+    - For shared transcripts: actual transcript title and AI-generated summary preview (200 chars)
+    - Professional appearance increasing click-through rates and user trust
+
 ### Fixed
 - **Shared Transcript Language Issue**: Fixed "Alleen-lezen" (Dutch) appearing in English interface on shared transcripts
   - Root cause: Legacy `/s/[shareCode]` route not locale-aware, falling back to browser's default locale
