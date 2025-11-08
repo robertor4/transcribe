@@ -150,10 +150,15 @@ export function getShareMetadata(
   const config = LOCALE_CONFIGS[locale as keyof typeof LOCALE_CONFIGS] || LOCALE_CONFIGS.en;
   const shareUrl = `${BASE_URL}/${locale}/shared/${transcript.shareToken}`;
 
-  // Truncate summary for OG description (max 200 chars recommended)
-  const description = transcript.summary
+  // Truncate summary for OG description (max 200 chars recommended, min 100 for LinkedIn)
+  let description = transcript.summary
     ? transcript.summary.substring(0, 200) + (transcript.summary.length > 200 ? '...' : '')
-    : `View this transcript shared via ${config.siteName}`;
+    : `View this transcript shared via ${config.siteName}. Transform audio recordings into accurate transcripts and intelligent summaries with AI-powered analysis.`;
+
+  // Ensure description is at least 100 characters for LinkedIn
+  if (description.length < 100) {
+    description = `${description} Transform audio recordings into accurate transcripts and intelligent summaries with AI-powered analysis.`;
+  }
 
   return {
     title: transcript.title,

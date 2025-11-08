@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Open Graph Description Length**: Fixed LinkedIn Post Inspector warning for shared transcripts
+  - Ensured all OG descriptions are minimum 100 characters (LinkedIn requirement)
+  - Updated fallback description from ~50 to 150+ characters ([apps/web/utils/metadata.ts:154-161](apps/web/utils/metadata.ts#L154-L161))
+  - Added automatic padding for short summaries to meet social media platform requirements
+  - **Impact**: Shared transcript links now pass LinkedIn validation without warnings
+
 ### Added
 - **Open Graph Metadata for Social Sharing**: Comprehensive Open Graph and Twitter Card implementation for better link sharing
   - **New Metadata Utilities** ([apps/web/utils/metadata.ts](apps/web/utils/metadata.ts)):

@@ -16,7 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     // Fetch the shared transcription data to get title and summary
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Use API_URL for server-side (internal), NEXT_PUBLIC_API_URL for client-side
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+    console.log('[Metadata] Fetching transcript data for:', shareToken, 'from:', apiUrl);
+
     const response = await fetch(`${apiUrl}/transcriptions/shared/${shareToken}`, {
       method: 'GET',
       headers: {
@@ -24,9 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       // Don't increment view count for metadata generation
       next: { revalidate: 3600 }, // Cache for 1 hour
+      cache: 'force-cache',
     });
 
     if (!response.ok) {
+      console.log('[Metadata] API response not OK:', response.status, response.statusText);
       // If transcription not found or password protected, use generic metadata
       return getShareMetadata(
         {
@@ -39,6 +45,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const data = await response.json();
+    console.log('[Metadata] Received data:', {
+      success: data.success,
+      hasData: !!data.data,
+      title: data.data?.title,
+      hasAnalyses: !!data.data?.analyses,
+      hasTranscript: !!data.data?.transcriptText,
+    });
 
     if (data.success && data.data) {
       const transcription = data.data;
@@ -58,6 +71,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         summary = transcription.transcriptText.substring(0, 200);
       }
 
+      console.log('[Metadata] Generated metadata:', {
+        title: transcription.title || transcription.fileName || 'Shared Transcript',
+        summaryLength: summary.length,
+      });
+
       return getShareMetadata(
         {
           title: transcription.title || transcription.fileName || 'Shared Transcript',
@@ -68,7 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       );
     }
   } catch (error) {
-    console.error('Error generating metadata for shared transcription:', error);
+    console.error('[Metadata] Error generating metadata for shared transcription:', error);
   }
 
   // Fallback metadata if fetch fails

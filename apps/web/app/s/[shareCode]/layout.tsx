@@ -23,13 +23,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     // Fetch the shared transcription data using the share code
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Use API_URL for server-side (internal), NEXT_PUBLIC_API_URL for client-side
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     const response = await fetch(`${apiUrl}/transcriptions/shared/${shareCode}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
       next: { revalidate: 3600 }, // Cache for 1 hour
+      cache: 'force-cache',
     });
 
     if (!response.ok) {
