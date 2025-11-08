@@ -134,7 +134,9 @@
     "uploadNewAudio": "Téléverser un nouvel audio",
     "emptyStateTitle": "Bienvenue sur Neural Summary !",
     "emptyStateDescription": "Vous n'avez pas encore téléversé de fichiers audio. Commencez par téléverser votre premier enregistrement.",
-    "emptyStateButton": "Téléverser votre premier audio"
+    "emptyStateButton": "Téléverser votre premier audio",
+    "uploadFile": "Télécharger un fichier",
+    "recordAudio": "Enregistrer de l'audio"
   },
   "upload": {
     "title": "Téléverser un fichier audio",
@@ -239,6 +241,48 @@
       "maxFilesReached": "Maximum de 3 fichiers autorisés à la fois",
       "duplicateFile": "Ce fichier a déjà été sélectionné",
       "tooManyFiles": "Seulement {max} fichiers peuvent être téléversés à la fois"
+    }
+  },
+  "recording": {
+    "title": "Enregistrer de l'audio",
+    "source": {
+      "label": "Source d'enregistrement",
+      "microphone": "Microphone",
+      "microphoneDescription": "Enregistrer depuis le microphone de votre appareil",
+      "tabAudio": "Audio de l'onglet de réunion",
+      "tabAudioDescription": "Capturer l'audio d'un onglet de navigateur (Google Meet, Zoom)",
+      "tabAudioNotSupported": "La capture audio d'onglet n'est prise en charge que dans les navigateurs Chrome et Edge. Veuillez utiliser l'enregistrement par microphone ou basculer vers un navigateur pris en charge.",
+      "tabAudioInstructions": "Lorsque vous y êtes invité, sélectionnez l'onglet du navigateur avec votre réunion et assurez-vous de cocher 'Partager l'audio de l'onglet' pour une qualité optimale."
+    },
+    "status": {
+      "ready": "Prêt à enregistrer",
+      "requesting": "Demande d'accès au microphone...",
+      "recording": "Enregistrement en cours...",
+      "paused": "Enregistrement en pause",
+      "stopped": "Enregistrement arrêté"
+    },
+    "controls": {
+      "start": "Démarrer l'enregistrement",
+      "stop": "Arrêter l'enregistrement",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "reset": "Réenregistrer",
+      "upload": "Télécharger et transcrire",
+      "uploading": "Téléchargement..."
+    },
+    "preview": {
+      "title": "Aperçu de l'enregistrement"
+    },
+    "fileSize": "Taille estimée : {size}",
+    "errors": {
+      "title": "Erreur d'enregistrement",
+      "notSupported": "L'enregistrement audio n'est pas pris en charge dans votre navigateur.",
+      "notSupportedDetails": "Veuillez utiliser un navigateur moderne comme Chrome, Firefox, Safari ou Edge pour enregistrer de l'audio.",
+      "permissionDenied": "Accès au microphone refusé. Veuillez autoriser l'accès au microphone dans les paramètres de votre navigateur.",
+      "noMicrophoneFound": "Aucun microphone trouvé. Veuillez connecter un microphone et réessayer.",
+      "microphoneInUse": "Le microphone est déjà utilisé par une autre application. Veuillez fermer les autres applications et réessayer.",
+      "recordingFailed": "Échec de l'enregistrement. Veuillez réessayer.",
+      "uploadFailed": "Échec du téléchargement. Veuillez réessayer."
     }
   },
   "transcription": {

@@ -7,12 +7,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { auth } from '@/lib/firebase';
 import { FileUploader } from '@/components/FileUploader';
+import { AudioRecorder } from '@/components/AudioRecorder';
 import { TranscriptionList } from '@/components/TranscriptionList';
 import { RecordingGuide } from '@/components/RecordingGuide';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UsageBadge } from '@/components/UsageBadge';
 import { FileAudio, Upload, Mic } from 'lucide-react';
+import { transcriptionApi } from '@/lib/api';
 import websocketService from '@/lib/websocket';
 import notificationService from '@/lib/notifications';
 import { WEBSOCKET_EVENTS, TranscriptionProgress } from '@transcribe/shared';
@@ -25,6 +27,7 @@ export default function DashboardPage() {
   const tDashboard = useTranslations('dashboard');
   const tCommon = useTranslations('common');
   const [activeTab, setActiveTab] = useState<'upload' | 'history' | 'recording-guide'>('history');
+  const [uploadMode, setUploadMode] = useState<'file' | 'record'>('file'); // Toggle between file upload and recording
   const [activeTranscriptions, setActiveTranscriptions] = useState<Map<string, string>>(new Map());
   const [lastCompletedId, setLastCompletedId] = useState<string | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -211,6 +214,14 @@ export default function DashboardPage() {
     }, 1000); // 1000ms debounce delay (increased to give Firestore time to create document)
   };
 
+  // Handle recording upload (from AudioRecorder component)
+  const handleRecordingUpload = async (file: File) => {
+    const response = await transcriptionApi.upload(file);
+    if (response.data) {
+      handleUploadComplete(response.data.transcriptionId, file.name);
+    }
+  };
+
   // Show loading state while checking auth
   if (loading) {
     return (
@@ -354,10 +365,57 @@ export default function DashboardPage() {
 
           {/* Upload Tab */}
           <div className={activeTab === 'upload' ? '' : 'hidden'}>
-            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-              {tDashboard('uploadAudioFiles')}
-            </h2>
-            <FileUploader onUploadComplete={handleUploadComplete} />
+            <div className="mb-6">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                {tDashboard('uploadAudioFiles')}
+              </h2>
+
+              {/* Toggle between File Upload and Recording */}
+              <div className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg w-fit mb-6">
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('file')}
+                  className={`
+                    px-4 py-2 rounded-md text-sm font-medium transition-all
+                    ${uploadMode === 'file'
+                      ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    <span>{tDashboard('uploadFile')}</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('record')}
+                  className={`
+                    px-4 py-2 rounded-md text-sm font-medium transition-all
+                    ${uploadMode === 'record'
+                      ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4" />
+                    <span>{tDashboard('recordAudio')}</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* File Upload Mode */}
+            {uploadMode === 'file' && (
+              <FileUploader onUploadComplete={handleUploadComplete} />
+            )}
+
+            {/* Recording Mode */}
+            {uploadMode === 'record' && (
+              <AudioRecorder onUpload={handleRecordingUpload} />
+            )}
           </div>
 
           {/* Recording Guide Tab */}

@@ -124,6 +124,8 @@
     "recentTranscriptions": "Recent Transcriptions",
     "uploadAudio": "Upload Audio",
     "uploadAudioFiles": "Upload audio files",
+    "uploadFile": "Upload File",
+    "recordAudio": "Record Audio",
     "transcriptionHistory": "Transcriptions",
     "yourTranscriptions": "Your transcriptions",
     "howItWorks": "How It Works",
@@ -240,6 +242,48 @@
       "maxFilesReached": "Maximum 3 files allowed at once",
       "duplicateFile": "This file has already been selected",
       "tooManyFiles": "Only {max} files can be uploaded at once"
+    }
+  },
+  "recording": {
+    "title": "Record Audio",
+    "source": {
+      "label": "Recording Source",
+      "microphone": "Microphone",
+      "microphoneDescription": "Record from your device microphone",
+      "tabAudio": "Meeting Tab Audio",
+      "tabAudioDescription": "Capture audio from a browser tab (Google Meet, Zoom)",
+      "tabAudioNotSupported": "Tab audio capture is only supported in Chrome and Edge browsers. Please use microphone recording or switch to a supported browser.",
+      "tabAudioInstructions": "When prompted, select the browser tab with your meeting and make sure to check 'Share tab audio' for best quality."
+    },
+    "status": {
+      "ready": "Ready to record",
+      "requesting": "Requesting microphone access...",
+      "recording": "Recording...",
+      "paused": "Recording paused",
+      "stopped": "Recording stopped"
+    },
+    "controls": {
+      "start": "Start Recording",
+      "stop": "Stop Recording",
+      "pause": "Pause",
+      "resume": "Resume",
+      "reset": "Re-record",
+      "upload": "Upload & Transcribe",
+      "uploading": "Uploading..."
+    },
+    "preview": {
+      "title": "Preview Recording"
+    },
+    "fileSize": "Estimated size: {size}",
+    "errors": {
+      "title": "Recording Error",
+      "notSupported": "Audio recording is not supported in your browser.",
+      "notSupportedDetails": "Please use a modern browser like Chrome, Firefox, Safari, or Edge to record audio.",
+      "permissionDenied": "Microphone access denied. Please allow microphone access in your browser settings.",
+      "noMicrophoneFound": "No microphone found. Please connect a microphone and try again.",
+      "microphoneInUse": "Microphone is already in use by another application. Please close other apps and try again.",
+      "recordingFailed": "Recording failed. Please try again.",
+      "uploadFailed": "Upload failed. Please try again."
     }
   },
   "transcription": {

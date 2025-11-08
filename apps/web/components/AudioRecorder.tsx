@@ -52,6 +52,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
   // Recovery state
   const [recoverableRecordings, setRecoverableRecordings] = useState<RecoverableRecording[]>([]);
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
+  const [recoveredRecordingId, setRecoveredRecordingId] = useState<string | null>(null);
 
   // Audio player ref
   const audioPlayerRef = useRef<HTMLAudioElement>(null);
@@ -72,6 +73,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     resumeRecording,
     reset,
     markAsUploaded,
+    loadRecoveredRecording,
     audioStream,
   } = useMediaRecorder({
     onStateChange: (newState) => {
@@ -111,34 +113,159 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
 
   // Create audio URL and load metadata when blob is available
   useEffect(() => {
-    if (!audioBlob || !audioPlayerRef.current) return;
+    console.log('[AudioRecorder] useEffect triggered - audioBlob:', audioBlob ? `${audioBlob.size} bytes` : 'null', 'state:', state);
+
+    if (!audioBlob) {
+      console.log('[AudioRecorder] No audioBlob, skipping URL creation');
+      return;
+    }
+
+    if (!audioPlayerRef.current) {
+      console.log('[AudioRecorder] No audioPlayerRef.current, skipping URL creation');
+      return;
+    }
+
+    // Only create URL when state is 'stopped' (after recording or recovery)
+    if (state !== 'stopped') {
+      console.log('[AudioRecorder] State is not stopped, skipping URL creation');
+      return;
+    }
+
+    console.log('[AudioRecorder] Creating audio URL for blob:', {
+      size: audioBlob.size,
+      type: audioBlob.type,
+      isValidBlob: audioBlob instanceof Blob,
+      hasAudioMimeType: audioBlob.type.startsWith('audio/'),
+    });
+
+    // Validate blob
+    if (audioBlob.size === 0) {
+      console.error('[AudioRecorder] Blob is empty!');
+      return;
+    }
+
+    if (!audioBlob.type) {
+      console.error('[AudioRecorder] Blob has no MIME type! This will cause playback to fail.');
+      return;
+    }
+
+    if (!audioBlob.type.startsWith('audio/')) {
+      console.error('[AudioRecorder] Blob MIME type is not audio:', audioBlob.type);
+      return;
+    }
+
+    // Revoke old URL if it exists (when blob changes)
+    if (audioUrlRef.current) {
+      console.log('[AudioRecorder] Revoking old URL:', audioUrlRef.current);
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
 
     // Create object URL for the blob
     const url = URL.createObjectURL(audioBlob);
     audioUrlRef.current = url;
-    audioPlayerRef.current.src = url;
 
-    // Add event listener before loading to ensure we catch it
-    const handleCanPlay = () => {
+    console.log('[AudioRecorder] Created new audio URL:', url);
+    console.log('[AudioRecorder] Audio element readyState before setting src:', audioPlayerRef.current.readyState);
+    console.log('[AudioRecorder] Setting audio element src...');
+
+    // Add event listeners to track loading progress
+    const handleLoadStart = () => {
+      console.log('[AudioRecorder] Load started');
+    };
+
+    const handleLoadedMetadata = () => {
+      console.log('[AudioRecorder] Metadata loaded, duration:', audioPlayerRef.current?.duration);
       if (audioPlayerRef.current && isFinite(audioPlayerRef.current.duration)) {
         setAudioDuration(audioPlayerRef.current.duration);
+      } else if (audioPlayerRef.current && !isFinite(audioPlayerRef.current.duration)) {
+        // WebM files sometimes don't have duration metadata, use tracked duration instead
+        console.log('[AudioRecorder] Metadata duration is Infinity, using tracked duration:', duration);
+        setAudioDuration(duration);
       }
     };
 
-    audioPlayerRef.current.addEventListener('canplay', handleCanPlay, { once: true });
-    audioPlayerRef.current.load(); // Force load to trigger metadata event
-
-    // Cleanup happens on component unmount or when blob changes
-    return () => {
-      audioPlayerRef.current?.removeEventListener('canplay', handleCanPlay);
+    const handleLoadedData = () => {
+      console.log('[AudioRecorder] Data loaded');
     };
-  }, [audioBlob]);
+
+    const handleCanPlay = () => {
+      console.log('[AudioRecorder] Audio can play, duration:', audioPlayerRef.current?.duration);
+      if (audioPlayerRef.current && isFinite(audioPlayerRef.current.duration)) {
+        setAudioDuration(audioPlayerRef.current.duration);
+      } else if (audioPlayerRef.current && !isFinite(audioPlayerRef.current.duration)) {
+        // WebM files sometimes don't have duration metadata, use tracked duration instead
+        console.log('[AudioRecorder] Audio duration is Infinity, using tracked duration:', duration);
+        setAudioDuration(duration);
+      }
+    };
+
+    const handleError = (e: Event) => {
+      // Ignore error events that happen during cleanup (empty error object)
+      const audioError = audioPlayerRef.current?.error;
+      if (!audioError || !audioError.code) {
+        // Silently ignore - these are cleanup artifacts from resetting the audio element
+        return;
+      }
+
+      // Ignore MEDIA_ERR_SRC_NOT_SUPPORTED (code 4) when src is empty (reset artifact)
+      if (audioError.code === 4 && !audioPlayerRef.current?.src) {
+        return;
+      }
+
+      // Only log real errors with error codes
+      console.error('[AudioRecorder] Audio element error event:', e);
+      console.error('[AudioRecorder] MediaError details:', {
+        code: audioError.code,
+        message: audioError.message,
+        // MediaError codes: 1=ABORTED, 2=NETWORK, 3=DECODE, 4=SRC_NOT_SUPPORTED
+        errorType: audioError.code === 1 ? 'MEDIA_ERR_ABORTED' :
+                   audioError.code === 2 ? 'MEDIA_ERR_NETWORK' :
+                   audioError.code === 3 ? 'MEDIA_ERR_DECODE' :
+                   audioError.code === 4 ? 'MEDIA_ERR_SRC_NOT_SUPPORTED' :
+                   'UNKNOWN',
+      });
+    };
+
+    const handleStalled = () => {
+      console.warn('[AudioRecorder] Loading stalled');
+    };
+
+    const handleSuspend = () => {
+      console.warn('[AudioRecorder] Loading suspended');
+    };
+
+    // Attach event listeners before setting src
+    audioPlayerRef.current.addEventListener('loadstart', handleLoadStart);
+    audioPlayerRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audioPlayerRef.current.addEventListener('loadeddata', handleLoadedData);
+    audioPlayerRef.current.addEventListener('canplay', handleCanPlay);
+    audioPlayerRef.current.addEventListener('error', handleError);
+    audioPlayerRef.current.addEventListener('stalled', handleStalled);
+    audioPlayerRef.current.addEventListener('suspend', handleSuspend);
+
+    // Set src and load (no reset needed - audio element handles source changes automatically)
+    audioPlayerRef.current.src = audioUrlRef.current;
+    audioPlayerRef.current.load();
+
+    // Cleanup event listeners when blob changes or component unmounts
+    return () => {
+      audioPlayerRef.current?.removeEventListener('loadstart', handleLoadStart);
+      audioPlayerRef.current?.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audioPlayerRef.current?.removeEventListener('loadeddata', handleLoadedData);
+      audioPlayerRef.current?.removeEventListener('canplay', handleCanPlay);
+      audioPlayerRef.current?.removeEventListener('error', handleError);
+      audioPlayerRef.current?.removeEventListener('stalled', handleStalled);
+      audioPlayerRef.current?.removeEventListener('suspend', handleSuspend);
+    };
+  }, [audioBlob, state, duration]);
 
   // Cleanup audio URL on unmount
   useEffect(() => {
     return () => {
       if (audioUrlRef.current) {
         URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
       }
     };
   }, []);
@@ -164,6 +291,19 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
       // Mark as uploaded (removes beforeunload warning, cleans IndexedDB)
       await markAsUploaded();
 
+      // If this was a recovered recording, clean it up from IndexedDB
+      if (recoveredRecordingId) {
+        try {
+          const { getRecordingStorage } = await import('@/utils/recordingStorage');
+          const storage = await getRecordingStorage();
+          await storage.deleteRecording(recoveredRecordingId);
+          console.log('[AudioRecorder] Cleaned up recovered recording from IndexedDB');
+        } catch (err) {
+          console.error('[AudioRecorder] Failed to clean up recovered recording:', err);
+        }
+        setRecoveredRecordingId(null);
+      }
+
       // Track success
       trackEvent('recording_uploaded', {
         file_size_bytes: file.size,
@@ -182,28 +322,41 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     } finally {
       setIsUploading(false);
     }
-  }, [audioBlob, audioFormat, onUpload, markAsUploaded, reset, duration, recordingSource, trackEvent]);
+  }, [audioBlob, audioFormat, onUpload, markAsUploaded, reset, duration, recordingSource, trackEvent, recoveredRecordingId]);
 
   // Handle play/pause preview
   const handlePlayPause = useCallback(() => {
-    if (!audioPlayerRef.current) return;
+    console.log('[AudioRecorder] Play/pause clicked, isPlaying:', isPlaying);
+    console.log('[AudioRecorder] audioPlayerRef.current:', audioPlayerRef.current);
+    console.log('[AudioRecorder] audioPlayerRef.current.src:', audioPlayerRef.current?.src);
+    console.log('[AudioRecorder] audioPlayerRef.current.duration:', audioPlayerRef.current?.duration);
+    console.log('[AudioRecorder] audioPlayerRef.current.readyState:', audioPlayerRef.current?.readyState);
+
+    if (!audioPlayerRef.current) {
+      console.error('[AudioRecorder] No audio player ref!');
+      return;
+    }
 
     if (isPlaying) {
+      console.log('[AudioRecorder] Pausing audio');
       audioPlayerRef.current.pause();
       // State will be updated by onPause event
     } else {
+      console.log('[AudioRecorder] Attempting to play audio');
       // Ensure duration is loaded before playing
       if (audioPlayerRef.current.duration && isFinite(audioPlayerRef.current.duration)) {
+        console.log('[AudioRecorder] Duration is loaded, playing now');
         audioPlayerRef.current.play().catch((err) => {
-          console.error('Play failed:', err);
+          console.error('[AudioRecorder] Play failed:', err);
         });
         // State will be updated by onPlay event
       } else {
-        // If duration not loaded yet, force load and try again
+        console.log('[AudioRecorder] Duration not loaded, forcing load first');
         audioPlayerRef.current.load();
         audioPlayerRef.current.addEventListener('loadedmetadata', () => {
+          console.log('[AudioRecorder] Metadata loaded after force load, now playing');
           audioPlayerRef.current?.play().catch((err) => {
-            console.error('Play failed:', err);
+            console.error('[AudioRecorder] Play failed after load:', err);
           });
           // State will be updated by onPlay event
         }, { once: true });
@@ -268,40 +421,43 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     setIsPlaying(false);
     setCurrentTime(0);
     setAudioDuration(0);
+    setRecoveredRecordingId(null); // Clear recovered recording ID
     reset();
   }, [reset]);
 
-  // Handle recovery of saved recording
+  // Handle recovery of saved recording - load into preview first
   const handleRecoverRecording = useCallback(
     async (recording: RecoverableRecording) => {
       try {
         // Reconstruct blob from saved chunks
         const recoveredBlob = new Blob(recording.chunks, { type: recording.mimeType });
 
-        // Manually set the recovered state (bypass normal flow)
-        // This simulates having just stopped recording
-        const file = blobToFile(recoveredBlob, audioFormat);
+        console.log('[AudioRecorder] Recovered blob details:', {
+          size: recoveredBlob.size,
+          type: recoveredBlob.type,
+          chunks: recording.chunks.length,
+          chunkSizes: recording.chunks.map(c => c.size),
+          originalMimeType: recording.mimeType,
+          blobIsValid: recoveredBlob instanceof Blob,
+          blobHasData: recoveredBlob.size > 0,
+        });
 
-        // Upload the recovered recording immediately
-        setIsUploading(true);
-        await onUpload(file);
+        // Load into preview player (this updates state in the hook)
+        loadRecoveredRecording(recoveredBlob, recording.duration);
 
-        // Clean up IndexedDB
-        const { getRecordingStorage } = await import('@/utils/recordingStorage');
-        const storage = await getRecordingStorage();
-        await storage.deleteRecording(recording.id);
+        // Store the recording ID so we can clean it up after upload
+        setRecoveredRecordingId(recording.id);
 
-        // Remove from UI
+        // Close recovery dialog and remove from list
+        setShowRecoveryDialog(false);
         setRecoverableRecordings((prev) => prev.filter((r) => r.id !== recording.id));
 
-        console.log('[AudioRecorder] Successfully recovered and uploaded recording');
+        console.log('[AudioRecorder] Loaded recovered recording into preview');
       } catch (err) {
         console.error('[AudioRecorder] Failed to recover recording:', err);
-      } finally {
-        setIsUploading(false);
       }
     },
-    [audioFormat, onUpload, trackEvent]
+    [loadRecoveredRecording]
   );
 
   // Handle discard of saved recording

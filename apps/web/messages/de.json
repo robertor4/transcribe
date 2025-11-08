@@ -135,7 +135,9 @@
     "uploadNewAudio": "Neue Audio hochladen",
     "emptyStateTitle": "Willkommen bei Neural Summary!",
     "emptyStateDescription": "Sie haben noch keine Audiodateien hochgeladen. Beginnen Sie, indem Sie Ihre erste Aufnahme hochladen.",
-    "emptyStateButton": "Laden Sie Ihre erste Audio hoch"
+    "emptyStateButton": "Laden Sie Ihre erste Audio hoch",
+    "uploadFile": "Datei hochladen",
+    "recordAudio": "Audio aufnehmen"
   },
   "upload": {
     "title": "Audiodatei hochladen",
@@ -237,6 +239,48 @@
       "maxFilesReached": "Maximal 3 Dateien gleichzeitig erlaubt",
       "duplicateFile": "Diese Datei ist bereits ausgewählt",
       "tooManyFiles": "Es können nur {max} Dateien gleichzeitig hochgeladen werden"
+    }
+  },
+  "recording": {
+    "title": "Audio aufnehmen",
+    "source": {
+      "label": "Aufnahmequelle",
+      "microphone": "Mikrofon",
+      "microphoneDescription": "Von Ihrem Gerät Mikrofon aufnehmen",
+      "tabAudio": "Meeting-Tab-Audio",
+      "tabAudioDescription": "Audio von einem Browser-Tab aufnehmen (Google Meet, Zoom)",
+      "tabAudioNotSupported": "Tab-Audio-Aufnahme wird nur in Chrome und Edge Browsern unterstützt. Bitte verwenden Sie Mikrofon-Aufnahme oder wechseln Sie zu einem unterstützten Browser.",
+      "tabAudioInstructions": "Wählen Sie bei Aufforderung den Browser-Tab mit Ihrem Meeting aus und aktivieren Sie 'Tab-Audio teilen' für beste Qualität."
+    },
+    "status": {
+      "ready": "Bereit zur Aufnahme",
+      "requesting": "Mikrofon-Zugriff wird angefordert...",
+      "recording": "Aufnahme läuft...",
+      "paused": "Aufnahme pausiert",
+      "stopped": "Aufnahme gestoppt"
+    },
+    "controls": {
+      "start": "Aufnahme starten",
+      "stop": "Aufnahme stoppen",
+      "pause": "Pausieren",
+      "resume": "Fortsetzen",
+      "reset": "Neu aufnehmen",
+      "upload": "Hochladen & Transkribieren",
+      "uploading": "Hochladen..."
+    },
+    "preview": {
+      "title": "Aufnahme-Vorschau"
+    },
+    "fileSize": "Geschätzte Größe: {size}",
+    "errors": {
+      "title": "Aufnahmefehler",
+      "notSupported": "Audio-Aufnahme wird in Ihrem Browser nicht unterstützt.",
+      "notSupportedDetails": "Bitte verwenden Sie einen modernen Browser wie Chrome, Firefox, Safari oder Edge, um Audio aufzunehmen.",
+      "permissionDenied": "Mikrofon-Zugriff verweigert. Bitte erlauben Sie Mikrofon-Zugriff in Ihren Browser-Einstellungen.",
+      "noMicrophoneFound": "Kein Mikrofon gefunden. Bitte schließen Sie ein Mikrofon an und versuchen Sie es erneut.",
+      "microphoneInUse": "Mikrofon wird bereits von einer anderen Anwendung verwendet. Bitte schließen Sie andere Apps und versuchen Sie es erneut.",
+      "recordingFailed": "Aufnahme fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut."
     }
   },
   "transcription": {

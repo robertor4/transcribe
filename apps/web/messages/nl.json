@@ -124,6 +124,8 @@
     "recentTranscriptions": "Recente transcripties",
     "uploadAudio": "Audio uploaden",
     "uploadAudioFiles": "Audiobestanden uploaden",
+    "uploadFile": "Bestand uploaden",
+    "recordAudio": "Audio opnemen",
     "transcriptionHistory": "Transcripties",
     "yourTranscriptions": "Jouw transcripties",
     "howItWorks": "Hoe het werkt",
@@ -240,6 +242,48 @@
       "maxFilesReached": "Maximaal 3 bestanden toegestaan tegelijk",
       "duplicateFile": "Dit bestand is al geselecteerd",
       "tooManyFiles": "Er kunnen slechts {max} bestanden tegelijk worden geüpload"
+    }
+  },
+  "recording": {
+    "title": "Audio opnemen",
+    "source": {
+      "label": "Opnamebron",
+      "microphone": "Microfoon",
+      "microphoneDescription": "Opnemen via je apparaatmicrofoon",
+      "tabAudio": "Vergadertabblad audio",
+      "tabAudioDescription": "Audio vastleggen van een browsertabblad (Google Meet, Zoom)",
+      "tabAudioNotSupported": "Tabblad-audio-opname wordt alleen ondersteund in Chrome en Edge browsers. Gebruik microfoonopname of schakel over naar een ondersteunde browser.",
+      "tabAudioInstructions": "Selecteer het browsertabblad met je vergadering en zorg ervoor dat je 'Tabblad audio delen' aanvinkt voor de beste kwaliteit."
+    },
+    "status": {
+      "ready": "Klaar om op te nemen",
+      "requesting": "Microfoontoegang aanvragen...",
+      "recording": "Opnemen...",
+      "paused": "Opname gepauzeerd",
+      "stopped": "Opname gestopt"
+    },
+    "controls": {
+      "start": "Start opname",
+      "stop": "Stop opname",
+      "pause": "Pauzeer",
+      "resume": "Hervat",
+      "reset": "Opnieuw opnemen",
+      "upload": "Uploaden & transcriberen",
+      "uploading": "Uploaden..."
+    },
+    "preview": {
+      "title": "Opname voorbeeld"
+    },
+    "fileSize": "Geschatte grootte: {size}",
+    "errors": {
+      "title": "Opnamefout",
+      "notSupported": "Audio-opname wordt niet ondersteund in je browser.",
+      "notSupportedDetails": "Gebruik een moderne browser zoals Chrome, Firefox, Safari of Edge om audio op te nemen.",
+      "permissionDenied": "Microfoontoegang geweigerd. Sta microfoontoegang toe in je browserinstellingen.",
+      "noMicrophoneFound": "Geen microfoon gevonden. Sluit een microfoon aan en probeer opnieuw.",
+      "microphoneInUse": "Microfoon is al in gebruik door een andere applicatie. Sluit andere apps en probeer opnieuw.",
+      "recordingFailed": "Opname mislukt. Probeer opnieuw.",
+      "uploadFailed": "Upload mislukt. Probeer opnieuw."
     }
   },
   "transcription": {

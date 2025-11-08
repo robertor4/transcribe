@@ -47,6 +47,7 @@ export interface UseMediaRecorderReturn {
   resumeRecording: () => void;
   reset: () => void;
   markAsUploaded: () => Promise<void>; // Mark recording as uploaded, removes beforeunload warning and cleans IndexedDB
+  loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
 
   // Audio stream (for visualization)
   audioStream: MediaStream | null;
@@ -80,6 +81,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const recordingSourceRef = useRef<RecordingSource | null>(null);
   const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hasUploadedRef = useRef<boolean>(false);
+  const durationRef = useRef<number>(0); // Track duration in ref for accurate storage
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -103,10 +105,15 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
     if (reset) {
       setDuration(0);
+      durationRef.current = 0;
     }
 
     timerRef.current = setInterval(() => {
-      setDuration((prev) => prev + 1);
+      setDuration((prev) => {
+        const newDuration = prev + 1;
+        durationRef.current = newDuration;
+        return newDuration;
+      });
     }, 1000);
   }, []);
 
@@ -211,22 +218,15 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           setAudioBlob(blob);
           onDataAvailable?.(blob);
 
-          // Final save to IndexedDB before stopping
+          // Clean up IndexedDB on normal stop (happy path - user stopped intentionally)
+          // Only keep auto-saved data for crash/accidental close scenarios
           if (enableAutoSave && recordingIdRef.current) {
             try {
               const storage = await getRecordingStorage();
-              await storage.saveRecording({
-                id: recordingIdRef.current,
-                startTime: Date.now() - duration * 1000,
-                chunks: [...chunksRef.current],
-                duration,
-                mimeType: audioFormat.mimeType,
-                source: recordingSourceRef.current || 'microphone',
-                lastSaved: Date.now(),
-              });
-              console.log('[useMediaRecorder] Final save to IndexedDB on stop');
+              await storage.deleteRecording(recordingIdRef.current);
+              console.log('[useMediaRecorder] Cleaned up auto-save on normal stop');
             } catch (err) {
-              console.error('[useMediaRecorder] Failed to save on stop:', err);
+              console.error('[useMediaRecorder] Failed to clean up on stop:', err);
             }
           }
 
@@ -359,6 +359,27 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     updateState('idle');
   }, [state, stopTimer, updateState]);
 
+  // Load a recovered recording into preview (for recovery flow)
+  const loadRecoveredRecording = useCallback(
+    (blob: Blob, recordingDuration: number) => {
+      // Set the audio blob and duration
+      setAudioBlob(blob);
+      setDuration(recordingDuration);
+      durationRef.current = recordingDuration;
+
+      // Set state to 'stopped' to trigger preview UI
+      updateState('stopped');
+
+      // Mark as not uploaded yet (will trigger beforeunload warning)
+      hasUploadedRef.current = false;
+
+      console.log(
+        `[useMediaRecorder] Loaded recovered recording (${recordingDuration}s) into preview`
+      );
+    },
+    [updateState]
+  );
+
   // Auto-save recording chunks to IndexedDB
   const saveRecordingToStorage = useCallback(async () => {
     if (!enableAutoSave || !recordingIdRef.current || chunksRef.current.length === 0) {
@@ -367,21 +388,22 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
     try {
       const storage = await getRecordingStorage();
+      const currentDuration = durationRef.current; // Use ref for accurate duration
       await storage.saveRecording({
         id: recordingIdRef.current,
-        startTime: Date.now() - duration * 1000,
+        startTime: Date.now() - currentDuration * 1000,
         chunks: [...chunksRef.current],
-        duration,
+        duration: currentDuration,
         mimeType: audioFormat.mimeType,
         source: recordingSourceRef.current || 'microphone',
         lastSaved: Date.now(),
       });
-      console.log('[useMediaRecorder] Auto-saved recording to IndexedDB');
+      console.log(`[useMediaRecorder] Auto-saved recording to IndexedDB (${currentDuration}s)`);
     } catch (err) {
       console.error('[useMediaRecorder] Failed to auto-save recording:', err);
       // Non-critical error, continue recording
     }
-  }, [enableAutoSave, duration, audioFormat.mimeType]);
+  }, [enableAutoSave, audioFormat.mimeType]);
 
   // Check for recoverable recordings on mount
   useEffect(() => {
@@ -390,11 +412,21 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     const checkForRecovery = async () => {
       try {
         const storage = await getRecordingStorage();
-        const recordings = await storage.getAllRecordings();
+        const allRecordings = await storage.getAllRecordings();
 
-        if (recordings && recordings.length > 0) {
-          console.log(`[useMediaRecorder] Found ${recordings.length} recoverable recording(s)`);
-          onRecoveryAvailable?.(recordings);
+        // Filter out recordings that are less than 2 minutes old
+        // These are likely from a recent session or current tab
+        // Only show recordings that are at least 2 minutes old (indicating a crash/close)
+        const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
+        const recoverableRecordings = allRecordings.filter(
+          (recording) => recording.lastSaved < twoMinutesAgo
+        );
+
+        if (recoverableRecordings && recoverableRecordings.length > 0) {
+          console.log(
+            `[useMediaRecorder] Found ${recoverableRecordings.length} recoverable recording(s)`
+          );
+          onRecoveryAvailable?.(recoverableRecordings);
         }
 
         // Auto-cleanup recordings older than 7 days
@@ -509,6 +541,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     resumeRecording,
     reset,
     markAsUploaded,
+    loadRecoveredRecording,
 
     // Audio stream
     audioStream,

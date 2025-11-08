@@ -134,7 +134,9 @@
     "uploadNewAudio": "Subir nuevo audio",
     "emptyStateTitle": "¡Bienvenido a Neural Summary!",
     "emptyStateDescription": "Aún no has subido ningún archivo de audio. Comienza subiendo tu primera grabación.",
-    "emptyStateButton": "Sube tu primer audio"
+    "emptyStateButton": "Sube tu primer audio",
+    "uploadFile": "Subir archivo",
+    "recordAudio": "Grabar audio"
   },
   "upload": {
     "title": "Subir archivo de audio",
@@ -239,6 +241,48 @@
       "maxFilesReached": "Máximo de 3 archivos permitidos a la vez",
       "duplicateFile": "Este archivo ya ha sido seleccionado",
       "tooManyFiles": "Solo se pueden subir {max} archivos a la vez"
+    }
+  },
+  "recording": {
+    "title": "Grabar audio",
+    "source": {
+      "label": "Fuente de grabación",
+      "microphone": "Micrófono",
+      "microphoneDescription": "Grabar desde el micrófono de tu dispositivo",
+      "tabAudio": "Audio de pestaña de reunión",
+      "tabAudioDescription": "Capturar audio de una pestaña del navegador (Google Meet, Zoom)",
+      "tabAudioNotSupported": "La captura de audio de pestaña solo es compatible con navegadores Chrome y Edge. Utilice la grabación por micrófono o cambie a un navegador compatible.",
+      "tabAudioInstructions": "Cuando se le solicite, seleccione la pestaña del navegador con su reunión y asegúrese de marcar 'Compartir audio de pestaña' para obtener la mejor calidad."
+    },
+    "status": {
+      "ready": "Listo para grabar",
+      "requesting": "Solicitando acceso al micrófono...",
+      "recording": "Grabando...",
+      "paused": "Grabación en pausa",
+      "stopped": "Grabación detenida"
+    },
+    "controls": {
+      "start": "Iniciar grabación",
+      "stop": "Detener grabación",
+      "pause": "Pausar",
+      "resume": "Reanudar",
+      "reset": "Volver a grabar",
+      "upload": "Subir y transcribir",
+      "uploading": "Subiendo..."
+    },
+    "preview": {
+      "title": "Vista previa de grabación"
+    },
+    "fileSize": "Tamaño estimado: {size}",
+    "errors": {
+      "title": "Error de grabación",
+      "notSupported": "La grabación de audio no es compatible con su navegador.",
+      "notSupportedDetails": "Utilice un navegador moderno como Chrome, Firefox, Safari o Edge para grabar audio.",
+      "permissionDenied": "Acceso al micrófono denegado. Permita el acceso al micrófono en la configuración de su navegador.",
+      "noMicrophoneFound": "No se encontró ningún micrófono. Conecte un micrófono e inténtelo de nuevo.",
+      "microphoneInUse": "El micrófono ya está en uso por otra aplicación. Cierre otras aplicaciones e inténtelo de nuevo.",
+      "recordingFailed": "Error en la grabación. Inténtelo de nuevo.",
+      "uploadFailed": "Error en la carga. Inténtelo de nuevo."
     }
   },
   "transcription": {

@@ -28,6 +28,15 @@ export type AnalyticsEventName =
   | 'custom_analysis_requested'
   | 'speaker_detection_enabled'
 
+  // Recording Events
+  | 'recording_started'
+  | 'recording_stopped'
+  | 'recording_uploaded'
+  | 'recording_error'
+  | 'recording_upload_failed'
+  | 'recording_permission_denied'
+  | 'tab_audio_used'
+
   // Engagement Events
   | 'transcript_shared'
   | 'transcript_downloaded'
