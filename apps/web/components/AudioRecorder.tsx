@@ -22,6 +22,7 @@ import { useTranslations } from 'next-intl';
 import { useMediaRecorder, type RecordingSource } from '@/hooks/useMediaRecorder';
 import { useAudioVisualization } from '@/hooks/useAudioVisualization';
 import { RecordingSourceSelector } from './RecordingSourceSelector';
+import { RecordingRecoveryDialog } from './RecordingRecoveryDialog';
 import {
   formatDuration,
   estimateFileSize,
@@ -30,6 +31,7 @@ import {
   detectBrowser,
 } from '@/utils/audio';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import type { RecoverableRecording } from '@/utils/recordingStorage';
 
 interface AudioRecorderProps {
   onUpload: (file: File) => Promise<void>;
@@ -46,6 +48,10 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+
+  // Recovery state
+  const [recoverableRecordings, setRecoverableRecordings] = useState<RecoverableRecording[]>([]);
+  const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
 
   // Audio player ref
   const audioPlayerRef = useRef<HTMLAudioElement>(null);
@@ -65,6 +71,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     pauseRecording,
     resumeRecording,
     reset,
+    markAsUploaded,
     audioStream,
   } = useMediaRecorder({
     onStateChange: (newState) => {
@@ -91,6 +98,12 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
         source: recordingSource,
       });
     },
+    onRecoveryAvailable: (recordings) => {
+      setRecoverableRecordings(recordings);
+      setShowRecoveryDialog(true);
+      console.log(`[AudioRecorder] Found ${recordings.length} recoverable recording(s)`);
+    },
+    enableAutoSave: true,
   });
 
   // Audio visualization hook
@@ -148,6 +161,9 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
       // Upload via parent callback
       await onUpload(file);
 
+      // Mark as uploaded (removes beforeunload warning, cleans IndexedDB)
+      await markAsUploaded();
+
       // Track success
       trackEvent('recording_uploaded', {
         file_size_bytes: file.size,
@@ -166,7 +182,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     } finally {
       setIsUploading(false);
     }
-  }, [audioBlob, audioFormat, onUpload, reset, duration, recordingSource, trackEvent]);
+  }, [audioBlob, audioFormat, onUpload, markAsUploaded, reset, duration, recordingSource, trackEvent]);
 
   // Handle play/pause preview
   const handlePlayPause = useCallback(() => {
@@ -254,6 +270,60 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     setAudioDuration(0);
     reset();
   }, [reset]);
+
+  // Handle recovery of saved recording
+  const handleRecoverRecording = useCallback(
+    async (recording: RecoverableRecording) => {
+      try {
+        // Reconstruct blob from saved chunks
+        const recoveredBlob = new Blob(recording.chunks, { type: recording.mimeType });
+
+        // Manually set the recovered state (bypass normal flow)
+        // This simulates having just stopped recording
+        const file = blobToFile(recoveredBlob, audioFormat);
+
+        // Upload the recovered recording immediately
+        setIsUploading(true);
+        await onUpload(file);
+
+        // Clean up IndexedDB
+        const { getRecordingStorage } = await import('@/utils/recordingStorage');
+        const storage = await getRecordingStorage();
+        await storage.deleteRecording(recording.id);
+
+        // Remove from UI
+        setRecoverableRecordings((prev) => prev.filter((r) => r.id !== recording.id));
+
+        console.log('[AudioRecorder] Successfully recovered and uploaded recording');
+      } catch (err) {
+        console.error('[AudioRecorder] Failed to recover recording:', err);
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [audioFormat, onUpload, trackEvent]
+  );
+
+  // Handle discard of saved recording
+  const handleDiscardRecording = useCallback(async (id: string) => {
+    try {
+      const { getRecordingStorage } = await import('@/utils/recordingStorage');
+      const storage = await getRecordingStorage();
+      await storage.deleteRecording(id);
+
+      // Remove from UI
+      setRecoverableRecordings((prev) => prev.filter((r) => r.id !== id));
+
+      console.log('[AudioRecorder] Discarded recording:', id);
+    } catch (err) {
+      console.error('[AudioRecorder] Failed to discard recording:', err);
+    }
+  }, []);
+
+  // Close recovery dialog
+  const handleCloseRecoveryDialog = useCallback(() => {
+    setShowRecoveryDialog(false);
+  }, []);
 
   // Browser not supported
   if (!isSupported) {
@@ -551,6 +621,16 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
             </button>
           </div>
         </div>
+      )}
+
+      {/* Recovery Dialog */}
+      {showRecoveryDialog && recoverableRecordings.length > 0 && (
+        <RecordingRecoveryDialog
+          recordings={recoverableRecordings}
+          onRecover={handleRecoverRecording}
+          onDiscard={handleDiscardRecording}
+          onClose={handleCloseRecoveryDialog}
+        />
       )}
     </div>
   );
