@@ -397,7 +397,8 @@ export class StripeService {
       const billing = session.metadata?.billing || 'monthly';
 
       // Get subscription details to get exact amount
-      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId as string);
+      const subscription =
+        await this.stripe.subscriptions.retrieve(subscriptionId);
       const amount = subscription.items.data[0]?.price?.unit_amount || 0;
       const currency = subscription.items.data[0]?.price?.currency || 'usd';
 

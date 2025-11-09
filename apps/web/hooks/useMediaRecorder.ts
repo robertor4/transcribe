@@ -414,12 +414,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         const storage = await getRecordingStorage();
         const allRecordings = await storage.getAllRecordings();
 
-        // Filter out recordings that are less than 2 minutes old
-        // These are likely from a recent session or current tab
-        // Only show recordings that are at least 2 minutes old (indicating a crash/close)
-        const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
+        // Filter out recordings that are less than 2 seconds old
+        // These are likely from the current session (user just opened the page)
+        // Only show recordings that are at least 2 seconds old (indicating a crash/close)
+        const twoSecondsAgo = Date.now() - 2 * 1000;
         const recoverableRecordings = allRecordings.filter(
-          (recording) => recording.lastSaved < twoMinutesAgo
+          (recording) => recording.lastSaved < twoSecondsAgo
         );
 
         if (recoverableRecordings && recoverableRecordings.length > 0) {

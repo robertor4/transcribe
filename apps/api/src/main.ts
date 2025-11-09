@@ -107,9 +107,15 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   const port = process.env.PORT || 3001;
-  await app.listen(port);
+  const server = await app.listen(port);
+
+  // Increase HTTP timeout for large file uploads (default is 2 minutes)
+  // Set to 30 minutes to support 3+ hour recordings (up to 1GB files)
+  server.setTimeout(1800000); // 30 minutes in milliseconds
+
   console.log(`API server running on http://localhost:${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`HTTP timeout: 30 minutes (for large file uploads)`);
   console.log('Graceful shutdown enabled');
 }
 bootstrap();

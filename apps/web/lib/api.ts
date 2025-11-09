@@ -19,6 +19,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 1800000, // 30 minutes timeout for large file uploads (increased from 5 min for 3+ hour recordings)
+  maxContentLength: 5 * 1024 * 1024 * 1024, // 5GB max content length (matches backend)
+  maxBodyLength: 5 * 1024 * 1024 * 1024, // 5GB max body length (matches backend)
 });
 
 // Add auth token to requests
@@ -111,17 +114,37 @@ api.interceptors.response.use(
 
 export const transcriptionApi = {
   upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
+    console.log('[TranscriptionAPI] Starting upload:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      analysisType,
+    });
+
     const formData = new FormData();
     formData.append('file', file);
     if (analysisType) formData.append('analysisType', analysisType);
     if (context) formData.append('context', context);
     if (contextId) formData.append('contextId', contextId);
 
-    return api.post('/transcriptions/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    try {
+      const response: ApiResponse<{ jobId: string; transcriptionId: string }> = await api.post('/transcriptions/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('[TranscriptionAPI] Upload successful:', response);
+      return response;
+    } catch (error: unknown) {
+      const err = error as { message?: string; response?: { data?: unknown; status?: number } };
+      console.error('[TranscriptionAPI] Upload failed:', {
+        error,
+        message: err?.message,
+        response: err?.response?.data,
+        status: err?.response?.status,
+      });
+      throw error;
+    }
   },
 
   uploadBatch: async (files: File[], mergeFiles: boolean, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ transcriptionIds: string[]; fileNames: string[]; merged: boolean }>> => {

@@ -122,7 +122,7 @@ export class AssemblyAIService {
       let completedTranscript: AssemblyAITranscript;
       const startTime = Date.now();
       const pollingInterval = 3000; // Poll every 3 seconds
-      const pollingTimeout = 600000; // 10 minute timeout
+      const pollingTimeout = 3600000; // 60 minute timeout (increased from 10 min for long recordings)
       let lastProgressUpdate = 15;
 
       while (true) {

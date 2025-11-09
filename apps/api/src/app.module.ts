@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -21,6 +22,8 @@ import { QueueModule } from './queue/queue.module';
       isGlobal: true,
       envFilePath: '../../.env',
     }),
+    // Enable scheduled tasks (cron jobs)
+    ScheduleModule.forRoot(),
     // Rate limiting configuration
     ThrottlerModule.forRoot([
       {

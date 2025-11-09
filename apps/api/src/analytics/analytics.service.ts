@@ -92,7 +92,10 @@ export class AnalyticsService {
         `Purchase tracked: User ${userId}, Transaction ${transactionId}, Value ${value} ${currency}`,
       );
     } catch (error) {
-      this.logger.error(`Failed to track purchase: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to track purchase: ${error.message}`,
+        error.stack,
+      );
     }
   }
 
@@ -139,7 +142,10 @@ export class AnalyticsService {
         `Refund tracked: User ${userId}, Transaction ${transactionId}, Value ${value} ${currency}`,
       );
     } catch (error) {
-      this.logger.error(`Failed to track refund: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to track refund: ${error.message}`,
+        error.stack,
+      );
     }
   }
 
@@ -211,7 +217,9 @@ export class AnalyticsService {
         },
       });
 
-      this.logger.log(`Payment failure tracked: User ${userId}, Reason: ${reason}`);
+      this.logger.log(
+        `Payment failure tracked: User ${userId}, Reason: ${reason}`,
+      );
     } catch (error) {
       this.logger.error(
         `Failed to track payment failure: ${error.message}`,
@@ -306,9 +314,7 @@ export class AnalyticsService {
    *
    * @param payload - GA4 measurement payload
    */
-  private async debugEvent(
-    payload: GA4MeasurementPayload,
-  ): Promise<void> {
+  private async debugEvent(payload: GA4MeasurementPayload): Promise<void> {
     const debugUrl = `https://www.google-analytics.com/debug/mp/collect?measurement_id=${this.measurementId}&api_secret=${this.apiSecret}`;
 
     try {

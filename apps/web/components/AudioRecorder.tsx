@@ -45,6 +45,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
   // Recording state
   const [recordingSource, setRecordingSource] = useState<RecordingSource>('microphone');
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
@@ -57,6 +58,24 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
   // Audio player ref
   const audioPlayerRef = useRef<HTMLAudioElement>(null);
   const audioUrlRef = useRef<string | null>(null);
+
+  // Track which recordings have been shown to avoid re-displaying them
+  const shownRecordingIdsRef = useRef<Set<string>>(new Set());
+
+  // Stable callback for recovery notifications (prevents useEffect re-runs)
+  const handleRecoveryAvailable = useCallback((recordings: RecoverableRecording[]) => {
+    // Filter out recordings that have already been shown
+    const newRecordings = recordings.filter((r) => !shownRecordingIdsRef.current.has(r.id));
+
+    if (newRecordings.length > 0) {
+      // Track these recordings as shown
+      newRecordings.forEach((r) => shownRecordingIdsRef.current.add(r.id));
+
+      setRecoverableRecordings(newRecordings);
+      setShowRecoveryDialog(true);
+      console.log(`[AudioRecorder] Found ${newRecordings.length} new recoverable recording(s)`);
+    }
+  }, []);
 
   // Media recorder hook
   const {
@@ -100,11 +119,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
         source: recordingSource,
       });
     },
-    onRecoveryAvailable: (recordings) => {
-      setRecoverableRecordings(recordings);
-      setShowRecoveryDialog(true);
-      console.log(`[AudioRecorder] Found ${recordings.length} recoverable recording(s)`);
-    },
+    onRecoveryAvailable: handleRecoveryAvailable,
     enableAutoSave: true,
   });
 
@@ -272,6 +287,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
 
   // Handle start recording
   const handleStart = useCallback(async () => {
+    setUploadError(null); // Clear any previous upload errors
     await startRecording(recordingSource);
   }, [startRecording, recordingSource]);
 
@@ -281,6 +297,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
 
     try {
       setIsUploading(true);
+      setUploadError(null); // Clear any previous errors
 
       // Convert blob to file
       const file = blobToFile(audioBlob, audioFormat);
@@ -314,10 +331,18 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
 
       // Reset recording state
       reset();
-    } catch (err) {
-      console.error('Upload failed:', err);
+    } catch (err: unknown) {
+      console.error('[AudioRecorder] Upload failed:', err);
+
+      // Extract user-friendly error message
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to upload recording. Please try again.';
+      setUploadError(errorMessage);
+
       trackEvent('recording_upload_failed', {
-        error_message: (err as Error).message,
+        error_message: errorMessage,
+        file_size_bytes: audioBlob.size,
+        duration_seconds: duration,
       });
     } finally {
       setIsUploading(false);
@@ -448,9 +473,15 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
         // Store the recording ID so we can clean it up after upload
         setRecoveredRecordingId(recording.id);
 
-        // Close recovery dialog and remove from list
-        setShowRecoveryDialog(false);
-        setRecoverableRecordings((prev) => prev.filter((r) => r.id !== recording.id));
+        // Remove from list
+        setRecoverableRecordings((prev) => {
+          const remaining = prev.filter((r) => r.id !== recording.id);
+          // Close dialog if no more recordings left
+          if (remaining.length === 0) {
+            setShowRecoveryDialog(false);
+          }
+          return remaining;
+        });
 
         console.log('[AudioRecorder] Loaded recovered recording into preview');
       } catch (err) {
@@ -467,8 +498,15 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
       const storage = await getRecordingStorage();
       await storage.deleteRecording(id);
 
-      // Remove from UI
-      setRecoverableRecordings((prev) => prev.filter((r) => r.id !== id));
+      // Remove from UI and close dialog if no more recordings
+      setRecoverableRecordings((prev) => {
+        const remaining = prev.filter((r) => r.id !== id);
+        // Close dialog if no more recordings left
+        if (remaining.length === 0) {
+          setShowRecoveryDialog(false);
+        }
+        return remaining;
+      });
 
       console.log('[AudioRecorder] Discarded recording:', id);
     } catch (err) {
@@ -776,6 +814,24 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
               )}
             </button>
           </div>
+
+          {/* Upload Error Message */}
+          {uploadError && (
+            <div className="mt-4 flex items-start gap-3 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-800 dark:text-red-300">Upload Failed</p>
+                <p className="text-sm text-red-700 dark:text-red-400 mt-1">{uploadError}</p>
+                <button
+                  type="button"
+                  onClick={() => setUploadError(null)}
+                  className="text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline mt-2"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

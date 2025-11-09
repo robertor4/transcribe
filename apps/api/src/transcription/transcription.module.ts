@@ -7,6 +7,7 @@ import { TranscriptionProcessor } from './transcription.processor';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { TranscriptCorrectionRouterService } from './transcript-correction-router.service';
+import { CleanupService } from './cleanup.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
@@ -39,6 +40,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     AnalysisTemplateService,
     OnDemandAnalysisService,
     TranscriptCorrectionRouterService,
+    CleanupService,
     SubscriptionGuard,
   ],
   exports: [

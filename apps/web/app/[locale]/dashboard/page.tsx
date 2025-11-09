@@ -216,9 +216,28 @@ export default function DashboardPage() {
 
   // Handle recording upload (from AudioRecorder component)
   const handleRecordingUpload = async (file: File) => {
-    const response = await transcriptionApi.upload(file);
-    if (response.data) {
-      handleUploadComplete(response.data.transcriptionId, file.name);
+    try {
+      const response = await transcriptionApi.upload(file);
+      if (response.data) {
+        handleUploadComplete(response.data.transcriptionId, file.name);
+      }
+    } catch (err: unknown) {
+      console.error('[Dashboard] Recording upload failed:', err);
+
+      // Extract error details for logging
+      const error = err as { response?: { data?: { message?: string }; status?: number }; message?: string };
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to upload recording';
+      const statusCode = error?.response?.status;
+
+      console.error('[Dashboard] Upload error details:', {
+        message: errorMessage,
+        statusCode,
+        fileSize: file.size,
+        fileName: file.name,
+      });
+
+      // Re-throw to let AudioRecorder handle UI state and display error to user
+      throw err;
     }
   };
 

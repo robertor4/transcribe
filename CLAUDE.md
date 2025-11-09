@@ -344,6 +344,70 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
+### Scheduled Tasks (Cron Jobs)
+
+The application runs **5 automated cron jobs** for maintenance, billing, and cleanup. All cron jobs respect graceful shutdown (`app.enableShutdownHooks()` in [main.ts](apps/api/src/main.ts:107)) and run in UTC timezone.
+
+**Configuration Requirements:**
+- `ScheduleModule.forRoot()` must be imported in [app.module.ts](apps/api/src/app.module.ts:25)
+- All cron services must be registered as providers in their respective modules
+
+#### 1. Cleanup Service
+**File**: [apps/api/src/transcription/cleanup.service.ts](apps/api/src/transcription/cleanup.service.ts)
+- **Schedule**: `@Cron(CronExpression.EVERY_HOUR)` - Runs every hour
+- **Purpose**: Clean up zombie transcriptions and orphaned files
+- **What it does**:
+  - Finds transcriptions stuck in PENDING/PROCESSING status for >24 hours
+  - Marks zombie transcriptions as FAILED with error message
+  - Deletes orphaned files from Firebase Storage
+  - Prevents accumulation of corrupted state from timeout failures
+- **Why needed**: Handles edge cases where uploads fail due to timeouts, crashes, or network issues
+
+#### 2. Monthly Usage Reset
+**File**: [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts:139-245)
+- **Schedule**: `@Cron('0 0 1 * *')` - 1st of month at 00:00 UTC
+- **Purpose**: Reset monthly usage quotas for all users
+- **Features**:
+  - Resumable after crash (saves progress every 10 users)
+  - Graceful shutdown support (can pause and resume)
+  - Checks for missed resets on startup (recovers from downtime)
+  - Processes all users with error tracking
+- **Why needed**: Subscription plans have monthly usage limits that must reset on billing cycle
+
+#### 3. Daily Overage Check
+**File**: [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts:251-327)
+- **Schedule**: `@Cron('0 2 * * *')` - Daily at 02:00 UTC
+- **Purpose**: Check Professional/Business tier users for overage charges
+- **What it does**:
+  - Calculates usage beyond monthly quota
+  - Logs overage hours and charges
+  - Actual billing handled via Stripe webhooks on subscription renewal
+- **Why needed**: Professional tier has $0.50/hour overage billing after 60 hours/month
+
+#### 4. Daily Usage Warnings
+**File**: [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts:333-393)
+- **Schedule**: `@Cron('0 10 * * *')` - Daily at 10:00 UTC
+- **Purpose**: Send warnings to users approaching quota limits
+- **What it does**:
+  - Checks all users for 80%+ quota usage
+  - Logs warnings for users near their limits
+  - TODO: Email notification integration pending
+- **Why needed**: Prevents users from hitting hard quota limits without warning
+
+#### 5. Monthly Usage Cleanup
+**File**: [apps/api/src/usage/usage.scheduler.ts](apps/api/src/usage/usage.scheduler.ts:399-445)
+- **Schedule**: `@Cron('0 3 15 * *')` - 15th of month at 03:00 UTC
+- **Purpose**: Delete old usage records to reduce database size
+- **What it does**:
+  - Finds usage records older than 12 months
+  - Batch deletes old records from Firestore
+- **Why needed**: Keeps `usageRecords` collection size manageable (GDPR data retention)
+
+**Monitoring Cron Jobs:**
+- All jobs log start/complete/error messages with duration metrics
+- Check logs: `docker logs -f transcribe-api | grep -E "Cleanup|Usage"`
+- Failed jobs log errors but don't crash the application
+
 ## SEO Guidelines for Landing Page
 
 **CRITICAL**: All landing page changes MUST follow these requirements:
