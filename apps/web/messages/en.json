@@ -736,16 +736,16 @@
       "trustIndicators": {
         "users": "Trusted by professionals",
         "rating": "Highly rated",
-        "certified": "GDPR compliant"
+        "certified": "Audio never stored"
       },
       "title": "Turn every meeting into crystal-clear",
       "titleHighlight": "notes and action items.",
-      "subtitle": "The AI meeting notes app that transforms Zoom, Teams, and Google Meet recordings into actionable summaries — automatically, accurately, and instantly.",
+      "subtitle": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy and deletes your audio within seconds — your conversations stay private.",
       "cta": {
         "primary": "Start free",
         "secondary": "See how it works"
       },
-      "guarantee": "Always free plan available • No credit card required • Works with all meeting platforms",
+      "guarantee": "Always free plan available • Audio deleted immediately • Works with all meeting platforms",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
@@ -791,10 +791,11 @@
     },
     "whyTeams": {
       "title": "Why Teams Choose Neural Summary",
-      "benefit1": "Save 3–5 hours per week on manual documentation",
-      "benefit2": "Reduce information loss and miscommunication",
-      "benefit3": "Keep teams aligned without endless note-sharing",
-      "benefit4": "Secure, compliant, and scalable for any organization",
+      "benefit1": "No awkward bots joining your sensitive meetings",
+      "benefit2": "Save 3–5 hours per week on manual documentation",
+      "benefit3": "Audio deleted immediately — complete privacy guaranteed",
+      "benefit4": "Keep teams aligned without endless note-sharing",
+      "benefit5": "Secure, compliant, and scalable for any organization",
       "tagline": "Stop wasting time in meetings — start turning words into action."
     },
     "features": {
@@ -818,10 +819,10 @@
     },
     "meetingPlatforms": {
       "title": "Works with Every Meeting Platform",
-      "subtitle": "Record on any platform, get AI-powered meeting notes automatically",
+      "subtitle": "No awkward bot joining your calls. Simply upload recordings from any platform after your meeting ends.",
       "zoom": {
         "name": "Zoom",
-        "description": "Record locally or to cloud, then upload for instant transcription"
+        "description": "Record locally or to cloud, then upload for instant transcription — no bot required"
       },
       "teams": {
         "name": "Microsoft Teams",
@@ -862,18 +863,18 @@
     },
     "howItWorks": {
       "title": "How It Works",
-      "subtitle": "From meeting recording to actionable notes in 3 simple steps",
+      "subtitle": "From meeting recording to actionable notes in 3 simple steps — no bots, no interruptions",
       "step1": {
-        "title": "Record your meeting",
-        "description": "Use Zoom, Teams, Google Meet, your phone, or any recording device. All major audio and video formats supported."
+        "title": "Record your meeting naturally",
+        "description": "Use Zoom, Teams, Google Meet, your phone, or any recording device. No bot joins your call. All major audio and video formats supported."
       },
       "step2": {
-        "title": "AI transcribes with speaker labels",
-        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context — even technical jargon."
+        "title": "Upload and AI processes securely",
+        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context. Your audio is deleted within seconds after processing."
       },
       "step3": {
         "title": "Get meeting summary & action items",
-        "description": "Receive structured summaries with key decisions, discussion topics, and action items with owners and deadlines."
+        "description": "Receive structured summaries with key decisions, discussion topics, and action items with owners and deadlines. Only text transcripts are retained."
       }
     },
     "security": {
@@ -884,19 +885,19 @@
       },
       "compliance": {
         "title": "Privacy-first architecture",
-        "description": "Built with GDPR compliance and data protection at the core"
+        "description": "Built with GDPR compliance and data protection at the core. No bots join your meetings — keep sensitive conversations truly private."
       },
       "useCases": {
         "title": "Trusted by professionals",
-        "description": "Used by legal, medical, research, and executive teams where every word matters."
+        "description": "Used by legal, medical, research, and executive teams where every word matters and confidentiality is non-negotiable."
       },
       "technology": {
         "title": "Powered by cutting-edge AI",
-        "description": "Built with the latest language models fine-tuned for business communication."
+        "description": "Enterprise-grade transcription services process your audio securely and delete it immediately."
       },
       "encryption": {
-        "title": "Immediate deletion after processing",
-        "description": "Audio files are deleted within seconds, never stored on our servers"
+        "title": "Audio never stored on our servers",
+        "description": "Files sent to secure transcription services and deleted within seconds — we only retain text transcripts, never audio"
       },
       "retention": {
         "title": "Secure cloud infrastructure",
@@ -904,7 +905,7 @@
       },
       "audit": {
         "title": "Zero-knowledge architecture",
-        "description": "Your data remains private - we only process what's necessary and delete audio immediately"
+        "description": "Your data remains private - we only process what's necessary and delete audio immediately after transcription"
       },
       "badges": {
         "soc2": "SOC 2 Compliant",
@@ -948,14 +949,22 @@
         "answer": "Absolutely! Our AI automatically detects multiple speakers and labels them throughout the transcript. You can also rename speakers after processing for clarity in your meeting notes."
       },
       "question4": {
-        "question": "What makes Neural Summary the best AI meeting notes app?",
-        "answer": "Unlike basic transcription tools, Neural Summary goes beyond just converting speech to text. We provide intelligent summaries with key decisions, discussion topics, action items with owners and deadlines, and advanced analysis options — all with 99.5% accuracy and support for 50+ languages."
+        "question": "Does a bot join my meeting like other AI note-taking tools?",
+        "answer": "No! Unlike other meeting tools, Neural Summary does NOT use bots that join your calls. Simply upload your recording after the meeting ends. This means no awkward 'Recording Bot has joined' announcements, no extra participant in your call, and complete privacy for sensitive discussions. Perfect for confidential client calls, legal consultations, and executive meetings."
       },
       "question5": {
+        "question": "What makes Neural Summary the best AI meeting notes app?",
+        "answer": "Unlike basic transcription tools, Neural Summary goes beyond just converting speech to text. No bots join your meetings, your audio is deleted within seconds after processing, and we provide intelligent summaries with key decisions, discussion topics, action items with owners and deadlines, and advanced analysis options — all with 99.5% accuracy and support for 50+ languages."
+      },
+      "question6": {
         "question": "How long does it take to process a meeting recording?",
         "answer": "Most meetings are processed in 3-5 minutes, regardless of length. We support files up to 5GB (approximately 50+ hours of audio) and use parallel processing to handle large meetings quickly. You'll receive a notification when your meeting summary is ready."
       },
-      "question6": {
+      "question7": {
+        "question": "Is my audio stored on your servers? What about privacy?",
+        "answer": "Your audio is NEVER stored on our servers. When you upload a recording, it's sent directly to secure, enterprise-grade transcription services for processing, then deleted within seconds. We only retain the text transcript and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain private — ideal for legal, medical, and confidential business discussions."
+      },
+      "question8": {
         "question": "Can I share meeting transcripts with my team?",
         "answer": "Yes! Neural Summary includes advanced sharing features. Share transcripts and summaries via secure password-protected links, send via email, or export to PDF, Word, and other formats. Professional plans include unlimited sharing and collaboration features."
       }
