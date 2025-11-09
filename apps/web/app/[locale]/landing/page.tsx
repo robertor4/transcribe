@@ -150,6 +150,14 @@ export default async function LandingPage({
         question: t('landing.meetingFaq.question6.question'),
         answer: t('landing.meetingFaq.question6.answer'),
       },
+      {
+        question: t('landing.meetingFaq.question7.question'),
+        answer: t('landing.meetingFaq.question7.answer'),
+      },
+      {
+        question: t('landing.meetingFaq.question8.question'),
+        answer: t('landing.meetingFaq.question8.answer'),
+      },
     ],
   };
 
@@ -616,6 +624,13 @@ export default async function LandingPage({
                 <div className="flex items-start bg-pink-50 rounded-lg p-6">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit4')}</p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="slideLeft" delay={400}>
+                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                  <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
+                  <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit5')}</p>
                 </div>
               </ScrollAnimation>
             </div>

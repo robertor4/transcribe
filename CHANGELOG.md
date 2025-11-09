@@ -8,6 +8,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Enhanced Privacy Messaging**: Prominently featured audio privacy and "no bot" differentiator across all product descriptions
+  - **README.md Updates**:
+    - New "Privacy & Security You Can Trust" section explaining immediate audio deletion
+    - Added bullet point highlighting audio never stored on servers (processed by secure transcription services, deleted within seconds)
+    - Updated "How It Works" section to emphasize privacy at each step
+    - Enhanced Security & Compliance section with "Audio Never Stored" and "HIPAA-Ready Workflow" features
+    - Added use cases for sensitive meetings (legal, medical, HR, executive, research)
+    - **Privacy Enhancement**: Removed specific third-party service provider names to maintain competitive advantage
+  - **Landing Page Updates** ([apps/web/messages/en.json](apps/web/messages/en.json)):
+    - Hero trust indicator changed from "GDPR compliant" to "Audio never stored"
+    - Hero subtitle updated to emphasize direct platform upload and audio deletion
+    - Hero guarantee updated: "Audio deleted immediately" instead of "No credit card required"
+    - Meeting platforms subtitle: Added "No awkward bot joining your calls" messaging
+    - How It Works section: Updated all 3 steps to mention no bots, secure processing, and audio deletion
+    - Security section: Emphasized "Audio never stored on our servers" and enterprise-grade processing
+    - Why Teams section: Added 5th benefit highlighting no bots and immediate audio deletion
+    - FAQ: Added 2 new questions (now 8 total):
+      - Q4: "Does a bot join my meeting like other AI note-taking tools?" (No!)
+      - Q7: "Is my audio stored on your servers? What about privacy?" (Never stored, deleted within seconds)
+    - **Privacy Enhancement**: Removed specific third-party service provider names from all user-facing text
+  - **Landing Page Component** ([apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx)):
+    - Added question7 and question8 to FAQ display
+    - Added benefit5 to "Why Teams Choose" section
+  - **Key Differentiators Highlighted**:
+    - No bot joins your meetings (vs Otter.ai, Fireflies.ai, Grain, etc.)
+    - Audio deleted within seconds after processing
+    - Upload recordings from any platform after meeting ends
+    - Secure, enterprise-grade transcription services process audio privately
+    - Only text transcripts retained, never audio files
+    - Zero-knowledge architecture for sensitive conversations
+
+### Added
 - **Browser-Based Audio Recording**: New in-browser recording feature for capturing audio directly without uploading files
   - **Recording Sources**:
     - Microphone recording for physical meetings (all browsers)

@@ -18,6 +18,20 @@ Neural Summary automates the entire process from audio to actionable insights:
 - **Improve Communication**: Analyze speaking patterns and become a more effective presenter
 - **Share Effortlessly**: Send polished summaries to your team with one click
 - **Work Globally**: Translate transcripts into 15 languages instantly
+- **Privacy-First**: Audio files are processed by secure transcription services and **never stored** - deleted within seconds after processing
+
+### Privacy & Security You Can Trust
+
+**Your audio is never stored on our servers.** When you upload a recording, it's sent directly to secure, enterprise-grade transcription services for processing, then **immediately deleted** - typically within seconds. We only retain the text transcript and analysis results.
+
+This makes Neural Summary ideal for sensitive meetings:
+- **Legal consultations** - Client confidentiality maintained
+- **Medical discussions** - HIPAA-compliant workflow ready
+- **Executive briefings** - Strategic discussions remain private
+- **HR conversations** - Employee privacy protected
+- **Research interviews** - Participant data secured
+
+**Zero-knowledge architecture**: Your data is encrypted in transit and at rest. We process only what's necessary and delete audio immediately after transcription.
 
 ### Who Uses Neural Summary
 Trusted by legal, medical, research, and executive teams where every word matters. From solo professionals to enterprise organizations, our platform scales with your needs while maintaining enterprise-grade security and compliance.
@@ -51,9 +65,10 @@ Trusted by legal, medical, research, and executive teams where every word matter
 - **Timeline Visualization**: Interactive speaker timeline with timestamps and context-aware copy
 
 ### Security & Compliance
-- **Zero-Knowledge Architecture**: Your data is encrypted and inaccessible to us
-- **Immediate Deletion**: Audio files deleted within seconds after processing
+- **Audio Never Stored**: Recordings processed by secure enterprise transcription services and deleted within seconds - never saved to our servers
+- **Zero-Knowledge Architecture**: Your data is encrypted and inaccessible to us - only text transcripts retained
 - **GDPR Compliant**: Enterprise-grade security and data protection with account deletion options
+- **HIPAA-Ready Workflow**: Secure processing suitable for sensitive medical, legal, and confidential discussions
 - **Security Hardening**: Rate limiting, input validation, XSS protection, command injection protection
 - **Secure Headers**: Helmet middleware with CSP, HSTS, and security best practices
 
@@ -68,16 +83,20 @@ Trusted by legal, medical, research, and executive teams where every word matter
 
 Get started in under 60 seconds:
 
-1. **Upload or Record Audio**
-   - Use your phone, Zoom, or any recording app
+1. **Upload Your Meeting Recording**
+   - **Direct upload** from Zoom, Microsoft Teams, Google Meet, or WebEx recordings
+   - Use your phone, any recording app, or in-person meeting recordings
    - Supports all major formats: M4A, MP3, WAV, MP4, WebM, FLAC, OGG
    - Drag & drop files up to 5GB or batch upload multiple files
+   - **Privacy guarantee**: Audio sent to secure transcription service, never stored on our servers
 
-2. **AI Processing**
+2. **Secure AI Processing**
+   - Audio processed by secure, enterprise-grade transcription services
    - Automatic transcription with 99.5% accuracy
    - Speaker identification and diarization
-   - Context-aware analysis using GPT-5
+   - Context-aware AI analysis for summaries and insights
    - Real-time progress updates via WebSocket
+   - **Audio deleted within seconds** after processing - only text transcript retained
 
 3. **Get Actionable Insights**
    - Core analyses auto-generated (Summary, Action Items, Communication)
@@ -86,7 +105,7 @@ Get started in under 60 seconds:
    - Instant translation to 15 languages with preference persistence
    - Interactive timeline view with context-aware copying
 
-**Result**: What used to take hours now takes seconds. Focus on decisions, not documentation.
+**Result**: What used to take hours now takes seconds. Focus on decisions, not documentation. Your sensitive conversations remain private with immediate audio deletion.
 
 ## Tech Stack
 
