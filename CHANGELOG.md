@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Share Page On-Demand Analyses**: Fixed share page to display custom/on-demand analyses when using "Complete" sharing preset
+  - Share page now correctly passes `generatedAnalyses` prop to `AnalysisTabs` component
+  - Previously only core analyses (summary, action items, communication styles) were displayed
+  - Now includes all user-generated custom analyses when shared with `includeOnDemandAnalyses: true`
+  - File: [apps/web/app/[locale]/shared/[shareToken]/page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx)
+
 ### Added
 - **Enhanced Privacy Messaging**: Prominently featured audio privacy and "no bot" differentiator across all product descriptions
   - **README.md Updates**:
