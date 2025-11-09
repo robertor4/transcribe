@@ -239,17 +239,17 @@ export default function SharedTranscriptionPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="p-6">
             {/* Analysis Tabs - only show content that was explicitly shared */}
-            {(transcription.analyses || transcription.transcriptText) && (
+            {(transcription.analyses || transcription.transcriptText || transcription.generatedAnalyses) && (
               <AnalysisTabs
                 analyses={{
-                  // The backend already filters analyses based on contentOptions
-                  // We just need to add the transcript if it was provided
+                  // Core analyses from backend (already filtered based on contentOptions)
                   ...(transcription.analyses || {}),
                   // Add transcript only if it was shared (backend provides it only when shared)
                   ...(transcription.transcriptText
                     ? { transcript: transcription.transcriptText }
                     : {})
                 }}
+                generatedAnalyses={transcription.generatedAnalyses}
                 speakerSegments={transcription.speakerSegments}
                 speakers={transcription.speakers}
                 transcription={transcription}
@@ -258,7 +258,7 @@ export default function SharedTranscriptionPage() {
             )}
 
             {/* Show message if no content was shared */}
-            {!transcription.analyses && !transcription.transcriptText && (
+            {!transcription.analyses && !transcription.transcriptText && !transcription.generatedAnalyses?.length && (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-700">No content available for this shared transcript.</p>
