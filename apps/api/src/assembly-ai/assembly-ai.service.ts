@@ -66,7 +66,10 @@ export class AssemblyAIService {
     onProgress?: (progress: number, message: string) => void,
   ): Promise<AssemblyAIResult> {
     try {
-      this.logger.log(`Starting AssemblyAI transcription for URL: ${audioUrl}`);
+      // Extract transcription ID from URL for concise logging
+      const idMatch = audioUrl.match(/transcriptions%2F([^%\/]+)/);
+      const transcriptionId = idMatch ? idMatch[1] : 'unknown';
+      this.logger.log(`Starting AssemblyAI transcription for job ${transcriptionId}`);
 
       // Prepare word boost from context - extract important keywords
       const wordBoost = context
@@ -205,7 +208,9 @@ export class AssemblyAIService {
     onProgress?: (progress: number, message: string) => void,
   ): Promise<AssemblyAIResult> {
     try {
-      this.logger.log(`Uploading file to AssemblyAI: ${fileName}`);
+      // Extract job identifier from filename (format: userId_timestamp.ext or transcriptionId.ext)
+      const jobId = fileName.split('.')[0].split('_').pop() || 'unknown';
+      this.logger.log(`Uploading file to AssemblyAI for job ${jobId} (${(audioBuffer.length / 1024 / 1024).toFixed(1)}MB)`);
 
       // Upload the file to AssemblyAI
       const uploadUrl = await this.client.files.upload(audioBuffer);

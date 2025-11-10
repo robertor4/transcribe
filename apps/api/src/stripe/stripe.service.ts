@@ -396,11 +396,21 @@ export class StripeService {
       const tier = session.metadata?.tier as 'professional' | 'business';
       const billing = session.metadata?.billing || 'monthly';
 
-      // Get subscription details to get exact amount
+      // Get actual amount paid (after discounts/coupons/taxes)
+      const amount = session.amount_total || 0;
+      const currency = session.currency || 'usd';
+
+      // Optional: Fetch subscription to log discount information
       const subscription =
         await this.stripe.subscriptions.retrieve(subscriptionId);
-      const amount = subscription.items.data[0]?.price?.unit_amount || 0;
-      const currency = subscription.items.data[0]?.price?.currency || 'usd';
+      const originalAmount = subscription.items.data[0]?.price?.unit_amount || 0;
+      const discountApplied = originalAmount - amount;
+
+      if (discountApplied > 0) {
+        this.logger.log(
+          `Discount applied: $${discountApplied / 100} (Original: $${originalAmount / 100}, Paid: $${amount / 100})`,
+        );
+      }
 
       // Update user with subscription info and reset usage
       await this.firebaseService.updateUser(userId, {

@@ -7,7 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Reduced Logging Verbosity**: Replaced verbose URL and file path logging with concise identifiers to improve log readability
+  - **AssemblyAI Service**: Now logs job/transcription IDs instead of full audio URLs (100+ chars → ~20 chars)
+  - **Firebase Service**: Uses transcription IDs instead of full file paths for all storage operations
+  - **Audio Splitter**: Logs chunk indices (e.g., "Processing chunk 1/5") instead of full FFmpeg commands and temporary file paths
+  - Added file size and duration metadata where relevant for debugging
+  - Full paths/URLs still available in debug-level logs when needed
+  - Files modified:
+    - [apps/api/src/assembly-ai/assembly-ai.service.ts](apps/api/src/assembly-ai/assembly-ai.service.ts)
+    - [apps/api/src/firebase/firebase.service.ts](apps/api/src/firebase/firebase.service.ts)
+    - [apps/api/src/utils/audio-splitter.ts](apps/api/src/utils/audio-splitter.ts)
+
 ### Fixed
+- **Stripe Revenue Tracking with Discount Coupons**: Fixed revenue analytics to track actual amount paid instead of original subscription price
+  - Revenue tracking now uses `session.amount_total` (actual amount after discounts) instead of `subscription.items.data[0]?.price?.unit_amount` (base price)
+  - Previously, 100% discount coupons were incorrectly tracked as full-price revenue in Google Analytics 4
+  - Now correctly tracks $0 revenue for founding member coupons and accurate discounted amounts for partial discounts
+  - Added logging for discount information when coupons are applied
+  - File: [apps/api/src/stripe/stripe.service.ts:399-413](apps/api/src/stripe/stripe.service.ts#L399-L413)
 - **Share Page On-Demand Analyses**: Fixed share page to display custom/on-demand analyses when using "Complete" sharing preset
   - Share page now correctly passes `generatedAnalyses` prop to `AnalysisTabs` component
   - Previously only core analyses (summary, action items, communication styles) were displayed
