@@ -165,7 +165,7 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
 
         {/* Hero Section with Video Background */}
         <section className="relative min-h-screen flex items-center overflow-hidden" aria-label="Hero section">
@@ -247,14 +247,14 @@ export default async function LandingPage({
         <MeetingPlatforms {...meetingPlatformsStrings} />
 
         {/* Value Proposition Section */}
-        <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900" aria-labelledby="value-prop-heading">
+        <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="value-prop-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <ScrollAnimation>
-                <h2 id="value-prop-heading" className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 leading-relaxed max-w-4xl mx-auto">
+                <h2 id="value-prop-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-relaxed max-w-4xl mx-auto">
                   {t('landing.valueProposition.title')}
                 </h2>
-                <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+                <p className="text-lg text-gray-700 max-w-3xl mx-auto">
                   {t('landing.valueProposition.subtitle')}
                 </p>
               </ScrollAnimation>
@@ -262,42 +262,42 @@ export default async function LandingPage({
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               <ScrollAnimation className="text-center" animation="slideLeft">
-                <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-50 dark:from-[#cc3399]/20 dark:to-purple-900/20 rounded-2xl p-8 h-full">
+                <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-50 rounded-2xl p-8 h-full">
                   <div className="w-16 h-16 bg-[#cc3399] rounded-full flex items-center justify-center mx-auto mb-6">
                     <Clock className="h-8 w-8 text-white" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     {t('landing.valueProposition.efficiency.title')}
                   </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed">
                     {t('landing.valueProposition.efficiency.description')}
                   </p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation className="text-center" delay={200}>
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 h-full">
+                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 h-full">
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Sparkles className="h-8 w-8 text-white" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     {t('landing.valueProposition.clarity.title')}
                   </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed">
                     {t('landing.valueProposition.clarity.description')}
                   </p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation className="text-center" animation="slideRight" delay={400}>
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-8 h-full">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 h-full">
                   <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <TrendingUp className="h-8 w-8 text-white" aria-hidden="true" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
                     {t('landing.valueProposition.impact.title')}
                   </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed">
                     {t('landing.valueProposition.impact.description')}
                   </p>
                 </div>
@@ -305,7 +305,7 @@ export default async function LandingPage({
             </div>
 
             <ScrollAnimation className="text-center" delay={600}>
-              <p className="text-xl font-semibold text-gray-900 dark:text-white">
+              <p className="text-xl font-semibold text-gray-900">
                 {t('landing.valueProposition.tagline')}
               </p>
               <Link
@@ -321,79 +321,79 @@ export default async function LandingPage({
         </section>
 
         {/* Benefits Section - What's in it for me? */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800" aria-labelledby="benefits-heading">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="benefits-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <ScrollAnimation>
-                <h2 id="benefits-heading" className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <h2 id="benefits-heading" className="text-4xl font-bold text-gray-900 mb-4">
                   {t('landing.benefits.title')}
                 </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                   {t('landing.benefits.subtitle')}
                 </p>
               </ScrollAnimation>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-              <ScrollAnimation className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft">
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft">
                 <div className="p-8">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-[#cc3399]/10 dark:bg-[#cc3399]/20 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
                       <Users className="h-6 w-6 text-[#cc3399]" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white ml-4">
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
                       {t('landing.benefits.shareCollaborate.title')}
                     </h3>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <p className="text-gray-700">
                     {t('landing.benefits.shareCollaborate.description')}
                   </p>
                 </div>
               </ScrollAnimation>
 
-              <ScrollAnimation className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={100}>
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={100}>
                 <div className="p-8">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="h-6 w-6 text-blue-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white ml-4">
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
                       {t('landing.benefits.improveCommunication.title')}
                     </h3>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <p className="text-gray-700">
                     {t('landing.benefits.improveCommunication.description')}
                   </p>
                 </div>
               </ScrollAnimation>
 
-              <ScrollAnimation className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft" delay={200}>
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft" delay={200}>
                 <div className="p-8">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-green-600 dark:text-green-400" aria-hidden="true" />
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <Clock className="h-6 w-6 text-green-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white ml-4">
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
                       {t('landing.benefits.saveTime.title')}
                     </h3>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <p className="text-gray-700">
                     {t('landing.benefits.saveTime.description')}
                   </p>
                 </div>
               </ScrollAnimation>
 
-              <ScrollAnimation className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={300}>
+              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={300}>
                 <div className="p-8">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" aria-hidden="true" />
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="h-6 w-6 text-purple-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white ml-4">
+                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
                       {t('landing.benefits.neverMiss.title')}
                     </h3>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <p className="text-gray-700">
                     {t('landing.benefits.neverMiss.description')}
                   </p>
                 </div>
@@ -406,20 +406,20 @@ export default async function LandingPage({
         <MeetingUseCases {...meetingUseCasesStrings} />
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 dark:bg-gray-900" aria-labelledby="how-it-works-heading">
+        <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="how-it-works-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
-              <h2 id="how-it-works-heading" className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 id="how-it-works-heading" className="text-3xl font-bold text-gray-900 mb-4">
                 {t('landing.howItWorks.title')}
               </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
+              <p className="text-lg text-gray-600">
                 {t('landing.howItWorks.subtitle')}
               </p>
             </div>
             
             <div className="grid gap-8 md:grid-cols-3">
               <ScrollAnimation className="relative" animation="slideLeft">
-                <article className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     1
                   </div>
@@ -431,13 +431,13 @@ export default async function LandingPage({
                     />
                   </div>
                   <div className="p-8">
-                    <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-4">
-                      <Mic className="h-7 w-7 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                    <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                      <Mic className="h-7 w-7 text-blue-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       {t('landing.howItWorks.step1.title')}
                     </h3>
-                    <p className="text-gray-700 dark:text-gray-300">
+                    <p className="text-gray-700">
                       {t('landing.howItWorks.step1.description')}
                     </p>
                   </div>
@@ -445,7 +445,7 @@ export default async function LandingPage({
               </ScrollAnimation>
 
               <ScrollAnimation className="relative" delay={200}>
-                <article className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     2
                   </div>
@@ -457,13 +457,13 @@ export default async function LandingPage({
                     />
                   </div>
                   <div className="p-8">
-                    <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-4">
-                      <Brain className="h-7 w-7 text-purple-600 dark:text-purple-400" aria-hidden="true" />
+                    <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                      <Brain className="h-7 w-7 text-purple-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       {t('landing.howItWorks.step2.title')}
                     </h3>
-                    <p className="text-gray-700 dark:text-gray-300">
+                    <p className="text-gray-700">
                       {t('landing.howItWorks.step2.description')}
                     </p>
                   </div>
@@ -471,7 +471,7 @@ export default async function LandingPage({
               </ScrollAnimation>
 
               <ScrollAnimation className="relative" animation="slideRight" delay={400}>
-                <article className="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
+                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
                   <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
                     3
                   </div>
@@ -483,13 +483,13 @@ export default async function LandingPage({
                     />
                   </div>
                   <div className="p-8">
-                    <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-4">
-                      <Award className="h-7 w-7 text-green-600 dark:text-green-400" aria-hidden="true" />
+                    <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                      <Award className="h-7 w-7 text-green-600" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
                       {t('landing.howItWorks.step3.title')}
                     </h3>
-                    <p className="text-gray-700 dark:text-gray-300">
+                    <p className="text-gray-700">
                       {t('landing.howItWorks.step3.description')}
                     </p>
                   </div>

@@ -17,7 +17,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
   const { user } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm z-50">
+    <header className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-sm z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex items-center justify-between h-16">
           <Link href={`/${locale}/landing`} className="flex items-center">
@@ -29,10 +29,10 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
               height={32}
             />
             <div>
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                 {tCommon('appName')}
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{tLanding('hero.byline')}</p>
+              <p className="text-xs text-gray-500 hidden sm:block">{tLanding('hero.byline')}</p>
             </div>
           </Link>
 
@@ -41,7 +41,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             {showFeaturesLink && (
               <Link
                 href={`/${locale}/landing#features`}
-                className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
+                className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
                 aria-label="View features"
               >
                 {tLanding('nav.features')}
@@ -49,7 +49,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             )}
             <Link
               href={`/${locale}/pricing`}
-              className="text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] font-medium transition-colors"
+              className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
               aria-label="View pricing plans"
             >
               {tLanding('nav.pricing')}
@@ -67,7 +67,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
               <>
                 <Link
                   href={`/${locale}/login`}
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+                  className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
                   aria-label="Log in to Neural Summary"
                 >
                   {tLanding('nav.login')}

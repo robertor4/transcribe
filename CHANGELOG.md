@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- **Dark Mode from Landing Pages**: Removed dark mode support from all static/public marketing pages for consistent branding
+  - Landing pages now always render in light mode (removed all `dark:` Tailwind classes)
+  - Dashboard and authenticated pages retain full dark mode functionality
+  - Improves marketing consistency and reduces CSS bundle size for public pages
+  - Files modified:
+    - [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx)
+    - [apps/web/components/PublicHeader.tsx](apps/web/components/PublicHeader.tsx)
+    - [apps/web/components/landing/MeetingPlatforms.tsx](apps/web/components/landing/MeetingPlatforms.tsx)
+    - [apps/web/components/landing/MeetingUseCases.tsx](apps/web/components/landing/MeetingUseCases.tsx)
+    - [apps/web/components/landing/MeetingFAQ.tsx](apps/web/components/landing/MeetingFAQ.tsx)
+    - [apps/web/app/[locale]/pricing/page.tsx](apps/web/app/[locale]/pricing/page.tsx)
+    - [apps/web/app/[locale]/login/page.tsx](apps/web/app/[locale]/login/page.tsx)
+    - [apps/web/app/[locale]/signup/page.tsx](apps/web/app/[locale]/signup/page.tsx)
+
 ### Changed
 - **Reduced Logging Verbosity**: Replaced verbose URL and file path logging with concise identifiers to improve log readability
   - **AssemblyAI Service**: Now logs job/transcription IDs instead of full audio URLs (100+ chars → ~20 chars)
