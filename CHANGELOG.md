@@ -7,6 +7,191 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **WorkflowCarousel Component**: Created horizontal carousel for "Built for your workflow" section
+  - Apple-style design with smooth auto-advancing slides (5s interval)
+  - Four workflow personas with AI-generated images (Product Manager, Founder, Content Creator, Sales Leader)
+  - Interactive navigation: arrow buttons, dot indicators, pause on hover
+  - Responsive design with gradient overlays for text readability
+  - Generated images using Google Imagen-4 via Replicate API
+  - Files: [apps/web/components/landing/WorkflowCarousel.tsx](apps/web/components/landing/WorkflowCarousel.tsx)
+  - Images: [apps/web/public/assets/images/product-manager-workflow.png](apps/web/public/assets/images/product-manager-workflow.png), [apps/web/public/assets/images/founder-workflow.png](apps/web/public/assets/images/founder-workflow.png), [apps/web/public/assets/images/content-creator-workflow.png](apps/web/public/assets/images/content-creator-workflow.png), [apps/web/public/assets/images/sales-leader-workflow.png](apps/web/public/assets/images/sales-leader-workflow.png)
+
+### Changed
+- **WorkflowCarousel Full-Bleed Immersion**: Transformed into truly immersive viewport-filling experience
+  - Image fills entire viewport height minus header (`calc(100vh - 80px)`)
+  - Completely removed padding/margins for edge-to-edge presentation (no background visible)
+  - Section title "Built for your workflow" overlaid on top of carousel with drop shadow
+  - Text positioned bottom-left (not center) to avoid blocking subject matter in images
+  - Navigation dots overlaid on bottom of image (white/transparent instead of gray)
+  - Refined gradient overlay (black/80 → black/30 → black/20) for better image visibility while maintaining text contrast
+  - Files: [apps/web/components/landing/WorkflowCarousel.tsx](apps/web/components/landing/WorkflowCarousel.tsx:88-186), [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:295-309)
+- **Workflow Section Redesign**: Replaced static 2x2 grid with interactive carousel
+  - Changed from static cards to dynamic horizontal carousel with real images
+  - Enhanced visual engagement with AI-generated persona photography
+  - Improved mobile experience with swipeable carousel
+- **Simplified Video Demo Section**: Reduced visual crowding in "From Thinking to Done" section
+  - Removed second paragraph ("3 minutes later: Complete product spec, ready for your dev team")
+  - Removed BeforeAfterAnimation component (redundant with ThreeStepsAnimation above)
+  - Now shows: headline → subtext → video → CTA (clean, focused flow)
+  - Video becomes immediate hero element after intro text
+  - Cleaner vertical spacing and better information hierarchy
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:263-300)
+
+### Added
+- **CTAButton Component**: Created reusable Client Component for CTA buttons with hover state
+  - Supports both link (href) and anchor (#) variants
+  - Two styling variants: `primary` (solid background) and `secondary` (outlined)
+  - Handles interactive hover effects with state management
+  - Uses `rounded-full` (pill-shaped) following Apple's design language
+  - Primary variant: `#2c2c2c` background with `#3a3a3a` hover
+  - Secondary variant: Outlined with gray-900 border, fills on hover
+  - Files: [apps/web/components/landing/CTAButton.tsx](apps/web/components/landing/CTAButton.tsx)
+- **Hero Section Dual CTAs**: Added primary and secondary call-to-action buttons
+  - Primary CTA: "Get started free" → signup page
+  - Secondary CTA: "Watch demo" → smooth scroll to video demo section (#video-demo)
+  - Side-by-side layout on desktop, stacked on mobile
+- **"The Cost of Translation" Section (WHY)**: Dark section establishing pain point
+  - Headline: "Your best ideas get lost in translation"
+  - Emphasizes the friction between thinking (conversations) and working (documents)
+  - Positions Neural Summary as the bridge between voice and deliverables
+- **"From Thinking to Done" Section (WOW)**: Transformed video demo section
+  - Headline: "Speaking becomes creating"
+  - Shows transformation from idea → complete product spec in 3 minutes
+  - Emphasizes AI interview feature differentiator
+  - YouTube video embed with responsive 16:9 aspect ratio
+  - Positioned with `id="video-demo"` for smooth scroll navigation
+- **"Built for Creators" Persona Section (WHO)**: Dark section with 4 use case cards
+  - Product Manager: Brainstorm → Product spec in 5 minutes
+  - Founder: Vision talk → Strategy doc for team
+  - Content Creator: Interview → Publish-ready article
+  - Sales Leader: Client call → Follow-up email in minutes
+  - Glass-morphism cards with hover effects
+- **"The Future of Work" Vision Section (WARP)**: Dark aspirational section before final CTA
+  - Headline: "The future of work isn't typing. It's thinking out loud."
+  - Manifesto-style copy emphasizing transformation
+  - Positions voice-to-output as the new creative workflow
+- **Framer Motion Animation Library**: Added `framer-motion` package for landing page animations
+  - Selected for minimal bundle size (~50KB with tree-shaking)
+  - Used for scroll-triggered animations with `useInView` hook
+  - Provides built-in `prefers-reduced-motion` support
+  - Dependency version: `^12.23.24`
+- **ThreeStepsAnimation Component**: Animated flow diagram for "How It Works" section
+  - File: [apps/web/components/landing/ThreeStepsAnimation.tsx](apps/web/components/landing/ThreeStepsAnimation.tsx)
+  - Interactive icons: Mic (pulsing), Settings (rotating), FileText (fading)
+  - Staggered entrance animation with scroll trigger
+  - Responsive grid layout: `md:grid-cols-[1fr_auto_1fr_auto_1fr]`
+  - **On-brand minimal color palette**:
+    - All icon backgrounds: `from-gray-100 to-gray-200` gradients with `shadow-sm` (increased contrast)
+    - Step 1 (Speak): Brand pink icon `#cc3399` - highlights input
+    - Step 2 (Extract): Gray icon `text-gray-600` - neutral processing
+    - Step 3 (Create): Brand pink icon `#cc3399` - highlights output
+    - Strategic use of brand color for beginning and end of journey
+  - Features:
+    - Microphone icon with breathing/pulsing effect (2s loop)
+    - Gears icon with gentle continuous rotation (8s linear loop)
+    - Document icon with fade-in effect
+    - Arrows between steps with slide-in animation
+    - Single-play on scroll into view
+  - Uses Lucide React icons for consistency
+  - Aligns with "Calm Intelligence" futuristic-minimal aesthetic
+- **BeforeAfterAnimation Component**: Before/After transformation visualization for "WOW" section
+  - File: [apps/web/components/landing/BeforeAfterAnimation.tsx](apps/web/components/landing/BeforeAfterAnimation.tsx)
+  - 3-column layout: Thought bubble → Lightning bolt → Document
+  - Animated counter using `useMotionValue` and `useTransform`: displays "0:00" → "3:00"
+  - **On-brand color palette**:
+    - Thought bubble: `from-gray-100 to-gray-200` with gray icon
+    - Lightning & timer: Brand pink `#cc3399`
+    - Document: `from-gray-100 to-gray-200` with brand pink icon and animated lines
+  - Features:
+    - Thought bubble: Floating animation with breathing effect (3s loop)
+    - Thought bubble tail: Small circles appear with delay
+    - Lightning bolt: Zap animation with rotation and scale effects
+    - Animated timer: Counts from 0 to 180 seconds (3 minutes) over 2 seconds
+    - Document: Materializes with line-by-line build animation (4 lines in brand pink)
+    - Sequential entrance: Left → Center → Right with cascading delays
+  - Single-play on scroll into view (prevents re-trigger)
+  - Uses Lucide React icons: Lightbulb, Zap, FileCheck
+
+### Changed
+- **Landing Page Narrative Transformation - "Thinking → Creating"**: Complete repositioning from "meeting notes" to "voice-to-output creation platform"
+  - **Hero Section**:
+    - Updated subtitle: "Turn conversations into work-ready documents—effortlessly"
+    - Emphasizes deliverable output vs passive note-taking
+    - Replaced video background with transparent hero image (`hero-bg-01 transparant.webp`)
+    - Warm gradient background: `from-gray-100/40 via-stone-50/30 to-gray-50/50`
+    - Text positioned at top with laptop image at bottom for Apple-like aesthetic
+  - **How It Works Section** (light, changed from dark):
+    - Renamed: "Three steps to creation" (was "Three steps to clarity")
+    - Step 1: **Speak** - "Record meetings, ideas, interviews. Or let Neural Summary interview you."
+    - Step 2: **Extract** - "AI structures thoughts, asks questions, captures every detail."
+    - Step 3: **Create** - "Get work-ready documents instantly. Specs, articles, emails, strategies."
+    - Emphasizes AI interview feature and transformation narrative
+    - **Now uses ThreeStepsAnimation component** for visual engagement with animated icons and transitions
+  - **From Thinking to Done Section** (WOW):
+    - **Integrated BeforeAfterAnimation component** showing visual transformation timeline
+    - Displays before (thought bubble) → transformation (3-minute timer) → after (document)
+    - Positioned above YouTube video to reinforce the speed of transformation
+  - **Features Section** (light):
+    - Three key features with image placeholders
+    - Alternating left/right layout for visual rhythm
+    - Minimal copy focusing on benefits
+  - **Security Section** (dark `#2c2c2c`):
+    - Clean headline with supporting text
+    - Enterprise-grade messaging
+  - **CTA Section** (light):
+    - Minimal "Ready to remember?" headline
+    - Custom CTA button with `#2c2c2c` background
+  - **Color Changes**:
+    - Changed all dark sections from `bg-gray-900` (#111827) to warmer `#2c2c2c`
+    - Creates softer, more approachable feel while maintaining sophistication
+    - CTA button uses `#2c2c2c` with `#3a3a3a` hover state
+- **Geist Font Applied Globally**: Replaced Inter font with Geist throughout entire application
+  - Added Google Fonts CDN link in root layout
+  - Applied to all body text via inline style (`fontFamily: 'Geist, system-ui, sans-serif'`)
+  - Updated `globals.css` body font-family for fallback
+  - Font weights: 300 (light), 400 (regular), 600 (semibold), 700 (bold), 800 (extrabold)
+- **README.md - Added "Calm Intelligence" Design Philosophy**:
+  - Documents futuristic-minimal aesthetic
+  - Defines tone as "Serene, confident, intelligent"
+  - Describes visual DNA: white space, soft gradients, precise typography
+  - Philosophy: "Technology that listens rather than shouts"
+- **CLAUDE.md - Added UI Design Guidelines**:
+  - Minimal text philosophy: "Few words, no marketing fluff"
+  - Color palette: Light gradients (`from-gray-50 to-white`), dark sections (`#2c2c2c`)
+  - Typography: Geist font globally applied
+  - Alternating light/dark sections for emotional rhythm
+  - **Button styling guidelines** (Apple design language):
+    - Primary CTAs: `rounded-full` (pill-shaped) for distinctive, approachable feel
+    - Secondary buttons: `rounded-lg` for utility actions and forms
+    - Documented CTAButton component usage with variants
+- **Standardized All CTA Buttons to Apple Style**: Changed all primary action buttons to `rounded-full`
+  - Updated landing page CTAs (lines 431, 696) from `rounded-xl` → `rounded-full`
+  - Consistent pill-shaped buttons across entire landing page
+  - Follows authentic Apple design pattern (confirmed via apple.com analysis)
+- **Brand Color Consistency Across Landing Page**: Unified color palette throughout all sections
+  - **"Why Teams Choose" section**: Changed card backgrounds from `bg-pink-50` to `bg-gray-50` with `border-gray-200`
+    - Aligns with minimal gray aesthetic
+    - Added subtle borders for definition
+    - Maintains brand pink checkmark icons (`#cc3399`)
+  - **Pricing section checkmarks**: Changed from `text-green-600` to `text-[#cc3399]` (brand pink)
+    - Applies to Free and Pay-As-You-Go tier feature lists
+    - Professional tier retains yellow checkmarks for differentiation
+    - Consistent brand color across all pricing tiers
+  - **"Why Teams" CTA button**: Converted to use CTAButton component
+    - Replaced inline button styling with CTAButton for consistency
+    - Ensures consistent hover states and interactions
+  - **Animation components**: All now use brand-consistent colors
+    - ThreeStepsAnimation: Gray backgrounds with strategic brand pink accents
+    - BeforeAfterAnimation: Gray backgrounds, brand pink transformation elements
+- **Standardized Section Padding**: Unified vertical spacing across all landing page sections
+  - Changed "Why Teams Choose" section: `py-20` → `py-32`
+  - Changed "Pricing Teaser" section: `py-20` → `py-32`
+  - Updated horizontal padding for consistency: `px-4 sm:px-6 lg:px-8` → `px-6 sm:px-8 lg:px-12`
+  - Creates consistent visual rhythm throughout the page
+  - All major sections now use `py-32` for breathing room
+  - **Design Decision**: Purple color retained in pricing section for tier differentiation (functional exception to strict brand palette)
+
 ### Removed
 - **Dark Mode from Landing Pages**: Removed dark mode support from all static/public marketing pages for consistent branding
   - Landing pages now always render in light mode (removed all `dark:` Tailwind classes)

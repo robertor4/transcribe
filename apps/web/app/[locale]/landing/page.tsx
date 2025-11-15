@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import ScrollAnimation from '@/components/ScrollAnimation';
-import { SmoothScrollLink } from '@/components/landing/SmoothScrollLink';
 import { MeetingPlatforms } from '@/components/landing/MeetingPlatforms';
 import { MeetingUseCases } from '@/components/landing/MeetingUseCases';
 import { MeetingFAQ } from '@/components/landing/MeetingFAQ';
+import { CTAButton } from '@/components/landing/CTAButton';
+import { ThreeStepsAnimation } from '@/components/landing/ThreeStepsAnimation';
+import WorkflowCarousel from '@/components/landing/WorkflowCarousel';
 import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
 import type { Metadata } from 'next';
 import {
@@ -167,421 +169,196 @@ export default async function LandingPage({
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
 
-        {/* Hero Section with Video Background */}
-        <section className="relative min-h-screen flex items-center overflow-hidden" aria-label="Hero section">
-          {/* Video Background */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute top-0 left-0 w-full h-full object-cover"
-            aria-hidden="true"
-          >
-            <source src="/assets/videos/neuralnotes-videobg.webm" type="video/webm" />
-          </video>
-          
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-black/70" aria-hidden="true"></div>
-          
-          {/* Content */}
-          <div className="relative z-10 px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20">
-            <div className="max-w-7xl mx-auto">
-              <div className="text-center space-y-10">
-                {/* Trust Indicators */}
-                <ScrollAnimation className="flex flex-wrap justify-center items-center gap-3 sm:gap-4" delay={200}>
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-[#ff66cc]" aria-hidden="true" />
-                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.users')}</span>
-                  </div>
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Star className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.rating')}</span>
-                  </div>
-                  <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/20">
-                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 text-green-400" aria-hidden="true" />
-                    <span className="text-xs sm:text-sm font-medium text-white">{t('landing.hero.trustIndicators.certified')}</span>
-                  </div>
+        {/* Hero Section - Minimal Apple-like Design */}
+        <section className="relative min-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
+          {/* Background Image - Clean, full opacity, positioned at bottom */}
+          <div className="absolute inset-0 flex items-end justify-center" aria-hidden="true">
+            <img
+              src="/assets/images/hero-bg-01 transparant.webp"
+              alt=""
+              className="w-full h-auto object-cover object-bottom"
+              style={{ minWidth: '100%', maxHeight: '70vh' }}
+            />
+          </div>
+
+          {/* Content - Positioned at top, clean spacing */}
+          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-32 sm:pt-40">
+            <div className="max-w-6xl mx-auto text-center">
+              <div className="space-y-8">
+
+                {/* Main Headline - Large and Bold, single line */}
+                <ScrollAnimation delay={200}>
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 leading-tight tracking-tight whitespace-nowrap">
+                    Speak. We'll remember.
+                  </h1>
                 </ScrollAnimation>
 
-                {/* Main Headline */}
-                <ScrollAnimation delay={300}>
-                  <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight drop-shadow-lg">
-                    {t('landing.hero.title')}{' '}
-                    <span className="text-[#ff66cc]">{t('landing.hero.titleHighlight')}</span>
-                  </h2>
-                  <p className="text-lg sm:text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto mt-8 drop-shadow-md">
-                    {t('landing.hero.subtitle')}
+                {/* Subtitle - Compact and Clean */}
+                <ScrollAnimation delay={400}>
+                  <p className="text-lg sm:text-xl md:text-2xl text-gray-700 font-normal max-w-3xl mx-auto leading-relaxed">
+                    Turn conversations into work-ready documents—effortlessly.
                   </p>
                 </ScrollAnimation>
 
-                {/* CTA Buttons */}
-                <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0" delay={400}>
-                  <Link
-                    href={`/${locale}/signup`}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#ff66cc] transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#ff66cc] focus:ring-offset-2 focus:ring-offset-black/50 hover-glow"
-                    aria-label="Start using Neural Summary free forever"
-                  >
-                    {t('landing.hero.cta.primary')}
-                    <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
-                  </Link>
-                  <SmoothScrollLink
-                    href="#how-it-works"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold text-lg rounded-xl shadow-md border border-white/30 hover:bg-white/20 transition-all"
-                    ariaLabel="Learn how Neural Summary works"
-                  >
-                    {t('landing.hero.cta.secondary')}
-                    <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
-                  </SmoothScrollLink>
+                {/* Dual CTAs */}
+                <ScrollAnimation delay={600}>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+                    {/* Primary CTA */}
+                    <CTAButton href="/signup" locale={locale} variant="primary">
+                      Get started free
+                    </CTAButton>
+
+                    {/* Secondary CTA - Watch Demo */}
+                    <CTAButton href="#video-demo" variant="secondary">
+                      Watch demo
+                    </CTAButton>
+                  </div>
                 </ScrollAnimation>
 
-                <p className="text-sm md:text-base text-gray-200">
-                  {t('landing.hero.guarantee')}
-                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Meeting Platforms Section */}
-        <MeetingPlatforms {...meetingPlatformsStrings} />
+        {/* The Cost of Translation - Dark Section (WHY) */}
+        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="cost-heading">
+          <div className="max-w-4xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 id="cost-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
+                Your best ideas get lost in translation.
+              </h2>
+            </ScrollAnimation>
 
-        {/* Value Proposition Section */}
-        <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="value-prop-heading">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <ScrollAnimation>
-                <h2 id="value-prop-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-relaxed max-w-4xl mx-auto">
-                  {t('landing.valueProposition.title')}
-                </h2>
-                <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-                  {t('landing.valueProposition.subtitle')}
+            <ScrollAnimation delay={400}>
+              <div className="space-y-8 text-lg sm:text-xl text-gray-300">
+                <p>
+                  You think in conversations. You work in documents.
                 </p>
-              </ScrollAnimation>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <ScrollAnimation className="text-center" animation="slideLeft">
-                <div className="bg-gradient-to-br from-[#cc3399]/10 to-purple-50 rounded-2xl p-8 h-full">
-                  <div className="w-16 h-16 bg-[#cc3399] rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Clock className="h-8 w-8 text-white" aria-hidden="true" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {t('landing.valueProposition.efficiency.title')}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    {t('landing.valueProposition.efficiency.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="text-center" delay={200}>
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 h-full">
-                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Sparkles className="h-8 w-8 text-white" aria-hidden="true" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {t('landing.valueProposition.clarity.title')}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    {t('landing.valueProposition.clarity.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="text-center" animation="slideRight" delay={400}>
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 h-full">
-                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <TrendingUp className="h-8 w-8 text-white" aria-hidden="true" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {t('landing.valueProposition.impact.title')}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    {t('landing.valueProposition.impact.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-            </div>
-
-            <ScrollAnimation className="text-center" delay={600}>
-              <p className="text-xl font-semibold text-gray-900">
-                {t('landing.valueProposition.tagline')}
-              </p>
-              <Link
-                href={`/${locale}/login`}
-                className="inline-flex items-center mt-6 px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#b82d89] transform transition-all hover:scale-105"
-                aria-label="Start your free trial"
-              >
-                {t('landing.hero.cta.primary')}
-                <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
-              </Link>
+                <p>
+                  Between the two: hours typing, formatting, restructuring.
+                </p>
+                <p className="text-2xl sm:text-3xl text-white font-semibold mt-12">
+                  What if your voice became the document?
+                </p>
+              </div>
             </ScrollAnimation>
           </div>
         </section>
 
-        {/* Benefits Section - What's in it for me? */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="benefits-heading">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <ScrollAnimation>
-                <h2 id="benefits-heading" className="text-4xl font-bold text-gray-900 mb-4">
-                  {t('landing.benefits.title')}
-                </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                  {t('landing.benefits.subtitle')}
-                </p>
-              </ScrollAnimation>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft">
-                <div className="p-8">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-[#cc3399]/10 rounded-lg flex items-center justify-center">
-                      <Users className="h-6 w-6 text-[#cc3399]" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
-                      {t('landing.benefits.shareCollaborate.title')}
-                    </h3>
-                  </div>
-                  <p className="text-gray-700">
-                    {t('landing.benefits.shareCollaborate.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={100}>
-                <div className="p-8">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-blue-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
-                      {t('landing.benefits.improveCommunication.title')}
-                    </h3>
-                  </div>
-                  <p className="text-gray-700">
-                    {t('landing.benefits.improveCommunication.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideLeft" delay={200}>
-                <div className="p-8">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Clock className="h-6 w-6 text-green-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
-                      {t('landing.benefits.saveTime.title')}
-                    </h3>
-                  </div>
-                  <p className="text-gray-700">
-                    {t('landing.benefits.saveTime.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="bg-white rounded-xl shadow-lg overflow-hidden hover-lift" animation="slideRight" delay={300}>
-                <div className="p-8">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <CheckCircle className="h-6 w-6 text-purple-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 ml-4">
-                      {t('landing.benefits.neverMiss.title')}
-                    </h3>
-                  </div>
-                  <p className="text-gray-700">
-                    {t('landing.benefits.neverMiss.description')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-            </div>
-          </div>
-        </section>
-
-        {/* Meeting Use Cases Section */}
-        <MeetingUseCases {...meetingUseCasesStrings} />
-
-        {/* How It Works Section */}
-        <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="how-it-works-heading">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 id="how-it-works-heading" className="text-3xl font-bold text-gray-900 mb-4">
-                {t('landing.howItWorks.title')}
+        {/* How It Works - Light Section */}
+        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden bg-gradient-to-b from-white to-gray-50" aria-label="How it works">
+          <div className="max-w-5xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
+                Three steps to creation.
               </h2>
-              <p className="text-lg text-gray-600">
-                {t('landing.howItWorks.subtitle')}
-              </p>
-            </div>
-            
-            <div className="grid gap-8 md:grid-cols-3">
-              <ScrollAnimation className="relative" animation="slideLeft">
-                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
-                    1
-                  </div>
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src="/assets/images/how-it-works-step1-recording.webp"
-                      alt="Recording audio easily"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-8">
-                    <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                      <Mic className="h-7 w-7 text-blue-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      {t('landing.howItWorks.step1.title')}
-                    </h3>
-                    <p className="text-gray-700">
-                      {t('landing.howItWorks.step1.description')}
-                    </p>
-                  </div>
-                </article>
-              </ScrollAnimation>
+            </ScrollAnimation>
 
-              <ScrollAnimation className="relative" delay={200}>
-                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
-                    2
-                  </div>
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src="/assets/images/how-it-works-step2-ai-processing.webp"
-                      alt="AI processing audio"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-8">
-                    <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
-                      <Brain className="h-7 w-7 text-purple-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      {t('landing.howItWorks.step2.title')}
-                    </h3>
-                    <p className="text-gray-700">
-                      {t('landing.howItWorks.step2.description')}
-                    </p>
-                  </div>
-                </article>
-              </ScrollAnimation>
-
-              <ScrollAnimation className="relative" animation="slideRight" delay={400}>
-                <article className="bg-white rounded-xl shadow-lg overflow-hidden h-full border-2 border-transparent hover:border-[#cc3399] transition-colors hover-lift">
-                  <div className="absolute top-4 right-4 z-10 w-12 h-12 bg-[#cc3399] text-white rounded-full flex items-center justify-center font-bold text-lg" aria-hidden="true">
-                    3
-                  </div>
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src="/assets/images/how-it-works-step3-insights.webp"
-                      alt="Reviewing insights and summaries"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-8">
-                    <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                      <Award className="h-7 w-7 text-green-600" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                      {t('landing.howItWorks.step3.title')}
-                    </h3>
-                    <p className="text-gray-700">
-                      {t('landing.howItWorks.step3.description')}
-                    </p>
-                  </div>
-                </article>
-              </ScrollAnimation>
+            <div className="mt-20">
+              <ThreeStepsAnimation />
             </div>
           </div>
         </section>
 
-        {/* Credibility & Social Proof Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="security-heading">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <ScrollAnimation>
-                <h2 id="security-heading" className="text-4xl font-bold text-gray-900 mb-4">
-                  {t('landing.security.title')}
+        {/* From Thinking to Done - Light Section (WOW) */}
+        <section id="video-demo" className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="video-demo-heading">
+          <div className="max-w-4xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 id="video-demo-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
+                Speaking becomes creating.
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto">
+                Have a product idea? Talk to Neural Summary. Answer questions.
+              </p>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={400}>
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gray-100 mb-12">
+                {/* YouTube embed - Replace VIDEO_ID with actual YouTube video ID */}
+                <iframe
+                  className="absolute inset-0 w-full h-full"
+                  src="https://www.youtube.com/embed/VIDEO_ID"
+                  title="Neural Summary Demo Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              <p className="text-lg text-gray-700">
+                No writing. No formatting. Just think out loud.
+              </p>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* Built for Creators - Full viewport section (WHO) */}
+        <section className="relative overflow-hidden" aria-labelledby="creators-heading">
+          <ScrollAnimation delay={300}>
+            <div className="relative">
+              {/* Title positioned absolutely on top of carousel */}
+              <div className="absolute top-8 md:top-12 left-0 right-0 z-20 px-6 sm:px-8 lg:px-12">
+                <h2 id="creators-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center drop-shadow-lg">
+                  Built for your workflow.
                 </h2>
-                <p className="text-xl text-gray-700 mb-2">
-                  {t('landing.security.stats.users')}, {t('landing.security.stats.rating')}
-                </p>
-              </ScrollAnimation>
+              </div>
+
+              {/* Carousel fills viewport */}
+              <WorkflowCarousel />
             </div>
+          </ScrollAnimation>
+        </section>
 
-            {/* Two-column layout with image and features side-by-side */}
-            <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-              {/* Left column: Image */}
-              <ScrollAnimation animation="slideLeft">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl">
-                  <img
-                    src="/assets/images/security-data-protection.webp"
-                    alt="Privacy-first data protection"
-                    className="w-full h-auto"
-                    width={512}
-                    height={384}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-green-900/20 to-transparent"></div>
-                </div>
-              </ScrollAnimation>
+        {/* Features - Light Section */}
+        <section id="features" className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-white to-gray-50" aria-labelledby="features-heading">
+          <div className="max-w-5xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 id="features-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-16">
+                Built for focus.
+              </h2>
+            </ScrollAnimation>
 
-              {/* Right column: Security features stacked */}
-              <div className="space-y-6">
-                <ScrollAnimation animation="slideRight">
-                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
-                    <div className="flex items-start">
-                      <div className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Shield className="h-7 w-7 text-green-600" aria-hidden="true" />
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {t('landing.security.encryption.title')}
-                        </h3>
-                        <p className="text-gray-700">
-                          {t('landing.security.encryption.description')}
-                        </p>
-                      </div>
-                    </div>
+            <div className="space-y-32">
+              {/* Feature 1 - Image placeholder left */}
+              <div className="grid md:grid-cols-2 gap-16 items-center">
+                <ScrollAnimation animation="slideLeft">
+                  <div className="bg-gray-100 rounded-2xl aspect-[4/3] flex items-center justify-center">
+                    <span className="text-gray-400 text-sm">Feature Image</span>
                   </div>
                 </ScrollAnimation>
-
-                <ScrollAnimation animation="slideRight" delay={100}>
-                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
-                    <div className="flex items-start">
-                      <div className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Lock className="h-7 w-7 text-blue-600" aria-hidden="true" />
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {t('landing.security.retention.title')}
-                        </h3>
-                        <p className="text-gray-700">
-                          {t('landing.security.retention.description')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </ScrollAnimation>
-
                 <ScrollAnimation animation="slideRight" delay={200}>
-                  <div className="bg-white rounded-xl shadow-md p-6 hover-lift">
-                    <div className="flex items-start">
-                      <div className="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="h-7 w-7 text-purple-600" aria-hidden="true" />
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {t('landing.security.compliance.title')}
-                        </h3>
-                        <p className="text-gray-700">
-                          {t('landing.security.compliance.description')}
-                        </p>
-                      </div>
-                    </div>
+                  <div className="text-left">
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">99.5% accuracy</h3>
+                    <p className="text-lg text-gray-700">Every word captured. Speaker labels included.</p>
+                  </div>
+                </ScrollAnimation>
+              </div>
+
+              {/* Feature 2 - Image placeholder right */}
+              <div className="grid md:grid-cols-2 gap-16 items-center">
+                <ScrollAnimation animation="slideLeft" className="md:order-2">
+                  <div className="bg-gray-100 rounded-2xl aspect-[4/3] flex items-center justify-center">
+                    <span className="text-gray-400 text-sm">Feature Image</span>
+                  </div>
+                </ScrollAnimation>
+                <ScrollAnimation animation="slideRight" delay={200} className="md:order-1">
+                  <div className="text-left md:text-right">
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">Files up to 5GB</h3>
+                    <p className="text-lg text-gray-700">Handle hours of audio. No limits.</p>
+                  </div>
+                </ScrollAnimation>
+              </div>
+
+              {/* Feature 3 - Image placeholder left */}
+              <div className="grid md:grid-cols-2 gap-16 items-center">
+                <ScrollAnimation animation="slideLeft">
+                  <div className="bg-gray-100 rounded-2xl aspect-[4/3] flex items-center justify-center">
+                    <span className="text-gray-400 text-sm">Feature Image</span>
+                  </div>
+                </ScrollAnimation>
+                <ScrollAnimation animation="slideRight" delay={200}>
+                  <div className="text-left">
+                    <h3 className="text-3xl font-bold text-gray-900 mb-4">99 languages</h3>
+                    <p className="text-lg text-gray-700">Automatic detection. Translate instantly.</p>
                   </div>
                 </ScrollAnimation>
               </div>
@@ -589,8 +366,63 @@ export default async function LandingPage({
           </div>
         </section>
 
+        {/* Security - Dark Section */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="security-heading">
+          <div className="max-w-5xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 id="security-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8">
+                Your privacy matters.
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Audio deleted within seconds. Only text remains. Enterprise-grade encryption.
+              </p>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* The Future of Work - Dark Section (WARP) */}
+        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="future-heading">
+          <div className="max-w-4xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 id="future-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
+                The future of work isn't typing.
+              </h2>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={400}>
+              <div className="space-y-8 text-xl sm:text-2xl text-gray-300">
+                <p>
+                  It's thinking out loud.
+                </p>
+                <div className="space-y-4 mt-12">
+                  <p className="text-white">Your ideas become requirements.</p>
+                  <p className="text-white">Your vision becomes strategy.</p>
+                  <p className="text-white">Your voice becomes output.</p>
+                </div>
+                <p className="text-2xl sm:text-3xl text-white font-semibold mt-16">
+                  This is how creative work should feel.
+                </p>
+              </div>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* CTA Section - Light */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-label="Get started">
+          <div className="max-w-4xl mx-auto text-center">
+            <ScrollAnimation delay={200}>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
+                Ready to remember?
+              </h2>
+              <CTAButton href="/signup" locale={locale}>
+                Get started
+              </CTAButton>
+            </ScrollAnimation>
+          </div>
+        </section>
+
         {/* Why Teams Choose Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="why-teams-heading">
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="why-teams-heading">
           <div className="max-w-5xl mx-auto">
             <ScrollAnimation className="text-center mb-12">
               <h2 id="why-teams-heading" className="text-4xl font-bold text-gray-900 mb-8">
@@ -600,35 +432,35 @@ export default async function LandingPage({
 
             <div className="space-y-4 mb-12">
               <ScrollAnimation animation="slideLeft">
-                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                <div className="flex items-start bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit1')}</p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation animation="slideRight" delay={100}>
-                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                <div className="flex items-start bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit2')}</p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation animation="slideLeft" delay={200}>
-                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                <div className="flex items-start bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit3')}</p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation animation="slideRight" delay={300}>
-                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                <div className="flex items-start bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit4')}</p>
                 </div>
               </ScrollAnimation>
 
               <ScrollAnimation animation="slideLeft" delay={400}>
-                <div className="flex items-start bg-pink-50 rounded-lg p-6">
+                <div className="flex items-start bg-gray-50 rounded-lg p-6 border border-gray-200">
                   <CheckCircle className="h-6 w-6 text-[#cc3399] mr-4 mt-1 flex-shrink-0" aria-hidden="true" />
                   <p className="text-lg text-gray-800">{t('landing.whyTeams.benefit5')}</p>
                 </div>
@@ -639,20 +471,18 @@ export default async function LandingPage({
               <p className="text-xl font-semibold text-gray-900 mb-6">
                 {t('landing.whyTeams.tagline')}
               </p>
-              <Link
-                href={`/${locale}/login`}
-                className="inline-flex items-center px-8 py-4 bg-[#cc3399] text-white font-semibold text-lg rounded-xl shadow-lg hover:bg-[#b82d89] transform transition-all hover:scale-105"
-                aria-label="Start your free trial"
-              >
-                {t('landing.hero.cta.primary')}
-                <ArrowRight className="h-5 w-5 ml-2" aria-hidden="true" />
-              </Link>
+              <div className="inline-flex items-center gap-2">
+                <CTAButton href="/login" locale={locale} variant="primary">
+                  {t('landing.hero.cta.primary')}
+                </CTAButton>
+                <ArrowRight className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </div>
             </ScrollAnimation>
           </div>
         </section>
 
         {/* Pricing Teaser Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white" aria-labelledby="pricing-teaser-heading">
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="pricing-teaser-heading">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <ScrollAnimation>
@@ -676,15 +506,15 @@ export default async function LandingPage({
                   </div>
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.free.features.transcriptions')}</span>
                     </li>
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.free.features.duration')}</span>
                     </li>
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.free.features.summary')}</span>
                     </li>
                   </ul>
@@ -753,15 +583,15 @@ export default async function LandingPage({
                   </div>
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.payg.features.credits')}</span>
                     </li>
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.payg.features.analyses')}</span>
                     </li>
                     <li className="flex items-start text-gray-700">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                      <CheckCircle className="h-5 w-5 text-[#cc3399] mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                       <span>{t('landing.pricingTeaser.payg.features.occasional')}</span>
                     </li>
                   </ul>
@@ -906,7 +736,7 @@ export default async function LandingPage({
             <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8" delay={400}>
               <Link
                 href={`/${locale}/login`}
-                className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] hover-glow"
+                className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-full shadow-lg hover:bg-gray-100 transform transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#cc3399] hover-glow"
                 aria-label="Start your free trial now"
               >
                 <Sparkles className="h-5 w-5 mr-2" aria-hidden="true" />

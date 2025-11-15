@@ -1,8 +1,19 @@
 # Neural Summary
 
-**Transform every conversation into clarity.**
+**Speak. We'll remember.**
 
-Neural Summary is an AI-powered platform that turns hours of audio into clear, structured notes, decisions, and next steps — in seconds. Whether you're handling meetings, interviews, calls, or podcasts, our platform helps professionals reclaim 10+ hours per week by automating transcription, analysis, and documentation.
+Neural Summary turns your conversations into flawless notes — effortlessly. An AI-powered platform that transforms audio into clarity, capturing every detail while you focus on what matters.
+
+## Design Language: Calm Intelligence
+
+Our interface embodies a futuristic-minimal aesthetic that blends human warmth with machine precision:
+
+- **Tone**: Serene, confident, intelligent
+- **Style**: Minimal, cinematic, spatial, human-centric
+- **Visual DNA**: White space, soft gradients, precise typography, subtle motion
+- **Philosophy**: Technology that listens rather than shouts — invisible, yet deeply present
+
+*The visual equivalent of AI that feels effortless.*
 
 ## Why Neural Summary?
 
