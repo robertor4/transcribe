@@ -712,7 +712,7 @@
       "subtitle": "Convierte conversaciones en documentos listos para trabajar—sin esfuerzo.",
       "ctaPrimary": "Comenzar gratis",
       "ctaSecondary": "Ver demo",
-      "byline": "",
+      "byline": "Plataforma de creación de voz a documento",
       "trustIndicators": {
         "users": "Confiado por profesionales",
         "rating": "Altamente valorado",
@@ -1090,6 +1090,7 @@
       "menu": "Menú",
       "language": "Idioma",
       "features": "Características",
+      "howItWorks": "Cómo Funciona",
       "pricing": "Precios",
       "faq": "FAQ"
     },
@@ -1702,12 +1703,12 @@
       "title": "Preguntas frecuentes",
       "questions": {
         "cost": {
-          "question": "¿Cuánto cuesta exactamente la transcripción?",
-          "answer": "El plan Profesional incluye 60 horas/mes por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
+          "question": "¿Cuánto cuesta convertir conversaciones en documentos?",
+          "answer": "El plan Profesional incluye 60 horas/mes de procesamiento de audio por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 archivos de audio/mes (máx 30 min cada uno)."
         },
         "overage": {
           "question": "¿Qué pasa si excedo mi límite mensual?",
-          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
+          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional de procesamiento de audio. Los usuarios Gratis deben actualizar para continuar creando documentos. Los usuarios de Paga según uses simplemente compran más créditos según sea necesario."
         },
         "cancel": {
           "question": "¿Puedo cancelar en cualquier momento?",
@@ -1723,7 +1724,7 @@
         },
         "payg": {
           "question": "¿Cómo funcionan los créditos de Paga según uses?",
-          "answer": "Los créditos cuestan {paygPrice} por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
+          "answer": "Los créditos cuestan {paygPrice} por hora de audio y pueden usarse para crear cualquier tipo de documento. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de creación de documentos."
         }
       }
     },

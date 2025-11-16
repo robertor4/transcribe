@@ -80,6 +80,24 @@ Neural Summary's landing page follows a strategic narrative arc using the **Five
 
 **Avoid**: Positioning as "better meeting recorder" or "transcription service" - competitors own that space. Focus on **transformation** and **creation**.
 
+## Brand Byline
+
+**Official Header Byline**: "Voice-to-output creation platform"
+
+This category-defining tagline appears in the header beneath the Neural Summary logo and establishes market positioning as a voice-to-output platform rather than a traditional transcription service.
+
+**Translations:**
+- **English**: "Voice-to-output creation platform"
+- **German**: "Von Sprache zu Dokumenten" (From speech to documents)
+- **Spanish**: "Plataforma de creación de voz a documento" (Voice-to-document creation platform)
+- **French**: "Plateforme de création voix-vers-document" (Voice-to-document creation platform)
+- **Dutch**: "Van spraak naar document platform" (From speech to document platform)
+
+**Implementation:**
+- **Location**: Header component (`apps/web/components/PublicHeader.tsx:35`)
+- **Translation key**: `landing.hero.byline` in `apps/web/messages/{locale}.json`
+- **Display**: Shown beneath "Neural Summary" name on all public pages (hidden on small screens)
+
 ## Changelog Maintenance
 
 **CRITICAL**: All code changes MUST be documented in [CHANGELOG.md](CHANGELOG.md)

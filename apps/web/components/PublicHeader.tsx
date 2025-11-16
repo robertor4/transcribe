@@ -37,7 +37,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
             {showFeaturesLink && (
               <Link
                 href={`/${locale}/landing#features`}
@@ -47,6 +47,13 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 {tLanding('nav.features')}
               </Link>
             )}
+            <Link
+              href={`/${locale}/landing#video-demo`}
+              className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
+              aria-label="See how it works"
+            >
+              {tLanding('nav.howItWorks')}
+            </Link>
             <Link
               href={`/${locale}/pricing`}
               className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
@@ -58,7 +65,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             {user ? (
               <Link
                 href={`/${locale}/dashboard`}
-                className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
+                className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-full hover:bg-[#b82d89] transition-colors"
                 aria-label="Go to Dashboard"
               >
                 {tLanding('nav.dashboard')}
@@ -74,7 +81,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 </Link>
                 <Link
                   href={`/${locale}/login`}
-                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors"
+                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-full hover:bg-[#b82d89] transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
                   {tLanding('nav.getStarted')}

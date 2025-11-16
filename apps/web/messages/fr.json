@@ -712,7 +712,7 @@
       "subtitle": "Transformez les conversations en documents prêts à l'emploi—sans effort.",
       "ctaPrimary": "Commencer gratuitement",
       "ctaSecondary": "Voir la démo",
-      "byline": "",
+      "byline": "Plateforme de création voix-vers-document",
       "trustIndicators": {
         "users": "Approuvé par des professionnels",
         "rating": "Très bien noté",
@@ -1090,6 +1090,7 @@
       "menu": "Menu",
       "language": "Langue",
       "features": "Fonctionnalités",
+      "howItWorks": "Comment ça Marche",
       "pricing": "Tarifs",
       "faq": "FAQ"
     },
@@ -1710,12 +1711,12 @@
       "title": "Questions fréquemment posées",
       "questions": {
         "cost": {
-          "question": "Combien coûte exactement la transcription ?",
-          "answer": "Le plan Professionnel inclut 60 heures/mois pour {professionalPrice}. Les heures supplémentaires coûtent {overageRate} chacune. Pay-As-You-Go est à {paygPrice}/heure avec des crédits qui n'expirent jamais. Le plan Gratuit inclut 3 transcriptions/mois (30 min max chacune)."
+          "question": "Combien coûte la transformation de conversations en documents ?",
+          "answer": "Le plan Professionnel inclut 60 heures/mois de traitement audio pour {professionalPrice}. Les heures supplémentaires coûtent {overageRate} chacune. Pay-As-You-Go est à {paygPrice}/heure avec des crédits qui n'expirent jamais. Le plan Gratuit inclut 3 fichiers audio/mois (30 min max chacun)."
         },
         "overage": {
           "question": "Que se passe-t-il si je dépasse ma limite mensuelle ?",
-          "answer": "Les utilisateurs Professionnels sont automatiquement facturés {overageRate} par heure supplémentaire. Les utilisateurs Gratuits doivent passer à la version supérieure pour continuer. Les utilisateurs Pay-As-You-Go achètent simplement plus de crédits."
+          "answer": "Les utilisateurs Professionnels sont automatiquement facturés {overageRate} par heure supplémentaire de traitement audio. Les utilisateurs Gratuits doivent passer à la version supérieure pour continuer à créer des documents. Les utilisateurs Pay-As-You-Go achètent simplement plus de crédits selon leurs besoins."
         },
         "cancel": {
           "question": "Puis-je annuler mon abonnement à tout moment ?",
@@ -1731,7 +1732,7 @@
         },
         "payg": {
           "question": "Comment fonctionnent les crédits Pay-As-You-Go ?",
-          "answer": "Les crédits coûtent {paygPrice} par heure de transcription. Ils n'expirent jamais et peuvent être utilisés à tout moment. Parfait pour les besoins occasionnels de transcription."
+          "answer": "Les crédits coûtent {paygPrice} par heure d'audio et peuvent être utilisés pour créer tout type de document. Ils n'expirent jamais et peuvent être utilisés à tout moment. Parfait pour les besoins occasionnels de création de documents."
         }
       }
     },

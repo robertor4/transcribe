@@ -29,7 +29,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay = 0 }: FAQItemProps
       <div className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-md transition-shadow">
         <button
           onClick={onToggle}
-          className="w-full px-6 py-5 text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+          className="w-full px-6 py-5 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors"
           aria-expanded={isOpen}
         >
           <span className="text-lg font-semibold text-gray-900 pr-8">

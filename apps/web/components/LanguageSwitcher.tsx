@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { locales, localeNames } from '@/i18n.config';
+import { locales, localeNames, localeCodes } from '@/i18n.config';
 import { Globe } from 'lucide-react';
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { updateUserLanguagePreference } from '@/lib/user-preferences';
@@ -54,17 +54,17 @@ export function LanguageSwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isPending}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] transition-colors disabled:opacity-50"
-        aria-label={t('language')}
+        className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] rounded-md transition-colors disabled:opacity-50"
+        aria-label={`${t('language')}: ${localeNames[locale as keyof typeof localeNames]}`}
       >
         {isPending ? (
-          <div className="h-4 w-4 border-2 border-gray-300 dark:border-gray-600 border-t-[#cc3399] rounded-full animate-spin" />
+          <div className="h-4 w-4 border-2 border-gray-300 border-t-[#cc3399] rounded-full animate-spin" />
         ) : (
           <Globe className="w-4 h-4" />
         )}
-        <span>{localeNames[locale as keyof typeof localeNames]}</span>
+        <span className="text-xs">{localeCodes[locale as keyof typeof localeCodes]}</span>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

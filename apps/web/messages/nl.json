@@ -735,7 +735,7 @@
       "subtitle": "Verander gesprekken in werkklare documenten—moeiteloos.",
       "ctaPrimary": "Start gratis",
       "ctaSecondary": "Bekijk demo",
-      "byline": "",
+      "byline": "Van spraak naar document platform",
       "trustIndicators": {
         "users": "Vertrouwd door professionals",
         "rating": "Hoog gewaardeerd",
@@ -1113,6 +1113,7 @@
       "menu": "Menu",
       "language": "Taal",
       "features": "Kenmerken",
+      "howItWorks": "Hoe het Werkt",
       "pricing": "Prijzen",
       "faq": "Veelgestelde vragen"
     },
@@ -1721,12 +1722,12 @@
       "title": "Veelgestelde vragen",
       "questions": {
         "cost": {
-          "question": "Wat kost transcriptie precies?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 transcripties/maand (max 30 min elk)."
+          "question": "Wat kost het om gesprekken om te zetten in documenten?",
+          "answer": "Professioneel abonnement bevat 60 uur/maand audio-verwerking voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 audiobestanden/maand (max 30 min elk)."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
-          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur in rekening gebracht. Gratis gebruikers moeten upgraden om door te gaan. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed."
+          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur audio-verwerking in rekening gebracht. Gratis gebruikers moeten upgraden om documenten te blijven maken. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed naar behoefte."
         },
         "cancel": {
           "question": "Kan ik mijn abonnement altijd opzeggen?",
@@ -1742,7 +1743,7 @@
         },
         "payg": {
           "question": "Hoe werkt Pay-As-You-Go tegoed?",
-          "answer": "Tegoed kost {paygPrice} per uur transcriptie. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele transcriptiebehoeften."
+          "answer": "Tegoed kost {paygPrice} per uur audio en kan worden gebruikt om elk type document te maken. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele document-creatie behoeften."
         }
       }
     },

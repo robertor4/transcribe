@@ -715,7 +715,7 @@
       "subtitle": "Verwandeln Sie Gespräche mühelos in arbeitsfertige Dokumente.",
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "Demo ansehen",
-      "byline": "",
+      "byline": "Von Sprache zu Dokumenten",
       "trustIndicators": {
         "users": "Vertraut von Profis",
         "rating": "Hoch bewertet",
@@ -1093,6 +1093,7 @@
       "menu": "Menü",
       "language": "Sprache",
       "features": "Funktionen",
+      "howItWorks": "So funktioniert's",
       "pricing": "Preise",
       "faq": "FAQ"
     },
@@ -1707,12 +1708,12 @@
       "title": "Häufig gestellte Fragen",
       "questions": {
         "cost": {
-          "question": "Was kostet die Transkription genau?",
-          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat für {professionalPrice}. Zusätzliche Stunden kosten {overageRate} pro Stück. Pay-As-You-Go ist {paygPrice}/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Transkriptionen/Monat (max 30 min jeweils)."
+          "question": "Was kostet es, Gespräche in Dokumente umzuwandeln?",
+          "answer": "Der Professional-Plan beinhaltet 60 Stunden/Monat Audio-Verarbeitung für {professionalPrice}. Zusätzliche Stunden kosten {overageRate} pro Stück. Pay-As-You-Go ist {paygPrice}/Stunde mit Credits, die nie verfallen. Der kostenlose Plan beinhaltet 3 Audio-Dateien/Monat (max 30 min jeweils)."
         },
         "overage": {
           "question": "Was passiert, wenn ich mein monatliches Limit überschreite?",
-          "answer": "Professional-Nutzer werden automatisch {overageRate} pro zusätzlicher Stunde berechnet. Kostenlose Nutzer müssen upgraden, um fortzufahren. Pay-As-You-Go-Nutzer kaufen einfach mehr Credits."
+          "answer": "Professional-Nutzer werden automatisch {overageRate} pro zusätzlicher Stunde Audio-Verarbeitung berechnet. Kostenlose Nutzer müssen upgraden, um weiterhin Dokumente zu erstellen. Pay-As-You-Go-Nutzer kaufen einfach nach Bedarf mehr Credits."
         },
         "cancel": {
           "question": "Kann ich jederzeit kündigen?",
@@ -1728,7 +1729,7 @@
         },
         "payg": {
           "question": "Wie funktionieren Pay-As-You-Go-Credits?",
-          "answer": "Credits kosten {paygPrice} pro Stunde Transkription. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Transkriptionsbedürfnisse."
+          "answer": "Credits kosten {paygPrice} pro Stunde Audio und können zur Erstellung jeder Art von Dokument verwendet werden. Sie verfallen nie und können jederzeit verwendet werden. Perfekt für gelegentliche Dokumentenerstellungsbedürfnisse."
         }
       }
     },

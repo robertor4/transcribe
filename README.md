@@ -1,8 +1,13 @@
 # Neural Summary
 
+**Voice-to-Output Creation Platform**
+
 **Speak. We'll remember.**
 
-Neural Summary turns your conversations into flawless notes — effortlessly. An AI-powered platform that transforms audio into clarity, capturing every detail while you focus on what matters.
+Neural Summary transforms conversations into work-ready documents — effortlessly. Turn brainstorms into product specs, interviews into articles, client calls into follow-up emails, and vision talks into strategy documents. An AI-powered platform that goes beyond transcription to create deliverables.
+
+### Core Value Proposition
+**"Speaking becomes creating"** - Turn thinking (conversations) into working (documents) without the friction of manual writing, formatting, and structuring.
 
 ## Design Language: Calm Intelligence
 
@@ -15,20 +20,40 @@ Our interface embodies a futuristic-minimal aesthetic that blends human warmth w
 
 *The visual equivalent of AI that feels effortless.*
 
+## Positioning
+
+Neural Summary is a **voice-to-output creation platform**, not a traditional transcription or meeting notes tool.
+
+We transform conversations into work-ready documents—product specs, articles, strategies, emails—using AI that understands context and generates structured deliverables. Our upcoming **AI interview feature** will ask questions to extract ideas and turn them into polished outputs.
+
+**We're not competing with:**
+- Meeting note tools (Otter, Fireflies)
+- Simple transcription services
+- Traditional dictation software
+
+**We enable:**
+- **Product Managers** to turn brainstorms into specs in 5 minutes
+- **Founders** to convert vision talks into strategy docs for teams
+- **Content Creators** to transform interviews into publish-ready articles
+- **Sales Leaders** to generate follow-up emails from client calls instantly
+
+**The difference:** We don't just capture what was said—we create what needs to be done.
+
 ## Why Neural Summary?
 
-**Your AI that listens, understands, and summarizes — so you can think, lead, and decide.**
+**Your AI that listens, understands, and creates — so you can think, lead, and deliver.**
 
 ### The Problem We Solve
-Professionals waste countless hours on manual note-taking, transcription, and documentation. Important details get lost, action items fall through the cracks, and teams struggle to stay aligned without endless meeting recaps.
+Your best ideas get lost in translation. You think in conversations. You work in documents. Between the two: hours of typing, formatting, restructuring. Professionals waste valuable time converting spoken thoughts into written deliverables—product specs, strategy documents, articles, follow-up emails.
 
 ### Our Solution
-Neural Summary automates the entire process from audio to actionable insights:
-- **Save Time**: Turn 1-hour meetings into 5-minute summaries
-- **Never Miss Details**: Capture every action item, decision, and insight automatically
-- **Improve Communication**: Analyze speaking patterns and become a more effective presenter
-- **Share Effortlessly**: Send polished summaries to your team with one click
-- **Work Globally**: Translate transcripts into 15 languages instantly
+Neural Summary transforms the entire process from conversation to creation:
+- **Save Time**: Turn 30-minute brainstorms into complete product specs or strategy docs
+- **Create Deliverables**: Generate work-ready documents, not just transcripts—specs, articles, emails, strategies
+- **AI-Powered Analysis**: Get 15+ specialized analysis templates (Executive Brief, Sales Analysis, Training Materials, etc.)
+- **Never Miss Details**: Capture every decision, action item, and insight automatically with 99.5% accuracy
+- **Share Effortlessly**: Send polished documents to your team with one click
+- **Work Globally**: Translate documents into 15 languages instantly
 - **Privacy-First**: Audio files are processed by secure transcription services and **never stored** - deleted within seconds after processing
 
 ### Privacy & Security You Can Trust

@@ -154,7 +154,7 @@ export default async function LandingPage({
 
   return (
     <>
-      <PublicHeader locale={locale} />
+      <PublicHeader locale={locale} showFeaturesLink={true} />
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
 
@@ -392,6 +392,9 @@ export default async function LandingPage({
         <section className="py-32 px-6 sm:px-8 lg:px-12" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="security-heading">
           <div className="max-w-5xl mx-auto text-center">
             <ScrollAnimation delay={200}>
+              <div className="flex justify-center mb-6">
+                <Lock className="h-12 w-12 text-white" aria-hidden="true" />
+              </div>
               <h2 id="security-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8">
                 {t('securitySection.headline')}
               </h2>

@@ -736,7 +736,7 @@
       "subtitle": "Turn conversations into work-ready documents—effortlessly.",
       "ctaPrimary": "Get started free",
       "ctaSecondary": "Watch demo",
-      "byline": "",
+      "byline": "Voice-to-output creation platform",
       "trustIndicators": {
         "users": "Trusted by professionals",
         "rating": "Highly rated",
@@ -1114,6 +1114,7 @@
       "menu": "Menu",
       "language": "Language",
       "features": "Features",
+      "howItWorks": "How it Works",
       "pricing": "Pricing",
       "faq": "FAQ"
     },
@@ -1501,12 +1502,12 @@
       "title": "Frequently Asked Questions",
       "questions": {
         "cost": {
-          "question": "What exactly does transcription cost?",
-          "answer": "Professional plan includes 60 hours/month for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
+          "question": "How much does it cost to turn conversations into documents?",
+          "answer": "Professional plan includes 60 hours/month of audio processing for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 audio files/month (30 min max each)."
         },
         "overage": {
           "question": "What happens if I exceed my monthly limit?",
-          "answer": "Professional users are automatically charged {overageRate} per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
+          "answer": "Professional users are automatically charged {overageRate} per additional hour of audio processing. Free users must upgrade to continue creating documents. Pay-As-You-Go users simply purchase more credits as needed."
         },
         "cancel": {
           "question": "Can I cancel my subscription anytime?",
@@ -1522,7 +1523,7 @@
         },
         "payg": {
           "question": "How do Pay-As-You-Go credits work?",
-          "answer": "Credits cost {paygPrice} per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
+          "answer": "Credits cost {paygPrice} per hour of audio and can be used to create any type of document. They never expire and can be used anytime. Perfect for occasional document creation needs."
         }
       }
     },

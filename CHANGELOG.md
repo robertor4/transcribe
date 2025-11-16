@@ -8,6 +8,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Privacy Section Lock Icon**: Added minimalistic lock icon above "Your privacy matters" headline
+  - Clean, centered lock icon (48px) in white color on dark background
+  - Reinforces security messaging visually in privacy section
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:395-397)
+- **Language Code Mapping**: Added two-letter uppercase language codes to i18n configuration
+  - New `localeCodes` mapping (EN, NL, DE, FR, ES) for compact display
+  - File: [apps/web/i18n.config.ts](apps/web/i18n.config.ts:14-20)
+
+### Changed
+- **Language Switcher UI**: Redesigned for more subtle, minimal appearance
+  - Changed button display from full language names to two-letter codes (e.g., "English" → "EN")
+  - Removed border and background from button for cleaner look
+  - Reduced padding and spacing for more compact footprint
+  - Updated text color to lighter gray (`text-gray-600`) for less visual weight
+  - Dropdown menu still shows full language names for clarity
+  - File: [apps/web/components/LanguageSwitcher.tsx](apps/web/components/LanguageSwitcher.tsx:54-74)
+- **Brand Byline Documentation**: Added official brand byline to project documentation
+  - Documented "Voice-to-output creation platform" byline in CLAUDE.md
+  - Includes all 5 language translations with implementation details
+  - Location: Brand Byline section in [CLAUDE.md](CLAUDE.md)
+- **Header Navigation Enhancement**: Added "How it Works" link to public header navigation
+  - New navigation item links to video demo section (`#video-demo`)
+  - Added translation key `nav.howItWorks` across all 5 languages (EN, DE, ES, FR, NL)
+  - Positioned between Features and Pricing links for logical flow
+  - File: [apps/web/components/PublicHeader.tsx](apps/web/components/PublicHeader.tsx:50-56)
+- **Header Byline/Tagline**: Added brand positioning tagline to header
+  - English: "Voice-to-output creation platform"
+  - German: "Von Sprache zu Dokumenten"
+  - Spanish: "Plataforma de creación de voz a documento"
+  - French: "Plateforme de création voix-vers-document"
+  - Dutch: "Van spraak naar document platform"
+  - Displays beneath "Neural Summary" name in header
+  - Reinforces differentiation from transcription-only competitors
+  - Translation key: `landing.hero.byline` in all locale files
+
+### Changed
+- **Landing Page Header**: Enabled Features link in navigation
+  - Changed: `<PublicHeader locale={locale} />` → `<PublicHeader locale={locale} showFeaturesLink={true} />`
+  - Users can now navigate to Features section (`#features`) from header
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:157)
+- **Header Button Styling**: Updated CTA buttons to follow Apple design language
+  - Changed from `rounded-lg` to `rounded-full` (pill-shaped) for primary CTAs
+  - Applied to "Go to Dashboard" and "Get Started" buttons
+  - Creates more distinctive, approachable, modern appearance per brand guidelines
+  - File: [apps/web/components/PublicHeader.tsx](apps/web/components/PublicHeader.tsx:68,84)
+- **Header Navigation Spacing**: Increased spacing between navigation items
+  - Changed from `space-x-4` (16px) to `space-x-6` (24px)
+  - Provides better breathing room and cleaner Apple-like aesthetic
+  - File: [apps/web/components/PublicHeader.tsx](apps/web/components/PublicHeader.tsx:40)
+- **README.md Brand Alignment**: Rewrote positioning to align with voice-to-output platform messaging
+  - Updated header to emphasize "Voice-to-Output Creation Platform" (not note-taking)
+  - Added "Core Value Proposition" section with "Speaking becomes creating" tagline
+  - New "Positioning" section explaining differentiation from transcription/meeting tools
+  - Highlighted four key personas: Product Manager, Founder, Content Creator, Sales Leader
+  - Reframed "Why Neural Summary?" to focus on document creation vs. conversation capture
+  - Emphasized deliverables (specs, articles, strategies) over meeting notes
+- **Landing Page FAQ Styling**: Removed focus ring offset for cleaner appearance
+  - Removed `focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2` from FAQ button styling
+  - Added `bg-white hover:bg-gray-50 transition-colors` to match pricing page FAQ
+  - Eliminates visible border/gap under FAQ headers when clicked
+  - File: [apps/web/components/landing/MeetingFAQ.tsx](apps/web/components/landing/MeetingFAQ.tsx:32)
+  - File: [README.md](README.md:1-57)
+
+### Added
 - **Features Section Images**: Generated professional AI images for Features section using Google Imagen 4
   - Three high-quality WebP images with dark theme matching hero laptop screen aesthetic
   - Feature 1 (99.5% accuracy): White waveform on dark charcoal background with pink accent peaks (35KB)

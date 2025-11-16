@@ -91,39 +91,38 @@ export function PricingCard({
   return (
     <div
       className={`
-        relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8
-        border-2 transition-all duration-200
+        relative bg-white rounded-2xl p-8 transition-all duration-300
         ${
           featured
-            ? 'border-[#cc3399] scale-100 md:scale-110 shadow-2xl ring-4 ring-[#cc3399]/20'
-            : 'border-gray-200 dark:border-gray-700 hover:border-[#cc3399]/50'
+            ? 'border border-[#cc3399] shadow-2xl md:scale-105 ring-2 ring-[#cc3399]/10'
+            : 'border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
         }
       `}
     >
       {featured && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#cc3399] to-purple-600 text-white px-5 py-1.5 rounded-full text-sm font-bold shadow-lg">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#cc3399] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
           Most Popular
         </div>
       )}
 
-      <div className="mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="mb-8 space-y-3">
+        <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
           {title}
         </h3>
-        <p className="text-gray-700 dark:text-gray-300">{description}</p>
+        <p className="text-gray-700 leading-relaxed">{description}</p>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex items-baseline">
-          <span className="text-5xl font-bold text-gray-900 dark:text-white">
+          <span className="text-5xl font-light text-gray-900 tracking-tight">
             {formattedPrice}
           </span>
-          <span className="text-gray-700 dark:text-gray-300 ml-2">
+          <span className="text-gray-700 ml-2 font-light">
             {priceUnit}
           </span>
         </div>
         {billingNote && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-sm text-gray-600 mt-2 font-light">
             {billingNote}
           </p>
         )}
@@ -133,13 +132,13 @@ export function PricingCard({
         href={ctaLink}
         onClick={handleCtaClick}
         className={`
-          group flex items-center justify-center gap-2 w-full py-3 px-6 rounded-lg text-center font-semibold transition-all mb-4
+          group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 text-gray-800
           ${
             featured
-              ? 'bg-gradient-to-r from-[#cc3399] to-purple-600 text-white hover:from-[#b82d89] hover:to-purple-700 shadow-lg'
+              ? 'bg-[#2c2c2c] text-white hover:bg-[#3c3c3c] shadow-lg'
               : tier === 'free'
               ? 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
-              : 'border-2 border-[#cc3399] text-[#cc3399] hover:bg-[#cc3399] hover:text-white dark:border-[#cc3399] dark:text-[#cc3399]'
+              : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
           }
         `}
       >
@@ -148,19 +147,19 @@ export function PricingCard({
       </Link>
 
       {showGuarantee && guaranteeText && (
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-700 dark:text-gray-300 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <Shield className="h-4 w-4 text-green-600 dark:text-green-400" />
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-700 mb-8 pb-8 border-b border-gray-200 font-light">
+          <Shield className="h-4 w-4 text-green-600" />
           <span>{guaranteeText}</span>
         </div>
       )}
 
-      <ul className="space-y-3">
+      <ul className="space-y-4">
         {features.map((feature, index) => {
           const isNewCategory = index === 0 || feature.category !== features[index - 1]?.category;
           return (
             <div key={index}>
               {isNewCategory && feature.category && (
-                <li className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-4 mb-2">
+                <li className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-6 mb-3">
                   {feature.category}
                 </li>
               )}
@@ -170,15 +169,15 @@ export function PricingCard({
                 )}
                 {!feature.icon && (
                   feature.included ? (
-                    <Check className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                   ) : (
-                    <X className="h-5 w-5 text-gray-400 dark:text-gray-600 mt-0.5 flex-shrink-0" />
+                    <X className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
                   )
                 )}
-                <span className={`${feature.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 dark:text-gray-500 line-through'}`}>
+                <span className={`font-light ${feature.included ? 'text-gray-800' : 'text-gray-500 line-through'}`}>
                   {feature.text}
                   {feature.note && (
-                    <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                    <span className="text-sm text-gray-600 ml-2">
                       ({feature.note})
                     </span>
                   )}

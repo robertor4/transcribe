@@ -10,3 +10,11 @@ export const localeNames: Record<Locale, string> = {
   fr: 'Français',
   es: 'Español',
 };
+
+export const localeCodes: Record<Locale, string> = {
+  en: 'EN',
+  nl: 'NL',
+  de: 'DE',
+  fr: 'FR',
+  es: 'ES',
+};
