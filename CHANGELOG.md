@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File: [apps/web/i18n.config.ts](apps/web/i18n.config.ts:14-20)
 
 ### Changed
+- **Dashboard Language Switcher**: Moved language switcher from user profile menu to main header
+  - Now positioned between ThemeToggle and UserProfileMenu for immediate visibility
+  - Matches public header pattern for consistent UX across signed-in and public pages
+  - Removed from UserProfileMenu dropdown (was hidden behind extra click)
+  - Files: [apps/web/app/[locale]/dashboard/page.tsx](apps/web/app/[locale]/dashboard/page.tsx:301), [apps/web/components/UserProfileMenu.tsx](apps/web/components/UserProfileMenu.tsx:274-285)
 - **Language Switcher UI**: Redesigned for more subtle, minimal appearance
   - Changed button display from full language names to two-letter codes (e.g., "English" → "EN")
   - Removed border and background from button for cleaner look
