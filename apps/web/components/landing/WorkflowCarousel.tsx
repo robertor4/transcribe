@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface WorkflowCard {
   id: string;
@@ -11,38 +12,39 @@ interface WorkflowCard {
   image: string;
 }
 
-const workflows: WorkflowCard[] = [
-  {
-    id: 'product-manager',
-    title: 'Product Manager',
-    subtitle: 'Brainstorm → Product spec in 5 minutes',
-    description: 'Talk through your feature idea. Get a complete spec ready for your dev team.',
-    image: '/assets/images/product-manager-workflow.png',
-  },
-  {
-    id: 'founder',
-    title: 'Founder',
-    subtitle: 'Vision talk → Strategy doc for your team',
-    description: 'Record your strategic vision. Share a structured brief with your team instantly.',
-    image: '/assets/images/founder-workflow.png',
-  },
-  {
-    id: 'content-creator',
-    title: 'Content Creator',
-    subtitle: 'Interview → Publish-ready article',
-    description: 'Interview guests naturally. Get structured content ready to publish.',
-    image: '/assets/images/content-creator-workflow.png',
-  },
-  {
-    id: 'sales-leader',
-    title: 'Sales Leader',
-    subtitle: 'Client call → Follow-up email in minutes',
-    description: 'Focus on the conversation. Send perfect summaries while prospects remember you.',
-    image: '/assets/images/sales-leader-workflow.png',
-  },
-];
-
 export default function WorkflowCarousel() {
+  const t = useTranslations('landing.who.personas');
+
+  const workflows: WorkflowCard[] = [
+    {
+      id: 'product-manager',
+      title: t('productManager.title'),
+      subtitle: t('productManager.subtitle'),
+      description: t('productManager.description'),
+      image: '/assets/images/product-manager-workflow.webp',
+    },
+    {
+      id: 'founder',
+      title: t('founder.title'),
+      subtitle: t('founder.subtitle'),
+      description: t('founder.description'),
+      image: '/assets/images/founder-workflow.webp',
+    },
+    {
+      id: 'content-creator',
+      title: t('contentCreator.title'),
+      subtitle: t('contentCreator.subtitle'),
+      description: t('contentCreator.description'),
+      image: '/assets/images/content-creator-workflow.webp',
+    },
+    {
+      id: 'sales-leader',
+      title: t('salesLeader.title'),
+      subtitle: t('salesLeader.subtitle'),
+      description: t('salesLeader.description'),
+      image: '/assets/images/sales-leader-workflow.webp',
+    },
+  ];
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

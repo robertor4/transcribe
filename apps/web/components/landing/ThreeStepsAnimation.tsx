@@ -3,8 +3,10 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Mic, Settings, FileText } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function ThreeStepsAnimation() {
+  const t = useTranslations('landing.what.steps');
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -79,8 +81,8 @@ export function ThreeStepsAnimation() {
           </motion.div>
         </motion.div>
         <div className="text-6xl font-bold text-gray-300 mb-4">1</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">Speak</h3>
-        <p className="text-gray-700 text-sm">Record meetings, ideas, interviews. Or let Neural Summary interview you.</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('speak.title')}</h3>
+        <p className="text-gray-700 text-sm">{t('speak.description')}</p>
       </motion.div>
 
       {/* Arrow 1 */}
@@ -106,8 +108,8 @@ export function ThreeStepsAnimation() {
           <Settings className="w-10 h-10 text-gray-600" />
         </motion.div>
         <div className="text-6xl font-bold text-gray-300 mb-4">2</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">Extract</h3>
-        <p className="text-gray-700 text-sm">AI structures thoughts, asks questions, captures every detail.</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('extract.title')}</h3>
+        <p className="text-gray-700 text-sm">{t('extract.description')}</p>
       </motion.div>
 
       {/* Arrow 2 */}
@@ -136,8 +138,8 @@ export function ThreeStepsAnimation() {
           </motion.div>
         </div>
         <div className="text-6xl font-bold text-gray-300 mb-4">3</div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">Create</h3>
-        <p className="text-gray-700 text-sm">Get work-ready documents instantly. Specs, articles, emails, strategies.</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('create.title')}</h3>
+        <p className="text-gray-700 text-sm">{t('create.description')}</p>
       </motion.div>
     </motion.div>
   );

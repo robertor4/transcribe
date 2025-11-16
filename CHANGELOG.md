@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Features Section Images**: Generated professional AI images for Features section using Google Imagen 4
+  - Three high-quality WebP images with dark theme matching hero laptop screen aesthetic
+  - Feature 1 (99.5% accuracy): White waveform on dark charcoal background with pink accent peaks (35KB)
+  - Feature 2 (Files up to 5GB): Light gray geometric shapes on dark background with pink glow (35KB)
+  - Feature 3 (99 languages): White network nodes on dark background with pink connection points (99KB)
+  - **Color scheme inspired by hero image**: Dark backgrounds (#1a1a1a - #2c2c2c), light gray/white elements, vibrant pink accents (#cc3399)
+  - Professional product photography with dramatic lighting, shadows, and strong contrast
+  - Modern sophisticated tech aesthetic matching Neural Summary's brand identity
+  - 4:3 aspect ratio optimized for landing page layout
+  - Files: [apps/web/public/assets/images/features/feature-accuracy.webp](apps/web/public/assets/images/features/feature-accuracy.webp), [apps/web/public/assets/images/features/feature-large-files.webp](apps/web/public/assets/images/features/feature-large-files.webp), [apps/web/public/assets/images/features/feature-languages.webp](apps/web/public/assets/images/features/feature-languages.webp)
+
+### Changed
+- **Features Section**: Replaced placeholder "Feature Image" divs with actual AI-generated images
+  - Updated all three feature image containers with proper img tags
+  - Added descriptive alt text for accessibility
+  - Implemented lazy loading for performance optimization
+  - Maintained responsive 4:3 aspect ratio with proper sizing attributes
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:321-387)
+
+### Added
 - **WorkflowCarousel Component**: Created horizontal carousel for "Built for your workflow" section
   - Apple-style design with smooth auto-advancing slides (5s interval)
   - Four workflow personas with AI-generated images (Product Manager, Founder, Content Creator, Sales Leader)

@@ -708,6 +708,10 @@
   },
   "landing": {
     "hero": {
+      "headline": "Parlez. Nous nous souviendrons.",
+      "subtitle": "Transformez les conversations en documents prêts à l'emploi—sans effort.",
+      "ctaPrimary": "Commencer gratuitement",
+      "ctaSecondary": "Voir la démo",
       "byline": "",
       "trustIndicators": {
         "users": "Approuvé par des professionnels",
@@ -716,7 +720,7 @@
       },
       "title": "Transformez chaque réunion en",
       "titleHighlight": "notes et actions claires.",
-      "subtitle": "L'application de notes de réunion IA qui transforme les enregistrements Zoom, Teams et Google Meet en résumés exploitables — automatiquement, précisément et instantanément.",
+      "subtitle2": "L'application de notes de réunion IA qui transforme les enregistrements Zoom, Teams et Google Meet en résumés exploitables — automatiquement, précisément et instantanément.",
       "cta": {
         "primary": "Commencer gratuitement",
         "secondary": "Voir comment ça marche"
@@ -726,6 +730,95 @@
         "saveTime": "Économisez 10+ heures/semaine",
         "accuracy": "99,5% de précision",
         "languages": "50+ langues"
+      }
+    },
+    "why": {
+      "headline": "Vos meilleures idées se perdent dans la traduction.",
+      "paragraph1": "Vous pensez en conversations. Vous travaillez en documents.",
+      "paragraph2": "Entre les deux : Des heures de frappe, de formatage, de restructuration.",
+      "paragraph3": "Et si votre voix devenait le document?"
+    },
+    "what": {
+      "headline": "Trois étapes vers la création.",
+      "steps": {
+        "speak": {
+          "title": "Parlez",
+          "description": "Enregistrez des réunions, des idées, des interviews. Ou laissez notre IA vous interviewer pour extraire votre vision."
+        },
+        "extract": {
+          "title": "Extrayez",
+          "description": "L'IA pose des questions, structure les pensées, capture chaque détail—comme un assistant personnel."
+        },
+        "create": {
+          "title": "Créez",
+          "description": "Obtenez instantanément des documents prêts à l'emploi. Spécifications, articles, e-mails, stratégies."
+        }
+      }
+    },
+    "wow": {
+      "headline": "Parler devient créer.",
+      "subtitle": "Conversation de 3 minutes → Spécification produit complète. Notre IA vous interviewe, pose des questions, génère des livrables.",
+      "tagline": "Pas d'écriture. Pas de formatage. Pensez juste à voix haute."
+    },
+    "who": {
+      "headline": "Conçu pour votre flux de travail.",
+      "personas": {
+        "productManager": {
+          "title": "Chef de Produit",
+          "subtitle": "Brainstorming → Spécification produit en 5 minutes",
+          "description": "Discutez de votre idée de fonctionnalité. Obtenez une spécification complète prête pour votre équipe de développement."
+        },
+        "founder": {
+          "title": "Fondateur",
+          "subtitle": "Discussion de vision → Document stratégique pour votre équipe",
+          "description": "Enregistrez votre vision stratégique. Partagez instantanément un brief structuré avec votre équipe."
+        },
+        "contentCreator": {
+          "title": "Créateur de Contenu",
+          "subtitle": "Interview → Article prêt à publier",
+          "description": "Interviewez naturellement les invités. Obtenez du contenu structuré prêt à publier."
+        },
+        "salesLeader": {
+          "title": "Directeur Commercial",
+          "subtitle": "Appel client → E-mail de suivi en minutes",
+          "description": "Concentrez-vous sur la conversation. Envoyez des résumés parfaits pendant que les prospects se souviennent de vous."
+        }
+      }
+    },
+    "featuresSection": {
+      "headline": "Conçu pour la concentration.",
+      "accuracy": {
+        "title": "99,5% de précision",
+        "description": "Chaque mot capturé. Étiquettes de locuteur incluses."
+      },
+      "largeFiles": {
+        "title": "Fichiers jusqu'à 5GB",
+        "description": "Gérez des heures d'audio. Aucune limite."
+      },
+      "languages": {
+        "title": "99 langues",
+        "description": "Détection automatique. Traduction instantanée."
+      }
+    },
+    "securitySection": {
+      "headline": "Votre confidentialité compte.",
+      "description": "Audio supprimé en quelques secondes. Seul le texte reste. Chiffrement de niveau entreprise."
+    },
+    "warp": {
+      "headline": "L'avenir du travail n'est pas la frappe.",
+      "subtitle": "C'est penser à voix haute.",
+      "line1": "Vos idées deviennent des exigences.",
+      "line2": "Votre vision devient stratégie.",
+      "line3": "Votre voix devient production.",
+      "tagline": "C'est ainsi que le travail créatif devrait se sentir."
+    },
+    "finalCta": {
+      "headline": "Parler devient créer",
+      "subtext": "Commencez gratuitement. Aucune carte requise.",
+      "button": "Commencer gratuitement",
+      "benefits": {
+        "free": "Commencez gratuitement",
+        "noCard": "Pas de carte bancaire"
       }
     },
     "valueProposition": {
@@ -751,6 +844,7 @@
       "benefit2": "Réduisez la perte d'informations et les malentendus",
       "benefit3": "Gardez les équipes alignées sans partage interminable de notes",
       "benefit4": "Sécurisé, conforme et évolutif pour toute organisation",
+      "benefit5": "Sécurisé, conforme et évolutif pour toute organisation",
       "tagline": "Arrêtez de perdre du temps en réunions — commencez à transformer les mots en action."
     },
     "benefits": {
@@ -881,6 +975,13 @@
       "audit": {
         "title": "Architecture zéro-connaissance",
         "description": "Vos données restent privées - nous ne traitons que le nécessaire et supprimons l'audio immédiatement"
+      },
+      "badges": {
+        "soc2": "Conforme SOC 2",
+        "gdpr": "Conforme RGPD",
+        "hipaa": "Prêt HIPAA",
+        "iso": "ISO 27001",
+        "compliance": "Les modèles de reconnaissance vocale sont conformes SOC 2, RGPD, HIPAA et ISO 27001."
       }
     },
     "testimonials": {
@@ -904,30 +1005,34 @@
     },
     "meetingFaq": {
       "title": "Questions Fréquemment Posées",
-      "subtitle": "Tout ce que vous devez savoir sur la transcription et les notes de réunion IA",
+      "subtitle": "Tout ce que vous devez savoir sur la transformation de la voix en documents prêts à l'emploi",
       "question1": {
-        "question": "Comment puis-je transcrire automatiquement les réunions Zoom?",
-        "answer": "Enregistrez simplement votre réunion Zoom (localement ou dans le cloud), téléchargez le fichier audio ou vidéo et chargez-le sur Neural Summary. Notre IA transcrira automatiquement la réunion avec des étiquettes de locuteur et générera un résumé avec actions en quelques minutes."
+        "question": "Comment fonctionne Neural Summary?",
+        "answer": "Téléchargez un enregistrement audio ou vidéo, ou parlez directement dans la plateforme. Notre IA traite votre conversation, identifie les informations clés et génère des documents structurés—résumés, actions et analyses détaillées. Fonctionne avec réunions, brainstormings, interviews ou mémos vocaux. De l'upload au document fini en seulement 3-5 minutes."
       },
       "question2": {
-        "question": "Fonctionne-t-il avec Microsoft Teams et Google Meet?",
-        "answer": "Oui! Neural Summary fonctionne avec n'importe quelle plateforme de réunion. Enregistrez votre réunion Microsoft Teams ou Google Meet, téléchargez l'enregistrement et chargez-le sur notre plateforme. Nous supportons tous les formats vidéo et audio majeurs."
+        "question": "Quels types de documents puis-je créer?",
+        "answer": "À partir d'un seul enregistrement, créez des résumés de réunion avec actions et décisions, analyses de contenu, insights stratégiques et analyses de communication. Chaque type de document est optimisé pour différents besoins—résumé exécutif, transcription détaillée ou plan d'action d'équipe. Bientôt: création de documents guidée par IA pour specs et articles."
       },
       "question3": {
-        "question": "L'IA peut-elle identifier différents locuteurs dans les réunions?",
-        "answer": "Absolument! Notre IA détecte automatiquement plusieurs locuteurs et les étiquette tout au long de la transcription. Vous pouvez également renommer les locuteurs après le traitement pour plus de clarté dans vos notes de réunion."
+        "question": "Fonctionne-t-il avec Zoom, Teams et Google Meet?",
+        "answer": "Oui! Enregistrez votre réunion sur n'importe quelle plateforme, téléchargez le fichier et chargez-le sur Neural Summary. Nous supportons tous les formats vidéo et audio majeurs dont MP3, M4A, WAV, MP4, MOV et plus. Pas de bots, pas de plugins—il suffit de télécharger et créer."
       },
       "question4": {
-        "question": "Qu'est-ce qui fait de Neural Summary la meilleure application de notes de réunion IA?",
-        "answer": "Contrairement aux outils de transcription basiques, Neural Summary va au-delà de la simple conversion de parole en texte. Nous fournissons des résumés intelligents avec décisions clés, sujets de discussion, actions avec responsables et échéances, et options d'analyse avancées — le tout avec 99,5% de précision et support de 50+ langues."
+        "question": "Neural Summary peut-il identifier différents locuteurs?",
+        "answer": "Oui! Notre technologie de diarisation de locuteurs détecte et étiquette automatiquement plusieurs locuteurs tout au long de votre conversation. Les contributions de chaque locuteur sont clairement attribuées, maintenant le flux naturel du dialogue. Vous pouvez renommer les locuteurs après traitement pour encore plus de clarté dans vos documents."
       },
       "question5": {
-        "question": "Combien de temps faut-il pour traiter un enregistrement de réunion?",
-        "answer": "La plupart des réunions sont traitées en 3-5 minutes, quelle que soit leur durée. Nous supportons des fichiers jusqu'à 5 Go (environ 50+ heures d'audio) et utilisons le traitement parallèle pour gérer rapidement les grandes réunions. Vous recevrez une notification lorsque votre résumé de réunion sera prêt."
+        "question": "Quelle est la précision des résultats?",
+        "answer": "Nous offrons 99,5% de précision de transcription avec identification des locuteurs dans plus de 50 langues. Mais Neural Summary va au-delà de la transcription—notre IA extrait décisions, actions, thèmes et insights que la prise de notes manuelle manque souvent. Vous obtenez à la fois une capture mot-à-mot précise et une analyse intelligente."
       },
       "question6": {
-        "question": "Puis-je partager les transcriptions de réunion avec mon équipe?",
-        "answer": "Oui! Neural Summary inclut des fonctionnalités de partage avancées. Partagez les transcriptions et résumés via des liens sécurisés protégés par mot de passe, envoyez par e-mail ou exportez en PDF, Word et autres formats. Les plans professionnels incluent le partage et les fonctionnalités de collaboration illimités."
+        "question": "Mes données sont-elles privées et sécurisées?",
+        "answer": "Votre audio n'est JAMAIS stocké sur nos serveurs. Lorsque vous téléchargez un enregistrement, il est traité immédiatement et supprimé en quelques secondes. Nous ne conservons que le texte et les résultats d'analyse. Cette architecture à connaissance zéro garantit que vos conversations sensibles restent complètement privées—idéal pour les discussions commerciales, juridiques ou médicales confidentielles."
+      },
+      "question7": {
+        "question": "Puis-je partager et exporter des documents?",
+        "answer": "Oui! Partagez vos documents via des liens sécurisés protégés par mot de passe, envoyez par e-mail ou exportez en formats PDF et Word. Les plans professionnels incluent le partage illimité et les fonctionnalités de collaboration pour les équipes."
       }
     },
     "cta": {
@@ -1014,7 +1119,7 @@
         "security": "Sécurité"
       },
       "copyright": "© 2024 Neural Summary. Tous droits réservés.",
-      "tagline": "Construit par des scientifiques de la communication et des ingénieurs en IA pour aider les gens à mieux se comprendre."
+      "tagline": "Créé par des gens qui ont passé trop d'heures en réunion."
     }
   },
   "terms": {
