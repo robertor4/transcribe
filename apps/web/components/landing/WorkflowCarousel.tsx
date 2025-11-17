@@ -134,8 +134,8 @@ export default function WorkflowCarousel() {
               className="min-w-full flex-shrink-0"
             >
               <div className="relative overflow-hidden">
-                {/* Image - Controlled height */}
-                <div className="relative h-[calc(100vh-80px)] overflow-hidden">
+                {/* Image - Responsive height with mobile constraints */}
+                <div className="relative min-h-[500px] h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] overflow-hidden">
                   <Image
                     src={workflow.image}
                     alt={workflow.title}

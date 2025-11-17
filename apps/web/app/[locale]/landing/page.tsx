@@ -165,8 +165,7 @@ export default async function LandingPage({
             <img
               src="/assets/images/hero-bg-01 transparant.webp"
               alt=""
-              className="w-full h-auto object-cover object-bottom"
-              style={{ minWidth: '100%', maxHeight: '70vh' }}
+              className="w-full h-[600px] object-cover object-bottom sm:h-auto sm:max-h-[70vh]"
             />
           </div>
 
@@ -175,9 +174,9 @@ export default async function LandingPage({
             <div className="max-w-6xl mx-auto text-center">
               <div className="space-y-8">
 
-                {/* Main Headline - Large and Bold, single line */}
+                {/* Main Headline - Large and Bold, responsive wrapping */}
                 <ScrollAnimation delay={200}>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 leading-tight tracking-tight whitespace-nowrap">
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 leading-tight tracking-tight">
                     {t('hero.headline')}
                   </h1>
                 </ScrollAnimation>
@@ -255,6 +254,7 @@ export default async function LandingPage({
                   title="Neural Summary Demo Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  loading="lazy"
                 />
               </div>
 
@@ -434,7 +434,7 @@ export default async function LandingPage({
               <p className="text-gray-700">{t('testimonials.rating')}</p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               <ScrollAnimation animation="slideLeft">
                 <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
                 <div className="flex mb-4">
@@ -568,7 +568,7 @@ export default async function LandingPage({
         {/* Footer */}
         <footer className="text-gray-400 py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#1a1a1a' }} aria-label="Footer">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
               <div>
                 <h3 className="text-white font-semibold mb-4">{t('footer.product.title')}</h3>
                 <ul className="space-y-2 text-sm">

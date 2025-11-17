@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **YouTube Thumbnail Generator**: Interactive page for creating professional YouTube thumbnails
+  - Three layout options: Split (dark/light halves), Overlay (full background), Workflow (3-step visualization)
+  - Real-time preview at YouTube dimensions (1280×720px)
+  - Customizable text: main headline and subtitle with live editing
+  - Brand-consistent design: Uses Neural Summary colors (#cc3399 pink, #2c2c2c dark gray), Geist font, and futuristic-minimal aesthetic
+  - Animated waveform visualizations matching landing page design
+  - One-click PNG export using html2canvas
+  - Toggle logo visibility (Neural Summary NS symbol)
+  - Files: [apps/web/app/[locale]/thumbnail/page.tsx](apps/web/app/[locale]/thumbnail/page.tsx)
+  - Dependencies: Added html2canvas package for image export
+
+### Fixed
+- **Mobile Responsiveness**: Improved landing page layout for small screens and tablets
+  - Removed `whitespace-nowrap` from hero headline to prevent horizontal scrolling on narrow devices (iPhone SE, etc.)
+  - Optimized testimonials grid: Changed from `md:grid-cols-3` to `md:grid-cols-2 lg:grid-cols-3` for better tablet display (768px-1024px)
+  - Added responsive height constraints to WorkflowCarousel: `min-h-[500px]` prevents content overflow on mobile landscape
+  - Improved background image sizing: Laptop now appears larger on mobile via `object-cover` with `h-[600px]` fixed height, creating zoom effect by cropping sides instead of showing entire width
+  - Added `loading="lazy"` to video iframe for improved initial page load performance
+  - Optimized footer grid: Removed intermediate `sm:grid-cols-2` breakpoint to keep single column until medium screens
+  - Files: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:180,437,572,168,258), [apps/web/components/landing/WorkflowCarousel.tsx](apps/web/components/landing/WorkflowCarousel.tsx:138)
+
+### Added
 - **Privacy Section Lock Icon**: Added minimalistic lock icon above "Your privacy matters" headline
   - Clean, centered lock icon (48px) in white color on dark background
   - Reinforces security messaging visually in privacy section
@@ -22,6 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Matches public header pattern for consistent UX across signed-in and public pages
   - Removed from UserProfileMenu dropdown (was hidden behind extra click)
   - Files: [apps/web/app/[locale]/dashboard/page.tsx](apps/web/app/[locale]/dashboard/page.tsx:301), [apps/web/components/UserProfileMenu.tsx](apps/web/components/UserProfileMenu.tsx:274-285)
+- **Language Switcher Dark Mode**: Implemented conditional dark mode support
+  - Added `enableDarkMode` prop to control dark mode class application
+  - Public pages use `<LanguageSwitcher />` (no dark mode)
+  - Dashboard uses `<LanguageSwitcher enableDarkMode />` (full dark mode support)
+  - Ensures light-mode-only design on public pages (landing, pricing, login)
+  - Provides proper visibility in dashboard's dark theme
+  - Files: [apps/web/components/LanguageSwitcher.tsx](apps/web/components/LanguageSwitcher.tsx:11-15,61,65,81,93), [apps/web/app/[locale]/dashboard/page.tsx](apps/web/app/[locale]/dashboard/page.tsx:301)
 - **Language Switcher UI**: Redesigned for more subtle, minimal appearance
   - Changed button display from full language names to two-letter codes (e.g., "English" → "EN")
   - Removed border and background from button for cleaner look

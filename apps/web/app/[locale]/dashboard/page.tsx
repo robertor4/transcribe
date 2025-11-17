@@ -298,7 +298,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <UsageBadge />
               <ThemeToggle />
-              <LanguageSwitcher />
+              <LanguageSwitcher enableDarkMode />
               <UserProfileMenu />
             </div>
           </div>
