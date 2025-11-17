@@ -29,7 +29,7 @@ export function ThreeStepsAnimation() {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: [0.25, 0.46, 0.45, 0.94], // easeOutQuad
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number], // easeOutQuad
       },
     },
   };
@@ -41,7 +41,7 @@ export function ThreeStepsAnimation() {
       x: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   };

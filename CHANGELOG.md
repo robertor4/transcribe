@@ -14,12 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Customizable text: main headline and subtitle with live editing
   - Brand-consistent design: Uses Neural Summary colors (#cc3399 pink, #2c2c2c dark gray), Geist font, and futuristic-minimal aesthetic
   - Animated waveform visualizations matching landing page design
-  - One-click PNG export using html2canvas
-  - Toggle logo visibility (Neural Summary NS symbol)
-  - Files: [apps/web/app/[locale]/thumbnail/page.tsx](apps/web/app/[locale]/thumbnail/page.tsx)
-  - Dependencies: Added html2canvas package for image export
+  - One-click PNG export using modern-screenshot (high-quality rendering with oklch support)
+  - Toggle logo visibility using actual Neural Summary logo ([/assets/neural-summary-logo.webp](apps/web/public/assets/neural-summary-logo.webp))
+  - Proper content centering using flexbox absolute positioning
+  - Export loading state with disabled button during generation
+  - Improved error handling with detailed error messages
+  - 2x scale for high-DPI displays (2560×1440px actual output)
+  - File: [apps/web/app/[locale]/thumbnail/page.tsx](apps/web/app/[locale]/thumbnail/page.tsx)
+  - Dependencies: modern-screenshot for pixel-perfect image export
+
+### Changed
+- **Thumbnail Export Library**: Upgraded to modern-screenshot for best quality
+  - Replaced html2canvas → dom-to-image-more → modern-screenshot
+  - html2canvas: doesn't support Tailwind CSS v4's oklch() color format
+  - dom-to-image-more: supported oklch but produced white boxes and low quality
+  - modern-screenshot: pixel-perfect rendering, native oklch support, no artifacts
+  - Built-in TypeScript support (no custom declarations needed)
+  - Superior rendering quality with proper CSS property handling
+  - File: [apps/web/app/[locale]/thumbnail/page.tsx](apps/web/app/[locale]/thumbnail/page.tsx:17-48)
 
 ### Fixed
+- **Thumbnail Generator Layout Centering**: Fixed workflow layout vertical alignment
+  - Restructured workflow layout for proper vertical centering using flex container
+  - Fixed JSX structure with proper closing tags for workflow steps container
+  - File: [apps/web/app/[locale]/thumbnail/page.tsx](apps/web/app/[locale]/thumbnail/page.tsx:295-408)
+- **ThreeStepsAnimation Type Errors**: Fixed TypeScript compilation errors in animation variants
+  - Added proper type assertions for easing arrays: `as [number, number, number, number]`
+  - Added `as const` assertion for string ease values to match Framer Motion's type expectations
+  - Resolved build failures caused by incompatible animation transition types
+  - File: [apps/web/components/landing/ThreeStepsAnimation.tsx](apps/web/components/landing/ThreeStepsAnimation.tsx:32,44)
 - **Mobile Responsiveness**: Improved landing page layout for small screens and tablets
   - Removed `whitespace-nowrap` from hero headline to prevent horizontal scrolling on narrow devices (iPhone SE, etc.)
   - Optimized testimonials grid: Changed from `md:grid-cols-3` to `md:grid-cols-2 lg:grid-cols-3` for better tablet display (768px-1024px)
