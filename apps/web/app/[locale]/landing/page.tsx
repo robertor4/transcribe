@@ -165,18 +165,18 @@ export default async function LandingPage({
             <img
               src="/assets/images/hero-bg-01 transparant.webp"
               alt=""
-              className="w-full h-[600px] object-cover object-bottom sm:h-auto sm:max-h-[70vh]"
+              className="w-full h-[400px] sm:h-[500px] md:h-auto md:max-h-[70vh] object-cover object-bottom -translate-y-16 sm:-translate-y-10 md:translate-y-0"
             />
           </div>
 
           {/* Content - Positioned at top, clean spacing */}
-          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-32 sm:pt-40">
+          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40">
             <div className="max-w-6xl mx-auto text-center">
-              <div className="space-y-8">
+              <div className="space-y-6">
 
                 {/* Main Headline - Large and Bold, responsive wrapping */}
                 <ScrollAnimation delay={200}>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-gray-900 leading-tight tracking-tight">
+                  <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 leading-none tracking-tight">
                     {t('hero.headline')}
                   </h1>
                 </ScrollAnimation>
@@ -190,7 +190,7 @@ export default async function LandingPage({
 
                 {/* Dual CTAs */}
                 <ScrollAnimation delay={600}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mb-20 sm:mb-24">
                     {/* Primary CTA */}
                     <CTAButton href="/signup" locale={locale} variant="primary">
                       {t('hero.ctaPrimary')}

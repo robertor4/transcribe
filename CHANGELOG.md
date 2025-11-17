@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Landing Page Mobile Design Improvements**: Enhanced mobile responsiveness for better user experience
+  - Increased hero title size on mobile from `text-4xl` (36px) to `text-5xl` (48px) for better visibility and impact
+  - Reduced hero title line height from `leading-tight` to `leading-none` for more cohesive, powerful statement
+  - Set fixed button width to `w-[240px]` (changed from `min-w-[200px]`) for perfectly even button sizes
+  - Reduced laptop image height on mobile from 600px to 400px (500px on sm screens) for better proportions
+  - Optimized hero section spacing: reduced top padding from `pt-32` to `pt-24` on mobile for better content visibility
+  - Reduced hero content vertical spacing from `space-y-8` to `space-y-6` (24px) and CTA top margin from `mt-12` to `mt-8` for tighter layout
+  - Reduced button gap from `gap-6` to `gap-4` (16px) for tighter visual grouping when stacked vertically
+  - Added transform translate to laptop image (`-translate-y-12` mobile, `sm:-translate-y-10`, `md:translate-y-0`) to lift laptop into viewport with optimal spacing
+  - Added bottom margin to button container (`mb-20` mobile, `sm:mb-24`) to create breathing room between CTAs and laptop image
+  - Fixed button height inconsistency: added `border-2 border-transparent` to primary/brand buttons to match secondary button height
+  - Files: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:168,173,179,193), [apps/web/components/landing/CTAButton.tsx](apps/web/components/landing/CTAButton.tsx:17,20,27)
 - **Landing Page Video**: Updated embedded YouTube video to actual Neural Summary demo (video ID: znkIBXi1O48)
   - Enabled closed captions by default for better accessibility (`cc_load_policy=1`)
   - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:253)
