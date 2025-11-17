@@ -732,7 +732,11 @@
   },
   "landing": {
     "hero": {
-      "byline": "",
+      "headline": "Speak. We'll remember.",
+      "subtitle": "Turn conversations into work-ready documents—effortlessly.",
+      "ctaPrimary": "Get started free",
+      "ctaSecondary": "Watch demo",
+      "byline": "Voice-to-output creation platform",
       "trustIndicators": {
         "users": "Trusted by professionals",
         "rating": "Highly rated",
@@ -740,7 +744,7 @@
       },
       "title": "Turn every meeting into crystal-clear",
       "titleHighlight": "notes and action items.",
-      "subtitle": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy and deletes your audio within seconds — your conversations stay private.",
+      "subtitle2": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy and deletes your audio within seconds — your conversations stay private.",
       "cta": {
         "primary": "Start free",
         "secondary": "See how it works"
@@ -750,6 +754,95 @@
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
         "languages": "50+ languages"
+      }
+    },
+    "why": {
+      "headline": "Your best ideas get lost in translation.",
+      "paragraph1": "You think in conversations. You work in documents.",
+      "paragraph2": "Between the two: Hours of typing, formatting, restructuring.",
+      "paragraph3": "What if your voice became the document?"
+    },
+    "what": {
+      "headline": "Three steps to creation.",
+      "steps": {
+        "speak": {
+          "title": "Speak",
+          "description": "Record meetings, ideas, interviews. Or let our AI interview you to extract your vision."
+        },
+        "extract": {
+          "title": "Extract",
+          "description": "AI asks questions, structures thoughts, captures every detail—like a personal assistant."
+        },
+        "create": {
+          "title": "Create",
+          "description": "Get work-ready documents instantly. Specs, articles, emails, strategies."
+        }
+      }
+    },
+    "wow": {
+      "headline": "Speaking becomes creating.",
+      "subtitle": "3-minute conversation → Complete product spec. Our AI interviews you, asks questions, generates deliverables.",
+      "tagline": "No writing. No formatting. Just think out loud."
+    },
+    "who": {
+      "headline": "Built for your workflow.",
+      "personas": {
+        "productManager": {
+          "title": "Product Manager",
+          "subtitle": "Brainstorm → Product spec in 5 minutes",
+          "description": "Talk through your feature idea. Get a complete spec ready for your dev team."
+        },
+        "founder": {
+          "title": "Founder",
+          "subtitle": "Vision talk → Strategy doc for your team",
+          "description": "Record your strategic vision. Share a structured brief with your team instantly."
+        },
+        "contentCreator": {
+          "title": "Content Creator",
+          "subtitle": "Interview → Publish-ready article",
+          "description": "Interview guests naturally. Get structured content ready to publish."
+        },
+        "salesLeader": {
+          "title": "Sales Leader",
+          "subtitle": "Client call → Follow-up email in minutes",
+          "description": "Focus on the conversation. Send perfect summaries while prospects remember you."
+        }
+      }
+    },
+    "featuresSection": {
+      "headline": "Built for focus.",
+      "accuracy": {
+        "title": "99.5% accuracy",
+        "description": "Every word captured. Speaker labels included."
+      },
+      "largeFiles": {
+        "title": "Files up to 5GB",
+        "description": "Handle hours of audio. No limits."
+      },
+      "languages": {
+        "title": "99 languages",
+        "description": "Automatic detection. Translate instantly."
+      }
+    },
+    "securitySection": {
+      "headline": "Your privacy matters.",
+      "description": "Audio deleted within seconds. Only text remains. Enterprise-grade encryption."
+    },
+    "warp": {
+      "headline": "The future of work isn't typing.",
+      "subtitle": "It's thinking out loud.",
+      "line1": "Your ideas become requirements.",
+      "line2": "Your vision becomes strategy.",
+      "line3": "Your voice becomes output.",
+      "tagline": "This is how creative work should feel."
+    },
+    "finalCta": {
+      "headline": "Speaking becomes creating",
+      "subtext": "Start free. No card required.",
+      "button": "Get started free",
+      "benefits": {
+        "free": "Start free",
+        "noCard": "No credit card"
       }
     },
     "valueProposition": {
@@ -911,7 +1004,8 @@
         "soc2": "SOC 2 Compliant",
         "gdpr": "GDPR Compliant",
         "hipaa": "HIPAA Ready",
-        "iso": "ISO 27001"
+        "iso": "ISO 27001",
+        "compliance": "Speech-to-text models are SOC 2, GDPR, HIPAA, and ISO 27001 compliant."
       }
     },
     "testimonials": {
@@ -935,38 +1029,34 @@
     },
     "meetingFaq": {
       "title": "Frequently Asked Questions",
-      "subtitle": "Everything you need to know about AI meeting transcription and notes",
+      "subtitle": "Everything you need to know about turning voice into work-ready documents",
       "question1": {
-        "question": "How do I automatically transcribe Zoom meetings?",
-        "answer": "Simply record your Zoom meeting (either locally or to the cloud), download the audio or video file, and upload it to Neural Summary. Our AI will automatically transcribe the meeting with speaker labels and generate a summary with action items in minutes."
+        "question": "How does Neural Summary work?",
+        "answer": "Upload any audio or video recording, or speak directly into the platform. Our AI processes your conversation, identifies key insights, and generates structured documents—summaries, action items, and detailed analysis. It works with meetings, brainstorms, interviews, or voice memos. From upload to finished document takes just 3-5 minutes."
       },
       "question2": {
-        "question": "Does it work with Microsoft Teams and Google Meet?",
-        "answer": "Yes! Neural Summary works with any meeting platform. Record your Microsoft Teams or Google Meet meeting, download the recording, and upload it to our platform. We support all major video and audio formats."
+        "question": "What types of documents can I create?",
+        "answer": "From a single recording, create meeting summaries with action items and decisions, content analysis, strategic insights, and communication breakdowns. Each document type is optimized for different needs—whether you need executive summaries, detailed transcripts, or team action plans. Coming soon: AI-guided document creation for specs and articles."
       },
       "question3": {
-        "question": "Can the AI identify different speakers in meetings?",
-        "answer": "Absolutely! Our AI automatically detects multiple speakers and labels them throughout the transcript. You can also rename speakers after processing for clarity in your meeting notes."
+        "question": "Does it work with Zoom, Teams, and Google Meet?",
+        "answer": "Yes! Record your meeting on any platform, download the file, and upload it to Neural Summary. We support all major video and audio formats including MP3, M4A, WAV, MP4, MOV, and more. No bots, no plugins—just upload and create."
       },
       "question4": {
-        "question": "Does a bot join my meeting like other AI note-taking tools?",
-        "answer": "No! Unlike other meeting tools, Neural Summary does NOT use bots that join your calls. Simply upload your recording after the meeting ends. This means no awkward 'Recording Bot has joined' announcements, no extra participant in your call, and complete privacy for sensitive discussions. Perfect for confidential client calls, legal consultations, and executive meetings."
+        "question": "Can Neural Summary identify different speakers?",
+        "answer": "Yes! Our speaker diarization technology automatically detects and labels multiple speakers throughout your conversation. Each speaker's contributions are clearly attributed, maintaining the natural flow of dialogue. You can rename speakers after processing for even greater clarity in your documents."
       },
       "question5": {
-        "question": "What makes Neural Summary the best AI meeting notes app?",
-        "answer": "Unlike basic transcription tools, Neural Summary goes beyond just converting speech to text. No bots join your meetings, your audio is deleted within seconds after processing, and we provide intelligent summaries with key decisions, discussion topics, action items with owners and deadlines, and advanced analysis options — all with 99.5% accuracy and support for 50+ languages."
+        "question": "How accurate are the results?",
+        "answer": "We deliver 99.5% transcription accuracy with speaker identification in over 50 languages. But Neural Summary goes beyond transcription—our AI extracts decisions, action items, themes, and insights that manual note-taking often misses. You get both precise word-for-word capture and intelligent analysis."
       },
       "question6": {
-        "question": "How long does it take to process a meeting recording?",
-        "answer": "Most meetings are processed in 3-5 minutes, regardless of length. We support files up to 5GB (approximately 50+ hours of audio) and use parallel processing to handle large meetings quickly. You'll receive a notification when your meeting summary is ready."
+        "question": "Is my data private and secure?",
+        "answer": "Your audio is NEVER stored on our servers. When you upload a recording, it's processed immediately and deleted within seconds. We only retain the text and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain completely private—ideal for confidential business, legal, or medical discussions."
       },
       "question7": {
-        "question": "Is my audio stored on your servers? What about privacy?",
-        "answer": "Your audio is NEVER stored on our servers. When you upload a recording, it's sent directly to secure, enterprise-grade transcription services for processing, then deleted within seconds. We only retain the text transcript and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain private — ideal for legal, medical, and confidential business discussions."
-      },
-      "question8": {
-        "question": "Can I share meeting transcripts with my team?",
-        "answer": "Yes! Neural Summary includes advanced sharing features. Share transcripts and summaries via secure password-protected links, send via email, or export to PDF, Word, and other formats. Professional plans include unlimited sharing and collaboration features."
+        "question": "Can I share and export documents?",
+        "answer": "Yes! Share your documents via secure password-protected links, send via email, or export to PDF and Word formats. Professional plans include unlimited sharing and collaboration features for teams."
       }
     },
     "cta": {
@@ -1024,6 +1114,7 @@
       "menu": "Menu",
       "language": "Language",
       "features": "Features",
+      "howItWorks": "How it Works",
       "pricing": "Pricing",
       "faq": "FAQ"
     },
@@ -1053,7 +1144,7 @@
         "security": "Security"
       },
       "copyright": "© 2024 Neural Summary. All rights reserved.",
-      "tagline": "Built by communication scientists and AI engineers to help humans understand each other better."
+      "tagline": "Built by people who've spent too many hours in meetings."
     }
   },
   "share": {
@@ -1411,12 +1502,12 @@
       "title": "Frequently Asked Questions",
       "questions": {
         "cost": {
-          "question": "What exactly does transcription cost?",
-          "answer": "Professional plan includes 60 hours/month for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 transcriptions/month (30 min max each)."
+          "question": "How much does it cost to turn conversations into documents?",
+          "answer": "Professional plan includes 60 hours/month of audio processing for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 audio files/month (30 min max each)."
         },
         "overage": {
           "question": "What happens if I exceed my monthly limit?",
-          "answer": "Professional users are automatically charged {overageRate} per additional hour. Free users must upgrade to continue. Pay-As-You-Go users simply purchase more credits."
+          "answer": "Professional users are automatically charged {overageRate} per additional hour of audio processing. Free users must upgrade to continue creating documents. Pay-As-You-Go users simply purchase more credits as needed."
         },
         "cancel": {
           "question": "Can I cancel my subscription anytime?",
@@ -1432,7 +1523,7 @@
         },
         "payg": {
           "question": "How do Pay-As-You-Go credits work?",
-          "answer": "Credits cost {paygPrice} per hour of transcription. They never expire and can be used anytime. Perfect for occasional transcription needs."
+          "answer": "Credits cost {paygPrice} per hour of audio and can be used to create any type of document. They never expire and can be used anytime. Perfect for occasional document creation needs."
         }
       }
     },

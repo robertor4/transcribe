@@ -48,28 +48,28 @@ export function PricingFAQ() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {faqs.map((faq, index) => (
         <div
           key={index}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+          className="border border-gray-200 rounded-xl overflow-hidden transition-all hover:border-gray-300"
         >
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
-            className="w-full flex items-center justify-between p-4 text-left bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition-colors"
           >
-            <span className="font-semibold text-gray-900 dark:text-white pr-4">
+            <span className="font-semibold text-gray-900 pr-4">
               {faq.question}
             </span>
             <ChevronDown
-              className={`h-5 w-5 text-gray-500 dark:text-gray-400 flex-shrink-0 transition-transform ${
+              className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform ${
                 openIndex === index ? 'transform rotate-180' : ''
               }`}
             />
           </button>
           {openIndex === index && (
-            <div className="p-4 pt-0 bg-white dark:bg-gray-800">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <div className="px-5 pb-5 bg-white">
+              <p className="text-gray-700 leading-relaxed">
                 {faq.answer}
               </p>
             </div>

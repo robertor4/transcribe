@@ -13,6 +13,7 @@ import { RecordingGuide } from '@/components/RecordingGuide';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { UsageBadge } from '@/components/UsageBadge';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { FileAudio, Upload, Mic } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import websocketService from '@/lib/websocket';
@@ -297,6 +298,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2">
               <UsageBadge />
               <ThemeToggle />
+              <LanguageSwitcher enableDarkMode />
               <UserProfileMenu />
             </div>
           </div>

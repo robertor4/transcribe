@@ -145,10 +145,10 @@ export class AudioSplitter {
       throw new Error('FFmpeg is not available. Cannot split audio files.');
     }
 
-    this.logger.log(`Splitting audio file: ${inputPath}`);
-
     const fileSize = await this.getFileSize(inputPath);
     const duration = await this.getAudioDuration(inputPath);
+
+    this.logger.log(`Splitting audio file (${(fileSize / 1024 / 1024).toFixed(1)}MB, ${Math.floor(duration / 60)}m${Math.floor(duration % 60)}s)`);
 
     if (fileSize <= this.MAX_WHISPER_SIZE) {
       this.logger.log('File size is within limits, no splitting needed');
@@ -191,7 +191,7 @@ export class AudioSplitter {
       );
 
       promises.push(
-        this.extractChunk(inputPath, outputPath, startTime, actualDuration, i),
+        this.extractChunk(inputPath, outputPath, startTime, actualDuration, i, totalChunks),
       );
     }
 
@@ -208,6 +208,7 @@ export class AudioSplitter {
     startTime: number,
     duration: number,
     index: number,
+    totalChunks: number,
   ): Promise<AudioChunk> {
     return new Promise((resolve, reject) => {
       // Sanitize paths before using with FFmpeg
@@ -231,8 +232,8 @@ export class AudioSplitter {
         .setDuration(duration)
         .audioCodec('libmp3lame')
         .audioBitrate('128k')
-        .on('start', (commandLine) => {
-          this.logger.debug(`Starting chunk ${index + 1}: ${commandLine}`);
+        .on('start', () => {
+          this.logger.debug(`Processing chunk ${index + 1}/${totalChunks}`);
         })
         .on('progress', (progress) => {
           this.logger.debug(
@@ -240,7 +241,7 @@ export class AudioSplitter {
           );
         })
         .on('end', () => {
-          this.logger.log(`Chunk ${index + 1} created: ${safeOutputPath}`);
+          this.logger.log(`Created chunk ${index + 1}/${totalChunks}`);
           resolve({
             path: safeOutputPath,
             startTime,
@@ -261,9 +262,9 @@ export class AudioSplitter {
     for (const chunk of chunks) {
       try {
         await fs.promises.unlink(chunk.path);
-        this.logger.debug(`Deleted chunk: ${chunk.path}`);
+        this.logger.debug(`Deleted chunk ${chunk.index + 1}/${chunks.length}`);
       } catch (error) {
-        this.logger.warn(`Failed to delete chunk ${chunk.path}:`, error);
+        this.logger.warn(`Failed to delete chunk ${chunk.index + 1}:`, error);
       }
     }
   }
@@ -365,8 +366,8 @@ export class AudioSplitter {
           .inputOptions(['-f', 'concat', '-safe', '0'])
           .audioCodec('libmp3lame')
           .audioBitrate('128k')
-          .on('start', (commandLine) => {
-            this.logger.debug(`Starting merge: ${commandLine}`);
+          .on('start', () => {
+            this.logger.debug(`Merging ${safeInputPaths.length} chunks`);
           })
           .on('progress', (progress) => {
             if (progress.percent) {
@@ -374,11 +375,11 @@ export class AudioSplitter {
             }
           })
           .on('end', () => {
-            this.logger.log(`Successfully merged files to: ${safeOutputPath}`);
+            this.logger.log(`Successfully merged ${safeInputPaths.length} chunks`);
             // Clean up file list
             void fs.promises.unlink(fileListPath).catch((error) => {
               this.logger.warn(
-                `Failed to delete file list: ${fileListPath}`,
+                `Failed to delete file list`,
                 error,
               );
             });

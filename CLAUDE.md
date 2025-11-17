@@ -3,7 +3,100 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-A production-ready monorepo application for audio transcription and intelligent summarization. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, and context-aware AI processing using OpenAI Whisper and GPT-5 models.
+A production-ready monorepo application that **transforms conversations into work-ready documents**. Neural Summary is positioned as a **voice-to-output creation platform**, not just a transcription tool. Features automatic audio splitting for large files (up to 5GB for enterprise users), real-time progress tracking via WebSockets, context-aware AI processing using OpenAI Whisper and GPT-5 models, and an upcoming **AI interview feature** that asks questions to extract and structure ideas into deliverable documents.
+
+### Core Value Proposition
+**"Speaking becomes creating"** - Turn thinking (conversations) into working (documents) without the friction of manual writing, formatting, and structuring.
+
+## Design Language: Calm Intelligence
+
+Neural Summary embodies a **futuristic-minimal** aesthetic that blends human warmth with machine precision.
+
+### Design Principles
+- **Tone**: Serene, confident, intelligent
+- **Style**: Minimal, cinematic, spatial, human-centric
+- **Visual DNA**: White space, soft gradients (gray-50 to white), precise typography (Geist font), subtle motion
+- **Philosophy**: Technology that listens rather than shouts — invisible, yet deeply present
+
+### UI Guidelines
+- **Minimal text**: Few words, no marketing fluff - clarity and emotion over explanation
+- **Futuristic-minimal**: Apple-like aesthetic with generous white space
+- **Typography**: Geist font (300-800 weights) applied globally via Google Fonts
+- **Color palette**:
+  - Light backgrounds: `from-gray-50 to-white` gradients
+  - Dark sections: `#2c2c2c` (warm dark gray) for emotional contrast
+  - Primary: `#cc3399` (brand pink) for accents only
+  - Text: `text-gray-900` (headlines), `text-gray-700` (body)
+- **Spacing**: Generous padding, `space-y-8` to `space-y-16` for breathing room
+- **No clutter**: Remove unnecessary badges, trust indicators, or marketing copy unless essential
+- **Button styling** (following Apple's design language):
+  - Primary CTAs: `rounded-full` (pill-shaped) - distinctive, approachable, modern
+  - Secondary buttons: `rounded-lg` (8px) - for utility actions, forms
+  - Component: Use `CTAButton` component for consistent styling
+  - Variants: `primary` (solid `#2c2c2c` background), `secondary` (outlined with hover fill)
+
+*The visual equivalent of AI that feels effortless.*
+
+## Messaging Framework: The Five W's
+
+Neural Summary's landing page follows a strategic narrative arc using the **Five W's** copywriting framework to guide visitors from problem → solution → transformation → vision.
+
+### 1. **WHY - The Problem** ("The Cost of Translation")
+**Pain point**: Ideas get lost between thinking (conversations) and working (documents). Hours wasted typing, formatting, restructuring.
+
+**Key message**: "Your best ideas get lost in translation. You think in conversations. You work in documents."
+
+### 2. **WHAT - The Solution** ("Three Steps to Creation")
+**Solution**: Upload audio or let Neural Summary interview you → AI extracts and structures → Get work-ready documents.
+
+**Key message**: "Speak → Extract → Create. Get work-ready documents instantly."
+
+### 3. **WOW - The Magic** ("From Thinking to Done")
+**Transformation**: 3-minute conversation → complete product spec. AI interviews you, asks questions, generates deliverables.
+
+**Key message**: "Speaking becomes creating. No writing. No formatting. Just think out loud."
+
+**Differentiator**: AI interview feature (not passive recording) - Neural Summary asks questions to extract ideas and generate structured documents.
+
+### 4. **WHO - Use Cases** ("Built for Your Workflow")
+**Personas**:
+- **Product Manager**: Brainstorm → Product spec in 5 minutes
+- **Founder**: Vision talk → Strategy doc for team
+- **Content Creator**: Interview → Publish-ready article
+- **Sales Leader**: Client call → Follow-up email in minutes
+
+**Key message**: "Turn [your scenario] into [deliverable output] in minutes."
+
+### 5. **WARP - The Future** ("The Future of Work")
+**Vision**: The future of work isn't typing—it's thinking out loud. Voice becomes the primary creative input.
+
+**Key message**: "Your ideas become requirements. Your vision becomes strategy. Your voice becomes output. This is how creative work should feel."
+
+### Messaging Hierarchy
+1. **Primary positioning**: Voice-to-output creation platform (NOT meeting notes tool)
+2. **Core differentiator**: AI interview feature that generates work-ready documents
+3. **Target outcome**: Turn conversations into deliverables (specs, articles, emails, strategies)
+4. **Emotional benefit**: Remove friction between thinking and creating
+
+**Avoid**: Positioning as "better meeting recorder" or "transcription service" - competitors own that space. Focus on **transformation** and **creation**.
+
+## Brand Byline
+
+**Official Header Byline**: "Voice-to-output creation platform"
+
+This category-defining tagline appears in the header beneath the Neural Summary logo and establishes market positioning as a voice-to-output platform rather than a traditional transcription service.
+
+**Translations:**
+- **English**: "Voice-to-output creation platform"
+- **German**: "Von Sprache zu Dokumenten" (From speech to documents)
+- **Spanish**: "Plataforma de creación de voz a documento" (Voice-to-document creation platform)
+- **French**: "Plateforme de création voix-vers-document" (Voice-to-document creation platform)
+- **Dutch**: "Van spraak naar document platform" (From speech to document platform)
+
+**Implementation:**
+- **Location**: Header component (`apps/web/components/PublicHeader.tsx:35`)
+- **Translation key**: `landing.hero.byline` in `apps/web/messages/{locale}.json`
+- **Display**: Shown beneath "Neural Summary" name on all public pages (hidden on small screens)
 
 ## Changelog Maintenance
 

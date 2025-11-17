@@ -53,6 +53,15 @@ export class FirebaseService implements OnModuleInit {
     this.logger.log('Firebase initialized');
   }
 
+  /**
+   * Extract transcription ID from file path for logging
+   * Example: "transcriptions/abc123/audio.mp3" -> "abc123"
+   */
+  private extractIdFromPath(path: string): string {
+    const match = path.match(/transcriptions\/([^\/]+)/);
+    return match ? match[1] : 'unknown';
+  }
+
   async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {
     try {
       const decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -214,7 +223,8 @@ export class FirebaseService implements OnModuleInit {
       expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    this.logger.log(`Generated signed URL for: ${path}`);
+    const transcriptionId = this.extractIdFromPath(path);
+    this.logger.log(`Generated signed URL for transcription ${transcriptionId}`);
 
     return { url, path };
   }
@@ -252,8 +262,8 @@ export class FirebaseService implements OnModuleInit {
       // Decode the file path
       filePath = decodeURIComponent(filePath);
 
-      this.logger.log(`Creating public URL for file: ${filePath}`);
-      this.logger.log(`Original URL: ${url}`);
+      const transcriptionId = this.extractIdFromPath(filePath);
+      this.logger.log(`Creating public URL for transcription ${transcriptionId}`);
 
       const bucket = this.storage.bucket();
       const file = bucket.file(filePath);
@@ -261,7 +271,7 @@ export class FirebaseService implements OnModuleInit {
       // Check if file exists
       const [exists] = await file.exists();
       if (!exists) {
-        this.logger.error(`File does not exist in storage: ${filePath}`);
+        this.logger.error(`File does not exist for transcription ${transcriptionId}: ${filePath}`);
         throw new Error(`File not found in storage: ${filePath}`);
       }
 
@@ -271,7 +281,7 @@ export class FirebaseService implements OnModuleInit {
         expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
       });
 
-      this.logger.log(`Generated public URL: ${publicUrl}`);
+      this.logger.log(`Generated public URL for transcription ${transcriptionId}`);
 
       return publicUrl;
     } catch (error) {
@@ -314,7 +324,8 @@ export class FirebaseService implements OnModuleInit {
       // Decode the file path (handles URL encoding like %20 for spaces)
       filePath = decodeURIComponent(filePath);
 
-      this.logger.log(`Downloading file from path: ${filePath}`);
+      const transcriptionId = this.extractIdFromPath(filePath);
+      this.logger.log(`Downloading file for transcription ${transcriptionId}`);
 
       const bucket = this.storage.bucket();
       const file = bucket.file(filePath);
@@ -330,15 +341,17 @@ export class FirebaseService implements OnModuleInit {
 
   async deleteFileByPath(path: string) {
     try {
+      const transcriptionId = this.extractIdFromPath(path);
       const bucket = this.storage.bucket();
       const file = bucket.file(path);
       await file.delete();
-      this.logger.log(`Successfully deleted file by path: ${path}`);
+      this.logger.log(`Successfully deleted file for transcription ${transcriptionId}`);
     } catch (error: any) {
       // Check if the error is a 404 (file not found)
       if (error?.code === 404 || error?.message?.includes('No such object')) {
+        const transcriptionId = this.extractIdFromPath(path);
         this.logger.warn(
-          `File already deleted or doesn't exist at path: ${path}`,
+          `File already deleted or doesn't exist for transcription ${transcriptionId}`,
         );
         // Don't throw - this is not a critical error
         return;

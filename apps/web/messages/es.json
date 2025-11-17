@@ -708,7 +708,11 @@
   },
   "landing": {
     "hero": {
-      "byline": "",
+      "headline": "Habla. Nosotros recordamos.",
+      "subtitle": "Convierte conversaciones en documentos listos para trabajar—sin esfuerzo.",
+      "ctaPrimary": "Comenzar gratis",
+      "ctaSecondary": "Ver demo",
+      "byline": "Plataforma de creación de voz a documento",
       "trustIndicators": {
         "users": "Confiado por profesionales",
         "rating": "Altamente valorado",
@@ -716,7 +720,7 @@
       },
       "title": "Convierte cada reunión en",
       "titleHighlight": "notas y acciones claras.",
-      "subtitle": "La app de notas de reunión con IA que transforma grabaciones de Zoom, Teams y Google Meet en resúmenes accionables — automáticamente, con precisión e instantáneamente.",
+      "subtitle2": "La app de notas de reunión con IA que transforma grabaciones de Zoom, Teams y Google Meet en resúmenes accionables — automáticamente, con precisión e instantáneamente.",
       "cta": {
         "primary": "Comenzar gratis",
         "secondary": "Ver cómo funciona"
@@ -726,6 +730,95 @@
         "saveTime": "Ahorra 10+ horas/semana",
         "accuracy": "99.5% de precisión",
         "languages": "50+ idiomas"
+      }
+    },
+    "why": {
+      "headline": "Tus mejores ideas se pierden en la traducción.",
+      "paragraph1": "Piensas en conversaciones. Trabajas en documentos.",
+      "paragraph2": "Entre ambos: Horas escribiendo, formateando, reestructurando.",
+      "paragraph3": "¿Y si tu voz se convirtiera en el documento?"
+    },
+    "what": {
+      "headline": "Tres pasos hacia la creación.",
+      "steps": {
+        "speak": {
+          "title": "Habla",
+          "description": "Graba reuniones, ideas, entrevistas. O deja que nuestra IA te entreviste para extraer tu visión."
+        },
+        "extract": {
+          "title": "Extrae",
+          "description": "La IA hace preguntas, estructura pensamientos, captura cada detalle—como un asistente personal."
+        },
+        "create": {
+          "title": "Crea",
+          "description": "Obtén documentos listos para trabajar al instante. Especificaciones, artículos, correos, estrategias."
+        }
+      }
+    },
+    "wow": {
+      "headline": "Hablar se convierte en crear.",
+      "subtitle": "Conversación de 3 minutos → Especificación de producto completa. Nuestra IA te entrevista, hace preguntas, genera entregables.",
+      "tagline": "Sin escribir. Sin formatear. Solo piensa en voz alta."
+    },
+    "who": {
+      "headline": "Diseñado para tu flujo de trabajo.",
+      "personas": {
+        "productManager": {
+          "title": "Product Manager",
+          "subtitle": "Lluvia de ideas → Especificación de producto en 5 minutos",
+          "description": "Discute tu idea de funcionalidad. Obtén una especificación completa lista para tu equipo de desarrollo."
+        },
+        "founder": {
+          "title": "Fundador",
+          "subtitle": "Charla de visión → Documento estratégico para tu equipo",
+          "description": "Graba tu visión estratégica. Comparte instantáneamente un brief estructurado con tu equipo."
+        },
+        "contentCreator": {
+          "title": "Creador de Contenido",
+          "subtitle": "Entrevista → Artículo listo para publicar",
+          "description": "Entrevista invitados naturalmente. Obtén contenido estructurado listo para publicar."
+        },
+        "salesLeader": {
+          "title": "Líder de Ventas",
+          "subtitle": "Llamada con cliente → Email de seguimiento en minutos",
+          "description": "Enfócate en la conversación. Envía resúmenes perfectos mientras los prospectos te recuerdan."
+        }
+      }
+    },
+    "featuresSection": {
+      "headline": "Diseñado para el enfoque.",
+      "accuracy": {
+        "title": "99.5% de precisión",
+        "description": "Cada palabra capturada. Etiquetas de hablante incluidas."
+      },
+      "largeFiles": {
+        "title": "Archivos hasta 5GB",
+        "description": "Maneja horas de audio. Sin límites."
+      },
+      "languages": {
+        "title": "99 idiomas",
+        "description": "Detección automática. Traducción instantánea."
+      }
+    },
+    "securitySection": {
+      "headline": "Tu privacidad importa.",
+      "description": "Audio eliminado en segundos. Solo queda el texto. Encriptación de nivel empresarial."
+    },
+    "warp": {
+      "headline": "El futuro del trabajo no es escribir.",
+      "subtitle": "Es pensar en voz alta.",
+      "line1": "Tus ideas se convierten en requisitos.",
+      "line2": "Tu visión se convierte en estrategia.",
+      "line3": "Tu voz se convierte en producción.",
+      "tagline": "Así es como debería sentirse el trabajo creativo."
+    },
+    "finalCta": {
+      "headline": "Hablar se convierte en crear",
+      "subtext": "Comienza gratis. No se requiere tarjeta.",
+      "button": "Comenzar gratis",
+      "benefits": {
+        "free": "Comienza gratis",
+        "noCard": "Sin tarjeta de crédito"
       }
     },
     "valueProposition": {
@@ -751,6 +844,7 @@
       "benefit2": "Reduce la pérdida de información y los malentendidos",
       "benefit3": "Mantén equipos alineados sin compartir notas interminablemente",
       "benefit4": "Seguro, conforme y escalable para cualquier organización",
+      "benefit5": "Seguro, conforme y escalable para cualquier organización",
       "tagline": "Deja de perder tiempo en reuniones — comienza a convertir palabras en acción."
     },
     "benefits": {
@@ -881,6 +975,13 @@
       "audit": {
         "title": "Arquitectura de conocimiento cero",
         "description": "Tus datos permanecen privados - solo procesamos lo necesario y eliminamos el audio de inmediato"
+      },
+      "badges": {
+        "soc2": "Cumple SOC 2",
+        "gdpr": "Cumple GDPR",
+        "hipaa": "Listo HIPAA",
+        "iso": "ISO 27001",
+        "compliance": "Los modelos de voz a texto cumplen con SOC 2, GDPR, HIPAA e ISO 27001."
       }
     },
     "testimonials": {
@@ -904,30 +1005,34 @@
     },
     "meetingFaq": {
       "title": "Preguntas Frecuentes",
-      "subtitle": "Todo lo que necesitas saber sobre transcripción y notas de reunión con IA",
+      "subtitle": "Todo lo que necesitas saber sobre convertir voz en documentos listos para trabajar",
       "question1": {
-        "question": "¿Cómo transcribo automáticamente reuniones de Zoom?",
-        "answer": "Simplemente graba tu reunión de Zoom (local o en la nube), descarga el archivo de audio o video y súbelo a Neural Summary. Nuestra IA transcribirá automáticamente la reunión con etiquetas de hablante y generará un resumen con tareas en minutos."
+        "question": "¿Cómo funciona Neural Summary?",
+        "answer": "Sube cualquier grabación de audio o video, o habla directamente en la plataforma. Nuestra IA procesa tu conversación, identifica información clave y genera documentos estructurados—resúmenes, tareas y análisis detallados. Funciona con reuniones, brainstormings, entrevistas o notas de voz. Del upload al documento finalizado en solo 3-5 minutos."
       },
       "question2": {
-        "question": "¿Funciona con Microsoft Teams y Google Meet?",
-        "answer": "¡Sí! Neural Summary funciona con cualquier plataforma de reuniones. Graba tu reunión de Microsoft Teams o Google Meet, descarga la grabación y súbela a nuestra plataforma. Soportamos todos los formatos principales de video y audio."
+        "question": "¿Qué tipos de documentos puedo crear?",
+        "answer": "Desde una sola grabación, crea resúmenes de reunión con tareas y decisiones, análisis de contenido, insights estratégicos y análisis de comunicación. Cada tipo de documento está optimizado para diferentes necesidades—resumen ejecutivo, transcripción detallada o plan de acción de equipo. Próximamente: creación de documentos guiada por IA para specs y artículos."
       },
       "question3": {
-        "question": "¿Puede la IA identificar diferentes hablantes en reuniones?",
-        "answer": "¡Absolutamente! Nuestra IA detecta automáticamente múltiples hablantes y los etiqueta a lo largo de la transcripción. También puedes renombrar hablantes después del procesamiento para mayor claridad en tus notas de reunión."
+        "question": "¿Funciona con Zoom, Teams y Google Meet?",
+        "answer": "¡Sí! Graba tu reunión en cualquier plataforma, descarga el archivo y súbelo a Neural Summary. Soportamos todos los formatos principales de video y audio incluyendo MP3, M4A, WAV, MP4, MOV y más. Sin bots, sin plugins—solo sube y crea."
       },
       "question4": {
-        "question": "¿Qué hace de Neural Summary la mejor app de notas de reunión con IA?",
-        "answer": "A diferencia de herramientas de transcripción básicas, Neural Summary va más allá de solo convertir voz en texto. Proporcionamos resúmenes inteligentes con decisiones clave, temas de discusión, tareas con responsables y plazos, y opciones de análisis avanzado — todo con 99.5% de precisión y soporte para 50+ idiomas."
+        "question": "¿Puede Neural Summary identificar diferentes hablantes?",
+        "answer": "¡Sí! Nuestra tecnología de diarización de hablantes detecta y etiqueta automáticamente múltiples hablantes a lo largo de tu conversación. Las contribuciones de cada hablante se atribuyen claramente, manteniendo el flujo natural del diálogo. Puedes renombrar hablantes después del procesamiento para aún más claridad en tus documentos."
       },
       "question5": {
-        "question": "¿Cuánto tiempo toma procesar una grabación de reunión?",
-        "answer": "La mayoría de las reuniones se procesan en 3-5 minutos, independientemente de la duración. Soportamos archivos de hasta 5GB (aproximadamente 50+ horas de audio) y usamos procesamiento paralelo para manejar reuniones grandes rápidamente. Recibirás una notificación cuando tu resumen de reunión esté listo."
+        "question": "¿Qué tan precisos son los resultados?",
+        "answer": "Ofrecemos 99.5% de precisión de transcripción con identificación de hablantes en más de 50 idiomas. Pero Neural Summary va más allá de la transcripción—nuestra IA extrae decisiones, tareas, temas e insights que la toma manual de notas suele perder. Obtienes tanto captura palabra por palabra precisa como análisis inteligente."
       },
       "question6": {
-        "question": "¿Puedo compartir transcripciones de reuniones con mi equipo?",
-        "answer": "¡Sí! Neural Summary incluye funciones de compartir avanzadas. Comparte transcripciones y resúmenes mediante enlaces seguros protegidos por contraseña, envía por correo electrónico o exporta a PDF, Word y otros formatos. Los planes profesionales incluyen funciones de compartir y colaboración ilimitadas."
+        "question": "¿Mis datos son privados y seguros?",
+        "answer": "Tu audio NUNCA se almacena en nuestros servidores. Cuando subes una grabación, se procesa inmediatamente y se elimina en segundos. Solo conservamos el texto y los resultados del análisis. Esta arquitectura de conocimiento cero garantiza que tus conversaciones sensibles permanezcan completamente privadas—ideal para discusiones comerciales, legales o médicas confidenciales."
+      },
+      "question7": {
+        "question": "¿Puedo compartir y exportar documentos?",
+        "answer": "¡Sí! Comparte tus documentos mediante enlaces seguros protegidos por contraseña, envía por correo electrónico o exporta en formatos PDF y Word. Los planes profesionales incluyen compartir ilimitado y funciones de colaboración para equipos."
       }
     },
     "cta": {
@@ -985,6 +1090,7 @@
       "menu": "Menú",
       "language": "Idioma",
       "features": "Características",
+      "howItWorks": "Cómo Funciona",
       "pricing": "Precios",
       "faq": "FAQ"
     },
@@ -1014,7 +1120,7 @@
         "security": "Seguridad"
       },
       "copyright": "© 2024 Neural Summary. Todos los derechos reservados.",
-      "tagline": "Construido por científicos de la comunicación e ingenieros de IA para ayudar a las personas a entenderse mejor entre sí."
+      "tagline": "Creado por personas que han pasado demasiadas horas en reuniones."
     }
   },
   "terms": {
@@ -1597,12 +1703,12 @@
       "title": "Preguntas frecuentes",
       "questions": {
         "cost": {
-          "question": "¿Cuánto cuesta exactamente la transcripción?",
-          "answer": "El plan Profesional incluye 60 horas/mes por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 transcripciones/mes (máx 30 min cada una)."
+          "question": "¿Cuánto cuesta convertir conversaciones en documentos?",
+          "answer": "El plan Profesional incluye 60 horas/mes de procesamiento de audio por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 archivos de audio/mes (máx 30 min cada uno)."
         },
         "overage": {
           "question": "¿Qué pasa si excedo mi límite mensual?",
-          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional. Los usuarios Gratis deben actualizar para continuar. Los usuarios de Paga según uses simplemente compran más créditos."
+          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional de procesamiento de audio. Los usuarios Gratis deben actualizar para continuar creando documentos. Los usuarios de Paga según uses simplemente compran más créditos según sea necesario."
         },
         "cancel": {
           "question": "¿Puedo cancelar en cualquier momento?",
@@ -1618,7 +1724,7 @@
         },
         "payg": {
           "question": "¿Cómo funcionan los créditos de Paga según uses?",
-          "answer": "Los créditos cuestan {paygPrice} por hora de transcripción. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de transcripción."
+          "answer": "Los créditos cuestan {paygPrice} por hora de audio y pueden usarse para crear cualquier tipo de documento. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de creación de documentos."
         }
       }
     },

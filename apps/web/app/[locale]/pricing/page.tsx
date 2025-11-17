@@ -11,8 +11,8 @@ import { PricingFAQ } from '@/components/pricing/PricingFAQ';
 import { BillingToggle } from '@/components/pricing/BillingToggle';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
-import { ArrowRight, Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
-import Link from 'next/link';
+import { CTAButton } from '@/components/landing/CTAButton';
+import { Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
 import { formatPricingTierItem, getCurrencyFromLocale } from '@/utils/analytics-helpers';
 
@@ -168,14 +168,14 @@ export default function PricingPage() {
     <>
       <PublicHeader locale={locale} showFeaturesLink={true} />
 
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
         {/* Hero Section */}
-        <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center space-y-8">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
               {t('hero.title')}
             </h1>
-            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               {t('hero.subtitle')}
             </p>
 
@@ -185,9 +185,9 @@ export default function PricingPage() {
         </section>
 
       {/* Pricing Cards */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 items-start">
             {/* Free Tier */}
             <PricingCard
               tier="free"
@@ -240,9 +240,9 @@ export default function PricingPage() {
       </section>
 
       {/* Feature Comparison Table */}
-      <section id="comparison" className="py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+      <section id="comparison" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 text-center tracking-tight">
             {t('comparison.title')}
           </h2>
           <FeatureComparisonTable />
@@ -250,9 +250,9 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+      <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-4xl mx-auto space-y-12">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 text-center tracking-tight">
             {t('faq.title')}
           </h2>
           <PricingFAQ />
@@ -260,21 +260,17 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-[#cc3399] to-purple-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#2c2c2c]">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
             {t('finalCta.title')}
           </h2>
-          <p className="text-xl text-white/90 mb-8">
+          <p className="text-xl text-white/90">
             {t('finalCta.subtitle')}
           </p>
-          <Link
-            href={`/${locale}/signup`}
-            className="inline-flex items-center px-8 py-4 bg-white text-[#cc3399] font-semibold text-lg rounded-xl shadow-lg hover:bg-gray-100 transition-all"
-          >
+          <CTAButton href="/signup" locale={locale} variant="primary">
             {t('finalCta.button')}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+          </CTAButton>
         </div>
       </section>
       </div>
