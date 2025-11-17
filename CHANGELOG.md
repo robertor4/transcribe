@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Landing Page Video**: Updated embedded YouTube video to actual Neural Summary demo (video ID: znkIBXi1O48)
+  - Enabled closed captions by default for better accessibility (`cc_load_policy=1`)
   - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:253)
 
 ### Added
