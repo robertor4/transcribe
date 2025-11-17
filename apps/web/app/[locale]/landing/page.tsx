@@ -247,10 +247,10 @@ export default async function LandingPage({
 
             <ScrollAnimation delay={400}>
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gray-100 mb-12">
-                {/* YouTube embed - Replace VIDEO_ID with actual YouTube video ID */}
+                {/* YouTube embed - Neural Summary Demo */}
                 <iframe
                   className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/VIDEO_ID"
+                  src="https://www.youtube.com/embed/znkIBXi1O48"
                   title="Neural Summary Demo Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Landing Page Video**: Updated embedded YouTube video to actual Neural Summary demo (video ID: znkIBXi1O48)
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:253)
+
 ### Added
 - **YouTube Thumbnail Generator**: Interactive page for creating professional YouTube thumbnails
   - Three layout options: Split (dark/light halves), Overlay (full background), Workflow (3-step visualization)
