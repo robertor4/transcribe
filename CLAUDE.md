@@ -409,6 +409,31 @@ socket.emit('transcription_failed', { jobId, error });
 - Translation files: `apps/web/messages/[locale].json`
 - Components use `useTranslations` hook from next-intl
 
+#### Translation Capitalization Rules
+Follow proper grammatical capitalization for each language:
+
+- **English**: Use sentence case for mid-sentence words
+  - ✅ "How it works" (not "How it Works")
+  - First word capitalized, subsequent words lowercase unless proper nouns
+
+- **Dutch**: Follow Dutch capitalization rules (similar to English)
+  - ✅ "Hoe het werkt" (not "Hoe het Werkt")
+  - Only capitalize first word and proper nouns
+
+- **Spanish**: Follow Spanish capitalization rules
+  - ✅ "Cómo funciona" (not "Cómo Funciona")
+  - Only capitalize first word and proper nouns
+
+- **French**: Follow French capitalization rules
+  - ✅ "Comment ça marche" (not "Comment ça Marche")
+  - Only capitalize first word and proper nouns
+
+- **German**: Follow German capitalization rules
+  - ✅ "So funktioniert's"
+  - Nouns are capitalized, but verbs/adjectives follow sentence case
+
+**Rule of thumb**: Use proper sentence case appropriate to each language. Avoid title case (capitalizing every word) unless specifically required by the language's grammar rules.
+
 ### Environment Variables
 Root `.env`:
 ```bash

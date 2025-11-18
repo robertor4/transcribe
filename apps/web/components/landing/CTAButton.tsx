@@ -14,17 +14,17 @@ interface CTAButtonProps {
 export function CTAButton({ href, locale, variant = 'primary', children, 'aria-label': ariaLabel }: CTAButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const baseClasses = "inline-flex items-center justify-center px-8 py-4 font-semibold text-lg rounded-full transform transition-all hover:scale-105";
+  const baseClasses = "inline-flex items-center justify-center px-10 py-4 font-semibold text-lg rounded-full transform transition-all hover:scale-105 w-[240px]";
 
   // Primary variant - solid dark background
-  const primaryClasses = `${baseClasses} text-white shadow-2xl`;
+  const primaryClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
   const primaryStyle = { backgroundColor: isHovered ? '#3a3a3a' : '#2c2c2c' };
 
-  // Secondary variant - outlined
-  const secondaryClasses = `${baseClasses} border-2 border-gray-900 text-gray-900 ${isHovered ? 'bg-gray-900 text-white' : ''}`;
+  // Secondary variant - outlined with white background
+  const secondaryClasses = `${baseClasses} bg-white border-2 border-gray-900 text-gray-900 ${isHovered ? 'bg-gray-900 text-white' : ''}`;
 
   // Brand variant - bold brand pink
-  const brandClasses = `${baseClasses} text-white shadow-2xl`;
+  const brandClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
   const brandStyle = { backgroundColor: isHovered ? '#b82d89' : '#cc3399' };
 
   if (!href) return null;
