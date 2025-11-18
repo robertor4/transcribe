@@ -760,14 +760,14 @@
     },
     "wow": {
       "headline": "Sprechen wird Erschaffen.",
-      "subtitle": "3-Minuten-Gespräch → Vollständige Produktspezifikation. Unsere KI interviewt Sie, stellt Fragen, generiert Ergebnisse.",
+      "subtitle": "Von einem 3-Minuten-Gespräch → Vollständige Produktspezifikation",
       "tagline": "Nicht schreiben. Nicht formatieren. Einfach laut denken."
     },
     "who": {
       "headline": "Für Ihren Workflow gebaut.",
       "personas": {
         "productManager": {
-          "title": "Product Manager",
+          "title": "Produktmanager",
           "subtitle": "Brainstorming → Produktspezifikation in 5 Minuten",
           "description": "Besprechen Sie Ihre Feature-Idee. Erhalten Sie eine vollständige Spezifikation für Ihr Dev-Team."
         },
@@ -777,7 +777,7 @@
           "description": "Nehmen Sie Ihre strategische Vision auf. Teilen Sie sofort ein strukturiertes Briefing mit Ihrem Team."
         },
         "contentCreator": {
-          "title": "Content Creator",
+          "title": "Content-Ersteller",
           "subtitle": "Interview → Veröffentlichungsfertiger Artikel",
           "description": "Führen Sie natürliche Interviews. Erhalten Sie strukturierte Inhalte bereit zur Veröffentlichung."
         },
@@ -993,7 +993,7 @@
       "testimonial1": {
         "quote": "Unsere Team-Meetings sind jetzt 10x produktiver. Jeder erhält automatisch die Zusammenfassung und Aktionspunkte — kein 'Wer macht Notizen?' mehr.",
         "author": "Michael Chen",
-        "role": "Engineering Manager, Tech Startup"
+        "role": "Engineering Manager, Tech-Startup"
       },
       "testimonial2": {
         "quote": "Ich kann mich auf meine Klienten konzentrieren, nicht aufs Tippen. Die Meeting-Zusammenfassungen sind so genau, dass ich sie direkt mit Stakeholdern teile.",
@@ -1003,7 +1003,7 @@
       "testimonial3": {
         "quote": "Ich nehme alle Kundengespräche auf und erhalte perfekte Transkripte mit Aktionspunkten. Es ist wie ein Assistent in jedem Anruf. Gamechanger für Vertrieb!",
         "author": "Jennifer Brooks",
-        "role": "Account Executive, SaaS Sales"
+        "role": "Account Executive, SaaS-Vertrieb"
       }
     },
     "meetingFaq": {

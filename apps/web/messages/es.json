@@ -757,14 +757,14 @@
     },
     "wow": {
       "headline": "Hablar se convierte en crear.",
-      "subtitle": "Conversación de 3 minutos → Especificación de producto completa. Nuestra IA te entrevista, hace preguntas, genera entregables.",
+      "subtitle": "De una conversación de 3 minutos → Especificación de producto completa",
       "tagline": "Sin escribir. Sin formatear. Solo piensa en voz alta."
     },
     "who": {
       "headline": "Diseñado para tu flujo de trabajo.",
       "personas": {
         "productManager": {
-          "title": "Product Manager",
+          "title": "Gerente de Producto",
           "subtitle": "Lluvia de ideas → Especificación de producto en 5 minutos",
           "description": "Discute tu idea de funcionalidad. Obtén una especificación completa lista para tu equipo de desarrollo."
         },
@@ -1090,7 +1090,7 @@
       "menu": "Menú",
       "language": "Idioma",
       "features": "Características",
-      "howItWorks": "Cómo Funciona",
+      "howItWorks": "Cómo funciona",
       "pricing": "Precios",
       "faq": "FAQ"
     },

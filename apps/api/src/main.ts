@@ -56,6 +56,9 @@ async function bootstrap() {
     );
   }
 
+  // Regex to match local network IPs (192.168.x.x, 10.0.x.x, 172.16-31.x.x)
+  const localNetworkRegex = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):\d+$/;
+
   // Validate FRONTEND_URL against whitelist
   const frontendUrl =
     process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL;
@@ -72,12 +75,20 @@ async function bootstrap() {
         return;
       }
 
+      // Check against whitelist
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
-      } else {
-        console.warn(`Blocked CORS request from origin: ${origin}`);
-        callback(new Error('Not allowed by CORS'));
+        return;
       }
+
+      // In development, allow local network IPs
+      if (process.env.NODE_ENV !== 'production' && localNetworkRegex.test(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      console.warn(`Blocked CORS request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

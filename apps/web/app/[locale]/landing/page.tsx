@@ -159,7 +159,7 @@ export default async function LandingPage({
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
 
         {/* Hero Section - Minimal Apple-like Design */}
-        <section className="relative min-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
+        <section className="relative min-h-screen max-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
           {/* Background Image - Clean, full opacity, positioned at bottom */}
           <div className="absolute inset-0 flex items-end justify-center" aria-hidden="true">
             <img
@@ -170,7 +170,7 @@ export default async function LandingPage({
           </div>
 
           {/* Content - Positioned at top, clean spacing */}
-          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40">
+          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-48">
             <div className="max-w-6xl mx-auto text-center">
               <div className="space-y-6">
 
@@ -190,7 +190,7 @@ export default async function LandingPage({
 
                 {/* Dual CTAs */}
                 <ScrollAnimation delay={600}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mb-20 sm:mb-24">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mb-12 sm:mb-16 md:mb-20">
                     {/* Primary CTA */}
                     <CTAButton href="/signup" locale={locale} variant="primary">
                       {t('hero.ctaPrimary')}
@@ -218,10 +218,25 @@ export default async function LandingPage({
             </ScrollAnimation>
 
             <ScrollAnimation delay={400}>
+              <p className="text-lg sm:text-xl text-gray-300">
+                {t('why.paragraph1')}
+              </p>
+            </ScrollAnimation>
+
+            {/* Visual separator - thinking to invoice illustration */}
+            <div className="flex justify-center py-8 my-8">
+              <div className="max-w-2xl mx-auto">
+                <img
+                  src="/assets/images/landing-thinkinvoice.png"
+                  alt="From thinking in conversations to working in documents"
+                  width="800"
+                  height="240"
+                />
+              </div>
+            </div>
+
+            <ScrollAnimation delay={800}>
               <div className="space-y-8 text-lg sm:text-xl text-gray-300">
-                <p>
-                  {t('why.paragraph1')}
-                </p>
                 <p>
                   {t('why.paragraph2')}
                 </p>

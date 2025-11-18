@@ -780,14 +780,14 @@
     },
     "wow": {
       "headline": "Spreken wordt creëren.",
-      "subtitle": "3-minuten gesprek → Complete productspecificatie. Onze AI interviewt je, stelt vragen, genereert deliverables.",
+      "subtitle": "Van een 3-minuten gesprek → Complete productspecificatie",
       "tagline": "Niet typen. Niet formatteren. Denk gewoon hardop."
     },
     "who": {
       "headline": "Gebouwd voor jouw workflow.",
       "personas": {
         "productManager": {
-          "title": "Product Manager",
+          "title": "Productmanager",
           "subtitle": "Brainstorm → Productspecificatie in 5 minuten",
           "description": "Bespreek je feature-idee. Krijg een complete specificatie klaar voor je dev-team."
         },
@@ -941,7 +941,7 @@
         "description": "Focus op het gesprek, niet op notities maken. Krijg perfecte verslagen van feedback, doelen en afspraken."
       },
       "teamStandups": {
-        "title": "Team Standups & Syncs",
+        "title": "Team Stand-ups & Syncs",
         "description": "Houd iedereen op één lijn met automatische notulen en actiepunt-tracking."
       },
       "clientCalls": {
@@ -1013,7 +1013,7 @@
       "testimonial1": {
         "quote": "Onze teamvergaderingen zijn nu 10x productiever. Iedereen krijgt automatisch de samenvatting en actiepunten — geen 'wie maakt de notities?' meer.",
         "author": "Michael Chen",
-        "role": "Engineering Manager, Tech Startup"
+        "role": "Engineering Manager, Tech Start-up"
       },
       "testimonial2": {
         "quote": "Ik kan me focussen op mijn cliënten, niet op typen. De vergadersamenvattingen zijn zo nauwkeurig dat ik ze direct met stakeholders deel.",
@@ -1023,7 +1023,7 @@
       "testimonial3": {
         "quote": "Ik neem al mijn klantgesprekken op en krijg perfecte transcripties met actiepunten. Het is alsof ik een assistent in elk gesprek heb. Gamechanger voor verkoop!",
         "author": "Jennifer Brooks",
-        "role": "Account Executive, SaaS Sales"
+        "role": "Account Executive, SaaS-verkoop"
       }
     },
     "meetingFaq": {
@@ -1113,7 +1113,7 @@
       "menu": "Menu",
       "language": "Taal",
       "features": "Kenmerken",
-      "howItWorks": "Hoe het Werkt",
+      "howItWorks": "Hoe het werkt",
       "pricing": "Prijzen",
       "faq": "Veelgestelde vragen"
     },

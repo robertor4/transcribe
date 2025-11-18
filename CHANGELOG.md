@@ -7,7 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Mobile Navigation Menu**: Complete redesign for better UX and feature parity with desktop
+  - Added missing "How it Works" link (navigates to `#video-demo` section) - critical gap fix
+  - Reordered sections for better hierarchy: Navigation links first, auth actions second, language switcher last
+  - Changed menu header from generic "Menu" to "Neural Summary" for better branding
+  - File: [apps/web/components/MobileNav.tsx](apps/web/components/MobileNav.tsx)
+- **Translation Capitalization Guidelines**: Added proper capitalization rules for all supported languages in CLAUDE.md
+  - Documents sentence case vs title case rules for English, Dutch, Spanish, French, and German
+  - Prevents future capitalization errors in navigation and UI text
+  - File: [CLAUDE.md](CLAUDE.md:412-435)
+
 ### Changed
+- **Translation Fixes**: Corrected capitalization in "How it Works" navigation link across languages
+  - Dutch: "Hoe het Werkt" → "Hoe het werkt" (lowercase "werkt")
+  - English: "How it Works" → "How it works" (lowercase "works")
+  - Spanish: "Cómo Funciona" → "Cómo funciona" (lowercase "funciona")
+  - French: "Comment ça Marche" → "Comment ça marche" (lowercase "marche")
+  - German: "So funktioniert's" (already correct)
+  - Files: [apps/web/messages/nl.json](apps/web/messages/nl.json:1116), [apps/web/messages/en.json](apps/web/messages/en.json:1117), [apps/web/messages/es.json](apps/web/messages/es.json:1093), [apps/web/messages/fr.json](apps/web/messages/fr.json:1093)
+- **Mobile Navigation Menu**: Improved contrast and design system compliance
+  - Fixed text colors for better readability: `text-gray-600` → `text-gray-800` for all navigation links
+  - Updated CTA button styling: `rounded-lg` → `rounded-full` to match desktop design language
+  - Log in link styled as secondary button: white background with gray-900 border, matches secondary CTAButton variant
+  - Increased spacing per design system: Navigation section `px-6 py-8` (up from `px-4 py-6`), sections use `space-y-8` (up from `space-y-6`)
+  - Removed all dark mode classes (`dark:`) for consistent light-only aesthetic per design system
+  - Language label now uses `text-gray-800` (up from `text-gray-700`) for better contrast
+  - File: [apps/web/components/MobileNav.tsx](apps/web/components/MobileNav.tsx)
+- **Landing Page Height Responsiveness**: Enhanced hero section layout for better visual hierarchy on reduced viewport heights
+  - Added `max-h-screen` constraint to hero section to prevent infinite growth and better handle short viewports
+  - Increased content wrapper top padding for better spacing below header: `pt-24 sm:pt-32 md:pt-40 lg:pt-48` (increased from `pt-16 sm:pt-24 md:pt-32 lg:pt-40`)
+  - Mobile now has 96px top padding (up from 64px) for adequate space below header
+  - Reduced button container bottom margins: `mb-12 sm:mb-16 md:mb-20` (down from `mb-20 sm:mb-24`) to prevent overlap
+  - Added white background to secondary CTA button (`bg-white`) for better visibility when overlapping laptop image
+  - Files: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:162,168,173,179,186,193), [apps/web/components/landing/CTAButton.tsx](apps/web/components/landing/CTAButton.tsx:24)
 - **Landing Page Mobile Design Improvements**: Enhanced mobile responsiveness for better user experience
   - Increased hero title size on mobile from `text-4xl` (36px) to `text-5xl` (48px) for better visibility and impact
   - Reduced hero title line height from `leading-tight` to `leading-none` for more cohesive, powerful statement

@@ -757,7 +757,7 @@
     },
     "wow": {
       "headline": "Parler devient créer.",
-      "subtitle": "Conversation de 3 minutes → Spécification produit complète. Notre IA vous interviewe, pose des questions, génère des livrables.",
+      "subtitle": "D'une conversation de 3 minutes → Spécification produit complète",
       "tagline": "Pas d'écriture. Pas de formatage. Pensez juste à voix haute."
     },
     "who": {
@@ -1090,7 +1090,7 @@
       "menu": "Menu",
       "language": "Langue",
       "features": "Fonctionnalités",
-      "howItWorks": "Comment ça Marche",
+      "howItWorks": "Comment ça marche",
       "pricing": "Tarifs",
       "faq": "FAQ"
     },

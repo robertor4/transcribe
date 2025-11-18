@@ -781,7 +781,7 @@
     },
     "wow": {
       "headline": "Speaking becomes creating.",
-      "subtitle": "3-minute conversation → Complete product spec. Our AI interviews you, asks questions, generates deliverables.",
+      "subtitle": "Go from a 3-minute conversation → Complete product spec",
       "tagline": "No writing. No formatting. Just think out loud."
     },
     "who": {
@@ -1114,7 +1114,7 @@
       "menu": "Menu",
       "language": "Language",
       "features": "Features",
-      "howItWorks": "How it Works",
+      "howItWorks": "How it works",
       "pricing": "Pricing",
       "faq": "FAQ"
     },
