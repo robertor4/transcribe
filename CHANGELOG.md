@@ -35,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:187-198)
 
 ### Changed
+- **Page Title Format**: Standardized all page titles with "Neural Summary |" prefix for consistent branding
+  - Pricing: "Pricing - Choose Your Plan" → "Neural Summary | Pricing" (all locales)
+  - Terms: "Terms of Service" → "Neural Summary | Terms of Service" (all locales)
+  - Privacy: "Privacy Policy" → "Neural Summary | Privacy Policy" (all locales)
+  - Landing page already followed this format
+  - Improves brand recognition in search results and browser tabs
+  - File: [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts)
 - **Landing Page Metadata**: Refactored to use centralized utility system
   - Removed 95 lines of inline metadata constants and OpenGraph/Twitter config
   - Metadata now managed in `/apps/web/config/page-metadata.ts` instead of page file

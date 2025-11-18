@@ -184,7 +184,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
 
 const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
   en: {
-    title: 'Pricing - Choose Your Plan',
+    title: 'Neural Summary | Pricing',
     description:
       'Flexible pricing plans for individuals and teams. Free tier available. Pro and Enterprise plans with advanced features, unlimited transcriptions, and priority support.',
     keywords: [
@@ -203,7 +203,7 @@ const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   nl: {
-    title: 'Prijzen - Kies Uw Plan',
+    title: 'Neural Summary | Prijzen',
     description:
       'Flexibele prijsplannen voor individuen en teams. Gratis tier beschikbaar. Pro en Enterprise plannen met geavanceerde functies, onbeperkte transcripties en prioritaire ondersteuning.',
     keywords: [
@@ -222,7 +222,7 @@ const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   de: {
-    title: 'Preise - Wählen Sie Ihren Plan',
+    title: 'Neural Summary | Preise',
     description:
       'Flexible Preispläne für Einzelpersonen und Teams. Kostenloser Tarif verfügbar. Pro- und Enterprise-Pläne mit erweiterten Funktionen, unbegrenzten Transkriptionen und vorrangigem Support.',
     keywords: [
@@ -241,7 +241,7 @@ const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   fr: {
-    title: 'Tarifs - Choisissez Votre Plan',
+    title: 'Neural Summary | Tarifs',
     description:
       'Plans tarifaires flexibles pour particuliers et équipes. Niveau gratuit disponible. Plans Pro et Enterprise avec fonctionnalités avancées, transcriptions illimitées et support prioritaire.',
     keywords: [
@@ -260,7 +260,7 @@ const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   es: {
-    title: 'Precios - Elija Su Plan',
+    title: 'Neural Summary | Precios',
     description:
       'Planes de precios flexibles para individuos y equipos. Nivel gratuito disponible. Planes Pro y Enterprise con funciones avanzadas, transcripciones ilimitadas y soporte prioritario.',
     keywords: [
@@ -282,7 +282,7 @@ const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
 
 const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
   en: {
-    title: 'Terms of Service',
+    title: 'Neural Summary | Terms of Service',
     description:
       'Terms and conditions for using Neural Summary voice-to-document creation platform. User rights, service terms, and legal agreements.',
     keywords: [
@@ -297,7 +297,7 @@ const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   nl: {
-    title: 'Algemene Voorwaarden',
+    title: 'Neural Summary | Algemene Voorwaarden',
     description:
       'Algemene voorwaarden voor het gebruik van Neural Summary spraak-naar-document platform. Gebruikersrechten, servicevoorwaarden en juridische overeenkomsten.',
     keywords: [
@@ -312,7 +312,7 @@ const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   de: {
-    title: 'Nutzungsbedingungen',
+    title: 'Neural Summary | Nutzungsbedingungen',
     description:
       'Allgemeine Geschäftsbedingungen für die Nutzung der Neural Summary Sprache-zu-Dokument Plattform. Benutzerrechte, Servicebedingungen und rechtliche Vereinbarungen.',
     keywords: [
@@ -327,7 +327,7 @@ const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   fr: {
-    title: 'Conditions d\'Utilisation',
+    title: 'Neural Summary | Conditions d\'Utilisation',
     description:
       'Conditions générales d\'utilisation de la plateforme de création voix-vers-document Neural Summary. Droits des utilisateurs, conditions de service et accords juridiques.',
     keywords: [
@@ -342,7 +342,7 @@ const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   es: {
-    title: 'Términos de Servicio',
+    title: 'Neural Summary | Términos de Servicio',
     description:
       'Términos y condiciones para usar la plataforma de creación de voz a documento Neural Summary. Derechos de usuario, términos de servicio y acuerdos legales.',
     keywords: [
@@ -360,7 +360,7 @@ const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
 
 const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
   en: {
-    title: 'Privacy Policy',
+    title: 'Neural Summary | Privacy Policy',
     description:
       'Neural Summary privacy policy. Learn how we protect your data, handle audio files, and ensure GDPR compliance for voice-to-document creation.',
     keywords: [
@@ -375,7 +375,7 @@ const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   nl: {
-    title: 'Privacybeleid',
+    title: 'Neural Summary | Privacybeleid',
     description:
       'Neural Summary privacybeleid. Ontdek hoe wij uw gegevens beschermen, audiobestanden verwerken en AVG-naleving waarborgen voor spraak-naar-document creatie.',
     keywords: [
@@ -390,7 +390,7 @@ const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   de: {
-    title: 'Datenschutzrichtlinie',
+    title: 'Neural Summary | Datenschutzrichtlinie',
     description:
       'Neural Summary Datenschutzrichtlinie. Erfahren Sie, wie wir Ihre Daten schützen, Audiodateien verarbeiten und DSGVO-Konformität für Sprache-zu-Dokument Erstellung gewährleisten.',
     keywords: [
@@ -405,7 +405,7 @@ const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   fr: {
-    title: 'Politique de Confidentialité',
+    title: 'Neural Summary | Politique de Confidentialité',
     description:
       'Politique de confidentialité Neural Summary. Découvrez comment nous protégeons vos données, traitons les fichiers audio et assurons la conformité RGPD pour la création voix-vers-document.',
     keywords: [
@@ -420,7 +420,7 @@ const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   es: {
-    title: 'Política de Privacidad',
+    title: 'Neural Summary | Política de Privacidad',
     description:
       'Política de privacidad de Neural Summary. Descubra cómo protegemos sus datos, manejamos archivos de audio y garantizamos el cumplimiento del RGPD para la creación de voz a documento.',
     keywords: [
