@@ -224,7 +224,9 @@ export class FirebaseService implements OnModuleInit {
     });
 
     const transcriptionId = this.extractIdFromPath(path);
-    this.logger.log(`Generated signed URL for transcription ${transcriptionId}`);
+    this.logger.log(
+      `Generated signed URL for transcription ${transcriptionId}`,
+    );
 
     return { url, path };
   }
@@ -263,7 +265,9 @@ export class FirebaseService implements OnModuleInit {
       filePath = decodeURIComponent(filePath);
 
       const transcriptionId = this.extractIdFromPath(filePath);
-      this.logger.log(`Creating public URL for transcription ${transcriptionId}`);
+      this.logger.log(
+        `Creating public URL for transcription ${transcriptionId}`,
+      );
 
       const bucket = this.storage.bucket();
       const file = bucket.file(filePath);
@@ -271,7 +275,9 @@ export class FirebaseService implements OnModuleInit {
       // Check if file exists
       const [exists] = await file.exists();
       if (!exists) {
-        this.logger.error(`File does not exist for transcription ${transcriptionId}: ${filePath}`);
+        this.logger.error(
+          `File does not exist for transcription ${transcriptionId}: ${filePath}`,
+        );
         throw new Error(`File not found in storage: ${filePath}`);
       }
 
@@ -281,7 +287,9 @@ export class FirebaseService implements OnModuleInit {
         expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
       });
 
-      this.logger.log(`Generated public URL for transcription ${transcriptionId}`);
+      this.logger.log(
+        `Generated public URL for transcription ${transcriptionId}`,
+      );
 
       return publicUrl;
     } catch (error) {
@@ -345,7 +353,9 @@ export class FirebaseService implements OnModuleInit {
       const bucket = this.storage.bucket();
       const file = bucket.file(path);
       await file.delete();
-      this.logger.log(`Successfully deleted file for transcription ${transcriptionId}`);
+      this.logger.log(
+        `Successfully deleted file for transcription ${transcriptionId}`,
+      );
     } catch (error: any) {
       // Check if the error is a 404 (file not found)
       if (error?.code === 404 || error?.message?.includes('No such object')) {

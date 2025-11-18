@@ -57,7 +57,8 @@ async function bootstrap() {
   }
 
   // Regex to match local network IPs (192.168.x.x, 10.0.x.x, 172.16-31.x.x)
-  const localNetworkRegex = /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):\d+$/;
+  const localNetworkRegex =
+    /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):\d+$/;
 
   // Validate FRONTEND_URL against whitelist
   const frontendUrl =
@@ -82,7 +83,10 @@ async function bootstrap() {
       }
 
       // In development, allow local network IPs
-      if (process.env.NODE_ENV !== 'production' && localNetworkRegex.test(origin)) {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        localNetworkRegex.test(origin)
+      ) {
         callback(null, true);
         return;
       }

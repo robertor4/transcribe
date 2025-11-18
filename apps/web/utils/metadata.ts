@@ -1,138 +1,67 @@
 import { Metadata } from 'next';
+import {
+  DEFAULT_OG_IMAGE,
+  SEO_BASE_URL,
+  SITE_NAME,
+  resolveOgLocale,
+  getPageMetadataContent,
+} from '@/config/page-metadata';
 
-/**
- * Base URL for the application
- */
-const BASE_URL = 'https://neuralsummary.com';
-
-/**
- * Default Open Graph image
- */
-const DEFAULT_OG_IMAGE = '/assets/NS-symbol.webp';
-
-/**
- * Locale-specific metadata configurations
- */
-const LOCALE_CONFIGS = {
-  en: {
-    siteName: 'Neural Summary',
-    defaultTitle: 'Neural Summary - AI-Powered Audio Transcription & Smart Summaries',
-    defaultDescription: 'Transform audio recordings into accurate transcripts and intelligent summaries. 99.5% accuracy, 50+ languages, enterprise security.',
-    ogLocale: 'en_US',
-  },
-  nl: {
-    siteName: 'Neural Summary',
-    defaultTitle: 'Neural Summary - AI-gebaseerde audio transcriptie & slimme samenvattingen',
-    defaultDescription: 'Transformeer audio-opnames naar nauwkeurige transcripties en intelligente samenvattingen. 99,5% nauwkeurigheid, 50+ talen, enterprise beveiliging.',
-    ogLocale: 'nl_NL',
-  },
-  de: {
-    siteName: 'Neural Summary',
-    defaultTitle: 'Neural Summary - KI-gestützte Audiotranskription & Intelligente Zusammenfassungen',
-    defaultDescription: 'Verwandeln Sie Audioaufnahmen in präzise Transkripte und intelligente Zusammenfassungen. 99,5% Genauigkeit, 50+ Sprachen, Unternehmenssicherheit.',
-    ogLocale: 'de_DE',
-  },
-  fr: {
-    siteName: 'Neural Summary',
-    defaultTitle: 'Neural Summary - Transcription Audio IA & Résumés Intelligents',
-    defaultDescription: 'Transformez vos enregistrements audio en transcriptions précises et résumés intelligents. 99,5% de précision, 50+ langues, sécurité entreprise.',
-    ogLocale: 'fr_FR',
-  },
-  es: {
-    siteName: 'Neural Summary',
-    defaultTitle: 'Neural Summary - Transcripción de Audio IA & Resúmenes Inteligentes',
-    defaultDescription: 'Transforme grabaciones de audio en transcripciones precisas y resúmenes inteligentes. 99,5% de precisión, 50+ idiomas, seguridad empresarial.',
-    ogLocale: 'es_ES',
-  },
+const DASHBOARD_TITLES: Record<string, string> = {
+  en: 'Dashboard',
+  nl: 'Dashboard',
+  de: 'Dashboard',
+  fr: 'Tableau de Bord',
+  es: 'Panel de Control',
 };
 
-/**
- * Get default metadata for a locale
- */
-export function getDefaultMetadata(locale: string = 'en'): Metadata {
-  const config = LOCALE_CONFIGS[locale as keyof typeof LOCALE_CONFIGS] || LOCALE_CONFIGS.en;
+const DASHBOARD_DESCRIPTIONS: Record<string, string> = {
+  en: 'Manage your transcriptions and AI summaries.',
+  nl: 'Beheer uw transcripties en AI-samenvattingen.',
+  de: 'Verwalten Sie Ihre Transkriptionen und KI-Zusammenfassungen.',
+  fr: 'Gérez vos transcriptions et résumés IA.',
+  es: 'Administre sus transcripciones y resúmenes de IA.',
+};
 
+function buildOpenGraphConfig({
+  locale,
+  title,
+  description,
+  url,
+  type,
+}: {
+  locale: string;
+  title: string;
+  description: string;
+  url: string;
+  type: 'website' | 'article';
+}) {
   return {
-    metadataBase: new URL(BASE_URL),
-    title: {
-      default: config.defaultTitle,
-      template: `%s | ${config.siteName}`,
-    },
-    description: config.defaultDescription,
-    openGraph: {
-      type: 'website',
-      locale: config.ogLocale,
-      url: BASE_URL,
-      siteName: config.siteName,
-      title: config.defaultTitle,
-      description: config.defaultDescription,
-      images: [
-        {
-          url: DEFAULT_OG_IMAGE,
-          width: 1200,
-          height: 630,
-          alt: `${config.siteName} - AI Transcription Platform`,
-          type: 'image/webp',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: config.defaultTitle,
-      description: config.defaultDescription,
-      site: '@neuralsummary',
-      creator: '@neuralsummary',
-      images: [DEFAULT_OG_IMAGE],
-    },
+    type,
+    locale: resolveOgLocale(locale),
+    url,
+    siteName: SITE_NAME,
+    title,
+    description,
+    images: [
+      {
+        url: `${SEO_BASE_URL}${DEFAULT_OG_IMAGE}`,
+        width: 1200,
+        height: 630,
+        alt: SITE_NAME,
+      },
+    ],
   };
 }
 
-/**
- * Get page-specific metadata with overrides
- */
-export function getPageMetadata(
-  page: {
-    title: string;
-    description: string;
-    path?: string;
-    image?: string;
-    noIndex?: boolean;
-  },
-  locale: string = 'en',
-): Metadata {
-  const config = LOCALE_CONFIGS[locale as keyof typeof LOCALE_CONFIGS] || LOCALE_CONFIGS.en;
-  const fullUrl = page.path ? `${BASE_URL}${page.path}` : BASE_URL;
-  const ogImage = page.image || DEFAULT_OG_IMAGE;
-
+function buildTwitterConfig(title: string, description: string) {
   return {
-    title: page.title,
-    description: page.description,
-    ...(page.noIndex && { robots: { index: false, follow: false } }),
-    openGraph: {
-      type: 'website',
-      locale: config.ogLocale,
-      url: fullUrl,
-      siteName: config.siteName,
-      title: page.title,
-      description: page.description,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: page.title,
-          type: 'image/webp',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: page.title,
-      description: page.description,
-      site: '@neuralsummary',
-      creator: '@neuralsummary',
-      images: [ogImage],
-    },
+    card: 'summary_large_image',
+    title,
+    description,
+    site: '@neuralsummary',
+    creator: '@neuralsummary',
+    images: [`${SEO_BASE_URL}${DEFAULT_OG_IMAGE}`],
   };
 }
 
@@ -147,13 +76,12 @@ export function getShareMetadata(
   },
   locale: string = 'en',
 ): Metadata {
-  const config = LOCALE_CONFIGS[locale as keyof typeof LOCALE_CONFIGS] || LOCALE_CONFIGS.en;
-  const shareUrl = `${BASE_URL}/${locale}/shared/${transcript.shareToken}`;
+  const shareUrl = `${SEO_BASE_URL}/${locale}/shared/${transcript.shareToken}`;
 
   // Truncate summary for OG description (max 200 chars recommended, min 100 for LinkedIn)
   let description = transcript.summary
     ? transcript.summary.substring(0, 200) + (transcript.summary.length > 200 ? '...' : '')
-    : `View this transcript shared via ${config.siteName}. Transform audio recordings into accurate transcripts and intelligent summaries with AI-powered analysis.`;
+    : `View this transcript shared via ${SITE_NAME}. Transform audio recordings into accurate transcripts and intelligent summaries with AI-powered analysis.`;
 
   // Ensure description is at least 100 characters for LinkedIn
   if (description.length < 100) {
@@ -163,91 +91,134 @@ export function getShareMetadata(
   return {
     title: transcript.title,
     description,
-    openGraph: {
-      type: 'article',
-      locale: config.ogLocale,
+    openGraph: buildOpenGraphConfig({
+      locale,
+      title: transcript.title,
+      description,
       url: shareUrl,
-      siteName: config.siteName,
-      title: transcript.title,
-      description,
-      images: [
-        {
-          url: DEFAULT_OG_IMAGE,
-          width: 1200,
-          height: 630,
-          alt: `${transcript.title} - ${config.siteName}`,
-          type: 'image/webp',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: transcript.title,
-      description,
-      site: '@neuralsummary',
-      creator: '@neuralsummary',
-      images: [DEFAULT_OG_IMAGE],
-    },
+      type: 'article',
+    }),
+    twitter: buildTwitterConfig(transcript.title, description),
   };
-}
-
-/**
- * Get metadata for pricing page
- */
-export function getPricingMetadata(locale: string = 'en'): Metadata {
-  const titles: Record<string, string> = {
-    en: 'Pricing - Choose Your Plan',
-    nl: 'Prijzen - Kies Uw Plan',
-    de: 'Preise - Wählen Sie Ihren Plan',
-    fr: 'Tarifs - Choisissez Votre Plan',
-    es: 'Precios - Elija Su Plan',
-  };
-
-  const descriptions: Record<string, string> = {
-    en: 'Flexible pricing plans for individuals and teams. Free tier available. Pro and Enterprise plans with advanced features, unlimited transcriptions, and priority support.',
-    nl: 'Flexibele prijsplannen voor individuen en teams. Gratis tier beschikbaar. Pro en Enterprise plannen met geavanceerde functies, onbeperkte transcripties en prioritaire ondersteuning.',
-    de: 'Flexible Preispläne für Einzelpersonen und Teams. Kostenloser Tarif verfügbar. Pro- und Enterprise-Pläne mit erweiterten Funktionen, unbegrenzten Transkriptionen und vorrangigem Support.',
-    fr: 'Plans tarifaires flexibles pour particuliers et équipes. Niveau gratuit disponible. Plans Pro et Enterprise avec fonctionnalités avancées, transcriptions illimitées et support prioritaire.',
-    es: 'Planes de precios flexibles para individuos y equipos. Nivel gratuito disponible. Planes Pro y Enterprise con funciones avanzadas, transcripciones ilimitadas y soporte prioritario.',
-  };
-
-  return getPageMetadata(
-    {
-      title: titles[locale] || titles.en,
-      description: descriptions[locale] || descriptions.en,
-      path: `/${locale}/pricing`,
-    },
-    locale,
-  );
 }
 
 /**
  * Get metadata for dashboard (authenticated pages - no indexing)
  */
 export function getDashboardMetadata(locale: string = 'en'): Metadata {
-  const titles: Record<string, string> = {
-    en: 'Dashboard',
-    nl: 'Dashboard',
-    de: 'Dashboard',
-    fr: 'Tableau de Bord',
-    es: 'Panel de Control',
-  };
+  const title = DASHBOARD_TITLES[locale] || DASHBOARD_TITLES.en;
+  const description = DASHBOARD_DESCRIPTIONS[locale] || DASHBOARD_DESCRIPTIONS.en;
+  const url = `${SEO_BASE_URL}/${locale}/dashboard`;
 
-  const descriptions: Record<string, string> = {
-    en: 'Manage your transcriptions and AI summaries.',
-    nl: 'Beheer uw transcripties en AI-samenvattingen.',
-    de: 'Verwalten Sie Ihre Transkriptionen und KI-Zusammenfassungen.',
-    fr: 'Gérez vos transcriptions et résumés IA.',
-    es: 'Administre sus transcripciones y resúmenes de IA.',
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false },
+    openGraph: buildOpenGraphConfig({
+      locale,
+      title,
+      description,
+      url,
+      type: 'website',
+    }),
+    twitter: buildTwitterConfig(title, description),
   };
+}
 
-  return getPageMetadata(
-    {
-      title: titles[locale] || titles.en,
-      description: descriptions[locale] || descriptions.en,
-      path: `/${locale}/dashboard`,
-      noIndex: true, // Don't index authenticated pages
-    },
-    locale,
-  );
+/**
+ * Metadata override options for page-specific customization
+ */
+export interface MetadataOverrides {
+  title?: string;
+  description?: string;
+  keywords?: string[];
+  openGraph?: {
+    title?: string;
+    description?: string;
+  };
+  twitter?: {
+    title?: string;
+    description?: string;
+  };
+}
+
+/**
+ * Generic helper to build metadata for public pages with optional overrides
+ *
+ * @param locale - User's locale (en, nl, de, fr, es)
+ * @param urlPath - URL path for the page (e.g., '/landing', '/pricing')
+ * @param overrides - Optional overrides for any metadata field (if not provided, uses landing page metadata as fallback)
+ * @returns Complete Metadata object for Next.js
+ */
+export function buildPageMetadata(
+  locale: string,
+  urlPath: string,
+  overrides?: MetadataOverrides
+): Metadata {
+  // Get base content from centralized config (always landing page metadata as fallback)
+  const baseContent = getPageMetadataContent(locale);
+  const pageUrl = `${SEO_BASE_URL}/${locale}${urlPath}`;
+
+  // Apply overrides with fallback to base content
+  const title = overrides?.title ?? baseContent.title;
+  const description = overrides?.description ?? baseContent.description;
+  const keywords = overrides?.keywords ?? baseContent.keywords;
+
+  // OpenGraph overrides
+  const ogTitle = overrides?.openGraph?.title ?? baseContent.openGraph?.title ?? title;
+  const ogDescription = overrides?.openGraph?.description ?? baseContent.openGraph?.description ?? description;
+
+  // Twitter overrides
+  const twitterTitle = overrides?.twitter?.title ?? baseContent.twitter?.title ?? title;
+  const twitterDescription = overrides?.twitter?.description ?? baseContent.twitter?.description ?? description;
+
+  return {
+    title,
+    description,
+    keywords,
+    openGraph: buildOpenGraphConfig({
+      locale,
+      title: ogTitle,
+      description: ogDescription,
+      url: pageUrl,
+      type: 'website',
+    }),
+    twitter: buildTwitterConfig(twitterTitle, twitterDescription),
+  };
+}
+
+/**
+ * Get metadata for landing page
+ * @param locale - User's locale
+ * @param overrides - Optional metadata overrides
+ */
+export function getLandingMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
+  return buildPageMetadata(locale, '/landing', overrides);
+}
+
+/**
+ * Get metadata for pricing page
+ * @param locale - User's locale
+ * @param overrides - Optional metadata overrides
+ */
+export function getPricingMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
+  return buildPageMetadata(locale, '/pricing', overrides);
+}
+
+/**
+ * Get metadata for terms of service page
+ * @param locale - User's locale
+ * @param overrides - Optional metadata overrides
+ */
+export function getTermsMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
+  return buildPageMetadata(locale, '/terms', overrides);
+}
+
+/**
+ * Get metadata for privacy policy page
+ * @param locale - User's locale
+ * @param overrides - Optional metadata overrides
+ */
+export function getPrivacyMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
+  return buildPageMetadata(locale, '/privacy', overrides);
 }

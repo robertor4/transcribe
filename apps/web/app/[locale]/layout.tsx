@@ -18,11 +18,27 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://neuralsummary.com'),
   title: {
-    default: 'Neural Summary - AI-Powered Audio Transcription & Smart Summaries',
-    template: '%s | Neural Summary'
+    default: 'Neural Summary | Turn Conversations into Work-Ready Documents',
+    template: '%s | Neural Summary',
   },
-  description: 'AI meeting notes app for automatic transcription and summaries. Transform Zoom, Teams, and Google Meet recordings into actionable notes. 99.5% accuracy, 50+ languages, enterprise security.',
-  keywords: ['AI meeting summarizer', 'AI meeting notes app', 'automatic meeting summary', 'meeting transcription software', 'meeting notes automation', 'Zoom transcription', 'Teams meeting notes', 'Google Meet transcription', 'AI transcription', 'speech to text', 'audio transcription', 'interview transcription', 'OpenAI Whisper', 'AI meeting assistant'],
+  description: 'Voice-to-output creation platform. Turn conversations into product specs, articles, strategies, and emails instantly. AI interviews you, extracts ideas, generates deliverables. Speaking becomes creating.',
+  keywords: [
+    'voice to document',
+    'conversation to document',
+    'AI document creation',
+    'voice-to-output platform',
+    'AI interview assistant',
+    'speaking to writing',
+    'audio to document',
+    'voice-powered creation',
+    'AI document generator',
+    'conversation to spec',
+    'voice-activated writing',
+    'AI transcription and analysis',
+    'audio to article',
+    'speech to document creation',
+    'AI content generation from voice'
+  ],
   authors: [{ name: 'Neural Summary' }],
   creator: 'Neural Summary',
   publisher: 'Neural Summary',
@@ -59,8 +75,8 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://neuralsummary.com',
     siteName: 'Neural Summary',
-    title: 'Neural Summary - AI-Powered Audio Transcription & Smart Summaries',
-    description: 'Transform audio recordings into accurate transcripts and intelligent summaries. 99.5% accuracy, 50+ languages, enterprise security.',
+    title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
+    description: 'Speaking becomes creating. Transform conversations into product specs, articles, and strategies with AI that interviews you and generates deliverables.',
     images: [
       {
         url: '/assets/NS-symbol.webp',
@@ -74,8 +90,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Neural Summary - AI-Powered Audio Transcription',
-    description: 'Transform audio into accurate transcripts & summaries. 99.5% accuracy, 50+ languages. Start free.',
+    title: 'Neural Summary | Voice-to-Output Creation Platform',
+    description: 'Turn 3-minute conversations into complete product specs, articles, and strategies. AI interviews you, generates deliverables.',
     site: '@neuralsummary',
     creator: '@neuralsummary',
     images: ['/assets/NS-symbol.webp'],

@@ -148,7 +148,9 @@ export class AudioSplitter {
     const fileSize = await this.getFileSize(inputPath);
     const duration = await this.getAudioDuration(inputPath);
 
-    this.logger.log(`Splitting audio file (${(fileSize / 1024 / 1024).toFixed(1)}MB, ${Math.floor(duration / 60)}m${Math.floor(duration % 60)}s)`);
+    this.logger.log(
+      `Splitting audio file (${(fileSize / 1024 / 1024).toFixed(1)}MB, ${Math.floor(duration / 60)}m${Math.floor(duration % 60)}s)`,
+    );
 
     if (fileSize <= this.MAX_WHISPER_SIZE) {
       this.logger.log('File size is within limits, no splitting needed');
@@ -191,7 +193,14 @@ export class AudioSplitter {
       );
 
       promises.push(
-        this.extractChunk(inputPath, outputPath, startTime, actualDuration, i, totalChunks),
+        this.extractChunk(
+          inputPath,
+          outputPath,
+          startTime,
+          actualDuration,
+          i,
+          totalChunks,
+        ),
       );
     }
 
@@ -375,13 +384,12 @@ export class AudioSplitter {
             }
           })
           .on('end', () => {
-            this.logger.log(`Successfully merged ${safeInputPaths.length} chunks`);
+            this.logger.log(
+              `Successfully merged ${safeInputPaths.length} chunks`,
+            );
             // Clean up file list
             void fs.promises.unlink(fileListPath).catch((error) => {
-              this.logger.warn(
-                `Failed to delete file list`,
-                error,
-              );
+              this.logger.warn(`Failed to delete file list`, error);
             });
             resolve(safeOutputPath);
           })

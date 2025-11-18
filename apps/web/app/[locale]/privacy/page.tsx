@@ -17,26 +17,6 @@ import {
   FileCheck,
   UserCheck
 } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export async function generateMetadata({
-  params
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'privacy' });
-  
-  return {
-    title: t('meta.title'),
-    description: t('meta.description'),
-    openGraph: {
-      title: t('meta.title'),
-      description: t('meta.description'),
-      type: 'website',
-    },
-  };
-}
 
 export default async function PrivacyPage({
   params
