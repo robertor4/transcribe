@@ -188,7 +188,7 @@ export default async function LandingPage({
               <div className="flex justify-center py-8 my-8">
                 <div className="max-w-2xl mx-auto">
                   <img
-                    src="/assets/images/landing-thinkinvoice.png"
+                    src="/assets/images/landing-thinkinvoice.webp"
                     alt="From thinking in conversations to working in documents"
                     width="800"
                     height="240"

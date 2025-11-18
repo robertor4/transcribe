@@ -1,7 +1,44 @@
 /**
- * Centralized SEO metadata content for all public pages
- * Separated from UI translations to maintain clear distinction between marketing/SEO content
+ * Centralized SEO and metadata configuration
+ *
+ * Contains:
+ * - SEO constants (base URL, OG image, site name)
+ * - Locale mapping utilities for OpenGraph
+ * - Landing page metadata (serves as universal fallback for all pages)
+ *
+ * Individual pages can override this fallback by defining their own metadata in layout files:
+ * - /app/[locale]/landing/layout.tsx - Custom OpenGraph/Twitter overrides
+ * - /app/[locale]/pricing/layout.tsx - Complete pricing metadata
+ * - /app/[locale]/terms/layout.tsx - Complete terms metadata
+ * - /app/[locale]/privacy/layout.tsx - Complete privacy metadata
  */
+
+// ============================================================================
+// SEO Constants
+// ============================================================================
+
+export const SEO_BASE_URL = 'https://neuralsummary.com';
+export const DEFAULT_OG_IMAGE = '/assets/NS-symbol.webp';
+export const SITE_NAME = 'Neural Summary';
+
+const OG_LOCALE_MAP: Record<string, string> = {
+  en: 'en_US',
+  nl: 'nl_NL',
+  de: 'de_DE',
+  fr: 'fr_FR',
+  es: 'es_ES',
+};
+
+/**
+ * Convert app locale to OpenGraph locale format
+ */
+export function resolveOgLocale(locale: string): string {
+  return OG_LOCALE_MAP[locale as keyof typeof OG_LOCALE_MAP] ?? OG_LOCALE_MAP.en;
+}
+
+// ============================================================================
+// Metadata Types and Content
+// ============================================================================
 
 export interface PageMetadataContent {
   title: string;
@@ -19,6 +56,9 @@ export interface PageMetadataContent {
 
 export type PageType = 'landing' | 'pricing' | 'terms' | 'privacy';
 
+/**
+ * Landing page metadata - serves as the universal fallback for all pages
+ */
 const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
   en: {
     title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
@@ -41,16 +81,6 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'speech to document creation',
       'AI content generation from voice',
     ],
-    openGraph: {
-      title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
-      description:
-        'Speaking becomes creating. Transform conversations into product specs, articles, and strategies with AI that interviews you and generates deliverables.',
-    },
-    twitter: {
-      title: 'Neural Summary | Voice-to-Output Creation Platform',
-      description:
-        'Turn 3-minute conversations into complete product specs, articles, and strategies. AI interviews you, generates deliverables.',
-    },
   },
   nl: {
     title: 'Neural Summary | Transformeer Gesprekken in Werkklare Documenten',
@@ -73,16 +103,6 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'spraak naar documentcreatie',
       'AI contentgeneratie via spraak',
     ],
-    openGraph: {
-      title: 'Neural Summary | Transformeer Gesprekken in Werkklare Documenten',
-      description:
-        'Spreken wordt creëren. Transformeer gesprekken in productspecificaties, artikelen en strategieën met AI die je interviewt en deliverables genereert.',
-    },
-    twitter: {
-      title: 'Neural Summary | Spraak-naar-Output Platform',
-      description:
-        'Transformeer 3-minuten gesprekken in complete productspecificaties, artikelen en strategieën. AI interviewt je en genereert deliverables.',
-    },
   },
   de: {
     title: 'Neural Summary | Verwandeln Sie Gespräche in Arbeitsbereite Dokumente',
@@ -105,16 +125,6 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'Sprache zu Dokumenterstellung',
       'KI Inhaltserstellung durch Sprache',
     ],
-    openGraph: {
-      title: 'Neural Summary | Verwandeln Sie Gespräche in Arbeitsbereite Dokumente',
-      description:
-        'Sprechen wird Erschaffen. Verwandeln Sie Gespräche in Produktspezifikationen, Artikel und Strategien mit KI, die Sie interviewt und Ergebnisse generiert.',
-    },
-    twitter: {
-      title: 'Neural Summary | Sprache-zu-Output Plattform',
-      description:
-        'Verwandeln Sie 3-Minuten Gespräche in vollständige Produktspezifikationen, Artikel und Strategien. KI interviewt Sie und generiert Ergebnisse.',
-    },
   },
   fr: {
     title: 'Neural Summary | Transformez les Conversations en Documents Prêts à l\'Emploi',
@@ -137,16 +147,6 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'création de documents par la parole',
       'génération de contenu IA par la voix',
     ],
-    openGraph: {
-      title: 'Neural Summary | Transformez les Conversations en Documents Prêts à l\'Emploi',
-      description:
-        'Parler devient créer. Transformez les conversations en spécifications produit, articles et stratégies avec l\'IA qui vous interviewe et génère des livrables.',
-    },
-    twitter: {
-      title: 'Neural Summary | Plateforme de Création Voix-vers-Document',
-      description:
-        'Transformez des conversations de 3 minutes en spécifications produit complètes, articles et stratégies. L\'IA vous interviewe et génère des livrables.',
-    },
   },
   es: {
     title: 'Neural Summary | Convierte Conversaciones en Documentos Listos para Trabajar',
@@ -169,289 +169,16 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'creación de documentos por habla',
       'generación de contenido IA por voz',
     ],
-    openGraph: {
-      title: 'Neural Summary | Convierte Conversaciones en Documentos Listos para Trabajar',
-      description:
-        'Hablar se convierte en crear. Transforma conversaciones en especificaciones de producto, artículos y estrategias con IA que te entrevista y genera entregables.',
-    },
-    twitter: {
-      title: 'Neural Summary | Plataforma de Creación de Voz a Documento',
-      description:
-        'Convierte conversaciones de 3 minutos en especificaciones de producto completas, artículos y estrategias. La IA te entrevista y genera entregables.',
-    },
-  },
-};
-
-const PRICING_PAGE_METADATA: Record<string, PageMetadataContent> = {
-  en: {
-    title: 'Neural Summary | Pricing',
-    description:
-      'Flexible pricing plans for individuals and teams. Free tier available. Pro and Enterprise plans with advanced features, unlimited transcriptions, and priority support.',
-    keywords: [
-      'Neural Summary pricing',
-      'voice to document pricing',
-      'AI transcription plans',
-      'document creation pricing',
-      'free transcription plan',
-      'professional transcription pricing',
-      'enterprise AI document creation',
-      'voice-to-output pricing',
-      'AI interview assistant pricing',
-      'conversation to document cost',
-      'transcription service pricing',
-      'AI document generator plans',
-    ],
-  },
-  nl: {
-    title: 'Neural Summary | Prijzen',
-    description:
-      'Flexibele prijsplannen voor individuen en teams. Gratis tier beschikbaar. Pro en Enterprise plannen met geavanceerde functies, onbeperkte transcripties en prioritaire ondersteuning.',
-    keywords: [
-      'Neural Summary prijzen',
-      'spraak naar document prijzen',
-      'AI transcriptie plannen',
-      'documentcreatie prijzen',
-      'gratis transcriptieplan',
-      'professionele transcriptie prijzen',
-      'enterprise AI documentcreatie',
-      'spraak-naar-output prijzen',
-      'AI interview assistent prijzen',
-      'gesprek naar document kosten',
-      'transcriptieservice prijzen',
-      'AI documentgenerator plannen',
-    ],
-  },
-  de: {
-    title: 'Neural Summary | Preise',
-    description:
-      'Flexible Preispläne für Einzelpersonen und Teams. Kostenloser Tarif verfügbar. Pro- und Enterprise-Pläne mit erweiterten Funktionen, unbegrenzten Transkriptionen und vorrangigem Support.',
-    keywords: [
-      'Neural Summary Preise',
-      'Sprache zu Dokument Preise',
-      'KI Transkription Pläne',
-      'Dokumenterstellung Preise',
-      'kostenloser Transkriptionsplan',
-      'professionelle Transkription Preise',
-      'Enterprise KI Dokumenterstellung',
-      'Sprache-zu-Output Preise',
-      'KI Interview Assistent Preise',
-      'Gespräch zu Dokument Kosten',
-      'Transkriptionsservice Preise',
-      'KI Dokumentgenerator Pläne',
-    ],
-  },
-  fr: {
-    title: 'Neural Summary | Tarifs',
-    description:
-      'Plans tarifaires flexibles pour particuliers et équipes. Niveau gratuit disponible. Plans Pro et Enterprise avec fonctionnalités avancées, transcriptions illimitées et support prioritaire.',
-    keywords: [
-      'Neural Summary tarifs',
-      'voix vers document tarifs',
-      'plans transcription IA',
-      'tarifs création de documents',
-      'plan transcription gratuit',
-      'tarifs transcription professionnelle',
-      'création de documents IA entreprise',
-      'tarifs voix-vers-sortie',
-      'tarifs assistant d\'interview IA',
-      'coût conversation vers document',
-      'tarifs service transcription',
-      'plans générateur de documents IA',
-    ],
-  },
-  es: {
-    title: 'Neural Summary | Precios',
-    description:
-      'Planes de precios flexibles para individuos y equipos. Nivel gratuito disponible. Planes Pro y Enterprise con funciones avanzadas, transcripciones ilimitadas y soporte prioritario.',
-    keywords: [
-      'Neural Summary precios',
-      'voz a documento precios',
-      'planes transcripción IA',
-      'precios creación de documentos',
-      'plan transcripción gratuito',
-      'precios transcripción profesional',
-      'creación de documentos IA empresarial',
-      'precios voz-a-salida',
-      'precios asistente de entrevista IA',
-      'costo conversación a documento',
-      'precios servicio transcripción',
-      'planes generador de documentos IA',
-    ],
-  },
-};
-
-const TERMS_PAGE_METADATA: Record<string, PageMetadataContent> = {
-  en: {
-    title: 'Neural Summary | Terms of Service',
-    description:
-      'Terms and conditions for using Neural Summary voice-to-document creation platform. User rights, service terms, and legal agreements.',
-    keywords: [
-      'Neural Summary terms',
-      'terms of service',
-      'user agreement',
-      'service terms',
-      'legal terms',
-      'AI transcription terms',
-      'voice to document terms',
-      'platform usage terms',
-    ],
-  },
-  nl: {
-    title: 'Neural Summary | Algemene Voorwaarden',
-    description:
-      'Algemene voorwaarden voor het gebruik van Neural Summary spraak-naar-document platform. Gebruikersrechten, servicevoorwaarden en juridische overeenkomsten.',
-    keywords: [
-      'Neural Summary voorwaarden',
-      'algemene voorwaarden',
-      'gebruikersovereenkomst',
-      'servicevoorwaarden',
-      'juridische voorwaarden',
-      'AI transcriptie voorwaarden',
-      'spraak naar document voorwaarden',
-      'platform gebruiksvoorwaarden',
-    ],
-  },
-  de: {
-    title: 'Neural Summary | Nutzungsbedingungen',
-    description:
-      'Allgemeine Geschäftsbedingungen für die Nutzung der Neural Summary Sprache-zu-Dokument Plattform. Benutzerrechte, Servicebedingungen und rechtliche Vereinbarungen.',
-    keywords: [
-      'Neural Summary Bedingungen',
-      'Nutzungsbedingungen',
-      'Benutzervereinbarung',
-      'Servicebedingungen',
-      'rechtliche Bedingungen',
-      'KI Transkription Bedingungen',
-      'Sprache zu Dokument Bedingungen',
-      'Plattform Nutzungsbedingungen',
-    ],
-  },
-  fr: {
-    title: 'Neural Summary | Conditions d\'Utilisation',
-    description:
-      'Conditions générales d\'utilisation de la plateforme de création voix-vers-document Neural Summary. Droits des utilisateurs, conditions de service et accords juridiques.',
-    keywords: [
-      'Neural Summary conditions',
-      'conditions d\'utilisation',
-      'accord utilisateur',
-      'conditions de service',
-      'conditions juridiques',
-      'conditions transcription IA',
-      'conditions voix vers document',
-      'conditions d\'utilisation de la plateforme',
-    ],
-  },
-  es: {
-    title: 'Neural Summary | Términos de Servicio',
-    description:
-      'Términos y condiciones para usar la plataforma de creación de voz a documento Neural Summary. Derechos de usuario, términos de servicio y acuerdos legales.',
-    keywords: [
-      'Neural Summary términos',
-      'términos de servicio',
-      'acuerdo de usuario',
-      'términos de servicio',
-      'términos legales',
-      'términos transcripción IA',
-      'términos voz a documento',
-      'términos de uso de plataforma',
-    ],
-  },
-};
-
-const PRIVACY_PAGE_METADATA: Record<string, PageMetadataContent> = {
-  en: {
-    title: 'Neural Summary | Privacy Policy',
-    description:
-      'Neural Summary privacy policy. Learn how we protect your data, handle audio files, and ensure GDPR compliance for voice-to-document creation.',
-    keywords: [
-      'Neural Summary privacy',
-      'privacy policy',
-      'data protection',
-      'GDPR compliance',
-      'audio file privacy',
-      'voice data security',
-      'transcription privacy',
-      'AI document privacy',
-    ],
-  },
-  nl: {
-    title: 'Neural Summary | Privacybeleid',
-    description:
-      'Neural Summary privacybeleid. Ontdek hoe wij uw gegevens beschermen, audiobestanden verwerken en AVG-naleving waarborgen voor spraak-naar-document creatie.',
-    keywords: [
-      'Neural Summary privacy',
-      'privacybeleid',
-      'gegevensbescherming',
-      'AVG-naleving',
-      'audiobestand privacy',
-      'spraakgegevens beveiliging',
-      'transcriptie privacy',
-      'AI document privacy',
-    ],
-  },
-  de: {
-    title: 'Neural Summary | Datenschutzrichtlinie',
-    description:
-      'Neural Summary Datenschutzrichtlinie. Erfahren Sie, wie wir Ihre Daten schützen, Audiodateien verarbeiten und DSGVO-Konformität für Sprache-zu-Dokument Erstellung gewährleisten.',
-    keywords: [
-      'Neural Summary Datenschutz',
-      'Datenschutzrichtlinie',
-      'Datenschutz',
-      'DSGVO-Konformität',
-      'Audiodatei Datenschutz',
-      'Sprachdaten Sicherheit',
-      'Transkription Datenschutz',
-      'KI Dokument Datenschutz',
-    ],
-  },
-  fr: {
-    title: 'Neural Summary | Politique de Confidentialité',
-    description:
-      'Politique de confidentialité Neural Summary. Découvrez comment nous protégeons vos données, traitons les fichiers audio et assurons la conformité RGPD pour la création voix-vers-document.',
-    keywords: [
-      'Neural Summary confidentialité',
-      'politique de confidentialité',
-      'protection des données',
-      'conformité RGPD',
-      'confidentialité fichiers audio',
-      'sécurité données vocales',
-      'confidentialité transcription',
-      'confidentialité documents IA',
-    ],
-  },
-  es: {
-    title: 'Neural Summary | Política de Privacidad',
-    description:
-      'Política de privacidad de Neural Summary. Descubra cómo protegemos sus datos, manejamos archivos de audio y garantizamos el cumplimiento del RGPD para la creación de voz a documento.',
-    keywords: [
-      'Neural Summary privacidad',
-      'política de privacidad',
-      'protección de datos',
-      'cumplimiento RGPD',
-      'privacidad archivos de audio',
-      'seguridad datos de voz',
-      'privacidad transcripción',
-      'privacidad documentos IA',
-    ],
   },
 };
 
 const DEFAULT_LOCALE = 'en';
 
-const PAGE_METADATA_MAP: Record<PageType, Record<string, PageMetadataContent>> = {
-  landing: LANDING_PAGE_METADATA,
-  pricing: PRICING_PAGE_METADATA,
-  terms: TERMS_PAGE_METADATA,
-  privacy: PRIVACY_PAGE_METADATA,
-};
-
 /**
- * Get metadata content for a specific page type and locale
+ * Get metadata content for locale (always returns landing page metadata as universal fallback)
+ * Individual pages should define their own metadata in layout files
  */
-export function getPageMetadataContent(
-  pageType: PageType,
-  locale: string
-): PageMetadataContent {
-  const pageMetadata = PAGE_METADATA_MAP[pageType];
-  return pageMetadata[locale] ?? pageMetadata[DEFAULT_LOCALE];
+export function getPageMetadataContent(locale: string): PageMetadataContent {
+  // Always use landing page metadata as fallback
+  return LANDING_PAGE_METADATA[locale] ?? LANDING_PAGE_METADATA[DEFAULT_LOCALE];
 }

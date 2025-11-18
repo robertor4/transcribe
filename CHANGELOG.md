@@ -42,6 +42,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:187-198)
 
 ### Changed
+- **Metadata Architecture Simplification**: Complete decentralization of page-specific metadata
+  - **Central Config (`page-metadata.ts`)**: Now contains ONLY landing page metadata as universal fallback
+  - **Page Layouts**: Each page now defines its complete metadata in its own layout file
+    - `landing/layout.tsx`: Landing page with custom OpenGraph/Twitter overrides
+    - `pricing/layout.tsx`: Complete pricing metadata for all 5 locales
+    - `terms/layout.tsx`: Complete terms metadata for all 5 locales
+    - `privacy/layout.tsx`: Complete privacy metadata for all 5 locales
+  - **Benefits**:
+    - Single source of truth per page (no jumping between files)
+    - Landing page metadata serves as sensible fallback for any page without metadata
+    - Clearer ownership model: each page owns its complete metadata
+    - Removed `pageType` parameter from `getPageMetadataContent()` and `buildPageMetadata()`
+  - **Files Changed**:
+    - [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts) - Reduced from 408 to 158 lines
+    - [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts) - Simplified function signatures
+    - [apps/web/app/[locale]/pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx) - Added PRICING_METADATA constant
+    - [apps/web/app/[locale]/terms/layout.tsx](apps/web/app/[locale]/terms/layout.tsx) - Added TERMS_METADATA constant
+    - [apps/web/app/[locale]/privacy/layout.tsx](apps/web/app/[locale]/privacy/layout.tsx) - Added PRIVACY_METADATA constant
+  - Files: [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts), [apps/web/app/[locale]/landing/layout.tsx](apps/web/app/[locale]/landing/layout.tsx:10-79)
+- **SEO Configuration Consolidation**: Merged `seo.ts` into `page-metadata.ts`
+  - Moved `SEO_BASE_URL`, `DEFAULT_OG_IMAGE`, `SITE_NAME` constants to page-metadata.ts
+  - Moved `resolveOgLocale()` utility function to page-metadata.ts
+  - All SEO and metadata configuration now in single file
+  - Deleted redundant `apps/web/config/seo.ts`
+  - Updated imports in `apps/web/utils/metadata.ts` to reference page-metadata.ts
+  - Benefits: Single source of truth for all SEO/metadata configuration, simpler project structure (one less config file)
+  - Files: [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts), [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts)
 - **Page Title Format**: Standardized all page titles with "Neural Summary |" prefix for consistent branding
   - Pricing: "Pricing - Choose Your Plan" → "Neural Summary | Pricing" (all locales)
   - Terms: "Terms of Service" → "Neural Summary | Terms of Service" (all locales)

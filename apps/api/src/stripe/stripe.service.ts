@@ -403,7 +403,8 @@ export class StripeService {
       // Optional: Fetch subscription to log discount information
       const subscription =
         await this.stripe.subscriptions.retrieve(subscriptionId);
-      const originalAmount = subscription.items.data[0]?.price?.unit_amount || 0;
+      const originalAmount =
+        subscription.items.data[0]?.price?.unit_amount || 0;
       const discountApplied = originalAmount - amount;
 
       if (discountApplied > 0) {

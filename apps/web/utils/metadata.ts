@@ -4,8 +4,8 @@ import {
   SEO_BASE_URL,
   SITE_NAME,
   resolveOgLocale,
-} from '@/config/seo';
-import { getPageMetadataContent, PageType } from '@/config/page-metadata';
+  getPageMetadataContent,
+} from '@/config/page-metadata';
 
 const DASHBOARD_TITLES: Record<string, string> = {
   en: 'Dashboard',
@@ -145,20 +145,18 @@ export interface MetadataOverrides {
 /**
  * Generic helper to build metadata for public pages with optional overrides
  *
- * @param pageType - Type of page (landing, pricing, terms, privacy)
  * @param locale - User's locale (en, nl, de, fr, es)
  * @param urlPath - URL path for the page (e.g., '/landing', '/pricing')
- * @param overrides - Optional overrides for any metadata field
+ * @param overrides - Optional overrides for any metadata field (if not provided, uses landing page metadata as fallback)
  * @returns Complete Metadata object for Next.js
  */
 export function buildPageMetadata(
-  pageType: PageType,
   locale: string,
   urlPath: string,
   overrides?: MetadataOverrides
 ): Metadata {
-  // Get base content from centralized config
-  const baseContent = getPageMetadataContent(pageType, locale);
+  // Get base content from centralized config (always landing page metadata as fallback)
+  const baseContent = getPageMetadataContent(locale);
   const pageUrl = `${SEO_BASE_URL}/${locale}${urlPath}`;
 
   // Apply overrides with fallback to base content
@@ -195,7 +193,7 @@ export function buildPageMetadata(
  * @param overrides - Optional metadata overrides
  */
 export function getLandingMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
-  return buildPageMetadata('landing', locale, '/landing', overrides);
+  return buildPageMetadata(locale, '/landing', overrides);
 }
 
 /**
@@ -204,7 +202,7 @@ export function getLandingMetadata(locale: string = 'en', overrides?: MetadataOv
  * @param overrides - Optional metadata overrides
  */
 export function getPricingMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
-  return buildPageMetadata('pricing', locale, '/pricing', overrides);
+  return buildPageMetadata(locale, '/pricing', overrides);
 }
 
 /**
@@ -213,7 +211,7 @@ export function getPricingMetadata(locale: string = 'en', overrides?: MetadataOv
  * @param overrides - Optional metadata overrides
  */
 export function getTermsMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
-  return buildPageMetadata('terms', locale, '/terms', overrides);
+  return buildPageMetadata(locale, '/terms', overrides);
 }
 
 /**
@@ -222,5 +220,5 @@ export function getTermsMetadata(locale: string = 'en', overrides?: MetadataOver
  * @param overrides - Optional metadata overrides
  */
 export function getPrivacyMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
-  return buildPageMetadata('privacy', locale, '/privacy', overrides);
+  return buildPageMetadata(locale, '/privacy', overrides);
 }
