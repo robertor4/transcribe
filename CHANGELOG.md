@@ -15,14 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Type-safe `PageMetadataContent` interface ensures consistency
   - Supports custom OpenGraph and Twitter metadata per page
   - Files: [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts)
+- **Flexible Metadata System with Overrides**: Page-specific customization support
+  - `buildPageMetadata()` - Generic builder with optional override support (exported for direct use)
+  - `MetadataOverrides` interface for type-safe customization
+  - All metadata functions accept optional `overrides` parameter
+  - Enables page layouts to customize title, description, keywords, OG, and Twitter metadata
+  - Fallback hierarchy: overrides → config defaults → empty values
+  - Example usage documented in pricing layout with commented examples
+  - Files: [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts:128-226), [apps/web/app/[locale]/pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx:10-37)
 - **Metadata Utility Functions**: Four new public page metadata generators
-  - `getLandingMetadata(locale)` - Landing page metadata with 15 SEO keywords
-  - `getPricingMetadata(locale)` - Pricing page metadata with plan-focused keywords
-  - `getTermsMetadata(locale)` - Terms of service page metadata
-  - `getPrivacyMetadata(locale)` - Privacy policy page metadata
+  - `getLandingMetadata(locale, overrides?)` - Landing page metadata with 15 SEO keywords
+  - `getPricingMetadata(locale, overrides?)` - Pricing page metadata with plan-focused keywords
+  - `getTermsMetadata(locale, overrides?)` - Terms of service page metadata
+  - `getPrivacyMetadata(locale, overrides?)` - Privacy policy page metadata
   - All functions reuse existing `buildOpenGraphConfig()` and `buildTwitterConfig()` helpers
-  - Generic `buildPageMetadata()` internal helper eliminates duplication
-  - Files: [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts:128-181)
+  - Files: [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts:192-226)
 - **Layout-Based Metadata Pattern**: Consistent structure across all public pages
   - Created layout files for landing, terms, and privacy pages
   - All public pages now follow dashboard/shared pattern: metadata in layout, content in page
