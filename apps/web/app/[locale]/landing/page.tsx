@@ -8,51 +8,11 @@ import { MeetingUseCases } from '@/components/landing/MeetingUseCases';
 import { MeetingFAQ } from '@/components/landing/MeetingFAQ';
 import { CTAButton } from '@/components/landing/CTAButton';
 import WorkflowCarousel from '@/components/landing/WorkflowCarousel';
-import type { Metadata } from 'next';
 import {
   Shield,
-  Brain,
   Lock,
-  Award,
-  TrendingUp,
-  Clock,
-  Users,
   Star,
-  Mic
 } from 'lucide-react';
-
-// SEO Metadata for voice-to-output creation platform
-export const metadata: Metadata = {
-  title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
-  description: 'Voice-to-output creation platform. Turn conversations into product specs, articles, strategies, and emails instantly. AI interviews you, extracts ideas, generates deliverables. Speaking becomes creating.',
-  keywords: [
-    'voice to document',
-    'conversation to document',
-    'AI document creation',
-    'voice-to-output platform',
-    'AI interview assistant',
-    'speaking to writing',
-    'audio to document',
-    'voice-powered creation',
-    'AI document generator',
-    'conversation to spec',
-    'voice-activated writing',
-    'AI transcription and analysis',
-    'audio to article',
-    'speech to document creation',
-    'AI content generation from voice'
-  ],
-  openGraph: {
-    title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
-    description: 'Speaking becomes creating. Transform conversations into product specs, articles, and strategies with AI that interviews you and generates deliverables.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Neural Summary | Voice-to-Output Creation Platform',
-    description: 'Turn 3-minute conversations into complete product specs, articles, and strategies. AI interviews you, generates deliverables.',
-  },
-};
 
 export default async function LandingPage({
   params
@@ -224,16 +184,18 @@ export default async function LandingPage({
             </ScrollAnimation>
 
             {/* Visual separator - thinking to invoice illustration */}
-            <div className="flex justify-center py-8 my-8">
-              <div className="max-w-2xl mx-auto">
-                <img
-                  src="/assets/images/landing-thinkinvoice.png"
-                  alt="From thinking in conversations to working in documents"
-                  width="800"
-                  height="240"
-                />
+            <ScrollAnimation delay={600}>
+              <div className="flex justify-center py-8 my-8">
+                <div className="max-w-2xl mx-auto">
+                  <img
+                    src="/assets/images/landing-thinkinvoice.png"
+                    alt="From thinking in conversations to working in documents"
+                    width="800"
+                    height="240"
+                  />
+                </div>
               </div>
-            </div>
+            </ScrollAnimation>
 
             <ScrollAnimation delay={800}>
               <div className="space-y-8 text-lg sm:text-xl text-gray-300">

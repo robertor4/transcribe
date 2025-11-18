@@ -3,26 +3,6 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ArrowLeft, FileText, Shield, Scale, Globe, AlertCircle, Mail, DollarSign, TrendingUp } from 'lucide-react';
-import type { Metadata } from 'next';
-
-export async function generateMetadata({
-  params
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'terms' });
-  
-  return {
-    title: t('meta.title'),
-    description: t('meta.description'),
-    openGraph: {
-      title: t('meta.title'),
-      description: t('meta.description'),
-      type: 'website',
-    },
-  };
-}
 
 export default async function TermsPage({
   params

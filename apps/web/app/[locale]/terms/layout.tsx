@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { getPricingMetadata } from '@/utils/metadata';
+import { getTermsMetadata } from '@/utils/metadata';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -8,13 +8,13 @@ type Props = {
 };
 
 /**
- * Generate metadata for pricing page
+ * Generate metadata for terms of service page
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  return getPricingMetadata(locale);
+  return getTermsMetadata(locale);
 }
 
-export default function PricingLayout({ children }: Props) {
+export default function TermsLayout({ children }: Props) {
   return <>{children}</>;
 }

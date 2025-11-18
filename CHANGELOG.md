@@ -8,6 +8,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Centralized SEO Metadata System**: Unified metadata/SEO architecture for all public pages
+  - Created `/apps/web/config/page-metadata.ts` - Single source of truth for all page metadata content
+  - Separates SEO content from UI translations for clearer content management
+  - Complete multilingual support (en, nl, de, fr, es) with keywords for all pages
+  - Type-safe `PageMetadataContent` interface ensures consistency
+  - Supports custom OpenGraph and Twitter metadata per page
+  - Files: [apps/web/config/page-metadata.ts](apps/web/config/page-metadata.ts)
+- **Metadata Utility Functions**: Four new public page metadata generators
+  - `getLandingMetadata(locale)` - Landing page metadata with 15 SEO keywords
+  - `getPricingMetadata(locale)` - Pricing page metadata with plan-focused keywords
+  - `getTermsMetadata(locale)` - Terms of service page metadata
+  - `getPrivacyMetadata(locale)` - Privacy policy page metadata
+  - All functions reuse existing `buildOpenGraphConfig()` and `buildTwitterConfig()` helpers
+  - Generic `buildPageMetadata()` internal helper eliminates duplication
+  - Files: [apps/web/utils/metadata.ts](apps/web/utils/metadata.ts:128-181)
+- **Layout-Based Metadata Pattern**: Consistent structure across all public pages
+  - Created layout files for landing, terms, and privacy pages
+  - All public pages now follow dashboard/shared pattern: metadata in layout, content in page
+  - Server-side metadata rendering guaranteed for SEO
+  - Files: [apps/web/app/[locale]/landing/layout.tsx](apps/web/app/[locale]/landing/layout.tsx), [apps/web/app/[locale]/terms/layout.tsx](apps/web/app/[locale]/terms/layout.tsx), [apps/web/app/[locale]/privacy/layout.tsx](apps/web/app/[locale]/privacy/layout.tsx)
+- **Landing Page Image Animation**: Added scroll animation to visual separator image
+  - Image after "You think in conversations. You work in documents." now animates on scroll
+  - Uses `ScrollAnimation` wrapper with 600ms delay for staggered effect
+  - Maintains consistent animation style with surrounding text (fadeUp effect)
+  - File: [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx:187-198)
+
+### Changed
+- **Landing Page Metadata**: Refactored to use centralized utility system
+  - Removed 95 lines of inline metadata constants and OpenGraph/Twitter config
+  - Metadata now managed in `/apps/web/config/page-metadata.ts` instead of page file
+  - `generateMetadata()` moved from `page.tsx` to new `layout.tsx` file
+  - Removed duplicate OpenGraph/Twitter building logic
+  - Removed unused imports: `Metadata`, SEO config imports, unused Lucide icons
+  - Files: [apps/web/app/[locale]/landing/layout.tsx](apps/web/app/[locale]/landing/layout.tsx), [apps/web/app/[locale]/landing/page.tsx](apps/web/app/[locale]/landing/page.tsx)
+- **Pricing Page Metadata**: Simplified to use centralized utility
+  - Removed 75 lines of inline metadata constants (`PRICING_SEO_CONTENT`)
+  - Replaced custom `resolvePricingMetadata()` with `getPricingMetadata()` utility
+  - Removed duplicate OpenGraph/Twitter config building
+  - Added keywords field (12 pricing-focused SEO keywords) previously missing
+  - Files: [apps/web/app/[locale]/pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx)
+- **Terms Page Metadata**: Enhanced with complete SEO metadata
+  - Moved metadata generation from `page.tsx` to new `layout.tsx` file
+  - Replaced minimal translation-based metadata with comprehensive utility-based system
+  - Added keywords field (8 legal/terms SEO keywords) previously missing
+  - Added complete OpenGraph config (images, locale, URL, siteName) previously missing
+  - Added Twitter Card metadata previously missing
+  - Files: [apps/web/app/[locale]/terms/layout.tsx](apps/web/app/[locale]/terms/layout.tsx), [apps/web/app/[locale]/terms/page.tsx](apps/web/app/[locale]/terms/page.tsx)
+- **Privacy Page Metadata**: Enhanced with complete SEO metadata
+  - Moved metadata generation from `page.tsx` to new `layout.tsx` file
+  - Replaced minimal translation-based metadata with comprehensive utility-based system
+  - Added keywords field (8 privacy/GDPR SEO keywords) previously missing
+  - Added complete OpenGraph config (images, locale, URL, siteName) previously missing
+  - Added Twitter Card metadata previously missing
+  - Files: [apps/web/app/[locale]/privacy/layout.tsx](apps/web/app/[locale]/privacy/layout.tsx), [apps/web/app/[locale]/privacy/page.tsx](apps/web/app/[locale]/privacy/page.tsx)
+
+### Removed
+- **Duplicate Metadata Code**: Eliminated ~200 lines of redundant SEO configuration
+  - Removed inline OpenGraph/Twitter config from landing page (24 lines)
+  - Removed inline metadata constants from pricing page (75 lines)
+  - Removed inline metadata generation from terms page (15 lines)
+  - Removed inline metadata generation from privacy page (15 lines)
+  - All replaced with single centralized utility system
+
+### Added
 - **Mobile Navigation Menu**: Complete redesign for better UX and feature parity with desktop
   - Added missing "How it Works" link (navigates to `#video-demo` section) - critical gap fix
   - Reordered sections for better hierarchy: Navigation links first, auth actions second, language switcher last
