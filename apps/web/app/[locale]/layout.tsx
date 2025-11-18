@@ -17,10 +17,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://neuralsummary.com'),
-  title: {
-    default: 'Neural Summary | Turn Conversations into Work-Ready Documents',
-    template: '%s | Neural Summary',
-  },
+  title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
   description: 'Voice-to-output creation platform. Turn conversations into product specs, articles, strategies, and emails instantly. AI interviews you, extracts ideas, generates deliverables. Speaking becomes creating.',
   keywords: [
     'voice to document',

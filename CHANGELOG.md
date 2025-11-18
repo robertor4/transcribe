@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Title Duplication Issue**: Fixed "Neural Summary" appearing twice in page titles
+  - Removed title template (`'%s | Neural Summary'`) from root layout that was causing duplication
+  - All page titles now properly display as "Neural Summary | Page Title" format
+  - Follows SEO best practice: brand name first, page title second
+  - Files: [apps/web/app/[locale]/layout.tsx](apps/web/app/[locale]/layout.tsx:18-20)
+
 ### Added
 - **Centralized SEO Metadata System**: Unified metadata/SEO architecture for all public pages
   - Created `/apps/web/config/page-metadata.ts` - Single source of truth for all page metadata content
