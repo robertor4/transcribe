@@ -211,23 +211,25 @@ export default async function LandingPage({
         </section>
 
         {/* From Thinking to Done - Light Section (WOW) */}
-        <section id="video-demo" className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="video-demo-heading">
+        <section id="video-demo" className="py-32 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="video-demo-heading">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimation delay={200}>
-              <h2 id="video-demo-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-                {t('wow.headline')}
-              </h2>
-              <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto">
-                {t('wow.subtitle')}
-              </p>
+              <div className="px-6 sm:px-8 lg:px-12">
+                <h2 id="video-demo-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
+                  {t('wow.headline')}
+                </h2>
+                <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto">
+                  {t('wow.subtitle')}
+                </p>
+              </div>
             </ScrollAnimation>
 
             <ScrollAnimation delay={400}>
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gray-100 mb-12">
+              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden sm:shadow-2xl bg-gray-100 mb-12 sm:mx-6 lg:mx-12">
                 {/* YouTube embed - Neural Summary Demo with captions enabled by default */}
                 <iframe
                   className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/znkIBXi1O48?cc_load_policy=1"
+                  src="https://www.youtube.com/embed/KEpOTCByFUs?cc_load_policy=1"
                   title="Neural Summary Demo Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -235,9 +237,11 @@ export default async function LandingPage({
                 />
               </div>
 
-              <p className="text-lg text-gray-700">
-                {t('wow.tagline')}
-              </p>
+              <div className="px-6 sm:px-8 lg:px-12">
+                <p className="text-lg text-gray-700">
+                  {t('wow.tagline')}
+                </p>
+              </div>
             </ScrollAnimation>
           </div>
         </section>
