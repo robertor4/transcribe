@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Files: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx), [apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx)
 
 ### Changed
+- **Output Templates Restructure**: Separated output templates into individual files for better maintainability
+  - Created `apps/web/lib/outputTemplates/` directory with dedicated file per template
+  - Files: `types.ts` (shared interfaces), `email.ts`, `blogPost.ts`, `linkedinPost.ts`, `actionItems.ts`, `userStories.ts`
+  - Central registry in `index.ts` exports `allTemplates` array and `getTemplateById()` helper
+  - Updated `OutputGeneratorModal.tsx` to use template registry instead of inline array
+  - Benefits: Easier to add new templates, better code organization, template-specific logic co-location
+  - Files: [apps/web/lib/outputTemplates/](apps/web/lib/outputTemplates/), [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
 - **Output Generator Progress Indicator**: Improved visual flow of connecting lines between step circles
   - Lines now flow directly between circles instead of appearing disconnected
   - Used absolute positioning for seamless connection from circle to circle

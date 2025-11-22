@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Mail, Edit3, Share2, CheckSquare, FileText, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from './Button';
+import { allTemplates, TemplateId } from '@/lib/outputTemplates';
 
 interface OutputGeneratorModalProps {
   isOpen: boolean;
@@ -10,63 +11,15 @@ interface OutputGeneratorModalProps {
   conversationTitle: string;
 }
 
-type OutputType = 'email' | 'blogPost' | 'linkedin' | 'actionItems' | 'userStories';
-
-interface OutputTypeOption {
-  id: OutputType;
-  name: string;
-  description: string;
-  icon: typeof Mail;
-  example: string;
-}
-
-const outputTypes: OutputTypeOption[] = [
-  {
-    id: 'email',
-    name: 'Email',
-    description: 'Professional email summary',
-    icon: Mail,
-    example: 'Turn this conversation into a follow-up email',
-  },
-  {
-    id: 'blogPost',
-    name: 'Blog Post',
-    description: 'Publish-ready article',
-    icon: Edit3,
-    example: 'Transform insights into a compelling blog post',
-  },
-  {
-    id: 'linkedin',
-    name: 'LinkedIn Post',
-    description: 'Engaging social media content',
-    icon: Share2,
-    example: 'Create a professional LinkedIn update',
-  },
-  {
-    id: 'actionItems',
-    name: 'Action Items',
-    description: 'Structured task list',
-    icon: CheckSquare,
-    example: 'Extract actionable next steps',
-  },
-  {
-    id: 'userStories',
-    name: 'User Stories',
-    description: 'Product requirements',
-    icon: FileText,
-    example: 'Generate user stories for development',
-  },
-];
-
 export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: OutputGeneratorModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [selectedType, setSelectedType] = useState<OutputType | null>(null);
+  const [selectedType, setSelectedType] = useState<TemplateId | null>(null);
   const [customInstructions, setCustomInstructions] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
   if (!isOpen) return null;
 
-  const selectedOption = outputTypes.find(t => t.id === selectedType);
+  const selectedOption = allTemplates.find(t => t.id === selectedType);
 
   const handleGenerate = () => {
     setStep(4);
@@ -180,14 +133,14 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: Out
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {outputTypes.map((type) => {
-                  const Icon = type.icon;
-                  const isSelected = selectedType === type.id;
+                {allTemplates.map((template) => {
+                  const Icon = template.icon;
+                  const isSelected = selectedType === template.id;
 
                   return (
                     <button
-                      key={type.id}
-                      onClick={() => setSelectedType(type.id)}
+                      key={template.id}
+                      onClick={() => setSelectedType(template.id)}
                       className={`group relative p-6 rounded-xl border-2 text-left transition-all duration-200 ${
                         isSelected
                           ? 'border-[#cc3399] bg-pink-50 dark:bg-[#cc3399]/10 shadow-lg scale-105'
@@ -206,13 +159,13 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: Out
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">
-                            {type.name}
+                            {template.name}
                           </h4>
                           <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            {type.description}
+                            {template.description}
                           </p>
                           <p className="text-xs font-medium text-gray-500 dark:text-gray-500 italic">
-                            {type.example}
+                            {template.example}
                           </p>
                         </div>
                         {isSelected && (
