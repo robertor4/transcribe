@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { BarChart3, Zap, FileText, Mail, CheckSquare, Edit3, Share2, Copy, ArrowLeft, Plus } from 'lucide-react';
+import { BarChart3, Zap, FileText, Mail, CheckSquare, Edit3, Share2, ArrowLeft, Plus } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { RightContextPanel } from '@/components/RightContextPanel';
@@ -125,7 +125,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 </p>
 
                 {conversation.source.summary.keyPoints.length > 0 && (
-                  <div className="mt-6 pl-6 py-1 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-gray-300 dark:border-gray-600">
+                  <div className="mt-6 pl-6 py-1 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#cc3399]">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Key Points</h3>
                     <ul className="space-y-2 list-disc list-inside">
                       {conversation.source.summary.keyPoints.map((point, idx) => (
@@ -236,27 +236,47 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
             {/* Section: Transcript */}
             <section id="transcript" className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      Transcript
-                    </h2>
-                  </div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    {conversation.source.transcript.speakers} speakers · {Math.floor(conversation.source.transcript.confidence * 100)}% confidence
-                  </p>
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    Transcript
+                  </h2>
                 </div>
-                <Button variant="ghost" size="sm" icon={<Copy className="w-4 h-4" />}>
-                  Copy Transcript
-                </Button>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700">
-                <p className="font-medium text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                  {conversation.source.transcript.text}
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  View the full conversation with speaker diarization and timeline
                 </p>
               </div>
+
+              {/* Transcript Card - Links to dedicated page */}
+              <Link
+                href={`/en/prototype-conversation-v2/${conversation.id}/transcript`}
+                className="group block p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#cc3399] dark:hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#cc3399] transition-colors">
+                      Full Transcript with Timeline
+                    </h3>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                      Interactive speaker timeline with {conversation.source.transcript.speakers} speakers and {Math.floor(conversation.source.transcript.confidence * 100)}% confidence
+                    </p>
+                    {conversation.source.transcript.speakerSegments && (
+                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        <span>{conversation.source.transcript.speakerSegments.length} segments</span>
+                        <span>·</span>
+                        <span>{Math.floor(conversation.source.audioDuration / 60)} min duration</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-shrink-0 text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
+                    →
+                  </div>
+                </div>
+              </Link>
             </section>
 
             {/* Prototype Notice */}

@@ -7,7 +7,7 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'cla
   variant?: 'primary' | 'secondary' | 'brand' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
-  children: ReactNode;
+  children?: ReactNode;
   fullWidth?: boolean;
   icon?: ReactNode;
 }

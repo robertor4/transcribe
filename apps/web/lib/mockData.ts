@@ -1,4 +1,5 @@
 // Mock data for UI prototyping - no backend changes required
+import { SpeakerSegment } from '@transcribe/shared';
 
 export interface MockConversation {
   id: string;
@@ -15,6 +16,7 @@ export interface MockConversation {
       text: string;
       speakers: number;
       confidence: number;
+      speakerSegments?: SpeakerSegment[]; // Added for transcript timeline
     };
     summary: {
       text: string;
@@ -256,7 +258,29 @@ export const mockConversations: MockConversation[] = [
       transcript: {
         text: 'This is a comprehensive discussion about our Q4 product strategy. We need to focus on AI-powered features that will increase user engagement by at least 50%. The key areas include automated workflow generation, intelligent recommendations, and real-time collaboration features. Our timeline is aggressive - we need to launch by October 15th to capture the holiday season...',
         speakers: 3,
-        confidence: 0.95
+        confidence: 0.95,
+        speakerSegments: [
+          { speakerTag: 'Speaker 1', startTime: 0, endTime: 45, text: 'Alright everyone, thanks for joining. Today we need to finalize our Q4 product roadmap. I want to focus on AI-powered features that will drive user engagement.', confidence: 0.96 },
+          { speakerTag: 'Speaker 2', startTime: 45, endTime: 92, text: 'Absolutely. Based on our analytics, we\'re seeing a 50% drop-off rate at the workflow creation stage. If we can automate that with AI, we could significantly improve retention.', confidence: 0.94 },
+          { speakerTag: 'Speaker 1', startTime: 92, endTime: 135, text: 'Exactly. Let\'s talk about three main pillars: automated workflow generation, intelligent recommendations, and real-time collaboration features.', confidence: 0.97 },
+          { speakerTag: 'Speaker 3', startTime: 135, endTime: 198, text: 'From a technical perspective, the workflow automation is the most complex. We\'ll need to integrate GPT-5 for pattern recognition and template suggestions. That\'s probably 8 weeks of development.', confidence: 0.93 },
+          { speakerTag: 'Speaker 2', startTime: 198, endTime: 245, text: 'What about intelligent recommendations? We already have user behavior tracking in place, right?', confidence: 0.95 },
+          { speakerTag: 'Speaker 3', startTime: 245, endTime: 310, text: 'Yes, we do. The recommendation engine can leverage our existing data. I\'d estimate 4 weeks for that, mostly frontend work to surface the suggestions in context.', confidence: 0.94 },
+          { speakerTag: 'Speaker 1', startTime: 310, endTime: 368, text: 'Good. Now, real-time collaboration is critical. Users expect Google Docs-level functionality. What\'s the lift there?', confidence: 0.96 },
+          { speakerTag: 'Speaker 3', startTime: 368, endTime: 445, text: 'That\'s the biggest challenge. We need WebSocket infrastructure, conflict resolution, presence indicators... I\'d say 10 weeks minimum. We could use operational transforms or CRDTs for sync.', confidence: 0.92 },
+          { speakerTag: 'Speaker 2', startTime: 445, endTime: 492, text: 'Ten weeks is tight. We want to launch by October 15th to capture the holiday season. That gives us what, 12 weeks total?', confidence: 0.95 },
+          { speakerTag: 'Speaker 1', startTime: 492, endTime: 548, text: 'Correct. Twelve weeks development, two weeks beta testing with partners, one week buffer. It\'s aggressive but achievable.', confidence: 0.97 },
+          { speakerTag: 'Speaker 3', startTime: 548, endTime: 612, text: 'We\'ll need to parallelize. I can bring in another senior engineer for the real-time features while I focus on the AI integration.', confidence: 0.93 },
+          { speakerTag: 'Speaker 2', startTime: 612, endTime: 670, text: 'What about design resources? The UX for all three features needs to be seamless. Users won\'t tolerate janky AI suggestions or laggy collaboration.', confidence: 0.94 },
+          { speakerTag: 'Speaker 1', startTime: 670, endTime: 725, text: 'I can dedicate Sarah full-time. She\'ll work on interaction patterns, micro-animations, and making sure everything feels native.', confidence: 0.96 },
+          { speakerTag: 'Speaker 2', startTime: 725, endTime: 788, text: 'Perfect. From a product perspective, I\'ll coordinate with the beta partners. We have three enterprise clients lined up: a SaaS company, a consulting firm, and a product team.', confidence: 0.95 },
+          { speakerTag: 'Speaker 3', startTime: 788, endTime: 845, text: 'That\'s solid validation. Real-world feedback before we go live will be crucial. When do they start testing?', confidence: 0.93 },
+          { speakerTag: 'Speaker 2', startTime: 845, endTime: 892, text: 'September 15th. Each partner committed 5-10 hours per week for feedback sessions.', confidence: 0.96 },
+          { speakerTag: 'Speaker 1', startTime: 892, endTime: 955, text: 'Excellent. Let me summarize: We\'re committing to AI workflows, recommendations, and collaboration. Resources are 2 engineers, 1 designer, 1 PM. Launch October 15th. Any concerns?', confidence: 0.97 },
+          { speakerTag: 'Speaker 3', startTime: 955, endTime: 1015, text: 'Just scope creep. We need to be ruthless about prioritization. If a feature doesn\'t directly impact engagement, it gets cut.', confidence: 0.94 },
+          { speakerTag: 'Speaker 2', startTime: 1015, endTime: 1068, text: 'Agreed. Weekly progress reviews will keep us honest. We can\'t afford delays with the holiday season deadline.', confidence: 0.95 },
+          { speakerTag: 'Speaker 1', startTime: 1068, endTime: 1125, text: 'Perfect. I\'ll document this and share the roadmap with the broader team by end of week. Thanks everyone!', confidence: 0.96 }
+        ]
       },
       summary: {
         text: 'This roadmap outlines the Q4 2025 product strategy focusing on AI-powered features to increase user engagement. Key initiatives include automated workflow generation, intelligent recommendations, and real-time collaboration. The team discussed technical feasibility, resource allocation, and go-to-market strategy. Target launch date is October 15th to capture holiday season opportunities.',
