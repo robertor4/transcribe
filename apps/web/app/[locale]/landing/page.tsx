@@ -130,7 +130,7 @@ export default async function LandingPage({
           </div>
 
           {/* Content - Positioned at top, clean spacing */}
-          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-48">
+          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-[16vh]">
             <div className="max-w-6xl mx-auto text-center">
               <div className="space-y-6">
 

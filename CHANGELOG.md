@@ -7,6 +7,128 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **ChatGPT-Style Sidebar Collapse (V2 Prototype)**: Redesigned sidebar collapse behavior to match modern app patterns
+  - Collapsed left sidebar shows persistent 48px icon strip with action buttons (Open, Search, New Conversation, User Profile)
+  - Hover tooltips on all collapsed icons showing action labels
+  - Collapse button integrated into header (PanelLeft icon) instead of floating chevron arrows
+  - Added "Dashboard" and "New Conversation" navigation links in expanded sidebar
+  - Simplified header to show only icon (removed "Neural Summary" text to prevent wrapping)
+  - Smooth transitions with `collapsedWidth: 48px` for both left and right panels
+  - State persists in localStorage for consistent user experience
+  - Files: [apps/web/components/CollapsibleSidebar.tsx](apps/web/components/CollapsibleSidebar.tsx), [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [apps/web/components/LeftNavigationCollapsed.tsx](apps/web/components/LeftNavigationCollapsed.tsx), [apps/web/components/ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+
+- **Output Generator Modal (V2 Prototype)**: Built comprehensive 4-step wizard for generating outputs from conversations
+  - Step 1: Select output type (Email, Blog Post, LinkedIn, Action Items, User Stories) with visual cards
+  - Step 2: Add optional custom instructions with textarea
+  - Step 3: Review selections before generation
+  - Step 4: Generation progress with animated loading state and success confirmation
+  - Features progress indicator showing current step (1-4) with visual feedback
+  - "+ New Output" button in Generated Outputs section header (shown when outputs exist)
+  - "Generate Output" button in empty state (shown when no outputs exist)
+  - Modal includes smooth animations, dark mode support, and brand color accents (#cc3399)
+  - Files: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx), [apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx)
+
+### Changed
+- **Output Generator Progress Indicator**: Improved visual flow of connecting lines between step circles
+  - Lines now flow directly between circles instead of appearing disconnected
+  - Used absolute positioning for seamless connection from circle to circle
+  - Labels remain aligned below their corresponding numbered circles
+  - File: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx:127-167)
+- **Success State Contrast Fix**: Changed success checkmark from grey text on light green to white text on solid green (bg-green-500)
+  - Provides proper contrast and matches green color used in completed step indicators
+  - File: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx:341-343)
+
+### Removed
+- **Code Cleanup**: Removed unused helper functions and dead code
+  - Deleted `PropertyRow` and `ActionButton` helper functions from RightContextPanel (were never used)
+  - Removed unused `canProceedFromStep2` variable from OutputGeneratorModal
+  - Files: [apps/web/components/RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx), [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **Visual Clarity Improvements (V2 Prototype)**:
+  - Enhanced pane contrast with subtle background tints for better visual separation:
+    - Left sidebar: `bg-gray-50 dark:bg-gray-900/50`
+    - Main content: `bg-white dark:bg-gray-950`
+    - Right panel: `bg-gray-50/50 dark:bg-gray-900/30`
+  - Implemented softer borders with 60% opacity (`border-gray-200/60 dark:border-gray-700/60`)
+  - Added gradient text to personalized greeting header: magenta to purple gradient (`from-[#cc3399] to-[#d946ef]`)
+
+- **Denser List Views**: Replaced card-based layouts with space-efficient list design
+  - Converted folder and conversation lists from cards (`py-5`) to compact rows (`py-3`)
+  - Implemented hairline borders (`divide-y divide-gray-100`) for subtle separation
+  - Hover states: subtle background change instead of heavy shadows
+  - Result: 8-10 visible items per screen (up from 4-5 with cards)
+  - Files: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx), [apps/web/app/[locale]/prototype-folder-v2/[id]/page.tsx](apps/web/app/[locale]/prototype-folder-v2/[id]/page.tsx)
+
+- **Refined Status Indicators**:
+  - Replaced verbose "✓ Ready" badges with subtle checkmark (✓) next to conversation title
+  - Kept prominent badges only for important states (Processing, Failed)
+  - Reduces visual noise while maintaining clarity
+  - Checkmark appears at end of title for "Ready" status conversations
+
+- **Polish & Refinements (Additional UX improvements)**:
+  - **Compact Quick Create Cards**: Reduced padding (`p-6` → `p-4`) and emoji size (`text-4xl` → `text-3xl`) for better space efficiency
+  - **Proportional Headers**: Reduced section headers from `text-3xl` to `text-2xl` for better visual hierarchy
+  - **Linear-Style Hover Effect**: Added magenta left border on hover (`border-l-2 hover:border-l-[#cc3399]`) to list items for spotlight effect
+  - **Lighter Typography**: Changed titles from `font-semibold` to `font-medium` for less visual weight
+  - **Sidebar Status Cleanup**: Removed "Ready" text from sidebar Recent section, showing only checkmark (✓) or processing icon (⏳)
+  - Result: Cleaner interface, better information hierarchy, increased content density
+
+### Changed
+- **CTA Button Placement**: Removed "New Conversation" button from top of left sidebar to reduce competition with logo and search bar
+  - Maintains cleaner header section with focus on search functionality
+  - FAB (Floating Action Button) remains primary quick-create mechanism
+  - File: [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+- **Button Spacing**: Moved "+ New Folder" button outside of bordered list container for better visual hierarchy
+  - Previously appeared inside the list border (confusing)
+  - Now appears below with proper spacing (`space-y-4`)
+  - File: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **Modern Three-Pane Layout System**: Implemented 2025 productivity tool UI patterns
+  - Created reusable `ThreePaneLayout` component with collapsible sidebars
+  - Built `CollapsibleSidebar` component with smooth animations (300ms transitions)
+  - Implemented state persistence via localStorage (remembers sidebar collapsed/expanded state)
+  - Created `useCollapsibleSidebar` hook for managing sidebar state
+  - Left sidebar (240px → 0px): Navigation with folders + recent conversations
+  - Right panel (360px → 0px): Contextual properties, metadata, and quick actions
+  - Follows patterns from Linear, Notion, Height, and other modern productivity tools
+  - Files: [apps/web/components/ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx), [apps/web/components/CollapsibleSidebar.tsx](apps/web/components/CollapsibleSidebar.tsx), [apps/web/hooks/useCollapsibleSidebar.ts](apps/web/hooks/useCollapsibleSidebar.ts)
+
+- **Left Navigation Sidebar**: Modern folder tree navigation
+  - Search bar for filtering conversations
+  - "New Conversation" primary action button
+  - Folders section with conversation counts
+  - Recent conversations with status indicators
+  - Hover states and smooth transitions
+  - Sticky top and bottom sections
+  - File: [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+- **Right Context Panel**: Contextual properties and actions panel
+  - Tabbed interface: Details vs Actions
+  - Details tab: File info, duration, status, folder, tags, speakers
+  - Actions tab: Generate outputs, Export, Share options
+  - All quick actions accessible without scrolling main content
+  - Sticky bottom actions (e.g., Delete button)
+  - Empty state when no conversation selected
+  - File: [apps/web/components/RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx)
+
+- **Vertical Sections Layout**: Replaced horizontal tabs with scrollable sections
+  - No more tabs! Single page with vertical sections: Summary → Outputs → Transcript
+  - Sticky section headers remain visible during scroll
+  - Reduced clicks and improved keyboard navigation
+  - Better for long-form content reading
+  - Prototype V2 pages demonstrate new pattern
+  - Files: [apps/web/app/[locale]/prototype-conversation-v2/[id]/page.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/page.tsx), [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **UI Prototype System**: Complete prototype interface for new "Conversations + Folders" paradigm
+  - Created `PrototypeHeader` component matching authenticated dashboard header
+  - Added folder detail view (`/prototype-folder/[id]`) showing all conversations in a folder
+  - Includes member management UI, conversation list, and empty states
+  - All prototype pages now include authenticated header (logo, usage badge, theme toggle, profile menu)
+  - Updated prototype dashboard to link folders to detail view instead of first conversation
+  - Updated PROTOTYPE_GUIDE.md with folder navigation testing instructions
+  - Files: [apps/web/components/PrototypeHeader.tsx](apps/web/components/PrototypeHeader.tsx), [apps/web/app/[locale]/prototype-folder/[id]/page.tsx](apps/web/app/[locale]/prototype-folder/[id]/page.tsx), [apps/web/app/[locale]/prototype-dashboard/page.tsx](apps/web/app/[locale]/prototype-dashboard/page.tsx), [apps/web/app/[locale]/prototype-conversation/[id]/page.tsx](apps/web/app/[locale]/prototype-conversation/[id]/page.tsx)
+
 ### Fixed
 - **Title Duplication Issue**: Fixed "Neural Summary" appearing twice in page titles
   - Removed title template (`'%s | Neural Summary'`) from root layout that was causing duplication
