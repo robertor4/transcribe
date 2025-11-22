@@ -1,6 +1,23 @@
 import { LucideIcon } from 'lucide-react';
 
 /**
+ * AI prompt configuration for generating outputs
+ */
+export interface PromptConfig {
+  /** System prompt that defines the AI's role and behavior */
+  system: string;
+
+  /** User message template with placeholders for conversation content */
+  userTemplate: string;
+
+  /** Model temperature (0-1). Lower = more focused, higher = more creative */
+  temperature?: number;
+
+  /** Maximum tokens to generate in response */
+  maxTokens?: number;
+}
+
+/**
  * Base interface for all output templates
  * Each template defines how a conversation should be transformed into a specific output format
  */
@@ -19,6 +36,9 @@ export interface OutputTemplate {
 
   /** Example use case or prompt shown to users */
   example: string;
+
+  /** AI prompt configuration for generating this output type */
+  prompt: PromptConfig;
 }
 
 /**

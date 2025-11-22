@@ -37,6 +37,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated `OutputGeneratorModal.tsx` to use template registry instead of inline array
   - Benefits: Easier to add new templates, better code organization, template-specific logic co-location
   - Files: [apps/web/lib/outputTemplates/](apps/web/lib/outputTemplates/), [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **AI Prompt Configuration Added to Templates**: Extended output templates with comprehensive AI prompt configuration
+  - Added `PromptConfig` interface with system prompt, user template, temperature, and maxTokens fields
+  - Each template now includes specialized prompts tailored to output type:
+    - **Email** (0.7 temp, 800 tokens): Professional email writer with focus on clarity and action items
+    - **Blog Post** (0.8 temp, 2000 tokens): Content writer creating engaging narratives with storytelling
+    - **LinkedIn Post** (0.8 temp, 500 tokens): Social media creator optimized for professional engagement
+    - **Action Items** (0.3 temp, 1000 tokens): Project manager extracting structured tasks with priorities
+    - **User Stories** (0.3 temp, 1500 tokens): Product manager creating Agile user stories with acceptance criteria
+  - Templates use placeholders (`{{TRANSCRIPT}}`, `{{CUSTOM_INSTRUCTIONS}}`) for dynamic content injection
+  - Files: [apps/web/lib/outputTemplates/types.ts](apps/web/lib/outputTemplates/types.ts), all template files
 - **Output Generator Progress Indicator**: Improved visual flow of connecting lines between step circles
   - Lines now flow directly between circles instead of appearing disconnected
   - Used absolute positioning for seamless connection from circle to circle
