@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Mail, CheckSquare, Edit3, Share2, FileText, Copy, Download, RefreshCw, MoreVertical } from 'lucide-react';
+import { Mail, CheckSquare, Edit3, Share2, FileText, Copy, Download, RefreshCw, MoreVertical, MessageSquareQuote } from 'lucide-react';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
 import { DetailMetadataPanel } from '@/components/detail-pages/DetailMetadataPanel';
@@ -11,8 +11,19 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { EmailTemplate } from '@/components/output-templates/EmailTemplate';
 import { BlogPostTemplate } from '@/components/output-templates/BlogPostTemplate';
+import { LinkedInTemplate } from '@/components/output-templates/LinkedInTemplate';
+import { ActionItemsTemplate } from '@/components/output-templates/ActionItemsTemplate';
+import { CommunicationAnalysisTemplate } from '@/components/output-templates/CommunicationAnalysisTemplate';
 import { PlaceholderTemplate } from '@/components/output-templates/PlaceholderTemplate';
-import { mockConversations, getOutput, EmailOutputContent, BlogPostOutputContent } from '@/lib/mockData';
+import {
+  mockConversations,
+  getOutput,
+  EmailOutputContent,
+  BlogPostOutputContent,
+  LinkedInOutputContent,
+  ActionItemsOutputContent,
+  CommunicationAnalysisOutputContent
+} from '@/lib/mockData';
 
 interface OutputDetailClientProps {
   conversationId: string;
@@ -45,6 +56,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       case 'actionItems': return CheckSquare;
       case 'blogPost': return Edit3;
       case 'linkedin': return Share2;
+      case 'communicationAnalysis': return MessageSquareQuote;
       case 'userStories': return FileText;
       default: return FileText;
     }
@@ -58,6 +70,8 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       value: output.type === 'blogPost' ? 'Blog Post' :
              output.type === 'actionItems' ? 'Action Items' :
              output.type === 'userStories' ? 'User Stories' :
+             output.type === 'communicationAnalysis' ? 'Communication Analysis' :
+             output.type === 'linkedin' ? 'LinkedIn' :
              output.type.charAt(0).toUpperCase() + output.type.slice(1)
     },
     { label: 'Generated', value: output.generatedAt.toLocaleDateString() },
@@ -151,14 +165,26 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           <BlogPostTemplate content={output.content as BlogPostOutputContent} />
         )}
 
-        {/* Placeholder for other output types */}
-        {!['email', 'blogPost'].includes(output.type) && (
+        {output.type === 'linkedin' && (
+          <LinkedInTemplate content={output.content as LinkedInOutputContent} />
+        )}
+
+        {output.type === 'actionItems' && (
+          <ActionItemsTemplate content={output.content as ActionItemsOutputContent} />
+        )}
+
+        {output.type === 'communicationAnalysis' && (
+          <CommunicationAnalysisTemplate content={output.content as CommunicationAnalysisOutputContent} />
+        )}
+
+        {/* Placeholder for other output types (e.g., userStories - future) */}
+        {!['email', 'blogPost', 'linkedin', 'actionItems', 'communicationAnalysis'].includes(output.type) && (
           <PlaceholderTemplate outputType={output.type} />
         )}
 
         <PrototypeNotice
           title="Generated Output Detail Page (V2)"
-          description="Dedicated page for each output type with custom formatting and metadata panel."
+          description="All 5 core output types now have custom renderers: Email, Blog Post, LinkedIn, Action Items, and Communication Analysis."
         />
       </div>
     </DetailPageLayout>

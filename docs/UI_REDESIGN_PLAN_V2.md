@@ -103,13 +103,13 @@ conversations/{conversationId}
       isPublic: boolean
       publicLinkId: string (short UUID for sharing)
       viewCount: number
-      sharedWith: string[] (email addresses for folder invitations - max 2 for free tier)
+      sharedWith: string[] (email addresses for folder invitations)
     }
 
 // Subcollection: conversations/{conversationId}/outputs
 // Cache generated outputs for fast retrieval
 outputs/{outputType}
-  - type: 'email' | 'actionItems' | 'blogPost' | 'linkedin' | 'userStories' | 'custom'
+  - type: 'email' | 'actionItems' | 'blogPost' | 'linkedin' | 'communicationAnalysis' | 'userStories' (future)
   - content: object (structured JSON)
   - generatedAt: timestamp
   - promptVersion: string (for tracking prompt changes)
@@ -238,7 +238,7 @@ publicLinks/{linkId}
    - ❌ Conversion tracking
 
 2. **FolderInvite Component** - Email invitation system
-   - ❌ Email invitation form (max 2 members for free tier)
+   - ❌ Email invitation form
    - ❌ Role selection UI (owner/editor/viewer)
    - ❌ Invitation email templates
    - ❌ Join folder flow (with/without account)
@@ -336,7 +336,7 @@ Key differences from original plan:
   │  Role: [Editor ▼]                       │
   │  [Send Invite]                          │
   │                                         │
-  │  Folder members (max 2 for free tier): │
+  │  Folder members (unlimited invitations for viral growth): │
   │  • john@company.com (Editor)            │
   │  • sarah@company.com (Viewer)           │
   │                                         │
@@ -599,7 +599,7 @@ Response: {
 POST /api/conversations/:conversationId/share
 Body: {
   type: 'public' | 'folder'
-  emails?: string[] // for folder invitations (max 2 members for free tier)
+  emails?: string[] // for folder invitations 
   role?: 'editor' | 'viewer'
   expiresAt?: timestamp
 }
@@ -917,7 +917,7 @@ These will be implemented first with full JSON schemas and React templates:
 - Attribution: Track which shared conversations drive most signups
 
 ### **Loop 2: Folder Collaboration → Team Expansion**
-1. User invites colleagues to folder (max 2 for free tier)
+1. User invites colleagues to folder (unlimited invitations for viral growth)
 2. Colleagues see team's conversations
 3. Colleagues create their own conversations
 4. Folder becomes central knowledge hub
@@ -985,7 +985,7 @@ These will be implemented first with full JSON schemas and React templates:
 ---
 
 ### **Phase 4: Folders & Collaboration (Week 4)** - ❌ **Not Started (0%)**
-- [ ] Folder invitation system (max 2 members for free tier)
+- [ ] Folder invitation system 
 - [ ] Email invitation templates
 - [ ] Join folder flow (with/without account)
 - [ ] Folder member management UI
@@ -1076,7 +1076,7 @@ These will be implemented first with full JSON schemas and React templates:
     - **Needed for:** Viral growth loop (150-word preview → signup)
 
 17. ❌ `<FolderInvite />` - Email invitation form
-    - **Needed for:** Collaboration (max 2 members for free tier)
+    - **Needed for:** Collaboration 
 
 18. ❌ `<ImpactDashboard />` - Viral analytics widget
     - **Needed for:** "Your Impact" stats, conversion tracking
@@ -1183,7 +1183,7 @@ Complete the V2 prototype to fully demonstrate the "One Conversation → Many Ou
 - [ ] Create folder invitation mockup in share modal
   - Email invitation form
   - Role selection (owner/editor/viewer)
-  - Member limit indicator (max 2 for free tier)
+  - Member limit indicator (unlimited invitations for viral growth)
 - **Why:** Viral features are core to V2 differentiation but 0% complete
 
 #### **3. Wire Up Quick Create Flow (UX Polish)**
@@ -1272,8 +1272,8 @@ Once prototype is validated, implement real infrastructure:
 
 **Viral Features (CRITICAL - 0% Complete):**
 - ✅ **Decision Made:** Unlimited public sharing for all tiers (maximize viral reach)
+- ✅ **Decision Made:** Unlimited folder invitations (no member limits to enable viral growth)
 - ✅ **Decision Made:** 150-word preview for anonymous users (not 500)
-- ✅ **Decision Made:** Max 2 folder members for free tier (not sharing limit)
 - ✅ **Decision Made:** Conversion attribution tracking
 - ✅ **Decision Made:** NO comment system (pre-PMF simplicity)
 - **Status:** UI mockups not started ❌ **← Highest priority gap**
@@ -1285,10 +1285,10 @@ Once prototype is validated, implement real infrastructure:
 - **Status:** Not implemented ❌ (lower priority than viral features)
 
 **Output Types:**
-- ✅ **Decision Made:** Launch with 5 core types: Email, Action Items, Blog Post, LinkedIn, User Stories
-- ✅ **Cataloged:** 59 total types for future expansion
+- ✅ **Decision Made:** Launch with 5 core types: Email, Blog Post, LinkedIn, Action Items, Communication Analysis
+- ✅ **Cataloged:** 59 total types for future expansion (User Stories moved to future roadmap)
 - ✅ **Approach:** Phased rollout based on user demand
-- **Status:** 5 types defined, 2 fully rendered (Email, Blog) 🚧
+- **Status:** 5 core types fully implemented with renderers ✅
 
 ---
 

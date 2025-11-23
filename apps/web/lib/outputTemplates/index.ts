@@ -13,18 +13,19 @@ export { emailTemplate } from './email';
 export { blogPostTemplate } from './blogPost';
 export { linkedinPostTemplate } from './linkedinPost';
 export { actionItemsTemplate } from './actionItems';
-export { userStoriesTemplate } from './userStories';
+export { communicationAnalysisTemplate } from './communicationAnalysis';
+export { userStoriesTemplate } from './userStories'; // Keep for future, not in core 5
 
 // Import templates for registry
 import { emailTemplate } from './email';
 import { blogPostTemplate } from './blogPost';
 import { linkedinPostTemplate } from './linkedinPost';
 import { actionItemsTemplate } from './actionItems';
-import { userStoriesTemplate } from './userStories';
+import { communicationAnalysisTemplate } from './communicationAnalysis';
 import { OutputTemplate } from './types';
 
 /**
- * Array of all available output templates
+ * Array of core output templates (5 types)
  * Use this for iteration in UI components
  */
 export const allTemplates: readonly OutputTemplate[] = [
@@ -32,7 +33,7 @@ export const allTemplates: readonly OutputTemplate[] = [
   blogPostTemplate,
   linkedinPostTemplate,
   actionItemsTemplate,
-  userStoriesTemplate,
+  communicationAnalysisTemplate,
 ] as const;
 
 /**

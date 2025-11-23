@@ -85,7 +85,8 @@ export type OutputType =
   | 'actionItems'
   | 'blogPost'
   | 'linkedin'
-  | 'userStories';
+  | 'communicationAnalysis'
+  | 'userStories'; // Keep for future
 
 export interface GeneratedOutput {
   id: string;
@@ -93,7 +94,7 @@ export interface GeneratedOutput {
   type: OutputType;
   title: string;
   preview: string; // First 150 chars for gallery cards
-  content: EmailOutputContent | BlogPostOutputContent | ActionItemsOutputContent | LinkedInOutputContent | UserStoriesOutputContent;
+  content: EmailOutputContent | BlogPostOutputContent | ActionItemsOutputContent | LinkedInOutputContent | CommunicationAnalysisOutputContent | UserStoriesOutputContent;
   context?: string; // User-provided instructions
   generatedAt: Date;
   createdBy?: string;
@@ -173,6 +174,20 @@ export interface UserStory {
   soThat: string;
   acceptanceCriteria: string[];
   priority: 'high' | 'medium' | 'low';
+}
+
+export interface CommunicationAnalysisOutputContent {
+  overallScore: number; // 0-100
+  dimensions: CommunicationDimension[];
+  overallAssessment: string;
+  keyTakeaway: string;
+}
+
+export interface CommunicationDimension {
+  name: string;
+  score: number; // 0-100
+  strengths: string[];
+  improvements: string[];
 }
 
 // Mock Folders
@@ -669,6 +684,154 @@ export const mockGeneratedOutputs: GeneratedOutput[] = [
     metadata: {
       wordCount: 847,
       estimatedReadTime: 5
+    }
+  },
+  {
+    id: 'action-items-jkl012',
+    conversationId: 'conv-1',
+    type: 'actionItems',
+    title: 'Action Items',
+    preview: 'Review technical feasibility with engineering team by Friday • Schedule beta partner meetings for next week • Finalize resource allocation by end of month...',
+    content: {
+      items: [
+        {
+          task: 'Review technical feasibility of AI features with engineering team',
+          owner: 'Roberto',
+          deadline: 'Friday, January 24th',
+          priority: 'high'
+        },
+        {
+          task: 'Schedule beta partner meetings to gather early feedback',
+          owner: 'Sarah',
+          deadline: 'Next week',
+          priority: 'high'
+        },
+        {
+          task: 'Finalize resource allocation for Q4 initiatives',
+          owner: 'John',
+          deadline: 'End of month',
+          priority: 'medium'
+        },
+        {
+          task: 'Prepare competitor analysis report on AI features',
+          owner: 'Maria',
+          deadline: 'February 5th',
+          priority: 'medium'
+        },
+        {
+          task: 'Draft technical specification for workflow automation',
+          owner: 'Engineering Team',
+          deadline: null,
+          priority: 'low'
+        }
+      ]
+    } as ActionItemsOutputContent,
+    generatedAt: new Date('2025-01-21T13:20:00'),
+    metadata: {
+      promptVersion: 'action-items-v1.0'
+    }
+  },
+  {
+    id: 'linkedin-post-ghi789',
+    conversationId: 'conv-1',
+    type: 'linkedin',
+    title: 'LinkedIn Post',
+    preview: '🚀 Excited to share our Q4 product strategy! We\'re doubling down on AI-powered features to transform user engagement...',
+    content: {
+      content: '🚀 Excited to share our Q4 product strategy!\n\nWe\'re doubling down on AI-powered features to transform user engagement. Target: 50% increase by October 15th.\n\nKey focus:\n✅ Workflow automation\n✅ Intelligent recommendations\n✅ Real-time collaboration\n\nWhat AI features do you find most valuable in your products?',
+      hashtags: ['ProductStrategy', 'AI', 'Innovation', 'UserEngagement', 'ProductManagement'],
+      characterCount: 267
+    } as LinkedInOutputContent,
+    generatedAt: new Date('2025-01-21T12:45:00'),
+    metadata: {
+      promptVersion: 'linkedin-v1.0'
+    }
+  },
+  {
+    id: 'comm-analysis-def456',
+    conversationId: 'conv-1',
+    type: 'communicationAnalysis',
+    title: 'Communication Analysis',
+    preview: 'Overall communication score: 78/100. The conversation demonstrated strong clarity and collaboration, with opportunities to improve active listening...',
+    content: {
+      overallScore: 78,
+      dimensions: [
+        {
+          name: 'Clarity',
+          score: 85,
+          strengths: [
+            'Clear articulation of Q4 goals with specific metrics (50% engagement increase)',
+            'Well-structured agenda that kept discussion focused'
+          ],
+          improvements: [
+            'Some technical jargon could be simplified for broader understanding',
+            'Consider using visual aids to illustrate complex concepts'
+          ]
+        },
+        {
+          name: 'Active Listening',
+          score: 72,
+          strengths: [
+            'Built on team members\' concerns about timeline feasibility',
+            'Acknowledged resource constraints raised by engineering lead'
+          ],
+          improvements: [
+            'Allow more pause time for team members to fully express thoughts',
+            'Summarize key points more frequently to confirm understanding'
+          ]
+        },
+        {
+          name: 'Empathy',
+          score: 80,
+          strengths: [
+            'Recognized team workload when discussing October deadline',
+            'Addressed concerns about technical complexity with understanding'
+          ],
+          improvements: [
+            'Probe deeper into team members\' reservations about AI implementation'
+          ]
+        },
+        {
+          name: 'Persuasiveness',
+          score: 75,
+          strengths: [
+            'Used data-driven reasoning (market research, competitor analysis)',
+            'Connected product vision to company mission effectively'
+          ],
+          improvements: [
+            'Provide more concrete examples of successful AI features from competitors'
+          ]
+        },
+        {
+          name: 'Collaboration',
+          score: 82,
+          strengths: [
+            'Invited input from all team members before finalizing decisions',
+            'Created space for engineering to voice technical concerns'
+          ],
+          improvements: [
+            'Establish clearer follow-up actions with assigned owners'
+          ]
+        },
+        {
+          name: 'Conciseness',
+          score: 74,
+          strengths: [
+            'Stayed on topic throughout 45-minute discussion',
+            'Efficiently covered all agenda items'
+          ],
+          improvements: [
+            'Some points were repeated—tighten delivery to save time',
+            'Move detailed technical discussions offline'
+          ]
+        }
+      ],
+      overallAssessment: 'The conversation was productive and goal-oriented, with strong clarity and collaborative spirit. The team aligned on an ambitious roadmap while addressing concerns. To elevate communication further, focus on deeper active listening and more concise delivery.',
+      keyTakeaway: 'Your strength lies in clear goal-setting and creating collaborative space. To improve, practice active listening techniques (paraphrasing, silence) and streamline explanations to maintain engagement.'
+    } as CommunicationAnalysisOutputContent,
+    generatedAt: new Date('2025-01-21T14:30:00'),
+    metadata: {
+      promptVersion: 'comm-analysis-v1.0'
     }
   }
 ];

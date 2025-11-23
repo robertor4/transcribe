@@ -7,20 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Communication Analysis Output Template**: New core output type analyzing communication effectiveness
+  - Created template definition in `apps/web/lib/outputTemplates/communicationAnalysis.ts`
+  - Scores conversations across 6 dimensions: Clarity, Active Listening, Empathy, Persuasiveness, Collaboration, Conciseness (each 0-100)
+  - Provides actionable strengths and improvement areas with specific examples
+  - React renderer (`CommunicationAnalysisTemplate.tsx`) with circular progress indicator, dimension breakdowns, score visualizations
+  - Mock data includes comprehensive 6-dimension analysis with overall 78/100 score
+  - Files: [apps/web/lib/outputTemplates/communicationAnalysis.ts](apps/web/lib/outputTemplates/communicationAnalysis.ts), [apps/web/components/output-templates/CommunicationAnalysisTemplate.tsx](apps/web/components/output-templates/CommunicationAnalysisTemplate.tsx)
+
+- **LinkedIn Post Output Template**: Complete renderer for social media posts
+  - React template (`LinkedInTemplate.tsx`) with character counter (280 limit), LinkedIn blue branding, hashtag chips
+  - Character limit warnings (red if over 280) and engagement tips section
+  - Mock data includes formatted post (267 chars) with emojis, checkmarks, 5 relevant hashtags (#ProductStrategy, #AI, etc.)
+  - File: [apps/web/components/output-templates/LinkedInTemplate.tsx](apps/web/components/output-templates/LinkedInTemplate.tsx)
+
+- **Action Items Output Template**: Task management renderer with priority system
+  - React template (`ActionItemsTemplate.tsx`) with checklist UI, priority badges (high=red, medium=yellow, low=green)
+  - Shows owner assignments, deadlines, priority summary statistics
+  - Hover effects on tasks, brand color accents, empty state handling
+  - Mock data includes 5 tasks across all priority levels with assignments and deadlines
+  - File: [apps/web/components/output-templates/ActionItemsTemplate.tsx](apps/web/components/output-templates/ActionItemsTemplate.tsx)
+
 ### Changed
-- **UI Redesign Plan V2 Updated with Implementation Status**: Comprehensive update to `docs/UI_REDESIGN_PLAN_V2.md` reflecting current prototype state
-  - Added implementation status overview at top showing 35% completion
-  - Added detailed "V2 Prototype Status" section documenting all completed features, partial implementations, and gaps
-  - Updated Design System section with component-by-component status (✅ implemented, 🚧 partial, ❌ not started)
-  - Updated all 5 implementation phases with progress indicators and status notes
-  - Added "Implementation Deviations" table comparing original plan vs actual implementation
-  - Documented features added beyond original plan (4-step wizard, detail page architecture, etc.)
-  - Updated "Next Steps" with immediate prototype completion roadmap (2-3 days) vs future backend work (4-5 weeks)
-  - Updated summary with implementation achievements and current priorities
-  - Key findings: Viral growth features 0% complete (critical gap), output templates 2/5 rendered, UI architecture 85% complete
+- **V2 Core Output Types Finalized**: Replaced "Custom" and "User Stories" with "Communication Analysis"
+  - **New Core 5**: Email, Blog Post, LinkedIn, Action Items, Communication Analysis
+  - User Stories moved to future roadmap (kept in library at `apps/web/lib/outputTemplates/userStories.ts` but not in core)
+  - Updated `OutputType` in mockData.ts: removed 'custom', added 'communicationAnalysis', kept 'userStories' with comment "// Keep for future"
+  - Updated template registry (`allTemplates` in index.ts) to export 5 core templates only
+  - **All 5 core types now have fully rendered React components** (100% template completion)
+  - Files: [apps/web/lib/outputTemplates/index.ts](apps/web/lib/outputTemplates/index.ts), [apps/web/lib/mockData.ts](apps/web/lib/mockData.ts)
+
+- **Output Detail Page: Full Template Support**: Updated router to render all 5 core types
+  - Added rendering cases for LinkedIn, Action Items, Communication Analysis (previously used PlaceholderTemplate)
+  - Updated icon mapping: added MessageSquareQuote for Communication Analysis
+  - Updated type label display logic for proper capitalization
+  - Updated PrototypeNotice description: "All 5 core output types now have custom renderers"
+  - File: [apps/web/app/[locale]/prototype-conversation-v2/[id]/outputs/[outputId]/OutputDetailClient.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+
+- **Viral Growth: Removed Member Limits**: Eliminated "max 2 members for free tier" restriction
+  - Changed to unlimited folder invitations for all tiers to maximize viral growth loop
+  - Removed 8 occurrences of member limit language from plan document
+  - Updated viral features decision: "Unlimited folder invitations (no member limits to enable viral growth)"
+  - Updated folder invitation flow mockups: changed "max 2 for free tier" to "unlimited invitations for viral growth"
+  - Updated data model: removed member limit from folder invitation notes
+  - Rationale: No artificial collaboration limits to enable Loop 2 (Folder Collaboration → Team Expansion)
   - File: [docs/UI_REDESIGN_PLAN_V2.md](docs/UI_REDESIGN_PLAN_V2.md)
 
-### Added
+- **UI Redesign Plan V2: Updated with Full Status**: Comprehensive update reflecting current prototype state
+  - Added implementation status overview at top showing 35% completion
+  - Added detailed "V2 Prototype Status" section documenting completed/partial/missing features
+  - Updated Design System section with component-by-component status (✅ implemented, 🚧 partial, ❌ not started)
+  - Updated all 5 implementation phases with progress indicators and status notes
+  - Added "Implementation Deviations" table (plan vs reality)
+  - Documented features added beyond plan (4-step wizard, detail page architecture)
+  - Updated "Next Steps" with prototype completion roadmap (2-3 days) vs backend implementation (4-5 weeks)
+  - Updated summary with achievements and priorities
+  - Updated data model output types: 'communicationAnalysis' replaces 'custom', 'userStories' marked "(future)"
+  - Updated output types summary: **NOW 5/5 core templates rendered** ✅ (was 2/5)
+  - Key findings: Viral growth 0%, templates 5/5 ✅, UI 85%
+  - File: [docs/UI_REDESIGN_PLAN_V2.md](docs/UI_REDESIGN_PLAN_V2.md)
+
+### Removed
 - **ChatGPT-Style Sidebar Collapse (V2 Prototype)**: Redesigned sidebar collapse behavior to match modern app patterns
   - Collapsed left sidebar shows persistent 48px icon strip with action buttons (Open, Search, New Conversation, User Profile)
   - Hover tooltips on all collapsed icons showing action labels
