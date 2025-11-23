@@ -9,6 +9,7 @@
 export * from './types';
 
 // Export individual templates
+export { transcribeOnlyTemplate } from './transcribeOnly';
 export { emailTemplate } from './email';
 export { blogPostTemplate } from './blogPost';
 export { linkedinPostTemplate } from './linkedinPost';
@@ -17,6 +18,7 @@ export { communicationAnalysisTemplate } from './communicationAnalysis';
 export { userStoriesTemplate } from './userStories'; // Keep for future, not in core 5
 
 // Import templates for registry
+import { transcribeOnlyTemplate } from './transcribeOnly';
 import { emailTemplate } from './email';
 import { blogPostTemplate } from './blogPost';
 import { linkedinPostTemplate } from './linkedinPost';
@@ -25,10 +27,11 @@ import { communicationAnalysisTemplate } from './communicationAnalysis';
 import { OutputTemplate } from './types';
 
 /**
- * Array of core output templates (5 types)
+ * Array of all output templates (6 types: 1 quick action + 5 output templates)
  * Use this for iteration in UI components
  */
 export const allTemplates: readonly OutputTemplate[] = [
+  transcribeOnlyTemplate, // Quick action first
   emailTemplate,
   blogPostTemplate,
   linkedinPostTemplate,

@@ -8,6 +8,78 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Context-Aware Conversation Creation** (Phase 1): Smart entry points based on button clicked
+  - **ConversationCreateModal** updated with context-aware props:
+    - `initialStep`: Start at specific step (template/upload/processing)
+    - `preselectedTemplateId`: Auto-select template (e.g., Email, LinkedIn)
+    - `uploadMethod`: Pre-select upload method ('file' or 'record')
+    - `skipTemplate`: Skip template selection entirely for quick workflows
+  - **Dashboard button mapping**:
+    - "Record audio" → Skip template, auto-start recording
+    - "Import audio" → Skip template, show file upload
+    - "Email", "LinkedIn", etc. → Pre-select template, show confirmation
+    - "More templates" → Standard template selector
+  - **UploadInterface** auto-selection via `initialMethod` prop
+  - Files: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **"Just Transcribe" Quick Action** (Phase 4): Simple transcription without custom outputs
+  - **transcribeOnlyTemplate**: New template with `isQuickAction: true` flag
+    - No AI prompt configuration (`prompt: null`)
+    - Category: 'quick' for UI grouping
+    - Provides basic transcription and summary only
+  - **TemplateSelector** updated with section dividers:
+    - "Quick Actions" section (Just Transcribe shown first)
+    - "Output Templates" section (5 core templates)
+    - Visual separation with different grid layouts
+  - **OutputTemplate interface** extended:
+    - `prompt: PromptConfig | null` (nullable for quick actions)
+    - `category?: 'quick' | 'output'`
+    - `isQuickAction?: boolean`
+  - Files: [apps/web/lib/outputTemplates/transcribeOnly.ts](apps/web/lib/outputTemplates/transcribeOnly.ts) (new), [apps/web/lib/outputTemplates/types.ts](apps/web/lib/outputTemplates/types.ts), [apps/web/lib/outputTemplates/index.ts](apps/web/lib/outputTemplates/index.ts), [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx)
+
+- **Recording Preview & Confirmation** (Phase 3): Audio playback before processing
+  - **RecordingPreview** component with full audio controls:
+    - Audio playback with play/pause toggle
+    - Seek bar with visual progress tracking
+    - Time display (current/total in MM:SS format)
+    - Static waveform visualization showing playback progress
+    - Three actions: "Re-record", "Cancel", "Proceed with this recording"
+  - **UploadInterface** recording state machine:
+    - States: `idle` → `recording` → `preview` → `confirmed`
+    - Stores recorded blob after stopping (doesn't immediately process)
+    - Shows RecordingPreview in 'preview' state
+    - Only calls `onRecordingComplete` after user confirms
+    - Re-record button starts fresh recording
+    - Cancel returns to method selection
+  - **Safety improvement**: Prevents accidental processing of bad recordings
+  - Files: [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx) (new), [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx)
+
+- **Conversation Create Flow**: Complete multi-step wizard for creating conversations
+  - **ConversationCreateModal**: 4-step modal wizard (template selection → upload method → file/record → processing)
+    - Files: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+  - **TemplateSelector**: Grid display of 5 core templates with icons, descriptions, selection state
+    - Allows skipping template selection to upload directly
+    - Visual feedback with brand color accent (#cc3399) for selected state
+    - Files: [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx)
+  - **UploadInterface**: Three input methods (upload file, record audio, import from URL)
+    - Drag-and-drop file upload with validation for audio/video formats
+    - Live audio recording with waveform visualization and timer (MM:SS format)
+    - File preview with size display and ability to change selection
+    - Recording uses MediaRecorder API with Blob conversion
+    - Files: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx)
+  - **ProcessingSimulator**: Animated progress simulation (uploading → transcribing → analyzing → complete)
+    - 4-stage visual progress with icons (FileAudio, MessageSquare, Sparkles, CheckCircle2)
+    - Gradient progress bar (0-100%) with 4-5 second animation
+    - Stage indicators with color transitions (gray → pink → green)
+    - Auto-navigation to conversation detail on completion
+    - Files: [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx)
+  - **Dashboard Integration**: All "Quick Create" buttons now open the ConversationCreateModal
+    - 8 create buttons (Record, Upload, Document, Meeting, Article, Email, LinkedIn, More templates)
+    - Empty state action updated to "Create Conversation"
+    - Navigation to conversation detail page after completion
+    - Files: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+
 - **Communication Analysis Output Template**: New core output type analyzing communication effectiveness
   - Created template definition in `apps/web/lib/outputTemplates/communicationAnalysis.ts`
   - Scores conversations across 6 dimensions: Clarity, Active Listening, Empathy, Persuasiveness, Collaboration, Conciseness (each 0-100)

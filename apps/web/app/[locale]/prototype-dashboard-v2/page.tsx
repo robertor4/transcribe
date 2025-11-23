@@ -2,20 +2,36 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Mic, FileText, Users, BookOpen, Sparkles, Briefcase, Target, Heart, Folder, MessageSquare, Upload, Share2, Mail } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
 import { RecordingModal } from '@/components/RecordingModal';
+import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { EmptyState } from '@/components/EmptyState';
 import { mockFolders, mockConversations, formatDuration, formatRelativeTime } from '@/lib/mockData';
 import { getGreeting, getMilestoneMessage } from '@/lib/userHelpers';
 
+type CreateStep = 'template' | 'upload' | 'processing' | 'complete';
+
+interface CreateModalConfig {
+  isOpen: boolean;
+  initialStep?: CreateStep;
+  preselectedTemplateId?: string | null;
+  uploadMethod?: 'file' | 'record' | null;
+  skipTemplate?: boolean;
+}
+
 export default function PrototypeDashboardV2() {
+  const router = useRouter();
   const ungroupedConversations = mockConversations.filter(c => !c.folderId);
   const [isRecording, setIsRecording] = useState(false);
+  const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
+    isOpen: false,
+  });
   const [showMilestone, setShowMilestone] = useState(false);
   const [milestoneMessage, setMilestoneMessage] = useState('');
 
@@ -48,6 +64,45 @@ export default function PrototypeDashboardV2() {
     console.log('Recording cancelled');
   };
 
+  const handleCreateComplete = (conversationId: string) => {
+    // Navigate to the new conversation
+    router.push(`/prototype-conversation-v2/${conversationId}`);
+  };
+
+  // Context-aware button handlers
+  const handleRecordAudio = () => {
+    setCreateModalConfig({
+      isOpen: true,
+      skipTemplate: true,
+      initialStep: 'upload',
+      uploadMethod: 'record',
+    });
+  };
+
+  const handleImportAudio = () => {
+    setCreateModalConfig({
+      isOpen: true,
+      skipTemplate: true,
+      initialStep: 'upload',
+      uploadMethod: 'file',
+    });
+  };
+
+  const handleTemplateCreate = (templateId: string) => {
+    setCreateModalConfig({
+      isOpen: true,
+      initialStep: 'template',
+      preselectedTemplateId: templateId,
+    });
+  };
+
+  const handleMoreTemplates = () => {
+    setCreateModalConfig({
+      isOpen: true,
+      initialStep: 'template',
+    });
+  };
+
   return (
     <div className="h-screen flex flex-col">
       <ThreePaneLayout
@@ -66,17 +121,18 @@ export default function PrototypeDashboardV2() {
             <section className="mb-16">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { Icon: Mic, label: 'Record audio', desc: 'Start recording' },
-                  { Icon: Upload, label: 'Import audio', desc: 'Upload file' },
-                  { Icon: FileText, label: 'Document', desc: 'Spec or brief' },
-                  { Icon: Users, label: 'Meeting', desc: 'Summary & notes' },
-                  { Icon: BookOpen, label: 'Article', desc: 'Blog or content' },
-                  { Icon: Mail, label: 'Email', desc: 'Draft message' },
-                  { Icon: Share2, label: 'LinkedIn post', desc: 'Social content' },
-                  { Icon: Sparkles, label: 'More templates', desc: 'Browse all' }
+                  { Icon: Mic, label: 'Record audio', desc: 'Start recording', handler: handleRecordAudio },
+                  { Icon: Upload, label: 'Import audio', desc: 'Upload file', handler: handleImportAudio },
+                  { Icon: FileText, label: 'Document', desc: 'Spec or brief', handler: () => handleTemplateCreate('blogPost') },
+                  { Icon: Users, label: 'Meeting', desc: 'Summary & notes', handler: () => handleTemplateCreate('actionItems') },
+                  { Icon: BookOpen, label: 'Article', desc: 'Blog or content', handler: () => handleTemplateCreate('blogPost') },
+                  { Icon: Mail, label: 'Email', desc: 'Draft message', handler: () => handleTemplateCreate('email') },
+                  { Icon: Share2, label: 'LinkedIn post', desc: 'Social content', handler: () => handleTemplateCreate('linkedinPost') },
+                  { Icon: Sparkles, label: 'More templates', desc: 'Browse all', handler: handleMoreTemplates }
                 ].map((type) => (
                   <button
                     key={type.label}
+                    onClick={type.handler}
                     aria-label={`Create ${type.label}: ${type.desc}`}
                     className="group relative flex items-center gap-3 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-700 dark:hover:border-gray-300 hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cc3399]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >
@@ -153,8 +209,8 @@ export default function PrototypeDashboardV2() {
                   icon={<Mic className="w-10 h-10 text-gray-400" />}
                   title="Welcome to Neural Summary"
                   description="Start by recording or uploading your first conversation. We'll transcribe and summarize it for you."
-                  actionLabel="Start Recording"
-                  onAction={handleStartRecording}
+                  actionLabel="Create Conversation"
+                  onAction={handleMoreTemplates}
                   actionIcon={<Mic className="w-5 h-5" />}
                 />
               ) : (
@@ -259,6 +315,17 @@ export default function PrototypeDashboardV2() {
         message={milestoneMessage}
         isVisible={showMilestone}
         onDismiss={() => setShowMilestone(false)}
+      />
+
+      {/* Conversation Create Modal */}
+      <ConversationCreateModal
+        isOpen={createModalConfig.isOpen}
+        onClose={() => setCreateModalConfig({ isOpen: false })}
+        onComplete={handleCreateComplete}
+        initialStep={createModalConfig.initialStep}
+        preselectedTemplateId={createModalConfig.preselectedTemplateId}
+        uploadMethod={createModalConfig.uploadMethod}
+        skipTemplate={createModalConfig.skipTemplate}
       />
     </div>
   );

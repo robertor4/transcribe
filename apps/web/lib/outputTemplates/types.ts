@@ -38,7 +38,13 @@ export interface OutputTemplate {
   example: string;
 
   /** AI prompt configuration for generating this output type */
-  prompt: PromptConfig;
+  prompt: PromptConfig | null;
+
+  /** Category for grouping templates in UI */
+  category?: 'quick' | 'output';
+
+  /** Indicates if this is a quick action (simplified template) */
+  isQuickAction?: boolean;
 }
 
 /**
