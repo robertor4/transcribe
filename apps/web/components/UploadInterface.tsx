@@ -28,7 +28,12 @@ export function UploadInterface({
   initialMethod,
   onRecordingStateChange,
 }: UploadInterfaceProps) {
-  const [selectedMethod, setSelectedMethod] = useState<InputMethod | null>(null);
+  // Initialize selectedMethod based on initialMethod prop
+  const [selectedMethod, setSelectedMethod] = useState<InputMethod | null>(() => {
+    if (initialMethod === 'record') return 'record';
+    if (initialMethod === 'file') return 'upload';
+    return null;
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
@@ -257,7 +262,7 @@ export function UploadInterface({
           {/* Back Button */}
           <div className="flex justify-start">
             <Button variant="ghost" onClick={onBack}>
-              ← Back to templates
+              ← Back
             </Button>
           </div>
         </>

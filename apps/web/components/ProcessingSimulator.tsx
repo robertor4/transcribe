@@ -7,7 +7,8 @@ import { Button } from './Button';
 interface ProcessingSimulatorProps {
   files: File[];
   processingMode: 'individual' | 'merged';
-  templateName?: string;
+  templateName?: string;  // Single template (backwards compat)
+  templateNames?: string[];  // Multiple templates
   onComplete: () => void;
 }
 
@@ -22,10 +23,15 @@ export function ProcessingSimulator({
   files,
   processingMode,
   templateName,
+  templateNames,
   onComplete,
 }: ProcessingSimulatorProps) {
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState<ProcessingStage>('uploading');
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Determine which templates to use
+  const templates = templateNames || (templateName ? [templateName] : ['Just Transcribe']);
 
   useEffect(() => {
     // Stage 1: Uploading (0% → 25%) - 1 second
@@ -73,13 +79,24 @@ export function ProcessingSimulator({
     };
   }, []);
 
-  // Auto-complete after showing success for 1 second
+  // Start countdown when complete, then auto-redirect
   useEffect(() => {
     if (stage === 'complete') {
-      const timer = setTimeout(() => {
-        onComplete();
+      // Start countdown from 5
+      setCountdown(5);
+
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(countdownInterval);
+            onComplete();
+            return null;
+          }
+          return prev - 1;
+        });
       }, 1000);
-      return () => clearTimeout(timer);
+
+      return () => clearInterval(countdownInterval);
     }
   }, [stage, onComplete]);
 
@@ -103,6 +120,13 @@ export function ProcessingSimulator({
       case 'transcribing':
         return 'Transcribing audio';
       case 'analyzing':
+        // Handle multiple templates
+        if (templates.length > 1) {
+          const additionalTemplates = templates.filter(t => t !== 'Just Transcribe');
+          if (additionalTemplates.length > 0) {
+            return `Generating ${additionalTemplates.length} output${additionalTemplates.length !== 1 ? 's' : ''}`;
+          }
+        }
         return templateName ? `Generating ${templateName}` : 'Analyzing conversation';
       case 'complete':
         return 'Complete!';
@@ -139,7 +163,7 @@ export function ProcessingSimulator({
             {files.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-800 text-xs text-gray-600 dark:text-gray-400"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-400"
               >
                 <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#cc3399] text-white text-[10px] font-semibold">
                   {index + 1}
@@ -147,6 +171,34 @@ export function ProcessingSimulator({
                 <span>{file.name}</span>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Show templates being generated */}
+        {templates.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
+              Generating outputs
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {templates.map((template, index) => (
+                <div
+                  key={`${template}-${index}`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                    template === 'Just Transcribe'
+                      ? 'bg-[#cc3399] text-white'
+                      : stage === 'analyzing' || stage === 'complete'
+                      ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {template === 'Just Transcribe' && (
+                    <span className="text-[10px] font-semibold">BASE</span>
+                  )}
+                  <span>{template}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -203,7 +255,7 @@ export function ProcessingSimulator({
                 className={`text-xs font-medium text-center ${
                   isActive || isPast
                     ? 'text-gray-900 dark:text-gray-100'
-                    : 'text-gray-500 dark:text-gray-500'
+                    : 'text-gray-600 dark:text-gray-400'
                 }`}
               >
                 {getStageLabel(stageName)}
@@ -218,17 +270,41 @@ export function ProcessingSimulator({
         <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
           {stage === 'uploading' && 'Securely uploading your file...'}
           {stage === 'transcribing' && 'Converting speech to text...'}
-          {stage === 'analyzing' && 'AI is analyzing your conversation...'}
+          {stage === 'analyzing' && (() => {
+            const additionalTemplates = templates.filter(t => t !== 'Just Transcribe');
+            if (additionalTemplates.length > 0) {
+              return `Generating: ${additionalTemplates.join(', ')}...`;
+            }
+            return 'AI is analyzing your conversation...';
+          })()}
           {stage === 'complete' && '✨ Ready to view!'}
         </p>
       </div>
 
-      {/* Complete State - Show button */}
+      {/* Complete State - Show countdown and button */}
       {stage === 'complete' && (
-        <div className="flex justify-center">
-          <Button variant="brand" size="lg" onClick={onComplete}>
-            View Conversation
-          </Button>
+        <div className="space-y-4">
+          {/* Countdown message */}
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Redirecting to your conversation in{' '}
+              <span className="font-bold text-[#cc3399]">{countdown}</span>{' '}
+              second{countdown !== 1 ? 's' : ''}...
+            </p>
+          </div>
+
+          {/* Manual navigation button */}
+          <div className="flex justify-center">
+            <Button
+              variant="brand"
+              onClick={() => {
+                setCountdown(null); // Cancel countdown
+                onComplete();
+              }}
+            >
+              View Conversation Now
+            </Button>
+          </div>
         </div>
       )}
     </div>

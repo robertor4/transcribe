@@ -267,9 +267,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         onError?.(error);
         updateState('idle');
 
-        // Cleanup on error
+        // Clean up any partially initialized resources
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
         }
         setAudioStream(null);

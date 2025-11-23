@@ -9,13 +9,11 @@ import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
 import { RecordingModal } from '@/components/RecordingModal';
-import { ConversationCreateModal } from '@/components/ConversationCreateModal';
+import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { EmptyState } from '@/components/EmptyState';
 import { mockFolders, mockConversations, formatDuration, formatRelativeTime } from '@/lib/mockData';
 import { getGreeting, getMilestoneMessage } from '@/lib/userHelpers';
-
-type CreateStep = 'template' | 'upload' | 'processing' | 'complete';
 
 interface CreateModalConfig {
   isOpen: boolean;
@@ -73,27 +71,27 @@ export default function PrototypeDashboardV2() {
   const handleRecordAudio = () => {
     setCreateModalConfig({
       isOpen: true,
-      skipTemplate: false,        // Show template selector first
-      initialStep: 'template',    // Start with template selection
-      uploadMethod: 'record',     // Pre-select recording method
+      skipTemplate: false,
+      initialStep: 'input-method',    // Start with new flow
+      uploadMethod: 'record',
     });
   };
 
   const handleImportAudio = () => {
     setCreateModalConfig({
       isOpen: true,
-      skipTemplate: false,        // Show template selector first
-      initialStep: 'template',    // Start with template selection
-      uploadMethod: 'file',       // Pre-select file upload method
+      skipTemplate: false,
+      initialStep: 'input-method',    // Start with new flow
+      uploadMethod: 'file',
     });
   };
 
   const handleTemplateCreate = (templateId: string) => {
-    // Template cards skip template selection, go directly to method choice
+    // Open modal with template pre-selected
     setCreateModalConfig({
       isOpen: true,
-      skipTemplate: true,           // Skip template selector (template already selected)
-      initialStep: 'upload',        // Go to upload step (shows method selection)
+      skipTemplate: false,
+      initialStep: 'input-method',    // Start with new flow
       preselectedTemplateId: templateId,
     });
   };
@@ -101,7 +99,7 @@ export default function PrototypeDashboardV2() {
   const handleMoreTemplates = () => {
     setCreateModalConfig({
       isOpen: true,
-      initialStep: 'template',
+      initialStep: 'input-method',    // Start with new flow
     });
   };
 
@@ -123,8 +121,8 @@ export default function PrototypeDashboardV2() {
             <section className="mb-16">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { Icon: Mic, label: 'Record audio', desc: 'Start recording', handler: handleRecordAudio },
-                  { Icon: Upload, label: 'Import audio', desc: 'Upload file', handler: handleImportAudio },
+                  { Icon: Mic, label: 'Record audio', desc: 'Start live conversation', handler: handleRecordAudio },
+                  { Icon: Upload, label: 'Import audio', desc: 'Upload audio/video file', handler: handleImportAudio },
                   { Icon: Users, label: 'Meeting', desc: 'Summary & transcribe', handler: () => handleTemplateCreate('transcribe-only') },
                   { Icon: Mail, label: 'Email', desc: 'Draft message', handler: () => handleTemplateCreate('email') },
                   { Icon: Edit3, label: 'Blog Post', desc: 'Publish-ready article', handler: () => handleTemplateCreate('blogPost') },

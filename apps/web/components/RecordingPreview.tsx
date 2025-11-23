@@ -95,7 +95,7 @@ export function RecordingPreview({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Recording Preview
           </h3>
-          <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-400">
             Total: {formatTime(duration)}
           </div>
         </div>
@@ -157,7 +157,7 @@ export function RecordingPreview({
           </div>
 
           {/* Playback tip */}
-          <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-center text-gray-600 dark:text-gray-400">
             Listen to your recording before proceeding to ensure quality
           </p>
         </div>
@@ -172,7 +172,7 @@ export function RecordingPreview({
           <Button variant="secondary" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="brand" size="lg" onClick={onConfirm}>
+          <Button variant="brand" onClick={onConfirm}>
             Proceed with this recording →
           </Button>
         </div>

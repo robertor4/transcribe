@@ -53,6 +53,7 @@ export function SimpleAudioRecorder({
   const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
   const [waveformBars, setWaveformBars] = useState<number[]>([]);
   const [showSourceSelector, setShowSourceSelector] = useState(true);
+  const [hasAttemptedAutoStart, setHasAttemptedAutoStart] = useState(false);
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -61,12 +62,18 @@ export function SimpleAudioRecorder({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Auto-start if requested (after source selection)
+  // Define handleStart before the useEffect that uses it
+  const handleStart = useCallback(async () => {
+    await startRecording(selectedSource);
+  }, [startRecording, selectedSource]);
+
+  // Auto-start if requested (after source selection) - but only once
   useEffect(() => {
-    if (autoStart && state === 'idle' && !showSourceSelector) {
+    if (autoStart && state === 'idle' && !showSourceSelector && !hasAttemptedAutoStart && !error) {
+      setHasAttemptedAutoStart(true);
       handleStart();
     }
-  }, [autoStart, state, showSourceSelector]);
+  }, [autoStart, state, showSourceSelector, hasAttemptedAutoStart, error, handleStart]);
 
   // Waveform animation (simple version - 30 random bars)
   useEffect(() => {
@@ -85,10 +92,6 @@ export function SimpleAudioRecorder({
 
     return () => clearInterval(interval);
   }, [state]);
-
-  const handleStart = useCallback(async () => {
-    await startRecording(selectedSource);
-  }, [startRecording, selectedSource]);
 
   const handleSourceSelect = useCallback((source: RecordingSource) => {
     setSelectedSource(source);
@@ -225,10 +228,21 @@ export function SimpleAudioRecorder({
   // Recording interface
   return (
     <div className="space-y-8">
-      {/* Error message */}
+      {/* Error message with dismiss option */}
       {error && (
         <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-red-700 dark:text-red-400 flex-1">{error}</p>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                reset();
+                onCancel();
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
 
