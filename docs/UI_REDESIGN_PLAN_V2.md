@@ -2,7 +2,25 @@
 
 **Vision Document - Revised Architecture**
 **Date:** January 2025
-**Status:** Planning Phase - V2 (Simplified)
+**Status:** Prototype Phase - V2 (~35% Complete)
+**Last Updated:** January 23, 2025
+
+## 📋 Implementation Status Overview
+
+**Prototype Progress: 35% Complete**
+
+- ✅ **UI Architecture** (85%) - Three-pane layouts, navigation, detail pages
+- ✅ **Core Components** (75%) - FAB, modals, buttons, empty states, personalization
+- 🚧 **Output System** (60%) - Templates defined, 2/5 fully rendered, mock generation working
+- ❌ **Viral Growth Features** (0%) - Public sharing, analytics, folder invites not started
+- ❌ **Backend Integration** (0%) - All features use mock data, no real API calls
+- ❌ **Image Generation** (0%) - Replicate integration not started
+
+**Key Achievement:** 4-step output generation wizard exceeds original plan's simple button approach
+
+**Critical Gaps:** All viral growth mechanics (Phase 3-5) are missing - these are core to the V2 differentiation strategy
+
+[📊 Detailed status breakdown below in "V2 Prototype Status" section](#v2-prototype-status)
 
 ---
 
@@ -110,6 +128,184 @@ publicLinks/{linkId}
   - uniqueViewers: string[] (IP hashes for analytics)
   - convertedUsers: string[] (userIds who signed up from this link)
 ```
+
+**⚠️ Implementation Note:** This data model is **not yet implemented**. The prototype currently uses mock data structures defined in `/apps/web/lib/mockData.ts`. Backend migration is Phase 1 of implementation (see roadmap below).
+
+---
+
+## 📊 V2 Prototype Status
+
+### ✅ Completed Features (~35% Overall)
+
+#### **Pages (All Functional with Mock Data)**
+1. **Dashboard V2** - `/app/[locale]/prototype-dashboard-v2/page.tsx`
+   - ✅ Personalized greeting with time-of-day awareness (`getGreeting()`)
+   - ✅ Quick Create buttons (8 templates)
+   - ✅ Folders section with stats
+   - ✅ Ungrouped conversations list
+   - ✅ Empty states with CTAs
+   - ✅ FAB integration
+   - ✅ Milestone toast detection
+
+2. **Conversation View V2** - `/app/[locale]/prototype-conversation-v2/[id]/page.tsx`
+   - ✅ Three-pane layout (left nav + content + right context panel)
+   - ✅ Vertical sections: Summary, Generated Outputs, Transcript
+   - ✅ Sticky section navigation
+   - ✅ Output gallery with cards
+   - ✅ Generate output flow (4-step wizard)
+   - ✅ FAB integration
+
+3. **Folder View V2** - `/app/[locale]/prototype-folder-v2/[id]/page.tsx`
+   - ✅ Three-pane layout
+   - ✅ Folder metadata in right panel
+   - ✅ Member list with roles
+   - ✅ Conversation list
+   - ✅ Empty states
+
+4. **Output Detail Page** - `/app/[locale]/prototype-conversation-v2/[id]/outputs/[outputId]/page.tsx`
+   - ✅ Dedicated detail page for each output
+   - ✅ Template-specific rendering (Blog, Email)
+   - ✅ Actions: Copy, Export, Regenerate, Share
+   - ✅ Right metadata panel
+   - ✅ Breadcrumb navigation
+
+5. **Transcript Page** - `/app/[locale]/prototype-conversation-v2/[id]/transcript/page.tsx`
+   - ✅ Dedicated transcript view with speaker timeline
+
+#### **Core V2 Components (18 New Components)**
+
+**Layout System:**
+- ✅ `ThreePaneLayout` - Main container with collapsible sidebar
+- ✅ `LeftNavigation` / `LeftNavigationCollapsed` - Sidebar with sections
+- ✅ `CollapsibleSidebar` - Reusable wrapper
+- ✅ `RightContextPanel` - Contextual metadata panel
+
+**V2 UI Patterns:**
+- ✅ `FloatingRecordButton` - Bottom-right FAB (implemented, not connected)
+- ✅ `RecordingModal` - Full-screen recording interface (UI only, no real recording)
+- ✅ `MilestoneToast` - Bottom-left celebration toasts
+- ✅ `EmptyState` - Reusable empty state component
+- ✅ `Button` - Standardized button system (5 variants: primary, secondary, brand, ghost, danger)
+- ✅ `OutputGeneratorModal` - **4-step wizard** (exceeds plan - see deviations below)
+- ✅ `DropdownMenu` - Reusable dropdown for actions
+
+**Detail Page System (Not in Original Plan):**
+- ✅ `DetailPageLayout` - Standardized wrapper
+- ✅ `DetailPageHeader` - Header with breadcrumbs and actions
+- ✅ `DetailMetadataPanel` - Right panel for metadata
+- ✅ `DetailRightPanel`, `RightPanelSection`, `DetailItem`
+- ✅ `ActionButton`, `ConversationCard`, `PrototypeNotice`
+
+**Helper Utilities:**
+- ✅ `userHelpers.ts` - Time-aware greetings, milestones, formatting
+- ✅ `outputTemplates/` - Modular template library (5 templates defined)
+- ✅ `mockData.ts` - Complete conversation/folder/output schemas
+
+#### **Output Templates (2/5 Fully Rendered)**
+- ✅ **EmailTemplate** - Full email rendering with subject, body, key points
+- ✅ **BlogPostTemplate** - Magazine-style with hero image placeholder, sections, quotes
+- 🚧 **LinkedInTemplate** - Defined but renders as `PlaceholderTemplate`
+- 🚧 **ActionItemsTemplate** - Defined but renders as `PlaceholderTemplate`
+- 🚧 **UserStoriesTemplate** - Defined but renders as `PlaceholderTemplate`
+
+---
+
+### 🚧 Partial / Needs Work
+
+1. **ShareModal** - `/components/ShareModal.tsx`
+   - ⚠️ Exists for **V1 transcription sharing** only
+   - ❌ Does NOT implement V2 viral growth features:
+     - No 150-word preview for anonymous users
+     - No signup prompts
+     - No conversion tracking
+     - No unlimited public sharing mechanics
+   - ✅ Has V1 features: password protection, email sending
+
+2. **Output Template Renderers**
+   - 🚧 3/5 templates need React rendering components
+   - Currently fall back to `PlaceholderTemplate`
+
+---
+
+### ❌ Not Started (Major Gaps)
+
+#### **Viral Growth Features (0% - Critical to V2 Strategy)**
+
+1. **PublicConversationView** - Anonymous preview with signup conversion
+   - ❌ 150-word content preview
+   - ❌ "Create account to see full content" blur/paywall
+   - ❌ Contextual signup CTAs
+   - ❌ Conversion tracking
+
+2. **FolderInvite Component** - Email invitation system
+   - ❌ Email invitation form (max 2 members for free tier)
+   - ❌ Role selection UI (owner/editor/viewer)
+   - ❌ Invitation email templates
+   - ❌ Join folder flow (with/without account)
+
+3. **ImpactDashboard** - Viral analytics
+   - ❌ "Your Impact" widget
+   - ❌ Shared conversation stats
+   - ❌ View counts and signup attribution
+   - ❌ Top shared conversations list
+
+4. **ImageGenerator** - Blog post visuals
+   - ❌ Replicate integration (Flux Schnell / Flux 1.1 Pro)
+   - ❌ Image generation UI in blog template
+   - ❌ Credit system for controlling costs
+
+5. **Real Backend Integration**
+   - ❌ Data model migration (transcriptions → conversations)
+   - ❌ Folders collection with CRUD
+   - ❌ Outputs subcollection (cache layer)
+   - ❌ Real output generation API (GPT-5 integration exists but not connected to V2 UI)
+   - ❌ Public links collection
+   - ❌ Conversion attribution tracking
+
+---
+
+### 🆕 Features Added Beyond Original Plan
+
+These components/patterns were created during implementation but weren't in the original plan:
+
+1. **4-Step Output Generator Wizard** - `OutputGeneratorModal`
+   - Plan called for simple "Generate" button
+   - Implementation: Sophisticated wizard (Type → Instructions → Review → Generate)
+   - **Better UX** than plan - allows customization before generation
+
+2. **Complete Detail Page Architecture**
+   - `DetailPageLayout`, `DetailPageHeader`, `DetailMetadataPanel`
+   - Breadcrumb navigation system
+   - Action button system
+   - **Not specified in plan** - evolved organically
+
+3. **Modular Template Library** - `/lib/outputTemplates/`
+   - Individual template files with type-safe schemas
+   - Central registry with `allTemplates` array
+   - **More sophisticated** than plan suggested
+
+4. **Transcript as Separate Page**
+   - Plan: Transcript as a tab within conversation view
+   - Implementation: Dedicated route with full timeline
+
+5. **Enhanced Button System**
+   - 5 variants with consistent styling
+   - Icon support, fullWidth, size options
+   - Plan didn't specify this level of detail
+
+---
+
+### 📝 Implementation Deviations
+
+Key differences from original plan:
+
+| Feature | Original Plan | Implementation | Reason |
+|---------|--------------|----------------|--------|
+| Output Generation | Simple "Generate" button | 4-step wizard modal | Better UX - allows instructions/customization |
+| User Instructions | During conversation **creation** | During **output generation** | More flexible - different instructions per output |
+| Transcript View | Tab within conversation | Separate page route | Better focus, dedicated timeline UI |
+| Detail Pages | Not specified | Full architecture system | Needed for polish and consistency |
+| Share Modal | V2 viral features | V1 functionality only | V2 viral features not yet implemented |
 
 ---
 
@@ -748,36 +944,58 @@ These will be implemented first with full JSON schemas and React templates:
 
 ## 🎯 Implementation Phases
 
-### **Phase 1: Simplified Data Model (Week 1)**
+### **Phase 1: Simplified Data Model (Week 1)** - ❌ **Not Started (0%)**
 - [ ] Migrate existing transcriptions to new `conversations` schema
 - [ ] Create `folders` collection with basic CRUD
 - [ ] Implement `outputs` subcollection (cache layer)
 - [ ] Update frontend to use new data structure
 - [ ] Add user instructions field to creation wizard
 
-### **Phase 2: Output Generation with JSON (Week 2)**
-- [ ] Build OutputsService with structured JSON prompts
-- [ ] Create generation API endpoints
-- [ ] Implement caching logic
-- [ ] Design output generation UI components
-- [ ] Build React templates for rendering JSON outputs (email, blog, etc.)
-- [ ] Add "Generate" buttons to conversation view
+**Status:** Prototype uses mock data from `/apps/web/lib/mockData.ts`. Backend migration blocked until prototype is complete.
 
-### **Phase 3: Public Sharing with Viral Mechanics (Week 3)**
+---
+
+### **Phase 2: Output Generation with JSON (Week 2)** - ✅ **Prototype Complete (90%)**
+- [x] Build OutputsService with structured JSON prompts (mock implementation)
+- [x] Create generation API endpoints (mocked)
+- [x] Implement caching logic (mocked)
+- [x] Design output generation UI components (**4-step wizard - exceeds plan**)
+- [x] Build React templates for rendering JSON outputs (2/5 complete: Email, Blog)
+- [x] Add "Generate" buttons to conversation view
+- [ ] Connect to real backend API (blocked by Phase 1)
+
+**Status:** Frontend complete and exceeds expectations. Backend integration pending.
+
+**Deviations:**
+- ✨ **Enhanced**: 4-step wizard (`OutputGeneratorModal`) vs simple button
+- ✨ **Enhanced**: User instructions per output (not just at creation)
+- 🚧 **Partial**: 3/5 template renderers still need to be built (LinkedIn, ActionItems, UserStories)
+
+---
+
+### **Phase 3: Public Sharing with Viral Mechanics (Week 3)** - ❌ **Not Started (0%)**
 - [ ] Implement public link generation (unlimited sharing for all tiers)
 - [ ] Create public conversation view (anonymous with 150-word preview)
 - [ ] Add signup prompts with limited preview blur effect
 - [ ] Track view analytics and conversions
 - [ ] Build share modal with link/invite options
 
-### **Phase 4: Folders & Collaboration (Week 4)**
+**Status:** ShareModal exists for V1 but lacks V2 viral features. **Critical gap** for growth strategy.
+
+---
+
+### **Phase 4: Folders & Collaboration (Week 4)** - ❌ **Not Started (0%)**
 - [ ] Folder invitation system (max 2 members for free tier)
 - [ ] Email invitation templates
 - [ ] Join folder flow (with/without account)
 - [ ] Folder member management UI
 - [ ] Role-based access control
 
-### **Phase 5: Viral Features & Image Generation (Week 5)**
+**Status:** Folder UI exists in prototype but no invitation/collaboration features.
+
+---
+
+### **Phase 5: Viral Features & Image Generation (Week 5)** - ❌ **Not Started (0%)**
 - [ ] Conversion attribution tracking
 - [ ] "Your Impact" analytics dashboard
 - [ ] Social proof on public pages ("X people created from this")
@@ -785,30 +1003,114 @@ These will be implemented first with full JSON schemas and React templates:
 - [ ] Image generation UI in blog post template
 - [ ] Credit system for image generation
 
+**Status:** None of these features started. Image generation is lower priority than viral sharing.
+
 ---
 
 ## 🎨 Design System Updates
 
-### New Components Needed:
-1. `<OutputGenerator />` - Card with "Generate" button + output display
-2. `<ShareModal />` - Public link (unlimited) + folder invite (max 2 members for free tier)
-3. `<PublicConversationView />` - Anonymous/limited preview (150 words) with signup prompts
-4. `<FolderInvite />` - Email invitation form (max 2 members for free tier)
-5. `<ImpactDashboard />` - Viral analytics widget
-6. `<SignupPrompt />` - Contextual signup CTA on public pages
-7. `<OutputTemplates />` - JSON renderers for each output type (start with 5):
-   - `<EmailTemplate />` - Renders email JSON
-   - `<BlogPostTemplate />` - Renders blog JSON with image generation
-   - `<LinkedInTemplate />` - Renders LinkedIn post JSON
-   - `<ActionItemsTemplate />` - Renders action items JSON
-   - `<UserStoriesTemplate />` - Renders user stories JSON
-8. `<ImageGenerator />` - Replicate integration component (Flux Schnell/Pro)
-9. `<CreationWizard />` - Multi-step creation flow with instructions field
+### Component Status
 
-### Updated Components:
-1. `<ConversationView />` (was DocumentView) - Add "Outputs" tab with generator cards
-2. `<Dashboard />` - Add folders section, replace "documents" with "conversations"
-3. `<Header />` - Add folder switcher dropdown
+#### ✅ **Implemented (Exceeds Plan)**
+
+**Core V2 Components:**
+1. ✅ `<OutputGeneratorModal />` - **4-step wizard** (Type → Instructions → Review → Generate)
+   - **Plan:** Simple "Generate" button
+   - **Reality:** Sophisticated multi-step flow with customization
+   - Location: `/components/OutputGeneratorModal.tsx`
+
+2. ✅ `<Button />` - Standardized button system
+   - 5 variants: primary, secondary, brand, ghost, danger
+   - Icon support, fullWidth, size options (sm, md, lg)
+   - Location: `/components/Button.tsx`
+
+3. ✅ `<FloatingRecordButton />` - Bottom-right FAB for quick recording
+   - Location: `/components/FloatingRecordButton.tsx`
+
+4. ✅ `<RecordingModal />` - Full-screen recording interface
+   - Location: `/components/RecordingModal.tsx`
+   - Note: UI only, not connected to real recording
+
+5. ✅ `<MilestoneToast />` - Celebration toasts for achievements
+   - Location: `/components/MilestoneToast.tsx`
+
+6. ✅ `<EmptyState />` - Reusable empty state component
+   - Location: `/components/EmptyState.tsx`
+
+**Output Templates (2/5 Complete):**
+7. ✅ `<EmailTemplate />` - Renders email JSON with subject, body, key points
+   - Location: `/components/output-templates/EmailTemplate.tsx`
+
+8. ✅ `<BlogPostTemplate />` - Magazine-style blog post with hero image placeholder
+   - Location: `/components/output-templates/BlogPostTemplate.tsx`
+
+9. 🚧 `<LinkedInTemplate />` - Defined in library, renders as `PlaceholderTemplate`
+   - Location: `/lib/outputTemplates/linkedin.ts` (data only)
+
+10. 🚧 `<ActionItemsTemplate />` - Defined in library, renders as `PlaceholderTemplate`
+    - Location: `/lib/outputTemplates/actionItems.ts` (data only)
+
+11. 🚧 `<UserStoriesTemplate />` - Defined in library, renders as `PlaceholderTemplate`
+    - Location: `/lib/outputTemplates/userStories.ts` (data only)
+
+**Layout System (Not in Original Plan):**
+12. ✅ `<ThreePaneLayout />` - Main container with collapsible sidebar
+    - Location: `/components/ThreePaneLayout.tsx`
+
+13. ✅ `<DetailPageLayout />`, `<DetailPageHeader />`, `<DetailMetadataPanel />` - Complete detail page architecture
+    - Location: `/components/DetailPageLayout.tsx`, etc.
+
+14. ✅ `<DropdownMenu />` - Reusable dropdown for action menus
+    - Location: `/components/DropdownMenu.tsx`
+
+#### 🚧 **Partial (V1 Version Exists, V2 Features Missing)**
+
+15. 🚧 `<ShareModal />` - **Exists for V1, needs V2 viral features**
+    - Location: `/components/ShareModal.tsx`
+    - ✅ Has: Password protection, email sending, content selection
+    - ❌ Missing: 150-word preview, signup prompts, unlimited public sharing, conversion tracking
+
+#### ❌ **Not Started (Critical Gaps)**
+
+16. ❌ `<PublicConversationView />` - Anonymous preview with signup conversion
+    - **Needed for:** Viral growth loop (150-word preview → signup)
+
+17. ❌ `<FolderInvite />` - Email invitation form
+    - **Needed for:** Collaboration (max 2 members for free tier)
+
+18. ❌ `<ImpactDashboard />` - Viral analytics widget
+    - **Needed for:** "Your Impact" stats, conversion tracking
+
+19. ❌ `<SignupPrompt />` - Contextual signup CTA on public pages
+    - **Needed for:** Public page conversion
+
+20. ❌ `<ImageGenerator />` - Replicate integration (Flux Schnell/Pro)
+    - **Needed for:** Blog post image generation
+    - Lower priority than viral features
+
+21. ❌ `<CreationWizard />` - Multi-step conversation creation flow
+    - Note: Output generation wizard exists, but conversation creation is still simple
+
+---
+
+### Updated Pages/Components
+
+#### ✅ **Fully Migrated to V2:**
+1. ✅ `<Dashboard />` → `/prototype-dashboard-v2`
+   - Folders section, quick create, personalized greeting, FAB
+
+2. ✅ `<ConversationView />` → `/prototype-conversation-v2/[id]`
+   - Three-pane layout, output generation, vertical sections
+
+3. ✅ `<FolderView />` → `/prototype-folder-v2/[id]`
+   - Three-pane layout, member list, conversation list
+
+#### 🆕 **New Pages (Not in Plan):**
+4. ✅ Output Detail Page - `/prototype-conversation-v2/[id]/outputs/[outputId]`
+   - Dedicated page for each output with actions
+
+5. ✅ Transcript Page - `/prototype-conversation-v2/[id]/transcript`
+   - Separate route instead of just a tab
 
 ---
 
@@ -860,51 +1162,182 @@ These will be implemented first with full JSON schemas and React templates:
 
 ## 🏁 Next Steps
 
-1. **Review & approve** this simplified plan
-2. **Prototype** output generation UI (mockup key screens)
-3. **Build** Phase 1: Data model migration (transcriptions → conversations)
-4. **Test** output prompt quality with JSON schemas (iterate on prompts)
-5. **Build** Phase 2: Output templates + image generation
-6. **Launch** Phase 3: Public sharing with viral mechanics (150-word preview)
-7. **Measure** conversion rates and iterate
+### **Immediate: Prototype Visual Completion (Estimated: 2-3 days)**
+
+Complete the V2 prototype to fully demonstrate the "One Conversation → Many Outputs" vision with mock data:
+
+#### **1. Complete Output Template Renderers (High Priority)**
+- [ ] Build `LinkedInTemplate.tsx` - Render LinkedIn post JSON
+- [ ] Build `ActionItemsTemplate.tsx` - Render action items as checklist
+- [ ] Build `UserStoriesTemplate.tsx` - Render Agile user stories format
+- **Why:** Show complete output generation capability (currently 2/5 done)
+
+#### **2. Add Viral Growth UI Mockups (Critical Gap)**
+- [ ] Create `PublicConversationView` page mockup
+  - 150-word content preview with blur effect
+  - "Sign up to see full content" CTA
+  - Signup prompt with value proposition
+- [ ] Add `ImpactDashboard` widget to dashboard
+  - Mock analytics: shares, views, signups driven
+  - Top shared conversations list
+- [ ] Create folder invitation mockup in share modal
+  - Email invitation form
+  - Role selection (owner/editor/viewer)
+  - Member limit indicator (max 2 for free tier)
+- **Why:** Viral features are core to V2 differentiation but 0% complete
+
+#### **3. Wire Up Quick Create Flow (UX Polish)**
+- [ ] Connect Quick Create buttons to navigate to mock conversation creation
+- [ ] Show template selection → upload/record → processing → conversation detail
+- [ ] Complete the end-to-end creation journey
+- **Why:** Currently buttons don't do anything
+
+#### **4. Polish Empty States (UX Consistency)**
+- [ ] Make empty state CTAs navigate to appropriate actions
+- [ ] Add more contextual empty states where needed
+- **Why:** Improve demo experience
 
 ---
 
-## 📋 Summary: Key Decisions Made
+### **Future: Backend Implementation (After Prototype Approval)**
+
+Once prototype is validated, implement real infrastructure:
+
+#### **Phase 1: Data Model Migration (Week 1)**
+1. Migrate `transcriptions` → `conversations` collection
+2. Create `folders` collection with CRUD operations
+3. Implement `outputs` subcollection as cache layer
+4. Create `publicLinks` collection for viral tracking
+
+#### **Phase 2: Real Output Generation (Week 2)**
+1. Build `OutputsService` with GPT-5 integration
+2. Create REST API endpoints for generation
+3. Implement caching logic in Firestore
+4. Connect V2 UI to real backend
+5. Test prompt quality and iterate
+
+#### **Phase 3: Viral Sharing Infrastructure (Week 3)**
+1. Public link generation (unlimited for all tiers)
+2. Anonymous conversation view with 150-word preview
+3. Signup conversion tracking
+4. View analytics and attribution
+
+#### **Phase 4: Folder Collaboration (Week 4)**
+1. Email invitation system
+2. Join folder flow (with/without account)
+3. Role-based access control
+4. Member management
+
+#### **Phase 5: Image Generation (Week 5+)**
+1. Replicate API integration (Flux models)
+2. Credit system for cost control
+3. Image generation UI in blog template
+
+---
+
+### **Success Criteria for Prototype Completion**
+
+✅ **Visual Completeness:**
+- All 5 output templates render beautifully
+- Complete end-to-end UX flow (create → generate → share)
+- Viral growth UI demonstrated (public view, analytics, invites)
+
+✅ **Demo-Ready:**
+- Can show complete "One Conversation → Many Outputs" story
+- All major screens and flows clickable
+- Professional polish throughout
+
+✅ **Stakeholder Validation:**
+- Get feedback on UX before backend investment
+- Validate viral growth mechanics design
+- Confirm output quality meets expectations
+
+---
+
+## 📋 Summary: Key Decisions & Implementation Status
+
+### **Strategic Decisions (From Original Plan)**
 
 **Naming:**
 - ✅ **"Conversation"** instead of Recording/Document (reflects merged recordings)
 - ✅ **"Folder"** instead of Workspace (simple, clear, familiar)
+- **Status:** Terminology used throughout prototype ✅
 
 **Architecture:**
 - ✅ **Model A**: Simple 1:1 (one conversation → many outputs)
 - ✅ **NOT**: Multi-source synthesis (future roadmap)
 - ✅ **JSON outputs**: Content separated from layout
-- ✅ **User instructions**: Guide AI extraction during creation
+- ✅ **User instructions**: Guide AI extraction ~~during creation~~ **→ per output** (deviation)
+- **Status:** Data model defined but not implemented (mock data only) 🚧
 
-**Viral Features:**
-- ✅ **Unlimited public sharing** for all tiers (maximize viral reach)
-- ✅ **150-word preview** for anonymous users (not 500)
-- ✅ **Max 2 folder members** for free tier (not sharing limit)
-- ✅ **Conversion attribution** tracking
-- ✅ **NO comment system** (pre-PMF simplicity)
+**Viral Features (CRITICAL - 0% Complete):**
+- ✅ **Decision Made:** Unlimited public sharing for all tiers (maximize viral reach)
+- ✅ **Decision Made:** 150-word preview for anonymous users (not 500)
+- ✅ **Decision Made:** Max 2 folder members for free tier (not sharing limit)
+- ✅ **Decision Made:** Conversion attribution tracking
+- ✅ **Decision Made:** NO comment system (pre-PMF simplicity)
+- **Status:** UI mockups not started ❌ **← Highest priority gap**
 
 **Image Generation:**
-- ✅ **Replicate integration** (Flux Schnell + Flux 1.1 Pro)
-- ✅ **Credit system** for controlling costs
-- ✅ **Blog post template** primary use case
+- ✅ **Decision Made:** Replicate integration (Flux Schnell + Flux 1.1 Pro)
+- ✅ **Decision Made:** Credit system for controlling costs
+- ✅ **Decision Made:** Blog post template primary use case
+- **Status:** Not implemented ❌ (lower priority than viral features)
 
 **Output Types:**
-- ✅ **Launch with 5 core types**: Email, Action Items, Blog Post, LinkedIn, User Stories
-- ✅ **59 total types cataloged** for future expansion
-- ✅ **Phased rollout** based on user demand and usage data
+- ✅ **Decision Made:** Launch with 5 core types: Email, Action Items, Blog Post, LinkedIn, User Stories
+- ✅ **Cataloged:** 59 total types for future expansion
+- ✅ **Approach:** Phased rollout based on user demand
+- **Status:** 5 types defined, 2 fully rendered (Email, Blog) 🚧
+
+---
+
+### **Implementation Achievements**
+
+**What Exceeded Expectations:**
+- ✨ **4-step output wizard** (plan called for simple button)
+- ✨ **Complete detail page architecture** (not in plan)
+- ✨ **Modular template library** (more sophisticated than planned)
+- ✨ **Three-pane layouts** (better UX than specified)
+- ✨ **Enhanced button system** (5 variants with full customization)
+
+**What's On Track:**
+- ✅ UI architecture and navigation (85% complete)
+- ✅ Core V2 components (18 new components built)
+- ✅ Personalization features (100% complete)
+- ✅ Mock data structures matching planned schema
+
+**What's Behind:**
+- ❌ Viral growth UI (0% - critical gap)
+- ❌ Remaining output templates (3/5 need renderers)
+- ❌ Backend integration (all mocked)
+- ❌ Image generation (not started)
+
+---
+
+### **Prototype Completion Roadmap**
+
+**To finish prototype visually (2-3 days):**
+1. Build 3 remaining template renderers
+2. Create viral growth UI mockups (public view, analytics, invites)
+3. Wire up Quick Create buttons
+4. Polish empty states
+
+**Then backend implementation (4-5 weeks):**
+1. Data model migration
+2. Real output generation API
+3. Viral sharing infrastructure
+4. Folder collaboration
+5. Image generation
 
 ---
 
 **This plan prioritizes:**
-✅ Simplicity (1 conversation → outputs, not complex building blocks)
-✅ AI-powered transformation (leverage GenAI strengths + custom instructions)
-✅ Viral growth (unlimited public sharing + 150-word preview + folder collaboration)
-✅ Clean architecture (conversations + folders + structured JSON outputs)
-✅ Flexible rendering (JSON content + React templates)
-✅ Fast validation (no comments system, focus on core value)
+- ✅ **Simplicity** - 1 conversation → many outputs (not complex building blocks)
+- ✅ **AI Transformation** - Leverage GenAI strengths + custom instructions
+- ⚠️ **Viral Growth** - PLANNED but UI not implemented yet (0%)
+- ✅ **Clean Architecture** - Conversations + folders + JSON outputs (mocked)
+- ✅ **Flexible Rendering** - JSON content + React templates (2/5 complete)
+- ✅ **Fast Validation** - No comments, focus on core value
+
+**Current Priority:** Complete viral growth UI mockups to validate full V2 strategy before backend investment.

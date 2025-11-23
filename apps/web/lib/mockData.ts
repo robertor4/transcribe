@@ -618,9 +618,9 @@ export const mockGeneratedOutputs: GeneratedOutput[] = [
     title: 'Blog Post: Q4 Product Strategy',
     preview: 'The Future of Product Development: How AI-Powered Features are Reshaping User Engagement. In today\'s competitive landscape...',
     content: {
-      headline: 'The Future of Product Development: How AI-Powered Features are Reshaping User Engagement',
-      subheading: 'A deep dive into our Q4 product strategy and what it means for the industry',
-      hook: 'In today\'s competitive landscape, user engagement isn\'t just a metric—it\'s the lifeblood of product success. Our Q4 strategy aims to redefine what\'s possible.',
+      headline: 'AI-Powered Features Reshape Engagement',
+      subheading: 'A deep dive into our Q4 product strategy and what it means for the industry. In today\'s competitive landscape, user engagement isn\'t just a metric—it\'s the lifeblood of product success.',
+      hook: 'After months of steady growth, we hit a plateau. Traditional optimization tactics weren\'t moving the needle. We needed a fundamentally different approach—and AI was the answer.',
       sections: [
         {
           heading: 'The Challenge: Breaking Through Engagement Plateaus',
