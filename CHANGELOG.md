@@ -37,6 +37,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `isQuickAction?: boolean`
   - Files: [apps/web/lib/outputTemplates/transcribeOnly.ts](apps/web/lib/outputTemplates/transcribeOnly.ts) (new), [apps/web/lib/outputTemplates/types.ts](apps/web/lib/outputTemplates/types.ts), [apps/web/lib/outputTemplates/index.ts](apps/web/lib/outputTemplates/index.ts), [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx)
 
+- **Multi-File Upload Support** (Phase 2): Upload up to 3 files with processing options
+  - **UploadInterface** updated to handle multiple files:
+    - Upload 1-3 audio/video files via drag-and-drop or file picker
+    - File validation: duplicate detection, type checking, 3-file limit
+    - Drag-to-reorder files (visual feedback with numbered badges)
+    - Compact "Add more files" dropzone when < 3 files selected
+    - File list UI: numbered badges, file sizes, remove buttons, drag handles
+    - Processing mode selector (only shown for 2+ files):
+      - **Individual**: Process as separate conversations
+      - **Merged**: Merge into single conversation (order matters)
+    - Info banner for merged mode explaining chronological ordering
+    - "Clear all" button to reset selection
+  - **ConversationCreateModal** multi-file state management:
+    - Changed `uploadedFile: File | null` to `uploadedFiles: File[]`
+    - Added `processingMode: 'individual' | 'merged'` state
+    - Updated `onFileUpload` signature to accept `(files: File[], mode)`
+    - Reset processing mode on modal close
+  - **ProcessingSimulator** multi-file display:
+    - Accepts `files: File[]` and `processingMode` props
+    - Smart file display message (single file name, "Merging X files", "Processing X files individually")
+    - Shows numbered file badges when multiple files selected
+    - Maintains same animated progress stages
+  - **Pattern**: Based on production `FileUploader.tsx` with drag-to-reorder, file management, and mode selection
+  - Files: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx)
+
 - **Recording Preview & Confirmation** (Phase 3): Audio playback before processing
   - **RecordingPreview** component with full audio controls:
     - Audio playback with play/pause toggle

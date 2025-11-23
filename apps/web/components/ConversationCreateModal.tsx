@@ -47,13 +47,15 @@ export function ConversationCreateModal({
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     preselectedTemplateId || null
   );
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
 
   // Reset state when modal closes
   const handleClose = () => {
     setCurrentStep(skipTemplate ? 'upload' : (initialStep || 'template'));
     setSelectedTemplateId(preselectedTemplateId || null);
-    setUploadedFile(null);
+    setUploadedFiles([]);
+    setProcessingMode('individual');
     onClose();
   };
 
@@ -67,15 +69,17 @@ export function ConversationCreateModal({
   };
 
   // Upload handlers
-  const handleFileUpload = (file: File) => {
-    setUploadedFile(file);
+  const handleFileUpload = (files: File[], mode: 'individual' | 'merged') => {
+    setUploadedFiles(files);
+    setProcessingMode(mode);
     setCurrentStep('processing');
   };
 
   const handleRecordingComplete = (blob: Blob) => {
     // Convert blob to file
     const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-    setUploadedFile(file);
+    setUploadedFiles([file]);
+    setProcessingMode('individual'); // Single recording always individual
     setCurrentStep('processing');
   };
 
@@ -139,7 +143,8 @@ export function ConversationCreateModal({
 
           {currentStep === 'processing' && (
             <ProcessingSimulator
-              fileName={uploadedFile?.name || 'recording.webm'}
+              files={uploadedFiles}
+              processingMode={processingMode}
               templateName={
                 selectedTemplateId
                   ? allTemplates.find((t) => t.id === selectedTemplateId)?.name
