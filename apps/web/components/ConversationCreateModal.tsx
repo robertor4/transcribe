@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 import { TemplateSelector } from './TemplateSelector';
@@ -49,6 +49,17 @@ export function ConversationCreateModal({
   );
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
+
+  // CRITICAL FIX: Reset state when modal opens with new props
+  // This ensures consistent behavior across multiple clicks
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep(skipTemplate ? 'upload' : (initialStep || 'template'));
+      setSelectedTemplateId(preselectedTemplateId || null);
+      setUploadedFiles([]);
+      setProcessingMode('individual');
+    }
+  }, [isOpen, skipTemplate, initialStep, preselectedTemplateId]);
 
   // Reset state when modal closes
   const handleClose = () => {
@@ -103,12 +114,12 @@ export function ConversationCreateModal({
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {currentStep === 'template' && 'Choose a template'}
-              {currentStep === 'upload' && 'Add your conversation'}
+              {currentStep === 'upload' && 'How do you want to add audio?'}
               {currentStep === 'processing' && 'Processing...'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {currentStep === 'template' && 'Select an output type or skip to upload directly'}
-              {currentStep === 'upload' && 'Upload a file or record audio'}
+              {currentStep === 'template' && 'Select an output type or skip to choose your input method'}
+              {currentStep === 'upload' && 'Choose to record, upload a file, or import from URL'}
               {currentStep === 'processing' && 'Transcribing and analyzing your conversation'}
             </p>
           </div>
@@ -122,7 +133,7 @@ export function ConversationCreateModal({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-hidden p-8">
           {currentStep === 'template' && (
             <TemplateSelector
               templates={allTemplates}
@@ -133,25 +144,29 @@ export function ConversationCreateModal({
           )}
 
           {currentStep === 'upload' && (
-            <UploadInterface
-              onFileUpload={handleFileUpload}
-              onRecordingComplete={handleRecordingComplete}
-              onBack={() => setCurrentStep('template')}
-              initialMethod={uploadMethod}
-            />
+            <div className="h-full overflow-y-auto">
+              <UploadInterface
+                onFileUpload={handleFileUpload}
+                onRecordingComplete={handleRecordingComplete}
+                onBack={() => setCurrentStep('template')}
+                initialMethod={uploadMethod}
+              />
+            </div>
           )}
 
           {currentStep === 'processing' && (
-            <ProcessingSimulator
-              files={uploadedFiles}
-              processingMode={processingMode}
-              templateName={
-                selectedTemplateId
-                  ? allTemplates.find((t) => t.id === selectedTemplateId)?.name
-                  : undefined
-              }
-              onComplete={handleProcessingComplete}
-            />
+            <div className="h-full overflow-y-auto">
+              <ProcessingSimulator
+                files={uploadedFiles}
+                processingMode={processingMode}
+                templateName={
+                  selectedTemplateId
+                    ? allTemplates.find((t) => t.id === selectedTemplateId)?.name
+                    : undefined
+                }
+                onComplete={handleProcessingComplete}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -8,6 +8,160 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **SimpleAudioRecorder Component**: New lightweight recording component that reuses production infrastructure
+  - Replaces inline recording logic in UploadInterface (~150 lines removed)
+  - Reuses production `useMediaRecorder` hook for robustness (recovery, wake lock, error handling, browser compatibility)
+  - **Features**:
+    - Source selection: Microphone + Tab Audio support
+    - Pause/Resume controls
+    - Simple waveform animation (30 random bars - matches prototype UX)
+    - Integration with RecordingPreview component
+    - Auto-start support for direct recording flow
+  - **Production Features Inherited**:
+    - Recording recovery via IndexedDB auto-save (crash protection)
+    - Wake lock to prevent screen sleep on mobile
+    - Smart error categorization with user-friendly messages
+    - Browser capability detection
+    - beforeunload protection to prevent accidental data loss
+    - Proper stream cleanup and resource management
+  - **Files Added**:
+    - [apps/web/components/SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx) - New component (~270 lines)
+
+### Changed
+- **UploadInterface Refactoring**: Extracted recording functionality into SimpleAudioRecorder component
+  - **Removed** (~200 lines):
+    - All recording state management (recordingState, recordedBlob, recordingSeconds, waveformBars)
+    - MediaRecorder API integration and stream management
+    - Manual recording timer and waveform animation logic
+    - Recording event handlers (start, stop, cancel, confirm, re-record)
+    - All recording-related useEffect hooks and cleanup code
+    - Inline recording UI and preview sections
+  - **Simplified to core responsibilities**:
+    - Method selection (upload/record/URL)
+    - File upload with drag-and-drop
+    - Multi-file management
+  - **New approach**:
+    - Delegates all recording to SimpleAudioRecorder component
+    - Renders SimpleAudioRecorder when `selectedMethod === 'record'`
+    - Passes callbacks for completion and cancellation
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx) - Reduced from ~750 lines to ~490 lines
+  - **Benefits**:
+    - Single source of truth for recording logic (useMediaRecorder hook)
+    - Better separation of concerns (1 component = 1 responsibility)
+    - Easier to test and maintain
+    - Consistent recording behavior across prototype and production
+    - Inherits all production recording improvements automatically
+- **Conversation Creation Modal Close Confirmation**: Added confirmation dialog when closing modal during recording, processing, or with selected files
+  - Shows "Are you sure you want to cancel? Your progress will be lost." prompt before closing
+  - Triggered when: recording is in progress, processing step active, OR upload step with files selected
+  - Prevents accidental loss of work during recording/uploading
+  - **Implementation**:
+    - Added `onRecordingStateChange` callback prop to UploadInterface to notify parent of recording status
+    - ConversationCreateModal tracks recording state and includes it in confirmation logic
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:13,51-56) - Added callback prop and useEffect to notify parent
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:52,62,69,84,168) - Track recording state and updated confirmation
+
+### Changed
+- **Modal Text Color Consistency & Brand Compliance**: Fixed 21 text color inconsistencies across conversation creation modal to match brand guidelines
+  - **Updated text-gray-600 → text-gray-700**: Body text and descriptions for better readability (14 instances)
+  - **Updated text-gray-500 → text-gray-600/700**: Hints and secondary text for improved legibility (5 instances)
+  - **Replaced blue info notice with brand colors**: Changed blue-50/blue-200/blue-800 to gray-50/magenta border (CRITICAL brand consistency fix)
+  - **Interactive elements**: Enhanced close button and cancel links with darker grays for better visibility
+  - **Files Modified**:
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:142,153) - Subtitle and close button icon
+    - [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx:71,105,117,128) - Descriptions, section headers, help text
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:339,358,374,406,409,440,476,514,528-531,560,586,651) - Card descriptions, upload text, info notice (blue→gray+magenta), mode descriptions, cancel button
+    - [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx:98,160) - Duration text, playback tip
+    - [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx:142,206) - File chips, inactive stage labels
+  - **Impact**: Improved readability, better contrast, full brand consistency (no blue colors), proper text hierarchy
+- **Button Size Consistency in Conversation Creation Modal**: Standardized button sizes across all modal steps
+  - Removed `size="lg"` from all modal buttons to match TemplateSelector default (medium) size
+  - All modal buttons (template selection, upload, recording preview, processing) now use consistent medium size for uniform appearance
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:605,646) - Changed "Upload & Process" and "Stop Recording" buttons from `size="lg"` to default
+    - [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx:175) - Changed "Proceed with this recording" button from `size="lg"` to default
+    - [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx:229) - Changed "View Conversation" button from `size="lg"` to default
+- **Conversation Creation Flow Restructure**: Standardized flow across all dashboard cards for consistency
+  - **New Flow Pattern**:
+    1. **Record audio** → Template selector (can skip) → **Auto-start recording** (method pre-selected)
+    2. **Import audio** → Template selector (can skip) → **Auto-show upload** (method pre-selected)
+    3. **Template-specific cards** (Meeting, Email, Blog Post, LinkedIn, Action Items) → Method choice (Record/Upload/URL) → Proceed (template pre-selected)
+    4. **More templates** → Template selector (can skip) → Method choice (Record/Upload/URL) → Proceed
+  - **Key Changes**:
+    - "Record audio" and "Import audio" now show template selector FIRST, then proceed with pre-selected method (no redundant method choice)
+    - Template-specific cards (Meeting, Email, etc.) show method selection FIRST, then proceed with pre-selected template
+    - Method selection only shown when user hasn't already indicated their preferred input method via button clicked
+    - Eliminates redundant "choose method" step when method is already known from button context
+  - **Files Modified**:
+    - [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx) - Updated dashboard handlers with uploadMethod prop
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx) - Restored auto-method selection for pre-selected methods
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx) - Updated modal headers
+
+### Fixed
+- **Microphone Not Released After Recording**: Fixed Chrome microphone indicator staying active after stopping/canceling recording
+  - **Issue**: Microphone access wasn't properly released when recording stopped, leaving the Chrome mic indicator highlighted
+  - **Root Cause**: Media stream tracks weren't stopped immediately when `handleStopRecording` was called; relied only on `onstop` callback which had timing issues
+  - **Solution** (based on [Stack Overflow research](https://stackoverflow.com/questions/44274410/mediarecorder-stop-doesnt-clear-the-recording-icon-in-the-tab)):
+    - Store media stream in ref (`mediaStreamRef`)
+    - Stop tracks **immediately** in `handleStopRecording` (not just in `onstop` callback)
+    - Stop tracks in cancel handler and component unmount cleanup
+    - Set ref to `null` after stopping to enable garbage collection
+  - **Impact**: Microphone indicator now properly disappears instantly when recording stops or is canceled
+  - **File**: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:46,103-110,277-280,307-310,318-321) - Added stream ref, immediate track cleanup, and unmount cleanup
+- **Processing Complete Confirmation Dialog**: Fixed unwanted confirmation dialog appearing when processing completes successfully
+  - **Issue**: When ProcessingSimulator auto-completes, it called `handleClose()` which triggered "Are you sure you want to cancel?" confirmation dialog
+  - **Root Cause**: `handleProcessingComplete` was calling `handleClose()` which checks if `currentStep === 'processing'` and shows confirmation
+  - **Solution**: Bypass `handleClose()` on successful completion and call `onClose()` directly with state reset
+  - **Impact**: Successful processing now closes modal smoothly without unwanted confirmation prompt
+  - **File**: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:113-127) - Updated `handleProcessingComplete` to reset state and close directly
+- **Template Selector Modal Button Visibility & Content Clipping**: Fixed action buttons not visible and template cards being clipped on sides
+  - **Issue**:
+    - Action buttons ("Skip this step" and "Continue") were completely hidden below scroll area, not visible without scrolling
+    - Template cards on left and right edges were being cut off
+  - **Root Cause**: Complex nested flexbox structure with TemplateSelector trying to manage its own sticky footer inside a constrained parent
+  - **Solution**: Simplified modal structure with fixed header/footer at modal level
+    - Restructured TemplateSelector to return fragments: scrollable body + fixed footer
+    - Modal now has: fixed header → scrollable body → fixed footer
+    - TemplateSelector body handles scrolling for template cards
+    - TemplateSelector footer is always visible at bottom of modal
+  - **Files Modified**:
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:136) - Added `flex flex-col` to content wrapper
+    - [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx:97-150) - Restructured to return fragment with scrollable body and fixed footer
+  - **Impact**: Action buttons now always visible at bottom of modal, template cards properly padded and not clipped, simpler and more maintainable structure
+- **ConversationCreateModal State Reset**: Fixed inconsistent behavior when clicking dashboard cards multiple times
+  - **Issue**: Modal state wasn't resetting when props changed, causing unpredictable behavior (sometimes showing template selection, sometimes skipping to upload)
+  - **Root cause**: `useState` initializers only run once on mount, not when props update
+  - **Solution**: Added `useEffect` hook to reset modal state (`currentStep`, `selectedTemplateId`, `uploadedFiles`, `processingMode`) whenever modal opens with new props
+  - **Impact**: All dashboard cards now have consistent, predictable behavior on every click
+  - File: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+
+### Changed (Previous)
+- **Dashboard Quick Action Cards**: Updated to properly map to available templates
+  - Fixed "Meeting" card to map to `transcribe-only` template (was incorrectly mapped to `actionItems`)
+  - Removed duplicate cards: "Document" and "Article" both mapped to `blogPost`
+  - Added "Action Items" card mapping to `actionItems` template
+  - Updated "Blog Post" card with `Edit3` icon (matches template definition)
+  - Updated descriptions to match template purposes:
+    - Meeting: "Summary & transcribe" (not "Summary & notes")
+    - Blog Post: "Publish-ready article" (not "Spec or brief")
+    - Action Items: "Task list" (new card)
+  - **Card behavior** (skip template selection for quick actions):
+    - Meeting & Action Items: Skip directly to upload (like Record/Import audio)
+    - Email, Blog Post, LinkedIn: Show template confirmation first
+  - **Card lineup** (8 total):
+    1. Record audio (general method - skip to upload)
+    2. Import audio (general method - skip to upload)
+    3. Meeting → `transcribe-only` (skip to upload)
+    4. Email → `email` (show template confirmation)
+    5. Blog Post → `blogPost` (show template confirmation)
+    6. LinkedIn post → `linkedin` (show template confirmation)
+    7. Action Items → `actionItems` (skip to upload)
+    8. More templates (opens selector for Communication Analysis + future templates)
+  - File: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+### Added
 - **Context-Aware Conversation Creation** (Phase 1): Smart entry points based on button clicked
   - **ConversationCreateModal** updated with context-aware props:
     - `initialStep`: Start at specific step (template/upload/processing)

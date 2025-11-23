@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mic, FileText, Users, BookOpen, Sparkles, Briefcase, Target, Heart, Folder, MessageSquare, Upload, Share2, Mail } from 'lucide-react';
+import { Mic, FileText, Users, Edit3, Sparkles, CheckSquare, Folder, MessageSquare, Upload, Share2, Mail, Briefcase, Target, Heart } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
@@ -73,25 +73,27 @@ export default function PrototypeDashboardV2() {
   const handleRecordAudio = () => {
     setCreateModalConfig({
       isOpen: true,
-      skipTemplate: true,
-      initialStep: 'upload',
-      uploadMethod: 'record',
+      skipTemplate: false,        // Show template selector first
+      initialStep: 'template',    // Start with template selection
+      uploadMethod: 'record',     // Pre-select recording method
     });
   };
 
   const handleImportAudio = () => {
     setCreateModalConfig({
       isOpen: true,
-      skipTemplate: true,
-      initialStep: 'upload',
-      uploadMethod: 'file',
+      skipTemplate: false,        // Show template selector first
+      initialStep: 'template',    // Start with template selection
+      uploadMethod: 'file',       // Pre-select file upload method
     });
   };
 
   const handleTemplateCreate = (templateId: string) => {
+    // Template cards skip template selection, go directly to method choice
     setCreateModalConfig({
       isOpen: true,
-      initialStep: 'template',
+      skipTemplate: true,           // Skip template selector (template already selected)
+      initialStep: 'upload',        // Go to upload step (shows method selection)
       preselectedTemplateId: templateId,
     });
   };
@@ -123,11 +125,11 @@ export default function PrototypeDashboardV2() {
                 {[
                   { Icon: Mic, label: 'Record audio', desc: 'Start recording', handler: handleRecordAudio },
                   { Icon: Upload, label: 'Import audio', desc: 'Upload file', handler: handleImportAudio },
-                  { Icon: FileText, label: 'Document', desc: 'Spec or brief', handler: () => handleTemplateCreate('blogPost') },
-                  { Icon: Users, label: 'Meeting', desc: 'Summary & notes', handler: () => handleTemplateCreate('actionItems') },
-                  { Icon: BookOpen, label: 'Article', desc: 'Blog or content', handler: () => handleTemplateCreate('blogPost') },
+                  { Icon: Users, label: 'Meeting', desc: 'Summary & transcribe', handler: () => handleTemplateCreate('transcribe-only') },
                   { Icon: Mail, label: 'Email', desc: 'Draft message', handler: () => handleTemplateCreate('email') },
-                  { Icon: Share2, label: 'LinkedIn post', desc: 'Social content', handler: () => handleTemplateCreate('linkedinPost') },
+                  { Icon: Edit3, label: 'Blog Post', desc: 'Publish-ready article', handler: () => handleTemplateCreate('blogPost') },
+                  { Icon: Share2, label: 'LinkedIn post', desc: 'Social content', handler: () => handleTemplateCreate('linkedin') },
+                  { Icon: CheckSquare, label: 'Action Items', desc: 'Task list', handler: () => handleTemplateCreate('actionItems') },
                   { Icon: Sparkles, label: 'More templates', desc: 'Browse all', handler: handleMoreTemplates }
                 ].map((type) => (
                   <button

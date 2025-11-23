@@ -95,49 +95,54 @@ export function TemplateSelector({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Quick Actions Section */}
-      {quickActions.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-            Quick Actions
-          </h3>
-          <div className="grid grid-cols-1 gap-3">
-            {quickActions.map(renderTemplateCard)}
+    <div className="flex flex-col h-full">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto space-y-8 pb-6">
+        {/* Quick Actions Section */}
+        {quickActions.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              Quick Actions
+            </h3>
+            <div className="grid grid-cols-1 gap-3">
+              {quickActions.map(renderTemplateCard)}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Output Templates Section */}
-      {outputTemplates.length > 0 && (
-        <div>
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-            Output Templates
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {outputTemplates.map(renderTemplateCard)}
+        {/* Output Templates Section */}
+        {outputTemplates.length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              Output Templates
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {outputTemplates.map(renderTemplateCard)}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Help Text */}
-      <div className="text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {selectedTemplateId
-            ? 'Selected template will guide the AI output generation'
-            : 'You can skip this step and generate outputs later'}
-        </p>
+        {/* Help Text */}
+        <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {selectedTemplateId
+              ? 'Selected template will guide the AI output generation'
+              : 'You can skip this step and generate outputs later'}
+          </p>
+        </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between gap-4">
-        <Button variant="ghost" onClick={() => onSelect(null)}>
-          {selectedTemplateId ? 'Clear selection' : 'Skip this step'}
-        </Button>
+      {/* Sticky Actions Footer */}
+      <div className="flex-shrink-0 pt-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="flex items-center justify-between gap-4">
+          <Button variant="ghost" onClick={() => onSelect(null)}>
+            {selectedTemplateId ? 'Clear selection' : 'Skip this step'}
+          </Button>
 
-        <Button variant="primary" onClick={onNext} size="lg">
-          {selectedTemplateId ? 'Continue with template' : 'Continue without template'}
-        </Button>
+          <Button variant="primary" onClick={onNext} size="lg">
+            {selectedTemplateId ? 'Continue with template' : 'Continue without template'}
+          </Button>
+        </div>
       </div>
     </div>
   );

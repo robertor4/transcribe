@@ -1,24 +1,24 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Upload, Mic, Link as LinkIcon, X, FileAudio, GripVertical, Info } from 'lucide-react';
 import { Button } from './Button';
-import { RecordingPreview } from './RecordingPreview';
+import { SimpleAudioRecorder } from './SimpleAudioRecorder';
 
 interface UploadInterfaceProps {
   onFileUpload: (files: File[], processingMode: 'individual' | 'merged') => void;
   onRecordingComplete: (blob: Blob) => void;
   onBack: () => void;
   initialMethod?: 'file' | 'record' | null;
+  onRecordingStateChange?: (isRecording: boolean) => void; // Notify parent of recording status
 }
 
 type InputMethod = 'upload' | 'record' | 'url';
-type RecordingState = 'idle' | 'recording' | 'preview' | 'confirmed';
 
 /**
  * Upload interface with three input methods:
  * 1. File upload (drag-and-drop or click)
- * 2. Record audio (live recording)
+ * 2. Record audio (live recording via SimpleAudioRecorder)
  * 3. Import from URL (future feature)
  */
 export function UploadInterface({
@@ -26,6 +26,7 @@ export function UploadInterface({
   onRecordingComplete,
   onBack,
   initialMethod,
+  onRecordingStateChange,
 }: UploadInterfaceProps) {
   const [selectedMethod, setSelectedMethod] = useState<InputMethod | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -33,68 +34,7 @@ export function UploadInterface({
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
-  // Recording state machine
-  const [recordingState, setRecordingState] = useState<RecordingState>('idle');
-  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const [waveformBars, setWaveformBars] = useState<number[]>([]);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-
-  // Computed: is currently recording
-  const isRecording = recordingState === 'recording';
-
-  // Auto-select method based on initialMethod prop
-  useEffect(() => {
-    if (initialMethod && !selectedMethod) {
-      if (initialMethod === 'file') {
-        setSelectedMethod('upload');
-      } else if (initialMethod === 'record') {
-        setSelectedMethod('record');
-        // Auto-start recording
-        handleStartRecording();
-      }
-    }
-  }, [initialMethod, selectedMethod]);
-
-  // Recording timer
-  useEffect(() => {
-    if (!isRecording) {
-      setRecordingSeconds(0);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setRecordingSeconds((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isRecording]);
-
-  // Waveform animation
-  useEffect(() => {
-    if (!isRecording) {
-      setWaveformBars([]);
-      return;
-    }
-
-    setWaveformBars(Array.from({ length: 30 }, () => Math.random()));
-
-    const interval = setInterval(() => {
-      setWaveformBars(Array.from({ length: 30 }, () => Math.random() * 0.7 + 0.3));
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, [isRecording]);
-
-  // Format time as MM:SS
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   // File upload handlers
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -241,79 +181,30 @@ export function UploadInterface({
     }
   };
 
-  // Recording handlers
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-
-        // NEW: Store blob and show preview instead of immediately processing
-        setRecordedBlob(audioBlob);
-        setRecordingState('preview');
-
-        // Stop media stream
-        stream.getTracks().forEach((track) => track.stop());
-      };
-
-      mediaRecorder.start();
-      setRecordingState('recording');
-    } catch (error) {
-      console.error('Failed to start recording:', error);
-      alert('Could not access microphone. Please check permissions.');
-    }
+  // Recording handlers - delegated to SimpleAudioRecorder
+  const handleRecordingComplete = (blob: Blob) => {
+    onRecordingComplete(blob);
   };
 
-  const handleStopRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  const handleCancelRecording = () => {
-    if (mediaRecorderRef.current && recordingState === 'recording') {
-      mediaRecorderRef.current.stop();
-      setRecordingState('idle');
-      audioChunksRef.current = [];
-    }
-  };
-
-  // Preview confirmation handlers
-  const handleConfirmRecording = () => {
-    if (recordedBlob) {
-      setRecordingState('confirmed');
-      onRecordingComplete(recordedBlob); // Now only called after confirmation
-    }
-  };
-
-  const handleReRecord = () => {
-    setRecordedBlob(null);
-    setRecordingSeconds(0);
-    setRecordingState('idle');
-    handleStartRecording(); // Start new recording
-  };
-
-  const handleCancelPreview = () => {
-    setRecordedBlob(null);
-    setRecordingSeconds(0);
-    setRecordingState('idle');
+  const handleRecordingCancel = () => {
     setSelectedMethod(null); // Go back to method selection
   };
+
+  // Show recording interface when record method is selected
+  if (selectedMethod === 'record') {
+    return (
+      <SimpleAudioRecorder
+        onComplete={handleRecordingComplete}
+        onCancel={handleRecordingCancel}
+        autoStart={initialMethod === 'record'}
+      />
+    );
+  }
 
   return (
     <div className="space-y-8">
       {/* Method Selection (if no method selected yet) */}
-      {!selectedMethod && !isRecording && (
+      {!selectedMethod && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Upload File */}
@@ -327,17 +218,14 @@ export function UploadInterface({
               <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
                 Upload File
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-700 dark:text-gray-400">
                 Import audio or video file
               </p>
             </button>
 
             {/* Record Audio */}
             <button
-              onClick={() => {
-                setSelectedMethod('record');
-                handleStartRecording();
-              }}
+              onClick={() => setSelectedMethod('record')}
               className="group p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
             >
               <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
@@ -346,7 +234,7 @@ export function UploadInterface({
               <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
                 Record Audio
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-700 dark:text-gray-400">
                 Record live conversation
               </p>
             </button>
@@ -362,7 +250,7 @@ export function UploadInterface({
               <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
                 Import from URL
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Coming soon</p>
+              <p className="text-sm text-gray-700 dark:text-gray-400">Coming soon</p>
             </button>
           </div>
 
@@ -394,10 +282,10 @@ export function UploadInterface({
             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {isDragging ? 'Drop your files here' : 'Drop your files here'}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-gray-700 dark:text-gray-400 mb-4">
               or click to browse (up to 3 files)
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               Supports: MP3, M4A, WAV, MP4, MOV, WebM (Max 5GB per file)
             </p>
             <input
@@ -428,7 +316,7 @@ export function UploadInterface({
                 Selected files ({selectedFiles.length})
               </h3>
               {selectedFiles.length > 1 && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-700 dark:text-gray-400">
                   Drag to reorder
                 </p>
               )}
@@ -464,7 +352,7 @@ export function UploadInterface({
                             {file.name}
                           </p>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                        <p className="text-xs text-gray-700 dark:text-gray-400">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                       </div>
@@ -502,7 +390,7 @@ export function UploadInterface({
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Add more files
                 </p>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   or click to browse
                 </span>
               </div>
@@ -516,10 +404,10 @@ export function UploadInterface({
                 Processing mode
               </label>
               {processingMode === 'merged' && (
-                <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399]/30 dark:border-[#cc3399]/50 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-blue-800 dark:text-blue-300">
+                    <Info className="h-4 w-4 text-[#cc3399] mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-gray-800 dark:text-gray-300">
                       Files will be merged in the order shown above. Drag to
                       reorder them chronologically.
                     </p>
@@ -548,7 +436,7 @@ export function UploadInterface({
                       Individual
                     </span>
                   </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                  <span className="text-xs text-gray-700 dark:text-gray-400 text-center">
                     Process as separate conversations
                   </span>
                 </button>
@@ -574,7 +462,7 @@ export function UploadInterface({
                       Merged
                     </span>
                   </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                  <span className="text-xs text-gray-700 dark:text-gray-400 text-center">
                     Merge into one conversation
                   </span>
                 </button>
@@ -593,70 +481,11 @@ export function UploadInterface({
             >
               Clear all
             </Button>
-            <Button variant="brand" size="lg" onClick={handleConfirmUpload}>
+            <Button variant="brand" onClick={handleConfirmUpload}>
               Upload & Process ({selectedFiles.length})
             </Button>
           </div>
         </div>
-      )}
-
-      {/* Recording Interface */}
-      {recordingState === 'recording' && (
-        <div className="space-y-8">
-          <div className="p-12 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700">
-            {/* Recording indicator */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  Recording...
-                </span>
-              </div>
-              <div className="text-3xl font-mono font-bold text-gray-900 dark:text-gray-100">
-                {formatTime(recordingSeconds)}
-              </div>
-            </div>
-
-            {/* Waveform */}
-            <div className="flex items-center justify-center gap-1 h-24 mb-8">
-              {waveformBars.map((height, index) => (
-                <div
-                  key={index}
-                  className="bg-[#cc3399] rounded-full transition-all duration-150"
-                  style={{
-                    width: '4px',
-                    height: `${height * 100}%`,
-                    opacity: 0.7 + height * 0.3,
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col items-center gap-3">
-              <Button variant="brand" size="lg" onClick={handleStopRecording} fullWidth>
-                Stop Recording
-              </Button>
-              <button
-                onClick={handleCancelRecording}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-              >
-                Cancel recording
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Recording Preview */}
-      {recordingState === 'preview' && recordedBlob && (
-        <RecordingPreview
-          audioBlob={recordedBlob}
-          duration={recordingSeconds}
-          onConfirm={handleConfirmRecording}
-          onReRecord={handleReRecord}
-          onCancel={handleCancelPreview}
-        />
       )}
     </div>
   );
