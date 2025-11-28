@@ -281,6 +281,9 @@
       "microphoneInUse": "Mikrofon wird bereits von einer anderen Anwendung verwendet. Bitte schließen Sie andere Apps und versuchen Sie es erneut.",
       "recordingFailed": "Aufnahme fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "warnings": {
+      "title": "Hinweis"
     }
   },
   "transcription": {

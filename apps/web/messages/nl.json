@@ -284,6 +284,9 @@
       "microphoneInUse": "Microfoon is al in gebruik door een andere applicatie. Sluit andere apps en probeer opnieuw.",
       "recordingFailed": "Opname mislukt. Probeer opnieuw.",
       "uploadFailed": "Upload mislukt. Probeer opnieuw."
+    },
+    "warnings": {
+      "title": "Let op"
     }
   },
   "transcription": {

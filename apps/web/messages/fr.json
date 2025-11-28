@@ -283,6 +283,9 @@
       "microphoneInUse": "Le microphone est déjà utilisé par une autre application. Veuillez fermer les autres applications et réessayer.",
       "recordingFailed": "Échec de l'enregistrement. Veuillez réessayer.",
       "uploadFailed": "Échec du téléchargement. Veuillez réessayer."
+    },
+    "warnings": {
+      "title": "Attention"
     }
   },
   "transcription": {

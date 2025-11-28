@@ -15,8 +15,10 @@ import {
   Upload,
   RotateCcw,
   AlertCircle,
+  AlertTriangle,
   PlayCircle,
   Volume2,
+  X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMediaRecorder, type RecordingSource } from '@/hooks/useMediaRecorder';
@@ -83,6 +85,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     duration,
     audioBlob,
     error,
+    warning,
     isSupported,
     canUseTabAudio,
     audioFormat,
@@ -93,6 +96,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
     reset,
     markAsUploaded,
     loadRecoveredRecording,
+    clearWarning,
     audioStream,
   } = useMediaRecorder({
     onStateChange: (newState) => {
@@ -554,6 +558,25 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
             <p className="text-sm font-medium text-red-900 dark:text-red-200">{t('errors.title')}</p>
             <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
           </div>
+        </div>
+      )}
+
+      {/* Warning Display (non-blocking, e.g., mic unavailable for tab audio) */}
+      {warning && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-900 dark:text-amber-200">{t('warnings.title')}</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">{warning}</p>
+          </div>
+          <button
+            type="button"
+            onClick={clearWarning}
+            className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 p-1 -mr-1 -mt-1"
+            aria-label="Dismiss warning"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 

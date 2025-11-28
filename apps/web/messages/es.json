@@ -283,6 +283,9 @@
       "microphoneInUse": "El micrófono ya está en uso por otra aplicación. Cierre otras aplicaciones e inténtelo de nuevo.",
       "recordingFailed": "Error en la grabación. Inténtelo de nuevo.",
       "uploadFailed": "Error en la carga. Inténtelo de nuevo."
+    },
+    "warnings": {
+      "title": "Aviso"
     }
   },
   "transcription": {

@@ -284,6 +284,9 @@
       "microphoneInUse": "Microphone is already in use by another application. Please close other apps and try again.",
       "recordingFailed": "Recording failed. Please try again.",
       "uploadFailed": "Upload failed. Please try again."
+    },
+    "warnings": {
+      "title": "Notice"
     }
   },
   "transcription": {

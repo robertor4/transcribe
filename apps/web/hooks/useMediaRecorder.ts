@@ -17,6 +17,7 @@ import {
   type AudioFormat,
 } from '@/utils/audio';
 import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordingStorage';
+import { mixAudioStreams } from '@/utils/audioMixer';
 
 export type RecordingSource = 'microphone' | 'tab-audio';
 
@@ -36,6 +37,7 @@ export interface UseMediaRecorderReturn {
   duration: number;
   audioBlob: Blob | null;
   error: string | null;
+  warning: string | null; // Non-blocking warning (e.g., mic unavailable for tab audio)
   isSupported: boolean;
   canUseTabAudio: boolean;
   audioFormat: AudioFormat;
@@ -48,6 +50,7 @@ export interface UseMediaRecorderReturn {
   reset: () => void;
   markAsUploaded: () => Promise<void>; // Mark recording as uploaded, removes beforeunload warning and cleans IndexedDB
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
+  clearWarning: () => void; // Clear the warning message
 
   // Audio stream (for visualization)
   audioStream: MediaStream | null;
@@ -67,6 +70,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [duration, setDuration] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
 
   // Refs
@@ -82,6 +86,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const autoSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const hasUploadedRef = useRef<boolean>(false);
   const durationRef = useRef<number>(0); // Track duration in ref for accurate storage
+
+  // Audio mixer refs (for tab audio + microphone mixing)
+  const mixerCleanupRef = useRef<(() => void) | null>(null);
+  const originalStreamsRef = useRef<MediaStream[]>([]);
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -125,6 +133,25 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     }
   }, []);
 
+  // Cleanup mixer resources (AudioContext and original streams)
+  const cleanupMixer = useCallback(() => {
+    // Call mixer cleanup function (disconnects nodes, closes AudioContext)
+    if (mixerCleanupRef.current) {
+      mixerCleanupRef.current();
+      mixerCleanupRef.current = null;
+    }
+    // Stop tracks from original streams (tab audio and microphone)
+    originalStreamsRef.current.forEach((stream) => {
+      stream.getTracks().forEach((track) => track.stop());
+    });
+    originalStreamsRef.current = [];
+  }, []);
+
+  // Clear warning message
+  const clearWarning = useCallback(() => {
+    setWarning(null);
+  }, []);
+
   // Get media stream based on source
   const getMediaStream = useCallback(
     async (source: RecordingSource): Promise<MediaStream> => {
@@ -138,14 +165,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           },
         });
       } else {
-        // Request tab audio capture (getDisplayMedia)
+        // Request tab audio capture (getDisplayMedia) with microphone mixing
         if (!canUseTabAudio) {
           throw new Error(
             'Tab audio capture is not supported in your browser. Please use Chrome or Edge.'
           );
         }
 
-        // Request screen/tab sharing with audio
+        // Step 1: Request screen/tab sharing with audio
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
           video: true, // Required, but we'll only use audio
           audio: true,
@@ -159,14 +186,53 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         }
 
         // Check if audio track exists
-        const audioTrack = displayStream.getAudioTracks()[0];
-        if (!audioTrack) {
+        const tabAudioTrack = displayStream.getAudioTracks()[0];
+        if (!tabAudioTrack) {
           throw new Error(
             'No audio track available. Make sure to check "Share tab audio" when selecting the tab.'
           );
         }
 
-        return displayStream;
+        // Step 2: Try to get microphone for mixing (graceful failure)
+        let micStream: MediaStream | null = null;
+        try {
+          micStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              sampleRate: 44100,
+            },
+          });
+          console.log('[useMediaRecorder] Microphone acquired for mixing with tab audio');
+        } catch (micError) {
+          // Microphone denied or unavailable - continue with tab audio only
+          const errorMessage =
+            micError instanceof Error && micError.name === 'NotAllowedError'
+              ? 'Microphone access denied - recording tab audio only. Your voice won\'t be included.'
+              : 'Microphone unavailable - recording tab audio only. Your voice won\'t be included.';
+          console.warn('[useMediaRecorder] Microphone unavailable for mixing:', micError);
+          setWarning(errorMessage);
+          return displayStream;
+        }
+
+        // Step 3: Mix both streams using Web Audio API
+        try {
+          const { mixedStream, cleanup } = await mixAudioStreams([displayStream, micStream]);
+
+          // Store references for cleanup
+          mixerCleanupRef.current = cleanup;
+          originalStreamsRef.current = [displayStream, micStream];
+
+          console.log('[useMediaRecorder] Tab audio + microphone mixed successfully');
+          return mixedStream;
+        } catch (mixError) {
+          // Mixing failed - fall back to tab audio only
+          console.error('[useMediaRecorder] Audio mixing failed, using tab audio only:', mixError);
+          setWarning('Audio mixing failed - recording tab audio only. Your voice won\'t be included.');
+          // Stop mic stream since we can't use it
+          micStream.getTracks().forEach((track) => track.stop());
+          return displayStream;
+        }
       }
     },
     [canUseTabAudio]
@@ -178,6 +244,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       try {
         // Reset previous state
         setError(null);
+        setWarning(null);
         setAudioBlob(null);
         chunksRef.current = [];
         hasUploadedRef.current = false;
@@ -242,6 +309,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           }
           setAudioStream(null);
 
+          // Clean up audio mixer resources (if used for tab audio + mic mixing)
+          cleanupMixer();
+
           updateState('stopped');
         };
 
@@ -273,6 +343,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           streamRef.current = null;
         }
         setAudioStream(null);
+        cleanupMixer();
       }
     },
     [
@@ -284,6 +355,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       startTimer,
       stopTimer,
       updateState,
+      cleanupMixer,
     ]
   );
 
@@ -340,6 +412,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     setDuration(0);
     setAudioBlob(null);
     setError(null);
+    setWarning(null);
     chunksRef.current = [];
     hasUploadedRef.current = false;
     recordingIdRef.current = null;
@@ -352,12 +425,15 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     }
     setAudioStream(null);
 
+    // Clean up audio mixer resources
+    cleanupMixer();
+
     // Release wake lock
     releaseWakeLock(wakeLockRef.current);
     wakeLockRef.current = null;
 
     updateState('idle');
-  }, [state, stopTimer, updateState]);
+  }, [state, stopTimer, updateState, cleanupMixer]);
 
   // Load a recovered recording into preview (for recovery flow)
   const loadRecoveredRecording = useCallback(
@@ -521,6 +597,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       if (autoSaveIntervalRef.current) {
         clearInterval(autoSaveIntervalRef.current);
       }
+      // Clean up audio mixer resources
+      if (mixerCleanupRef.current) {
+        mixerCleanupRef.current();
+      }
+      originalStreamsRef.current.forEach((stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+      });
     };
   }, [stopTimer]);
 
@@ -530,6 +613,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     duration,
     audioBlob,
     error,
+    warning,
     isSupported,
     canUseTabAudio,
     audioFormat,
@@ -542,6 +626,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     reset,
     markAsUploaded,
     loadRecoveredRecording,
+    clearWarning,
 
     // Audio stream
     audioStream,
