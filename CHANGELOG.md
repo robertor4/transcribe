@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Landing Page Hero Text**: Updated hero headline, subtitle, and byline across all 5 languages
+  - Headline: "Speak. We'll remember." → "Create anything with your voice"
+  - Subtitle: "Turn conversations into work-ready documents—effortlessly." → "Turn conversations into summaries, emails, social posts and more."
+  - Byline: "Voice-to-output creation platform" → "Speech-to-content platform"
+  - Files: [apps/web/messages/en.json](apps/web/messages/en.json), [apps/web/messages/nl.json](apps/web/messages/nl.json), [apps/web/messages/de.json](apps/web/messages/de.json), [apps/web/messages/fr.json](apps/web/messages/fr.json), [apps/web/messages/es.json](apps/web/messages/es.json)
+
 ### Fixed
 - **Stripe Webhook Failures**: Fixed webhook signature verification failures (HTTP 400 errors)
   - Root cause: Traefik's buffering middleware was modifying the raw request body

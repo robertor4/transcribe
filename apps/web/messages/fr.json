@@ -711,11 +711,11 @@
   },
   "landing": {
     "hero": {
-      "headline": "Parlez. Nous nous souviendrons.",
-      "subtitle": "Transformez les conversations en documents prêts à l'emploi—sans effort.",
+      "headline": "Créez tout avec votre voix",
+      "subtitle": "Transformez les conversations en résumés, e-mails, publications sociales et plus.",
       "ctaPrimary": "Commencer gratuitement",
       "ctaSecondary": "Voir la démo",
-      "byline": "Plateforme de création voix-vers-document",
+      "byline": "Plateforme voix-vers-contenu",
       "trustIndicators": {
         "users": "Approuvé par des professionnels",
         "rating": "Très bien noté",

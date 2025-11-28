@@ -711,11 +711,11 @@
   },
   "landing": {
     "hero": {
-      "headline": "Habla. Nosotros recordamos.",
-      "subtitle": "Convierte conversaciones en documentos listos para trabajar—sin esfuerzo.",
+      "headline": "Crea cualquier cosa con tu voz",
+      "subtitle": "Convierte conversaciones en resúmenes, correos, publicaciones y más.",
       "ctaPrimary": "Comenzar gratis",
       "ctaSecondary": "Ver demo",
-      "byline": "Plataforma de creación de voz a documento",
+      "byline": "Plataforma de voz a contenido",
       "trustIndicators": {
         "users": "Confiado por profesionales",
         "rating": "Altamente valorado",
