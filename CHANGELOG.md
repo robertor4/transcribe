@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Stripe Webhook Failures**: Fixed webhook signature verification failures (HTTP 400 errors)
+  - Root cause: Traefik's buffering middleware was modifying the raw request body
+  - Stripe webhook signature verification requires the exact raw body bytes
+  - Added dedicated Traefik router for `/api/stripe/webhook` that bypasses buffering
+  - Webhook route now only uses `api-strip-prefix` middleware (no `api-buffering`)
+  - Priority 95 ensures webhook route is matched before general API routes (priority 90)
+  - File: [docker-compose.prod.yml](docker-compose.prod.yml:110-117)
 - **Title Duplication Issue**: Fixed "Neural Summary" appearing twice in page titles
   - Removed title template (`'%s | Neural Summary'`) from root layout that was causing duplication
   - All page titles now properly display as "Neural Summary | Page Title" format
