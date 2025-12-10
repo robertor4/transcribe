@@ -91,7 +91,7 @@ services:
       retries: 3
     labels:
       - "traefik.enable=true"
-      
+
       # WebSocket routing (highest priority for socket.io)
       - "traefik.http.routers.websocket.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && PathPrefix(`/api/socket.io`)"
       - "traefik.http.routers.websocket.entrypoints=websecure"
@@ -100,17 +100,26 @@ services:
       - "traefik.http.routers.websocket.priority=100"
       - "traefik.http.routers.websocket.service=api-websocket"
       - "traefik.http.routers.websocket.middlewares=websocket-strip-prefix@docker"
-      
+
       # Strip /api prefix for WebSocket
       - "traefik.http.middlewares.websocket-strip-prefix.stripprefix.prefixes=/api"
-      
+
       # Service configuration for WebSocket
       - "traefik.http.services.api-websocket.loadbalancer.server.port=3001"
-      
+
+      # Stripe webhook routing (high priority, NO buffering to preserve raw body for signature verification)
+      - "traefik.http.routers.stripe-webhook.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && Path(`/api/stripe/webhook`)"
+      - "traefik.http.routers.stripe-webhook.entrypoints=websecure"
+      - "traefik.http.routers.stripe-webhook.tls=true"
+      - "traefik.http.routers.stripe-webhook.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.stripe-webhook.priority=95"
+      - "traefik.http.routers.stripe-webhook.service=api-service"
+      - "traefik.http.routers.stripe-webhook.middlewares=api-strip-prefix@docker"
+
       # Increase max request body size for file uploads (5GB)
       - "traefik.http.middlewares.api-buffering.buffering.maxRequestBodyBytes=5368709120"
-      
-      # API routing for regular HTTP requests  
+
+      # API routing for regular HTTP requests
       - "traefik.http.routers.api.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls=true"
@@ -118,10 +127,10 @@ services:
       - "traefik.http.routers.api.priority=90"
       - "traefik.http.routers.api.service=api-service"
       - "traefik.http.routers.api.middlewares=api-strip-prefix@docker,api-buffering@docker"
-      
+
       # Strip /api prefix for regular API calls
       - "traefik.http.middlewares.api-strip-prefix.stripprefix.prefixes=/api"
-      
+
       # Service configuration for API
       - "traefik.http.services.api-service.loadbalancer.server.port=3001"
     logging:

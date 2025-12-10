@@ -457,8 +457,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated prototype dashboard to link folders to detail view instead of first conversation
   - Updated PROTOTYPE_GUIDE.md with folder navigation testing instructions
   - Files: [apps/web/components/PrototypeHeader.tsx](apps/web/components/PrototypeHeader.tsx), [apps/web/app/[locale]/prototype-folder/[id]/page.tsx](apps/web/app/[locale]/prototype-folder/[id]/page.tsx), [apps/web/app/[locale]/prototype-dashboard/page.tsx](apps/web/app/[locale]/prototype-dashboard/page.tsx), [apps/web/app/[locale]/prototype-conversation/[id]/page.tsx](apps/web/app/[locale]/prototype-conversation/[id]/page.tsx)
+- **Landing Page Hero Text**: Updated hero headline, subtitle, and byline across all 5 languages
+  - Headline: "Speak. We'll remember." → "Create anything with your voice"
+  - Subtitle: "Turn conversations into work-ready documents—effortlessly." → "Turn conversations into summaries, emails, social posts and more."
+  - Byline: "Voice-to-output creation platform" → "Speech-to-content platform"
+  - Files: [apps/web/messages/en.json](apps/web/messages/en.json), [apps/web/messages/nl.json](apps/web/messages/nl.json), [apps/web/messages/de.json](apps/web/messages/de.json), [apps/web/messages/fr.json](apps/web/messages/fr.json), [apps/web/messages/es.json](apps/web/messages/es.json)
 
 ### Fixed
+- **Stripe Webhook Failures**: Fixed webhook signature verification failures (HTTP 400 errors)
+  - Root cause: Traefik's buffering middleware was modifying the raw request body
+  - Stripe webhook signature verification requires the exact raw body bytes
+  - Added dedicated Traefik router for `/api/stripe/webhook` that bypasses buffering
+  - Webhook route now only uses `api-strip-prefix` middleware (no `api-buffering`)
+  - Priority 95 ensures webhook route is matched before general API routes (priority 90)
+  - File: [docker-compose.prod.yml](docker-compose.prod.yml:110-117)
 - **Title Duplication Issue**: Fixed "Neural Summary" appearing twice in page titles
   - Removed title template (`'%s | Neural Summary'`) from root layout that was causing duplication
   - All page titles now properly display as "Neural Summary | Page Title" format

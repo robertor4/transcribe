@@ -284,6 +284,9 @@
       "microphoneInUse": "Microfoon is al in gebruik door een andere applicatie. Sluit andere apps en probeer opnieuw.",
       "recordingFailed": "Opname mislukt. Probeer opnieuw.",
       "uploadFailed": "Upload mislukt. Probeer opnieuw."
+    },
+    "warnings": {
+      "title": "Let op"
     }
   },
   "transcription": {
@@ -731,11 +734,11 @@
   },
   "landing": {
     "hero": {
-      "headline": "Spreek. Wij onthouden het.",
-      "subtitle": "Verander gesprekken in werkklare documenten—moeiteloos.",
+      "headline": "Creëer alles met je stem",
+      "subtitle": "Verander gesprekken in samenvattingen, e-mails, social posts en meer.",
       "ctaPrimary": "Start gratis",
       "ctaSecondary": "Bekijk demo",
-      "byline": "Van spraak naar document platform",
+      "byline": "Spraak-naar-content platform",
       "trustIndicators": {
         "users": "Vertrouwd door professionals",
         "rating": "Hoog gewaardeerd",

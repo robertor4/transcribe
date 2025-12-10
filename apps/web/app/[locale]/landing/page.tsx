@@ -119,16 +119,7 @@ export default async function LandingPage({
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
 
         {/* Hero Section - Minimal Apple-like Design */}
-        <section className="relative min-h-screen max-h-screen flex items-start justify-center overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
-          {/* Background Image - Clean, full opacity, positioned at bottom */}
-          <div className="absolute inset-0 flex items-end justify-center" aria-hidden="true">
-            <img
-              src="/assets/images/hero-bg-01 transparant.webp"
-              alt=""
-              className="w-full h-[400px] sm:h-[500px] md:h-auto md:max-h-[70vh] object-cover object-bottom -translate-y-16 sm:-translate-y-10 md:translate-y-0"
-            />
-          </div>
-
+        <section className="relative h-screen flex flex-col items-center justify-between overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
           {/* Content - Positioned at top, clean spacing */}
           <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-[16vh]">
             <div className="max-w-6xl mx-auto text-center">
@@ -150,7 +141,7 @@ export default async function LandingPage({
 
                 {/* Dual CTAs */}
                 <ScrollAnimation delay={600}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mb-12 sm:mb-16 md:mb-20">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
                     {/* Primary CTA */}
                     <CTAButton href="/signup" locale={locale} variant="primary">
                       {t('hero.ctaPrimary')}
@@ -165,6 +156,15 @@ export default async function LandingPage({
 
               </div>
             </div>
+          </div>
+
+          {/* Hero Image - Full width, aligned to bottom, scales up on mobile for better visibility */}
+          <div className="absolute inset-0 flex items-end justify-center overflow-hidden" aria-hidden="true">
+            <img
+              src="/assets/images/hero-bg-02.webp"
+              alt=""
+              className="min-w-[200%] sm:min-w-[150%] md:min-w-full w-full h-auto object-contain object-bottom"
+            />
           </div>
         </section>
 
