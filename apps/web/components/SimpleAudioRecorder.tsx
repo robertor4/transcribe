@@ -9,7 +9,6 @@ import { Mic, Monitor, AlertCircle, Pause, Square } from 'lucide-react';
 interface SimpleAudioRecorderProps {
   onComplete: (blob: Blob) => void;
   onCancel: () => void;
-  autoStart?: boolean;
 }
 
 /**
@@ -32,7 +31,6 @@ interface SimpleAudioRecorderProps {
 export function SimpleAudioRecorder({
   onComplete,
   onCancel,
-  autoStart = false,
 }: SimpleAudioRecorderProps) {
   const {
     state,
@@ -53,7 +51,6 @@ export function SimpleAudioRecorder({
   const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
   const [waveformBars, setWaveformBars] = useState<number[]>([]);
   const [showSourceSelector, setShowSourceSelector] = useState(true);
-  const [hasAttemptedAutoStart, setHasAttemptedAutoStart] = useState(false);
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -67,13 +64,10 @@ export function SimpleAudioRecorder({
     await startRecording(selectedSource);
   }, [startRecording, selectedSource]);
 
-  // Auto-start if requested (after source selection) - but only once
-  useEffect(() => {
-    if (autoStart && state === 'idle' && !showSourceSelector && !hasAttemptedAutoStart && !error) {
-      setHasAttemptedAutoStart(true);
-      handleStart();
-    }
-  }, [autoStart, state, showSourceSelector, hasAttemptedAutoStart, error, handleStart]);
+  // Back button handler - go back to source selection
+  const handleBackToSourceSelection = useCallback(() => {
+    setShowSourceSelector(true);
+  }, []);
 
   // Waveform animation (simple version - 30 random bars)
   useEffect(() => {
@@ -116,6 +110,11 @@ export function SimpleAudioRecorder({
   }, [reset, onCancel]);
 
   const handleCancelRecording = useCallback(() => {
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel? Your recording will be lost.'
+    );
+    if (!confirmed) return;
+
     reset();
     onCancel();
   }, [reset, onCancel]);
@@ -268,7 +267,13 @@ export function SimpleAudioRecorder({
           </div>
         </div>
 
-        {/* Waveform (only show when recording) */}
+        {/* Waveform area - maintains consistent height across states */}
+        {state === 'idle' && (
+          <div className="flex items-center justify-center h-24 mb-8">
+            <div className="w-full max-w-md h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+          </div>
+        )}
+
         {state === 'recording' && waveformBars.length > 0 && (
           <div className="flex items-center justify-center gap-1 h-24 mb-8">
             {waveformBars.map((height, index) => (
@@ -285,7 +290,6 @@ export function SimpleAudioRecorder({
           </div>
         )}
 
-        {/* Paused state message */}
         {state === 'paused' && (
           <div className="flex items-center justify-center h-24 mb-8">
             <p className="text-gray-600 dark:text-gray-400">
@@ -305,57 +309,41 @@ export function SimpleAudioRecorder({
 
           {/* Recording state - pause and stop buttons */}
           {state === 'recording' && (
-            <>
-              <div className="flex gap-3 w-full">
-                <Button
-                  variant="secondary"
-                  onClick={pauseRecording}
-                  fullWidth
-                  icon={<Pause className="w-5 h-5" />}
-                >
-                  Pause
-                </Button>
-                <Button
-                  variant="brand"
-                  onClick={stopRecording}
-                  fullWidth
-                  icon={<Square className="w-5 h-5" />}
-                >
-                  Stop Recording
-                </Button>
-              </div>
-              <button
-                onClick={handleCancelRecording}
-                className="text-sm text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            <div className="flex gap-3 w-full">
+              <Button
+                variant="secondary"
+                onClick={pauseRecording}
+                fullWidth
+                icon={<Pause className="w-5 h-5" />}
               >
-                Cancel recording
-              </button>
-            </>
+                Pause
+              </Button>
+              <Button
+                variant="brand"
+                onClick={stopRecording}
+                fullWidth
+                icon={<Square className="w-5 h-5" />}
+              >
+                Stop Recording
+              </Button>
+            </div>
           )}
 
           {/* Paused state - resume and stop buttons */}
           {state === 'paused' && (
-            <>
-              <div className="flex gap-3 w-full">
-                <Button variant="brand" onClick={resumeRecording} fullWidth icon={<Mic />}>
-                  Resume
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={stopRecording}
-                  fullWidth
-                  icon={<Square className="w-5 h-5" />}
-                >
-                  Stop
-                </Button>
-              </div>
-              <button
-                onClick={handleCancelRecording}
-                className="text-sm text-gray-700 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            <div className="flex gap-3 w-full">
+              <Button variant="brand" onClick={resumeRecording} fullWidth icon={<Mic />}>
+                Resume
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={stopRecording}
+                fullWidth
+                icon={<Square className="w-5 h-5" />}
               >
-                Cancel recording
-              </button>
-            </>
+                Stop
+              </Button>
+            </div>
           )}
 
           {/* Requesting permission state */}
@@ -369,6 +357,22 @@ export function SimpleAudioRecorder({
           )}
         </div>
       </div>
+
+      {/* Back/Cancel button - left-aligned, outside the recording box */}
+      {state === 'idle' && (
+        <div className="flex justify-start">
+          <Button variant="ghost" onClick={handleBackToSourceSelection}>
+            ← Change source
+          </Button>
+        </div>
+      )}
+      {(state === 'recording' || state === 'paused') && (
+        <div className="flex justify-start">
+          <Button variant="ghost" onClick={handleCancelRecording}>
+            Cancel
+          </Button>
+        </div>
+      )}
 
       {/* Source indicator */}
       {(state === 'recording' || state === 'paused') && (

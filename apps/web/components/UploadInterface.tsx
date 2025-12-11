@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Upload, Mic, Link as LinkIcon, X, FileAudio, GripVertical, Info } from 'lucide-react';
 import { Button } from './Button';
 import { SimpleAudioRecorder } from './SimpleAudioRecorder';
@@ -40,6 +40,22 @@ export function UploadInterface({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Notify parent when recording mode is active/inactive
+  useEffect(() => {
+    if (selectedMethod === 'record') {
+      onRecordingStateChange?.(true);
+    } else {
+      onRecordingStateChange?.(false);
+    }
+  }, [selectedMethod, onRecordingStateChange]);
+
+  // Cleanup: notify parent on unmount
+  useEffect(() => {
+    return () => {
+      onRecordingStateChange?.(false);
+    };
+  }, [onRecordingStateChange]);
 
   // File upload handlers
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -201,7 +217,6 @@ export function UploadInterface({
       <SimpleAudioRecorder
         onComplete={handleRecordingComplete}
         onCancel={handleRecordingCancel}
-        autoStart={initialMethod === 'record'}
       />
     );
   }

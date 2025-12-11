@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Mic, FileText, Users, Edit3, Sparkles, CheckSquare, Folder, MessageSquare, Upload, Share2, Mail, Briefcase, Target, Heart } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
@@ -25,6 +25,7 @@ interface CreateModalConfig {
 
 export default function PrototypeDashboardV2() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const ungroupedConversations = mockConversations.filter(c => !c.folderId);
   const [isRecording, setIsRecording] = useState(false);
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
@@ -35,6 +36,18 @@ export default function PrototypeDashboardV2() {
 
   // Mock user email for greeting (in production, get from auth context)
   const userEmail = 'roberto@dreamone.nl';
+
+  // Check for newConversation query param to auto-open modal
+  useEffect(() => {
+    if (searchParams.get('newConversation') === 'true') {
+      setCreateModalConfig({
+        isOpen: true,
+        initialStep: 'capture',
+      });
+      // Clear the query param from URL
+      router.replace('/prototype-dashboard-v2');
+    }
+  }, [searchParams, router]);
 
   // Check for milestone on mount
   useEffect(() => {
@@ -72,7 +85,7 @@ export default function PrototypeDashboardV2() {
     setCreateModalConfig({
       isOpen: true,
       skipTemplate: false,
-      initialStep: 'input-method',    // Start with new flow
+      initialStep: 'capture',
       uploadMethod: 'record',
     });
   };
@@ -81,7 +94,7 @@ export default function PrototypeDashboardV2() {
     setCreateModalConfig({
       isOpen: true,
       skipTemplate: false,
-      initialStep: 'input-method',    // Start with new flow
+      initialStep: 'capture',
       uploadMethod: 'file',
     });
   };
@@ -91,7 +104,7 @@ export default function PrototypeDashboardV2() {
     setCreateModalConfig({
       isOpen: true,
       skipTemplate: false,
-      initialStep: 'input-method',    // Start with new flow
+      initialStep: 'capture',
       preselectedTemplateId: templateId,
     });
   };
@@ -99,14 +112,14 @@ export default function PrototypeDashboardV2() {
   const handleMoreTemplates = () => {
     setCreateModalConfig({
       isOpen: true,
-      initialStep: 'input-method',    // Start with new flow
+      initialStep: 'capture',
     });
   };
 
   return (
     <div className="h-screen flex flex-col">
       <ThreePaneLayout
-        leftSidebar={<LeftNavigation />}
+        leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
         showRightPanel={false} // No right panel on dashboard
         mainContent={
           <div className="max-w-7xl mx-auto px-6 py-12">

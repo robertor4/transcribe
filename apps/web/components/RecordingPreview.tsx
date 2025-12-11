@@ -70,6 +70,23 @@ export function RecordingPreview({
     setCurrentTime(0);
   };
 
+  // Confirmation handlers to prevent accidental data loss
+  const handleCancelWithConfirmation = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel? Your recording will be lost.'
+    );
+    if (!confirmed) return;
+    onCancel();
+  };
+
+  const handleReRecordWithConfirmation = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to re-record? Your current recording will be lost.'
+    );
+    if (!confirmed) return;
+    onReRecord();
+  };
+
   // Generate static waveform visualization
   const waveformBars = useMemo(() => {
     return Array.from({ length: 40 }, (_, i) => {
@@ -165,11 +182,11 @@ export function RecordingPreview({
 
       {/* Actions */}
       <div className="flex items-center justify-between gap-4">
-        <Button variant="ghost" onClick={onReRecord}>
+        <Button variant="ghost" onClick={handleReRecordWithConfirmation}>
           ← Re-record
         </Button>
         <div className="flex gap-3">
-          <Button variant="secondary" onClick={onCancel}>
+          <Button variant="secondary" onClick={handleCancelWithConfirmation}>
             Cancel
           </Button>
           <Button variant="brand" onClick={onConfirm}>

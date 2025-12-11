@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Plus, Folder, Clock, Briefcase, Target, Heart, PanelLeft, Home, MessageSquarePlus } from 'lucide-react';
-import { mockFolders, mockConversations, getRecentConversations } from '@/lib/mockData';
-import { Button } from '@/components/Button';
+import { useRouter } from 'next/navigation';
+import { Search, Plus, Clock, Briefcase, Target, Heart, PanelLeft, Home, MessageSquarePlus } from 'lucide-react';
+import { mockFolders, getRecentConversations } from '@/lib/mockData';
 
 interface LeftNavigationProps {
   onToggleSidebar?: () => void;
+  onNewConversation?: () => void;
 }
 
 /**
@@ -15,8 +16,18 @@ interface LeftNavigationProps {
  * Shows: Logo, Folders, Recent Conversations, User Profile
  * Follows ChatGPT/Claude/Linear navigation patterns
  */
-export function LeftNavigation({ onToggleSidebar }: LeftNavigationProps) {
+export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavigationProps) {
+  const router = useRouter();
   const recentConversations = getRecentConversations(5);
+
+  const handleNewConversation = () => {
+    if (onNewConversation) {
+      onNewConversation();
+    } else {
+      // Navigate to dashboard with query param to open modal
+      router.push('/prototype-dashboard-v2?newConversation=true');
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-transparent">
@@ -77,6 +88,7 @@ export function LeftNavigation({ onToggleSidebar }: LeftNavigationProps) {
               </span>
             </Link>
             <button
+              onClick={handleNewConversation}
               className="group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left"
             >
               <MessageSquarePlus className="w-4 h-4 text-gray-400 flex-shrink-0 group-hover:text-[#cc3399] transition-colors" />
