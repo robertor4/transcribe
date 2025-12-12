@@ -2,7 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { BarChart3, Zap, FileText, Mail, CheckSquare, Edit3, Share2, ArrowLeft, Plus } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import {
+  BarChart3,
+  Zap,
+  FileText,
+  Mail,
+  CheckSquare,
+  Edit3,
+  Share2,
+  ArrowLeft,
+  Plus,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { RightContextPanel } from '@/components/RightContextPanel';
@@ -10,36 +23,89 @@ import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
 import { RecordingModal } from '@/components/RecordingModal';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
-import { mockConversations, mockFolders, getOutputsByConversation, formatRelativeTime } from '@/lib/mockData';
+import { SummaryRenderer } from '@/components/SummaryRenderer';
+import { useConversation } from '@/hooks/useConversation';
+import { useFolders } from '@/hooks/useFolders';
+import { formatRelativeTime, formatDuration } from '@/lib/formatters';
 
 interface ConversationClientProps {
   conversationId: string;
 }
 
 export function ConversationClient({ conversationId }: ConversationClientProps) {
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
+
   const [isRecording, setIsRecording] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
-  const conversation = mockConversations.find(c => c.id === conversationId) || mockConversations[0];
-  const folder = conversation.folderId ? mockFolders.find(f => f.id === conversation.folderId) : null;
-  const outputs = getOutputsByConversation(conversation.id);
+  const { conversation, isLoading, error } = useConversation(conversationId);
+  const { folders } = useFolders();
+
+  // Find the folder for this conversation
+  const folder = conversation?.folderId
+    ? folders.find((f) => f.id === conversation.folderId)
+    : null;
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
     switch (type) {
-      case 'email': return Mail;
-      case 'actionItems': return CheckSquare;
-      case 'blogPost': return Edit3;
-      case 'linkedin': return Share2;
-      case 'userStories': return FileText;
-      default: return FileText;
+      case 'email':
+        return Mail;
+      case 'actionItems':
+        return CheckSquare;
+      case 'blogPost':
+        return Edit3;
+      case 'linkedin':
+        return Share2;
+      case 'userStories':
+        return FileText;
+      default:
+        return FileText;
     }
   };
+
+  const handleGenerateOutput = (outputType: string) => {
+    console.log('Generate output:', outputType);
+    // TODO: Implement output generation
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#cc3399] mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading conversation...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !conversation) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Conversation not found
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error?.message || 'The conversation you are looking for does not exist or you do not have access to it.'}
+          </p>
+          <Link href={`/${locale}/dashboard`}>
+            <Button variant="primary">Back to Dashboard</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Conversation details for right panel
   const conversationDetails = {
     duration: conversation.source.audioDuration,
-    fileSize: '8.5 MB',
+    fileSize: '—', // TODO: Add file size to Conversation type
     createdAt: conversation.createdAt,
     status: conversation.status,
     folder: folder ? { id: folder.id, name: folder.name } : undefined,
@@ -47,9 +113,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     speakers: conversation.source.transcript.speakers,
   };
 
-  const handleGenerateOutput = (outputType: string) => {
-    console.log('Generate output:', outputType);
-  };
+  // TODO: Fetch outputs from API when implemented
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const outputs: any[] = [];
 
   return (
     <div className="h-screen flex flex-col">
@@ -65,22 +131,27 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           <div className="max-w-4xl mx-auto px-6 py-8">
             {/* Header */}
             <div className="mb-8">
-              {folder && (
-                <Link
-                  href={`/prototype-folder-v2/${folder.id}`}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors mb-3"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  {folder.name}
-                </Link>
-              )}
+              <Link
+                href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors mb-6"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {folder ? folder.name : 'Dashboard'}
+              </Link>
               <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3">
                 {conversation.title}
               </h1>
               <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-                <span>{Math.floor(conversation.source.audioDuration / 60)} min</span>
+                <span>{formatDuration(conversation.source.audioDuration)}</span>
                 <span>·</span>
-                <span>Created {conversation.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span>
+                  Created{' '}
+                  {conversation.createdAt.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
 
@@ -108,52 +179,27 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               </div>
             </nav>
 
-            {/* VERTICAL SECTIONS (No Tabs!) */}
-
             {/* Section: Summary */}
             <section id="summary" className="mb-12 scroll-mt-8">
               <div className="flex items-center gap-3 mb-4">
                 <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  Summary
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Summary</h2>
               </div>
 
-              <div className="prose prose-lg max-w-none">
-                <p className="text-lg font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {conversation.source.summary.text}
-                </p>
-
-                {conversation.source.summary.keyPoints.length > 0 && (
-                  <div className="mt-6 pl-6 py-1 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#cc3399]">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Key Points</h3>
-                    <ul className="space-y-2 list-disc list-inside">
-                      {conversation.source.summary.keyPoints.map((point, idx) => (
-                        <li key={idx} className="font-medium text-gray-700 dark:text-gray-300">{point}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Detailed Discussion of Key Points */}
-                {conversation.source.summary.keyPointsDetailed && conversation.source.summary.keyPointsDetailed.length > 0 && (
-                  <div className="mt-8 space-y-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Detailed Discussion</h3>
-                    {conversation.source.summary.keyPointsDetailed.map((detail, idx) => (
-                      <div key={idx} className="pl-6 border-l-2 border-gray-200 dark:border-gray-700">
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{detail.title}</h4>
-                        <p className="text-base font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {detail.content}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {conversation.source.summary.text ? (
+                <SummaryRenderer content={conversation.source.summary.text} />
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Summary is being generated...</p>
+                </div>
+              )}
             </section>
 
             {/* Section: Generated Outputs */}
-            <section id="outputs" className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
+            <section
+              id="outputs"
+              className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
+            >
               <div className="mb-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -188,7 +234,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     return (
                       <Link
                         key={output.id}
-                        href={`/en/prototype-conversation-v2/${conversation.id}/outputs/${output.id}`}
+                        href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
                         className="group relative p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#cc3399] dark:hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
                       >
                         <div className="flex items-start gap-4">
@@ -221,13 +267,10 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     No outputs yet
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
-                    Generate your first output to transform this conversation into a deliverable format.
+                    Generate your first output to transform this conversation into a deliverable
+                    format.
                   </p>
-                  <Button
-                    variant="brand"
-                    size="md"
-                    onClick={() => setIsGeneratorOpen(true)}
-                  >
+                  <Button variant="brand" size="md" onClick={() => setIsGeneratorOpen(true)}>
                     Generate Output
                   </Button>
                 </div>
@@ -235,7 +278,10 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </section>
 
             {/* Section: Transcript */}
-            <section id="transcript" className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
+            <section
+              id="transcript"
+              className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
+            >
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
@@ -250,7 +296,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
               {/* Transcript Card - Links to dedicated page */}
               <Link
-                href={`/en/prototype-conversation-v2/${conversation.id}/transcript`}
+                href={`/${locale}/conversation/${conversation.id}/transcript`}
                 className="group block p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#cc3399] dark:hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
               >
                 <div className="flex items-start gap-4">
@@ -262,13 +308,17 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       Full Transcript with Timeline
                     </h3>
                     <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                      Interactive speaker timeline with {conversation.source.transcript.speakers} speakers and {Math.floor(conversation.source.transcript.confidence * 100)}% confidence
+                      Interactive speaker timeline with {conversation.source.transcript.speakers}{' '}
+                      speakers and{' '}
+                      {Math.floor(conversation.source.transcript.confidence * 100)}% confidence
                     </p>
                     {conversation.source.transcript.speakerSegments && (
                       <div className="flex items-center gap-4 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                        <span>{conversation.source.transcript.speakerSegments.length} segments</span>
+                        <span>
+                          {conversation.source.transcript.speakerSegments.length} segments
+                        </span>
                         <span>·</span>
-                        <span>{Math.floor(conversation.source.audioDuration / 60)} min duration</span>
+                        <span>{formatDuration(conversation.source.audioDuration)} duration</span>
                       </div>
                     )}
                   </div>
@@ -278,20 +328,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 </div>
               </Link>
             </section>
-
-            {/* Prototype Notice */}
-            <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399] rounded-xl">
-              <div className="flex items-start gap-3">
-                <div className="text-2xl">🧪</div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Three-Pane UI Prototype (V2)</div>
-                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Conversation view with vertical sections (no tabs), professional icons, and contextual right panel.
-                    Use the floating button (bottom-right) for quick recording.
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         }
       />

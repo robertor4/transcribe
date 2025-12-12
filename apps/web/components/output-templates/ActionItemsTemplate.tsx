@@ -1,4 +1,4 @@
-import { ActionItemsOutputContent } from '@/lib/mockData';
+import { ActionItemsOutputContent } from '@/lib/types/outputs';
 import { CheckSquare, Circle, User, Calendar } from 'lucide-react';
 
 interface ActionItemsTemplateProps {

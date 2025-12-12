@@ -349,6 +349,28 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Move transcription to a folder (or remove from folder with null)
+   */
+  @Patch(':id/folder')
+  @UseGuards(FirebaseAuthGuard)
+  async moveToFolder(
+    @Param('id') id: string,
+    @Body('folderId') folderId: string | null,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    await this.transcriptionService.moveToFolder(req.user.uid, id, folderId);
+
+    return {
+      success: true,
+      data: {
+        message: folderId
+          ? 'Transcription moved to folder'
+          : 'Transcription removed from folder',
+      },
+    };
+  }
+
   @Delete(':id')
   @UseGuards(FirebaseAuthGuard)
   async deleteTranscription(

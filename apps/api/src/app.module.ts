@@ -15,6 +15,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { UsageModule } from './usage/usage.module';
 import { AdminModule } from './admin/admin.module';
 import { QueueModule } from './queue/queue.module';
+import { FolderModule } from './folder/folder.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { QueueModule } from './queue/queue.module';
     StripeModule,
     UsageModule,
     AdminModule,
+    FolderModule,
   ],
   controllers: [AppController],
   providers: [

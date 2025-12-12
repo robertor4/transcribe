@@ -1,4 +1,4 @@
-import { LinkedInOutputContent } from '@/lib/mockData';
+import { LinkedInOutputContent } from '@/lib/types/outputs';
 import { Hash } from 'lucide-react';
 
 interface LinkedInTemplateProps {

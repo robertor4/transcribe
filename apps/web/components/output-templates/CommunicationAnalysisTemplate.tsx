@@ -1,4 +1,4 @@
-import { CommunicationAnalysisOutputContent } from '@/lib/mockData';
+import { CommunicationAnalysisOutputContent } from '@/lib/types/outputs';
 import { MessageSquareQuote, TrendingUp, AlertCircle, Lightbulb } from 'lucide-react';
 
 interface CommunicationAnalysisTemplateProps {

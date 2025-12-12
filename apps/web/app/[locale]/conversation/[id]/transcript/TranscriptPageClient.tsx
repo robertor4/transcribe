@@ -4,21 +4,20 @@ import { FileText, Copy } from 'lucide-react';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
 import { DetailMetadataPanel } from '@/components/detail-pages/DetailMetadataPanel';
-import { PrototypeNotice } from '@/components/detail-pages/PrototypeNotice';
 import { Button } from '@/components/Button';
 import TranscriptTimeline from '@/components/TranscriptTimeline';
-import { mockConversations, mockFolders } from '@/lib/mockData';
+import { useConversation } from '@/hooks/useConversation';
+import { formatDuration } from '@/lib/formatters';
 
 interface TranscriptPageClientProps {
   conversationId: string;
 }
 
 export function TranscriptPageClient({ conversationId }: TranscriptPageClientProps) {
-  const conversation = mockConversations.find(c => c.id === conversationId) || mockConversations[0];
-  const folder = conversation.folderId ? mockFolders.find(f => f.id === conversation.folderId) : null;
+  const { conversation, isLoading, error, refresh } = useConversation(conversationId);
 
   const handleCopyTranscript = () => {
-    if (conversation.source.transcript.speakerSegments) {
+    if (conversation?.source.transcript.speakerSegments) {
       const formattedTranscript = conversation.source.transcript.speakerSegments
         .map(segment => {
           const minutes = Math.floor(segment.startTime / 60);
@@ -33,12 +32,38 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
     }
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading transcript...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !conversation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">😕</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Conversation Not Found</h2>
+          <p className="text-gray-600">{error?.message || 'Unable to load conversation'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const transcript = conversation.source.transcript;
   const detailsData = [
-    { label: 'Speakers', value: conversation.source.transcript.speakers },
-    { label: 'Confidence', value: `${Math.floor(conversation.source.transcript.confidence * 100)}%` },
-    { label: 'Duration', value: `${Math.floor(conversation.source.audioDuration / 60)} min` },
-    ...(conversation.source.transcript.speakerSegments
-      ? [{ label: 'Segments', value: conversation.source.transcript.speakerSegments.length }]
+    { label: 'Speakers', value: transcript.speakers },
+    { label: 'Confidence', value: `${Math.floor(transcript.confidence * 100)}%` },
+    { label: 'Duration', value: formatDuration(conversation.source.audioDuration) },
+    ...(transcript.speakerSegments
+      ? [{ label: 'Segments', value: transcript.speakerSegments.length }]
       : []
     )
   ];
@@ -65,7 +90,7 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
         conversationTitle={conversation.title}
         icon={FileText}
         title="Transcript"
-        subtitle={`${conversation.source.transcript.speakers} speakers · ${Math.floor(conversation.source.transcript.confidence * 100)}% confidence`}
+        subtitle={`${transcript.speakers} speakers · ${Math.floor(transcript.confidence * 100)}% confidence`}
         maxWidth="max-w-6xl"
         actions={
           <Button
@@ -81,15 +106,13 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
 
       <div className="max-w-6xl mx-auto px-6 pb-8">
         {/* Transcript Timeline Component */}
-        {conversation.source.transcript.speakerSegments && conversation.source.transcript.speakerSegments.length > 0 ? (
+        {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
           <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-8">
             <TranscriptTimeline
               transcriptionId={conversation.id}
-              segments={conversation.source.transcript.speakerSegments}
+              segments={transcript.speakerSegments}
               readOnlyMode={false}
-              onRefresh={() => {
-                console.log('Transcript refreshed');
-              }}
+              onRefresh={refresh}
             />
           </div>
         ) : (
@@ -99,20 +122,15 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
               No Speaker Timeline Available
             </h3>
             <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
-              This conversation doesn't have speaker diarization data.
+              This conversation does not have speaker diarization data.
             </p>
             <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg">
               <p className="font-medium text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                {conversation.source.transcript.text}
+                {transcript.text}
               </p>
             </div>
           </div>
         )}
-
-        <PrototypeNotice
-          title="Transcript Timeline Page (V2)"
-          description="Dedicated page for speaker diarization timeline with interactive visualization, search, and copy functionality."
-        />
       </div>
     </DetailPageLayout>
   );

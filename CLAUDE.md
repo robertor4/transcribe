@@ -348,10 +348,21 @@ Supported analysis types: Summary, Communication Styles, Action Items, Emotional
 FIREBASE_STORAGE_BUCKET=project-id.firebasestorage.app
 ```
 
-### Required Firestore Composite Index
-Create composite index for transcriptions:
+### Required Firestore Composite Indexes
+
+**Transcriptions index** (existing):
 - Collection: `transcriptions`
 - Fields: `userId` (Ascending), `createdAt` (Descending)
+
+**Folders index** (V2):
+- Collection: `folders`
+- Fields: `userId` (Ascending), `sortOrder` (Ascending), `createdAt` (Ascending)
+
+**Transcriptions by folder index** (V2):
+- Collection: `transcriptions`
+- Fields: `userId` (Ascending), `folderId` (Ascending), `createdAt` (Descending)
+
+Note: Firestore will provide a link to auto-create indexes when queries fail. Follow the link in the error message to create the index.
 
 ### Audio Processing Constraints
 - Max file size: 1GB (Free), 3GB (Pro), 5GB (Enterprise)

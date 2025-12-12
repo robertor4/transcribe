@@ -30,8 +30,10 @@ import {
   BatchUploadResponse,
   SUPPORTED_LANGUAGES,
   GeneratedAnalysis,
+  SummaryV2,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
+import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
 import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
@@ -681,6 +683,71 @@ ${fullCustomPrompt}`;
   }
 
   /**
+   * V2: Generate structured JSON summary using the new V2 prompt and parser.
+   * Returns a SummaryV2 object with structured data instead of markdown.
+   */
+  async generateSummaryV2(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<SummaryV2> {
+    try {
+      this.logger.log('Generating V2 structured summary...');
+
+      const systemPrompt = prompts.SUMMARIZATION_SYSTEM_PROMPT_V2;
+      const userPrompt = prompts.buildSummaryPromptV2(
+        transcriptionText,
+        context,
+        language,
+      );
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-5', // Always use GPT-5 for summaries
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_completion_tokens: 8000,
+      });
+
+      const aiResponse = completion.choices[0].message.content || '';
+
+      // Parse and validate the JSON response
+      const summaryV2 = parseSummaryV2(aiResponse);
+
+      this.logger.log(
+        `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections`,
+      );
+
+      return summaryV2;
+    } catch (error) {
+      this.logger.error('Error generating V2 summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate V2 summary and also return markdown version for backwards compatibility.
+   * Used during transition period.
+   */
+  async generateSummaryV2WithMarkdown(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<{ summaryV2: SummaryV2; markdownSummary: string }> {
+    const summaryV2 = await this.generateSummaryV2(
+      transcriptionText,
+      context,
+      language,
+    );
+
+    // Convert to markdown for backwards compatibility
+    const markdownSummary = summaryV2ToMarkdown(summaryV2);
+
+    return { summaryV2, markdownSummary };
+  }
+
+  /**
    * DEPRECATED: Use generateCoreAnalyses() instead
    * Kept for backward compatibility
    */
@@ -803,7 +870,10 @@ ${fullCustomPrompt}`;
 
   /**
    * NEW: Generate only core analyses (Summary, Action Items, Communication, Transcript)
-   * This is the new default for the on-demand analysis system
+   * This is the new default for the on-demand analysis system.
+   *
+   * V2 UPDATE: Now generates structured SummaryV2 JSON and also provides markdown
+   * version for backwards compatibility.
    */
   async generateCoreAnalyses(
     transcriptionText: string,
@@ -811,26 +881,25 @@ ${fullCustomPrompt}`;
     language?: string,
   ): Promise<{
     summary: string;
+    summaryV2?: SummaryV2;
     actionItems: string;
     communicationStyles: string;
     transcript: string;
   }> {
     try {
       this.logger.log(
-        'Generating core analyses (Summary, Action Items, Communication)...',
+        'Generating core analyses (V2 Summary, Action Items, Communication)...',
       );
 
       const analysisPromises = [
-        // Summary - Always use GPT-5
-        this.generateSummaryWithModel(
+        // V2 Summary - Structured JSON format with GPT-5
+        this.generateSummaryV2WithMarkdown(
           transcriptionText,
-          AnalysisType.SUMMARY,
           context,
           language,
-          'gpt-5',
         ).catch((err) => {
-          this.logger.error('Summary generation failed:', err);
-          return 'Summary generation failed. Please try again.';
+          this.logger.error('V2 Summary generation failed:', err);
+          return null;
         }),
 
         // Action Items - Use GPT-5-mini
@@ -858,13 +927,23 @@ ${fullCustomPrompt}`;
         }),
       ];
 
-      const [summary, actionItems, communicationStyles] =
-        await Promise.all(analysisPromises);
+      const results = await Promise.all(analysisPromises);
 
       this.logger.log('Core analyses completed');
 
+      // Handle V2 summary result (contains both structured and markdown)
+      const summaryData = results[0] as {
+        summaryV2: SummaryV2;
+        markdownSummary: string;
+      } | null;
+      const actionItems = results[1] as string | null;
+      const communicationStyles = results[2] as string | null;
+
       return {
-        summary: summary || 'Summary generation failed. Please try again.',
+        summary:
+          summaryData?.markdownSummary ||
+          'Summary generation failed. Please try again.',
+        summaryV2: summaryData?.summaryV2, // V2 structured data (undefined if generation failed)
         actionItems: actionItems || 'No action items identified.',
         communicationStyles:
           communicationStyles || 'Communication analysis unavailable.',
@@ -1034,6 +1113,17 @@ ${fullCustomPrompt}`;
     }
 
     return updatedTranscription;
+  }
+
+  /**
+   * Move a transcription to a folder (or remove from folder with null)
+   */
+  async moveToFolder(
+    userId: string,
+    transcriptionId: string,
+    folderId: string | null,
+  ): Promise<void> {
+    await this.firebaseService.moveToFolder(userId, transcriptionId, folderId);
   }
 
   async deleteTranscription(userId: string, transcriptionId: string) {

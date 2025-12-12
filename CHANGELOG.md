@@ -8,6 +8,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **V2 Migration Phase 1 - Backend Folder Support**:
+  - Added `Folder`, `CreateFolderRequest`, `UpdateFolderRequest` types to shared package
+  - Added `folderId` field to `Transcription` interface
+  - Implemented folder CRUD methods in `FirebaseService`:
+    - `createFolder`, `getUserFolders`, `getFolder`, `updateFolder`, `deleteFolder`
+    - `getTranscriptionsByFolder`, `moveToFolder`
+  - Created `FolderModule` with `FolderController` endpoints:
+    - `POST /folders` - Create folder
+    - `GET /folders` - List user folders
+    - `GET /folders/:id` - Get single folder
+    - `PUT /folders/:id` - Update folder
+    - `DELETE /folders/:id` - Delete folder with options:
+      - Default: moves conversations to "unfiled"
+      - `?deleteContents=true&confirm=true`: soft-deletes all conversations in folder
+    - `GET /folders/:id/transcriptions` - Get folder transcriptions
+  - Added `deletedAt` field to `Transcription` interface for soft delete support
+  - Added `PATCH /transcriptions/:id/folder` endpoint to move transcriptions between folders
+  - Documented required Firestore composite indexes for folders
+
+- **V2 Migration Phase 2 - Frontend Data Layer**:
+  - Created `Conversation` type adapter ([lib/types/conversation.ts](apps/web/lib/types/conversation.ts)):
+    - Maps backend `Transcription` to frontend `Conversation` terminology
+    - Extracts summary, transcript, and sharing data from various source locations
+  - Added `folderApi` to API client ([lib/api.ts](apps/web/lib/api.ts))
+  - Created service layer:
+    - [lib/services/conversationService.ts](apps/web/lib/services/conversationService.ts) - High-level conversation operations
+    - [lib/services/folderService.ts](apps/web/lib/services/folderService.ts) - Folder management
+  - Created React hooks:
+    - [hooks/useConversations.ts](apps/web/hooks/useConversations.ts) - List with pagination, WebSocket progress
+    - [hooks/useConversation.ts](apps/web/hooks/useConversation.ts) - Single conversation fetching
+    - [hooks/useFolders.ts](apps/web/hooks/useFolders.ts) - Folder CRUD operations
+  - Added utility formatters ([lib/formatters.ts](apps/web/lib/formatters.ts)):
+    - `formatDuration`, `formatRelativeTime`, `formatFullDate`, `formatFileSize`, etc.
+
 - **SimpleAudioRecorder Component**: New lightweight recording component that reuses production infrastructure
   - Replaces inline recording logic in UploadInterface (~150 lines removed)
   - Reuses production `useMediaRecorder` hook for robustness (recovery, wake lock, error handling, browser compatibility)

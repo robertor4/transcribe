@@ -283,6 +283,41 @@ export const transcriptionApi = {
   regenerateCoreAnalyses: async (id: string): Promise<ApiResponse<unknown>> => {
     return api.post(`/transcriptions/${id}/regenerate-core-analyses`);
   },
+
+  // Folder API method
+  moveToFolder: async (id: string, folderId: string | null): Promise<ApiResponse<{ message: string }>> => {
+    return api.patch(`/transcriptions/${id}/folder`, { folderId });
+  },
+};
+
+// Folder API
+export const folderApi = {
+  list: async (): Promise<ApiResponse<unknown[]>> => {
+    return api.get('/folders');
+  },
+
+  get: async (id: string): Promise<ApiResponse<unknown>> => {
+    return api.get(`/folders/${id}`);
+  },
+
+  create: async (name: string, color?: string): Promise<ApiResponse<unknown>> => {
+    return api.post('/folders', { name, color });
+  },
+
+  update: async (id: string, data: { name?: string; color?: string; sortOrder?: number }): Promise<ApiResponse<unknown>> => {
+    return api.put(`/folders/${id}`, data);
+  },
+
+  delete: async (id: string, deleteContents: boolean = false): Promise<ApiResponse<{ message: string; deletedConversations?: number }>> => {
+    const params = deleteContents
+      ? { deleteContents: 'true', confirm: 'true' }
+      : {};
+    return api.delete(`/folders/${id}`, { params });
+  },
+
+  getTranscriptions: async (id: string): Promise<ApiResponse<unknown[]>> => {
+    return api.get(`/folders/${id}/transcriptions`);
+  },
 };
 
 export default api;

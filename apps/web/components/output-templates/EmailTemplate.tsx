@@ -1,4 +1,4 @@
-import { EmailOutputContent } from '@/lib/mockData';
+import { EmailOutputContent } from '@/lib/types/outputs';
 
 interface EmailTemplateProps {
   content: EmailOutputContent;

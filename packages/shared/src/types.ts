@@ -1,4 +1,5 @@
 import { BASE_PRICING } from './pricing';
+import { SummaryV2 } from './types/summary';
 
 export enum TranscriptionStatus {
   PENDING = 'pending',
@@ -83,6 +84,28 @@ export interface TranscriptionContext {
   updatedAt: Date;
 }
 
+// V2 Folder support
+export interface Folder {
+  id: string;
+  userId: string;
+  name: string;
+  color?: string;
+  sortOrder?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateFolderRequest {
+  name: string;
+  color?: string;
+}
+
+export interface UpdateFolderRequest {
+  name?: string;
+  color?: string;
+  sortOrder?: number;
+}
+
 export interface AnalysisResults {
   summary?: string;
   communicationStyles?: string;
@@ -97,7 +120,8 @@ export interface AnalysisResults {
 
 // New: Core analyses that are always generated
 export interface CoreAnalyses {
-  summary: string;
+  summary: string; // Markdown summary (V1 format for backwards compatibility)
+  summaryV2?: SummaryV2; // V2 structured JSON summary (new)
   actionItems: string;
   communicationStyles: string;
   transcript: string;
@@ -154,6 +178,7 @@ export interface TranslationData {
 export interface Transcription {
   id: string;
   userId: string;
+  folderId?: string | null; // V2: Optional folder assignment
   fileName: string;
   title?: string; // Custom user-defined title, defaults to fileName
   fileUrl?: string; // Optional - cleared after file deletion for privacy
@@ -197,6 +222,8 @@ export interface Transcription {
   // Translation fields
   translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
   preferredTranslationLanguage?: string; // User's preferred language for this transcription (e.g., 'es', 'fr', or 'original')
+  // Soft delete fields
+  deletedAt?: Date; // When the transcription was soft-deleted (null = not deleted)
 }
 
 export interface TranscriptionJob {

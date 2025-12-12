@@ -1,7 +1,7 @@
 'use client';
 
 import { Clock, FileIcon, Calendar, Folder as FolderIcon, Tag, Users as UsersIcon, Share2, Download, Copy, Edit3 } from 'lucide-react';
-import { formatDuration } from '@/lib/mockData';
+import { formatDuration } from '@/lib/formatters';
 
 interface ConversationDetails {
   duration: number;

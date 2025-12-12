@@ -1,4 +1,4 @@
-import { BlogPostOutputContent } from '@/lib/mockData';
+import { BlogPostOutputContent } from '@/lib/types/outputs';
 import Image from 'next/image';
 
 interface BlogPostTemplateProps {

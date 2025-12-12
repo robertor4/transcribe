@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { ArrowLeft, LucideIcon } from 'lucide-react';
 
 interface DetailPageHeaderProps {
@@ -27,11 +28,14 @@ export function DetailPageHeader({
   actions,
   maxWidth = 'max-w-4xl'
 }: DetailPageHeaderProps) {
+  const params = useParams();
+  const locale = params?.locale || 'en';
+
   return (
     <div className={`${maxWidth} mx-auto px-6 py-8`}>
       {/* Breadcrumb Navigation */}
       <Link
-        href={`/en/prototype-conversation-v2/${conversationId}`}
+        href={`/${locale}/conversation/${conversationId}`}
         className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />

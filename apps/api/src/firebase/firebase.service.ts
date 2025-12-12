@@ -7,6 +7,9 @@ import {
   TranscriptionStatus,
   SummaryComment,
   GeneratedAnalysis,
+  Folder,
+  CreateFolderRequest,
+  UpdateFolderRequest,
 } from '@transcribe/shared';
 
 @Injectable()
@@ -1208,5 +1211,247 @@ export class FirebaseService implements OnModuleInit {
       usageRecords,
       accountEvents,
     };
+  }
+
+  // ============================================================
+  // FOLDER METHODS (V2 UI Support)
+  // ============================================================
+
+  /**
+   * Create a new folder for a user
+   */
+  async createFolder(
+    userId: string,
+    data: CreateFolderRequest,
+  ): Promise<string> {
+    const now = new Date();
+    const folderData = {
+      userId,
+      name: data.name,
+      color: data.color || null,
+      sortOrder: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const docRef = await this.db.collection('folders').add(folderData);
+    this.logger.log(`Created folder ${docRef.id} for user ${userId}`);
+    return docRef.id;
+  }
+
+  /**
+   * Get all folders for a user
+   */
+  async getUserFolders(userId: string): Promise<Folder[]> {
+    const snapshot = await this.db
+      .collection('folders')
+      .where('userId', '==', userId)
+      .orderBy('sortOrder', 'asc')
+      .orderBy('createdAt', 'asc')
+      .get();
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        name: data.name,
+        color: data.color,
+        sortOrder: data.sortOrder,
+        createdAt: data.createdAt?.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt,
+        updatedAt: data.updatedAt?.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt,
+      } as Folder;
+    });
+  }
+
+  /**
+   * Get a single folder by ID
+   */
+  async getFolder(userId: string, folderId: string): Promise<Folder | null> {
+    const doc = await this.db.collection('folders').doc(folderId).get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    const data = doc.data();
+    if (!data || data.userId !== userId) {
+      return null;
+    }
+
+    return {
+      id: doc.id,
+      userId: data.userId,
+      name: data.name,
+      color: data.color,
+      sortOrder: data.sortOrder,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
+    } as Folder;
+  }
+
+  /**
+   * Update a folder
+   */
+  async updateFolder(
+    userId: string,
+    folderId: string,
+    data: UpdateFolderRequest,
+  ): Promise<void> {
+    const folder = await this.getFolder(userId, folderId);
+    if (!folder) {
+      throw new Error('Folder not found or access denied');
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.color !== undefined) updateData.color = data.color;
+    if (data.sortOrder !== undefined) updateData.sortOrder = data.sortOrder;
+
+    await this.db.collection('folders').doc(folderId).update(updateData);
+    this.logger.log(`Updated folder ${folderId}`);
+  }
+
+  /**
+   * Delete a folder
+   * @param deleteContents - If true, soft-delete all conversations in the folder
+   *                         If false, move conversations to unfiled (default)
+   * @returns Object with deletedConversations count
+   */
+  async deleteFolder(
+    userId: string,
+    folderId: string,
+    deleteContents: boolean = false,
+  ): Promise<{ deletedConversations: number }> {
+    const folder = await this.getFolder(userId, folderId);
+    if (!folder) {
+      throw new Error('Folder not found or access denied');
+    }
+
+    // Get all transcriptions in this folder
+    const transcriptions = await this.getTranscriptionsByFolder(
+      userId,
+      folderId,
+    );
+
+    if (deleteContents) {
+      // Soft delete: mark transcriptions as deleted
+      const now = new Date();
+      for (const t of transcriptions) {
+        await this.updateTranscription(t.id, {
+          deletedAt: now,
+          folderId: null, // Clear folder reference
+        });
+      }
+      this.logger.log(
+        `Soft-deleted ${transcriptions.length} transcriptions from folder ${folderId}`,
+      );
+    } else {
+      // Move to unfiled: just clear the folder reference
+      for (const t of transcriptions) {
+        await this.updateTranscription(t.id, { folderId: null });
+      }
+      this.logger.log(
+        `Moved ${transcriptions.length} transcriptions to unfiled from folder ${folderId}`,
+      );
+    }
+
+    // Delete the folder document
+    await this.db.collection('folders').doc(folderId).delete();
+    this.logger.log(`Deleted folder ${folderId}`);
+
+    return { deletedConversations: transcriptions.length };
+  }
+
+  /**
+   * Get transcriptions in a specific folder
+   */
+  async getTranscriptionsByFolder(
+    userId: string,
+    folderId: string | null,
+  ): Promise<Transcription[]> {
+    let query = this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId);
+
+    if (folderId === null) {
+      // Get unfiled transcriptions (no folderId or folderId is null)
+      // Firestore can't query for missing fields, so we query all and filter
+      const snapshot = await query.orderBy('createdAt', 'desc').get();
+      return snapshot.docs
+        .filter((doc) => {
+          const data = doc.data();
+          return !data.folderId;
+        })
+        .map((doc) => this.mapTranscriptionDoc(doc));
+    } else {
+      query = query.where('folderId', '==', folderId);
+      const snapshot = await query.orderBy('createdAt', 'desc').get();
+      return snapshot.docs.map((doc) => this.mapTranscriptionDoc(doc));
+    }
+  }
+
+  /**
+   * Move a transcription to a folder (or remove from folder with null)
+   */
+  async moveToFolder(
+    userId: string,
+    transcriptionId: string,
+    folderId: string | null,
+  ): Promise<void> {
+    const transcription = await this.getTranscription(userId, transcriptionId);
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // If moving to a folder, verify the folder exists and belongs to user
+    if (folderId) {
+      const folder = await this.getFolder(userId, folderId);
+      if (!folder) {
+        throw new Error('Folder not found or access denied');
+      }
+    }
+
+    await this.updateTranscription(transcriptionId, {
+      folderId: folderId,
+    });
+    this.logger.log(
+      `Moved transcription ${transcriptionId} to folder ${folderId || 'none'}`,
+    );
+  }
+
+  /**
+   * Helper to map Firestore document to Transcription object
+   */
+  private mapTranscriptionDoc(
+    doc: admin.firestore.QueryDocumentSnapshot,
+  ): Transcription {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
+      completedAt: data.completedAt?.toDate
+        ? data.completedAt.toDate()
+        : data.completedAt,
+      sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+      sharedWith: data.sharedWith?.map((record: any) => ({
+        email: record.email,
+        sentAt: record.sentAt?.toDate ? record.sentAt.toDate() : record.sentAt,
+      })),
+    } as Transcription;
   }
 }
