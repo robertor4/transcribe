@@ -443,7 +443,7 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<{ text: string; language?: string }> {
+  ): Promise<{ text: string; language?: string; durationSeconds?: number }> {
     return this.transcribeAudio(fileUrl, context, onProgress);
   }
 
@@ -453,7 +453,7 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<{ text: string; language?: string }> {
+  ): Promise<{ text: string; language?: string; durationSeconds?: number }> {
     try {
       this.logger.log(
         'Starting transcription with OpenAI Whisper API (with auto-chunking for large files)',
@@ -491,6 +491,7 @@ export class TranscriptionService {
 
       let transcriptText = '';
       let detectedLanguage: string | undefined;
+      let totalDuration: number | undefined;
 
       if (fileSizeInMB > 25) {
         this.logger.log(
@@ -507,6 +508,7 @@ export class TranscriptionService {
 
         // Process each chunk
         const transcriptions: string[] = [];
+        let accumulatedDuration = 0;
         for (let i = 0; i < chunks.length; i++) {
           const chunk = chunks[i];
 
@@ -538,13 +540,19 @@ export class TranscriptionService {
             this.logger.log(`Detected language: ${detectedLanguage}`);
           }
 
+          // Accumulate duration from each chunk
+          if (response.duration) {
+            accumulatedDuration += response.duration;
+          }
+
           // Clean up chunk file
           fs.unlinkSync(chunk.path);
         }
 
         // Combine all transcriptions
         transcriptText = transcriptions.join(' ');
-        this.logger.log(`Combined ${chunks.length} chunk transcriptions`);
+        totalDuration = accumulatedDuration > 0 ? accumulatedDuration : undefined;
+        this.logger.log(`Combined ${chunks.length} chunk transcriptions, total duration: ${totalDuration}s`);
       } else {
         this.logger.log(
           `File size ${fileSizeInMB}MB is within limit. Processing directly...`,
@@ -564,16 +572,20 @@ export class TranscriptionService {
 
         transcriptText = response.text;
         detectedLanguage = response.language;
+        totalDuration = response.duration;
 
         if (detectedLanguage) {
           this.logger.log(`Detected language: ${detectedLanguage}`);
+        }
+        if (totalDuration) {
+          this.logger.log(`Audio duration from Whisper: ${totalDuration}s`);
         }
       }
 
       // Clean up temp file
       fs.unlinkSync(tempFilePath);
 
-      return { text: transcriptText, language: detectedLanguage };
+      return { text: transcriptText, language: detectedLanguage, durationSeconds: totalDuration };
     } catch (error) {
       this.logger.error('Error transcribing audio:', error);
       throw error;

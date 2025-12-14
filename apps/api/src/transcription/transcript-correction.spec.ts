@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { TranscriptionService } from './transcription.service';
+import { TranscriptCorrectionRouterService } from './transcript-correction-router.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
@@ -112,6 +113,34 @@ describe('TranscriptionService - Transcript Correction', () => {
           provide: UsageService,
           useValue: {},
         },
+        {
+          provide: TranscriptCorrectionRouterService,
+          useValue: {
+            analyzeAndRoute: jest.fn().mockResolvedValue({
+              simpleReplacements: [
+                { find: 'John', replace: 'Jon', caseSensitive: false, estimatedMatches: 2, confidence: 'high' },
+              ],
+              complexCorrections: [],
+              estimatedTime: { regex: '< 1s', ai: '0s', total: '< 1s' },
+              summary: {
+                totalCorrections: 1,
+                simpleCount: 1,
+                complexCount: 0,
+                totalSegmentsAffected: 2,
+                totalSegments: 2,
+                percentageAffected: '100%',
+              },
+            }),
+            applySimpleReplacements: jest.fn().mockImplementation((segments) => ({
+              correctedSegments: segments.map((s: { text: string }) => ({
+                ...s,
+                text: s.text.replace(/John/gi, 'Jon'),
+              })),
+              affectedCount: 2,
+            })),
+            mergeResults: jest.fn().mockImplementation((original, regex) => regex),
+          },
+        },
       ],
     }).compile();
 
@@ -204,15 +233,7 @@ describe('TranscriptionService - Transcript Correction', () => {
           true, // preview mode
         );
 
-        // Should call OpenAI
-        expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith(
-          expect.objectContaining({
-            model: 'gpt-4o-mini',
-            temperature: 0.3,
-          }),
-        );
-
-        // Should return preview with diff
+        // Should return preview with diff (via CorrectionRouterService)
         expect(result).toHaveProperty('original');
         expect(result).toHaveProperty('corrected');
         expect(result).toHaveProperty('diff');
@@ -223,7 +244,7 @@ describe('TranscriptionService - Transcript Correction', () => {
         expect(result.summary.totalChanges).toBe(2);
         expect(result.summary.affectedSegments).toBe(2);
 
-        // Should NOT save to Firestore
+        // Should NOT save to Firestore in preview mode
         expect(firebaseService.updateTranscription).not.toHaveBeenCalled();
         expect(
           firebaseService.deleteGeneratedAnalysesByTranscription,
@@ -257,7 +278,7 @@ describe('TranscriptionService - Transcript Correction', () => {
         });
       });
 
-      it('should handle transcripts without speaker segments', async () => {
+      it('should throw BadRequestException for transcripts without speaker segments', async () => {
         const noSpeakerTrans = {
           ...mockTranscription,
           speakerSegments: [],
@@ -267,15 +288,14 @@ describe('TranscriptionService - Transcript Correction', () => {
           .spyOn(firebaseService, 'getTranscription')
           .mockResolvedValue(noSpeakerTrans as any);
 
-        const result = await service.correctTranscriptWithAI(
-          'test-user-id',
-          'test-transcript-id',
-          'Fix typos',
-          true,
-        );
-
-        expect(result.diff).toHaveLength(0); // No segments to diff
-        expect(result.corrected).toBeDefined();
+        await expect(
+          service.correctTranscriptWithAI(
+            'test-user-id',
+            'test-transcript-id',
+            'Fix typos',
+            true,
+          ),
+        ).rejects.toThrow('No speaker segments available for correction');
       });
     });
 
@@ -358,14 +378,17 @@ describe('TranscriptionService - Transcript Correction', () => {
       });
     });
 
-    describe('OpenAI Integration', () => {
+    describe('Correction Router Integration', () => {
+      let correctionRouterService: TranscriptCorrectionRouterService;
+
       beforeEach(() => {
         jest
           .spyOn(firebaseService, 'getTranscription')
           .mockResolvedValue(mockTranscription as any);
+        correctionRouterService = (service as any).correctionRouter;
       });
 
-      it('should call OpenAI with correct prompts', async () => {
+      it('should call the correction router for analysis', async () => {
         await service.correctTranscriptWithAI(
           'test-user-id',
           'test-transcript-id',
@@ -373,28 +396,28 @@ describe('TranscriptionService - Transcript Correction', () => {
           true,
         );
 
-        expect(mockOpenAI.chat.completions.create).toHaveBeenCalledWith({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: expect.stringContaining(
-                'transcript correction assistant',
-              ),
-            },
-            {
-              role: 'user',
-              content: expect.stringContaining('Change John to Jon'),
-            },
-          ],
-          temperature: 0.3,
-          max_tokens: 16000,
-        });
+        expect(correctionRouterService.analyzeAndRoute).toHaveBeenCalledWith(
+          expect.any(Array),
+          'Change John to Jon',
+          expect.any(String),
+          undefined, // duration is optional
+        );
       });
 
-      it('should throw BadRequestException if OpenAI fails', async () => {
-        mockOpenAI.chat.completions.create.mockRejectedValue(
-          new Error('OpenAI API error'),
+      it('should apply simple replacements via the router', async () => {
+        await service.correctTranscriptWithAI(
+          'test-user-id',
+          'test-transcript-id',
+          'Change John to Jon',
+          true,
+        );
+
+        expect(correctionRouterService.applySimpleReplacements).toHaveBeenCalled();
+      });
+
+      it('should throw if router analysis fails', async () => {
+        (correctionRouterService.analyzeAndRoute as jest.Mock).mockRejectedValue(
+          new Error('Analysis failed'),
         );
 
         await expect(
@@ -404,22 +427,7 @@ describe('TranscriptionService - Transcript Correction', () => {
             'Fix typos',
             true,
           ),
-        ).rejects.toThrow();
-      });
-
-      it('should throw BadRequestException if OpenAI returns empty response', async () => {
-        mockOpenAI.chat.completions.create.mockResolvedValue({
-          choices: [{ message: { content: '' } }],
-        });
-
-        await expect(
-          service.correctTranscriptWithAI(
-            'test-user-id',
-            'test-transcript-id',
-            'Fix typos',
-            true,
-          ),
-        ).rejects.toThrow('Failed to generate corrected transcript');
+        ).rejects.toThrow('Analysis failed');
       });
     });
   });

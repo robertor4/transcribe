@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { Button } from './Button';
 import { TemplateSelector } from './TemplateSelector';
 import { UploadInterface } from './UploadInterface';
-import { ProcessingSimulator } from './ProcessingSimulator';
+import { RealProcessingView } from './RealProcessingView';
 import { allTemplates } from '@/lib/outputTemplates';
 
 interface ConversationCreateModalProps {
@@ -52,6 +52,8 @@ export function ConversationCreateModal({
   const [isRecording, setIsRecording] = useState(false);
   // Store markAsUploaded callback to call after successful processing
   const [markAsUploadedCallback, setMarkAsUploadedCallback] = useState<(() => Promise<void>) | null>(null);
+  // Store processing error for display
+  const [processingError, setProcessingError] = useState<string | null>(null);
 
   // CRITICAL FIX: Reset state when modal opens with new props
   // This ensures consistent behavior across multiple clicks
@@ -75,6 +77,7 @@ export function ConversationCreateModal({
       setProcessingMode('individual');
       setIsRecording(false);
       setMarkAsUploadedCallback(null);
+      setProcessingError(null);
     }
   }, [isOpen, uploadMethod, preselectedTemplateId]);
 
@@ -101,6 +104,7 @@ export function ConversationCreateModal({
     setProcessingMode('individual');
     setIsRecording(false);
     setMarkAsUploadedCallback(null);
+    setProcessingError(null);
     onClose();
   };
 
@@ -159,16 +163,12 @@ export function ConversationCreateModal({
     setCurrentStep('processing');
   };
 
-  // Processing complete handler
-  const handleProcessingComplete = async () => {
-    // Generate mock conversation ID
-    const mockConversationId = `conv-${Date.now()}`;
-
+  // Processing complete handler - receives real transcription ID from backend
+  const handleProcessingComplete = async (transcriptionId: string) => {
     // Clean up IndexedDB backup now that processing succeeded
     if (markAsUploadedCallback) {
       try {
         await markAsUploadedCallback();
-        console.log('[ConversationCreateModal] IndexedDB backup cleaned up after successful processing');
       } catch (err) {
         console.error('[ConversationCreateModal] Failed to clean up IndexedDB backup:', err);
       }
@@ -184,10 +184,17 @@ export function ConversationCreateModal({
     setProcessingMode('individual');
     setIsRecording(false);
     setMarkAsUploadedCallback(null);
+    setProcessingError(null);
     onClose();
 
-    // Navigate to conversation detail
-    onComplete(mockConversationId);
+    // Navigate to conversation detail with real transcription ID
+    onComplete(transcriptionId);
+  };
+
+  // Processing error handler
+  const handleProcessingError = (error: string) => {
+    setProcessingError(error);
+    // Don't auto-close - let user see the error and retry or cancel
   };
 
   if (!isOpen) return null;
@@ -310,15 +317,13 @@ export function ConversationCreateModal({
           )}
 
           {/* Step 4: Processing */}
-          {currentStep === 'processing' && (
+          {currentStep === 'processing' && uploadedFiles.length > 0 && (
             <div className="flex-1 overflow-y-auto p-8">
-              <ProcessingSimulator
-                files={uploadedFiles}
-                processingMode={processingMode}
-                templateNames={selectedTemplates
-                  .map(id => allTemplates.find(t => t.id === id)?.name)
-                  .filter(Boolean) as string[]}
+              <RealProcessingView
+                file={uploadedFiles[0]}
+                context={overallContext || undefined}
                 onComplete={handleProcessingComplete}
+                onError={handleProcessingError}
               />
             </div>
           )}

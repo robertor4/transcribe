@@ -160,6 +160,18 @@ npm run lint          # Run Next.js ESLint
 npm run lint          # Run ESLint across all packages
 ```
 
+### Testing Requirements
+
+**CRITICAL**: Follow these testing practices:
+
+1. **Cover new code with unit tests**: All new functionality, especially core business logic like transcription processing, duration extraction, and API integrations, must have corresponding unit tests.
+
+2. **Run tests before committing**: Always run `npm run test` in the relevant package (e.g., `apps/api`) before committing code to ensure no regressions.
+
+3. **Test file naming**: Place test files adjacent to the code they test with `.spec.ts` suffix (e.g., `assembly-ai.service.spec.ts` for `assembly-ai.service.ts`).
+
+4. **Mock external dependencies**: Use Jest mocks for external APIs (OpenAI, AssemblyAI, Firebase) to ensure tests are fast and deterministic.
+
 ### Build & Production
 ```bash
 npm run build         # Production build for all packages
