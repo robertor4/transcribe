@@ -1,13 +1,24 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { useMediaRecorder, RecordingSource } from '@/hooks/useMediaRecorder';
+import { useAudioVisualization } from '@/hooks/useAudioVisualization';
 import { RecordingPreview } from './RecordingPreview';
 import { Button } from './Button';
-import { Mic, Monitor, AlertCircle, Pause, Square } from 'lucide-react';
+import { Mic, Monitor, AlertCircle, Pause, Square, ChevronDown, Volume2 } from 'lucide-react';
+
+interface AudioDevice {
+  deviceId: string;
+  label: string;
+}
 
 interface SimpleAudioRecorderProps {
-  onComplete: (blob: Blob) => void;
+  /**
+   * Called when user confirms the recording.
+   * @param blob - The recorded audio blob
+   * @param markAsUploaded - Call this after successful upload to clean up IndexedDB backup
+   */
+  onComplete: (blob: Blob, markAsUploaded: () => Promise<void>) => void;
   onCancel: () => void;
 }
 
@@ -18,7 +29,7 @@ interface SimpleAudioRecorderProps {
  * - Reuses production useMediaRecorder hook (gets all robustness)
  * - Supports both microphone and tab audio
  * - Pause/resume functionality
- * - Simple waveform animation (30 random bars)
+ * - Real-time audio visualization using Web Audio API
  * - Integration with RecordingPreview component
  *
  * Production features inherited via useMediaRecorder:
@@ -39,18 +50,133 @@ export function SimpleAudioRecorder({
     error,
     isSupported,
     canUseTabAudio,
+    audioStream,
     startRecording,
     stopRecording,
     pauseRecording,
     resumeRecording,
     reset,
+    markAsUploaded,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
   });
 
+  // Real audio visualization from microphone/tab audio
+  const { audioLevel, frequencyData, isAnalyzing } = useAudioVisualization(audioStream);
+
   const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
-  const [waveformBars, setWaveformBars] = useState<number[]>([]);
   const [showSourceSelector, setShowSourceSelector] = useState(true);
+
+  // Microphone device selection
+  const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+  const [isLoadingDevices, setIsLoadingDevices] = useState(false);
+
+  // Microphone preview (test before recording)
+  const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
+  const [isTestingMic, setIsTestingMic] = useState(false);
+  const previewStreamRef = useRef<MediaStream | null>(null);
+
+  // Audio visualization for preview (separate from recording visualization)
+  const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
+
+  // Use raw audio level directly (no decay/smoothing)
+  const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
+
+  // Fetch available audio input devices
+  useEffect(() => {
+    const getAudioDevices = async () => {
+      setIsLoadingDevices(true);
+      try {
+        // Request permission first to get device labels
+        await navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            // Stop the stream immediately - we just needed permission
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(() => {
+            // Permission denied - we'll still try to enumerate devices
+          });
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices
+          .filter(device => device.kind === 'audioinput')
+          .map(device => ({
+            deviceId: device.deviceId,
+            label: device.label || `Microphone ${device.deviceId.slice(0, 8)}...`,
+          }));
+
+        setAudioDevices(audioInputs);
+
+        // Select the default microphone if none selected
+        if (audioInputs.length > 0 && !selectedDeviceId) {
+          // Look for the system default device:
+          // 1. Device with deviceId === 'default' (Chrome/Edge)
+          // 2. Device with 'default' in label (fallback)
+          // 3. First device in list (final fallback)
+          const defaultDevice = audioInputs.find(d => d.deviceId === 'default')
+            || audioInputs.find(d => d.label.toLowerCase().includes('default'))
+            || audioInputs[0];
+          setSelectedDeviceId(defaultDevice.deviceId);
+        }
+      } catch (err) {
+        console.error('Failed to enumerate audio devices:', err);
+      } finally {
+        setIsLoadingDevices(false);
+      }
+    };
+
+    getAudioDevices();
+
+    // Listen for device changes
+    navigator.mediaDevices.addEventListener('devicechange', getAudioDevices);
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', getAudioDevices);
+    };
+  }, [selectedDeviceId]);
+
+  // Helper function to generate waveform bars from frequency data
+  const generateWaveformBars = useCallback((data: Uint8Array | null): number[] => {
+    if (!data) {
+      return Array(30).fill(0.1); // Minimal bars when no data
+    }
+
+    // Check if this is time domain data (values centered around 128) or frequency data (values from 0)
+    // Time domain: silence is 128, frequency: silence is 0
+    const isTimeDomain = data[0] > 100 && data[0] < 156;
+
+    const bars: number[] = [];
+    const relevantBins = Math.min(64, data.length);
+    const step = Math.max(1, Math.floor(relevantBins / 30));
+
+    for (let i = 0; i < 30; i++) {
+      const binIndex = Math.min(i * step, relevantBins - 1);
+      const rawValue = data[binIndex] || 0;
+
+      let normalized: number;
+      if (isTimeDomain) {
+        // Time domain: deviation from 128 (silence)
+        // Max deviation is 128 (0 or 255), so normalize accordingly
+        const deviation = Math.abs(rawValue - 128);
+        normalized = Math.min(1, (deviation / 128) * 3); // 3x boost for visibility
+      } else {
+        // Frequency domain: 0-255 scale
+        normalized = Math.min(1, (rawValue / 255) * 2);
+      }
+
+      bars.push(Math.max(0.1, normalized));
+    }
+    return bars;
+  }, []);
+
+  // Generate waveform bars from real frequency data (recording)
+  const waveformBars = useMemo(() => {
+    if (state !== 'recording') {
+      return Array(30).fill(0.1); // Minimal bars when not recording
+    }
+    return generateWaveformBars(frequencyData);
+  }, [frequencyData, state, generateWaveformBars]);
+
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -61,31 +187,65 @@ export function SimpleAudioRecorder({
 
   // Define handleStart before the useEffect that uses it
   const handleStart = useCallback(async () => {
-    await startRecording(selectedSource);
-  }, [startRecording, selectedSource]);
+    // Pass device ID for microphone source
+    const deviceId = selectedSource === 'microphone' ? selectedDeviceId : undefined;
+    await startRecording(selectedSource, deviceId);
+  }, [startRecording, selectedSource, selectedDeviceId]);
+
+  // Start microphone preview test
+  const startMicPreview = useCallback(async () => {
+    try {
+      setIsTestingMic(true);
+      const audioConstraints: MediaTrackConstraints = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      };
+      if (selectedDeviceId) {
+        audioConstraints.deviceId = { exact: selectedDeviceId };
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: audioConstraints,
+      });
+      previewStreamRef.current = stream;
+      setPreviewStream(stream);
+    } catch (err) {
+      console.error('Failed to start mic preview:', err);
+      setIsTestingMic(false);
+    }
+  }, [selectedDeviceId]);
+
+  // Stop microphone preview test
+  const stopMicPreview = useCallback(() => {
+    if (previewStreamRef.current) {
+      previewStreamRef.current.getTracks().forEach(track => track.stop());
+      previewStreamRef.current = null;
+    }
+    setPreviewStream(null);
+    setIsTestingMic(false);
+  }, []);
+
+  // Auto-start mic preview when device is selected and we're on source selection screen
+  useEffect(() => {
+    if (showSourceSelector && state === 'idle' && selectedDeviceId && !isTestingMic) {
+      startMicPreview();
+    }
+  }, [showSourceSelector, state, selectedDeviceId, isTestingMic, startMicPreview]);
+
+  // Cleanup preview stream on unmount
+  useEffect(() => {
+    return () => {
+      if (previewStreamRef.current) {
+        previewStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   // Back button handler - go back to source selection
   const handleBackToSourceSelection = useCallback(() => {
+    stopMicPreview();
     setShowSourceSelector(true);
-  }, []);
-
-  // Waveform animation (simple version - 30 random bars)
-  useEffect(() => {
-    if (state !== 'recording') {
-      setWaveformBars([]);
-      return;
-    }
-
-    // Initialize with random heights
-    setWaveformBars(Array.from({ length: 30 }, () => Math.random()));
-
-    // Update waveform every 150ms
-    const interval = setInterval(() => {
-      setWaveformBars(Array.from({ length: 30 }, () => Math.random() * 0.7 + 0.3));
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, [state]);
+  }, [stopMicPreview]);
 
   const handleSourceSelect = useCallback((source: RecordingSource) => {
     setSelectedSource(source);
@@ -94,10 +254,12 @@ export function SimpleAudioRecorder({
 
   const handleConfirm = useCallback(() => {
     if (audioBlob) {
-      onComplete(audioBlob);
+      // Pass blob and markAsUploaded callback to parent
+      // Parent should call markAsUploaded() after successful upload to clean up IndexedDB
+      onComplete(audioBlob, markAsUploaded);
       reset();
     }
-  }, [audioBlob, onComplete, reset]);
+  }, [audioBlob, onComplete, markAsUploaded, reset]);
 
   const handleReRecord = useCallback(() => {
     reset();
@@ -162,20 +324,90 @@ export function SimpleAudioRecorder({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Microphone */}
-          <button
-            onClick={() => handleSourceSelect('microphone')}
-            className="group p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
-          >
-            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
-              <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
+          <div className="p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200">
+            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+              <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400" />
             </div>
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center">
               Microphone
             </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-400">
-              Record from your device's microphone
+            <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
+              Record from your device&apos;s microphone
             </p>
-          </button>
+
+            {/* Microphone selector dropdown */}
+            {audioDevices.length > 1 && (
+              <div className="mb-4">
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
+                  Select microphone
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedDeviceId}
+                    onChange={(e) => {
+                      // Stop current preview - it will auto-restart with new device
+                      if (isTestingMic) {
+                        stopMicPreview();
+                      }
+                      setSelectedDeviceId(e.target.value);
+                    }}
+                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent cursor-pointer"
+                  >
+                    {audioDevices.map((device) => (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
+            {isLoadingDevices && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                Loading microphones...
+              </p>
+            )}
+
+            {/* Audio level indicator - macOS style segmented meter */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Volume2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                <span className="text-xs text-gray-600 dark:text-gray-400">
+                  {isTestingMic ? 'Input level' : 'Initializing...'}
+                </span>
+              </div>
+              <div className="flex items-center gap-[3px]">
+                {Array.from({ length: 12 }).map((_, index) => {
+                  // Each segment represents ~8.33% of the level
+                  const threshold = (index + 1) * 8.33;
+                  const isActive = isTestingMic && displayedAudioLevel >= threshold;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`h-3 flex-1 rounded-sm transition-colors duration-75 ${
+                        isActive
+                          ? 'bg-[#cc3399]'
+                          : 'bg-gray-300 dark:bg-gray-600'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                stopMicPreview();
+                handleSourceSelect('microphone');
+              }}
+              className="w-full py-2.5 px-4 bg-[#cc3399] hover:bg-[#b82d89] text-white font-medium rounded-full transition-colors"
+            >
+              Use this microphone
+            </button>
+          </div>
 
           {/* Tab Audio */}
           <button

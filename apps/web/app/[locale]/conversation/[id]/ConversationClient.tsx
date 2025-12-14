@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   BarChart3,
   Zap,
@@ -21,7 +21,7 @@ import { LeftNavigation } from '@/components/LeftNavigation';
 import { RightContextPanel } from '@/components/RightContextPanel';
 import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
-import { RecordingModal } from '@/components/RecordingModal';
+import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { useConversation } from '@/hooks/useConversation';
@@ -34,9 +34,10 @@ interface ConversationClientProps {
 
 export function ConversationClient({ conversationId }: ConversationClientProps) {
   const params = useParams();
+  const router = useRouter();
   const locale = (params?.locale as string) || 'en';
 
-  const [isRecording, setIsRecording] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   const { conversation, isLoading, error } = useConversation(conversationId);
@@ -333,13 +334,18 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
       />
 
       {/* Floating Action Button */}
-      <FloatingRecordButton onClick={() => setIsRecording(true)} isRecording={isRecording} />
+      <FloatingRecordButton onClick={() => setIsCreateModalOpen(true)} isRecording={false} />
 
-      {/* Recording Modal */}
-      <RecordingModal
-        isOpen={isRecording}
-        onStop={() => setIsRecording(false)}
-        onCancel={() => setIsRecording(false)}
+      {/* Conversation Create Modal (for recording new conversations) */}
+      <ConversationCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onComplete={(newConversationId) => {
+          setIsCreateModalOpen(false);
+          router.push(`/${locale}/conversation/${newConversationId}`);
+        }}
+        initialStep="capture"
+        uploadMethod="record"
       />
 
       {/* Output Generator Modal */}

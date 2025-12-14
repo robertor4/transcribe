@@ -20,7 +20,6 @@ import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
-import { RecordingModal } from '@/components/RecordingModal';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { EmptyState } from '@/components/EmptyState';
@@ -52,7 +51,6 @@ export function DashboardClient() {
   // Filter ungrouped conversations (no folderId or folderId is null)
   const ungroupedConversations = conversations.filter((c) => !c.folderId);
 
-  const [isRecording, setIsRecording] = useState(false);
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
     isOpen: false,
   });
@@ -83,18 +81,6 @@ export function DashboardClient() {
       }
     }
   }, [conversationsLoading, total]);
-
-  const handleStartRecording = () => {
-    setIsRecording(true);
-  };
-
-  const handleStopRecording = () => {
-    setIsRecording(false);
-  };
-
-  const handleCancelRecording = () => {
-    setIsRecording(false);
-  };
 
   const handleCreateComplete = (conversationId: string) => {
     router.push(`/${locale}/conversation/${conversationId}`);
@@ -459,15 +445,8 @@ export function DashboardClient() {
         }
       />
 
-      {/* Floating Action Button */}
-      <FloatingRecordButton onClick={handleStartRecording} isRecording={isRecording} />
-
-      {/* Recording Modal */}
-      <RecordingModal
-        isOpen={isRecording}
-        onStop={handleStopRecording}
-        onCancel={handleCancelRecording}
-      />
+      {/* Floating Action Button - opens recording flow */}
+      <FloatingRecordButton onClick={handleRecordAudio} isRecording={false} />
 
       {/* Milestone Toast */}
       <MilestoneToast

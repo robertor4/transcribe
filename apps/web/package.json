@@ -32,7 +32,8 @@
     "react-markdown": "^10.1.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "webm-duration-fix": "^1.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

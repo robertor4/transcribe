@@ -50,6 +50,8 @@ export function ConversationCreateModal({
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
   const [isRecording, setIsRecording] = useState(false);
+  // Store markAsUploaded callback to call after successful processing
+  const [markAsUploadedCallback, setMarkAsUploadedCallback] = useState<(() => Promise<void>) | null>(null);
 
   // CRITICAL FIX: Reset state when modal opens with new props
   // This ensures consistent behavior across multiple clicks
@@ -72,6 +74,7 @@ export function ConversationCreateModal({
       setRecordedBlob(null);
       setProcessingMode('individual');
       setIsRecording(false);
+      setMarkAsUploadedCallback(null);
     }
   }, [isOpen, uploadMethod, preselectedTemplateId]);
 
@@ -97,6 +100,7 @@ export function ConversationCreateModal({
     setRecordedBlob(null);
     setProcessingMode('individual');
     setIsRecording(false);
+    setMarkAsUploadedCallback(null);
     onClose();
   };
 
@@ -114,8 +118,10 @@ export function ConversationCreateModal({
     }
   };
 
-  const handleRecordingComplete = (blob: Blob) => {
+  const handleRecordingComplete = (blob: Blob, markAsUploaded: () => Promise<void>) => {
     setRecordedBlob(blob);
+    // Store the callback to call after successful upload/processing
+    setMarkAsUploadedCallback(() => markAsUploaded);
     // Convert blob to file for compatibility
     const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
     setUploadedFiles([file]);
@@ -154,9 +160,19 @@ export function ConversationCreateModal({
   };
 
   // Processing complete handler
-  const handleProcessingComplete = () => {
+  const handleProcessingComplete = async () => {
     // Generate mock conversation ID
     const mockConversationId = `conv-${Date.now()}`;
+
+    // Clean up IndexedDB backup now that processing succeeded
+    if (markAsUploadedCallback) {
+      try {
+        await markAsUploadedCallback();
+        console.log('[ConversationCreateModal] IndexedDB backup cleaned up after successful processing');
+      } catch (err) {
+        console.error('[ConversationCreateModal] Failed to clean up IndexedDB backup:', err);
+      }
+    }
 
     // Reset state without confirmation (successful completion, not cancellation)
     setCurrentStep('capture');
@@ -167,6 +183,7 @@ export function ConversationCreateModal({
     setRecordedBlob(null);
     setProcessingMode('individual');
     setIsRecording(false);
+    setMarkAsUploadedCallback(null);
     onClose();
 
     // Navigate to conversation detail

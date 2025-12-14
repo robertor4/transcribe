@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import fixWebmDuration from 'webm-duration-fix';
 import {
   detectBestAudioFormat,
   isRecordingSupported,
@@ -43,7 +44,7 @@ export interface UseMediaRecorderReturn {
   audioFormat: AudioFormat;
 
   // Actions
-  startRecording: (source: RecordingSource) => Promise<void>;
+  startRecording: (source: RecordingSource, deviceId?: string) => Promise<void>;
   stopRecording: () => void;
   pauseRecording: () => void;
   resumeRecording: () => void;
@@ -154,15 +155,22 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Get media stream based on source
   const getMediaStream = useCallback(
-    async (source: RecordingSource): Promise<MediaStream> => {
+    async (source: RecordingSource, deviceId?: string): Promise<MediaStream> => {
       if (source === 'microphone') {
-        // Request microphone access
+        // Request microphone access with optional device selection
+        const audioConstraints: MediaTrackConstraints = {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        };
+
+        // Add device ID if specified
+        if (deviceId) {
+          audioConstraints.deviceId = { exact: deviceId };
+        }
+
         return await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            sampleRate: 44100,
-          },
+          audio: audioConstraints,
         });
       } else {
         // Request tab audio capture (getDisplayMedia) with microphone mixing
@@ -240,7 +248,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Start recording
   const startRecording = useCallback(
-    async (source: RecordingSource) => {
+    async (source: RecordingSource, deviceId?: string) => {
       try {
         // Reset previous state
         setError(null);
@@ -260,8 +268,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         updateState('requesting-permission');
 
-        // Get media stream
-        const stream = await getMediaStream(source);
+        // Get media stream (with optional device ID for microphone selection)
+        const stream = await getMediaStream(source, deviceId);
         streamRef.current = stream;
         setAudioStream(stream);
 
@@ -281,21 +289,35 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         // Handle recording stop
         mediaRecorder.onstop = async () => {
-          const blob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+          const rawBlob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+
+          // Fix WebM duration metadata bug
+          // MediaRecorder creates WebM files without duration metadata because the header
+          // is written before recording ends. This causes audio to stop early during playback.
+          // See: https://bugs.chromium.org/p/chromium/issues/detail?id=642012
+          // Using webm-duration-fix which auto-calculates duration from blob content
+          let blob: Blob;
+          try {
+            const fixedBlob = await fixWebmDuration(rawBlob);
+
+            // Ensure the fixed blob has the correct MIME type
+            // webm-duration-fix may return a blob without proper type
+            if (!fixedBlob.type || fixedBlob.type !== audioFormat.mimeType) {
+              blob = new Blob([fixedBlob], { type: audioFormat.mimeType });
+            } else {
+              blob = fixedBlob;
+            }
+          } catch (err) {
+            console.warn('[useMediaRecorder] Failed to fix WebM duration, using raw blob:', err);
+            blob = rawBlob;
+          }
+
           setAudioBlob(blob);
           onDataAvailable?.(blob);
 
-          // Clean up IndexedDB on normal stop (happy path - user stopped intentionally)
-          // Only keep auto-saved data for crash/accidental close scenarios
-          if (enableAutoSave && recordingIdRef.current) {
-            try {
-              const storage = await getRecordingStorage();
-              await storage.deleteRecording(recordingIdRef.current);
-              console.log('[useMediaRecorder] Cleaned up auto-save on normal stop');
-            } catch (err) {
-              console.error('[useMediaRecorder] Failed to clean up on stop:', err);
-            }
-          }
+          // DO NOT clean up IndexedDB here - keep the backup until upload/transcription succeeds
+          // The backup will be cleaned up by markAsUploaded() after successful upload
+          // This protects against: upload failures, transcription failures, accidental tab close, etc.
 
           // Cleanup
           stopTimer();
@@ -324,7 +346,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         };
 
         // Start recording
-        mediaRecorder.start(1000); // Collect data every second
+        // Use smaller timeslice (100ms) to ensure we don't lose audio at the end
+        // Larger timeslices (1000ms) can cause the last partial chunk to be lost
+        mediaRecorder.start(100);
         updateState('recording');
         startTimer();
 
@@ -362,6 +386,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   // Stop recording
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && state !== 'idle' && state !== 'stopped') {
+      // Simply call stop() - MediaRecorder will automatically fire one final
+      // ondataavailable event with any remaining data before onstop fires
+      // Note: Do NOT call requestData() before stop() - this can cause race conditions
+      // where the blob is created before the final data chunk is available
       mediaRecorderRef.current.stop();
     }
   }, [state]);

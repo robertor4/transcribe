@@ -7,7 +7,12 @@ import { SimpleAudioRecorder } from './SimpleAudioRecorder';
 
 interface UploadInterfaceProps {
   onFileUpload: (files: File[], processingMode: 'individual' | 'merged') => void;
-  onRecordingComplete: (blob: Blob) => void;
+  /**
+   * Called when recording is confirmed.
+   * @param blob - The recorded audio blob
+   * @param markAsUploaded - Call after successful upload to clean up IndexedDB backup
+   */
+  onRecordingComplete: (blob: Blob, markAsUploaded: () => Promise<void>) => void;
   onBack: () => void;
   initialMethod?: 'file' | 'record' | null;
   onRecordingStateChange?: (isRecording: boolean) => void; // Notify parent of recording status
@@ -203,8 +208,8 @@ export function UploadInterface({
   };
 
   // Recording handlers - delegated to SimpleAudioRecorder
-  const handleRecordingComplete = (blob: Blob) => {
-    onRecordingComplete(blob);
+  const handleRecordingComplete = (blob: Blob, markAsUploaded: () => Promise<void>) => {
+    onRecordingComplete(blob, markAsUploaded);
   };
 
   const handleRecordingCancel = () => {

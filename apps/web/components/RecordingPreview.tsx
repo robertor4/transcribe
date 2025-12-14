@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { Button } from './Button';
+import { useAudioWaveform } from '@/hooks/useAudioWaveform';
 
 interface RecordingPreviewProps {
   audioBlob: Blob;
@@ -19,21 +20,88 @@ interface RecordingPreviewProps {
  */
 export function RecordingPreview({
   audioBlob,
-  duration,
+  duration: durationProp,
   onConfirm,
   onReRecord,
   onCancel,
 }: RecordingPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [actualDuration, setActualDuration] = useState(durationProp);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Create audio URL from blob (cleanup on unmount)
-  const audioUrl = useMemo(() => URL.createObjectURL(audioBlob), [audioBlob]);
+  // Web Audio API for volume boost
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
 
+  // Use actual audio duration once loaded, fallback to prop
+  const duration = actualDuration;
+
+  // Create audio URL from blob - use ref to ensure stability across renders
+  const audioUrlRef = useRef<string | null>(null);
+
+  // Create URL only once when blob changes
+  if (!audioUrlRef.current) {
+    audioUrlRef.current = URL.createObjectURL(audioBlob);
+  }
+
+  const audioUrl = audioUrlRef.current;
+
+  // Cleanup URL only on unmount (not on re-renders)
   useEffect(() => {
-    return () => URL.revokeObjectURL(audioUrl);
-  }, [audioUrl]);
+    return () => {
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  // Setup Web Audio gain node for volume boost
+  // This must be done on user interaction (play button) due to browser autoplay policy
+  const setupAudioGain = () => {
+    const audio = audioRef.current;
+    if (!audio || sourceNodeRef.current) return; // Already connected
+
+    try {
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const ctx = new AudioContextClass();
+      const source = ctx.createMediaElementSource(audio);
+      const gain = ctx.createGain();
+
+      // Boost volume by 1.8x (adjust as needed)
+      gain.gain.value = 1.8;
+
+      source.connect(gain);
+      gain.connect(ctx.destination);
+
+      audioContextRef.current = ctx;
+      gainNodeRef.current = gain;
+      sourceNodeRef.current = source;
+    } catch {
+      // If Web Audio fails, audio will still play at normal volume
+    }
+  };
+
+  // Cleanup audio context on unmount
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  // Get actual duration from audio element when metadata loads
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
+    const audioDuration = e.currentTarget.duration;
+    if (audioDuration && isFinite(audioDuration)) {
+      setActualDuration(audioDuration);
+    }
+  };
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -42,32 +110,147 @@ export function RecordingPreview({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (!audioRef.current) return;
+
+    // Setup audio gain on first play (must be on user interaction)
+    setupAudioGain();
+
+    // Resume AudioContext if suspended (browser autoplay policy)
+    if (audioContextRef.current?.state === 'suspended') {
+      await audioContextRef.current.resume();
+    }
 
     if (isPlaying) {
       audioRef.current.pause();
+      setIsPlaying(false);
     } else {
-      audioRef.current.play();
+      // Always reset to beginning if at or near the end, or if audio has ended
+      if (audioRef.current.ended || audioRef.current.currentTime >= duration - 0.1 || currentTime >= duration - 0.1) {
+        audioRef.current.currentTime = 0;
+        setCurrentTime(0);
+      }
+
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch {
+        // Reset to beginning and try again (without reload which can break blob URLs)
+        audioRef.current.currentTime = 0;
+        setCurrentTime(0);
+        // Small delay before retry
+        await new Promise(resolve => setTimeout(resolve, 100));
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch {
+          // Silently fail - user can try again
+        }
+      }
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const time = parseFloat(e.target.value);
-    setCurrentTime(time);
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-    }
+  // Click on waveform to seek
+  const waveformRef = useRef<HTMLDivElement>(null);
+
+  const handleWaveformClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!waveformRef.current || !audioRef.current) return;
+
+    const rect = waveformRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const newTime = percentage * duration;
+
+    setCurrentTime(newTime);
+    audioRef.current.currentTime = newTime;
   };
+
+  // Track last known time to detect when playback stalls
+  const lastTimeRef = useRef<number>(-1);
+  const stallCountRef = useRef<number>(0);
+  const stallCheckRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) => {
-    setCurrentTime(e.currentTarget.currentTime);
+    const time = e.currentTarget.currentTime;
+    setCurrentTime(time);
+    lastTimeRef.current = time;
+    stallCountRef.current = 0; // Reset stall counter when time updates
   };
+
+  // Detect when playback has actually ended
+  // The 'ended' event doesn't fire reliably when audio is routed through Web Audio API
+  // So we poll to detect when currentTime stops advancing
+  useEffect(() => {
+    if (!isPlaying) {
+      // Clear any existing interval when not playing
+      if (stallCheckRef.current) {
+        clearInterval(stallCheckRef.current);
+        stallCheckRef.current = null;
+      }
+      stallCountRef.current = 0;
+      return;
+    }
+
+    // Poll every 300ms to check if playback has stalled
+    stallCheckRef.current = setInterval(() => {
+      const audio = audioRef.current;
+      if (!audio || !isFinite(audio.duration)) return;
+
+      const currentAudioTime = audio.currentTime;
+      const audioDuration = audio.duration;
+
+      // Check if time hasn't advanced
+      if (currentAudioTime === lastTimeRef.current && currentAudioTime > 0) {
+        stallCountRef.current++;
+
+        // Only trigger end detection if:
+        // 1. Time hasn't advanced for 2+ checks (600ms+)
+        // 2. We're near the end of the audio (within 1 second)
+        if (
+          stallCountRef.current >= 2 &&
+          currentAudioTime >= audioDuration - 1
+        ) {
+          setIsPlaying(false);
+          // First show playhead at 100% (snap to end)
+          setCurrentTime(audioDuration);
+          lastTimeRef.current = -1;
+          stallCountRef.current = 0;
+          if (stallCheckRef.current) {
+            clearInterval(stallCheckRef.current);
+            stallCheckRef.current = null;
+          }
+          // After brief pause, reset playhead to beginning for next play
+          setTimeout(() => {
+            setCurrentTime(0);
+            if (audio) {
+              audio.currentTime = 0;
+            }
+          }, 500);
+        }
+      } else {
+        stallCountRef.current = 0;
+      }
+    }, 300);
+
+    return () => {
+      if (stallCheckRef.current) {
+        clearInterval(stallCheckRef.current);
+        stallCheckRef.current = null;
+      }
+    };
+  }, [isPlaying]);
 
   const handleEnded = () => {
     setIsPlaying(false);
-    setCurrentTime(0);
+    // First show playhead at 100% (snap to end)
+    setCurrentTime(duration);
+    // After brief pause, reset playhead to beginning for next play
+    setTimeout(() => {
+      setCurrentTime(0);
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
+    }, 500);
   };
 
   // Confirmation handlers to prevent accidental data loss
@@ -87,14 +270,8 @@ export function RecordingPreview({
     onReRecord();
   };
 
-  // Generate static waveform visualization
-  const waveformBars = useMemo(() => {
-    return Array.from({ length: 40 }, (_, i) => {
-      // Create a pseudo-random but consistent pattern based on index
-      const height = 30 + Math.sin(i * 0.5) * 20 + Math.cos(i * 0.3) * 15;
-      return Math.max(20, Math.min(100, height));
-    });
-  }, []);
+  // Generate real waveform from audio data (more bars for full-width display)
+  const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 100);
 
   return (
     <div className="space-y-6">
@@ -102,82 +279,93 @@ export function RecordingPreview({
       <audio
         ref={audioRef}
         src={audioUrl}
+        onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
       />
 
       {/* Preview Card */}
       <div className="p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399]">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Recording Preview
-          </h3>
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-400">
-            Total: {formatTime(duration)}
-          </div>
-        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Your Recording
+        </h3>
 
-        {/* Playback controls */}
-        <div className="space-y-4">
-          {/* Time display and play button */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-mono text-gray-700 dark:text-gray-300">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </span>
-            <button
-              onClick={handlePlayPause}
-              className="p-3 rounded-full bg-[#cc3399] text-white hover:bg-[#b82d89] transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform"
-              aria-label={isPlaying ? 'Pause' : 'Play'}
+        {/* Playback controls - SoundCloud style */}
+        <div className="flex items-center gap-4">
+          {/* Play/Pause button */}
+          <button
+            onClick={handlePlayPause}
+            className="flex-shrink-0 p-3 rounded-full bg-[#cc3399] text-white hover:bg-[#b82d89] transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5" fill="currentColor" />
+            ) : (
+              <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
+            )}
+          </button>
+
+          {/* Waveform seekbar */}
+          <div className="flex-1 flex flex-col gap-1">
+            {/* Waveform with playhead */}
+            <div
+              ref={waveformRef}
+              onClick={handleWaveformClick}
+              className="relative h-16 cursor-pointer"
             >
-              {isPlaying ? (
-                <Pause className="w-5 h-5" fill="currentColor" />
-              ) : (
-                <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
-              )}
-            </button>
+              {/* Waveform bars */}
+              <div className="absolute inset-0 flex items-center gap-[2px]">
+                {isAnalyzing || waveformBars.length === 0 ? (
+                  // Loading placeholder
+                  Array.from({ length: 100 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-sm bg-gray-300 dark:bg-gray-600 animate-pulse"
+                      style={{
+                        height: `${20 + Math.sin(i * 0.3) * 10}%`,
+                        animationDelay: `${i * 10}ms`,
+                      }}
+                    />
+                  ))
+                ) : (
+                  waveformBars.map((height, i) => {
+                    const progress = duration > 0 ? currentTime / duration : 0;
+                    const barProgress = i / waveformBars.length;
+                    const isPast = barProgress <= progress;
+
+                    return (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-sm transition-colors duration-100"
+                        style={{
+                          height: `${height}%`,
+                          backgroundColor: isPast ? '#cc3399' : '#d1d5db',
+                          opacity: isPast ? 1 : 0.5,
+                        }}
+                      />
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Playhead line */}
+              <div
+                className="absolute top-0 bottom-0 w-0.5 bg-[#cc3399] shadow-sm pointer-events-none"
+                style={{
+                  left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
+                  boxShadow: '0 0 4px rgba(204, 51, 153, 0.5)',
+                }}
+              />
+            </div>
+
+            {/* Time display - current left, total right */}
+            <div className="flex justify-between text-xs font-mono text-gray-600 dark:text-gray-400">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
           </div>
-
-          {/* Seek bar */}
-          <input
-            type="range"
-            min={0}
-            max={duration}
-            step={0.1}
-            value={currentTime}
-            onChange={handleSeek}
-            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#cc3399]"
-            style={{
-              background: `linear-gradient(to right, #cc3399 0%, #cc3399 ${(currentTime / duration) * 100}%, rgb(229, 231, 235) ${(currentTime / duration) * 100}%, rgb(229, 231, 235) 100%)`,
-            }}
-          />
-
-          {/* Static waveform visualization */}
-          <div className="flex items-center justify-center gap-1 h-20 bg-white dark:bg-gray-900 rounded-lg p-4">
-            {waveformBars.map((height, i) => {
-              const progress = currentTime / duration;
-              const barProgress = i / waveformBars.length;
-              const isPast = barProgress <= progress;
-
-              return (
-                <div
-                  key={i}
-                  className="rounded-full transition-all duration-150"
-                  style={{
-                    width: '3px',
-                    height: `${height}%`,
-                    backgroundColor: isPast ? '#cc3399' : '#d1d5db',
-                    opacity: isPast ? 1 : 0.4,
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          {/* Playback tip */}
-          <p className="text-xs text-center text-gray-600 dark:text-gray-400">
-            Listen to your recording before proceeding to ensure quality
-          </p>
         </div>
+
       </div>
 
       {/* Actions */}
