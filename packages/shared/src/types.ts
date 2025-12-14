@@ -132,7 +132,7 @@ export interface AnalysisTemplate {
   id: string; // e.g., "system-emotional-iq"
   name: string; // "Emotional Intelligence"
   description: string; // Short description for catalog
-  category: 'professional' | 'content' | 'specialized';
+  category: string; // Dynamic category (e.g., 'professional', 'content', 'specialized')
   icon: string; // Lucide icon name
   color: string; // Badge color
   systemPrompt: string; // GPT system prompt
@@ -141,9 +141,131 @@ export interface AnalysisTemplate {
   estimatedSeconds: number; // ~20 for mini, ~30 for gpt-5
   featured: boolean; // Show in featured section
   order: number; // Display order
+  outputFormat?: 'markdown' | 'structured'; // V2: Output format (default: markdown for backwards compat)
+  jsonSchema?: string; // V2: JSON schema for structured outputs
   createdAt: Date;
   updatedAt: Date;
+
+  // Taxonomy (optional) - for filtering and discovery
+  tags?: string[]; // e.g., ["linkedin", "social-media", "professional"]
+  targetRoles?: string[]; // e.g., ["founder", "content-creator", "product-manager"]
+  templateGroup?: string; // Groups variants together, e.g., "linkedin" for all LinkedIn templates
+
+  // Ownership & visibility
+  createdBy: string; // "system" for built-in templates, userId for user-created
+  isSystemTemplate: boolean; // true = hardcoded system template, false = user-created
+  visibility: 'public' | 'private'; // public = anyone can see, private = creator only
+  requiredTier?: 'free' | 'professional' | 'business'; // Subscription tier required to use
+
+  // Versioning (optional) - for template evolution
+  version?: number; // Template version number
+  baseTemplateId?: string; // If forked from another template
 }
+
+// ============================================================
+// V2 STRUCTURED OUTPUT TYPES
+// ============================================================
+
+/** Action item extracted from conversation */
+export interface ActionItem {
+  task: string;
+  owner: string | null;
+  deadline: string | null;
+  priority: 'high' | 'medium' | 'low';
+  priorityReason?: string; // Explains why this priority was assigned (shown in tooltip)
+  context?: string;
+}
+
+/** Structured action items output */
+export interface ActionItemsOutput {
+  type: 'actionItems';
+  immediateActions: ActionItem[]; // This week
+  shortTermActions: ActionItem[]; // This month
+  longTermActions: ActionItem[]; // Beyond this month
+}
+
+/** Structured email output */
+export interface EmailOutput {
+  type: 'email';
+  subject: string;
+  greeting: string;
+  body: string[];
+  keyPoints: string[];
+  actionItems: string[];
+  closing: string;
+}
+
+/** Blog post section */
+export interface BlogSection {
+  heading: string;
+  paragraphs: string[];
+  bulletPoints?: string[];
+  quotes?: { text: string; attribution: string }[];
+}
+
+/** Structured blog post output */
+export interface BlogPostOutput {
+  type: 'blogPost';
+  headline: string;
+  subheading?: string;
+  hook: string;
+  sections: BlogSection[];
+  callToAction: string;
+  metadata: {
+    wordCount: number;
+    targetAudience?: string;
+    tone: string;
+  };
+}
+
+/** Structured LinkedIn post output */
+export interface LinkedInOutput {
+  type: 'linkedin';
+  hook: string;
+  content: string;
+  hashtags: string[];
+  callToAction: string;
+  characterCount: number;
+}
+
+/** Communication dimension score */
+export interface CommunicationDimension {
+  name: string;
+  score: number;
+  strengths: string[];
+  improvements: string[];
+}
+
+/** Structured communication analysis output */
+export interface CommunicationAnalysisOutput {
+  type: 'communicationAnalysis';
+  overallScore: number;
+  dimensions: CommunicationDimension[];
+  overallAssessment: string;
+  keyTakeaway: string;
+}
+
+/** Union type for all structured outputs */
+export type StructuredOutput =
+  | ActionItemsOutput
+  | EmailOutput
+  | BlogPostOutput
+  | LinkedInOutput
+  | CommunicationAnalysisOutput;
+
+/** Type guard to check if content is structured */
+export function isStructuredOutput(content: unknown): content is StructuredOutput {
+  return (
+    typeof content === 'object' &&
+    content !== null &&
+    'type' in content &&
+    typeof (content as StructuredOutput).type === 'string'
+  );
+}
+
+// ============================================================
+// GENERATED ANALYSIS
+// ============================================================
 
 // New: Generated analysis record
 export interface GeneratedAnalysis {
@@ -152,8 +274,10 @@ export interface GeneratedAnalysis {
   userId: string;
   templateId: string; // Links to AnalysisTemplate
   templateName: string; // Snapshot for history (e.g., "Emotional Intelligence")
-  content: string; // Generated markdown content
+  content: string | StructuredOutput; // Markdown (V1) or structured JSON (V2)
+  contentType: 'markdown' | 'structured'; // Indicates how to render content
   model: 'gpt-5' | 'gpt-5-mini';
+  customInstructions?: string; // User-provided instructions at generation time
   tokenUsage?: {
     prompt: number;
     completion: number;
@@ -162,7 +286,7 @@ export interface GeneratedAnalysis {
   generatedAt: Date;
   generationTimeMs?: number;
   translations?: {
-    [languageCode: string]: string; // Translated content for each language (e.g., { 'en': '...', 'es': '...' })
+    [languageCode: string]: string | StructuredOutput; // Translated content for each language
   };
 }
 

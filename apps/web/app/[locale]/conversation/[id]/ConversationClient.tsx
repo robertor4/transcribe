@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -15,7 +15,11 @@ import {
   Plus,
   Loader2,
   AlertCircle,
+  MessageSquareQuote,
 } from 'lucide-react';
+import { transcriptionApi } from '@/lib/api';
+import type { GeneratedAnalysis, StructuredOutput } from '@transcribe/shared';
+import { getStructuredOutputPreview } from '@/components/outputTemplates';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { RightContextPanel } from '@/components/RightContextPanel';
@@ -42,11 +46,35 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const { conversation, isLoading, error } = useConversation(conversationId);
   const { folders } = useFolders();
+  const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
+  const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
 
   // Find the folder for this conversation
   const folder = conversation?.folderId
     ? folders.find((f) => f.id === conversation.folderId)
     : null;
+
+  // Fetch generated outputs for this conversation
+  const fetchOutputs = useCallback(async () => {
+    if (!conversationId) return;
+
+    setIsLoadingOutputs(true);
+    try {
+      const response = await transcriptionApi.getUserAnalyses(conversationId);
+      if (response.success && response.data) {
+        setOutputs(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch outputs:', err);
+    } finally {
+      setIsLoadingOutputs(false);
+    }
+  }, [conversationId]);
+
+  // Fetch outputs on mount and when conversation changes
+  useEffect(() => {
+    fetchOutputs();
+  }, [fetchOutputs]);
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
@@ -59,8 +87,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         return Edit3;
       case 'linkedin':
         return Share2;
-      case 'userStories':
-        return FileText;
+      case 'communicationAnalysis':
+        return MessageSquareQuote;
       default:
         return FileText;
     }
@@ -68,7 +96,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const handleGenerateOutput = (outputType: string) => {
     console.log('Generate output:', outputType);
-    // TODO: Implement output generation
+    setIsGeneratorOpen(true);
   };
 
   // Loading state
@@ -114,9 +142,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     speakers: conversation.source.transcript.speakers,
   };
 
-  // TODO: Fetch outputs from API when implemented
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const outputs: any[] = [];
 
   return (
     <div className="h-screen flex flex-col">
@@ -234,7 +259,20 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {outputs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {outputs.map((output) => {
-                    const OutputIcon = getOutputIcon(output.type);
+                    const OutputIcon = getOutputIcon(output.templateId);
+                    // Create a preview from the content - handle both markdown and structured
+                    let preview: string;
+                    if (output.contentType === 'structured' && typeof output.content === 'object') {
+                      preview = getStructuredOutputPreview(output.content as StructuredOutput);
+                    } else {
+                      const contentStr = typeof output.content === 'string' ? output.content : JSON.stringify(output.content);
+                      preview = contentStr
+                        .replace(/^#+ /gm, '') // Remove markdown headers
+                        .replace(/\*\*/g, '') // Remove bold markers
+                        .slice(0, 150)
+                        .trim() + (contentStr.length > 150 ? '...' : '');
+                    }
+
                     return (
                       <Link
                         key={output.id}
@@ -247,13 +285,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#cc3399] transition-colors">
-                              {output.title}
+                              {output.templateName}
                             </h3>
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                              {output.preview}
+                              {preview}
                             </p>
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Generated {formatRelativeTime(output.generatedAt)}
+                              Generated {formatRelativeTime(new Date(output.generatedAt))}
                             </div>
                           </div>
                           <div className="flex-shrink-0 text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
@@ -356,6 +394,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         isOpen={isGeneratorOpen}
         onClose={() => setIsGeneratorOpen(false)}
         conversationTitle={conversation.title}
+        conversationId={conversationId}
+        onOutputGenerated={fetchOutputs}
       />
     </div>
   );

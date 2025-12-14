@@ -30,6 +30,7 @@ export class OnDemandAnalysisService {
     transcriptionId: string,
     templateId: string,
     userId: string,
+    customInstructions?: string,
   ): Promise<GeneratedAnalysis> {
     // 1. Get template
     const template = this.templateService.getTemplateById(templateId);
@@ -76,21 +77,52 @@ export class OnDemandAnalysisService {
 
     // 5. Generate analysis using the template
     const startTime = Date.now();
+    const isStructured = template.outputFormat === 'structured';
+
+    // Combine stored context with custom instructions
+    let effectiveContext = transcription.context || '';
+    if (customInstructions) {
+      if (effectiveContext) {
+        effectiveContext = `${effectiveContext}\n\nAdditional instructions: ${customInstructions}`;
+      } else {
+        effectiveContext = customInstructions;
+      }
+    }
+
+    this.logger.log(
+      `Context for analysis: "${effectiveContext || '(no context)'}"`,
+    );
+
     try {
-      const content = await this.transcriptionService.generateSummaryWithModel(
+      const rawContent = await this.transcriptionService.generateSummaryWithModel(
         transcriptText,
         undefined, // No AnalysisType enum - use custom prompts
-        transcription.context,
+        effectiveContext || undefined,
         transcription.detectedLanguage,
         template.modelPreference,
         template.systemPrompt,
         template.userPrompt,
+        template.outputFormat, // V2: Pass output format for JSON mode
       );
       const generationTimeMs = Date.now() - startTime;
 
       this.logger.log(
-        `Analysis generated in ${generationTimeMs}ms using ${template.modelPreference}`,
+        `Analysis generated in ${generationTimeMs}ms using ${template.modelPreference} (format: ${template.outputFormat || 'markdown'})`,
       );
+
+      // V2: Parse JSON content for structured outputs
+      let content: GeneratedAnalysis['content'] = rawContent;
+      if (isStructured) {
+        try {
+          content = JSON.parse(rawContent);
+          this.logger.log('Successfully parsed structured JSON output');
+        } catch (parseError) {
+          this.logger.warn(
+            `Failed to parse JSON output, storing as markdown: ${parseError.message}`,
+          );
+          // Fall back to storing as markdown if JSON parsing fails
+        }
+      }
 
       // 6. Save to Firestore
       const analysis: Omit<GeneratedAnalysis, 'id'> = {
@@ -99,9 +131,12 @@ export class OnDemandAnalysisService {
         templateId,
         templateName: template.name,
         content,
+        contentType: isStructured && typeof content === 'object' ? 'structured' : 'markdown',
         model: template.modelPreference,
         generatedAt: new Date(),
         generationTimeMs,
+        // Only include customInstructions if provided (Firestore doesn't accept undefined)
+        ...(customInstructions ? { customInstructions } : {}),
       };
 
       const analysisId =

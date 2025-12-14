@@ -1,5 +1,11 @@
 import { AnalysisTemplate, AnalysisType } from '@transcribe/shared';
 import * as prompts from './prompts';
+import {
+  createTemplate,
+  createStructuredTemplate,
+  PROMPT_INSTRUCTIONS,
+  SCHEMA_FRAGMENTS,
+} from './template-helpers';
 
 /**
  * System-defined analysis templates
@@ -7,63 +13,414 @@ import * as prompts from './prompts';
  */
 export const ANALYSIS_TEMPLATES: AnalysisTemplate[] = [
   // ============================================================
+  // V2 OUTPUT TEMPLATES (matching frontend template IDs)
+  // ============================================================
+  createStructuredTemplate({
+    id: 'actionItems',
+    name: 'Action Items',
+    description: 'Extract actionable tasks from conversations',
+    category: 'professional',
+    icon: 'CheckSquare',
+    color: 'green',
+    systemPrompt: `You are a critical project manager. Only extract GENUINE action items that were EXPLICITLY discussed or committed to. Never fabricate or infer tasks. Quality over quantity. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Extract actionable tasks from this conversation and return as JSON.
+
+CRITICAL REQUIREMENTS:
+1. Only include action items that were EXPLICITLY discussed or committed to
+2. Each action item must be SMART-formatted: Specific, Measurable, with clear context
+
+DO NOT include:
+- General topics or ideas mentioned casually
+- Vague statements like "we should think about X"
+- Inferred or assumed tasks not explicitly stated
+- Recommendations unless someone explicitly committed to doing them
+
+Each action item MUST be SMART:
+- SPECIFIC: Include WHAT needs to be done and any relevant details (who, where, how)
+- MEASURABLE: Clear completion criteria when possible
+- ACTION-ORIENTED: Start with a clear verb (send, schedule, create, review, call, etc.)
+- COMPLETE: Include enough context that someone reading it later understands the full task
+
+EXAMPLES of good vs bad action items:
+❌ BAD: "Book it tomorrow" (Book what? Where? For whom?)
+✅ GOOD: "Book the conference room for the Q1 planning meeting tomorrow at 2pm"
+
+❌ BAD: "Send the thing" (What thing? To whom?)
+✅ GOOD: "Send the updated proposal to Sarah at Acme Corp"
+
+❌ BAD: "Follow up" (On what? With whom?)
+✅ GOOD: "Follow up with the design team about the homepage mockups"
+
+For each action item, extract:
+- task: Complete, specific task description with full context (SMART format)
+- owner: Person's name if mentioned, or null
+- deadline: Due date or timeframe if discussed, or null
+- priority: "high", "medium", or "low"
+- priorityReason: One sentence explaining WHY this priority level
+- context: Any dependencies or additional context (optional)
+
+Priority guidelines:
+- HIGH: Explicitly urgent, blocking other work, or has immediate deadline (this week)
+- MEDIUM: Important but flexible timeline, mentioned as "needed soon"
+- LOW: Nice-to-have, no urgency expressed, or "when time permits"
+
+Group items by timeframe:
+- immediateActions: Tasks for this week
+- shortTermActions: Tasks for this month
+- longTermActions: Tasks beyond this month
+
+IMPORTANT: If there are NO genuine, explicit action items in the conversation, return empty arrays. Quality over quantity - it's better to return nothing than to fabricate vague tasks.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "actionItems",
+  "immediateActions": [{ "task": "string", "owner": "string|null", "deadline": "string|null", "priority": "high|medium|low", "priorityReason": "string", "context": "string" }],
+  "shortTermActions": [{ "task": "string", "owner": "string|null", "deadline": "string|null", "priority": "high|medium|low", "priorityReason": "string", "context": "string" }],
+  "longTermActions": [{ "task": "string", "owner": "string|null", "deadline": "string|null", "priority": "high|medium|low", "priorityReason": "string", "context": "string" }]
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    featured: true,
+    order: 0,
+    tags: ['action-items', 'tasks', 'productivity', 'project-management'],
+    targetRoles: ['project-manager', 'team-lead', 'founder'],
+    templateGroup: 'action-items',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'actionItems' },
+        immediateActions: { type: 'array', items: SCHEMA_FRAGMENTS.actionItem },
+        shortTermActions: { type: 'array', items: SCHEMA_FRAGMENTS.actionItem },
+        longTermActions: { type: 'array', items: SCHEMA_FRAGMENTS.actionItem },
+      },
+      required: ['type', 'immediateActions', 'shortTermActions', 'longTermActions'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'email',
+    name: 'Email Summary',
+    description: 'Transform conversations into professional follow-up emails',
+    category: 'content',
+    icon: 'Mail',
+    color: 'blue',
+    systemPrompt: `You are an expert email writer. Transform conversation transcripts into clear, concise emails. Adapt your tone based on context — professional for business, casual for friends, formal for executives, etc. Default to professional when no tone is specified. Focus on key points, action items, and next steps. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Based on this conversation transcript, write an email summary and return as JSON.
+
+IMPORTANT: If context is provided above, USE IT to customize the email:
+- Tailor the greeting to the specified recipient (use their name if provided)
+- Match the tone to what's specified (casual, friendly, formal, etc.) — default to professional only if no tone is indicated
+- Include any specific instructions from the context (e.g., "focus on pricing", "mention next steps")
+- Reference any mentioned deadlines, project names, or company details
+
+Extract and structure:
+- subject: Clear, actionable subject line
+- greeting: Greeting appropriate to the tone and recipient
+- body: Array of paragraphs summarizing the key points
+- keyPoints: Array of bullet points highlighting main takeaways
+- actionItems: Array of next steps or actions required
+- closing: Closing appropriate to the tone
+
+Keep the email focused and easy to scan.
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "email",
+  "subject": "string",
+  "greeting": "string",
+  "body": ["paragraph1", "paragraph2"],
+  "keyPoints": ["point1", "point2"],
+  "actionItems": ["action1", "action2"],
+  "closing": "string"
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    featured: true,
+    order: 0,
+    tags: ['email', 'communication', 'follow-up', 'business'],
+    targetRoles: ['sales', 'account-manager', 'founder', 'consultant'],
+    templateGroup: 'email',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'email' },
+        subject: { type: 'string' },
+        greeting: { type: 'string' },
+        body: SCHEMA_FRAGMENTS.stringArray,
+        keyPoints: SCHEMA_FRAGMENTS.stringArray,
+        actionItems: SCHEMA_FRAGMENTS.stringArray,
+        closing: { type: 'string' },
+      },
+      required: ['type', 'subject', 'greeting', 'body', 'keyPoints', 'actionItems', 'closing'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'blogPost',
+    name: 'Blog Post',
+    description: 'Transform conversation insights into compelling blog content',
+    category: 'content',
+    icon: 'FileEdit',
+    color: 'purple',
+    systemPrompt: `You are an experienced content writer specializing in creating engaging, publish-ready blog posts. Transform conversation transcripts into compelling narratives that educate, inspire, and engage readers. Use storytelling techniques, clear structure, and authentic voice. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Transform this conversation into a compelling blog post and return as JSON.
+
+Create a structured blog post with:
+- headline: Engaging, SEO-friendly headline
+- subheading: Optional subtitle that adds context
+- hook: Opening paragraph that captures attention
+- sections: Array of content sections, each with:
+  - heading: Section title (sentence case)
+  - paragraphs: Array of body paragraphs
+  - bulletPoints: Optional array of key points
+  - quotes: Optional array of quotes with attribution
+- callToAction: Compelling closing statement
+- metadata: Word count, target audience, tone
+
+Make it publish-ready and engaging for readers.
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "blogPost",
+  "headline": "string",
+  "subheading": "string (optional)",
+  "hook": "string",
+  "sections": [{ "heading": "string", "paragraphs": ["string"], "bulletPoints": ["string"], "quotes": [{ "text": "string", "attribution": "string" }] }],
+  "callToAction": "string",
+  "metadata": { "wordCount": number, "targetAudience": "string", "tone": "string" }
+}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 0,
+    tags: ['blog', 'content-creation', 'writing', 'thought-leadership'],
+    targetRoles: ['content-creator', 'founder', 'marketing', 'thought-leader'],
+    templateGroup: 'blog',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'blogPost' },
+        headline: { type: 'string' },
+        subheading: { type: 'string' },
+        hook: { type: 'string' },
+        sections: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              heading: { type: 'string' },
+              paragraphs: SCHEMA_FRAGMENTS.stringArray,
+              bulletPoints: SCHEMA_FRAGMENTS.stringArray,
+              quotes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    text: { type: 'string' },
+                    attribution: { type: 'string' },
+                  },
+                  required: ['text', 'attribution'],
+                },
+              },
+            },
+            required: ['heading', 'paragraphs'],
+          },
+        },
+        callToAction: { type: 'string' },
+        metadata: {
+          type: 'object',
+          properties: {
+            wordCount: { type: 'number' },
+            targetAudience: { type: 'string' },
+            tone: { type: 'string' },
+          },
+          required: ['wordCount', 'tone'],
+        },
+      },
+      required: ['type', 'headline', 'hook', 'sections', 'callToAction', 'metadata'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'linkedin',
+    name: 'LinkedIn Post',
+    description: 'Create engaging professional LinkedIn updates',
+    category: 'content',
+    icon: 'Share2',
+    color: 'indigo',
+    systemPrompt: `You are a social media content creator specializing in LinkedIn posts. Create engaging, professional posts that spark conversation and provide value. Use authentic voice, clear insights, and strategic formatting with line breaks and emojis when appropriate. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create an engaging LinkedIn post based on this conversation and return as JSON.
+
+Structure the post with:
+- hook: Opening line that grabs attention (question or bold statement)
+- content: Main body with key insights (use \\n for line breaks, emojis sparingly)
+- hashtags: 3-5 relevant hashtags (without # symbol)
+- callToAction: Closing question or CTA to encourage engagement
+- characterCount: Total character count (aim for 150-300 words)
+
+Make it authentic and engaging for LinkedIn's professional audience.
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "linkedin",
+  "hook": "string",
+  "content": "string",
+  "hashtags": ["tag1", "tag2"],
+  "callToAction": "string",
+  "characterCount": number
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    order: 0,
+    tags: ['linkedin', 'social-media', 'professional-networking', 'thought-leadership'],
+    targetRoles: ['founder', 'content-creator', 'sales', 'thought-leader'],
+    templateGroup: 'linkedin',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'linkedin' },
+        hook: { type: 'string' },
+        content: { type: 'string' },
+        hashtags: SCHEMA_FRAGMENTS.stringArray,
+        callToAction: { type: 'string' },
+        characterCount: { type: 'number' },
+      },
+      required: ['type', 'hook', 'content', 'hashtags', 'callToAction', 'characterCount'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'communicationAnalysis',
+    name: 'Communication Analysis',
+    description: 'Score conversation on communication effectiveness',
+    category: 'professional',
+    icon: 'MessageSquare',
+    color: 'teal',
+    systemPrompt: `You are a communication coach and analyst. Your task is to evaluate conversations across multiple dimensions of effective communication. Provide constructive, actionable feedback with specific examples from the conversation. Be objective yet encouraging. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this conversation transcript for communication effectiveness and return as JSON.
+
+Evaluate and score (0-100) the conversation across these 6 dimensions:
+1. Clarity - How clearly were ideas expressed?
+2. Active Listening - Evidence of listening and building on others' ideas
+3. Empathy - Understanding and acknowledging others' perspectives
+4. Persuasiveness - Effectiveness in presenting arguments and influencing
+5. Collaboration - Working together towards shared understanding
+6. Conciseness - Getting to the point without unnecessary words
+
+For each dimension, provide:
+- name: The dimension name
+- score: Number from 0-100
+- strengths: 1-2 specific examples of what was done well
+- improvements: 1-2 actionable suggestions for improvement
+
+Also provide:
+- overallScore: Weighted average of all dimensions
+- overallAssessment: 2-3 sentence summary of communication quality
+- keyTakeaway: Single most important insight
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "communicationAnalysis",
+  "overallScore": number,
+  "dimensions": [{ "name": "string", "score": number, "strengths": ["string"], "improvements": ["string"] }],
+  "overallAssessment": "string",
+  "keyTakeaway": "string"
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 0,
+    tags: ['communication', 'feedback', 'coaching', 'soft-skills'],
+    targetRoles: ['manager', 'coach', 'hr', 'team-lead'],
+    templateGroup: 'communication-analysis',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'communicationAnalysis' },
+        overallScore: { type: 'number', minimum: 0, maximum: 100 },
+        dimensions: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              score: { type: 'number', minimum: 0, maximum: 100 },
+              strengths: SCHEMA_FRAGMENTS.stringArray,
+              improvements: SCHEMA_FRAGMENTS.stringArray,
+            },
+            required: ['name', 'score', 'strengths', 'improvements'],
+          },
+        },
+        overallAssessment: { type: 'string' },
+        keyTakeaway: { type: 'string' },
+      },
+      required: ['type', 'overallScore', 'dimensions', 'overallAssessment', 'keyTakeaway'],
+    },
+  }),
+
+  // ============================================================
   // PROFESSIONAL ANALYSIS TEMPLATES
   // ============================================================
-  {
+  createTemplate({
     id: 'system-emotional-iq',
     name: 'Emotional Intelligence',
     description: 'Analyze emotional tone, empathy, and interpersonal dynamics',
     category: 'professional',
     icon: 'Brain',
     color: 'pink',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.EMOTIONAL_INTELLIGENCE,
-    ),
+    systemPrompt: prompts.getSystemPromptByType(AnalysisType.EMOTIONAL_INTELLIGENCE),
     userPrompt: prompts.getPromptByType(AnalysisType.EMOTIONAL_INTELLIGENCE),
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
     featured: true,
     order: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['emotional-intelligence', 'empathy', 'interpersonal', 'psychology'],
+    targetRoles: ['manager', 'coach', 'hr', 'therapist'],
+    templateGroup: 'emotional-intelligence',
+  }),
+
+  createTemplate({
     id: 'system-influence',
     name: 'Influence & Persuasion',
     description: 'Identify persuasion techniques and influence patterns',
     category: 'professional',
     icon: 'Target',
     color: 'orange',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.INFLUENCE_PERSUASION,
-    ),
+    systemPrompt: prompts.getSystemPromptByType(AnalysisType.INFLUENCE_PERSUASION),
     userPrompt: prompts.getPromptByType(AnalysisType.INFLUENCE_PERSUASION),
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
     featured: true,
     order: 2,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['persuasion', 'influence', 'negotiation', 'sales'],
+    targetRoles: ['sales', 'founder', 'negotiator', 'consultant'],
+    templateGroup: 'influence',
+  }),
+
+  createTemplate({
     id: 'system-development',
     name: 'Personal Development',
     description: 'Identify growth opportunities and skill development areas',
     category: 'professional',
     icon: 'TrendingUp',
     color: 'teal',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.PERSONAL_DEVELOPMENT,
-    ),
+    systemPrompt: prompts.getSystemPromptByType(AnalysisType.PERSONAL_DEVELOPMENT),
     userPrompt: prompts.getPromptByType(AnalysisType.PERSONAL_DEVELOPMENT),
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
     featured: true,
     order: 3,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['personal-development', 'growth', 'coaching', 'feedback'],
+    targetRoles: ['coach', 'manager', 'hr', 'individual-contributor'],
+    templateGroup: 'personal-development',
+  }),
+
+  createTemplate({
     id: 'system-risk-assessment',
     name: 'Risk Assessment',
     description: 'Identify risks and mitigation strategies',
@@ -101,16 +458,16 @@ Categories to consider:
 ## Immediate Actions Required
 [Critical risks needing immediate attention]
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 11,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['risk-management', 'mitigation', 'project-management', 'strategy'],
+    targetRoles: ['project-manager', 'product-manager', 'founder', 'executive'],
+    templateGroup: 'risk-assessment',
+  }),
+
+  createTemplate({
     id: 'system-conflict-analysis',
     name: 'Conflict Analysis',
     description: 'Identify disagreements and resolution paths',
@@ -161,20 +518,19 @@ What's the underlying disagreement? (values, priorities, information gap, etc.)
 ## Action Items from Conflicts
 [Specific next steps to address unresolved issues]
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 14,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+    tags: ['conflict-resolution', 'mediation', 'negotiation', 'team-dynamics'],
+    targetRoles: ['manager', 'hr', 'mediator', 'team-lead'],
+    templateGroup: 'conflict-analysis',
+  }),
 
   // ============================================================
   // CONTENT CREATION TEMPLATES
   // ============================================================
-  {
+  createTemplate({
     id: 'system-blog-post',
     name: 'Blog Post Draft',
     description: 'Transform conversation into an engaging blog post',
@@ -196,16 +552,16 @@ Requirements:
 
 Write in an accessible style suitable for a professional blog audience.
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 4,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['blog', 'content-creation', 'writing', 'marketing'],
+    targetRoles: ['content-creator', 'marketing', 'founder', 'thought-leader'],
+    templateGroup: 'blog',
+  }),
+
+  createTemplate({
     id: 'system-email-summary',
     name: 'Executive Brief',
     description:
@@ -234,75 +590,47 @@ Examples: "Decision Required: Q3 Budget Allocation" or "Update: Product Launch T
 
 **Opening Line (BLUF - Bottom Line Up Front):**
 Immediately state the most important insight, decision, or outcome in 1-2 sentences.
-Examples:
-- "We've decided to accelerate the product launch by 6 weeks, requiring an additional $200K investment."
-- "The client committed to a $500K expansion, pending legal review by March 15."
-- "Three critical risks were identified that could delay the Q2 release."
 
 **Context (2-3 sentences):**
-Briefly explain why this conversation happened and who was involved. Only include context that helps understanding - skip the obvious.
+Briefly explain why this conversation happened and who was involved.
 
 **Key Decisions & Outcomes:**
-List the most important decisions/outcomes with brief rationale:
-- Use bullet points for 3+ items, integrate into prose for 1-2 items
-- Include the "why" when it provides strategic insight
-- Format: "[Decision/Outcome] to [achieve business goal/mitigate risk]"
-- Quantify when possible (dates, $$$, metrics, percentages)
+List the most important decisions/outcomes with brief rationale.
 
 **Risks & Considerations (if applicable):**
-Flag anything that could derail success or requires leadership awareness:
-- Dependencies on other teams/systems
-- Resource constraints or budget concerns
-- Timeline pressures or competing priorities
-- External factors (regulatory, competitive, market)
+Flag anything that could derail success or requires leadership awareness.
 
 **Action Items:**
-Present as clear commitments, not vague intentions:
-- Format: "[Name] will [specific action] by [date] to [outcome/goal]"
-- Only include actions that matter at the executive level
-- Flag critical path items or cross-functional dependencies
+Present as clear commitments, not vague intentions.
+Format: "[Name] will [specific action] by [date] to [outcome/goal]"
 
 **Next Milestone/Decision Point (if applicable):**
 When will the next update come? What's the next key decision point?
-Examples: "Next review: March 15 board meeting" or "Decision required by: EOW Friday on vendor selection"
 
 **Closing (1 sentence, if needed):**
-Only include if there's a specific ask, invitation for input, or important context.
-Examples:
-- "Please confirm budget approval by EOD Thursday."
-- "Let me know if you have concerns about the timeline shift."
-- "Happy to discuss any of these points in more detail."
+Only include if there's a specific ask or important context.
 
 **Quality Checklist:**
 ✓ BLUF captures the most important point immediately
-✓ Business impact is clear (revenue, risk, strategic alignment, efficiency)
-✓ Decisions include rationale, not just "what"
-✓ Numbers and dates are specific, not vague
+✓ Business impact is clear
+✓ Decisions include rationale
+✓ Numbers and dates are specific
 ✓ Risks are flagged proactively
 ✓ Actions have clear owners and deadlines
-✓ Length: 200-300 words (longer for complex strategic discussions, shorter for updates)
-✓ Zero jargon unless it's standard business terminology
-✓ Sounds like it came from a senior leader or their trusted advisor
-
-**What to Omit:**
-- Detailed back-and-forth or process discussions
-- Tactical minutiae (unless it reveals strategic risk)
-- Generic platitudes ("had a productive discussion")
-- Obvious context the executive already knows
-- Verbose explanations - be crisp
+✓ Length: 200-300 words
 
 **Critical Language Requirement:**
-If the transcript is in a non-English language, write the entire brief (subject and body) in that same language, maintaining the same professional executive tone.
-
-**Remember:** You're writing for someone who has 2 minutes to read this and needs to make a decision or understand the strategic situation. Make every sentence count.`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
     featured: true,
     order: 4,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['executive-brief', 'leadership', 'strategy', 'decision-making'],
+    targetRoles: ['executive', 'founder', 'chief-of-staff', 'board-member'],
+    templateGroup: 'executive-brief',
+  }),
+
+  createTemplate({
     id: 'system-linkedin-post',
     name: 'LinkedIn Post',
     description: 'Create a LinkedIn post highlighting key insights',
@@ -324,15 +652,16 @@ Requirements:
 
 Focus on insights that would interest your professional network.
 
-If the transcript is in a non-English language, the entire post (including hashtags) must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
-    featured: false,
     order: 6,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['linkedin', 'social-media', 'professional-networking'],
+    targetRoles: ['founder', 'content-creator', 'sales', 'marketing'],
+    templateGroup: 'linkedin',
+  }),
+
+  createTemplate({
     id: 'system-meeting-minutes',
     name: 'Meeting Minutes (Formal)',
     description: 'Generate formal meeting minutes with sections',
@@ -369,16 +698,16 @@ For each agenda item:
 ## Next Meeting
 [Date/topics if mentioned]
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 25,
-    featured: false,
     order: 7,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['meeting-minutes', 'documentation', 'formal', 'records'],
+    targetRoles: ['executive-assistant', 'project-manager', 'secretary', 'team-lead'],
+    templateGroup: 'meeting-minutes',
+  }),
+
+  createTemplate({
     id: 'system-faq',
     name: 'FAQ Generator',
     description: 'Extract common questions and answers',
@@ -411,16 +740,16 @@ Categories might include:
 - Technical Details
 - Best Practices
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
-    featured: false,
     order: 13,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['faq', 'knowledge-base', 'documentation', 'support'],
+    targetRoles: ['product-manager', 'support', 'content-creator', 'knowledge-manager'],
+    templateGroup: 'faq',
+  }),
+
+  createTemplate({
     id: 'system-training',
     name: 'Training Material',
     description: 'Convert conversation into training content',
@@ -473,20 +802,19 @@ Key takeaways in bullet points
 - How will learners know they've mastered this?
 - Self-check questions
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 15,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+    tags: ['training', 'education', 'learning', 'instructional-design'],
+    targetRoles: ['trainer', 'hr', 'learning-designer', 'team-lead'],
+    templateGroup: 'training',
+  }),
 
   // ============================================================
   // SPECIALIZED TEMPLATES
   // ============================================================
-  {
+  createTemplate({
     id: 'system-executive-briefing',
     name: 'Executive Briefing',
     description: 'One-page executive summary for leadership',
@@ -526,16 +854,16 @@ What leadership needs to decide
 
 Keep it scannable - use bold for key terms, limit to 1 page.
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 8,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['executive-briefing', 'leadership', 'strategy', 'summary'],
+    targetRoles: ['executive', 'founder', 'chief-of-staff', 'consultant'],
+    templateGroup: 'executive-brief',
+  }),
+
+  createTemplate({
     id: 'system-sales-analysis',
     name: 'Sales Call Analysis',
     description: 'Analyze sales calls for objections and opportunities',
@@ -578,16 +906,16 @@ For each objection:
 - Key factors influencing outcome
 - What could move the needle
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 9,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['sales', 'call-analysis', 'objections', 'opportunity'],
+    targetRoles: ['sales', 'sales-manager', 'account-executive', 'founder'],
+    templateGroup: 'sales-analysis',
+  }),
+
+  createTemplate({
     id: 'system-customer-feedback',
     name: 'Customer Feedback Extraction',
     description: 'Extract product feedback and feature requests',
@@ -622,16 +950,16 @@ If the transcript is in a non-English language, ALL headings and content must be
 ## Priority Assessment
 Rate each item: Critical / High / Medium / Low
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 25,
-    featured: false,
     order: 10,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
+    tags: ['customer-feedback', 'product-feedback', 'feature-requests', 'voice-of-customer'],
+    targetRoles: ['product-manager', 'customer-success', 'founder', 'ux-researcher'],
+    templateGroup: 'customer-feedback',
+  }),
+
+  createTemplate({
     id: 'system-tech-docs',
     name: 'Technical Documentation',
     description: 'Create technical documentation from discussions',
@@ -679,15 +1007,14 @@ Brief description of what's being built/decided
 - Environment requirements
 - Rollback procedures
 
-Write ALL section headers in sentence case, capitalizing only the first word and proper nouns.
-If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
+${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    featured: false,
     order: 12,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
+    tags: ['technical-docs', 'engineering', 'architecture', 'documentation'],
+    targetRoles: ['engineer', 'technical-writer', 'architect', 'team-lead'],
+    templateGroup: 'technical-docs',
+  }),
 ];
 
 // Helper to get template by ID

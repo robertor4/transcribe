@@ -249,12 +249,16 @@ export const transcriptionApi = {
     return api.get('/transcriptions/analysis-templates');
   },
 
-  generateAnalysis: async (id: string, templateId: string): Promise<ApiResponse<GeneratedAnalysis>> => {
-    return api.post(`/transcriptions/${id}/generate-analysis`, { templateId });
+  generateAnalysis: async (id: string, templateId: string, customInstructions?: string): Promise<ApiResponse<GeneratedAnalysis>> => {
+    return api.post(`/transcriptions/${id}/generate-analysis`, { templateId, customInstructions });
   },
 
   getUserAnalyses: async (id: string): Promise<ApiResponse<GeneratedAnalysis[]>> => {
     return api.get(`/transcriptions/${id}/analyses`);
+  },
+
+  getAnalysis: async (id: string, analysisId: string): Promise<ApiResponse<GeneratedAnalysis>> => {
+    return api.get(`/transcriptions/${id}/analyses/${analysisId}`);
   },
 
   deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {

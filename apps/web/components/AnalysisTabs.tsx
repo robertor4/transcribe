@@ -56,9 +56,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
   const [showRightArrow, setShowRightArrow] = useState(false);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleCopy = async (content: string, tabKey: string) => {
+  const handleCopy = async (content: string | object, tabKey: string) => {
     try {
-      await navigator.clipboard.writeText(content);
+      const textContent = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+      await navigator.clipboard.writeText(textContent);
       setCopiedTab(tabKey);
       setTimeout(() => setCopiedTab(null), 2000);
     } catch (error) {
@@ -787,7 +788,10 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
 
               {/* Content */}
               <div className="prose prose-sm max-w-none dark:prose-invert">
-                <AnalysisContentRenderer content={analysis.content} />
+                <AnalysisContentRenderer
+                  content={analysis.content}
+                  contentType={analysis.contentType}
+                />
               </div>
 
               {/* Metadata */}

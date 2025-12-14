@@ -144,9 +144,10 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
     }
   };
 
-  const handleCopy = async (content: string, analysisId: string) => {
+  const handleCopy = async (content: string | object, analysisId: string) => {
     try {
-      await navigator.clipboard.writeText(content);
+      const textContent = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+      await navigator.clipboard.writeText(textContent);
       setCopiedId(analysisId);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
@@ -409,6 +410,13 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                   selectedAnalysis.translations?.[selectedLanguage]
                     ? selectedAnalysis.translations[selectedLanguage]
                     : selectedAnalysis.content
+                }
+                contentType={
+                  // Translations are always markdown strings; only original can be structured
+                  selectedLanguage !== 'original' &&
+                  selectedAnalysis.translations?.[selectedLanguage]
+                    ? 'markdown'
+                    : selectedAnalysis.contentType
                 }
               />
             </div>

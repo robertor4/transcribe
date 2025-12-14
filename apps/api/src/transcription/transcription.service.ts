@@ -682,6 +682,7 @@ export class TranscriptionService {
     model?: string,
     customSystemPrompt?: string, // NEW: For on-demand analysis templates
     customUserPrompt?: string, // NEW: For on-demand analysis templates
+    outputFormat?: 'markdown' | 'structured', // V2: Output format for structured JSON
   ): Promise<string> {
     try {
       const languageInstruction = language
@@ -742,6 +743,12 @@ ${fullCustomPrompt}`;
         `Using model ${selectedModel} for ${analysisType || 'custom'} generation`,
       );
 
+      // V2: Use JSON output format for structured outputs
+      const useJsonFormat = outputFormat === 'structured';
+      if (useJsonFormat) {
+        this.logger.log('Using JSON output format for structured response');
+      }
+
       const completion = await this.openai.chat.completions.create({
         model: selectedModel,
         messages: [
@@ -750,6 +757,7 @@ ${fullCustomPrompt}`;
         ],
         max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
         // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
+        ...(useJsonFormat && { response_format: { type: 'json_object' as const } }),
       });
 
       return completion.choices[0].message.content || '';

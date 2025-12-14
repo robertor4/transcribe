@@ -1,38 +1,60 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import { Button } from './Button';
 import { allTemplates, TemplateId } from '@/lib/outputTemplates';
+import { transcriptionApi } from '@/lib/api';
 
 interface OutputGeneratorModalProps {
   isOpen: boolean;
   onClose: () => void;
   conversationTitle: string;
+  conversationId: string;
+  onOutputGenerated?: () => void;
 }
 
-export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: OutputGeneratorModalProps) {
+export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated }: OutputGeneratorModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<TemplateId | null>(null);
   const [customInstructions, setCustomInstructions] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const selectedOption = allTemplates.find(t => t.id === selectedType);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
+    if (!selectedType) return;
+
     setStep(4);
     setIsGenerating(true);
+    setError(null);
 
-    // Simulate generation
-    setTimeout(() => {
+    try {
+      const response = await transcriptionApi.generateAnalysis(
+        conversationId,
+        selectedType,
+        customInstructions || undefined
+      );
+
+      if (response.success) {
+        setIsGenerating(false);
+        // Notify parent to refresh outputs
+        onOutputGenerated?.();
+        // Close modal after showing success
+        setTimeout(() => {
+          handleClose();
+        }, 1500);
+      } else {
+        throw new Error(response.message || 'Failed to generate output');
+      }
+    } catch (err) {
+      console.error('Error generating output:', err);
       setIsGenerating(false);
-      // Close modal after success
-      setTimeout(() => {
-        handleClose();
-      }, 1500);
-    }, 3000);
+      setError(err instanceof Error ? err.message : 'Failed to generate output. Please try again.');
+    }
   };
 
   const handleClose = () => {
@@ -43,6 +65,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: Out
       setSelectedType(null);
       setCustomInstructions('');
       setIsGenerating(false);
+      setError(null);
     }, 300);
   };
 
@@ -295,6 +318,21 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle }: Out
                     <div className="w-3 h-3 rounded-full bg-[#cc3399] animate-bounce" style={{ animationDelay: '150ms' }} />
                     <div className="w-3 h-3 rounded-full bg-[#cc3399] animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
+                </>
+              ) : error ? (
+                <>
+                  <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
+                    <AlertCircle className="w-10 h-10 text-red-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                    Generation failed
+                  </h3>
+                  <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-6">
+                    {error}
+                  </p>
+                  <Button variant="brand" size="md" onClick={() => { setStep(3); setError(null); }}>
+                    Try Again
+                  </Button>
                 </>
               ) : (
                 <>

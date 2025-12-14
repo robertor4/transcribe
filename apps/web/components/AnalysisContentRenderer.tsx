@@ -4,26 +4,39 @@ import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import type { StructuredOutput } from '@transcribe/shared';
+import { OutputRenderer } from './outputTemplates';
 
 interface AnalysisContentRendererProps {
-  content: string;
+  content: string | StructuredOutput;
+  contentType?: 'markdown' | 'structured';
 }
 
 export const AnalysisContentRenderer: React.FC<AnalysisContentRendererProps> = ({
-  content
+  content,
+  contentType,
 }) => {
+  // If content is structured, use the OutputRenderer
+  if (contentType === 'structured' || (typeof content === 'object' && content !== null)) {
+    return <OutputRenderer content={content} contentType={contentType} />;
+  }
+
+  // For markdown content, use the existing markdown renderer
+  const markdownContent = typeof content === 'string' ? content : JSON.stringify(content);
+
   // Process the content to handle HTML-styled intro paragraph
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const processedContent = useMemo(() => {
     const htmlParagraphRegex = /<p\s+style="font-size:\s*1\.4em;">([^<]+)<\/p>/;
-    const match = content.match(htmlParagraphRegex);
+    const match = markdownContent.match(htmlParagraphRegex);
 
     if (match) {
       // Replace the HTML with markdown that we'll style specially
       const introText = match[1];
-      return content.replace(htmlParagraphRegex, `[INTRO]${introText}[/INTRO]`);
+      return markdownContent.replace(htmlParagraphRegex, `[INTRO]${introText}[/INTRO]`);
     }
-    return content;
-  }, [content]);
+    return markdownContent;
+  }, [markdownContent]);
 
   return (
     <div className="max-w-4xl mx-auto px-0 sm:px-6 lg:px-8">

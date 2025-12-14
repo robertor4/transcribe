@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **V2 Output Generation**:
+  - Wired up `OutputGeneratorModal` to call the backend API for generating outputs
+  - Added V2 output templates to backend (matching frontend template IDs):
+    - `actionItems` - Extract actionable tasks from conversations
+    - `email` - Transform conversations into professional follow-up emails
+    - `blogPost` - Create publish-ready blog content
+    - `linkedin` - Generate engaging LinkedIn posts
+    - `communicationAnalysis` - Score conversation communication effectiveness
+  - Added outputs fetching to `ConversationClient` - displays generated outputs in gallery
+  - Added error handling and retry UI in OutputGeneratorModal
+  - Outputs refresh automatically after successful generation
+
 - **V2 Migration Phase 1 - Backend Folder Support**:
   - Added `Folder`, `CreateFolderRequest`, `UpdateFolderRequest` types to shared package
   - Added `folderId` field to `Transcription` interface

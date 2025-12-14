@@ -823,6 +823,7 @@ export class TranscriptionController {
   async generateAnalysis(
     @Param('id') transcriptionId: string,
     @Body('templateId') templateId: string,
+    @Body('customInstructions') customInstructions: string | undefined,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<GeneratedAnalysis>> {
     if (!templateId) {
@@ -836,6 +837,7 @@ export class TranscriptionController {
       transcriptionId,
       templateId,
       req.user.uid,
+      customInstructions,
     );
 
     // Track usage after successful generation
@@ -864,6 +866,27 @@ export class TranscriptionController {
     return {
       success: true,
       data: analyses,
+    };
+  }
+
+  /**
+   * Get a single generated analysis by ID
+   */
+  @Get(':id/analyses/:analysisId')
+  @UseGuards(FirebaseAuthGuard)
+  async getAnalysis(
+    @Param('id') transcriptionId: string,
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<GeneratedAnalysis>> {
+    const analysis = await this.onDemandAnalysisService.getAnalysisById(
+      analysisId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: analysis,
     };
   }
 
