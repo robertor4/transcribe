@@ -322,6 +322,7 @@ export function ConversationCreateModal({
               <RealProcessingView
                 file={uploadedFiles[0]}
                 context={overallContext || undefined}
+                selectedTemplates={selectedTemplates}
                 onComplete={handleProcessingComplete}
                 onError={handleProcessingError}
               />

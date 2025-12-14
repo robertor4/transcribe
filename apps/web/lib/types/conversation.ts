@@ -91,10 +91,11 @@ function extractSummary(transcription: Transcription): {
   if (transcription.coreAnalyses?.summaryV2) {
     const v2 = transcription.coreAnalyses.summaryV2;
     return {
-      text: transcription.coreAnalyses.summary, // Markdown version for backwards compat
+      // V2: summary.text may be empty - UI should check summaryV2 first
+      text: transcription.coreAnalyses.summary || '', // Empty for V2 transcriptions
       keyPoints: v2.keyPoints.map((kp) => `${kp.topic}: ${kp.description}`),
       generatedAt: v2.generatedAt || transcription.completedAt || transcription.updatedAt,
-      summaryV2: v2, // Pass through V2 structured data
+      summaryV2: v2, // Pass through V2 structured data - this is the primary source for V2
     };
   }
 

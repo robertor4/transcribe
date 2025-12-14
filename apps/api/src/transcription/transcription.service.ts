@@ -73,12 +73,66 @@ export class TranscriptionService {
     this.audioSplitter = new AudioSplitter();
   }
 
+  /**
+   * V2: Parse selected templates into analysis selection flags.
+   * Maps frontend template IDs to backend analysis types.
+   *
+   * Template mapping:
+   * - 'transcribe-only' → summaryV2 only (no action items, no communication)
+   * - 'email', 'blogPost', 'linkedinPost' → summaryV2 only (output format templates)
+   * - 'actionItems' → generate ACTION_ITEMS analysis
+   * - 'communicationAnalysis' → generate COMMUNICATION_STYLES analysis
+   *
+   * @param selectedTemplates Array of template IDs from frontend
+   * @returns Object with flags for each analysis type
+   */
+  parseTemplateSelection(selectedTemplates?: string[]): {
+    generateSummary: boolean;
+    generateActionItems: boolean;
+    generateCommunicationStyles: boolean;
+  } {
+    // Default behavior: generate all core analyses (backwards compatibility for old clients)
+    if (!selectedTemplates || selectedTemplates.length === 0) {
+      this.logger.log(
+        'No selectedTemplates provided - generating all analyses (backwards compat)',
+      );
+      return {
+        generateSummary: true,
+        generateActionItems: true,
+        generateCommunicationStyles: true,
+      };
+    }
+
+    // V2: Check what templates are selected
+    const hasActionItems = selectedTemplates.includes('actionItems');
+    const hasCommunication = selectedTemplates.includes(
+      'communicationAnalysis',
+    );
+
+    // Summary (summaryV2) is always generated when any template is selected
+    // Action items and communication styles are ONLY generated when explicitly requested
+    const result = {
+      generateSummary: true, // Always generate summaryV2
+      generateActionItems: hasActionItems,
+      generateCommunicationStyles: hasCommunication,
+    };
+
+    this.logger.log(
+      `Parsed template selection: ${JSON.stringify(selectedTemplates)} → ` +
+        `summary=${result.generateSummary}, actionItems=${result.generateActionItems}, ` +
+        `communication=${result.generateCommunicationStyles}`,
+    );
+
+    return result;
+  }
+
   async createTranscription(
     userId: string,
     file: Express.Multer.File,
     analysisType?: AnalysisType,
     context?: string,
     contextId?: string,
+    selectedTemplates?: string[], // V2: Template IDs to control which analyses are generated
   ): Promise<Transcription> {
     this.logger.log(
       `Creating transcription for user ${userId}, file: ${file.originalname}`,
@@ -114,6 +168,9 @@ export class TranscriptionService {
     if (contextId) {
       transcription.contextId = contextId;
     }
+    if (selectedTemplates?.length) {
+      transcription.selectedTemplates = selectedTemplates;
+    }
 
     const transcriptionId =
       await this.firebaseService.createTranscription(transcription);
@@ -130,6 +187,7 @@ export class TranscriptionService {
       retryCount: 0,
       maxRetries: 3,
       createdAt: new Date(),
+      selectedTemplates, // V2: Pass template selection to processor
     };
 
     await this.transcriptionQueue.add('transcribe', job, {
@@ -551,8 +609,11 @@ export class TranscriptionService {
 
         // Combine all transcriptions
         transcriptText = transcriptions.join(' ');
-        totalDuration = accumulatedDuration > 0 ? accumulatedDuration : undefined;
-        this.logger.log(`Combined ${chunks.length} chunk transcriptions, total duration: ${totalDuration}s`);
+        totalDuration =
+          accumulatedDuration > 0 ? accumulatedDuration : undefined;
+        this.logger.log(
+          `Combined ${chunks.length} chunk transcriptions, total duration: ${totalDuration}s`,
+        );
       } else {
         this.logger.log(
           `File size ${fileSizeInMB}MB is within limit. Processing directly...`,
@@ -585,7 +646,11 @@ export class TranscriptionService {
       // Clean up temp file
       fs.unlinkSync(tempFilePath);
 
-      return { text: transcriptText, language: detectedLanguage, durationSeconds: totalDuration };
+      return {
+        text: transcriptText,
+        language: detectedLanguage,
+        durationSeconds: totalDuration,
+      };
     } catch (error) {
       this.logger.error('Error transcribing audio:', error);
       throw error;
@@ -884,13 +949,23 @@ ${fullCustomPrompt}`;
    * NEW: Generate only core analyses (Summary, Action Items, Communication, Transcript)
    * This is the new default for the on-demand analysis system.
    *
-   * V2 UPDATE: Now generates structured SummaryV2 JSON and also provides markdown
-   * version for backwards compatibility.
+   * V2 UPDATE: Now generates structured SummaryV2 JSON only (no markdown summary).
+   * Respects template selection to only generate requested analyses.
+   *
+   * @param transcriptionText The transcript text to analyze
+   * @param context Optional context to improve analysis quality
+   * @param language Detected language of the transcript
+   * @param selection Optional flags to control which analyses are generated (V2)
    */
   async generateCoreAnalyses(
     transcriptionText: string,
     context?: string,
     language?: string,
+    selection?: {
+      generateSummary: boolean;
+      generateActionItems: boolean;
+      generateCommunicationStyles: boolean;
+    },
   ): Promise<{
     summary: string;
     summaryV2?: SummaryV2;
@@ -898,67 +973,103 @@ ${fullCustomPrompt}`;
     communicationStyles: string;
     transcript: string;
   }> {
+    // Default to all analyses if no selection provided (backwards compatibility)
+    const sel = selection ?? {
+      generateSummary: true,
+      generateActionItems: true,
+      generateCommunicationStyles: true,
+    };
+
     try {
       this.logger.log(
-        'Generating core analyses (V2 Summary, Action Items, Communication)...',
+        `Generating core analyses: summary=${sel.generateSummary}, ` +
+          `actionItems=${sel.generateActionItems}, communication=${sel.generateCommunicationStyles}`,
       );
 
-      const analysisPromises = [
-        // V2 Summary - Structured JSON format with GPT-5
-        this.generateSummaryV2WithMarkdown(
-          transcriptionText,
-          context,
-          language,
-        ).catch((err) => {
-          this.logger.error('V2 Summary generation failed:', err);
-          return null;
-        }),
+      // Build promises array based on selection - only generate what's requested
+      const analysisPromises: Promise<unknown>[] = [];
+      let summaryIndex = -1;
+      let actionItemsIndex = -1;
+      let communicationIndex = -1;
 
-        // Action Items - Use GPT-5-mini
-        this.generateSummaryWithModel(
-          transcriptionText,
-          AnalysisType.ACTION_ITEMS,
-          context,
-          language,
-          'gpt-5-mini',
-        ).catch((err) => {
-          this.logger.error('Action items generation failed:', err);
-          return null;
-        }),
+      // V2 Summary - Structured JSON format with GPT-5
+      if (sel.generateSummary) {
+        summaryIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryV2WithMarkdown(
+            transcriptionText,
+            context,
+            language,
+          ).catch((err) => {
+            this.logger.error('V2 Summary generation failed:', err);
+            return null;
+          }),
+        );
+      }
 
-        // Communication Styles - Use GPT-5-mini
-        this.generateSummaryWithModel(
-          transcriptionText,
-          AnalysisType.COMMUNICATION_STYLES,
-          context,
-          language,
-          'gpt-5-mini',
-        ).catch((err) => {
-          this.logger.error('Communication styles generation failed:', err);
-          return null;
-        }),
-      ];
+      // Action Items - Use GPT-5-mini (only if requested)
+      if (sel.generateActionItems) {
+        actionItemsIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryWithModel(
+            transcriptionText,
+            AnalysisType.ACTION_ITEMS,
+            context,
+            language,
+            'gpt-5-mini',
+          ).catch((err) => {
+            this.logger.error('Action items generation failed:', err);
+            return null;
+          }),
+        );
+      }
+
+      // Communication Styles - Use GPT-5-mini (only if requested)
+      if (sel.generateCommunicationStyles) {
+        communicationIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryWithModel(
+            transcriptionText,
+            AnalysisType.COMMUNICATION_STYLES,
+            context,
+            language,
+            'gpt-5-mini',
+          ).catch((err) => {
+            this.logger.error('Communication styles generation failed:', err);
+            return null;
+          }),
+        );
+      }
 
       const results = await Promise.all(analysisPromises);
 
-      this.logger.log('Core analyses completed');
+      this.logger.log(
+        `Core analyses completed (${analysisPromises.length} generated)`,
+      );
 
-      // Handle V2 summary result (contains both structured and markdown)
-      const summaryData = results[0] as {
-        summaryV2: SummaryV2;
-        markdownSummary: string;
-      } | null;
-      const actionItems = results[1] as string | null;
-      const communicationStyles = results[2] as string | null;
+      // Extract results based on indices
+      const summaryData =
+        summaryIndex >= 0
+          ? (results[summaryIndex] as {
+              summaryV2: SummaryV2;
+              markdownSummary: string;
+            } | null)
+          : null;
+      const actionItems =
+        actionItemsIndex >= 0
+          ? (results[actionItemsIndex] as string | null)
+          : null;
+      const communicationStyles =
+        communicationIndex >= 0
+          ? (results[communicationIndex] as string | null)
+          : null;
 
       return {
-        summary:
-          summaryData?.markdownSummary ||
-          'Summary generation failed. Please try again.',
-        summaryV2: summaryData?.summaryV2, // V2 structured data (undefined if generation failed)
-        actionItems: actionItems || 'No action items identified.',
-        communicationStyles:
-          communicationStyles || 'Communication analysis unavailable.',
+        // V2: summary field is empty for new transcriptions (UI uses summaryV2)
+        summary: '',
+        summaryV2: summaryData?.summaryV2, // V2 structured data (undefined if not generated or failed)
+        actionItems: actionItems || '',
+        communicationStyles: communicationStyles || '',
         transcript: transcriptionText, // No AI needed - just the text
       };
     } catch (error) {

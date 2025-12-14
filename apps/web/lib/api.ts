@@ -113,12 +113,13 @@ api.interceptors.response.use(
 );
 
 export const transcriptionApi = {
-  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
+  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string, selectedTemplates?: string[]): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
     console.log('[TranscriptionAPI] Starting upload:', {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
       analysisType,
+      selectedTemplates,
     });
 
     const formData = new FormData();
@@ -126,6 +127,7 @@ export const transcriptionApi = {
     if (analysisType) formData.append('analysisType', analysisType);
     if (context) formData.append('context', context);
     if (contextId) formData.append('contextId', contextId);
+    if (selectedTemplates?.length) formData.append('selectedTemplates', JSON.stringify(selectedTemplates));
 
     try {
       const response: ApiResponse<{ jobId: string; transcriptionId: string }> = await api.post('/transcriptions/upload', formData, {

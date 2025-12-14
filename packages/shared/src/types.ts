@@ -224,6 +224,8 @@ export interface Transcription {
   preferredTranslationLanguage?: string; // User's preferred language for this transcription (e.g., 'es', 'fr', or 'original')
   // Soft delete fields
   deletedAt?: Date; // When the transcription was soft-deleted (null = not deleted)
+  // V2: Template selection - controls which analyses are generated
+  selectedTemplates?: string[]; // Array of template IDs from frontend (e.g., ['transcribe-only', 'actionItems'])
 }
 
 export interface TranscriptionJob {
@@ -238,6 +240,8 @@ export interface TranscriptionJob {
   maxRetries: number;
   createdAt: Date;
   processedAt?: Date;
+  // V2: Template selection - controls which analyses are generated
+  selectedTemplates?: string[]; // Array of template IDs from frontend
 }
 
 export interface FileUploadRequest {

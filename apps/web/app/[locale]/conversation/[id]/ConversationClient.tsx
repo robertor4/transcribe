@@ -187,8 +187,11 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Summary</h2>
               </div>
 
-              {conversation.source.summary.text ? (
-                <SummaryRenderer content={conversation.source.summary.text} />
+              {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
+                <SummaryRenderer
+                  content={conversation.source.summary.text}
+                  summaryV2={conversation.source.summary.summaryV2}
+                />
               ) : (
                 <div className="text-center py-8 text-gray-500">
                   <p>Summary is being generated...</p>

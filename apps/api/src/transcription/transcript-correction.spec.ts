@@ -118,7 +118,13 @@ describe('TranscriptionService - Transcript Correction', () => {
           useValue: {
             analyzeAndRoute: jest.fn().mockResolvedValue({
               simpleReplacements: [
-                { find: 'John', replace: 'Jon', caseSensitive: false, estimatedMatches: 2, confidence: 'high' },
+                {
+                  find: 'John',
+                  replace: 'Jon',
+                  caseSensitive: false,
+                  estimatedMatches: 2,
+                  confidence: 'high',
+                },
               ],
               complexCorrections: [],
               estimatedTime: { regex: '< 1s', ai: '0s', total: '< 1s' },
@@ -131,14 +137,18 @@ describe('TranscriptionService - Transcript Correction', () => {
                 percentageAffected: '100%',
               },
             }),
-            applySimpleReplacements: jest.fn().mockImplementation((segments) => ({
-              correctedSegments: segments.map((s: { text: string }) => ({
-                ...s,
-                text: s.text.replace(/John/gi, 'Jon'),
+            applySimpleReplacements: jest
+              .fn()
+              .mockImplementation((segments) => ({
+                correctedSegments: segments.map((s: { text: string }) => ({
+                  ...s,
+                  text: s.text.replace(/John/gi, 'Jon'),
+                })),
+                affectedCount: 2,
               })),
-              affectedCount: 2,
-            })),
-            mergeResults: jest.fn().mockImplementation((original, regex) => regex),
+            mergeResults: jest
+              .fn()
+              .mockImplementation((original, regex) => regex),
           },
         },
       ],
@@ -412,13 +422,15 @@ describe('TranscriptionService - Transcript Correction', () => {
           true,
         );
 
-        expect(correctionRouterService.applySimpleReplacements).toHaveBeenCalled();
+        expect(
+          correctionRouterService.applySimpleReplacements,
+        ).toHaveBeenCalled();
       });
 
       it('should throw if router analysis fails', async () => {
-        (correctionRouterService.analyzeAndRoute as jest.Mock).mockRejectedValue(
-          new Error('Analysis failed'),
-        );
+        (
+          correctionRouterService.analyzeAndRoute as jest.Mock
+        ).mockRejectedValue(new Error('Analysis failed'));
 
         await expect(
           service.correctTranscriptWithAI(

@@ -59,7 +59,9 @@ describe('AssemblyAIService', () => {
       };
 
       // Access private method through any type
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.durationSeconds).toBe(45.5);
     });
@@ -87,13 +89,15 @@ describe('AssemblyAIService', () => {
             text: 'How are you?',
             start: 3000,
             end: 5000, // 5 seconds in ms - this is the last utterance
-            confidence: 0.90,
+            confidence: 0.9,
             words: [],
           },
         ],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       // Should calculate from last utterance end time: 5000ms = 5 seconds
       expect(result.durationSeconds).toBe(5);
@@ -118,7 +122,9 @@ describe('AssemblyAIService', () => {
         ],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.durationSeconds).toBe(10.5);
     });
@@ -133,7 +139,9 @@ describe('AssemblyAIService', () => {
         utterances: [], // Empty utterances
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.durationSeconds).toBeUndefined();
     });
@@ -148,7 +156,9 @@ describe('AssemblyAIService', () => {
         utterances: undefined,
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.durationSeconds).toBeUndefined();
     });
@@ -172,7 +182,9 @@ describe('AssemblyAIService', () => {
         ],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       // Should use audio_duration (30) not utterance end time (25)
       expect(result.durationSeconds).toBe(30);
@@ -188,13 +200,36 @@ describe('AssemblyAIService', () => {
         language_code: 'en',
         audio_duration: 10,
         utterances: [
-          { speaker: 'A', text: 'Hello.', start: 0, end: 1000, confidence: 0.9, words: [] },
-          { speaker: 'B', text: 'Hi there.', start: 1500, end: 3000, confidence: 0.9, words: [] },
-          { speaker: 'A', text: 'Nice to meet you.', start: 3500, end: 5000, confidence: 0.9, words: [] },
+          {
+            speaker: 'A',
+            text: 'Hello.',
+            start: 0,
+            end: 1000,
+            confidence: 0.9,
+            words: [],
+          },
+          {
+            speaker: 'B',
+            text: 'Hi there.',
+            start: 1500,
+            end: 3000,
+            confidence: 0.9,
+            words: [],
+          },
+          {
+            speaker: 'A',
+            text: 'Nice to meet you.',
+            start: 3500,
+            end: 5000,
+            confidence: 0.9,
+            words: [],
+          },
         ],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.speakerCount).toBe(2);
       expect(result.speakers).toHaveLength(2);
@@ -208,12 +243,28 @@ describe('AssemblyAIService', () => {
         language_code: 'en',
         audio_duration: 5,
         utterances: [
-          { speaker: 'A', text: 'Hello.', start: 0, end: 1000, confidence: 0.9, words: [] },
-          { speaker: 'B', text: 'Hi.', start: 1500, end: 2500, confidence: 0.9, words: [] },
+          {
+            speaker: 'A',
+            text: 'Hello.',
+            start: 0,
+            end: 1000,
+            confidence: 0.9,
+            words: [],
+          },
+          {
+            speaker: 'B',
+            text: 'Hi.',
+            start: 1500,
+            end: 2500,
+            confidence: 0.9,
+            words: [],
+          },
         ],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
 
       expect(result.transcriptWithSpeakers).toContain('Speaker A: Hello.');
       expect(result.transcriptWithSpeakers).toContain('Speaker B: Hi.');
@@ -240,7 +291,9 @@ describe('AssemblyAIService', () => {
           utterances: [],
         };
 
-        const result = (service as any).processTranscriptionResponse(mockTranscript);
+        const result = (service as any).processTranscriptionResponse(
+          mockTranscript,
+        );
         expect(result.language).toBe(expected);
       }
     });
@@ -255,7 +308,9 @@ describe('AssemblyAIService', () => {
         utterances: [],
       };
 
-      const result = (service as any).processTranscriptionResponse(mockTranscript);
+      const result = (service as any).processTranscriptionResponse(
+        mockTranscript,
+      );
       expect(result.language).toBe('ja');
     });
   });

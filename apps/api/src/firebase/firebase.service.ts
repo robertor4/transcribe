@@ -57,12 +57,31 @@ export class FirebaseService implements OnModuleInit {
   }
 
   /**
-   * Extract transcription ID from file path for logging
-   * Example: "transcriptions/abc123/audio.mp3" -> "abc123"
+   * Extract identifier from file path for logging
+   * Handles multiple path patterns:
+   * - "transcriptions/userId/transcriptionId/file" -> "transcriptionId"
+   * - "audio/userId/timestamp_filename" -> "timestamp_filename" (truncated)
    */
   private extractIdFromPath(path: string): string {
-    const match = path.match(/transcriptions\/([^\/]+)/);
-    return match ? match[1] : 'unknown';
+    // Try transcriptions path first: transcriptions/{userId}/{transcriptionId}/...
+    const transcriptionMatch = path.match(/transcriptions\/[^\/]+\/([^\/]+)/);
+    if (transcriptionMatch) {
+      return transcriptionMatch[1];
+    }
+
+    // Try audio path: audio/{userId}/{timestamp}_{filename}
+    const audioMatch = path.match(/audio\/[^\/]+\/(.+)/);
+    if (audioMatch) {
+      // Return truncated filename for readability
+      const filename = audioMatch[1];
+      return filename.length > 30
+        ? filename.substring(0, 30) + '...'
+        : filename;
+    }
+
+    // Fallback: return last path segment
+    const segments = path.split('/').filter(Boolean);
+    return segments.length > 0 ? segments[segments.length - 1] : 'unknown';
   }
 
   async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {

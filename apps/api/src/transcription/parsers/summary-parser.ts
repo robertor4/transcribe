@@ -1,5 +1,9 @@
 import { Logger } from '@nestjs/common';
-import { SummaryV2, SummaryKeyPoint, SummaryDetailedSection } from '@transcribe/shared';
+import {
+  SummaryV2,
+  SummaryKeyPoint,
+  SummaryDetailedSection,
+} from '@transcribe/shared';
 
 const logger = new Logger('SummaryParser');
 
@@ -35,7 +39,9 @@ export function parseSummaryV2(aiResponse: string): SummaryV2 {
   if (jsonString.startsWith('```')) {
     const endIndex = jsonString.lastIndexOf('```');
     if (endIndex > 3) {
-      jsonString = jsonString.substring(jsonString.indexOf('\n') + 1, endIndex).trim();
+      jsonString = jsonString
+        .substring(jsonString.indexOf('\n') + 1, endIndex)
+        .trim();
     }
   }
 
@@ -46,7 +52,9 @@ export function parseSummaryV2(aiResponse: string): SummaryV2 {
   } catch (parseError) {
     logger.error('Failed to parse summary JSON:', parseError);
     logger.debug('Raw response:', aiResponse.substring(0, 500));
-    throw new Error(`Failed to parse AI summary response as JSON: ${parseError.message}`);
+    throw new Error(
+      `Failed to parse AI summary response as JSON: ${parseError.message}`,
+    );
   }
 
   // Validate and transform to SummaryV2
@@ -146,7 +154,9 @@ function validateDetailedSections(value: unknown): SummaryDetailedSection[] {
 
       // Skip items with empty topic or content
       if (!topic || !content) {
-        logger.warn(`detailedSection[${index}] has empty topic or content, skipping`);
+        logger.warn(
+          `detailedSection[${index}] has empty topic or content, skipping`,
+        );
         return null;
       }
 

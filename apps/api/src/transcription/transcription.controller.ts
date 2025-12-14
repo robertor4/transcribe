@@ -16,6 +16,7 @@ import {
   BadRequestException,
   ParseIntPipe,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
@@ -61,6 +62,8 @@ import {
 
 @Controller('transcriptions')
 export class TranscriptionController {
+  private readonly logger = new Logger(TranscriptionController.name);
+
   constructor(
     private readonly transcriptionService: TranscriptionService,
     private readonly templateService: AnalysisTemplateService,
@@ -112,6 +115,7 @@ export class TranscriptionController {
     @Body('analysisType') analysisType: AnalysisType,
     @Body('context') context: string,
     @Body('contextId') contextId: string,
+    @Body('selectedTemplates') selectedTemplatesJson: string, // V2: JSON string of template IDs
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<Transcription>> {
     if (!file) {
@@ -152,12 +156,26 @@ export class TranscriptionController {
       estimatedDurationMinutes,
     );
 
+    // V2: Parse selectedTemplates from JSON string
+    let selectedTemplates: string[] | undefined;
+    if (selectedTemplatesJson) {
+      try {
+        selectedTemplates = JSON.parse(selectedTemplatesJson);
+        this.logger.log(
+          `Parsed selectedTemplates: ${JSON.stringify(selectedTemplates)}`,
+        );
+      } catch (e) {
+        this.logger.warn('Failed to parse selectedTemplates JSON:', e);
+      }
+    }
+
     const transcription = await this.transcriptionService.createTranscription(
       req.user.uid,
       file,
       analysisType,
       context,
       contextId,
+      selectedTemplates,
     );
 
     return {

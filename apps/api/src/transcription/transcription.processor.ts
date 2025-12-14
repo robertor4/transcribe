@@ -39,8 +39,14 @@ export class TranscriptionProcessor {
     concurrency: parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10),
   })
   async handleTranscription(job: Job<TranscriptionJob>) {
-    const { transcriptionId, userId, fileUrl, analysisType, context } =
-      job.data;
+    const {
+      transcriptionId,
+      userId,
+      fileUrl,
+      analysisType,
+      context,
+      selectedTemplates,
+    } = job.data;
 
     const concurrency = parseInt(
       process.env.TRANSCRIPTION_CONCURRENCY || '2',
@@ -106,39 +112,57 @@ export class TranscriptionProcessor {
         );
       }
 
+      // V2: Parse template selection to determine which analyses to generate
+      const analysisSelection =
+        this.transcriptionService.parseTemplateSelection(selectedTemplates);
+
       // Update progress for summarization phase
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 60,
-        message: 'Transcription complete, generating core analyses...',
+        message: 'Transcription complete, generating analyses...',
         stage: 'summarizing',
       });
 
-      // Generate CORE analyses only (Summary, Action Items, Communication, Transcript)
+      // Generate analyses based on template selection (V2) or all analyses (backwards compat)
       const coreAnalyses = await this.transcriptionService.generateCoreAnalyses(
         transcriptText,
         context,
         detectedLanguage,
+        analysisSelection, // V2: Pass selection to control which analyses are generated
       );
 
-      // For backward compatibility, keep the summary field
+      // For backward compatibility, keep the summary field (empty for V2)
       const summary = coreAnalyses.summary;
 
-      // Extract title from the summary and generate a short version
-      const extractedTitle =
-        this.transcriptionService.extractTitleFromSummary(summary);
+      // V2: Extract title from summaryV2 intro, or fall back to markdown parsing
       let finalTitle: string | undefined;
-      if (extractedTitle) {
+      if (coreAnalyses.summaryV2?.intro) {
+        // V2: Use the intro as the source for title generation
         this.logger.log(
-          `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
+          `Using summaryV2 intro for title extraction: ${coreAnalyses.summaryV2.intro.substring(0, 50)}...`,
         );
-        // Generate a shorter, more scannable title (5-7 words)
-        finalTitle =
-          await this.transcriptionService.generateShortTitle(extractedTitle);
+        finalTitle = await this.transcriptionService.generateShortTitle(
+          coreAnalyses.summaryV2.intro,
+        );
         this.logger.log(
           `Short title for transcription ${transcriptionId}: ${finalTitle}`,
         );
+      } else if (summary) {
+        // Legacy fallback: Extract title from markdown summary
+        const extractedTitle =
+          this.transcriptionService.extractTitleFromSummary(summary);
+        if (extractedTitle) {
+          this.logger.log(
+            `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
+          );
+          finalTitle =
+            await this.transcriptionService.generateShortTitle(extractedTitle);
+          this.logger.log(
+            `Short title for transcription ${transcriptionId}: ${finalTitle}`,
+          );
+        }
       }
 
       // Update progress - finalizing

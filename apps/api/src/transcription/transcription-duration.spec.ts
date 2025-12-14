@@ -94,8 +94,14 @@ describe('TranscriptionService - Duration Extraction', () => {
             }),
           },
         },
-        { provide: TranscriptCorrectionRouterService, useValue: mockCorrectionRouterService },
-        { provide: getQueueToken(QUEUE_NAMES.TRANSCRIPTION), useValue: mockQueue },
+        {
+          provide: TranscriptCorrectionRouterService,
+          useValue: mockCorrectionRouterService,
+        },
+        {
+          provide: getQueueToken(QUEUE_NAMES.TRANSCRIPTION),
+          useValue: mockQueue,
+        },
         { provide: getQueueToken(QUEUE_NAMES.SUMMARY), useValue: mockQueue },
       ],
     }).compile();
@@ -125,7 +131,7 @@ describe('TranscriptionService - Duration Extraction', () => {
 
       const result = await service.transcribeAudio(
         'https://storage.example.com/audio.mp3',
-        'Test context'
+        'Test context',
       );
 
       expect(result.durationSeconds).toBe(15.5);
@@ -145,7 +151,7 @@ describe('TranscriptionService - Duration Extraction', () => {
       });
 
       const result = await service.transcribeAudio(
-        'https://storage.example.com/audio.mp3'
+        'https://storage.example.com/audio.mp3',
       );
 
       expect(result.durationSeconds).toBeUndefined();
@@ -163,7 +169,7 @@ describe('TranscriptionService - Duration Extraction', () => {
       });
 
       const result = await service.transcribeAudio(
-        'https://storage.example.com/audio.mp3'
+        'https://storage.example.com/audio.mp3',
       );
 
       // Zero is a valid duration
@@ -177,7 +183,9 @@ describe('TranscriptionService - Duration Extraction', () => {
       mockFirebaseService.downloadFile.mockResolvedValue(mockBuffer);
 
       // Set file size to trigger chunking (30MB - over 25MB limit)
-      (mockedFs.statSync as jest.Mock).mockReturnValue({ size: 30 * 1024 * 1024 });
+      (mockedFs.statSync as jest.Mock).mockReturnValue({
+        size: 30 * 1024 * 1024,
+      });
 
       // Mock audio splitter to return 3 chunks
       const mockChunks = [
@@ -192,12 +200,24 @@ describe('TranscriptionService - Duration Extraction', () => {
 
       // Mock Whisper responses for each chunk with durations
       mockOpenAI.audio.transcriptions.create
-        .mockResolvedValueOnce({ text: 'Chunk 1 text', language: 'en', duration: 600 })
-        .mockResolvedValueOnce({ text: 'Chunk 2 text', language: 'en', duration: 600 })
-        .mockResolvedValueOnce({ text: 'Chunk 3 text', language: 'en', duration: 600 });
+        .mockResolvedValueOnce({
+          text: 'Chunk 1 text',
+          language: 'en',
+          duration: 600,
+        })
+        .mockResolvedValueOnce({
+          text: 'Chunk 2 text',
+          language: 'en',
+          duration: 600,
+        })
+        .mockResolvedValueOnce({
+          text: 'Chunk 3 text',
+          language: 'en',
+          duration: 600,
+        });
 
       const result = await service.transcribeAudio(
-        'https://storage.example.com/large-audio.mp3'
+        'https://storage.example.com/large-audio.mp3',
       );
 
       // Total duration should be sum of all chunks: 600 + 600 + 600 = 1800
@@ -212,7 +232,9 @@ describe('TranscriptionService - Duration Extraction', () => {
       mockFirebaseService.downloadFile.mockResolvedValue(mockBuffer);
 
       // Set file size to trigger chunking
-      (mockedFs.statSync as jest.Mock).mockReturnValue({ size: 30 * 1024 * 1024 });
+      (mockedFs.statSync as jest.Mock).mockReturnValue({
+        size: 30 * 1024 * 1024,
+      });
 
       const mockChunks = [
         { path: '/tmp/chunk1.mp3', startTime: 0, endTime: 600, index: 0 },
@@ -224,11 +246,15 @@ describe('TranscriptionService - Duration Extraction', () => {
 
       // First chunk has duration, second doesn't
       mockOpenAI.audio.transcriptions.create
-        .mockResolvedValueOnce({ text: 'Chunk 1', language: 'en', duration: 600 })
+        .mockResolvedValueOnce({
+          text: 'Chunk 1',
+          language: 'en',
+          duration: 600,
+        })
         .mockResolvedValueOnce({ text: 'Chunk 2', language: 'en' }); // No duration
 
       const result = await service.transcribeAudio(
-        'https://storage.example.com/audio.mp3'
+        'https://storage.example.com/audio.mp3',
       );
 
       // Should have accumulated duration from first chunk only
@@ -240,13 +266,15 @@ describe('TranscriptionService - Duration Extraction', () => {
     it('should pass through duration from Whisper when AssemblyAI fails', async () => {
       // Mock AssemblyAI to fail (e.g., language detection failure)
       mockAssemblyAIService.transcribeWithDiarization.mockRejectedValue(
-        new Error('Language detection failed')
+        new Error('Language detection failed'),
       );
 
       // Mock Firebase
       const mockBuffer = Buffer.from('fake audio data');
       mockFirebaseService.downloadFile.mockResolvedValue(mockBuffer);
-      mockFirebaseService.getPublicUrl.mockResolvedValue('https://public.url/audio.mp3');
+      mockFirebaseService.getPublicUrl.mockResolvedValue(
+        'https://public.url/audio.mp3',
+      );
 
       // Mock Whisper fallback response with duration
       mockOpenAI.audio.transcriptions.create.mockResolvedValue({
@@ -257,7 +285,7 @@ describe('TranscriptionService - Duration Extraction', () => {
 
       const result = await service.transcribeAudioWithProgress(
         'https://storage.example.com/audio.mp3',
-        'Test context'
+        'Test context',
       );
 
       expect(result.durationSeconds).toBe(25.0);

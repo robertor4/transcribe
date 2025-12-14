@@ -10,6 +10,7 @@ import { WEBSOCKET_EVENTS } from '@transcribe/shared';
 interface RealProcessingViewProps {
   file: File;
   context?: string;
+  selectedTemplates?: string[]; // V2: Template IDs to control which analyses are generated
   onComplete: (transcriptionId: string) => void;
   onError: (error: string) => void;
 }
@@ -39,6 +40,7 @@ interface FailedData {
 export function RealProcessingView({
   file,
   context,
+  selectedTemplates,
   onComplete,
   onError,
 }: RealProcessingViewProps) {
@@ -113,7 +115,7 @@ export function RealProcessingView({
         setProgress(10);
         setStatusMessage('Uploading audio file...');
 
-        const response = await transcriptionApi.upload(file, undefined, context);
+        const response = await transcriptionApi.upload(file, undefined, context, undefined, selectedTemplates);
 
         if (!response?.success || !response.data) {
           throw new Error('Upload failed - no response data');

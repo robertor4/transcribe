@@ -37,7 +37,10 @@ export class FolderController {
     const userId = (req as any).user.uid;
 
     if (!body.name || body.name.trim() === '') {
-      throw new HttpException('Folder name is required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Folder name is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const folderId = await this.firebaseService.createFolder(userId, {

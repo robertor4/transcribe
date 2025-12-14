@@ -309,8 +309,13 @@ export class AssemblyAIService {
     let durationSeconds = transcript.audio_duration;
 
     // If no duration from AssemblyAI, try to calculate from last utterance end time
-    if (!durationSeconds && transcript.utterances && transcript.utterances.length > 0) {
-      const lastUtterance = transcript.utterances[transcript.utterances.length - 1];
+    if (
+      !durationSeconds &&
+      transcript.utterances &&
+      transcript.utterances.length > 0
+    ) {
+      const lastUtterance =
+        transcript.utterances[transcript.utterances.length - 1];
       durationSeconds = lastUtterance.end / 1000; // Convert ms to seconds
       this.logger.log(
         `AssemblyAI audio_duration was ${transcript.audio_duration}, calculated from utterances: ${durationSeconds}s`,
