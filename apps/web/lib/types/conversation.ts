@@ -80,6 +80,13 @@ function mapStatus(status: TranscriptionStatus): ConversationStatus {
 /**
  * Extract summary text from various source locations in Transcription.
  * Supports both V1 (markdown) and V2 (structured JSON) summary formats.
+ *
+ * Priority order:
+ * 1. transcription.summaryV2 (V2 architecture - new transcriptions)
+ * 2. transcription.coreAnalyses.summaryV2 (V2 in legacy location - backwards compat)
+ * 3. transcription.coreAnalyses.summary (V1 markdown)
+ * 4. transcription.analyses.summary (legacy V1)
+ * 5. transcription.summary (oldest legacy)
  */
 function extractSummary(transcription: Transcription): {
   text: string;
@@ -87,19 +94,29 @@ function extractSummary(transcription: Transcription): {
   generatedAt: Date;
   summaryV2?: SummaryV2;
 } {
-  // Try coreAnalyses.summaryV2 first (V2 structured format - new)
-  if (transcription.coreAnalyses?.summaryV2) {
-    const v2 = transcription.coreAnalyses.summaryV2;
+  // V2 ARCHITECTURE: Try summaryV2 directly on transcription first (new transcriptions)
+  if (transcription.summaryV2) {
+    const v2 = transcription.summaryV2;
     return {
-      // V2: summary.text may be empty - UI should check summaryV2 first
-      text: transcription.coreAnalyses.summary || '', // Empty for V2 transcriptions
+      text: '', // V2 transcriptions don't have markdown summary
       keyPoints: v2.keyPoints.map((kp) => `${kp.topic}: ${kp.description}`),
       generatedAt: v2.generatedAt || transcription.completedAt || transcription.updatedAt,
-      summaryV2: v2, // Pass through V2 structured data - this is the primary source for V2
+      summaryV2: v2,
     };
   }
 
-  // Try coreAnalyses.summary (V1 markdown format)
+  // BACKWARDS COMPAT: Try coreAnalyses.summaryV2 (old transcriptions before migration)
+  if (transcription.coreAnalyses?.summaryV2) {
+    const v2 = transcription.coreAnalyses.summaryV2;
+    return {
+      text: transcription.coreAnalyses.summary || '',
+      keyPoints: v2.keyPoints.map((kp) => `${kp.topic}: ${kp.description}`),
+      generatedAt: v2.generatedAt || transcription.completedAt || transcription.updatedAt,
+      summaryV2: v2,
+    };
+  }
+
+  // BACKWARDS COMPAT: Try coreAnalyses.summary (V1 markdown format)
   if (transcription.coreAnalyses?.summary) {
     return {
       text: transcription.coreAnalyses.summary,
@@ -108,7 +125,7 @@ function extractSummary(transcription: Transcription): {
     };
   }
 
-  // Fall back to analyses.summary (legacy V1)
+  // LEGACY: Fall back to analyses.summary (oldest V1)
   if (transcription.analyses?.summary) {
     return {
       text: transcription.analyses.summary,
@@ -117,7 +134,7 @@ function extractSummary(transcription: Transcription): {
     };
   }
 
-  // Legacy summary field
+  // LEGACY: Oldest summary field
   if (transcription.summary) {
     return {
       text: transcription.summary,

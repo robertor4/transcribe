@@ -18,7 +18,7 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis } from '@transcribe/shared';
+import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
@@ -163,10 +163,42 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const OutputIcon = getOutputIcon(output.templateId);
   const conversationTitle = conversation?.title || 'Conversation';
 
+  // Extract metadata from structured content for the right panel
+  const getOutputMetadata = (): { label: string; value: string }[] => {
+    if (typeof output.content !== 'object' || !output.content) return [];
+
+    const content = output.content as { type?: string };
+
+    if (content.type === 'blogPost') {
+      const blogData = output.content as BlogPostOutput;
+      const metadata: { label: string; value: string }[] = [];
+      if (blogData.metadata?.wordCount) {
+        metadata.push({ label: 'Word count', value: `${blogData.metadata.wordCount} words` });
+      }
+      if (blogData.metadata?.tone) {
+        metadata.push({ label: 'Tone', value: blogData.metadata.tone });
+      }
+      if (blogData.metadata?.targetAudience) {
+        metadata.push({ label: 'Audience', value: blogData.metadata.targetAudience });
+      }
+      return metadata;
+    }
+
+    if (content.type === 'linkedin') {
+      const linkedinData = output.content as LinkedInOutput;
+      if (linkedinData.characterCount) {
+        return [{ label: 'Characters', value: `${linkedinData.characterCount}` }];
+      }
+    }
+
+    return [];
+  };
+
   // Details for right panel
   const detailsData = [
     { label: 'Generated', value: formatRelativeTime(new Date(output.generatedAt)) },
     { label: 'Template', value: output.templateName },
+    ...getOutputMetadata(),
   ];
 
   // Custom sections for the right panel

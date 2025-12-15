@@ -41,6 +41,12 @@ interface AnalysisTabsProps {
   onTranscriptionUpdate?: () => void; // Callback to refresh transcription after corrections
 }
 
+// V2 ARCHITECTURE: Map analysis keys to their template IDs in generatedAnalyses
+const ANALYSIS_TO_TEMPLATE_MAP: Record<string, string> = {
+  actionItems: 'actionItems',
+  communicationStyles: 'communicationAnalysis',
+};
+
 export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedAnalyses, speakerSegments, transcriptionId, transcription, readOnlyMode, onTranscriptionUpdate }) => {
   const [activeTab, setActiveTab] = useState<keyof AnalysisResults | 'moreAnalyses' | string>('summary');
   const [copiedTab, setCopiedTab] = useState<string | null>(null);
@@ -50,6 +56,30 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [currentAnalyses, setCurrentAnalyses] = useState<AnalysisResults>(analyses);
   const [translationError, setTranslationError] = useState<string | null>(null);
+
+  /**
+   * V2 ARCHITECTURE: Find generated analysis by template ID
+   * For actionItems and communicationStyles, we now store them in generatedAnalyses collection
+   */
+  const findGeneratedAnalysisByKey = (analysisKey: string): GeneratedAnalysis | undefined => {
+    const templateId = ANALYSIS_TO_TEMPLATE_MAP[analysisKey];
+    if (!templateId || !generatedAnalyses) return undefined;
+    return generatedAnalyses.find(a => a.templateId === templateId);
+  };
+
+  /**
+   * V2 ARCHITECTURE: Check if an analysis has content (from either location)
+   * Priority: generatedAnalyses > analyses (backwards compat)
+   */
+  const hasAnalysisContent = (analysisKey: string): boolean => {
+    // For action items and communication, check generatedAnalyses first
+    if (ANALYSIS_TO_TEMPLATE_MAP[analysisKey]) {
+      const generated = findGeneratedAnalysisByKey(analysisKey);
+      if (generated) return true;
+    }
+    // Fall back to analyses for backwards compat
+    return !!currentAnalyses[analysisKey as keyof AnalysisResults];
+  };
 
   // Scroll state for horizontal tabs
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -376,7 +406,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
             {/* Render all tabs EXCEPT Details */}
             {ANALYSIS_TYPE_INFO.filter(info => info.key !== 'details').map((info) => {
               const Icon = getIconComponent(info.icon);
-              const hasContent = analyses[info.key];
+              // V2 ARCHITECTURE: Check both generatedAnalyses and analyses for content
+              const hasContent = hasAnalysisContent(info.key);
 
               // Skip tabs without content
               if (!hasContent) return null;
@@ -500,7 +531,11 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
       {/* Tab Content */}
       <div>
         {ANALYSIS_TYPE_INFO.map((info) => {
-          const content = currentAnalyses[info.key];
+          // V2 ARCHITECTURE: Check for generated analysis first, then fall back to analyses
+          const generatedAnalysis = findGeneratedAnalysisByKey(info.key);
+          const legacyContent = currentAnalyses[info.key];
+          const content = generatedAnalysis?.content || legacyContent;
+
           // Show Details tab even without content
           if (activeTab !== info.key) return null;
           if (!content && info.key !== 'details') return null;
@@ -718,15 +753,23 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                       /* Show plain text when no speaker segments available */
                       <div>
                         <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-mono">
-                          {content}
+                          {typeof content === 'string' ? content : ''}
                         </p>
                       </div>
                     )}
                   </div>
                 ) : info.key === 'summary' ? (
-                  <AnalysisContentRenderer content={content || ''} />
+                  <AnalysisContentRenderer content={typeof content === 'string' ? content : ''} />
                 ) : info.key === 'actionItems' ? (
-                  <ActionItemsTable content={content || ''} />
+                  // V2 ARCHITECTURE: Use structured renderer if from generatedAnalyses, else legacy table
+                  generatedAnalysis && generatedAnalysis.content ? (
+                    <AnalysisContentRenderer
+                      content={generatedAnalysis.content}
+                      contentType={generatedAnalysis.contentType}
+                    />
+                  ) : (
+                    <ActionItemsTable content={typeof content === 'string' ? content : ''} />
+                  )
                 ) : info.key === 'details' ? (
                   // Details tab should never render in read-only mode (filtered out from tabs)
                   transcription && transcription.id && !readOnlyMode ? (
@@ -740,9 +783,17 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
                     </div>
                   )
                 ) : info.key === 'communicationStyles' ? (
-                  <AnalysisContentRenderer content={content || ''} />
+                  // V2 ARCHITECTURE: Use structured renderer if from generatedAnalyses
+                  generatedAnalysis && generatedAnalysis.content ? (
+                    <AnalysisContentRenderer
+                      content={generatedAnalysis.content}
+                      contentType={generatedAnalysis.contentType}
+                    />
+                  ) : (
+                    <AnalysisContentRenderer content={typeof content === 'string' ? content : ''} />
+                  )
                 ) : (
-                  <AnalysisContentRenderer content={content || ''} />
+                  <AnalysisContentRenderer content={typeof content === 'string' ? content : ''} />
                 )}
               </div>
             </div>

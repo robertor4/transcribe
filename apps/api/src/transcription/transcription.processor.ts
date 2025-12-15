@@ -7,6 +7,7 @@ import {
   QUEUE_NAMES,
 } from '@transcribe/shared';
 import { TranscriptionService } from './transcription.service';
+import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { EmailService } from '../email/email.service';
@@ -19,6 +20,7 @@ export class TranscriptionProcessor {
 
   constructor(
     private transcriptionService: TranscriptionService,
+    private onDemandAnalysisService: OnDemandAnalysisService,
     private firebaseService: FirebaseService,
     private websocketGateway: WebSocketGateway,
     private emailService: EmailService,
@@ -125,44 +127,80 @@ export class TranscriptionProcessor {
         stage: 'summarizing',
       });
 
-      // Generate analyses based on template selection (V2) or all analyses (backwards compat)
-      const coreAnalyses = await this.transcriptionService.generateCoreAnalyses(
-        transcriptText,
-        context,
-        detectedLanguage,
-        analysisSelection, // V2: Pass selection to control which analyses are generated
-      );
+      // V2 ARCHITECTURE: Generate summaryV2 directly, other analyses via templates
+      // 1. Generate summaryV2 (always, stored on transcription doc for fast access)
+      const summaryV2 = analysisSelection.generateSummary
+        ? await this.transcriptionService.generateSummaryV2Only(
+            transcriptText,
+            context,
+            detectedLanguage,
+          )
+        : null;
 
-      // For backward compatibility, keep the summary field (empty for V2)
-      const summary = coreAnalyses.summary;
+      // 2. Generate actionItems and communicationStyles as GeneratedAnalysis docs
+      const generatedAnalysisIds: string[] = [];
 
-      // V2: Extract title from summaryV2 intro, or fall back to markdown parsing
+      if (analysisSelection.generateActionItems) {
+        try {
+          this.logger.log(
+            `Generating actionItems analysis for transcription ${transcriptionId}`,
+          );
+          const actionItemsDoc =
+            await this.onDemandAnalysisService.generateFromTemplate(
+              transcriptionId,
+              'actionItems',
+              userId,
+              undefined,
+              { skipDuplicateCheck: true },
+            );
+          generatedAnalysisIds.push(actionItemsDoc.id);
+          this.logger.log(
+            `ActionItems analysis created: ${actionItemsDoc.id}`,
+          );
+        } catch (err) {
+          this.logger.error('Failed to generate actionItems analysis:', err);
+          // Continue processing even if this fails
+        }
+      }
+
+      if (analysisSelection.generateCommunicationStyles) {
+        try {
+          this.logger.log(
+            `Generating communicationAnalysis for transcription ${transcriptionId}`,
+          );
+          const commDoc =
+            await this.onDemandAnalysisService.generateFromTemplate(
+              transcriptionId,
+              'communicationAnalysis',
+              userId,
+              undefined,
+              { skipDuplicateCheck: true },
+            );
+          generatedAnalysisIds.push(commDoc.id);
+          this.logger.log(
+            `CommunicationAnalysis created: ${commDoc.id}`,
+          );
+        } catch (err) {
+          this.logger.error(
+            'Failed to generate communicationAnalysis:',
+            err,
+          );
+          // Continue processing even if this fails
+        }
+      }
+
+      // V2: Extract title from summaryV2 intro
       let finalTitle: string | undefined;
-      if (coreAnalyses.summaryV2?.intro) {
-        // V2: Use the intro as the source for title generation
+      if (summaryV2?.intro) {
         this.logger.log(
-          `Using summaryV2 intro for title extraction: ${coreAnalyses.summaryV2.intro.substring(0, 50)}...`,
+          `Using summaryV2 intro for title extraction: ${summaryV2.intro.substring(0, 50)}...`,
         );
         finalTitle = await this.transcriptionService.generateShortTitle(
-          coreAnalyses.summaryV2.intro,
+          summaryV2.intro,
         );
         this.logger.log(
           `Short title for transcription ${transcriptionId}: ${finalTitle}`,
         );
-      } else if (summary) {
-        // Legacy fallback: Extract title from markdown summary
-        const extractedTitle =
-          this.transcriptionService.extractTitleFromSummary(summary);
-        if (extractedTitle) {
-          this.logger.log(
-            `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
-          );
-          finalTitle =
-            await this.transcriptionService.generateShortTitle(extractedTitle);
-          this.logger.log(
-            `Short title for transcription ${transcriptionId}: ${finalTitle}`,
-          );
-        }
       }
 
       // Update progress - finalizing
@@ -191,18 +229,15 @@ export class TranscriptionProcessor {
         `transcriptions/${userId}/${transcriptionId}/transcript.txt`,
       );
 
-      const summaryUrl = await this.firebaseService.uploadText(
-        summary,
-        `transcriptions/${userId}/${transcriptionId}/summary.md`,
-      );
+      // V2: No longer save markdown summary file (summaryV2 is stored as JSON on doc)
 
       // Update transcription document with language and speaker information
+      // V2 ARCHITECTURE: summaryV2 stored directly on doc, other analyses in generatedAnalyses collection
       const updateData: any = {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
-        summary, // Keep for backward compatibility
-        coreAnalyses, // NEW: Store core analyses
-        generatedAnalysisIds: [], // Initialize empty array for on-demand analyses
+        summaryV2, // V2: Structured summary stored directly on doc for fast access
+        generatedAnalysisIds, // V2: References to actionItems, communicationAnalysis, etc.
         duration: durationSeconds, // Audio duration in seconds
         completedAt: new Date(),
         updatedAt: new Date(),

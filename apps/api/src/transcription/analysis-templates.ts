@@ -25,6 +25,8 @@ export const ANALYSIS_TEMPLATES: AnalysisTemplate[] = [
     systemPrompt: `You are a critical project manager. Only extract GENUINE action items that were EXPLICITLY discussed or committed to. Never fabricate or infer tasks. Quality over quantity. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Extract actionable tasks from this conversation and return as JSON.
 
+${PROMPT_INSTRUCTIONS.useContext}
+
 CRITICAL REQUIREMENTS:
 1. Only include action items that were EXPLICITLY discussed or committed to
 2. Each action item must be SMART-formatted: Specific, Measurable, with clear context
@@ -109,11 +111,10 @@ Return JSON matching this exact schema:
     systemPrompt: `You are an expert email writer. Transform conversation transcripts into clear, concise emails. Adapt your tone based on context — professional for business, casual for friends, formal for executives, etc. Default to professional when no tone is specified. Focus on key points, action items, and next steps. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Based on this conversation transcript, write an email summary and return as JSON.
 
-IMPORTANT: If context is provided above, USE IT to customize the email:
-- Tailor the greeting to the specified recipient (use their name if provided)
-- Match the tone to what's specified (casual, friendly, formal, etc.) — default to professional only if no tone is indicated
-- Include any specific instructions from the context (e.g., "focus on pricing", "mention next steps")
-- Reference any mentioned deadlines, project names, or company details
+${PROMPT_INSTRUCTIONS.useContext}
+Additionally for emails:
+- Use the recipient's name in the greeting if provided
+- Default to professional tone only if no tone is specified in context
 
 Extract and structure:
 - subject: Clear, actionable subject line
@@ -167,6 +168,12 @@ Return JSON matching this exact schema:
     color: 'purple',
     systemPrompt: `You are an experienced content writer specializing in creating engaging, publish-ready blog posts. Transform conversation transcripts into compelling narratives that educate, inspire, and engage readers. Use storytelling techniques, clear structure, and authentic voice. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Transform this conversation into a compelling blog post and return as JSON.
+
+${PROMPT_INSTRUCTIONS.useContext}
+Additionally for blog posts:
+- Target the specified audience if mentioned
+- Adopt the writing style or angle if specified
+- Focus on themes or topics highlighted in context
 
 Create a structured blog post with:
 - headline: Engaging, SEO-friendly headline
@@ -254,6 +261,11 @@ Return JSON matching this exact schema:
     systemPrompt: `You are a social media content creator specializing in LinkedIn posts. Create engaging, professional posts that spark conversation and provide value. Use authentic voice, clear insights, and strategic formatting with line breaks and emojis when appropriate. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create an engaging LinkedIn post based on this conversation and return as JSON.
 
+${PROMPT_INSTRUCTIONS.useContext}
+Additionally for LinkedIn:
+- Align with the professional brand or persona if specified
+- Focus on insights relevant to the target network
+
 Structure the post with:
 - hook: Opening line that grabs attention (question or bold statement)
 - content: Main body with key insights (use \\n for line breaks, emojis sparingly)
@@ -302,6 +314,11 @@ Return JSON matching this exact schema:
     color: 'teal',
     systemPrompt: `You are a communication coach and analyst. Your task is to evaluate conversations across multiple dimensions of effective communication. Provide constructive, actionable feedback with specific examples from the conversation. Be objective yet encouraging. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Analyze this conversation transcript for communication effectiveness and return as JSON.
+
+${PROMPT_INSTRUCTIONS.useContext}
+Additionally for communication analysis:
+- Focus on specific speakers or roles if mentioned in context
+- Weight dimensions differently if context specifies priorities
 
 Evaluate and score (0-100) the conversation across these 6 dimensions:
 1. Clarity - How clearly were ideas expressed?

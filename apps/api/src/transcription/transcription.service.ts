@@ -953,9 +953,39 @@ ${fullCustomPrompt}`;
   }
 
   /**
-   * NEW: Generate only core analyses (Summary, Action Items, Communication, Transcript)
-   * This is the new default for the on-demand analysis system.
+   * Generate only the V2 structured summary.
+   * Used by the processor during initial transcription processing.
+   * The summary is stored directly on the transcription document for fast access.
    *
+   * @param transcriptionText The transcript text to analyze
+   * @param context Optional context to improve analysis quality
+   * @param language Detected language of the transcript
+   * @returns SummaryV2 structured JSON, or null if generation fails
+   */
+  async generateSummaryV2Only(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<SummaryV2 | null> {
+    try {
+      this.logger.log('Generating V2 summary only (no other core analyses)...');
+      const summaryV2 = await this.generateSummaryV2(
+        transcriptionText,
+        context,
+        language,
+      );
+      return summaryV2;
+    } catch (error) {
+      this.logger.error('V2 summary generation failed:', error);
+      return null;
+    }
+  }
+
+  /**
+   * @deprecated Use generateSummaryV2Only() for summary and onDemandAnalysisService.generateFromTemplate()
+   * for actionItems and communicationStyles. This method will be removed in a future version.
+   *
+   * Generate core analyses (Summary, Action Items, Communication).
    * V2 UPDATE: Now generates structured SummaryV2 JSON only (no markdown summary).
    * Respects template selection to only generate requested analyses.
    *

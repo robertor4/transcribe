@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **V2 Architecture: Deprecate coreAnalyses in favor of generatedAnalyses**:
+  - New transcriptions now store `summaryV2` directly on transcription document (not in `coreAnalyses`)
+  - Action items and communication analysis are now generated as `GeneratedAnalysis` documents in the `generatedAnalyses` collection
+  - Frontend `AnalysisTabs` updated to read from both `generatedAnalyses` and legacy `coreAnalyses` (backwards compatible)
+  - Frontend `conversation.ts` adapter updated with fallback logic for old transcriptions
+  - Marked `CoreAnalyses` interface and `coreAnalyses` field as `@deprecated`
+  - Added `summaryV2` field directly to `Transcription` interface
+  - Added `generateSummaryV2Only()` method to `TranscriptionService`
+  - Added `skipDuplicateCheck` option to `OnDemandAnalysisService.generateFromTemplate()`
+  - Created migration script for Phase 2 cleanup: `apps/api/src/scripts/migrate-core-analyses.ts`
+    - Run with `--dry-run` to preview changes
+    - Run with `--limit=N` to process only N transcriptions
+    - Promotes `summaryV2` from `coreAnalyses` to root level and removes `coreAnalyses` field
+
 ### Added
 - **V2 Output Generation**:
   - Wired up `OutputGeneratorModal` to call the backend API for generating outputs

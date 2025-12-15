@@ -1,32 +1,14 @@
-import { FileText, Quote } from 'lucide-react';
+import { Quote } from 'lucide-react';
 import type { BlogPostOutput } from '@transcribe/shared';
-import { TemplateHeader, BulletList } from './shared';
+import { BulletList } from './shared';
 
 interface BlogPostTemplateProps {
   data: BlogPostOutput;
 }
 
 export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
-  const metadata = (
-    <>
-      <span>{data.metadata.wordCount} words</span>
-      <span>•</span>
-      <span className="capitalize">{data.metadata.tone} tone</span>
-      {data.metadata.targetAudience && (
-        <>
-          <span>•</span>
-          <span>For {data.metadata.targetAudience}</span>
-        </>
-      )}
-    </>
-  );
-
   return (
-    <div className="space-y-6">
-      <TemplateHeader icon={FileText} label="Blog Post" metadata={metadata} />
-
-      {/* Article Preview */}
-      <article className="prose prose-gray dark:prose-invert max-w-none">
+    <article className="prose prose-gray dark:prose-invert max-w-none">
         {/* Headline */}
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
           {data.headline}
@@ -86,13 +68,12 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
           </section>
         ))}
 
-        {/* Call to Action */}
-        <div className="mt-8 p-6 bg-gradient-to-r from-[#cc3399]/10 to-purple-500/10 dark:from-[#cc3399]/20 dark:to-purple-500/20 rounded-xl border border-[#cc3399]/20">
-          <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {data.callToAction}
-          </p>
-        </div>
-      </article>
-    </div>
+      {/* Call to Action */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-[#cc3399]/10 to-purple-500/10 dark:from-[#cc3399]/20 dark:to-purple-500/20 rounded-xl border border-[#cc3399]/20">
+        <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          {data.callToAction}
+        </p>
+      </div>
+    </article>
   );
 }

@@ -1,8 +1,8 @@
 'use client';
 
-import { MessageSquare, TrendingUp, TrendingDown, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target } from 'lucide-react';
 import type { CommunicationAnalysisOutput, CommunicationDimension } from '@transcribe/shared';
-import { TemplateHeader, BulletList } from './shared';
+import { BulletList } from './shared';
 
 interface CommunicationAnalysisTemplateProps {
   data: CommunicationAnalysisOutput;
@@ -104,8 +104,6 @@ function DimensionCard({ dimension }: { dimension: CommunicationDimension }) {
 export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTemplateProps) {
   return (
     <div className="space-y-6">
-      <TemplateHeader icon={MessageSquare} label="Communication Analysis" />
-
       {/* Overall Score Card */}
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-6">
         <div className="flex flex-col md:flex-row items-center gap-6">

@@ -118,7 +118,11 @@ export interface AnalysisResults {
   details?: string; // Metadata and recording information
 }
 
-// New: Core analyses that are always generated
+/**
+ * @deprecated Use summaryV2 directly on Transcription and generatedAnalyses collection for other analyses.
+ * This interface is kept for backwards compatibility with existing transcriptions.
+ * Will be removed after migration is complete.
+ */
 export interface CoreAnalyses {
   summary: string; // Markdown summary (V1 format for backwards compatibility)
   summaryV2?: SummaryV2; // V2 structured JSON summary (new)
@@ -321,10 +325,15 @@ export interface Transcription {
   detectedLanguage?: string; // Language detected from the audio (e.g., 'english', 'dutch', 'german')
   summaryLanguage?: string; // Language used for the summary
   analyses?: AnalysisResults; // All analysis results - DEPRECATED, use coreAnalyses
-  // NEW: Core analyses generated automatically
+  // V2 ARCHITECTURE: summaryV2 stored directly on doc, other analyses in generatedAnalyses collection
+  summaryV2?: SummaryV2; // V2: Structured summary stored directly for fast access
+  /**
+   * @deprecated Use summaryV2 directly on Transcription and generatedAnalyses collection.
+   * Kept for backwards compatibility with existing transcriptions.
+   */
   coreAnalyses?: CoreAnalyses;
   coreAnalysesOutdated?: boolean; // True when transcript corrected but analyses not regenerated
-  // NEW: References to on-demand analyses
+  // References to analyses in generatedAnalyses collection (actionItems, communicationAnalysis, etc.)
   generatedAnalysisIds?: string[]; // Array of GeneratedAnalysis IDs
   error?: string;
   createdAt: Date;

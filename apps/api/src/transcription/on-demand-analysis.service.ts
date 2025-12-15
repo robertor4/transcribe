@@ -25,12 +25,19 @@ export class OnDemandAnalysisService {
 
   /**
    * Generate analysis from a template
+   * @param transcriptionId - The transcription to analyze
+   * @param templateId - The template to use for analysis
+   * @param userId - The user requesting the analysis
+   * @param customInstructions - Optional custom instructions to append to context
+   * @param options - Optional settings
+   * @param options.skipDuplicateCheck - Skip checking for existing analysis (used by processor for initial generation)
    */
   async generateFromTemplate(
     transcriptionId: string,
     templateId: string,
     userId: string,
     customInstructions?: string,
+    options?: { skipDuplicateCheck?: boolean },
   ): Promise<GeneratedAnalysis> {
     // 1. Get template
     const template = this.templateService.getTemplateById(templateId);
@@ -54,13 +61,16 @@ export class OnDemandAnalysisService {
     }
 
     // 3. Check if this analysis already exists (prevent duplicates)
-    const existing = await this.getUserAnalyses(transcriptionId, userId);
-    const duplicate = existing.find((a) => a.templateId === templateId);
-    if (duplicate) {
-      this.logger.log(
-        `Analysis already exists for template ${templateId}, returning cached version`,
-      );
-      return duplicate; // Return existing instead of regenerating
+    // Skip this check when called from processor during initial transcription
+    if (!options?.skipDuplicateCheck) {
+      const existing = await this.getUserAnalyses(transcriptionId, userId);
+      const duplicate = existing.find((a) => a.templateId === templateId);
+      if (duplicate) {
+        this.logger.log(
+          `Analysis already exists for template ${templateId}, returning cached version`,
+        );
+        return duplicate; // Return existing instead of regenerating
+      }
     }
 
     // 4. Get transcript text (use transcriptText directly, no longer duplicated in coreAnalyses)

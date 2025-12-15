@@ -1,6 +1,5 @@
-import { Share2, Hash } from 'lucide-react';
+import { Hash } from 'lucide-react';
 import type { LinkedInOutput } from '@transcribe/shared';
-import { TemplateHeader } from './shared';
 
 interface LinkedInTemplateProps {
   data: LinkedInOutput;
@@ -12,13 +11,6 @@ export function LinkedInTemplate({ data }: LinkedInTemplateProps) {
 
   return (
     <div className="space-y-6">
-      <TemplateHeader
-        icon={Share2}
-        label="LinkedIn Post"
-        iconColor="text-[#0077b5]"
-        metadata={<span>{data.characterCount} characters</span>}
-      />
-
       {/* LinkedIn Post Preview */}
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
         {/* Post Header - LinkedIn Style */}

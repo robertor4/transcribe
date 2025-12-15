@@ -18,6 +18,14 @@ If the transcript is in a non-English language, ALL headings and content must be
 
   /** Instruction for JSON output */
   jsonRequirement: 'Always respond with valid JSON matching the provided schema.',
+
+  /** Instruction for using context in structured templates */
+  useContext: `IMPORTANT: If context is provided above the transcript, USE IT to customize your output:
+- Tailor content to the specified audience or recipient
+- Match the tone or style if specified (casual, formal, technical, etc.)
+- Focus on topics or aspects mentioned in the context
+- Reference any specific names, projects, or details provided
+- Follow any explicit instructions given in the context`,
 };
 
 /**
