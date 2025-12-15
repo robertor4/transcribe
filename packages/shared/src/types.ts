@@ -161,8 +161,8 @@ export interface AnalysisTemplate {
   visibility: 'public' | 'private'; // public = anyone can see, private = creator only
   requiredTier?: 'free' | 'professional' | 'business'; // Subscription tier required to use
 
-  // Versioning (optional) - for template evolution
-  version?: number; // Template version number
+  // Versioning - for template evolution and compatibility tracking
+  version: string; // Semantic version (e.g., "1.0.0", "1.1.0", "2.0.0")
   baseTemplateId?: string; // If forked from another template
 }
 
@@ -278,6 +278,7 @@ export interface GeneratedAnalysis {
   userId: string;
   templateId: string; // Links to AnalysisTemplate
   templateName: string; // Snapshot for history (e.g., "Emotional Intelligence")
+  templateVersion: string; // Snapshot of template version at generation time (e.g., "1.0.0")
   content: string | StructuredOutput; // Markdown (V1) or structured JSON (V2)
   contentType: 'markdown' | 'structured'; // Indicates how to render content
   model: 'gpt-5' | 'gpt-5-mini';

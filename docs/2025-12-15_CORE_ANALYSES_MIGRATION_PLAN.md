@@ -276,3 +276,73 @@ cd apps/api
 npx ts-node src/scripts/migrate-core-analyses.ts --dry-run  # Preview
 npx ts-node src/scripts/migrate-core-analyses.ts            # Execute
 ```
+
+---
+
+## Template Versioning Strategy
+
+### Why Versioning?
+
+When templates evolve (prompt changes, schema updates), existing analyses may become incompatible or inconsistent with new versions. Template versioning enables:
+
+1. **Detection** of outdated analyses
+2. **Selective regeneration** ("New template available, regenerate?")
+3. **Backwards compatibility** logic in the UI
+4. **Audit trail** of what version produced each analysis
+
+### Version Format
+
+Templates use semantic versioning (`MAJOR.MINOR.PATCH`):
+
+- **MAJOR (x.0.0)**: Breaking changes - schema structure changes, field renames
+- **MINOR (0.x.0)**: New fields added, prompt improvements that change output quality
+- **PATCH (0.0.x)**: Bug fixes, typo corrections, minor prompt tweaks
+
+### Implementation
+
+**Template Definition** (`packages/shared/src/types.ts`):
+```typescript
+export interface AnalysisTemplate {
+  // ... other fields
+  version: string; // Semantic version (e.g., "1.0.0")
+}
+```
+
+**Generated Analysis** (`packages/shared/src/types.ts`):
+```typescript
+export interface GeneratedAnalysis {
+  // ... other fields
+  templateVersion: string; // Snapshot of version at generation time
+}
+```
+
+**Version Constant** (`apps/api/src/transcription/template-helpers.ts`):
+```typescript
+export const CURRENT_TEMPLATE_VERSION = '1.0.0';
+```
+
+### Compatibility Scenarios
+
+| Change Type | Version Bump | Impact on Existing Analyses |
+|-------------|--------------|----------------------------|
+| Schema field added | MINOR | Old analyses work, missing new field |
+| Schema field renamed | MAJOR | Old analyses incompatible with new UI |
+| Schema field removed | MAJOR | Old analyses have extra unused field |
+| Prompt quality improvement | MINOR | Old analyses have different quality |
+| Prompt typo fix | PATCH | Negligible impact |
+
+### Future Enhancements (Optional)
+
+1. **Version comparison utility**:
+   ```typescript
+   function isAnalysisOutdated(analysis: GeneratedAnalysis, template: AnalysisTemplate): boolean {
+     return semver.lt(analysis.templateVersion, template.version);
+   }
+   ```
+
+2. **UI indicator for outdated analyses**:
+   - Show badge: "Generated with template v1.0.0 (v1.1.0 available)"
+   - Offer "Regenerate with latest template" button
+
+3. **Bulk regeneration tool**:
+   - Admin script to regenerate all analyses for a specific template when major version changes

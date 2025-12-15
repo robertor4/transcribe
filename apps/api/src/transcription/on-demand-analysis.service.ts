@@ -139,6 +139,7 @@ export class OnDemandAnalysisService {
         userId,
         templateId,
         templateName: template.name,
+        templateVersion: template.version, // Store version for compatibility tracking
         content,
         contentType: isStructured && typeof content === 'object' ? 'structured' : 'markdown',
         model: template.modelPreference,

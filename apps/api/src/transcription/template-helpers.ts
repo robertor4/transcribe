@@ -29,6 +29,20 @@ If the transcript is in a non-English language, ALL headings and content must be
 };
 
 /**
+ * Current template version for all system templates.
+ * Increment this when making breaking changes to template prompts or schemas.
+ *
+ * Version history:
+ * - 1.0.0: Initial V2 templates with structured JSON output
+ *
+ * Versioning strategy:
+ * - MAJOR (x.0.0): Breaking changes - schema structure changes, field renames
+ * - MINOR (0.x.0): New fields added, prompt improvements that change output quality
+ * - PATCH (0.0.x): Bug fixes, typo corrections, minor prompt tweaks
+ */
+export const CURRENT_TEMPLATE_VERSION = '1.0.0';
+
+/**
  * Default ecosystem fields for system templates
  */
 const SYSTEM_TEMPLATE_DEFAULTS = {
@@ -38,7 +52,7 @@ const SYSTEM_TEMPLATE_DEFAULTS = {
   isSystemTemplate: true,
   visibility: 'public' as const,
   requiredTier: 'free' as const,
-  version: 1,
+  version: CURRENT_TEMPLATE_VERSION,
 };
 
 /**
