@@ -22,7 +22,7 @@ describe('TranscriptionService - Transcript Correction', () => {
     fileName: 'test.mp3',
     status: 'completed',
     transcriptText: 'Speaker 1: Hello John. Speaker 2: Hi John.',
-    transcriptWithSpeakers: 'Speaker 1: Hello John.\n\nSpeaker 2: Hi John.',
+    // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
     speakerSegments: [
       {
         speakerTag: 'Speaker 1',
@@ -292,7 +292,7 @@ describe('TranscriptionService - Transcript Correction', () => {
         const noSpeakerTrans = {
           ...mockTranscription,
           speakerSegments: [],
-          transcriptWithSpeakers: null,
+          // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
         };
         jest
           .spyOn(firebaseService, 'getTranscription')
@@ -334,7 +334,7 @@ describe('TranscriptionService - Transcript Correction', () => {
           'test-transcript-id',
           expect.objectContaining({
             transcriptText: mockCorrectedTranscript,
-            transcriptWithSpeakers: mockCorrectedTranscript,
+            // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
             translations: {}, // Cleared
             generatedAnalysisIds: [], // Cleared
             updatedAt: expect.any(Date),

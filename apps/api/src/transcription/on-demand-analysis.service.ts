@@ -63,11 +63,10 @@ export class OnDemandAnalysisService {
       return duplicate; // Return existing instead of regenerating
     }
 
-    // 4. Get transcript text
+    // 4. Get transcript text (use transcriptText directly, no longer duplicated in coreAnalyses)
     const transcriptText =
-      transcription.coreAnalyses?.transcript ||
-      transcription.analyses?.transcript ||
-      transcription.transcriptText;
+      transcription.transcriptText ||
+      transcription.analyses?.transcript; // Legacy fallback
 
     if (!transcriptText) {
       throw new BadRequestException(

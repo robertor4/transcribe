@@ -54,8 +54,8 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
 
       {/* Key Points Box */}
       {summary.keyPoints.length > 0 && (
-        <div className="pl-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#cc3399] rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#cc3399] rounded-r-lg">
+          <h3 className="text-lg font-bold text-[#cc3399] mb-5">
             Key Points
           </h3>
           <ul className="space-y-4 pl-4">
@@ -89,7 +89,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
 
       {/* Decisions (only shown if present) */}
       {summary.decisions && summary.decisions.length > 0 && (
-        <div className="pl-6 py-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
+        <div className="px-6 py-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
             Decisions Made
           </h3>
@@ -105,7 +105,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
 
       {/* Next Steps (only shown if present) */}
       {summary.nextSteps && summary.nextSteps.length > 0 && (
-        <div className="pl-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
+        <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
             Next Steps
           </h3>

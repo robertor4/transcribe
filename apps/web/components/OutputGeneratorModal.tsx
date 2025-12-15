@@ -6,6 +6,9 @@ import { Button } from './Button';
 import { allTemplates, TemplateId } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
 
+// Filter out transcribe-only since we're already in a conversation with transcription
+const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
+
 interface OutputGeneratorModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -156,7 +159,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {allTemplates.map((template) => {
+                {outputTemplates.map((template) => {
                   const Icon = template.icon;
                   const isSelected = selectedType === template.id;
 

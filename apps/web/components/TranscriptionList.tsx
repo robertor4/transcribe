@@ -1010,7 +1010,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                         summary: transcription.coreAnalyses?.summary || transcription.analyses?.summary || '',
                         actionItems: transcription.coreAnalyses?.actionItems || transcription.analyses?.actionItems,
                         communicationStyles: transcription.coreAnalyses?.communicationStyles || transcription.analyses?.communicationStyles,
-                        transcript: transcription.coreAnalyses?.transcript || transcription.analyses?.transcript || transcription.transcriptText,
+                        transcript: transcription.transcriptText || transcription.analyses?.transcript, // Use transcriptText directly
                         // Old format fields (only for backward compatibility)
                         emotionalIntelligence: transcription.analyses?.emotionalIntelligence,
                         influencePersuasion: transcription.analyses?.influencePersuasion,

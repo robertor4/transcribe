@@ -124,7 +124,7 @@ export interface CoreAnalyses {
   summaryV2?: SummaryV2; // V2 structured JSON summary (new)
   actionItems: string;
   communicationStyles: string;
-  transcript: string;
+  // Note: transcript removed - use transcriptText directly (no duplication)
 }
 
 // New: Analysis template definition
@@ -336,7 +336,7 @@ export interface Transcription {
   speakerCount?: number;
   speakers?: Speaker[];
   speakerSegments?: SpeakerSegment[];
-  transcriptWithSpeakers?: string; // Formatted transcript with speaker labels
+  // Note: transcriptWithSpeakers removed - derive from speakerSegments using formatTranscriptWithSpeakers()
   diarizationConfidence?: number;
   // Sharing fields
   shareToken?: string;

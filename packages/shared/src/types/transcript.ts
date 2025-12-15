@@ -76,8 +76,7 @@ export interface TranscriptV1 {
    * Uses the existing SpeakerSegment interface.
    */
   speakerSegments?: SpeakerSegment[];
-  /** Formatted transcript with speaker labels */
-  transcriptWithSpeakers?: string;
+  // Note: transcriptWithSpeakers removed - derive from speakerSegments using formatTranscriptWithSpeakers()
   /** When the transcript was generated */
   generatedAt?: Date;
 }
@@ -133,4 +132,18 @@ export function toTranscriptSegment(segment: SpeakerSegment): TranscriptSegment 
     text: segment.text,
     confidence: segment.confidence,
   };
+}
+
+/**
+ * Derive formatted transcript with speaker labels from speaker segments.
+ * This replaces the stored transcriptWithSpeakers field to reduce duplication.
+ *
+ * @param segments - Array of speaker segments from the transcription
+ * @returns Formatted string with "Speaker X: text" format, separated by double newlines
+ */
+export function formatTranscriptWithSpeakers(segments: SpeakerSegment[] | undefined | null): string {
+  if (!segments || segments.length === 0) {
+    return '';
+  }
+  return segments.map(s => `${s.speakerTag}: ${s.text}`).join('\n\n');
 }

@@ -102,7 +102,7 @@ export class TranscriptionProcessor {
       const detectedLanguage = transcriptionResult.language;
       const speakers = transcriptionResult.speakers;
       const speakerSegments = transcriptionResult.speakerSegments;
-      const transcriptWithSpeakers = transcriptionResult.transcriptWithSpeakers;
+      // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
       const speakerCount = transcriptionResult.speakerCount;
       const durationSeconds = transcriptionResult.durationSeconds || 0;
 
@@ -222,7 +222,7 @@ export class TranscriptionProcessor {
       if (speakers && speakers.length > 0) {
         updateData.speakers = speakers;
         updateData.speakerSegments = speakerSegments;
-        updateData.transcriptWithSpeakers = transcriptWithSpeakers;
+        // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
         updateData.speakerCount = speakerCount;
         this.logger.log(
           `Added speaker diarization data: ${speakerCount} speakers identified`,

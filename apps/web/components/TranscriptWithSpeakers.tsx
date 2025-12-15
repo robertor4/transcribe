@@ -8,7 +8,6 @@ import TranscriptCorrectionModal from './TranscriptCorrectionModal';
 interface TranscriptWithSpeakersProps {
   transcriptionId: string;
   segments?: SpeakerSegment[];
-  transcriptWithSpeakers?: string;
   className?: string;
   onRefresh?: () => void; // Callback to refresh transcription after correction
 }
@@ -16,7 +15,6 @@ interface TranscriptWithSpeakersProps {
 export default function TranscriptWithSpeakers({
   transcriptionId,
   segments,
-  transcriptWithSpeakers,
   className = '',
   onRefresh,
 }: TranscriptWithSpeakersProps) {
@@ -24,20 +22,8 @@ export default function TranscriptWithSpeakers({
   const [showTimestamps, setShowTimestamps] = useState(false);
   const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
 
+  // Return null if no segments available
   if (!segments || segments.length === 0) {
-    // Fall back to formatted transcript if no segments
-    if (transcriptWithSpeakers) {
-      return (
-        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Transcript with Speakers</h3>
-          <div className="prose prose-sm max-w-none dark:prose-invert">
-            <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-gray-300">
-              {transcriptWithSpeakers}
-            </pre>
-          </div>
-        </div>
-      );
-    }
     return null;
   }
 

@@ -156,11 +156,11 @@ function extractTranscript(transcription: Transcription): {
   confidence: number;
   speakerSegments?: SpeakerSegment[];
 } {
+  // Use transcriptText directly (no longer duplicated in coreAnalyses)
+  // Derive transcriptWithSpeakers from speakerSegments if needed
   const text =
-    transcription.coreAnalyses?.transcript ||
-    transcription.analyses?.transcript ||
     transcription.transcriptText ||
-    transcription.transcriptWithSpeakers ||
+    transcription.analyses?.transcript || // Legacy fallback
     '';
 
   return {

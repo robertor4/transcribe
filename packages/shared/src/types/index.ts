@@ -26,4 +26,5 @@ export {
   isTranscriptV2,
   toSpeakerSegment,
   toTranscriptSegment,
+  formatTranscriptWithSpeakers,
 } from './transcript';

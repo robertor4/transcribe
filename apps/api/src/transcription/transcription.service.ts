@@ -373,7 +373,7 @@ export class TranscriptionService {
     language?: string;
     speakers?: Speaker[];
     speakerSegments?: SpeakerSegment[];
-    transcriptWithSpeakers?: string;
+    // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
     speakerCount?: number;
     durationSeconds?: number;
   }> {
@@ -405,7 +405,6 @@ export class TranscriptionService {
         ...result,
         speakers: undefined,
         speakerSegments: undefined,
-        transcriptWithSpeakers: undefined,
         speakerCount: undefined,
       };
     }
@@ -420,7 +419,7 @@ export class TranscriptionService {
     language?: string;
     speakers?: Speaker[];
     speakerSegments?: SpeakerSegment[];
-    transcriptWithSpeakers?: string;
+    // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
     speakerCount?: number;
     durationSeconds?: number;
   }> {
@@ -486,7 +485,7 @@ export class TranscriptionService {
         language: result.language,
         speakers: result.speakers,
         speakerSegments: result.speakerSegments,
-        transcriptWithSpeakers: result.transcriptWithSpeakers,
+        // Note: transcriptWithSpeakers no longer returned - derived from speakerSegments on demand
         speakerCount: result.speakerCount,
         durationSeconds: result.durationSeconds,
       };
@@ -979,7 +978,7 @@ ${fullCustomPrompt}`;
     summaryV2?: SummaryV2;
     actionItems: string;
     communicationStyles: string;
-    transcript: string;
+    // Note: transcript removed - stored separately as transcriptText (no duplication)
   }> {
     // Default to all analyses if no selection provided (backwards compatibility)
     const sel = selection ?? {
@@ -1078,7 +1077,7 @@ ${fullCustomPrompt}`;
         summaryV2: summaryData?.summaryV2, // V2 structured data (undefined if not generated or failed)
         actionItems: actionItems || '',
         communicationStyles: communicationStyles || '',
-        transcript: transcriptionText, // No AI needed - just the text
+        // Note: transcript not included - stored separately as transcriptText (no duplication)
       };
     } catch (error) {
       this.logger.error('Critical error generating core analyses:', error);
@@ -2550,7 +2549,7 @@ IMPORTANT:
     // Update Firestore
     await this.firebaseService.updateTranscription(transcriptionId, {
       transcriptText: correctedTranscript,
-      transcriptWithSpeakers: correctedTranscript,
+      // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
       speakerSegments: correctedSegments,
       translations: {},
       generatedAnalysisIds: [],
