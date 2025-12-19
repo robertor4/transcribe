@@ -251,9 +251,9 @@
       "microphone": "Microfoon",
       "microphoneDescription": "Opnemen via je apparaatmicrofoon",
       "tabAudio": "Vergadertabblad audio",
-      "tabAudioDescription": "Audio vastleggen van een browsertabblad (Google Meet, Zoom)",
+      "tabAudioDescription": "Vergadering audio + je microfoon vastleggen (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tabblad-audio-opname wordt alleen ondersteund in Chrome en Edge browsers. Gebruik microfoonopname of schakel over naar een ondersteunde browser.",
-      "tabAudioInstructions": "Selecteer het browsertabblad met je vergadering en zorg ervoor dat je 'Tabblad audio delen' aanvinkt voor de beste kwaliteit."
+      "tabAudioInstructions": "Sta eerst microfoon toegang toe (om je stem vast te leggen), selecteer dan het browsertabblad met je vergadering en vink 'Tabblad audio delen' aan."
     },
     "status": {
       "ready": "Klaar om op te nemen",

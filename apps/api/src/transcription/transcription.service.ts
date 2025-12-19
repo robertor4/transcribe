@@ -91,15 +91,15 @@ export class TranscriptionService {
     generateActionItems: boolean;
     generateCommunicationStyles: boolean;
   } {
-    // Default behavior: generate all core analyses (backwards compatibility for old clients)
+    // V2: Default behavior is summary only - other analyses are generated on-demand
     if (!selectedTemplates || selectedTemplates.length === 0) {
       this.logger.log(
-        'No selectedTemplates provided - generating all analyses (backwards compat)',
+        'No selectedTemplates provided - generating summary only (V2 default)',
       );
       return {
         generateSummary: true,
-        generateActionItems: true,
-        generateCommunicationStyles: true,
+        generateActionItems: false,
+        generateCommunicationStyles: false,
       };
     }
 
@@ -1183,8 +1183,8 @@ ${fullCustomPrompt}`;
       // Count words in the title
       const wordCount = fullTitle.trim().split(/\s+/).length;
 
-      // If title is already 8 words or less, use as-is
-      if (wordCount <= 8) {
+      // If title is already 10 words or less, use as-is
+      if (wordCount <= 10) {
         this.logger.log(
           `Title already concise (${wordCount} words), skipping API call`,
         );
@@ -1206,7 +1206,7 @@ ${fullCustomPrompt}`;
           },
           {
             role: 'user',
-            content: `Shorten this heading to MAXIMUM 6 words while preserving the core meaning and language:\n\n"${fullTitle}"\n\nIMPORTANT: Your response must be 6 words or less. Return ONLY the shortened title, nothing else. Keep the same language as the original.`,
+            content: `Shorten this heading to MAXIMUM 10 words while preserving the key takeaway and language:\n\n"${fullTitle}"\n\nIMPORTANT: Your response must be 10 words or less. Return ONLY the shortened title, nothing else. Keep the same language as the original.`,
           },
         ],
         max_completion_tokens: 30,
@@ -1217,13 +1217,13 @@ ${fullCustomPrompt}`;
 
       // Verify the shortened title actually follows the word limit
       const shortTitleWordCount = shortTitle.trim().split(/\s+/).length;
-      if (shortTitleWordCount > 8) {
+      if (shortTitleWordCount > 10) {
         this.logger.warn(
           `AI-generated title still too long (${shortTitleWordCount} words), applying fallback`,
         );
         // Use fallback if AI didn't follow instructions
         const words = fullTitle.trim().split(/\s+/);
-        return words.slice(0, 6).join(' ') + '...';
+        return words.slice(0, 10).join(' ') + '...';
       }
 
       this.logger.log(`Short title generated: "${shortTitle}"`);
@@ -1232,10 +1232,10 @@ ${fullCustomPrompt}`;
     } catch (error) {
       this.logger.error('Error generating short title, using fallback:', error);
 
-      // Fallback: Take first 6 words and add ellipsis if truncated
+      // Fallback: Take first 10 words and add ellipsis if truncated
       const words = fullTitle.trim().split(/\s+/);
-      if (words.length > 6) {
-        return words.slice(0, 6).join(' ') + '...';
+      if (words.length > 10) {
+        return words.slice(0, 10).join(' ') + '...';
       }
       return fullTitle;
     }

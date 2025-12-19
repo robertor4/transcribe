@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
-import { TemplateSelector } from './TemplateSelector';
 import { UploadInterface } from './UploadInterface';
 import { RealProcessingView } from './RealProcessingView';
-import { allTemplates } from '@/lib/outputTemplates';
 
 interface ConversationCreateModalProps {
   isOpen: boolean;
@@ -16,20 +14,17 @@ interface ConversationCreateModalProps {
 
   // Context-aware entry props
   initialStep?: CreateStep;
-  preselectedTemplateId?: string | null;
   uploadMethod?: 'file' | 'record' | null;
-  skipTemplate?: boolean;
 }
 
-export type CreateStep = 'capture' | 'template' | 'context' | 'processing' | 'complete';
+export type CreateStep = 'capture' | 'context' | 'processing' | 'complete';
 
 /**
- * Multi-step conversation creation modal
+ * Simplified conversation creation modal
  * Step 1: Upload/record audio
- * Step 2: Template selection (optional - can skip)
- * Step 3: Add context
- * Step 4: Processing simulation
- * Step 5: Navigate to conversation detail
+ * Step 2: Add context (optional)
+ * Step 3: Processing
+ * Step 4: Navigate to conversation detail
  */
 export function ConversationCreateModal({
   isOpen,
@@ -37,15 +32,11 @@ export function ConversationCreateModal({
   onComplete,
   folderId,
   initialStep,
-  preselectedTemplateId,
   uploadMethod,
-  skipTemplate,
 }: ConversationCreateModalProps) {
-  // State for new flow
+  // State for flow
   const [currentStep, setCurrentStep] = useState<CreateStep>('capture');
-  const [selectedTemplates, setSelectedTemplates] = useState<string[]>(['transcribe-only']); // Always includes base
   const [overallContext, setOverallContext] = useState<string>('');
-  const [templateInstructions, setTemplateInstructions] = useState<Record<string, string>>({});
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
@@ -55,23 +46,11 @@ export function ConversationCreateModal({
   // Store processing error for display
   const [processingError, setProcessingError] = useState<string | null>(null);
 
-  // CRITICAL FIX: Reset state when modal opens with new props
-  // This ensures consistent behavior across multiple clicks
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      // Always start at capture step now
       setCurrentStep('capture');
-
-      // Set selected templates based on preselectedTemplateId
-      if (preselectedTemplateId) {
-        // Add the preselected template to the base transcription
-        setSelectedTemplates(['transcribe-only', preselectedTemplateId]);
-      } else {
-        setSelectedTemplates(['transcribe-only']);
-      }
-
       setOverallContext('');
-      setTemplateInstructions({});
       setUploadedFiles([]);
       setRecordedBlob(null);
       setProcessingMode('individual');
@@ -79,7 +58,7 @@ export function ConversationCreateModal({
       setMarkAsUploadedCallback(null);
       setProcessingError(null);
     }
-  }, [isOpen, uploadMethod, preselectedTemplateId]);
+  }, [isOpen, uploadMethod]);
 
   // Reset state when modal closes
   const handleClose = () => {
@@ -96,9 +75,7 @@ export function ConversationCreateModal({
 
     // Reset all state
     setCurrentStep('capture');
-    setSelectedTemplates(['transcribe-only']);
     setOverallContext('');
-    setTemplateInstructions({});
     setUploadedFiles([]);
     setRecordedBlob(null);
     setProcessingMode('individual');
@@ -112,14 +89,7 @@ export function ConversationCreateModal({
   const handleFileUpload = (files: File[], mode: 'individual' | 'merged') => {
     setUploadedFiles(files);
     setProcessingMode(mode);
-
-    // Skip template selection if already preselected
-    if (preselectedTemplateId) {
-      // Always show context step - users can provide context even for base transcription
-      setCurrentStep('context');
-    } else {
-      setCurrentStep('template'); // Go to template selection after upload
-    }
+    setCurrentStep('context'); // Go directly to context step
   };
 
   const handleRecordingComplete = (blob: Blob, markAsUploaded: () => Promise<void>) => {
@@ -130,32 +100,7 @@ export function ConversationCreateModal({
     const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
     setUploadedFiles([file]);
     setProcessingMode('individual'); // Single recording always individual
-
-    // Skip template selection if already preselected
-    if (preselectedTemplateId) {
-      // Always show context step - users can provide context even for base transcription
-      setCurrentStep('context');
-    } else {
-      setCurrentStep('template'); // Go to template selection after recording
-    }
-  };
-
-  // Template selection handlers
-  const handleTemplateToggle = (templateId: string) => {
-    // Don't allow deselecting 'transcribe-only'
-    if (templateId === 'transcribe-only') return;
-
-    setSelectedTemplates(prev =>
-      prev.includes(templateId)
-        ? prev.filter(id => id !== templateId)
-        : [...prev, templateId]
-    );
-  };
-
-  const handleTemplateNext = () => {
-    // Always show context step - even for just transcribe-only
-    // Users can provide context to improve the transcription/summary
-    setCurrentStep('context');
+    setCurrentStep('context'); // Go directly to context step
   };
 
   // Context submission
@@ -176,9 +121,7 @@ export function ConversationCreateModal({
 
     // Reset state without confirmation (successful completion, not cancellation)
     setCurrentStep('capture');
-    setSelectedTemplates(['transcribe-only']);
     setOverallContext('');
-    setTemplateInstructions({});
     setUploadedFiles([]);
     setRecordedBlob(null);
     setProcessingMode('individual');
@@ -207,14 +150,12 @@ export function ConversationCreateModal({
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {currentStep === 'capture' && 'Create a conversation'}
-              {currentStep === 'template' && 'Choose output formats'}
               {currentStep === 'context' && 'Add context'}
               {currentStep === 'processing' && 'Processing...'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {currentStep === 'capture' && 'Choose how to add your audio'}
-              {currentStep === 'template' && 'Select additional outputs to generate from your conversation'}
-              {currentStep === 'context' && 'Provide context to improve AI-generated outputs'}
+              {currentStep === 'context' && 'Provide context to improve transcription accuracy (optional)'}
               {currentStep === 'processing' && 'Transcribing and analyzing your conversation'}
             </p>
           </div>
@@ -245,25 +186,13 @@ export function ConversationCreateModal({
             </div>
           )}
 
-          {/* Step 2: Template Selection */}
-          {currentStep === 'template' && (
-            <TemplateSelector
-              templates={allTemplates}
-              selectedTemplates={selectedTemplates}
-              onToggle={handleTemplateToggle}
-              onNext={handleTemplateNext}
-              onBack={() => setCurrentStep('capture')}
-            />
-          )}
-
-          {/* Step 3: Context Input */}
+          {/* Step 2: Context Input */}
           {currentStep === 'context' && (
             <div className="flex-1 overflow-y-auto p-8">
-              {/* Context component will be created next */}
               <div className="max-w-2xl mx-auto space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Overall context (optional)
+                    Context (optional)
                   </label>
                   <textarea
                     value={overallContext}
@@ -274,33 +203,8 @@ export function ConversationCreateModal({
                   />
                 </div>
 
-                {/* Template-specific instructions */}
-                {selectedTemplates.filter(id => id !== 'transcribe-only').map(templateId => {
-                  const template = allTemplates.find(t => t.id === templateId);
-                  if (!template) return null;
-                  const Icon = template.icon;
-
-                  return (
-                    <div key={templateId} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Icon className="w-5 h-5 text-[#cc3399]" />
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Instructions for {template.name}
-                        </label>
-                      </div>
-                      <textarea
-                        value={templateInstructions[templateId] || ''}
-                        onChange={(e) => setTemplateInstructions(prev => ({ ...prev, [templateId]: e.target.value }))}
-                        placeholder={`Specific instructions for generating the ${template.name.toLowerCase()}...`}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 resize-none transition-colors"
-                        rows={3}
-                      />
-                    </div>
-                  );
-                })}
-
                 <div className="flex justify-between gap-4 pt-6">
-                  <Button variant="ghost" onClick={() => setCurrentStep('template')}>
+                  <Button variant="ghost" onClick={() => setCurrentStep('capture')}>
                     Back
                   </Button>
                   <div className="flex gap-2">
@@ -308,7 +212,7 @@ export function ConversationCreateModal({
                       Skip
                     </Button>
                     <Button variant="primary" onClick={handleContextSubmit}>
-                      Generate outputs
+                      Start processing
                     </Button>
                   </div>
                 </div>
@@ -316,13 +220,12 @@ export function ConversationCreateModal({
             </div>
           )}
 
-          {/* Step 4: Processing */}
+          {/* Step 3: Processing */}
           {currentStep === 'processing' && uploadedFiles.length > 0 && (
             <div className="flex-1 overflow-y-auto p-8">
               <RealProcessingView
                 file={uploadedFiles[0]}
                 context={overallContext || undefined}
-                selectedTemplates={selectedTemplates}
                 onComplete={handleProcessingComplete}
                 onError={handleProcessingError}
               />

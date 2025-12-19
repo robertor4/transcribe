@@ -180,11 +180,50 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           );
         }
 
-        // Step 1: Request screen/tab sharing with audio
-        const displayStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true, // Required, but we'll only use audio
-          audio: true,
-        });
+        // Step 1: Request microphone FIRST (before tab selection) - only if deviceId provided
+        // When deviceId is undefined, user opted out of microphone mixing (tab audio only)
+        let micStream: MediaStream | null = null;
+        if (deviceId) {
+          try {
+            const micConstraints: MediaTrackConstraints = {
+              echoCancellation: true,
+              noiseSuppression: true,
+              sampleRate: 44100,
+              deviceId: { exact: deviceId },
+            };
+
+            micStream = await navigator.mediaDevices.getUserMedia({
+              audio: micConstraints,
+            });
+            const micTrack = micStream.getAudioTracks()[0];
+            console.log(`[useMediaRecorder] Microphone acquired for mixing: "${micTrack?.label}"`);
+          } catch (micError) {
+            // Microphone denied or unavailable - warn but continue
+            const errorMessage =
+              micError instanceof Error && micError.name === 'NotAllowedError'
+                ? 'Microphone access denied - recording tab audio only. Your voice won\'t be included.'
+                : 'Microphone unavailable - recording tab audio only. Your voice won\'t be included.';
+            console.warn('[useMediaRecorder] Microphone unavailable for mixing:', micError);
+            setWarning(errorMessage);
+          }
+        } else {
+          console.log('[useMediaRecorder] Tab audio only mode (microphone not requested)');
+        }
+
+        // Step 2: Request screen/tab sharing with audio
+        let displayStream: MediaStream;
+        try {
+          displayStream = await navigator.mediaDevices.getDisplayMedia({
+            video: true, // Required, but we'll only use audio
+            audio: true,
+          });
+        } catch (displayError) {
+          // User cancelled tab selection - clean up mic stream if it was acquired
+          if (micStream) {
+            micStream.getTracks().forEach((track) => track.stop());
+          }
+          throw displayError;
+        }
 
         // Stop video track immediately (we only want audio)
         const videoTrack = displayStream.getVideoTracks()[0];
@@ -196,51 +235,38 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         // Check if audio track exists
         const tabAudioTrack = displayStream.getAudioTracks()[0];
         if (!tabAudioTrack) {
+          // Clean up mic stream if no tab audio
+          if (micStream) {
+            micStream.getTracks().forEach((track) => track.stop());
+          }
           throw new Error(
             'No audio track available. Make sure to check "Share tab audio" when selecting the tab.'
           );
         }
 
-        // Step 2: Try to get microphone for mixing (graceful failure)
-        let micStream: MediaStream | null = null;
-        try {
-          micStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              sampleRate: 44100,
-            },
-          });
-          console.log('[useMediaRecorder] Microphone acquired for mixing with tab audio');
-        } catch (micError) {
-          // Microphone denied or unavailable - continue with tab audio only
-          const errorMessage =
-            micError instanceof Error && micError.name === 'NotAllowedError'
-              ? 'Microphone access denied - recording tab audio only. Your voice won\'t be included.'
-              : 'Microphone unavailable - recording tab audio only. Your voice won\'t be included.';
-          console.warn('[useMediaRecorder] Microphone unavailable for mixing:', micError);
-          setWarning(errorMessage);
-          return displayStream;
+        // Step 3: If we have microphone, mix both streams using Web Audio API
+        if (micStream) {
+          try {
+            const { mixedStream, cleanup } = await mixAudioStreams([displayStream, micStream]);
+
+            // Store references for cleanup
+            mixerCleanupRef.current = cleanup;
+            originalStreamsRef.current = [displayStream, micStream];
+
+            console.log('[useMediaRecorder] Tab audio + microphone mixed successfully');
+            return mixedStream;
+          } catch (mixError) {
+            // Mixing failed - fall back to tab audio only
+            console.error('[useMediaRecorder] Audio mixing failed, using tab audio only:', mixError);
+            setWarning('Audio mixing failed - recording tab audio only. Your voice won\'t be included.');
+            // Stop mic stream since we can't use it
+            micStream.getTracks().forEach((track) => track.stop());
+            return displayStream;
+          }
         }
 
-        // Step 3: Mix both streams using Web Audio API
-        try {
-          const { mixedStream, cleanup } = await mixAudioStreams([displayStream, micStream]);
-
-          // Store references for cleanup
-          mixerCleanupRef.current = cleanup;
-          originalStreamsRef.current = [displayStream, micStream];
-
-          console.log('[useMediaRecorder] Tab audio + microphone mixed successfully');
-          return mixedStream;
-        } catch (mixError) {
-          // Mixing failed - fall back to tab audio only
-          console.error('[useMediaRecorder] Audio mixing failed, using tab audio only:', mixError);
-          setWarning('Audio mixing failed - recording tab audio only. Your voice won\'t be included.');
-          // Stop mic stream since we can't use it
-          micStream.getTracks().forEach((track) => track.stop());
-          return displayStream;
-        }
+        // No microphone available - return tab audio only
+        return displayStream;
       }
     },
     [canUseTabAudio]

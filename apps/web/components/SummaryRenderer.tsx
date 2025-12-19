@@ -58,7 +58,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
           <h3 className="text-lg font-bold text-[#cc3399] mb-5">
             Key Points
           </h3>
-          <ul className="space-y-4 pl-4">
+          <ul className="space-y-4 pl-4 list-outside" style={{ listStyleType: 'square' }}>
             {summary.keyPoints.map((point, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">

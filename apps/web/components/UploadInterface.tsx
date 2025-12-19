@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Upload, Mic, Link as LinkIcon, X, FileAudio, GripVertical, Info } from 'lucide-react';
+import { Upload, Mic, X, FileAudio, GripVertical, Info } from 'lucide-react';
 import { Button } from './Button';
 import { SimpleAudioRecorder } from './SimpleAudioRecorder';
 
@@ -18,13 +18,12 @@ interface UploadInterfaceProps {
   onRecordingStateChange?: (isRecording: boolean) => void; // Notify parent of recording status
 }
 
-type InputMethod = 'upload' | 'record' | 'url';
+type InputMethod = 'upload' | 'record';
 
 /**
- * Upload interface with three input methods:
+ * Upload interface with two input methods:
  * 1. File upload (drag-and-drop or click)
  * 2. Record audio (live recording via SimpleAudioRecorder)
- * 3. Import from URL (future feature)
  */
 export function UploadInterface({
   onFileUpload,
@@ -231,7 +230,7 @@ export function UploadInterface({
       {/* Method Selection (if no method selected yet) */}
       {!selectedMethod && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
             {/* Upload File */}
             <button
               onClick={() => setSelectedMethod('upload')}
@@ -262,20 +261,6 @@ export function UploadInterface({
               <p className="text-sm text-gray-700 dark:text-gray-400">
                 Record live conversation
               </p>
-            </button>
-
-            {/* Import from URL */}
-            <button
-              disabled
-              className="group p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed"
-            >
-              <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-                <LinkIcon className="w-7 h-7 text-gray-600 dark:text-gray-400" />
-              </div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2">
-                Import from URL
-              </h3>
-              <p className="text-sm text-gray-700 dark:text-gray-400">Coming soon</p>
             </button>
           </div>
 

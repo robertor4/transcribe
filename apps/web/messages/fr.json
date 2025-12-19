@@ -250,9 +250,9 @@
       "microphone": "Microphone",
       "microphoneDescription": "Enregistrer depuis le microphone de votre appareil",
       "tabAudio": "Audio de l'onglet de réunion",
-      "tabAudioDescription": "Capturer l'audio d'un onglet de navigateur (Google Meet, Zoom)",
+      "tabAudioDescription": "Capturer l'audio de la réunion + votre microphone (Google Meet, Zoom)",
       "tabAudioNotSupported": "La capture audio d'onglet n'est prise en charge que dans les navigateurs Chrome et Edge. Veuillez utiliser l'enregistrement par microphone ou basculer vers un navigateur pris en charge.",
-      "tabAudioInstructions": "Lorsque vous y êtes invité, sélectionnez l'onglet du navigateur avec votre réunion et assurez-vous de cocher 'Partager l'audio de l'onglet' pour une qualité optimale."
+      "tabAudioInstructions": "Autorisez d'abord l'accès au microphone (pour capturer votre voix), puis sélectionnez l'onglet avec votre réunion et cochez 'Partager l'audio de l'onglet'."
     },
     "status": {
       "ready": "Prêt à enregistrer",

@@ -248,9 +248,9 @@
       "microphone": "Mikrofon",
       "microphoneDescription": "Von Ihrem Gerät Mikrofon aufnehmen",
       "tabAudio": "Meeting-Tab-Audio",
-      "tabAudioDescription": "Audio von einem Browser-Tab aufnehmen (Google Meet, Zoom)",
+      "tabAudioDescription": "Meeting-Audio + Ihr Mikrofon aufnehmen (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tab-Audio-Aufnahme wird nur in Chrome und Edge Browsern unterstützt. Bitte verwenden Sie Mikrofon-Aufnahme oder wechseln Sie zu einem unterstützten Browser.",
-      "tabAudioInstructions": "Wählen Sie bei Aufforderung den Browser-Tab mit Ihrem Meeting aus und aktivieren Sie 'Tab-Audio teilen' für beste Qualität."
+      "tabAudioInstructions": "Erlauben Sie zuerst den Mikrofon-Zugriff (um Ihre Stimme aufzunehmen), wählen Sie dann den Browser-Tab mit Ihrem Meeting und aktivieren Sie 'Tab-Audio teilen'."
     },
     "status": {
       "ready": "Bereit zur Aufnahme",

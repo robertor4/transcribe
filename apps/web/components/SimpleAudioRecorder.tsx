@@ -67,6 +67,9 @@ export function SimpleAudioRecorder({
   const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
   const [showSourceSelector, setShowSourceSelector] = useState(true);
 
+  // Tab audio options
+  const [includeMicWithTabAudio, setIncludeMicWithTabAudio] = useState(true);
+
   // Microphone device selection
   const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
@@ -108,16 +111,13 @@ export function SimpleAudioRecorder({
 
         setAudioDevices(audioInputs);
 
-        // Select the default microphone if none selected
+        // Pre-select the "default" pseudo-device if it exists (shows "Default - ..." in dropdown)
+        // This gives the user a clear indication of what the system default is
         if (audioInputs.length > 0 && !selectedDeviceId) {
-          // Look for the system default device:
-          // 1. Device with deviceId === 'default' (Chrome/Edge)
-          // 2. Device with 'default' in label (fallback)
-          // 3. First device in list (final fallback)
-          const defaultDevice = audioInputs.find(d => d.deviceId === 'default')
-            || audioInputs.find(d => d.label.toLowerCase().includes('default'))
-            || audioInputs[0];
-          setSelectedDeviceId(defaultDevice.deviceId);
+          const defaultPseudoDevice = audioInputs.find(d => d.deviceId === 'default');
+          const deviceToSelect = defaultPseudoDevice || audioInputs[0];
+          setSelectedDeviceId(deviceToSelect.deviceId);
+          console.log(`[SimpleAudioRecorder] Pre-selected device: "${deviceToSelect.label}"`);
         }
       } catch (err) {
         console.error('Failed to enumerate audio devices:', err);
@@ -185,12 +185,56 @@ export function SimpleAudioRecorder({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Resolve 'default' pseudo-device to real device ID
+  // Chrome's 'default' deviceId doesn't work reliably with getUserMedia,
+  // so we find the actual device that corresponds to the system default
+  const resolveRealDeviceId = useCallback((deviceId: string): string => {
+    if (deviceId !== 'default') {
+      return deviceId; // Already a real device ID
+    }
+
+    // Find the pseudo-device to get its label (e.g., "Default - Logitech StreamCam")
+    const defaultPseudoDevice = audioDevices.find(d => d.deviceId === 'default');
+    if (!defaultPseudoDevice) {
+      return deviceId; // No pseudo-device found, return as-is
+    }
+
+    // Extract device name from "Default - Device Name"
+    const defaultDeviceName = defaultPseudoDevice.label.replace(/^Default\s*-\s*/i, '').trim();
+
+    // Find the real device with matching name
+    const matchingRealDevice = audioDevices.find(
+      d => d.deviceId !== 'default' && d.label.trim() === defaultDeviceName
+    );
+
+    if (matchingRealDevice) {
+      console.log(`[SimpleAudioRecorder] Resolved 'default' to real device: "${matchingRealDevice.label}" (${matchingRealDevice.deviceId.slice(0, 20)}...)`);
+      return matchingRealDevice.deviceId;
+    }
+
+    // Fallback: return first non-default device
+    const firstReal = audioDevices.find(d => d.deviceId !== 'default');
+    if (firstReal) {
+      console.log(`[SimpleAudioRecorder] Fallback: using first real device: "${firstReal.label}"`);
+      return firstReal.deviceId;
+    }
+
+    return deviceId; // Last resort: return as-is
+  }, [audioDevices]);
+
   // Define handleStart before the useEffect that uses it
   const handleStart = useCallback(async () => {
-    // Pass device ID for microphone source
-    const deviceId = selectedSource === 'microphone' ? selectedDeviceId : undefined;
-    await startRecording(selectedSource, deviceId);
-  }, [startRecording, selectedSource, selectedDeviceId]);
+    // Resolve pseudo 'default' device ID to real device ID for reliable getUserMedia
+    const realDeviceId = selectedDeviceId ? resolveRealDeviceId(selectedDeviceId) : undefined;
+
+    // For tab audio: only pass deviceId if user wants mic included
+    const deviceIdToUse = selectedSource === 'tab-audio' && !includeMicWithTabAudio
+      ? undefined  // No mic - tab audio only
+      : realDeviceId;
+
+    console.log(`[SimpleAudioRecorder] handleStart - source: ${selectedSource}, includeMic: ${includeMicWithTabAudio}, deviceId: ${deviceIdToUse}`);
+    await startRecording(selectedSource, deviceIdToUse);
+  }, [startRecording, selectedSource, selectedDeviceId, includeMicWithTabAudio, resolveRealDeviceId]);
 
   // Start microphone preview test
   const startMicPreview = useCallback(async () => {
@@ -324,11 +368,11 @@ export function SimpleAudioRecorder({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Microphone */}
-          <div className="p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200">
-            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-              <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400" />
+          <div className="group flex flex-col p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200">
+            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+              <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
             </div>
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center">
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center group-hover:text-[#cc3399]">
               Microphone
             </h3>
             <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
@@ -398,6 +442,9 @@ export function SimpleAudioRecorder({
               </div>
             </div>
 
+            {/* Spacer to push button to bottom */}
+            <div className="flex-1" />
+
             <button
               onClick={() => {
                 stopMicPreview();
@@ -410,13 +457,11 @@ export function SimpleAudioRecorder({
           </div>
 
           {/* Tab Audio */}
-          <button
-            onClick={() => handleSourceSelect('tab-audio')}
-            disabled={!canUseTabAudio}
-            className={`group p-8 rounded-xl border-2 transition-all duration-200 ${
+          <div
+            className={`group flex flex-col p-8 rounded-xl border-2 transition-all duration-200 ${
               canUseTabAudio
                 ? 'border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg'
-                : 'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed'
+                : 'border-gray-200 dark:border-gray-700 opacity-50'
             }`}
           >
             <div
@@ -433,18 +478,60 @@ export function SimpleAudioRecorder({
               />
             </div>
             <h3
-              className={`font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 ${
+              className={`font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center ${
                 canUseTabAudio ? 'group-hover:text-[#cc3399]' : ''
               }`}
             >
               Tab Audio
             </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-400">
+            <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
               {canUseTabAudio
                 ? 'Record audio from a browser tab'
                 : 'Not supported in this browser'}
             </p>
-          </button>
+
+            {canUseTabAudio && (
+              <>
+                {/* Include microphone toggle */}
+                <label className="flex items-start gap-3 cursor-pointer mb-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={includeMicWithTabAudio}
+                    onChange={(e) => setIncludeMicWithTabAudio(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#cc3399] focus:ring-[#cc3399] cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 block">
+                      Include my microphone
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      Recommended for video calls
+                    </span>
+                  </div>
+                </label>
+
+                {/* Show selected microphone when toggle is on */}
+                {includeMicWithTabAudio && selectedDeviceId && (
+                  <div className="flex items-center gap-2 mb-4 text-xs text-gray-600 dark:text-gray-400">
+                    <Mic className="w-3.5 h-3.5" />
+                    <span className="truncate">
+                      Using: {audioDevices.find(d => d.deviceId === selectedDeviceId)?.label || 'Default microphone'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Spacer to push button to bottom */}
+                <div className="flex-1" />
+
+                <button
+                  onClick={() => handleSourceSelect('tab-audio')}
+                  className="w-full py-2.5 px-4 bg-[#cc3399] hover:bg-[#b82d89] text-white font-medium rounded-full transition-colors"
+                >
+                  Record tab audio
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-start">

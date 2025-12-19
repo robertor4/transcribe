@@ -1,0 +1,97 @@
+'use client';
+
+import { useDroppable } from '@dnd-kit/core';
+import Link from 'next/link';
+import { Folder } from 'lucide-react';
+import { formatDuration } from '@/lib/formatters';
+import type { Folder as FolderType } from '@/lib/services/folderService';
+
+interface FolderStats {
+  count: number;
+  duration: number;
+}
+
+interface DroppableFolderCardProps {
+  folder: FolderType;
+  stats: FolderStats;
+  locale: string;
+}
+
+export function DroppableFolderCard({
+  folder,
+  stats,
+  locale,
+}: DroppableFolderCardProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: folder.id,
+    data: {
+      type: 'folder',
+      folder,
+    },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`relative transition-all duration-200 ${
+        isOver
+          ? 'ring-2 ring-[#cc3399] bg-pink-50/20 dark:bg-pink-900/10 scale-[1.02]'
+          : ''
+      }`}
+    >
+      <Link
+        href={`/${locale}/folder/${folder.id}`}
+        className="group flex items-center justify-between py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+      >
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex-shrink-0">
+            <Folder
+              className={`w-5 h-5 transition-all duration-200 ${
+                isOver
+                  ? 'text-[#cc3399] scale-125'
+                  : 'text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110'
+              }`}
+              style={{
+                color: isOver ? '#cc3399' : folder.color || undefined,
+              }}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div
+              className={`font-semibold mb-0.5 transition-colors duration-200 ${
+                isOver
+                  ? 'text-[#cc3399]'
+                  : 'text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399]'
+              }`}
+            >
+              {folder.name}
+            </div>
+            <div className="flex items-center gap-3 text-xs font-medium text-gray-600 dark:text-gray-400">
+              <span>{stats.count} conversations</span>
+              <span>·</span>
+              <span>{formatDuration(stats.duration)}</span>
+            </div>
+          </div>
+        </div>
+        <div
+          className={`flex-shrink-0 pr-2 text-sm font-medium transition-all duration-200 ${
+            isOver
+              ? 'text-[#cc3399] translate-x-1'
+              : 'text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1'
+          }`}
+        >
+          →
+        </div>
+      </Link>
+
+      {/* Drop indicator text */}
+      {isOver && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="bg-[#cc3399] text-white text-xs font-medium px-2 py-1 rounded-full shadow-lg">
+            Drop to move here
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}

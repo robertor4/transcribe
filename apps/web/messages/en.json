@@ -251,9 +251,9 @@
       "microphone": "Microphone",
       "microphoneDescription": "Record from your device microphone",
       "tabAudio": "Meeting Tab Audio",
-      "tabAudioDescription": "Capture audio from a browser tab (Google Meet, Zoom)",
+      "tabAudioDescription": "Capture meeting audio + your microphone (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tab audio capture is only supported in Chrome and Edge browsers. Please use microphone recording or switch to a supported browser.",
-      "tabAudioInstructions": "When prompted, select the browser tab with your meeting and make sure to check 'Share tab audio' for best quality."
+      "tabAudioInstructions": "First allow microphone access (to capture your voice), then select the browser tab with your meeting and check 'Share tab audio'."
     },
     "status": {
       "ready": "Ready to record",

@@ -16,6 +16,7 @@ import {
   Loader2,
   AlertCircle,
   MessageSquareQuote,
+  Copy,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, StructuredOutput } from '@transcribe/shared';
@@ -43,6 +44,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const [copiedSummary, setCopiedSummary] = useState(false);
 
   const { conversation, isLoading, error } = useConversation(conversationId);
   const { folders } = useFolders();
@@ -97,6 +99,93 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const handleGenerateOutput = (outputType: string) => {
     console.log('Generate output:', outputType);
     setIsGeneratorOpen(true);
+  };
+
+  // Copy summary to clipboard as rich text HTML with plain text fallback
+  const handleCopySummary = async () => {
+    if (!conversation) return;
+
+    const summaryV2 = conversation.source.summary.summaryV2;
+    const summaryText = conversation.source.summary.text;
+
+    let html = '';
+    let plainText = '';
+
+    if (summaryV2) {
+      // Build HTML for rich text copying
+      const htmlParts: string[] = [];
+      const textParts: string[] = [];
+
+      if (summaryV2.intro) {
+        htmlParts.push(`<p>${summaryV2.intro}</p>`);
+        textParts.push(summaryV2.intro);
+      }
+
+      if (summaryV2.keyPoints && summaryV2.keyPoints.length > 0) {
+        htmlParts.push('<h2>Key Points</h2><ul>');
+        textParts.push('\nKey Points\n');
+        summaryV2.keyPoints.forEach((point) => {
+          htmlParts.push(`<li><strong>${point.topic}:</strong> ${point.description}</li>`);
+          textParts.push(`• ${point.topic}: ${point.description}`);
+        });
+        htmlParts.push('</ul>');
+      }
+
+      if (summaryV2.detailedSections && summaryV2.detailedSections.length > 0) {
+        summaryV2.detailedSections.forEach((section) => {
+          htmlParts.push(`<h3>${section.topic}</h3><p>${section.content}</p>`);
+          textParts.push(`\n${section.topic}\n${section.content}`);
+        });
+      }
+
+      if (summaryV2.decisions && summaryV2.decisions.length > 0) {
+        htmlParts.push('<h2>Decisions Made</h2><ul>');
+        textParts.push('\nDecisions Made\n');
+        summaryV2.decisions.forEach((decision) => {
+          htmlParts.push(`<li>${decision}</li>`);
+          textParts.push(`• ${decision}`);
+        });
+        htmlParts.push('</ul>');
+      }
+
+      if (summaryV2.nextSteps && summaryV2.nextSteps.length > 0) {
+        htmlParts.push('<h2>Next Steps</h2><ul>');
+        textParts.push('\nNext Steps\n');
+        summaryV2.nextSteps.forEach((step) => {
+          htmlParts.push(`<li>${step}</li>`);
+          textParts.push(`• ${step}`);
+        });
+        htmlParts.push('</ul>');
+      }
+
+      html = htmlParts.join('');
+      plainText = textParts.join('\n');
+    } else if (summaryText) {
+      html = `<p>${summaryText.replace(/\n/g, '</p><p>')}</p>`;
+      plainText = summaryText;
+    }
+
+    if (html && plainText) {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([plainText], { type: 'text/plain' }),
+          }),
+        ]);
+        setCopiedSummary(true);
+        setTimeout(() => setCopiedSummary(false), 2000);
+      } catch (err) {
+        // Fallback to plain text if rich text fails
+        try {
+          await navigator.clipboard.writeText(plainText);
+          setCopiedSummary(true);
+          setTimeout(() => setCopiedSummary(false), 2000);
+        } catch (fallbackErr) {
+          console.error('Failed to copy summary:', fallbackErr);
+        }
+      }
+    }
   };
 
   // Loading state
@@ -207,9 +296,21 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
             {/* Section: Summary */}
             <section id="summary" className="mb-12 scroll-mt-8">
-              <div className="flex items-center gap-3 mb-4">
-                <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Summary</h2>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Summary</h2>
+                </div>
+                {(conversation.source.summary.summaryV2 || conversation.source.summary.text) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<Copy className="w-4 h-4" />}
+                    onClick={handleCopySummary}
+                  >
+                    {copiedSummary ? 'Copied!' : 'Copy'}
+                  </Button>
+                )}
               </div>
 
               {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (

@@ -189,17 +189,12 @@ export class TranscriptionProcessor {
         }
       }
 
-      // V2: Extract title from summaryV2 intro
+      // V2: Use title directly from summaryV2 (AI generates max 10 words)
       let finalTitle: string | undefined;
-      if (summaryV2?.intro) {
+      if (summaryV2?.title) {
+        finalTitle = summaryV2.title;
         this.logger.log(
-          `Using summaryV2 intro for title extraction: ${summaryV2.intro.substring(0, 50)}...`,
-        );
-        finalTitle = await this.transcriptionService.generateShortTitle(
-          summaryV2.intro,
-        );
-        this.logger.log(
-          `Short title for transcription ${transcriptionId}: ${finalTitle}`,
+          `Using summaryV2 title for transcription ${transcriptionId}: ${finalTitle}`,
         );
       }
 

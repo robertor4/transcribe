@@ -250,9 +250,9 @@
       "microphone": "Micrófono",
       "microphoneDescription": "Grabar desde el micrófono de tu dispositivo",
       "tabAudio": "Audio de pestaña de reunión",
-      "tabAudioDescription": "Capturar audio de una pestaña del navegador (Google Meet, Zoom)",
+      "tabAudioDescription": "Capturar audio de reunión + tu micrófono (Google Meet, Zoom)",
       "tabAudioNotSupported": "La captura de audio de pestaña solo es compatible con navegadores Chrome y Edge. Utilice la grabación por micrófono o cambie a un navegador compatible.",
-      "tabAudioInstructions": "Cuando se le solicite, seleccione la pestaña del navegador con su reunión y asegúrese de marcar 'Compartir audio de pestaña' para obtener la mejor calidad."
+      "tabAudioInstructions": "Primero permite el acceso al micrófono (para capturar tu voz), luego selecciona la pestaña con tu reunión y marca 'Compartir audio de pestaña'."
     },
     "status": {
       "ready": "Listo para grabar",

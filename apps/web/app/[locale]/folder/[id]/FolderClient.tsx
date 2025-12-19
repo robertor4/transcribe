@@ -2,19 +2,23 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Folder,
   MessageSquare,
   Loader2,
   AlertCircle,
+  ArrowLeft,
+  Trash2,
 } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
 import { FloatingRecordButton } from '@/components/FloatingRecordButton';
 import { RecordingModal } from '@/components/RecordingModal';
+import { DeleteFolderModal } from '@/components/DeleteFolderModal';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
+import { useFolders } from '@/hooks/useFolders';
 import { formatDuration, formatRelativeTime } from '@/lib/formatters';
 
 interface FolderClientProps {
@@ -23,10 +27,37 @@ interface FolderClientProps {
 
 export function FolderClient({ folderId }: FolderClientProps) {
   const params = useParams();
+  const router = useRouter();
   const locale = (params?.locale as string) || 'en';
   const [isRecording, setIsRecording] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { folder, conversations, isLoading, error } = useFolderConversations(folderId);
+  const { deleteFolder } = useFolders();
+
+  const handleDeleteFolder = async (deleteContents: boolean) => {
+    setIsDeleting(true);
+    try {
+      await deleteFolder(folderId, deleteContents);
+      router.push(`/${locale}/dashboard`);
+    } catch (err) {
+      console.error('Failed to delete folder:', err);
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    if (conversations.length > 0) {
+      // Has conversations - show modal to choose move vs delete
+      setIsDeleteModalOpen(true);
+    } else {
+      // Empty folder - use inline confirmation
+      setShowDeleteConfirm(true);
+    }
+  };
 
   // Loading state
   if (isLoading) {
@@ -125,29 +156,70 @@ export function FolderClient({ folderId }: FolderClientProps) {
         }
         mainContent={
           <div className="max-w-7xl mx-auto px-6 py-8">
+            {/* Back Button */}
+            <Link
+              href={`/${locale}/dashboard`}
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] transition-colors mb-6"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Link>
+
             {/* Folder Header */}
             <div className="mb-12">
-              <div className="flex items-center gap-4 mb-3">
-                <div
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                  style={{
-                    backgroundColor: folder.color
-                      ? `${folder.color}20`
-                      : 'rgb(243 244 246)',
-                  }}
-                >
-                  <Folder
-                    className="w-8 h-8"
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center"
                     style={{
-                      color: folder.color || 'rgb(107 114 128)',
+                      backgroundColor: folder.color
+                        ? `${folder.color}20`
+                        : 'rgb(243 244 246)',
                     }}
-                  />
+                  >
+                    <Folder
+                      className="w-8 h-8"
+                      style={{
+                        color: folder.color || 'rgb(107 114 128)',
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
+                      {folder.name}
+                    </h1>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-                    {folder.name}
-                  </h1>
-                </div>
+                {!showDeleteConfirm ? (
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    icon={<Trash2 className="w-4 h-4" />}
+                    onClick={handleDeleteClick}
+                  >
+                    Delete
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                    <span className="text-sm text-red-700 dark:text-red-300">Delete?</span>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDeleteFolder(false)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? '...' : 'Yes'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeleting}
+                    >
+                      No
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-4 text-sm font-medium text-gray-600 dark:text-gray-400 ml-20">
                 <span>{conversations.length} conversations</span>
@@ -199,11 +271,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
                             <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] transition-colors duration-200 truncate">
                               {conversation.title}
                             </span>
-                            {conversation.status === 'ready' && (
-                              <span className="flex-shrink-0 text-gray-700 dark:text-gray-400">
-                                ✓
-                              </span>
-                            )}
                           </div>
                           <div className="flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-400">
                             <span>{formatDuration(conversation.source.audioDuration)}</span>
@@ -246,6 +313,15 @@ export function FolderClient({ folderId }: FolderClientProps) {
         isOpen={isRecording}
         onStop={() => setIsRecording(false)}
         onCancel={() => setIsRecording(false)}
+      />
+
+      {/* Delete Folder Modal */}
+      <DeleteFolderModal
+        isOpen={isDeleteModalOpen}
+        folderName={folder?.name || ''}
+        conversationCount={conversations.length}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDeleteFolder}
       />
     </div>
   );

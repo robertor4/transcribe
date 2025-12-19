@@ -242,9 +242,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                       {conversation.title}
                     </span>
-                    {conversation.status === 'ready' && (
-                      <span className="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">✓</span>
-                    )}
                     {conversation.status === 'processing' && (
                       <span className="flex-shrink-0 text-xs text-yellow-600 dark:text-yellow-400">⏳</span>
                     )}
