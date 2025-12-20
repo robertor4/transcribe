@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **No Audio Detection Warning**: Microphone selection now shows a warning if no audio is detected after 3 seconds
+  - Helps users identify microphone issues (muted, wrong device, disconnected) before recording
+  - Warning appears below the input level meter in the "Create a conversation" modal
+  - Automatically resets when switching microphones or when audio is detected
+  - Non-blocking: users can still proceed with recording if they choose
+
 ### Changed
 - **Comprehensive Performance Optimizations**: Major performance audit and improvements across frontend and backend
   - **React Context Memoization**:

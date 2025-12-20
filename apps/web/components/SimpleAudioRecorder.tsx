@@ -65,7 +65,7 @@ export function SimpleAudioRecorder({
   });
 
   // Real audio visualization from microphone/tab audio
-  const { audioLevel, frequencyData, isAnalyzing } = useAudioVisualization(audioStream);
+  const { frequencyData } = useAudioVisualization(audioStream);
 
   const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
   const [showSourceSelector, setShowSourceSelector] = useState(true);
@@ -83,11 +83,39 @@ export function SimpleAudioRecorder({
   const [isTestingMic, setIsTestingMic] = useState(false);
   const previewStreamRef = useRef<MediaStream | null>(null);
 
+  // No audio detection warning
+  const [hasDetectedAudio, setHasDetectedAudio] = useState(false);
+  const [showNoAudioWarning, setShowNoAudioWarning] = useState(false);
+
   // Audio visualization for preview (separate from recording visualization)
   const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
 
   // Use raw audio level directly (no decay/smoothing)
   const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
+
+  // Track when audio is detected (threshold > 5 to avoid noise)
+  useEffect(() => {
+    if (isTestingMic && previewAudioLevel > 5) {
+      setHasDetectedAudio(true);
+      setShowNoAudioWarning(false);
+    }
+  }, [isTestingMic, previewAudioLevel]);
+
+  // Show warning after 3 seconds if no audio detected
+  useEffect(() => {
+    if (!isTestingMic) {
+      setShowNoAudioWarning(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (!hasDetectedAudio) {
+        setShowNoAudioWarning(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isTestingMic, hasDetectedAudio]);
 
   // Notify parent when actual recording state changes
   useEffect(() => {
@@ -403,6 +431,9 @@ export function SimpleAudioRecorder({
                         stopMicPreview();
                       }
                       setSelectedDeviceId(e.target.value);
+                      // Reset audio detection for new microphone
+                      setHasDetectedAudio(false);
+                      setShowNoAudioWarning(false);
                     }}
                     className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent cursor-pointer"
                   >
@@ -449,6 +480,16 @@ export function SimpleAudioRecorder({
                   );
                 })}
               </div>
+
+              {/* No audio detected warning */}
+              {showNoAudioWarning && !hasDetectedAudio && (
+                <div className="flex items-center gap-2 mt-2 text-amber-600 dark:text-amber-400">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-xs">
+                    No audio detected. Check your microphone is working and not muted.
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Spacer to push button to bottom */}
