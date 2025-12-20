@@ -14,6 +14,7 @@ interface ConversationDetails {
   };
   tags?: string[];
   speakers?: number;
+  summaryFormat?: 'v1' | 'v2';
 }
 
 interface RightContextPanelProps {
@@ -90,6 +91,18 @@ export function RightContextPanel({
                'Pending'}
             </span>
           </div>
+          {conversation.summaryFormat && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Summary</span>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                conversation.summaryFormat === 'v2'
+                  ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+              }`}>
+                {conversation.summaryFormat === 'v2' ? 'V2' : 'Legacy'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

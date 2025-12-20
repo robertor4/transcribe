@@ -229,6 +229,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     folder: folder ? { id: folder.id, name: folder.name } : undefined,
     tags: conversation.tags,
     speakers: conversation.source.transcript.speakers,
+    summaryFormat: conversation.source.summary.summaryV2 ? 'v2' as const : 'v1' as const,
   };
 
 
