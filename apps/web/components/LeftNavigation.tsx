@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Search, Plus, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -29,13 +29,24 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
   const [newFolderName, setNewFolderName] = useState('');
   const { conversations, isLoading: conversationsLoading } = useConversationsContext();
 
-  // Get recent conversations (first 5)
-  const recentConversations = conversations.slice(0, 5);
+  // Memoize recent conversations to prevent recalculation on every render
+  const recentConversations = useMemo(() => conversations.slice(0, 5), [conversations]);
 
-  // Calculate folder counts from conversations
-  const getFolderCount = (folderId: string) => {
-    return conversations.filter((c) => c.folderId === folderId).length;
-  };
+  // Pre-compute folder counts to avoid O(n*m) filtering in render
+  const folderCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const conv of conversations) {
+      if (conv.folderId) {
+        counts.set(conv.folderId, (counts.get(conv.folderId) || 0) + 1);
+      }
+    }
+    return counts;
+  }, [conversations]);
+
+  // Memoized getter for folder count
+  const getFolderCount = useCallback((folderId: string) => {
+    return folderCounts.get(folderId) || 0;
+  }, [folderCounts]);
 
   const handleNewConversation = () => {
     if (onNewConversation) {

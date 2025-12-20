@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   Mic,
@@ -16,7 +16,31 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { deleteConversation } from '@/lib/services/conversationService';
-import { getGreeting, getMilestoneMessage } from '@/lib/userHelpers';
+import { getTimeOfDay, getMilestoneMessage } from '@/lib/userHelpers';
+import type { LucideIcon } from 'lucide-react';
+
+// Quick create button config - defined outside component to avoid recreation
+interface QuickCreateButton {
+  Icon: LucideIcon;
+  label: string;
+  desc: string;
+  action: 'record' | 'upload';
+}
+
+const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
+  {
+    Icon: Mic,
+    label: 'Record audio',
+    desc: 'Start live conversation',
+    action: 'record',
+  },
+  {
+    Icon: Upload,
+    label: 'Import audio',
+    desc: 'Upload audio/video file',
+    action: 'upload',
+  },
+];
 
 interface CreateModalConfig {
   isOpen: boolean;
@@ -34,8 +58,11 @@ export function DashboardClient() {
   const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversationsContext();
   const { folders, isLoading: foldersLoading, createFolder, moveToFolder } = useFoldersContext();
 
-  // Filter ungrouped conversations (no folderId or folderId is null)
-  const ungroupedConversations = conversations.filter((c) => !c.folderId);
+  // Memoize filtered ungrouped conversations
+  const ungroupedConversations = useMemo(
+    () => conversations.filter((c) => !c.folderId),
+    [conversations]
+  );
 
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
     isOpen: false,
@@ -96,45 +123,57 @@ export function DashboardClient() {
     [refreshConversations]
   );
 
-  // Calculate folder stats
+  // Pre-compute folder stats map to avoid O(n*m) filtering in render
+  const folderStatsMap = useMemo(() => {
+    const map = new Map<string, { count: number; duration: number }>();
+    for (const conv of conversations) {
+      if (conv.folderId) {
+        const existing = map.get(conv.folderId) || { count: 0, duration: 0 };
+        map.set(conv.folderId, {
+          count: existing.count + 1,
+          duration: existing.duration + (conv.source?.audioDuration || 0),
+        });
+      }
+    }
+    return map;
+  }, [conversations]);
+
+  // Memoized getter for folder stats - O(1) lookup instead of O(n) filter
   const getFolderStats = useCallback(
     (folderId: string) => {
-      const folderConversations = conversations.filter((c) => c.folderId === folderId);
-      const totalDuration = folderConversations.reduce(
-        (sum, c) => sum + (c.source?.audioDuration || 0),
-        0
-      );
-      return {
-        count: folderConversations.length,
-        duration: totalDuration,
-      };
+      return folderStatsMap.get(folderId) || { count: 0, duration: 0 };
     },
-    [conversations]
+    [folderStatsMap]
   );
 
-  // Context-aware button handlers
-  const handleRecordAudio = () => {
+  // Context-aware button handlers - memoized to prevent re-renders
+  const handleRecordAudio = useCallback(() => {
     setCreateModalConfig({
       isOpen: true,
       initialStep: 'capture',
       uploadMethod: 'record',
     });
-  };
+  }, []);
 
-  const handleImportAudio = () => {
+  const handleImportAudio = useCallback(() => {
     setCreateModalConfig({
       isOpen: true,
       initialStep: 'capture',
       uploadMethod: 'file',
     });
-  };
+  }, []);
 
-  const handleMoreTemplates = () => {
+  const handleMoreTemplates = useCallback(() => {
     setCreateModalConfig({
       isOpen: true,
       initialStep: 'capture',
     });
-  };
+  }, []);
+
+  // Memoized handler getter for quick create buttons
+  const getButtonHandler = useCallback((action: 'record' | 'upload') => {
+    return action === 'record' ? handleRecordAudio : handleImportAudio;
+  }, [handleRecordAudio, handleImportAudio]);
 
   const isLoading = conversationsLoading || foldersLoading;
 
@@ -148,30 +187,17 @@ export function DashboardClient() {
             {/* Personalized Greeting */}
             <div className="mb-12">
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#b82d89] via-[#cc3399] to-[#ff66cc] bg-clip-text text-transparent">
-                {getGreeting(user?.displayName || user?.email || '')}
+                Good {getTimeOfDay()}, {user?.displayName || user?.email || 'there'}
               </h1>
             </div>
 
             {/* Quick Create Buttons */}
             <section className="mb-16">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
-                {[
-                  {
-                    Icon: Mic,
-                    label: 'Record audio',
-                    desc: 'Start live conversation',
-                    handler: handleRecordAudio,
-                  },
-                  {
-                    Icon: Upload,
-                    label: 'Import audio',
-                    desc: 'Upload audio/video file',
-                    handler: handleImportAudio,
-                  },
-                ].map((type) => (
+                {QUICK_CREATE_BUTTONS.map((type) => (
                   <button
                     key={type.label}
-                    onClick={type.handler}
+                    onClick={getButtonHandler(type.action)}
                     aria-label={`Create ${type.label}: ${type.desc}`}
                     className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-700 dark:hover:border-gray-300 hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cc3399]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >

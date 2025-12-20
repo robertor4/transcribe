@@ -28,8 +28,8 @@ class WebSocketService {
       return;
     }
 
-    // Force refresh token if it's older than 55 minutes
-    const token = await user.getIdToken(true);
+    // Use cached token - Firebase handles expiry automatically
+    const token = await user.getIdToken();
     const socketUrl = getWebSocketUrl();
 
     // In production, WebSocket connects through the /api proxy

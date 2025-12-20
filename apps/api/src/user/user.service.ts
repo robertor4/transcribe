@@ -85,15 +85,11 @@ export class UserService {
       }
 
       // Update profile in Firestore
+      const updatedAt = new Date();
       const updates = {
         ...profile,
-        updatedAt: new Date(),
+        updatedAt,
       };
-
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
 
       // Also update Firebase Auth profile to keep them in sync
       // This ensures photoURL and displayName are reflected in the user object
@@ -106,17 +102,23 @@ export class UserService {
         authUpdates.photoURL = profile.photoURL || null;
       }
 
-      if (Object.keys(authUpdates).length > 0) {
-        await this.firebaseService.auth.updateUser(userId, authUpdates);
-      }
+      // Run Firestore and Auth updates in parallel for better performance
+      await Promise.all([
+        this.firebaseService.firestore
+          .collection('users')
+          .doc(userId)
+          .update(updates),
+        Object.keys(authUpdates).length > 0
+          ? this.firebaseService.auth.updateUser(userId, authUpdates)
+          : Promise.resolve(),
+      ]);
 
-      // Return updated user
-      const updatedUser = await this.getUserProfile(userId);
-      if (!updatedUser) {
-        throw new Error('Failed to retrieve updated user');
-      }
-
-      return updatedUser;
+      // Return merged user data without extra fetch
+      return {
+        ...user,
+        ...profile,
+        updatedAt,
+      } as User;
     } catch (error) {
       this.logger.error(`Error updating profile for user ${userId}:`, error);
       throw error;

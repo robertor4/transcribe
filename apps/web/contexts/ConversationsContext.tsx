@@ -7,7 +7,7 @@
  * preventing duplicate API calls when multiple components need the same data.
  */
 
-import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { listConversations, Conversation } from '@/lib/services/conversationService';
 import websocketService from '@/lib/websocket';
@@ -177,19 +177,20 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     await fetchConversations(1);
   }, [fetchConversations]);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    conversations,
+    isLoading,
+    error,
+    hasMore,
+    total,
+    progressMap,
+    loadMore,
+    refresh,
+  }), [conversations, isLoading, error, hasMore, total, progressMap, loadMore, refresh]);
+
   return (
-    <ConversationsContext.Provider
-      value={{
-        conversations,
-        isLoading,
-        error,
-        hasMore,
-        total,
-        progressMap,
-        loadMore,
-        refresh,
-      }}
-    >
+    <ConversationsContext.Provider value={contextValue}>
       {children}
     </ConversationsContext.Provider>
   );

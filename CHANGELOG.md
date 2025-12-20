@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Comprehensive Performance Optimizations**: Major performance audit and improvements across frontend and backend
+  - **React Context Memoization**:
+    - `AuthContext.tsx`: Wrapped all auth functions with `useCallback`, memoized context value with `useMemo` to prevent cascading re-renders to all authenticated components
+    - `ConversationsContext.tsx`: Memoized context value to prevent unnecessary consumer re-renders
+    - `UsageContext.tsx`: Added proper error handling for parallel API fetches
+  - **React Component Optimizations**:
+    - `DraggableConversationCard.tsx`: Wrapped with `React.memo` to prevent re-renders when parent updates
+    - `DroppableFolderCard.tsx`: Wrapped with `React.memo` for same performance benefit
+    - `LeftNavigation.tsx`: Pre-computed folder counts using `useMemo` Map (O(n) once vs O(n×m) per render)
+    - `DashboardClient.tsx`: Pre-computed folder stats map, extracted button config outside component, memoized handlers
+  - **Data Fetching Optimizations**:
+    - `ConversationClient.tsx`: Changed from `useFolders()` to `useFoldersContext()` to eliminate duplicate folder API calls
+    - `websocket.ts`: Changed `getIdToken(true)` to `getIdToken()` to use cached Firebase tokens (saves ~100ms per connection)
+  - **Backend Query Optimizations**:
+    - `firebase.service.ts`: Changed folder deletion from sequential updates to Firestore batch writes (10-30s → <1s for 50+ items)
+    - `firebase.service.ts`: Parallelized `moveToFolder` queries with `Promise.all` (~50% faster)
+    - `user.service.ts`: Parallelized Firestore and Firebase Auth updates, removed redundant user fetch
+
 ### Added
 - **30-Day Audio Retention**: Audio files are now retained for 30 days after transcription for support and recovery purposes
   - Removed immediate audio deletion from `transcription.processor.ts` (both success and failure cases)

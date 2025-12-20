@@ -180,8 +180,12 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     if (user && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       console.log('[UsageContext] Initial fetch triggered for user:', userId);
-      // Fetch in parallel
-      Promise.all([fetchUserProfile(), fetchUsage()]);
+      // Fetch in parallel with proper error handling
+      Promise.all([fetchUserProfile(), fetchUsage()]).catch((err) => {
+        console.error('[UsageContext] Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch user data');
+        setLoading(false);
+      });
     } else if (!user) {
       setUserRole(null);
       setUsageStats(null);

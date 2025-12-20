@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import Link from 'next/link';
 import { Folder } from 'lucide-react';
@@ -16,7 +17,7 @@ interface DroppableFolderCardProps {
   locale: string;
 }
 
-export function DroppableFolderCard({
+export const DroppableFolderCard = memo(function DroppableFolderCard({
   folder,
   stats,
   locale,
@@ -91,4 +92,4 @@ export function DroppableFolderCard({
       )}
     </div>
   );
-}
+});

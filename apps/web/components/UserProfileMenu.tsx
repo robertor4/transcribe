@@ -19,6 +19,8 @@ export function UserProfileMenu() {
   const tUsage = useTranslations('usage');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ bottom: 0, left: 0 });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -43,6 +45,17 @@ export function UserProfileMenu() {
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen]);
+
+  // Calculate dropdown position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        bottom: window.innerHeight - rect.top + 8, // 8px gap above button
+        left: rect.left,
+      });
     }
   }, [isOpen]);
 
@@ -94,6 +107,7 @@ export function UserProfileMenu() {
     <div className="relative" ref={dropdownRef}>
       {/* Profile Button */}
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
         aria-expanded={isOpen}
@@ -128,9 +142,12 @@ export function UserProfileMenu() {
         />
       </button>
 
-      {/* Dropdown Menu - opens upward for sidebar placement */}
+      {/* Dropdown Menu - uses fixed positioning to escape sidebar overflow constraints */}
       {isOpen && (
-        <div className="absolute left-0 bottom-full mb-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div
+          className="fixed w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[100]"
+          style={{ bottom: dropdownPosition.bottom, left: dropdownPosition.left }}
+        >
           {/* User Info Section */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">

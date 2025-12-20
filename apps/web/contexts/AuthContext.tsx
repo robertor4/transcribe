@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import {
   User,
   signInWithPopup,
@@ -103,71 +103,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
-  const signInWithGoogle = async () => {
+  // Memoize auth functions to prevent unnecessary re-renders
+  const signInWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
-  };
+  }, []);
 
-  const signInWithEmail = async (email: string, password: string) => {
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);
-  };
+  }, []);
 
-  const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, displayName?: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     // Update the user's display name if provided
     if (displayName && userCredential.user) {
       await updateProfile(userCredential.user, {
         displayName: displayName,
       });
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await signOut(auth);
-  };
+  }, []);
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = useCallback(async (email: string) => {
     await sendPasswordResetEmail(auth, email);
-  };
+  }, []);
 
-  const confirmPasswordResetHandler = async (oobCode: string, newPassword: string) => {
+  const confirmPasswordResetHandler = useCallback(async (oobCode: string, newPassword: string) => {
     await confirmPasswordReset(auth, oobCode, newPassword);
-  };
+  }, []);
 
-  const verifyPasswordResetCodeHandler = async (oobCode: string) => {
+  const verifyPasswordResetCodeHandler = useCallback(async (oobCode: string) => {
     return await verifyPasswordResetCode(auth, oobCode);
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     const currentUser = auth.currentUser;
     if (currentUser) {
       await currentUser.reload();
       // After reload, get the refreshed user and update state
       setUser(auth.currentUser);
     }
-  };
+  }, []);
+
+  // Memoize context value to prevent re-renders when values haven't changed
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    signInWithGoogle,
+    signInWithEmail,
+    signUpWithEmail,
+    logout,
+    sendPasswordResetEmail: resetPassword,
+    confirmPasswordReset: confirmPasswordResetHandler,
+    verifyPasswordResetCode: verifyPasswordResetCodeHandler,
+    refreshUser,
+  }), [user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, logout, resetPassword, confirmPasswordResetHandler, verifyPasswordResetCodeHandler, refreshUser]);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        signInWithGoogle,
-        signInWithEmail,
-        signUpWithEmail,
-        logout,
-        sendPasswordResetEmail: resetPassword,
-        confirmPasswordReset: confirmPasswordResetHandler,
-        verifyPasswordResetCode: verifyPasswordResetCodeHandler,
-        refreshUser,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

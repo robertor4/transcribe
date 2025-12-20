@@ -1391,23 +1391,36 @@ export class FirebaseService implements OnModuleInit {
       folderId,
     );
 
-    if (deleteContents) {
-      // Soft delete: mark transcriptions as deleted
-      const now = new Date();
-      for (const t of transcriptions) {
-        await this.updateTranscription(t.id, {
-          deletedAt: now,
-          folderId: null, // Clear folder reference
-        });
+    // Use batch writes for better performance (max 500 per batch)
+    const batchSize = 500;
+    const now = new Date();
+
+    for (let i = 0; i < transcriptions.length; i += batchSize) {
+      const batch = this.db.batch();
+      const chunk = transcriptions.slice(i, i + batchSize);
+
+      for (const t of chunk) {
+        const docRef = this.db.collection('transcriptions').doc(t.id);
+        if (deleteContents) {
+          // Soft delete: mark transcriptions as deleted
+          batch.update(docRef, {
+            deletedAt: now,
+            folderId: null, // Clear folder reference
+          });
+        } else {
+          // Move to unfiled: just clear the folder reference
+          batch.update(docRef, { folderId: null });
+        }
       }
+
+      await batch.commit();
+    }
+
+    if (deleteContents) {
       this.logger.log(
         `Soft-deleted ${transcriptions.length} transcriptions from folder ${folderId}`,
       );
     } else {
-      // Move to unfiled: just clear the folder reference
-      for (const t of transcriptions) {
-        await this.updateTranscription(t.id, { folderId: null });
-      }
       this.logger.log(
         `Moved ${transcriptions.length} transcriptions to unfiled from folder ${folderId}`,
       );
@@ -1460,17 +1473,19 @@ export class FirebaseService implements OnModuleInit {
     transcriptionId: string,
     folderId: string | null,
   ): Promise<void> {
-    const transcription = await this.getTranscription(userId, transcriptionId);
+    // Parallelize the verification queries for better performance
+    const [transcription, folder] = await Promise.all([
+      this.getTranscription(userId, transcriptionId),
+      folderId ? this.getFolder(userId, folderId) : Promise.resolve(null),
+    ]);
+
     if (!transcription) {
       throw new Error('Transcription not found or access denied');
     }
 
     // If moving to a folder, verify the folder exists and belongs to user
-    if (folderId) {
-      const folder = await this.getFolder(userId, folderId);
-      if (!folder) {
-        throw new Error('Folder not found or access denied');
-      }
+    if (folderId && !folder) {
+      throw new Error('Folder not found or access denied');
     }
 
     await this.updateTranscription(transcriptionId, {

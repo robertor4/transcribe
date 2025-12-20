@@ -245,12 +245,16 @@ export function TwoColumnDashboardLayout({
           {ungroupedConversations.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
               <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                No conversations yet
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Start by recording or uploading your first conversation
               </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onNewConversation}
+              >
+                Start First Conversation
+              </Button>
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">

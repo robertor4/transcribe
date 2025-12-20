@@ -30,7 +30,7 @@ import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { DeleteConversationButton } from '@/components/DeleteConversationButton';
 import { useConversation } from '@/hooks/useConversation';
 import { updateConversationTitle } from '@/lib/services/conversationService';
-import { useFolders } from '@/hooks/useFolders';
+import { useFoldersContext } from '@/contexts/FoldersContext';
 import { formatRelativeTime, formatDuration } from '@/lib/formatters';
 
 interface ConversationClientProps {
@@ -51,7 +51,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
-  const { folders } = useFolders();
+  const { folders } = useFoldersContext();
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
 

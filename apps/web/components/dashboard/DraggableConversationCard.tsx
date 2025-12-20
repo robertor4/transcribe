@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ interface DraggableConversationCardProps {
   onDelete?: (conversationId: string) => Promise<void>;
 }
 
-export function DraggableConversationCard({
+export const DraggableConversationCard = memo(function DraggableConversationCard({
   conversation,
   locale,
   onDelete,
@@ -148,4 +148,4 @@ export function DraggableConversationCard({
       )}
     </div>
   );
-}
+});
