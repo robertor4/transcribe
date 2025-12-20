@@ -7,8 +7,7 @@ import { useState } from 'react';
 import { Search, Plus, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X } from 'lucide-react';
 import { useFolders } from '@/hooks/useFolders';
 import { useConversations } from '@/hooks/useConversations';
-import { useAuth } from '@/contexts/AuthContext';
-import { getInitials } from '@/lib/formatters';
+import { UserProfileMenu } from '@/components/UserProfileMenu';
 
 interface LeftNavigationProps {
   onToggleSidebar?: () => void;
@@ -24,7 +23,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
-  const { user } = useAuth();
 
   const { folders, isLoading: foldersLoading, createFolder } = useFolders();
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
@@ -253,18 +251,9 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
         </div>
       </div>
 
-      {/* Bottom Section - User Profile */}
+      {/* Bottom Section - User Profile Menu */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 mt-auto">
-        <div className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-[#cc3399] flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
-            {user?.displayName ? getInitials(user.displayName) : user?.email?.[0]?.toUpperCase() || 'U'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-              {user?.email || 'User'}
-            </div>
-          </div>
-        </div>
+        <UserProfileMenu />
       </div>
     </div>
   );

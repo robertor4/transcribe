@@ -395,8 +395,6 @@ apps/web/
 │   ├── LeftNavigation.tsx           # Left nav with logo + profile
 │   ├── RightContextPanel.tsx        # Right panel component
 │   ├── Button.tsx                   # Standardized button component
-│   ├── FloatingRecordButton.tsx     # FAB for quick recording (NEW)
-│   ├── RecordingModal.tsx           # Full-screen recording UI (NEW)
 │   ├── MilestoneToast.tsx           # Celebration notifications (NEW)
 │   └── EmptyState.tsx               # Reusable empty state (NEW)
 ├── hooks/
@@ -405,11 +403,11 @@ apps/web/
 │   └── userHelpers.ts               # Personalization utilities (NEW)
 └── app/[locale]/
     ├── prototype-dashboard-v2/
-    │   └── page.tsx                 # Dashboard with FAB, greeting, milestones
+    │   └── page.tsx                 # Dashboard with greeting, milestones
     ├── prototype-conversation-v2/[id]/
-    │   └── page.tsx                 # Conversation with FAB
+    │   └── page.tsx                 # Conversation view
     └── prototype-folder-v2/[id]/
-        └── page.tsx                 # Folder with FAB
+        └── page.tsx                 # Folder view
 ```
 
 ---
@@ -508,31 +506,14 @@ Following 2025 UX/UI best practices from Linear, Notion, Height, ChatGPT, and Cl
 
 ### New Components
 
-**1. FloatingRecordButton (FAB)**
-- **File**: `components/FloatingRecordButton.tsx`
-- **Purpose**: 1-click recording access from anywhere
-- **Position**: Bottom-right corner (fixed, z-50)
-- **Visual**: Magenta background → Red + pulse when recording
-- **Always visible** across all V2 pages
-
-**2. RecordingModal**
-- **File**: `components/RecordingModal.tsx`
-- **Trigger**: Click FAB to open
-- **Features**:
-  - Pulsing red dot + "Recording..." header
-  - Elapsed time counter (MM:SS)
-  - Animated waveform visualization
-  - Large "Stop & Transcribe" button
-  - Cancel option
-
-**3. MilestoneToast**
+**1. MilestoneToast**
 - **File**: `components/MilestoneToast.tsx`
 - **Purpose**: Celebrate milestones (1st, 10th, 50th, 100th+ conversations)
 - **Position**: Bottom-left, auto-dismiss after 5s
 - **Design**: Gray background + magenta left border
 - **Non-intrusive**: Slide-in animation, no gamification
 
-**4. EmptyState**
+**2. EmptyState**
 - **File**: `components/EmptyState.tsx`
 - **Purpose**: Friendly empty states for dashboard, folders, search
 - **Pattern**: Large emoji + title + description + CTA button

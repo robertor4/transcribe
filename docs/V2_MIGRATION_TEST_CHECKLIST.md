@@ -43,10 +43,9 @@ This checklist covers manual testing for the V1 to V2 UI migration.
 - [ ] Clicking conversation navigates to `/conversation/[id]`
 - [ ] Hover effects work (arrow slides, text highlights)
 
-### 1.5 Floating Action Button
-- [ ] FAB visible in bottom-right corner
-- [ ] Clicking FAB opens RecordingModal
-- [ ] RecordingModal can be cancelled/stopped
+### 1.5 Quick Actions
+- [ ] Record audio button opens ConversationCreateModal with recording mode
+- [ ] Import audio button opens ConversationCreateModal with file upload mode
 
 ---
 

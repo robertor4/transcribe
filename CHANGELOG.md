@@ -7,7 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Profile Photo Upload**: Replaced URL-only profile photo input with intuitive uploader
+  - New `ProfilePhotoUploader` component with dropdown menu
+  - "Use Google Photo" option (one-click sync for Google-connected accounts)
+  - File upload support for JPG/PNG images (max 5MB)
+  - "Remove Photo" option to clear profile picture
+  - Backend endpoints: `POST /user/profile/photo` and `DELETE /user/profile/photo`
+  - Photos stored in Firebase Storage at `profiles/{userId}/{timestamp}.{ext}` (matching storage.rules)
+  - Uses signed URLs (7-day expiration) for secure authenticated access
+  - Automatic cleanup of old profile photos when uploading new ones
+  - Translations added for all 5 languages (en, de, es, fr, nl)
+
+### Fixed
+- Dashboard greeting now uses display name instead of email prefix (shows "Good afternoon, Roberto" instead of "Good afternoon, Dreamone4")
+- Folder page crash: Added missing UsageProvider layout wrapper to fix "useUsage must be used within UsageProvider" error
+- Conversation page crash: Added UsageProvider layout wrapper for same issue
+
 ### Changed
+- **Settings Pages Consolidation**:
+  - Merged Account page functionality into Profile page (password change, account deletion, data export)
+  - Account page now redirects to Profile
+  - Removed Account from settings navigation (4 tabs → 3 tabs: Profile, Preferences, Subscription)
+  - Simplified settings layout header with cleaner breadcrumb styling
+  - Notifications page simplified with cleaner card-based layout
+  - Preferences page refactored with improved visual hierarchy
+  - Subscription page streamlined with consistent card styling
+- **Upload Interface Improvements**:
+  - Swapped order: "Record Audio" now appears first (primary action)
+  - Added expandable "Learn more" info sections for each method
+  - Internationalized all strings using next-intl translations
+
+### Removed
+- **Legacy Recording Components**: Removed unused `FloatingRecordButton` and `RecordingModal` components
+  - These were superseded by `SimpleAudioRecorder` integrated into `UploadInterface`
+  - Removed 156 lines of deprecated code
+
+### Changed
+- **README Updated for V2**: Comprehensive documentation update reflecting V2 architecture
+  - Added new Core Features sections: Quick Recording & Upload, Folder Organization, Personalized Experience
+  - Updated AI-Powered Analysis section to reflect V2 Output System
+  - Expanded Project Structure to show V2 directories (folder/, dashboard/, outputTemplates/, hooks/, services/)
+  - Added Folder API endpoints documentation
+  - Updated Required Firestore Indexes section with V2 folder indexes
 - **V2 Architecture: Deprecate coreAnalyses in favor of generatedAnalyses**:
   - New transcriptions now store `summaryV2` directly on transcription document (not in `coreAnalyses`)
   - Action items and communication analysis are now generated as `GeneratedAnalysis` documents in the `generatedAnalyses` collection

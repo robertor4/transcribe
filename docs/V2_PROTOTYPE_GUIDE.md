@@ -3,40 +3,12 @@
 The V2 prototype implements modern productivity app patterns focusing on speed, personalization, and visual consistency following 2025 best practices from Linear, Notion, Height, ChatGPT, and Claude.
 
 **Core Philosophy:**
-- **Quick Recording Access:** 1-click start via Floating Action Button (FAB)
+- **Quick Recording Access:** 1-click start via dashboard quick actions
 - **Personalization:** Time-aware greetings, milestone celebrations, user-specific data
 - **Visual Consistency:** Monochrome (white/gray/black) + magenta `#cc3399` accent
 - **No Complexity:** Simple, clean MVP without keyboard shortcuts or heavy features
 
 ## Key Components
-
-### FloatingRecordButton
-**Location:** `/apps/web/components/FloatingRecordButton.tsx`
-- **Purpose:** Quick access to recording from anywhere in the app
-- **Pattern:** Floating Action Button (FAB) positioned bottom-right corner
-- **Visual States:**
-  - Default: Magenta `#cc3399` background with mic icon
-  - Recording: Red `bg-red-500` with square icon + pulse animation
-- **Behavior:** Always visible, hover scale-110, focus ring
-- **Usage:**
-  ```tsx
-  <FloatingRecordButton onClick={handleStartRecording} isRecording={isRecording} />
-  ```
-
-### RecordingModal
-**Location:** `/apps/web/components/RecordingModal.tsx`
-- **Purpose:** Full-screen recording interface triggered by FAB
-- **Features:**
-  - Pulsing red dot + "Recording..." header
-  - Elapsed time counter (MM:SS format)
-  - Animated waveform visualization (40 bars, random heights)
-  - Large "Stop & Transcribe" button (brand variant)
-  - Cancel option below
-- **Design:** Modal overlay with semi-transparent dark background
-- **Usage:**
-  ```tsx
-  <RecordingModal isOpen={isRecording} onStop={handleStop} onCancel={handleCancel} />
-  ```
 
 ### MilestoneToast
 **Location:** `/apps/web/components/MilestoneToast.tsx`
@@ -156,12 +128,10 @@ All links and navigation now point exclusively to V2 versions.
 ## Implementation Checklist
 
 When creating new V2 pages or features:
-- [ ] Add FloatingRecordButton to all main pages
-- [ ] Integrate RecordingModal with FAB state
+- [ ] Provide quick action buttons for recording/importing audio
 - [ ] Use personalized greeting on dashboard-style pages
 - [ ] Check for milestone messages on conversation count changes
 - [ ] Replace blue cards/notices with gray + magenta border
 - [ ] Use EmptyState component instead of custom empty messages
 - [ ] Ensure all status badges use semantic colors (green/yellow/red/gray)
 - [ ] Add proper empty states for all list views
-- [ ] Test FAB doesn't block important content (z-50, bottom-8 right-8)

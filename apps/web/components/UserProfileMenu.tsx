@@ -126,9 +126,9 @@ export function UserProfileMenu() {
         />
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Dropdown Menu - opens upward for sidebar placement */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute left-0 bottom-full mb-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
           {/* User Info Section */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">

@@ -32,8 +32,17 @@ Neural Summary embodies a **futuristic-minimal** aesthetic that blends human war
 - **Button styling** (following Apple's design language):
   - Primary CTAs: `rounded-full` (pill-shaped) - distinctive, approachable, modern
   - Secondary buttons: `rounded-lg` (8px) - for utility actions, forms
-  - Component: Use `CTAButton` component for consistent styling
-  - Variants: `primary` (solid `#2c2c2c` background), `secondary` (outlined with hover fill)
+  - Component: Use `Button` component (`/apps/web/components/Button.tsx`) for consistent styling
+  - Variants: `primary` (solid `#2c2c2c` background), `secondary` (outlined with hover fill), `ghost` (transparent with hover background), `brand` (pink), `danger` (red)
+  - **Always prefer using the `Button` component** over custom styled `<button>` elements for consistency
+- **Inline action confirmations** (for destructive actions like Delete):
+  - Initial state: `Button` with `variant="ghost"` showing the action (e.g., "Delete" with Trash icon)
+  - Confirmation state: Replace button with inline confirmation UI containing:
+    - Colored background container (`bg-red-50 dark:bg-red-900/20` for danger)
+    - Confirmation text (e.g., "Delete?")
+    - "Yes" button with `variant="danger"` and `size="sm"`
+    - "No" button with `variant="ghost"` and `size="sm"`
+  - Example: See `FolderClient.tsx` delete confirmation pattern
 
 *The visual equivalent of AI that feels effortless.*
 
@@ -554,14 +563,12 @@ The application runs **5 automated cron jobs** for maintenance, billing, and cle
 See [V2 Prototype Guide](docs/V2_PROTOTYPE_GUIDE.md) for detailed component specs.
 
 **Quick Reference:**
-- `FloatingRecordButton` - FAB for quick recording access (`/apps/web/components/FloatingRecordButton.tsx`)
-- `RecordingModal` - Full-screen recording interface (`/apps/web/components/RecordingModal.tsx`)
 - `MilestoneToast` - Celebration toasts for 1st, 10th, 50th, etc. (`/apps/web/components/MilestoneToast.tsx`)
 - `EmptyState` - Friendly empty states across app (`/apps/web/components/EmptyState.tsx`)
 - Helper functions in `/apps/web/lib/userHelpers.ts`
 
 **Active V2 Pages:**
-- `/prototype-dashboard-v2` - Dashboard with FAB, personalized greeting, milestones
+- `/prototype-dashboard-v2` - Dashboard with personalized greeting, milestones
 - `/prototype-conversation-v2/[id]` - Conversation view with vertical sections
 - `/prototype-folder-v2/[id]` - Folder view with improved empty states
 

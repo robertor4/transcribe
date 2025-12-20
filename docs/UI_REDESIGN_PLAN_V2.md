@@ -181,8 +181,7 @@ publicLinks/{linkId}
 - ✅ `RightContextPanel` - Contextual metadata panel
 
 **V2 UI Patterns:**
-- ✅ `FloatingRecordButton` - Bottom-right FAB (implemented, not connected)
-- ✅ `RecordingModal` - Full-screen recording interface (UI only, no real recording)
+- ✅ Quick action buttons - Dashboard buttons for recording/importing (via ConversationCreateModal)
 - ✅ `MilestoneToast` - Bottom-left celebration toasts
 - ✅ `EmptyState` - Reusable empty state component
 - ✅ `Button` - Standardized button system (5 variants: primary, secondary, brand, ghost, danger)
@@ -1024,17 +1023,13 @@ These will be implemented first with full JSON schemas and React templates:
    - Icon support, fullWidth, size options (sm, md, lg)
    - Location: `/components/Button.tsx`
 
-3. ✅ `<FloatingRecordButton />` - Bottom-right FAB for quick recording
-   - Location: `/components/FloatingRecordButton.tsx`
+3. ✅ Quick action buttons - Dashboard buttons for recording/importing audio
+   - Integrated with `ConversationCreateModal`
 
-4. ✅ `<RecordingModal />` - Full-screen recording interface
-   - Location: `/components/RecordingModal.tsx`
-   - Note: UI only, not connected to real recording
-
-5. ✅ `<MilestoneToast />` - Celebration toasts for achievements
+4. ✅ `<MilestoneToast />` - Celebration toasts for achievements
    - Location: `/components/MilestoneToast.tsx`
 
-6. ✅ `<EmptyState />` - Reusable empty state component
+5. ✅ `<EmptyState />` - Reusable empty state component
    - Location: `/components/EmptyState.tsx`
 
 **Output Templates (2/5 Complete):**

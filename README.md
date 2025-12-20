@@ -74,22 +74,40 @@ Trusted by legal, medical, research, and executive teams where every word matter
 
 ## Core Features
 
+### Quick Recording & Upload (V2)
+- **1-Click Recording**: Floating Action Button (FAB) for instant recording from anywhere in the app
+- **Recording Preview**: Listen to your recording before processing with waveform visualization
+- **Recording Recovery**: Auto-save to IndexedDB protects against browser crashes
+- **Template Selection**: Choose output format before processing (summary, blog post, email, etc.)
+- **Batch Processing**: Upload multiple files with merge or individual processing and drag-to-reorder
+
+### Folder Organization (V2)
+- **Folder System**: Organize conversations into folders with full CRUD operations
+- **Drag & Drop**: Move conversations between folders with intuitive drag-and-drop
+- **Folder Sharing**: Invite collaborators to folders (unlimited invitations)
+- **Nested Organization**: Structure your work by project, client, or topic
+
+### Personalized Experience (V2)
+- **Time-Aware Greetings**: "Good morning, Roberto" based on time of day
+- **Milestone Celebrations**: Subtle toasts for 1st, 10th, 50th, 100th conversations
+- **Smart Defaults**: Remembers your preferences (language, templates, folder locations)
+- **Usage Insights**: Conversation counts and activity summaries
+
 ### Transcription & Processing
 - **99.5% Accuracy**: Advanced AI transcription with automatic speaker identification
 - **Large File Support**: Handle files up to 5GB with intelligent audio splitting
-- **Batch Processing**: Upload multiple files at once with merge or individual processing options and drag-to-reorder functionality
 - **Parallel Job Processing**: Configurable concurrency (default: 2 jobs simultaneously) for faster batch transcription
 - **Real-Time Updates**: Live progress tracking with WebSocket resilience and automatic polling fallback
 - **99 Languages**: Automatic language detection with support for 99 languages
 
-### AI-Powered Analysis
-- **Core Analyses (Auto-Generated)**: Summary, Action Items, Communication Styles, and Full Transcript
-- **On-Demand Analyses (15+ Templates)**: Generate specialized analyses only when needed
-  - Professional: Emotional Intelligence, Influence & Persuasion, Personal Development, Executive Brief
+### AI-Powered Analysis (V2 Output System)
+- **Auto-Generated Summary**: New V2 summary format with structured insights
+- **On-Demand Output Templates (15+)**: Generate specialized outputs only when needed
+  - Professional: Emotional Intelligence, Communication Analysis, Personal Development, Executive Brief
   - Content Creation: Blog Post, Email, LinkedIn, Meeting Minutes, FAQ, Training Materials
-  - Specialized: Sales Analysis, Customer Feedback, Risk Assessment, Technical Documentation, Conflict Analysis
-- **Context-Aware Processing**: Provide background information during upload to enhance AI understanding and improve analysis accuracy
-- **Translation Support**: Translate transcriptions to 15 languages with automatic preference persistence
+  - Specialized: Sales Analysis, Customer Feedback, Risk Assessment, Technical Documentation, Action Items
+- **Context-Aware Processing**: Provide background information during upload to enhance AI understanding
+- **Translation Support**: Translate outputs to 15 languages with automatic preference persistence
 
 ### Translation & Collaboration
 - **Multi-Language Translation**: Translate transcriptions to 15 languages instantly using GPT-5-mini
@@ -289,34 +307,43 @@ npm run clean         # Clean all build artifacts and stop Redis
 ## Project Structure
 
 ```
-transcribe/
+neural-summary/
 ├── apps/
-│   ├── api/                 # NestJS backend
+│   ├── api/                      # NestJS backend
 │   │   ├── src/
-│   │   │   ├── transcription/  # Core transcription logic
-│   │   │   ├── auth/          # Authentication
-│   │   │   ├── websocket/     # Real-time updates
-│   │   │   ├── firebase/      # Firebase services
-│   │   │   └── utils/         # Audio splitting, etc.
+│   │   │   ├── transcription/    # Core transcription logic & prompts
+│   │   │   ├── folder/           # Folder management (V2)
+│   │   │   ├── auth/             # Authentication
+│   │   │   ├── websocket/        # Real-time updates
+│   │   │   ├── firebase/         # Firebase services
+│   │   │   ├── usage/            # Usage tracking & cron jobs
+│   │   │   └── utils/            # Audio splitting, etc.
 │   │   └── Dockerfile
-│   └── web/                 # Next.js frontend
+│   └── web/                      # Next.js frontend
 │       ├── app/
-│       │   └── [locale]/    # Internationalized routes
-│       ├── components/      # React components
-│       ├── lib/            # Client utilities
-│       ├── messages/       # Translation files
+│       │   └── [locale]/         # Internationalized routes
+│       ├── components/
+│       │   ├── dashboard/        # Dashboard components (V2 drag-drop)
+│       │   ├── detail-pages/     # Conversation detail layouts
+│       │   ├── outputTemplates/  # V2 output renderers (blog, email, etc.)
+│       │   ├── landing/          # Landing page components
+│       │   ├── paywall/          # Subscription UI
+│       │   └── pricing/          # Pricing page components
+│       ├── hooks/                # React hooks (useFolders, useTranscriptions)
+│       ├── lib/
+│       │   └── services/         # API service layer (folderService, etc.)
+│       ├── messages/             # Translation files (en, nl, de, fr, es)
 │       └── Dockerfile
 ├── packages/
-│   └── shared/             # Shared TypeScript types
-├── scripts/
-│   └── deploy.sh          # Deployment script to Hetzner
-├── docs/                   # Documentation
-│   ├── DEPLOYMENT.md      # Deployment guide
-│   ├── DOCKER.md          # Docker setup
+│   └── shared/                   # Shared TypeScript types
+├── scripts/                      # Deployment & maintenance scripts
+├── docs/                         # Documentation
+│   ├── V2_PROTOTYPE_GUIDE.md     # V2 component patterns
+│   ├── UI_DESIGN_SYSTEM.md       # Design system guidelines
 │   └── ...
-├── docker-compose.prod.yml # Production setup with Traefik
-├── docker-compose.dev.yml  # Development Docker setup
-└── turbo.json             # Turborepo configuration
+├── docker-compose.prod.yml       # Production setup with Traefik
+├── docker-compose.dev.yml        # Development Docker setup
+└── turbo.json                    # Turborepo configuration
 ```
 
 ## API Endpoints
@@ -346,6 +373,15 @@ transcribe/
 - `GET /transcriptions/:id/translations/:language` - Get specific translation
 - `DELETE /transcriptions/:id/translations/:language` - Delete translation
 - `PATCH /transcriptions/:id/translation-preference` - Update preferred translation language
+
+### Folders (V2)
+- `POST /folders` - Create a new folder
+- `GET /folders` - List user's folders
+- `GET /folders/:id` - Get folder details
+- `PUT /folders/:id` - Update folder (name, color, sortOrder)
+- `DELETE /folders/:id` - Delete folder (options: move contents or delete with contents)
+- `GET /folders/:id/transcriptions` - List transcriptions in folder
+- `PATCH /transcriptions/:id/folder` - Move transcription to folder
 
 ### Sharing
 - `POST /transcriptions/:id/share` - Create share link with settings (includes on-demand analyses)
@@ -433,11 +469,23 @@ For detailed deployment instructions, see `CLAUDE.md`
 4. Create a service account and download the JSON key
 5. Set up authentication methods (Email/Password, Google)
 
-### Required Firestore Index
+### Required Firestore Indexes
 
-Create a composite index:
+Create composite indexes:
+
+**Transcriptions index:**
 - Collection: `transcriptions`
 - Fields: `userId` (Ascending), `createdAt` (Descending)
+
+**Folders index (V2):**
+- Collection: `folders`
+- Fields: `userId` (Ascending), `sortOrder` (Ascending), `createdAt` (Ascending)
+
+**Transcriptions by folder index (V2):**
+- Collection: `transcriptions`
+- Fields: `userId` (Ascending), `folderId` (Ascending), `createdAt` (Descending)
+
+Note: Firestore will provide a link to auto-create indexes when queries fail.
 
 ### Subscription Tiers & Limits
 

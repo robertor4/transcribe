@@ -136,7 +136,13 @@
     "emptyStateDescription": "Vous n'avez pas encore téléversé de fichiers audio. Commencez par téléverser votre premier enregistrement.",
     "emptyStateButton": "Téléverser votre premier audio",
     "uploadFile": "Télécharger un fichier",
-    "recordAudio": "Enregistrer de l'audio"
+    "recordAudio": "Enregistrer de l'audio",
+    "learnMore": "En savoir plus",
+    "importAudio": "Importer audio",
+    "importAudioDesc": "Téléverser fichier audio/vidéo",
+    "recordAudioDesc": "Enregistrer une conversation en direct",
+    "recordAudioInfo": "Démarrez une session d'enregistrement en direct. Vous pouvez choisir d'enregistrer depuis votre microphone ou capturer l'audio d'un onglet de navigateur (pour les appels vidéo).",
+    "importAudioInfo": "Importez un fichier audio ou vidéo existant depuis votre appareil. Formats pris en charge : MP3, M4A, WAV, MP4, MOV, WebM. La taille maximale du fichier dépend de votre abonnement."
   },
   "upload": {
     "title": "Téléverser un fichier audio",
@@ -573,8 +579,14 @@
       "saveError": "Échec de la sauvegarde du profil",
       "saveSuccess": "Profil mis à jour avec succès",
       "profilePhoto": "Photo de profil",
-      "photoURLPlaceholder": "Entrez l'URL de l'image",
-      "photoURLHelp": "Entrez une URL d'image à utiliser comme photo de profil",
+      "changePhoto": "Changer la photo",
+      "useGooglePhoto": "Utiliser la photo Google",
+      "uploadPhoto": "Télécharger une photo",
+      "removePhoto": "Supprimer la photo",
+      "photoUploadError": "Échec du téléchargement de la photo",
+      "photoSizeError": "La photo doit faire moins de 5 Mo",
+      "photoTypeError": "Seuls les fichiers JPG et PNG sont autorisés",
+      "uploadingPhoto": "Téléchargement...",
       "displayName": "Nom d'affichage",
       "displayNamePlaceholder": "Entrez votre nom",
       "email": "Adresse e-mail",
@@ -1818,6 +1830,7 @@
       "description": "Gérez votre abonnement, consultez l'utilisation et l'historique de facturation"
     },
     "title": "Abonnement et facturation",
+    "description": "Gérez votre abonnement et vos informations de facturation.",
     "loading": "Chargement des détails de l'abonnement...",
     "error": {
       "loadFailed": "Échec du chargement des détails de l'abonnement",

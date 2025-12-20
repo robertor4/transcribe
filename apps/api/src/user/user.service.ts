@@ -122,6 +122,151 @@ export class UserService {
     }
   }
 
+  /**
+   * Upload a profile photo to Firebase Storage and update user profile
+   * @param userId - The user ID
+   * @param file - The uploaded file (must be image/jpeg or image/png, max 5MB)
+   * @returns The public URL of the uploaded photo
+   */
+  async uploadProfilePhoto(
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<string> {
+    try {
+      // Validate file type
+      const allowedMimeTypes = ['image/jpeg', 'image/png'];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        throw new Error('Invalid file type. Only JPG and PNG files are allowed.');
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new Error('File too large. Maximum size is 5MB.');
+      }
+
+      // Get file extension from mimetype
+      const ext = file.mimetype === 'image/jpeg' ? 'jpg' : 'png';
+
+      // Generate unique filename - use 'profiles/' path to match storage.rules
+      const timestamp = Date.now();
+      const filePath = `profiles/${userId}/${timestamp}.${ext}`;
+
+      // Get the user's current photo URL to delete old photo later
+      const currentUser = await this.getUserProfile(userId);
+      const oldPhotoPath =
+        currentUser?.photoURL?.includes('profiles/') ||
+        currentUser?.photoURL?.includes('profile-photos/')
+          ? this.extractPathFromUrl(currentUser.photoURL)
+          : null;
+
+      // Upload to Firebase Storage
+      const bucket = this.firebaseService.storageService.bucket();
+      const fileRef = bucket.file(filePath);
+
+      await fileRef.save(file.buffer, {
+        contentType: file.mimetype,
+        metadata: {
+          cacheControl: 'public, max-age=31536000', // 1 year cache
+        },
+      });
+
+      // Generate a signed URL with maximum expiration (7 days is the max for V4 signatures)
+      // For profile photos, we'll regenerate the URL when it's close to expiring
+      // or use a public bucket policy
+      const [signedUrl] = await fileRef.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days (max for V4)
+      });
+
+      const publicUrl = signedUrl;
+
+      // Update user profile with new photo URL
+      await this.updateUserProfile(userId, { photoURL: publicUrl });
+
+      // Delete old profile photo if it was a custom upload
+      if (oldPhotoPath) {
+        try {
+          await bucket.file(oldPhotoPath).delete();
+          this.logger.log(`Deleted old profile photo: ${oldPhotoPath}`);
+        } catch (error) {
+          // Don't fail if old photo deletion fails
+          this.logger.warn(`Failed to delete old profile photo: ${oldPhotoPath}`);
+        }
+      }
+
+      this.logger.log(`Profile photo uploaded for user ${userId}: ${publicUrl}`);
+      return publicUrl;
+    } catch (error) {
+      this.logger.error(`Error uploading profile photo for ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete user's profile photo from storage and clear photoURL
+   */
+  async deleteProfilePhoto(userId: string): Promise<void> {
+    try {
+      const user = await this.getUserProfile(userId);
+
+      if (
+      user?.photoURL?.includes('profiles/') ||
+      user?.photoURL?.includes('profile-photos/')
+    ) {
+        const filePath = this.extractPathFromUrl(user.photoURL);
+        if (filePath) {
+          const bucket = this.firebaseService.storageService.bucket();
+          try {
+            await bucket.file(filePath).delete();
+            this.logger.log(`Deleted profile photo: ${filePath}`);
+          } catch (error) {
+            this.logger.warn(`Failed to delete profile photo: ${filePath}`);
+          }
+        }
+      }
+
+      // Clear the photoURL in user profile
+      await this.updateUserProfile(userId, { photoURL: '' });
+      this.logger.log(`Profile photo cleared for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error deleting profile photo for ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Extract Firebase Storage path from public URL
+   * Handles multiple formats:
+   * - https://storage.googleapis.com/bucket/path (GCS public)
+   * - https://storage.googleapis.com/bucket/path?X-Goog-... (GCS signed URL)
+   * - https://firebasestorage.googleapis.com/v0/b/bucket/o/path?alt=media&token=xxx
+   */
+  private extractPathFromUrl(url: string): string | null {
+    try {
+      // Firebase Storage download URL format
+      const firebaseMatch = url.match(
+        /firebasestorage\.googleapis\.com\/v0\/b\/[^/]+\/o\/([^?]+)/,
+      );
+      if (firebaseMatch) {
+        return decodeURIComponent(firebaseMatch[1]);
+      }
+
+      // Google Cloud Storage format (with or without query params for signed URLs)
+      // URL format: https://storage.googleapis.com/bucket-name/path/to/file?X-Goog-...
+      const gcsMatch = url.match(
+        /storage\.googleapis\.com\/[^/]+\/([^?]+)/,
+      );
+      if (gcsMatch) {
+        return decodeURIComponent(gcsMatch[1]);
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
   async updateUserPreferences(
     userId: string,
     preferences: { preferredLanguage?: string },

@@ -137,7 +137,13 @@
     "uploadNewAudio": "Upload New Audio",
     "emptyStateTitle": "Welcome to Neural Summary!",
     "emptyStateDescription": "You haven't uploaded any audio files yet. Get started by uploading your first recording.",
-    "emptyStateButton": "Upload Your First Audio"
+    "emptyStateButton": "Upload Your First Audio",
+    "learnMore": "Learn more",
+    "importAudio": "Import audio",
+    "importAudioDesc": "Upload audio/video file",
+    "recordAudioDesc": "Record live conversation",
+    "recordAudioInfo": "Start a live recording session. You can choose to record from your microphone or capture audio from a browser tab (for video calls).",
+    "importAudioInfo": "Import an existing audio or video file from your device. Supported formats: MP3, M4A, WAV, MP4, MOV, WebM. Maximum file size depends on your subscription plan."
   },
   "upload": {
     "title": "Upload Audio File",
@@ -575,8 +581,14 @@
       "saveError": "Failed to save profile",
       "saveSuccess": "Profile updated successfully",
       "profilePhoto": "Profile Photo",
-      "photoURLPlaceholder": "Enter image URL",
-      "photoURLHelp": "Enter a URL to an image to use as your profile photo",
+      "changePhoto": "Change Photo",
+      "useGooglePhoto": "Use Google Photo",
+      "uploadPhoto": "Upload Photo",
+      "removePhoto": "Remove Photo",
+      "photoUploadError": "Failed to upload photo",
+      "photoSizeError": "Photo must be less than 5MB",
+      "photoTypeError": "Only JPG and PNG files are allowed",
+      "uploadingPhoto": "Uploading...",
       "displayName": "Display Name",
       "displayNamePlaceholder": "Enter your name",
       "email": "Email Address",
@@ -1609,6 +1621,7 @@
       "description": "Manage your subscription, view usage, and billing history"
     },
     "title": "Subscription & Billing",
+    "description": "Manage your subscription and billing information.",
     "loading": "Loading subscription details...",
     "error": {
       "loadFailed": "Failed to load subscription details",

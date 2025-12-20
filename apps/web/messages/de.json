@@ -137,7 +137,13 @@
     "emptyStateDescription": "Sie haben noch keine Audiodateien hochgeladen. Beginnen Sie, indem Sie Ihre erste Aufnahme hochladen.",
     "emptyStateButton": "Laden Sie Ihre erste Audio hoch",
     "uploadFile": "Datei hochladen",
-    "recordAudio": "Audio aufnehmen"
+    "recordAudio": "Audio aufnehmen",
+    "learnMore": "Mehr erfahren",
+    "importAudio": "Audio importieren",
+    "importAudioDesc": "Audio-/Videodatei hochladen",
+    "recordAudioDesc": "Live-Gespräch aufnehmen",
+    "recordAudioInfo": "Starte eine Live-Aufnahmesitzung. Du kannst wählen, ob du über dein Mikrofon aufnimmst oder Audio von einem Browser-Tab aufzeichnest (für Videoanrufe).",
+    "importAudioInfo": "Importiere eine vorhandene Audio- oder Videodatei von deinem Gerät. Unterstützte Formate: MP3, M4A, WAV, MP4, MOV, WebM. Die maximale Dateigröße hängt von deinem Abonnement ab."
   },
   "upload": {
     "title": "Audiodatei hochladen",
@@ -576,8 +582,14 @@
       "saveError": "Speichern des Profils fehlgeschlagen",
       "saveSuccess": "Profil erfolgreich aktualisiert",
       "profilePhoto": "Profilfoto",
-      "photoURLPlaceholder": "Bild-URL eingeben",
-      "photoURLHelp": "Geben Sie eine URL zu einem Bild ein, das als Profilfoto verwendet werden soll",
+      "changePhoto": "Foto ändern",
+      "useGooglePhoto": "Google-Foto verwenden",
+      "uploadPhoto": "Foto hochladen",
+      "removePhoto": "Foto entfernen",
+      "photoUploadError": "Foto konnte nicht hochgeladen werden",
+      "photoSizeError": "Foto muss kleiner als 5 MB sein",
+      "photoTypeError": "Nur JPG- und PNG-Dateien sind erlaubt",
+      "uploadingPhoto": "Hochladen...",
       "displayName": "Anzeigename",
       "displayNamePlaceholder": "Geben Sie Ihren Namen ein",
       "email": "E-Mail-Adresse",
@@ -1815,6 +1827,7 @@
       "description": "Verwalten Sie Ihr Abonnement, sehen Sie Nutzung und Abrechnungsverlauf"
     },
     "title": "Abonnement & Abrechnung",
+    "description": "Verwalten Sie Ihr Abonnement und Rechnungsinformationen.",
     "loading": "Abo-Details werden geladen...",
     "error": {
       "loadFailed": "Abo-Details konnten nicht geladen werden",

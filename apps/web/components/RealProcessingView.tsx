@@ -11,6 +11,7 @@ interface RealProcessingViewProps {
   file: File;
   context?: string;
   selectedTemplates?: string[]; // V2: Template IDs to control which analyses are generated
+  folderId?: string; // Optional folder to assign the conversation to
   onComplete: (transcriptionId: string) => void;
   onError: (error: string) => void;
 }
@@ -41,6 +42,7 @@ export function RealProcessingView({
   file,
   context,
   selectedTemplates,
+  folderId,
   onComplete,
   onError,
 }: RealProcessingViewProps) {
@@ -132,6 +134,17 @@ export function RealProcessingView({
 
         setTranscriptionId(newTranscriptionId);
         transcriptionIdRef.current = newTranscriptionId;
+
+        // If a folder was specified, assign the conversation to it immediately
+        if (folderId) {
+          try {
+            await transcriptionApi.moveToFolder(newTranscriptionId, folderId);
+          } catch (err) {
+            console.error('[RealProcessingView] Failed to assign to folder:', err);
+            // Don't fail the upload - folder assignment is not critical
+          }
+        }
+
         setProgress(25);
         setStage('processing');
         setStatusMessage('Transcribing audio...');
@@ -242,7 +255,7 @@ export function RealProcessingView({
     };
 
     upload();
-  }, [file, context, handleCompletion, handleError]);
+  }, [file, context, folderId, handleCompletion, handleError]);
 
   const getStageIcon = (stageName: ProcessingStage) => {
     switch (stageName) {

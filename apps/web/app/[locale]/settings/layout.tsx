@@ -8,7 +8,6 @@ import {
   User,
   Bell,
   Settings,
-  Shield,
   CreditCard,
   ChevronLeft,
   Menu,
@@ -65,17 +64,10 @@ export default function SettingsLayout({
       current: pathname?.endsWith('/settings/preferences'),
     },
     {
-      name: t('account'),
-      href: `/settings/account`,
-      icon: Shield,
-      current: pathname?.endsWith('/settings/account'),
-    },
-    {
       name: t('subscription'),
       href: `/settings/subscription`,
       icon: CreditCard,
       current: pathname?.includes('/settings/subscription'),
-      disabled: false,
     },
   ];
 
@@ -84,17 +76,19 @@ export default function SettingsLayout({
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                {/* Breadcrumb */}
                 <Link
                   href="/dashboard"
-                  className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors mr-4"
+                  className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mb-2"
                 >
-                  <ChevronLeft className="h-5 w-5 mr-1" />
-                  <span className="hidden sm:inline">{t('backToDashboard')}</span>
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  {t('backToDashboard')}
                 </Link>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                {/* Page Title */}
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {t('title')}
                 </h1>
               </div>
@@ -102,7 +96,7 @@ export default function SettingsLayout({
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 self-start"
               >
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -127,10 +121,6 @@ export default function SettingsLayout({
                       href={item.href}
                       className={`
                         group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                        ${item.disabled
-                          ? 'opacity-50 cursor-not-allowed pointer-events-none'
-                          : ''
-                        }
                         ${item.current
                           ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399] border-l-4 border-[#cc3399] -ml-1 pl-4'
                           : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -144,11 +134,6 @@ export default function SettingsLayout({
                         `}
                       />
                       <span className="truncate">{item.name}</span>
-                      {item.disabled && (
-                        <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
-                          {t('comingSoon')}
-                        </span>
-                      )}
                     </Link>
                   );
                 })}
@@ -175,10 +160,6 @@ export default function SettingsLayout({
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`
                         group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                        ${item.disabled
-                          ? 'opacity-50 cursor-not-allowed pointer-events-none'
-                          : ''
-                        }
                         ${item.current
                           ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399]'
                           : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -192,11 +173,6 @@ export default function SettingsLayout({
                         `}
                       />
                       <span className="truncate">{item.name}</span>
-                      {item.disabled && (
-                        <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
-                          {t('comingSoon')}
-                        </span>
-                      )}
                     </Link>
                   );
                 })}

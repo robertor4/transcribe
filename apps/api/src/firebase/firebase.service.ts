@@ -28,6 +28,10 @@ export class FirebaseService implements OnModuleInit {
     return admin.auth();
   }
 
+  get storageService(): admin.storage.Storage {
+    return this.storage;
+  }
+
   onModuleInit() {
     if (!admin.apps.length) {
       // Use the storage bucket from env, which should be transcribe-52b6f.firebasestorage.app

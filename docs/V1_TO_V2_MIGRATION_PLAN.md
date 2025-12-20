@@ -168,7 +168,7 @@ apps/web/app/[locale]/
 Replace V1 content with V2 dashboard:
 1. Copy structure from `prototype-dashboard-v2/page.tsx`
 2. Replace mock data imports with hooks (`useConversations`, `useFolders`)
-3. Keep V2 components: `ThreePaneLayout`, `LeftNavigation`, `FloatingRecordButton`, etc.
+3. Keep V2 components: `ThreePaneLayout`, `LeftNavigation`, quick action buttons, etc.
 
 ### 3.3 Update Internal Links
 

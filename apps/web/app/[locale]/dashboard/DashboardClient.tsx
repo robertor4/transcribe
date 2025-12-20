@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
-import { FloatingRecordButton } from '@/components/FloatingRecordButton';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
@@ -139,7 +138,7 @@ export function DashboardClient() {
             {/* Personalized Greeting */}
             <div className="mb-12">
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#b82d89] via-[#cc3399] to-[#ff66cc] bg-clip-text text-transparent">
-                {getGreeting(user?.email || '')}
+                {getGreeting(user?.displayName || user?.email || '')}
               </h1>
             </div>
 
@@ -202,9 +201,6 @@ export function DashboardClient() {
           </div>
         }
       />
-
-      {/* Floating Action Button - opens recording flow */}
-      <FloatingRecordButton onClick={handleRecordAudio} isRecording={false} />
 
       {/* Milestone Toast */}
       <MilestoneToast

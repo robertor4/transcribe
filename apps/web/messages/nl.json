@@ -137,7 +137,13 @@
     "uploadNewAudio": "Nieuwe audio uploaden",
     "emptyStateTitle": "Welkom bij Neural Summary!",
     "emptyStateDescription": "Je hebt nog geen audiobestanden geüpload. Begin door je eerste opname te uploaden.",
-    "emptyStateButton": "Upload je eerste audio"
+    "emptyStateButton": "Upload je eerste audio",
+    "learnMore": "Meer info",
+    "importAudio": "Importeer audio",
+    "importAudioDesc": "Upload audio/video bestand",
+    "recordAudioDesc": "Neem live gesprek op",
+    "recordAudioInfo": "Start een live opnamesessie. Je kunt kiezen om op te nemen via je microfoon of audio van een browsertabblad vastleggen (voor videogesprekken).",
+    "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement."
   },
   "upload": {
     "title": "Audiobestand uploaden",
@@ -574,8 +580,14 @@
       "saveError": "Opslaan van profiel mislukt",
       "saveSuccess": "Profiel succesvol bijgewerkt",
       "profilePhoto": "Profielfoto",
-      "photoURLPlaceholder": "Voer afbeeldings-URL in",
-      "photoURLHelp": "Voer een URL in naar een afbeelding om als profielfoto te gebruiken",
+      "changePhoto": "Foto wijzigen",
+      "useGooglePhoto": "Google-foto gebruiken",
+      "uploadPhoto": "Foto uploaden",
+      "removePhoto": "Foto verwijderen",
+      "photoUploadError": "Foto uploaden mislukt",
+      "photoSizeError": "Foto moet kleiner zijn dan 5 MB",
+      "photoTypeError": "Alleen JPG- en PNG-bestanden zijn toegestaan",
+      "uploadingPhoto": "Uploaden...",
       "displayName": "Weergavenaam",
       "displayNamePlaceholder": "Voer je naam in",
       "email": "E-mailadres",
@@ -1829,6 +1841,7 @@
       "description": "Beheer je abonnement, bekijk gebruik en factureringsgeschiedenis"
     },
     "title": "Abonnement & facturering",
+    "description": "Beheer je abonnement en factuurgegevens.",
     "loading": "Abonnementsgegevens laden...",
     "error": {
       "loadFailed": "Laden van abonnementsgegevens mislukt",

@@ -14,8 +14,7 @@ import {
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
-import { FloatingRecordButton } from '@/components/FloatingRecordButton';
-import { RecordingModal } from '@/components/RecordingModal';
+import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
@@ -29,7 +28,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || 'en';
-  const [isRecording, setIsRecording] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -234,7 +233,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   Conversations ({conversations.length})
                 </h2>
-                <Button variant="brand" size="md" onClick={() => setIsRecording(true)}>
+                <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
                   + New Conversation
                 </Button>
               </div>
@@ -250,7 +249,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
                     Create your first conversation in this folder
                   </p>
-                  <Button variant="brand" size="md" onClick={() => setIsRecording(true)}>
+                  <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
                     + New Conversation
                   </Button>
                 </div>
@@ -305,14 +304,14 @@ export function FolderClient({ folderId }: FolderClientProps) {
         }
       />
 
-      {/* Floating Action Button */}
-      <FloatingRecordButton onClick={() => setIsRecording(true)} isRecording={isRecording} />
-
-      {/* Recording Modal */}
-      <RecordingModal
-        isOpen={isRecording}
-        onStop={() => setIsRecording(false)}
-        onCancel={() => setIsRecording(false)}
+      {/* Conversation Create Modal */}
+      <ConversationCreateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onComplete={(conversationId) => {
+          router.push(`/${locale}/conversation/${conversationId}`);
+        }}
+        folderId={folderId}
       />
 
       {/* Delete Folder Modal */}

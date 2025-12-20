@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { Search, MessageSquarePlus, PanelLeft } from 'lucide-react';
+import { UserProfileMenu } from '@/components/UserProfileMenu';
 
 interface LeftNavigationCollapsedProps {
   onToggle: () => void;
@@ -58,24 +57,13 @@ export function LeftNavigationCollapsed({ onToggle }: LeftNavigationCollapsedPro
         </div>
       </button>
 
-      {/* Spacer to push user avatar to bottom */}
+      {/* Spacer to push user profile to bottom */}
       <div className="flex-1" />
 
-      {/* User Profile Avatar */}
-      <Link
-        href="/prototype-dashboard-v2"
-        className="group relative p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-        aria-label="User profile"
-      >
-        <div className="w-8 h-8 rounded-full bg-[#cc3399] flex items-center justify-center text-white text-sm font-medium">
-          R
-        </div>
-
-        {/* Tooltip */}
-        <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-          roberto@dreamone.nl
-        </div>
-      </Link>
+      {/* User Profile Menu */}
+      <div className="px-1">
+        <UserProfileMenu />
+      </div>
     </div>
   );
 }

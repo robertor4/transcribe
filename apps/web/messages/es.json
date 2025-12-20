@@ -136,7 +136,13 @@
     "emptyStateDescription": "Aún no has subido ningún archivo de audio. Comienza subiendo tu primera grabación.",
     "emptyStateButton": "Sube tu primer audio",
     "uploadFile": "Subir archivo",
-    "recordAudio": "Grabar audio"
+    "recordAudio": "Grabar audio",
+    "learnMore": "Más información",
+    "importAudio": "Importar audio",
+    "importAudioDesc": "Subir archivo de audio/video",
+    "recordAudioDesc": "Grabar conversación en vivo",
+    "recordAudioInfo": "Inicia una sesión de grabación en vivo. Puedes elegir grabar desde tu micrófono o capturar audio de una pestaña del navegador (para videollamadas).",
+    "importAudioInfo": "Importa un archivo de audio o video existente desde tu dispositivo. Formatos compatibles: MP3, M4A, WAV, MP4, MOV, WebM. El tamaño máximo del archivo depende de tu suscripción."
   },
   "upload": {
     "title": "Subir archivo de audio",
@@ -573,8 +579,14 @@
       "saveError": "Error al guardar el perfil",
       "saveSuccess": "Perfil actualizado exitosamente",
       "profilePhoto": "Foto de perfil",
-      "photoURLPlaceholder": "Ingrese la URL de la imagen",
-      "photoURLHelp": "Ingrese una URL de imagen para usar como foto de perfil",
+      "changePhoto": "Cambiar foto",
+      "useGooglePhoto": "Usar foto de Google",
+      "uploadPhoto": "Subir foto",
+      "removePhoto": "Eliminar foto",
+      "photoUploadError": "Error al subir la foto",
+      "photoSizeError": "La foto debe ser menor a 5 MB",
+      "photoTypeError": "Solo se permiten archivos JPG y PNG",
+      "uploadingPhoto": "Subiendo...",
       "displayName": "Nombre para mostrar",
       "displayNamePlaceholder": "Ingrese su nombre",
       "email": "Dirección de correo electrónico",
@@ -1810,6 +1822,7 @@
       "description": "Administre su suscripción, vea uso e historial de facturación"
     },
     "title": "Suscripción y facturación",
+    "description": "Administre su suscripción e información de facturación.",
     "loading": "Cargando detalles de suscripción...",
     "error": {
       "loadFailed": "Error al cargar detalles de suscripción",

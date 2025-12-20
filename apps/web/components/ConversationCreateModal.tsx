@@ -226,6 +226,7 @@ export function ConversationCreateModal({
               <RealProcessingView
                 file={uploadedFiles[0]}
                 context={overallContext || undefined}
+                folderId={folderId || undefined}
                 onComplete={handleProcessingComplete}
                 onError={handleProcessingError}
               />

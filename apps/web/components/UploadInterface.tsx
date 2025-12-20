@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Upload, Mic, X, FileAudio, GripVertical, Info } from 'lucide-react';
+import { Upload, Mic, X, FileAudio, GripVertical, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { SimpleAudioRecorder } from './SimpleAudioRecorder';
 
@@ -42,7 +43,9 @@ export function UploadInterface({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [expandedInfo, setExpandedInfo] = useState<'record' | 'upload' | null>(null);
 
+  const t = useTranslations('dashboard');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Notify parent when recording mode is active/inactive
@@ -230,38 +233,90 @@ export function UploadInterface({
       {/* Method Selection (if no method selected yet) */}
       {!selectedMethod && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto">
-            {/* Upload File */}
-            <button
-              onClick={() => setSelectedMethod('upload')}
-              className="group p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
-            >
-              <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
-                <Upload className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
-              </div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
-                Upload File
-              </h3>
-              <p className="text-sm text-gray-700 dark:text-gray-400">
-                Import audio or video file
-              </p>
-            </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto items-start">
+            {/* Record Audio (now first) */}
+            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200 overflow-hidden">
+              <button
+                onClick={() => setSelectedMethod('record')}
+                className="group w-full p-8"
+              >
+                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+                  <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
+                  {t('recordAudio')}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-400">
+                  {t('recordAudioDesc')}
+                </p>
+              </button>
 
-            {/* Record Audio */}
-            <button
-              onClick={() => setSelectedMethod('record')}
-              className="group p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
-            >
-              <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
-                <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
-              </div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
-                Record Audio
-              </h3>
-              <p className="text-sm text-gray-700 dark:text-gray-400">
-                Record live conversation
-              </p>
-            </button>
+              {/* Learn more toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedInfo(expandedInfo === 'record' ? null : 'record');
+                }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mx-auto pb-4"
+              >
+                <Info className="w-4 h-4" />
+                <span>{t('learnMore')}</span>
+                {expandedInfo === 'record' ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {/* Expandable content */}
+              {expandedInfo === 'record' && (
+                <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 border-t border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {t('recordAudioInfo')}
+                </div>
+              )}
+            </div>
+
+            {/* Upload File (now second) */}
+            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200 overflow-hidden">
+              <button
+                onClick={() => setSelectedMethod('upload')}
+                className="group w-full p-8"
+              >
+                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+                  <Upload className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
+                  {t('importAudio')}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-400">
+                  {t('importAudioDesc')}
+                </p>
+              </button>
+
+              {/* Learn more toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedInfo(expandedInfo === 'upload' ? null : 'upload');
+                }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mx-auto pb-4"
+              >
+                <Info className="w-4 h-4" />
+                <span>{t('learnMore')}</span>
+                {expandedInfo === 'upload' ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {/* Expandable content */}
+              {expandedInfo === 'upload' && (
+                <div className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-4 py-3 border-t border-gray-100 dark:border-gray-700 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {t('importAudioInfo')}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Back Button */}

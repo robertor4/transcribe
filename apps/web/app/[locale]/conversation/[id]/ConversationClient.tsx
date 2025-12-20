@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import {
   BarChart3,
   Zap,
@@ -25,8 +25,6 @@ import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { RightContextPanel } from '@/components/RightContextPanel';
 import { Button } from '@/components/Button';
-import { FloatingRecordButton } from '@/components/FloatingRecordButton';
-import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { useConversation } from '@/hooks/useConversation';
@@ -39,10 +37,8 @@ interface ConversationClientProps {
 
 export function ConversationClient({ conversationId }: ConversationClientProps) {
   const params = useParams();
-  const router = useRouter();
   const locale = (params?.locale as string) || 'en';
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
 
@@ -296,7 +292,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </nav>
 
             {/* Section: Summary */}
-            <section id="summary" className="mb-12 scroll-mt-8">
+            <section id="summary" className="mb-12 scroll-mt-16">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
@@ -474,21 +470,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </section>
           </div>
         }
-      />
-
-      {/* Floating Action Button */}
-      <FloatingRecordButton onClick={() => setIsCreateModalOpen(true)} isRecording={false} />
-
-      {/* Conversation Create Modal (for recording new conversations) */}
-      <ConversationCreateModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onComplete={(newConversationId) => {
-          setIsCreateModalOpen(false);
-          router.push(`/${locale}/conversation/${newConversationId}`);
-        }}
-        initialStep="capture"
-        uploadMethod="record"
       />
 
       {/* Output Generator Modal */}
