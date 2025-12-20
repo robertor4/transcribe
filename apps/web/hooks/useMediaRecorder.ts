@@ -183,6 +183,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       autoGainContextRef.current.close().catch(() => {});
     }
 
+    // Stop the original source stream tracks (releases the microphone)
+    if (autoGainSourceStreamRef.current) {
+      autoGainSourceStreamRef.current.getTracks().forEach((track) => track.stop());
+    }
+
     // Clear refs
     autoGainContextRef.current = null;
     autoGainNodeRef.current = null;
