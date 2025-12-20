@@ -6,7 +6,7 @@ import { LucideIcon } from 'lucide-react';
 import { formatPriceLocale } from '@transcribe/shared';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { useEffect } from 'react';
-import { formatViewItemParams, formatSelectItemParams, parseBillingCycle, type PricingTier, type BillingCycle } from '@/utils/analytics-helpers';
+import { formatViewItemParams, formatSelectItemParams, type PricingTier, type BillingCycle } from '@/utils/analytics-helpers';
 
 interface Feature {
   text: string;
@@ -47,7 +47,7 @@ export function PricingCard({
   ctaLink,
   locale,
   currency = 'USD',
-  currencySymbol = '$',
+  currencySymbol: _currencySymbol = '$',
   showGuarantee = false,
   guaranteeText,
   billingNote,

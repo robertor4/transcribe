@@ -54,9 +54,6 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     async (pageNum: number, append: boolean = false) => {
       if (!user) return;
 
-      console.log('[ConversationsContext] Fetching conversations...', { pageNum, append });
-      const startTime = performance.now();
-
       try {
         if (append) {
           setIsLoadingMore(true);
@@ -66,11 +63,6 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
         setError(null);
 
         const result = await listConversations(pageNum, pageSize);
-
-        console.log('[ConversationsContext] Conversations fetched', {
-          count: result.conversations.length,
-          elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
-        });
 
         if (append) {
           setConversations((prev) => [...prev, ...result.conversations]);
@@ -82,7 +74,6 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
         setHasMore(result.hasMore);
         setPage(pageNum);
       } catch (err) {
-        console.error('[ConversationsContext] Fetch failed', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch conversations'));
       } finally {
         setIsLoading(false);

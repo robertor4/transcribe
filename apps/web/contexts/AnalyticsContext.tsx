@@ -126,7 +126,6 @@ export function AnalyticsProvider({ children, user }: AnalyticsProviderProps) {
     parameters?: Record<string, any>
   ) => {
     if (!analyticsInstance || !isAnalyticsEnabled) {
-      console.log('[Analytics Disabled] Event:', eventName, parameters);
       return;
     }
 
@@ -139,10 +138,6 @@ export function AnalyticsProvider({ children, user }: AnalyticsProviderProps) {
       };
 
       logEvent(analyticsInstance, eventName as string, enrichedParams);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Analytics] Event tracked:', eventName, enrichedParams);
-      }
     } catch (error) {
       console.error('[Analytics] Error tracking event:', error);
     }

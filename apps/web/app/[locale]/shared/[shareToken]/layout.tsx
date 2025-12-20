@@ -19,8 +19,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Use API_URL for server-side (internal), NEXT_PUBLIC_API_URL for client-side
     const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-    console.log('[Metadata] Fetching transcript data for:', shareToken, 'from:', apiUrl);
-
     const response = await fetch(`${apiUrl}/transcriptions/shared/${shareToken}`, {
       method: 'GET',
       headers: {
@@ -32,7 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 
     if (!response.ok) {
-      console.log('[Metadata] API response not OK:', response.status, response.statusText);
       // If transcription not found or password protected, use generic metadata
       return getShareMetadata(
         {
@@ -45,13 +42,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const data = await response.json();
-    console.log('[Metadata] Received data:', {
-      success: data.success,
-      hasData: !!data.data,
-      title: data.data?.title,
-      hasAnalyses: !!data.data?.analyses,
-      hasTranscript: !!data.data?.transcriptText,
-    });
 
     if (data.success && data.data) {
       const transcription = data.data;
@@ -70,11 +60,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       if (!summary && transcription.transcriptText) {
         summary = transcription.transcriptText.substring(0, 200);
       }
-
-      console.log('[Metadata] Generated metadata:', {
-        title: transcription.title || transcription.fileName || 'Shared Transcript',
-        summaryLength: summary.length,
-      });
 
       return getShareMetadata(
         {

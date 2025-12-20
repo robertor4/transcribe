@@ -53,7 +53,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
   const { folders } = useFoldersContext();
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
-  const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
+  const [, setIsLoadingOutputs] = useState(false);
 
   // Find the folder for this conversation
   const folder = conversation?.folderId
@@ -139,8 +139,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     }
   };
 
-  const handleGenerateOutput = (outputType: string) => {
-    console.log('Generate output:', outputType);
+  const handleGenerateOutput = () => {
     setIsGeneratorOpen(true);
   };
 
@@ -218,7 +217,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         ]);
         setCopiedSummary(true);
         setTimeout(() => setCopiedSummary(false), 2000);
-      } catch (err) {
+      } catch {
         // Fallback to plain text if rich text fails
         try {
           await navigator.clipboard.writeText(plainText);

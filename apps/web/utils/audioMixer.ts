@@ -34,8 +34,6 @@ export async function mixAudioStreams(
     await audioContext.resume();
   }
 
-  console.log('[audioMixer] AudioContext created, state:', audioContext.state, 'sampleRate:', audioContext.sampleRate);
-
   // Create a destination node to capture mixed output
   const destination = audioContext.createMediaStreamDestination();
 
@@ -47,16 +45,12 @@ export async function mixAudioStreams(
   streams.forEach((stream, index) => {
     const audioTracks = stream.getAudioTracks();
     if (audioTracks.length > 0) {
-      const track = audioTracks[0];
-      console.log(`[audioMixer] Stream ${index}: label="${track.label}", enabled=${track.enabled}, muted=${track.muted}, readyState=${track.readyState}`);
-
       const source = audioContext.createMediaStreamSource(stream);
       const gainNode = audioContext.createGain();
 
       // Apply gain (default 1.0, but can boost microphone if needed)
       const gain = options?.gains?.[index] ?? 1.0;
       gainNode.gain.value = gain;
-      console.log(`[audioMixer] Stream ${index} gain set to ${gain}`);
 
       // Connect: source -> gain -> destination
       source.connect(gainNode);
@@ -64,12 +58,8 @@ export async function mixAudioStreams(
 
       sourceNodes.push(source);
       gainNodes.push(gainNode);
-    } else {
-      console.warn(`[audioMixer] Stream ${index} has no audio tracks`);
     }
   });
-
-  console.log(`[audioMixer] Mixed ${sourceNodes.length} streams into destination`);
 
   const cleanup = () => {
     // Disconnect all nodes
@@ -89,8 +79,8 @@ export async function mixAudioStreams(
     });
 
     // Close the audio context
-    audioContext.close().catch((err) => {
-      console.warn('[audioMixer] Failed to close AudioContext:', err);
+    audioContext.close().catch(() => {
+      // Ignore close errors
     });
   };
 

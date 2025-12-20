@@ -5,7 +5,6 @@ import { X, Loader2, AlertTriangle, Sparkles } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import { CorrectionPreview, CorrectionApplyResponse } from '@transcribe/shared';
 import DiffViewer from './DiffViewer';
-import { useTranslations } from 'next-intl';
 
 interface TranscriptCorrectionModalProps {
   transcriptionId: string;
@@ -20,7 +19,6 @@ export default function TranscriptCorrectionModal({
   onClose,
   onSuccess,
 }: TranscriptCorrectionModalProps) {
-  const t = useTranslations();
   const [instructions, setInstructions] = useState('');
   const [preview, setPreview] = useState<CorrectionPreview | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);

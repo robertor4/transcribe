@@ -6,7 +6,7 @@
  */
 
 import { transcriptionApi, folderApi } from '../api';
-import type { Transcription, ApiResponse, PaginatedResponse } from '@transcribe/shared';
+import type { Transcription } from '@transcribe/shared';
 import {
   Conversation,
   transcriptionToConversation,
@@ -185,7 +185,7 @@ export async function listConversationsByFolder(
   const response = await folderApi.getTranscriptions(folderId);
 
   if (!response.success || !response.data) {
-    throw new Error((response as any).error || 'Failed to fetch folder conversations');
+    throw new Error((response as { error?: string }).error || 'Failed to fetch folder conversations');
   }
 
   return transcriptionsToConversations(response.data as Transcription[]);

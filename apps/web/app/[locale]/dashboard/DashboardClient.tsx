@@ -16,7 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { deleteConversation } from '@/lib/services/conversationService';
-import { getTimeOfDay, getMilestoneMessage } from '@/lib/userHelpers';
+import { getCreativeGreeting, getMilestoneMessage } from '@/lib/userHelpers';
 import type { LucideIcon } from 'lucide-react';
 
 // Quick create button config - defined outside component to avoid recreation
@@ -187,7 +187,7 @@ export function DashboardClient() {
             {/* Personalized Greeting */}
             <div className="mb-12">
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#b82d89] via-[#cc3399] to-[#ff66cc] bg-clip-text text-transparent">
-                Good {getTimeOfDay()}, {user?.displayName || user?.email || 'there'}
+                {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
 

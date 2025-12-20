@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, FileText, Share2 } from 'lucide-react';
 import { DetailRightPanel } from './DetailRightPanel';
 import { RightPanelSection } from './RightPanelSection';
 import { DetailItem } from './DetailItem';
@@ -42,8 +42,8 @@ export function DetailMetadataPanel({
   customSections
 }: DetailMetadataPanelProps) {
   // Use FileText as default icon if not provided
-  const DetailsIcon = detailsIcon || (require('lucide-react').FileText as LucideIcon);
-  const ActionsIcon = actionsIcon || (require('lucide-react').Share2 as LucideIcon);
+  const DetailsIcon = detailsIcon || FileText;
+  const ActionsIcon = actionsIcon || Share2;
 
   return (
     <DetailRightPanel>

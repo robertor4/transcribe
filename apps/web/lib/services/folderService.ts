@@ -107,7 +107,7 @@ export async function deleteFolder(
   }
 
   return {
-    deletedConversations: (response.data as any)?.deletedConversations || 0,
+    deletedConversations: (response.data as { deletedConversations?: number })?.deletedConversations || 0,
   };
 }
 

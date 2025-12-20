@@ -51,7 +51,6 @@ export class RecordingStorage {
           }
         },
       });
-      console.log('[RecordingStorage] IndexedDB initialized successfully');
     } catch (error) {
       console.error('[RecordingStorage] Failed to initialize IndexedDB:', error);
       throw error;
@@ -64,7 +63,6 @@ export class RecordingStorage {
    */
   async saveRecording(recording: RecordingDB['recordings']['value']): Promise<void> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized, skipping save');
       return;
     }
 
@@ -73,18 +71,13 @@ export class RecordingStorage {
         ...recording,
         lastSaved: Date.now(),
       });
-      console.log(
-        `[RecordingStorage] Saved recording ${recording.id} (${recording.chunks.length} chunks, ${Math.round(recording.duration)}s)`
-      );
     } catch (error) {
       // Handle quota exceeded error gracefully
       if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-        console.error('[RecordingStorage] Storage quota exceeded');
         throw new Error(
           'Storage quota exceeded. Please clean up old recordings or free up device storage.'
         );
       }
-      console.error('[RecordingStorage] Failed to save recording:', error);
       throw error;
     }
   }
@@ -96,18 +89,12 @@ export class RecordingStorage {
    */
   async getRecording(id: string): Promise<RecordingDB['recordings']['value'] | undefined> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized');
       return undefined;
     }
 
     try {
-      const recording = await this.db.get(this.STORE_NAME, id);
-      if (recording) {
-        console.log(`[RecordingStorage] Retrieved recording ${id}`);
-      }
-      return recording;
-    } catch (error) {
-      console.error('[RecordingStorage] Failed to retrieve recording:', error);
+      return await this.db.get(this.STORE_NAME, id);
+    } catch {
       return undefined;
     }
   }
@@ -118,16 +105,12 @@ export class RecordingStorage {
    */
   async getAllRecordings(): Promise<RecordingDB['recordings']['value'][]> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized');
       return [];
     }
 
     try {
-      const recordings = await this.db.getAll(this.STORE_NAME);
-      console.log(`[RecordingStorage] Retrieved ${recordings.length} recordings`);
-      return recordings;
-    } catch (error) {
-      console.error('[RecordingStorage] Failed to retrieve all recordings:', error);
+      return await this.db.getAll(this.STORE_NAME);
+    } catch {
       return [];
     }
   }
@@ -138,15 +121,12 @@ export class RecordingStorage {
    */
   async deleteRecording(id: string): Promise<void> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized');
       return;
     }
 
     try {
       await this.db.delete(this.STORE_NAME, id);
-      console.log(`[RecordingStorage] Deleted recording ${id}`);
     } catch (error) {
-      console.error('[RecordingStorage] Failed to delete recording:', error);
       throw error;
     }
   }
@@ -158,7 +138,6 @@ export class RecordingStorage {
    */
   async cleanupOldRecordings(daysOld: number = 7): Promise<number> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized');
       return 0;
     }
 
@@ -174,13 +153,8 @@ export class RecordingStorage {
         }
       }
 
-      if (deletedCount > 0) {
-        console.log(`[RecordingStorage] Cleaned up ${deletedCount} old recording(s)`);
-      }
-
       return deletedCount;
-    } catch (error) {
-      console.error('[RecordingStorage] Failed to cleanup old recordings:', error);
+    } catch {
       return 0;
     }
   }
@@ -191,7 +165,6 @@ export class RecordingStorage {
    */
   async getTotalStorageUsed(): Promise<number> {
     if (!this.db) {
-      console.warn('[RecordingStorage] Database not initialized');
       return 0;
     }
 
@@ -206,8 +179,7 @@ export class RecordingStorage {
       }
 
       return totalBytes;
-    } catch (error) {
-      console.error('[RecordingStorage] Failed to calculate storage usage:', error);
+    } catch {
       return 0;
     }
   }
@@ -219,7 +191,6 @@ export class RecordingStorage {
     if (this.db) {
       this.db.close();
       this.db = null;
-      console.log('[RecordingStorage] Database connection closed');
     }
   }
 }

@@ -226,22 +226,6 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  // Get user initials for avatar fallback
-  const getInitials = () => {
-    if (displayName) {
-      return displayName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (authUser?.email) {
-      return authUser.email.slice(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

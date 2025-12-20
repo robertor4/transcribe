@@ -16,7 +16,6 @@ import {
   RotateCcw,
   AlertCircle,
   AlertTriangle,
-  PlayCircle,
   Volume2,
   X,
 } from 'lucide-react';

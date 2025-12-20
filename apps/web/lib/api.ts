@@ -5,7 +5,6 @@ import {
   AnalysisType,
   AnalysisTemplate,
   GeneratedAnalysis,
-  CorrectTranscriptRequest,
   CorrectionPreview,
   CorrectionApplyResponse,
   RoutingPlan,

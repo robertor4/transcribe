@@ -141,7 +141,7 @@ export function ActionItemsTemplate({ data }: ActionItemsTemplateProps) {
           No action items found
         </h3>
         <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          This conversation didn't contain any explicit action items or commitments.
+          This conversation didn&apos;t contain any explicit action items or commitments.
         </p>
       </div>
     );

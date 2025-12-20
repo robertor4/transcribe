@@ -15,7 +15,6 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { trackEvent } = useAnalytics();
   const t = useTranslations('checkout');
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const tier = params.tier as string;
@@ -33,7 +32,6 @@ export default function CheckoutPage() {
 
   async function createCheckoutSession() {
     try {
-      setLoading(true);
       setError(null);
 
       // Get user's Firebase ID token

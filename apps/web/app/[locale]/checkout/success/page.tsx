@@ -1,7 +1,7 @@
 'use client';
 
 import { use, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -15,7 +15,6 @@ export default function CheckoutSuccessPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = use(params);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const t = useTranslations('checkout.success');

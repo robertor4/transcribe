@@ -438,7 +438,6 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
             {/* On-Demand Generated Analyses Tabs */}
             {generatedAnalyses && generatedAnalyses.map((analysis) => {
               const isActive = activeTab === `generated-${analysis.id}`;
-              const colors = getTabColors('text-blue-600 dark:text-blue-400', isActive);
 
               return (
                 <button

@@ -17,7 +17,7 @@ interface MoreAnalysesTabProps {
 
 export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
   transcriptionId,
-  transcription,
+  transcription: _transcription,
   selectedLanguage = 'original',
 }) => {
   const { refreshUsage, usageStats } = useUsage();

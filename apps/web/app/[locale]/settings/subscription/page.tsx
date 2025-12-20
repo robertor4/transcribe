@@ -78,8 +78,6 @@ export default function SubscriptionPage() {
     try {
       setLoading(true);
       const token = await user?.getIdToken();
-      console.log('Current user UID:', user?.uid);
-      console.log('Current user email:', user?.email);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
       const [subResponse, usageResponse, historyResponse] = await Promise.all([
@@ -97,20 +95,13 @@ export default function SubscriptionPage() {
       // Handle subscription data (may fail if Stripe subscription doesn't exist)
       if (subResponse.ok) {
         const subData = await subResponse.json();
-        console.log('Subscription data:', subData);
-        console.log('Subscription object:', subData.subscription);
-        console.log('Current period start:', subData.subscription?.currentPeriodStart);
-        console.log('Current period end:', subData.subscription?.currentPeriodEnd);
         setSubscription(subData);
-      } else {
-        console.warn('Failed to load subscription details:', subResponse.status);
-        // Still allow page to render with basic tier info from usage stats
       }
+      // Still allow page to render with basic tier info from usage stats if subscription fetch fails
 
       // Handle usage stats
       if (usageResponse.ok) {
         const usageData = await usageResponse.json();
-        console.log('Usage data:', usageData);
         // Handle API response wrapper format
         setUsageStats(usageData.data || usageData);
       }
@@ -118,10 +109,8 @@ export default function SubscriptionPage() {
       // Handle billing history (may fail if no Stripe customer exists)
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
-        console.log('Billing history:', historyData);
         setBillingHistory(historyData.invoices || []);
       } else {
-        console.warn('Failed to load billing history:', historyResponse.status);
         setBillingHistory([]);
       }
     } catch (error) {

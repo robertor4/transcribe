@@ -31,7 +31,7 @@ export function ConversationCreateModal({
   onClose,
   onComplete,
   folderId,
-  initialStep,
+  initialStep: _initialStep,
   uploadMethod,
 }: ConversationCreateModalProps) {
   // State for flow
@@ -39,12 +39,12 @@ export function ConversationCreateModal({
   const [overallContext, setOverallContext] = useState<string>('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
+  const [, setProcessingMode] = useState<'individual' | 'merged'>('individual');
   const [isRecording, setIsRecording] = useState(false);
   // Store markAsUploaded callback to call after successful processing
   const [markAsUploadedCallback, setMarkAsUploadedCallback] = useState<(() => Promise<void>) | null>(null);
   // Store processing error for display
-  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [, setProcessingError] = useState<string | null>(null);
 
   // Reset state when modal opens
   useEffect(() => {

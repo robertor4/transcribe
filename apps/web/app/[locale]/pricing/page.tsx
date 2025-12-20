@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { PricingCard } from '@/components/pricing/PricingCard';
@@ -14,12 +14,11 @@ import { PublicFooter } from '@/components/PublicFooter';
 import { CTAButton } from '@/components/landing/CTAButton';
 import { Globe, Clock, FileText, Share2, Headphones, Zap, Package } from 'lucide-react';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
-import { formatPricingTierItem, getCurrencyFromLocale } from '@/utils/analytics-helpers';
+import { formatPricingTierItem } from '@/utils/analytics-helpers';
 
 export default function PricingPage() {
   const params = useParams();
   const locale = params.locale as string;
-  const router = useRouter();
   const { user } = useAuth();
   const { trackEvent } = useAnalytics();
   const t = useTranslations('pricing');

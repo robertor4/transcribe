@@ -20,7 +20,7 @@ export function QuotaExceededModal({
   isOpen,
   onClose,
   quotaType,
-  currentTier,
+  currentTier: _currentTier,
   details,
 }: QuotaExceededModalProps) {
   const t = useTranslations('paywall.quotaExceeded');

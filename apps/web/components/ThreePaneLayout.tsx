@@ -43,7 +43,7 @@ export function ThreePaneLayout({
 
   // Clone leftSidebar element to inject toggle function
   const leftSidebarWithToggle = isValidElement(leftSidebar)
-    ? cloneElement(leftSidebar as React.ReactElement<any>, {
+    ? cloneElement(leftSidebar as React.ReactElement<{ onToggleSidebar?: () => void }>, {
         onToggleSidebar: leftSidebarState.toggle,
       })
     : leftSidebar;

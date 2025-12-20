@@ -49,28 +49,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [hasRedirectedToVerify, setHasRedirectedToVerify] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    console.log('[AuthContext] Starting auth state listener');
-    const startTime = performance.now();
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('[AuthContext] onAuthStateChanged fired', {
-        hasUser: !!firebaseUser,
-        elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
-      });
-
       if (firebaseUser) {
         // Always reload user to get latest email verification status
         try {
-          console.log('[AuthContext] Reloading user...');
-          const reloadStart = performance.now();
           await firebaseUser.reload();
-          console.log('[AuthContext] User reloaded', {
-            elapsed: `${(performance.now() - reloadStart).toFixed(0)}ms`
-          });
 
           // Get the refreshed user
           const refreshedUser = auth.currentUser;
@@ -85,7 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             websocketService.connect();
           }
         } catch (error) {
-          console.log('[AuthContext] User reload failed', error);
           setUser(firebaseUser);
         }
       } else {
@@ -94,9 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         websocketService.disconnect();
       }
 
-      console.log('[AuthContext] Setting loading=false', {
-        totalElapsed: `${(performance.now() - startTime).toFixed(0)}ms`
-      });
       setLoading(false);
     });
 

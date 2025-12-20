@@ -48,19 +48,11 @@ export function FoldersProvider({ children }: FoldersProviderProps) {
 
   // Fetch folders
   const fetchFolders = useCallback(async () => {
-    console.log('[FoldersContext] Fetching folders...');
-    const startTime = performance.now();
-
     try {
       setError(null);
       const result = await listFolders();
-      console.log('[FoldersContext] Folders fetched', {
-        count: result.length,
-        elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
-      });
       setFolders(result);
     } catch (err) {
-      console.error('[FoldersContext] Fetch failed', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch folders'));
     } finally {
       setIsLoading(false);

@@ -10,9 +10,6 @@ import type {
   Transcription,
   TranscriptionStatus,
   SpeakerSegment,
-  Speaker,
-  CoreAnalyses,
-  AnalysisResults,
   SummaryV2,
 } from '@transcribe/shared';
 

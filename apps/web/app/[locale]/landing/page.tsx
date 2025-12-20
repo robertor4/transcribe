@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import ScrollAnimation from '@/components/ScrollAnimation';
-import { MeetingPlatforms } from '@/components/landing/MeetingPlatforms';
-import { MeetingUseCases } from '@/components/landing/MeetingUseCases';
 import { MeetingFAQ } from '@/components/landing/MeetingFAQ';
 import { CTAButton } from '@/components/landing/CTAButton';
 import WorkflowCarousel from '@/components/landing/WorkflowCarousel';
@@ -22,61 +20,7 @@ export default async function LandingPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'landing' });
 
-  // Debug: Log locale and test translation
-  console.log('[Landing Page] Locale:', locale);
-  console.log('[Landing Page] Hero headline:', t('hero.headline'));
-
-  // Pre-translate strings for meeting components
-  const meetingPlatformsStrings = {
-    title: t('meetingPlatforms.title'),
-    subtitle: t('meetingPlatforms.subtitle'),
-    platforms: {
-      zoom: {
-        name: t('meetingPlatforms.zoom.name'),
-        description: t('meetingPlatforms.zoom.description'),
-      },
-      teams: {
-        name: t('meetingPlatforms.teams.name'),
-        description: t('meetingPlatforms.teams.description'),
-      },
-      meet: {
-        name: t('meetingPlatforms.meet.name'),
-        description: t('meetingPlatforms.meet.description'),
-      },
-      webex: {
-        name: t('meetingPlatforms.webex.name'),
-        description: t('meetingPlatforms.webex.description'),
-      },
-      anyPlatform: {
-        name: t('meetingPlatforms.anyPlatform.name'),
-        description: t('meetingPlatforms.anyPlatform.description'),
-      },
-    },
-  };
-
-  const meetingUseCasesStrings = {
-    title: t('meetingUseCases.title'),
-    subtitle: t('meetingUseCases.subtitle'),
-    useCases: {
-      oneOnOnes: {
-        title: t('meetingUseCases.oneOnOnes.title'),
-        description: t('meetingUseCases.oneOnOnes.description'),
-      },
-      teamStandups: {
-        title: t('meetingUseCases.teamStandups.title'),
-        description: t('meetingUseCases.teamStandups.description'),
-      },
-      clientCalls: {
-        title: t('meetingUseCases.clientCalls.title'),
-        description: t('meetingUseCases.clientCalls.description'),
-      },
-      allHands: {
-        title: t('meetingUseCases.allHands.title'),
-        description: t('meetingUseCases.allHands.description'),
-      },
-    },
-  };
-
+  // Pre-translate strings for meeting FAQ component
   const meetingFaqStrings = {
     title: t('meetingFaq.title'),
     subtitle: t('meetingFaq.subtitle'),

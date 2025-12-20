@@ -5,7 +5,6 @@ import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 
 interface DetailPageLayoutProps {
-  conversationId: string;
   rightPanel: ReactNode;
   children: ReactNode;
 }
@@ -14,7 +13,7 @@ interface DetailPageLayoutProps {
  * Standard layout wrapper for all detail pages (outputs, transcript, etc.)
  * Provides consistent structure with ThreePaneLayout and LeftNavigation
  */
-export function DetailPageLayout({ conversationId, rightPanel, children }: DetailPageLayoutProps) {
+export function DetailPageLayout({ rightPanel, children }: DetailPageLayoutProps) {
   return (
     <div className="h-screen flex flex-col">
       <ThreePaneLayout

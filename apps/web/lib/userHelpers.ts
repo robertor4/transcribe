@@ -62,6 +62,65 @@ export function getGreeting(emailOrName?: string): string {
 }
 
 /**
+ * Creative greeting variations by time of day
+ * Subtly references the product's purpose (recording, creating, capturing ideas)
+ */
+const GREETINGS = {
+  night: [
+    (name: string) => `Burning the midnight oil, ${name}?`,
+    (name: string) => `Late night ideas? Let's capture them, ${name}`,
+    (name: string) => `The quiet hours — perfect for thinking, ${name}`,
+  ],
+  morning: [
+    (name: string) => `Good morning, ${name}`,
+    (name: string) => `Morning, ${name} — ready to capture some ideas?`,
+    (name: string) => `A fresh morning for creating, ${name}`,
+    (name: string) => `Rise and record, ${name}`,
+  ],
+  afternoon: [
+    (name: string) => `Good afternoon, ${name}`,
+    (name: string) => `Afternoon, ${name} — what will you create today?`,
+    (name: string) => `Good afternoon for capturing thoughts, ${name}`,
+    (name: string) => `Hey ${name}, ready to turn ideas into documents?`,
+  ],
+  evening: [
+    (name: string) => `Good evening, ${name}`,
+    (name: string) => `Evening, ${name} — time to wrap up some thoughts?`,
+    (name: string) => `Good evening for recording, ${name}`,
+    (name: string) => `Wind down with a conversation, ${name}`,
+  ],
+};
+
+/**
+ * Get a creative, personalized greeting that changes daily
+ * Uses date-based rotation so greeting stays consistent throughout the day
+ * @param name - User's display name or email
+ * @returns Creative greeting string
+ */
+export function getCreativeGreeting(name: string): string {
+  const hour = new Date().getHours();
+  const dayOfMonth = new Date().getDate();
+
+  // Determine time period
+  let period: keyof typeof GREETINGS;
+  if (hour >= 0 && hour < 6) {
+    period = 'night';
+  } else if (hour >= 6 && hour < 12) {
+    period = 'morning';
+  } else if (hour >= 12 && hour < 18) {
+    period = 'afternoon';
+  } else {
+    period = 'evening';
+  }
+
+  const greetings = GREETINGS[period];
+  // Use day of month for consistent daily rotation
+  const index = dayOfMonth % greetings.length;
+
+  return greetings[index](name);
+}
+
+/**
  * Get milestone message for conversation count
  * @param count - Number of conversations
  * @returns Milestone message or null if no milestone
