@@ -270,7 +270,7 @@ export default async function PrivacyPage({
                   <ul className="space-y-1 text-sm text-gray-700">
                     <li><strong>{t('sections.dataRetention.periods.account')}:</strong> Until 12 months after account deletion</li>
                     <li><strong>{t('sections.dataRetention.periods.transcriptions')}:</strong> Keep until deleted</li>
-                    <li><strong>{t('sections.dataRetention.periods.audioFiles')}:</strong> Raw uploads are deleted right after processing</li>
+                    <li><strong>{t('sections.dataRetention.periods.audioFiles')}:</strong> Retained for 30 days after processing for support and recovery purposes, then automatically deleted</li>
                     <li><strong>{t('sections.dataRetention.periods.logs')}:</strong> 1 year for audit/security purposes</li>
                     <li><strong>{t('sections.dataRetention.periods.analytics')}:</strong> 12 months</li>
                   </ul>

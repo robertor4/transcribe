@@ -20,6 +20,7 @@ export interface UseConversationResult {
   isLoading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
+  updateConversationLocally: (updates: Partial<Conversation>) => void;
 }
 
 export function useConversation(
@@ -73,10 +74,16 @@ export function useConversation(
     await fetchConversation();
   }, [fetchConversation]);
 
+  // Update conversation state locally without refetching
+  const updateConversationLocally = useCallback((updates: Partial<Conversation>) => {
+    setConversation((prev) => (prev ? { ...prev, ...updates } : null));
+  }, []);
+
   return {
     conversation,
     isLoading,
     error,
     refresh,
+    updateConversationLocally,
   };
 }

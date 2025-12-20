@@ -3,7 +3,6 @@
 import { useDroppable } from '@dnd-kit/core';
 import Link from 'next/link';
 import { Folder } from 'lucide-react';
-import { formatDuration } from '@/lib/formatters';
 import type { Folder as FolderType } from '@/lib/services/folderService';
 
 interface FolderStats {
@@ -66,10 +65,8 @@ export function DroppableFolderCard({
             >
               {folder.name}
             </div>
-            <div className="flex items-center gap-3 text-xs font-medium text-gray-600 dark:text-gray-400">
+            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
               <span>{stats.count} conversations</span>
-              <span>·</span>
-              <span>{formatDuration(stats.duration)}</span>
             </div>
           </div>
         </div>

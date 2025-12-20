@@ -95,34 +95,36 @@ export function UserProfileMenu() {
       {/* Profile Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label={tCommon('userMenu')}
       >
-        {/* Profile Picture or Initials Avatar */}
-        {user.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt={user.displayName || user.email || 'User'}
-            className="h-8 w-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-            referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
-          />
-        ) : (
-          <div className="h-8 w-8 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-sm font-semibold">
-            {getInitials()}
-          </div>
-        )}
+        {/* Left side: Avatar + Name */}
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Profile Picture or Initials Avatar */}
+          {user.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt={user.displayName || user.email || 'User'}
+              className="h-8 w-8 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-sm font-semibold flex-shrink-0">
+              {getInitials()}
+            </div>
+          )}
 
-        {/* User Name/Email (hidden on mobile) */}
-        <span className="hidden md:block text-sm font-medium text-gray-800 dark:text-gray-200 max-w-[150px] truncate">
-          {user.displayName || user.email}
-        </span>
+          {/* User Name/Email (hidden on mobile) */}
+          <span className="hidden md:block text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+            {user.displayName || user.email}
+          </span>
+        </div>
 
         {/* Chevron Icon */}
         <ChevronDown
-          className={`h-4 w-4 text-gray-600 dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -138,7 +140,6 @@ export function UserProfileMenu() {
                   alt={user.displayName || user.email || 'User'}
                   className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                   referrerPolicy="no-referrer"
-                  crossOrigin="anonymous"
                 />
               ) : (
                 <div className="h-10 w-10 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-base font-semibold">

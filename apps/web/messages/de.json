@@ -826,7 +826,7 @@
     },
     "securitySection": {
       "headline": "Ihre Privatsphäre zählt.",
-      "description": "Audio innerhalb Sekunden gelöscht. Nur Text bleibt. Enterprise-grade Verschlüsselung."
+      "description": "Audio nach 30 Tagen automatisch gelöscht. Nur Text bleibt dauerhaft. Enterprise-grade Verschlüsselung."
     },
     "warp": {
       "headline": "Die Zukunft der Arbeit ist nicht Tippen.",
@@ -989,16 +989,16 @@
         "description": "Gebaut mit den neuesten Sprachmodellen, feinabgestimmt für geschäftliche Kommunikation."
       },
       "encryption": {
-        "title": "Sofortige Löschung nach Verarbeitung",
-        "description": "Audiodateien werden innerhalb von Sekunden gelöscht, niemals auf unseren Servern gespeichert"
+        "title": "Audio nach 30 Tagen automatisch gelöscht",
+        "description": "Audiodateien werden 30 Tage für Support aufbewahrt, dann dauerhaft gelöscht. Nur Texttranskripte bleiben erhalten."
       },
       "retention": {
         "title": "Sichere Cloud-Infrastruktur",
         "description": "Ihre Daten werden bei der Speicherung und Übertragung mit Industriestandard-Protokollen verschlüsselt"
       },
       "audit": {
-        "title": "Zero-Knowledge-Architektur",
-        "description": "Ihre Daten bleiben privat - wir verarbeiten nur das Notwendige und löschen Audio sofort"
+        "title": "Privacy by Design",
+        "description": "Ihre Daten bleiben privat - wir verarbeiten nur das Notwendige. Audio wird nach 30 Tagen automatisch gelöscht."
       },
       "badges": {
         "soc2": "SOC 2 konform",
@@ -1052,7 +1052,7 @@
       },
       "question6": {
         "question": "Sind meine Daten privat und sicher?",
-        "answer": "Ihr Audio wird NIEMALS auf unseren Servern gespeichert. Wenn Sie eine Aufzeichnung hochladen, wird sie sofort verarbeitet und innerhalb von Sekunden gelöscht. Wir behalten nur den Text und die Analyseergebnisse. Diese Zero-Knowledge-Architektur stellt sicher, dass Ihre sensiblen Gespräche vollständig privat bleiben—ideal für vertrauliche geschäftliche, rechtliche oder medizinische Diskussionen."
+        "answer": "Absolut. Ihr Audio wird nur 30 Tage für Support- und Wiederherstellungszwecke aufbewahrt, dann automatisch und dauerhaft gelöscht. Wir behalten nur die Texttranskripte und Analyseergebnisse. Enterprise-grade Verschlüsselung schützt Ihre Daten bei Speicherung und Übertragung—ideal für vertrauliche geschäftliche, rechtliche oder medizinische Diskussionen."
       },
       "question7": {
         "question": "Kann ich Dokumente teilen und exportieren?",
@@ -1171,7 +1171,7 @@
         "features": {
           "transcription": "Automatische Transkription von Audiodateien mit fortschrittlicher KI-Technologie",
           "analysis": "Intelligente Zusammenfassung und Analyse von transkribiertem Inhalt",
-          "storage": "Sichere Cloud-Speicherung Ihrer Transkriptionen und Audiodateien",
+          "storage": "Sichere Cloud-Speicherung Ihrer Transkriptionen. Audiodateien werden 30 Tage für Support aufbewahrt, dann automatisch gelöscht",
           "sharing": "Möglichkeit, Transkriptionen mit kontrolliertem Zugang zu teilen"
         }
       },

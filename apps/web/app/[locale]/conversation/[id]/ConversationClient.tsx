@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   BarChart3,
   Zap,
@@ -27,7 +27,9 @@ import { RightContextPanel } from '@/components/RightContextPanel';
 import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
+import { DeleteConversationButton } from '@/components/DeleteConversationButton';
 import { useConversation } from '@/hooks/useConversation';
+import { updateConversationTitle } from '@/lib/services/conversationService';
 import { useFolders } from '@/hooks/useFolders';
 import { formatRelativeTime, formatDuration } from '@/lib/formatters';
 
@@ -37,12 +39,18 @@ interface ConversationClientProps {
 
 export function ConversationClient({ conversationId }: ConversationClientProps) {
   const params = useParams();
+  const router = useRouter();
   const locale = (params?.locale as string) || 'en';
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
 
-  const { conversation, isLoading, error } = useConversation(conversationId);
+  // Title editing state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
   const { folders } = useFolders();
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
@@ -51,6 +59,45 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const folder = conversation?.folderId
     ? folders.find((f) => f.id === conversation.folderId)
     : null;
+
+  // Title editing handlers
+  const handleStartEditTitle = () => {
+    if (conversation) {
+      setEditedTitle(conversation.title);
+      setIsEditingTitle(true);
+    }
+  };
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditingTitle && titleInputRef.current) {
+      titleInputRef.current.focus();
+      titleInputRef.current.select();
+    }
+  }, [isEditingTitle]);
+
+  const handleSaveTitle = async () => {
+    const trimmedTitle = editedTitle.trim();
+    if (trimmedTitle && trimmedTitle !== conversation?.title) {
+      try {
+        await updateConversationTitle(conversationId, trimmedTitle);
+        updateConversationLocally({ title: trimmedTitle });
+      } catch (err) {
+        console.error('Failed to rename conversation:', err);
+      }
+    }
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveTitle();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsEditingTitle(false);
+    }
+  };
 
   // Fetch generated outputs for this conversation
   const fetchOutputs = useCallback(async () => {
@@ -250,20 +297,42 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 <ArrowLeft className="w-4 h-4" />
                 {folder ? folder.name : 'Dashboard'}
               </Link>
-              <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3">
-                {conversation.title}
-              </h1>
-              <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-                <span>{formatDuration(conversation.source.audioDuration)}</span>
-                <span>·</span>
-                <span>
-                  Created{' '}
-                  {conversation.createdAt.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
+              {isEditingTitle ? (
+                <input
+                  ref={titleInputRef}
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  onBlur={handleSaveTitle}
+                  onKeyDown={handleTitleKeyDown}
+                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#cc3399] outline-none w-full mb-3"
+                />
+              ) : (
+                <h1
+                  onClick={handleStartEditTitle}
+                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+                  title="Click to rename"
+                >
+                  {conversation.title}
+                </h1>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <span>{formatDuration(conversation.source.audioDuration)}</span>
+                  <span>·</span>
+                  <span>
+                    Created{' '}
+                    {conversation.createdAt.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+                <DeleteConversationButton
+                  conversationId={conversationId}
+                  onDeleted={() => router.push(`/${locale}/dashboard`)}
+                />
               </div>
             </div>
 

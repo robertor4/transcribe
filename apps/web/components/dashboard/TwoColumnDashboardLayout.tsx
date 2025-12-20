@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Folder as FolderIcon, MessageSquare, Mic, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01 } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Folder as FolderIcon, MessageSquare, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01, Mic } from 'lucide-react';
 import { Button } from '@/components/Button';
-import { EmptyState } from '@/components/EmptyState';
 import { DashboardDndProvider } from './DashboardDndProvider';
 import { DraggableConversationCard } from './DraggableConversationCard';
 import { DroppableFolderCard } from './DroppableFolderCard';
@@ -17,13 +16,13 @@ interface FolderStats {
 
 interface TwoColumnDashboardLayoutProps {
   folders: Folder[];
-  conversations: Conversation[];
   ungroupedConversations: Conversation[];
   locale: string;
   getFolderStats: (folderId: string) => FolderStats;
   onMoveToFolder: (conversationId: string, folderId: string) => Promise<void>;
   onCreateFolder: (name: string) => Promise<void>;
   onNewConversation: () => void;
+  onDeleteConversation?: (conversationId: string) => Promise<void>;
 }
 
 // Sort modes cycle: A-Z → Z-A → Newest → Oldest → A-Z...
@@ -37,21 +36,39 @@ const SORT_MODE_CONFIG: Record<FolderSortMode, { icon: typeof ArrowDownAZ; label
 };
 
 const ITEMS_PER_PAGE = 10;
+const FOLDER_SORT_STORAGE_KEY = 'neural-summary-folder-sort-mode';
 
 export function TwoColumnDashboardLayout({
   folders,
-  conversations,
   ungroupedConversations,
   locale,
   getFolderStats,
   onMoveToFolder,
   onCreateFolder,
   onNewConversation,
+  onDeleteConversation,
 }: TwoColumnDashboardLayoutProps) {
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [sortMode, setSortMode] = useState<FolderSortMode>('name-asc');
+  const [isHydrated, setIsHydrated] = useState(false);
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE);
+
+  // Load sort mode from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(FOLDER_SORT_STORAGE_KEY);
+    if (stored && stored in SORT_MODE_CONFIG) {
+      setSortMode(stored as FolderSortMode);
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // Save sort mode to localStorage when it changes
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem(FOLDER_SORT_STORAGE_KEY, sortMode);
+    }
+  }, [sortMode, isHydrated]);
 
   // Pagination for ungrouped conversations
   const visibleConversations = ungroupedConversations.slice(0, displayCount);
@@ -96,23 +113,9 @@ export function TwoColumnDashboardLayout({
     setIsCreatingFolder(false);
   };
 
-  // If no conversations at all, show welcome empty state
-  if (conversations.length === 0) {
-    return (
-      <EmptyState
-        icon={<Mic className="w-10 h-10 text-gray-400" />}
-        title="Welcome to Neural Summary"
-        description="Start by recording or uploading your first conversation. We'll transcribe and summarize it for you."
-        actionLabel="Create Conversation"
-        onAction={onNewConversation}
-        actionIcon={<Mic className="w-5 h-5" />}
-      />
-    );
-  }
-
   return (
     <DashboardDndProvider onMoveToFolder={onMoveToFolder}>
-      <div className="grid grid-cols-1 lg:grid-cols-[35%_65%] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
         {/* Left Column: Folders */}
         <section>
           <div className="flex items-center justify-between mb-6">
@@ -216,24 +219,37 @@ export function TwoColumnDashboardLayout({
           )}
         </section>
 
-        {/* Right Column: Ungrouped Conversations */}
+        {/* Right Column: Conversations */}
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {folders.length > 0 ? 'Ungrouped' : 'Conversations'}
+              Conversations
             </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {hasMore
-                ? `${displayCount} of ${ungroupedConversations.length}`
-                : `${ungroupedConversations.length} items`}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {hasMore
+                  ? `${displayCount} of ${ungroupedConversations.length}`
+                  : `${ungroupedConversations.length} items`}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onNewConversation}
+                icon={<Mic className="h-4 w-4" />}
+              >
+                New
+              </Button>
+            </div>
           </div>
 
           {ungroupedConversations.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
               <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                All conversations are organized in folders
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                No conversations yet
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Start by recording or uploading your first conversation
               </p>
             </div>
           ) : (
@@ -243,6 +259,7 @@ export function TwoColumnDashboardLayout({
                   key={conversation.id}
                   conversation={conversation}
                   locale={locale}
+                  onDelete={onDeleteConversation}
                 />
               ))}
               {hasMore && (

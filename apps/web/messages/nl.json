@@ -846,7 +846,7 @@
     },
     "securitySection": {
       "headline": "Jouw privacy is belangrijk.",
-      "description": "Audio binnen seconden verwijderd. Alleen tekst blijft. Enterprise-grade encryptie."
+      "description": "Audio automatisch verwijderd na 30 dagen. Alleen tekst blijft permanent. Enterprise-grade encryptie."
     },
     "warp": {
       "headline": "De toekomst van werk is niet typen.",
@@ -922,8 +922,8 @@
         "description": "Verwerk bestanden tot 5GB met enterprise-grade transcriptietechnologie"
       },
       "security": {
-        "title": "Je Audio Wordt Nooit Opgeslagen",
-        "description": "Bestanden worden direct na verwerking verwijderd. Zero-knowledge architectuur garandeert je privacy."
+        "title": "Audio automatisch verwijderd na 30 dagen",
+        "description": "Bestanden worden kort bewaard voor support, daarna permanent verwijderd. Enterprise-grade encryptie garandeert je privacy."
       },
       "demo": {
         "dragDrop": "Sleep je audiobestand hier",
@@ -1009,16 +1009,16 @@
         "description": "Gebouwd met de nieuwste taalmodellen, verfijnd voor zakelijke communicatie."
       },
       "encryption": {
-        "title": "Directe verwijdering na verwerking",
-        "description": "Audiobestanden worden binnen seconden verwijderd, nooit opgeslagen op onze servers"
+        "title": "Audio automatisch verwijderd na 30 dagen",
+        "description": "Audiobestanden worden 30 dagen bewaard voor support, daarna permanent verwijderd. Alleen teksttranscripties blijven."
       },
       "retention": {
         "title": "Beveiligde cloudinfrastructuur",
         "description": "Je gegevens worden versleuteld tijdens opslag en verzending met industriestandaard protocollen"
       },
       "audit": {
-        "title": "Zero-knowledge architectuur",
-        "description": "Je gegevens blijven privé - wij verwerken alleen wat nodig is en verwijderen audio direct"
+        "title": "Privacy by design",
+        "description": "Je gegevens blijven privé - wij verwerken alleen wat nodig is. Audio wordt na 30 dagen automatisch verwijderd."
       },
       "badges": {
         "soc2": "SOC 2 Conform",
@@ -1072,7 +1072,7 @@
       },
       "question6": {
         "question": "Zijn mijn gegevens privé en veilig?",
-        "answer": "Je audio wordt NOOIT opgeslagen op onze servers. Wanneer je een opname uploadt, wordt deze direct verwerkt en binnen seconden verwijderd. We bewaren alleen de tekst en analyseresultaten. Deze zero-knowledge architectuur zorgt ervoor dat je gevoelige gesprekken volledig privé blijven—ideaal voor vertrouwelijke zakelijke, juridische of medische discussies."
+        "answer": "Absoluut. Je audio wordt slechts 30 dagen bewaard voor support en hersteldoeleinden, daarna automatisch en permanent verwijderd. We bewaren alleen de teksttranscripties en analyseresultaten. Enterprise-grade encryptie beschermt je gegevens tijdens opslag en verzending—ideaal voor vertrouwelijke zakelijke, juridische of medische discussies."
       },
       "question7": {
         "question": "Kan ik documenten delen en exporteren?",
@@ -1265,7 +1265,7 @@
         "features": {
           "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
           "analysis": "Intelligente samenvatting en analyse van de inhoud",
-          "storage": "Veilige cloudopslag van uw transcripties en audiobestanden",
+          "storage": "Veilige cloudopslag van uw transcripties. Audiobestanden worden 30 dagen bewaard voor support, daarna automatisch verwijderd",
           "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
         }
       },

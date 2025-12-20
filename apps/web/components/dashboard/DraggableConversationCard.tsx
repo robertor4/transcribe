@@ -1,21 +1,27 @@
 'use client';
 
+import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
-import { MessageSquare, GripVertical } from 'lucide-react';
-import { formatDuration, formatRelativeTime } from '@/lib/formatters';
+import { MessageSquare, GripVertical, Trash2, Loader2 } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/formatters';
 import type { Conversation } from '@/lib/types/conversation';
 
 interface DraggableConversationCardProps {
   conversation: Conversation;
   locale: string;
+  onDelete?: (conversationId: string) => Promise<void>;
 }
 
 export function DraggableConversationCard({
   conversation,
   locale,
+  onDelete,
 }: DraggableConversationCardProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: conversation.id,
     data: {
@@ -29,6 +35,18 @@ export function DraggableConversationCard({
         transform: CSS.Translate.toString(transform),
       }
     : undefined;
+
+  const handleDelete = async () => {
+    if (!onDelete) return;
+    setIsDeleting(true);
+    try {
+      await onDelete(conversation.id);
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   return (
     <div
@@ -67,13 +85,47 @@ export function DraggableConversationCard({
               {conversation.title}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-            <span>{formatDuration(conversation.source.audioDuration)}</span>
-            <span>·</span>
+          <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
             <span>{formatRelativeTime(conversation.createdAt)}</span>
           </div>
         </div>
       </Link>
+
+      {/* Delete Button - appears on hover */}
+      {onDelete && (
+        <div
+          className="flex-shrink-0 mr-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {showDeleteConfirm ? (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+              <span className="text-xs text-red-700 dark:text-red-300">Delete?</span>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-2 py-0.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded transition-colors disabled:opacity-50"
+              >
+                {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Yes'}
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              >
+                No
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+              title="Delete conversation"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
         →

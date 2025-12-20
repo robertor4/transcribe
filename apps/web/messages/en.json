@@ -761,16 +761,16 @@
       "trustIndicators": {
         "users": "Trusted by professionals",
         "rating": "Highly rated",
-        "certified": "Audio never stored"
+        "certified": "Audio auto-deleted after 30 days"
       },
       "title": "Turn every meeting into crystal-clear",
       "titleHighlight": "notes and action items.",
-      "subtitle2": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy and deletes your audio within seconds — your conversations stay private.",
+      "subtitle2": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy. Audio is retained for 30 days for support purposes, then automatically deleted.",
       "cta": {
         "primary": "Start free",
         "secondary": "See how it works"
       },
-      "guarantee": "Always free plan available • Audio deleted immediately • Works with all meeting platforms",
+      "guarantee": "Always free plan available • Audio auto-deleted after 30 days • Works with all meeting platforms",
       "features": {
         "saveTime": "Save 10+ hours/week",
         "accuracy": "99.5% accuracy",
@@ -847,7 +847,7 @@
     },
     "securitySection": {
       "headline": "Your privacy matters.",
-      "description": "Audio deleted within seconds. Only text remains. Enterprise-grade encryption."
+      "description": "Audio auto-deleted after 30 days. Only text remains permanently. Enterprise-grade encryption."
     },
     "warp": {
       "headline": "The future of work isn't typing.",
@@ -907,7 +907,7 @@
       "title": "Why Teams Choose Neural Summary",
       "benefit1": "No awkward bots joining your sensitive meetings",
       "benefit2": "Save 3–5 hours per week on manual documentation",
-      "benefit3": "Audio deleted immediately — complete privacy guaranteed",
+      "benefit3": "Audio auto-deleted after 30 days — privacy by design",
       "benefit4": "Keep teams aligned without endless note-sharing",
       "benefit5": "Secure, compliant, and scalable for any organization",
       "tagline": "Stop wasting time in meetings — start turning words into action."
@@ -923,8 +923,8 @@
         "description": "Handle files up to 5GB with enterprise-grade transcription technology"
       },
       "security": {
-        "title": "Your Audio Is Never Stored",
-        "description": "Files deleted immediately after processing. Zero-knowledge architecture ensures your privacy."
+        "title": "Audio Auto-Deleted After 30 Days",
+        "description": "Files retained briefly for support, then permanently deleted. Enterprise-grade encryption ensures your privacy."
       },
       "demo": {
         "dragDrop": "Drag & drop your audio file here",
@@ -984,7 +984,7 @@
       },
       "step2": {
         "title": "Upload and AI processes securely",
-        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context. Your audio is deleted within seconds after processing."
+        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context. Audio is retained for 30 days for support, then auto-deleted."
       },
       "step3": {
         "title": "Get meeting summary & action items",
@@ -1007,11 +1007,11 @@
       },
       "technology": {
         "title": "Powered by cutting-edge AI",
-        "description": "Enterprise-grade transcription services process your audio securely and delete it immediately."
+        "description": "Enterprise-grade transcription services process your audio securely. Audio is retained for 30 days, then auto-deleted."
       },
       "encryption": {
-        "title": "Audio never stored on our servers",
-        "description": "Files sent to secure transcription services and deleted within seconds — we only retain text transcripts, never audio"
+        "title": "Audio auto-deleted after 30 days",
+        "description": "Files sent to secure transcription services. Audio is retained for 30 days for support, then permanently deleted. Only text transcripts remain."
       },
       "retention": {
         "title": "Secure cloud infrastructure",
@@ -1073,7 +1073,7 @@
       },
       "question6": {
         "question": "Is my data private and secure?",
-        "answer": "Your audio is NEVER stored on our servers. When you upload a recording, it's processed immediately and deleted within seconds. We only retain the text and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain completely private—ideal for confidential business, legal, or medical discussions."
+        "answer": "Absolutely. Your audio is retained for only 30 days for support and recovery purposes, then automatically and permanently deleted. We retain only the text transcripts and analysis results. Enterprise-grade encryption protects your data at rest and in transit—ideal for confidential business, legal, or medical discussions."
       },
       "question7": {
         "question": "Can I share and export documents?",
@@ -1268,7 +1268,7 @@
         "features": {
           "transcription": "Automatic transcription of audio files using advanced AI technology",
           "analysis": "Intelligent summarization and analysis of transcribed content",
-          "storage": "Secure cloud storage of your transcriptions and audio files",
+          "storage": "Secure cloud storage of your transcriptions. Audio files are retained for 30 days for support purposes, then automatically deleted",
           "sharing": "Ability to share transcriptions with controlled access"
         }
       },

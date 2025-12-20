@@ -27,6 +27,7 @@ interface AuthContextType {
   sendPasswordResetEmail: (email: string) => Promise<void>;
   confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<void>;
   verifyPasswordResetCode: (oobCode: string) => Promise<string>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -39,6 +40,7 @@ const AuthContext = createContext<AuthContextType>({
   sendPasswordResetEmail: async () => {},
   confirmPasswordReset: async () => {},
   verifyPasswordResetCode: async () => '',
+  refreshUser: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -51,11 +53,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     setMounted(true);
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
+    console.log('[AuthContext] Starting auth state listener');
+    const startTime = performance.now();
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('[AuthContext] onAuthStateChanged fired', {
+        hasUser: !!firebaseUser,
+        elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
+      });
+
+      if (firebaseUser) {
         // Always reload user to get latest email verification status
         try {
-          await user.reload();
+          console.log('[AuthContext] Reloading user...');
+          const reloadStart = performance.now();
+          await firebaseUser.reload();
+          console.log('[AuthContext] User reloaded', {
+            elapsed: `${(performance.now() - reloadStart).toFixed(0)}ms`
+          });
+
           // Get the refreshed user
           const refreshedUser = auth.currentUser;
           setUser(refreshedUser);
@@ -63,19 +79,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Don't auto-redirect for unverified users - let pages handle it individually
           // This prevents redirect loops and flickering
 
-          // Connect WebSocket only for verified users
+          // Connect WebSocket only for verified users (non-blocking)
           if (refreshedUser && refreshedUser.emailVerified) {
-            await websocketService.connect();
+            // Don't await - let WebSocket connect in background to avoid blocking UI
+            websocketService.connect();
           }
         } catch (error) {
-          setUser(user);
+          console.log('[AuthContext] User reload failed', error);
+          setUser(firebaseUser);
         }
       } else {
         setUser(null);
         // Disconnect WebSocket when user logs out
         websocketService.disconnect();
       }
-      
+
+      console.log('[AuthContext] Setting loading=false', {
+        totalElapsed: `${(performance.now() - startTime).toFixed(0)}ms`
+      });
       setLoading(false);
     });
 
@@ -123,6 +144,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await verifyPasswordResetCode(auth, oobCode);
   };
 
+  const refreshUser = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await currentUser.reload();
+      // After reload, get the refreshed user and update state
+      setUser(auth.currentUser);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -135,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sendPasswordResetEmail: resetPassword,
         confirmPasswordReset: confirmPasswordResetHandler,
         verifyPasswordResetCode: verifyPasswordResetCodeHandler,
+        refreshUser,
       }}
     >
       {children}

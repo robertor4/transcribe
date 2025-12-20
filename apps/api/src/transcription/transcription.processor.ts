@@ -282,41 +282,8 @@ export class TranscriptionProcessor {
         );
       }
 
-      // Delete original uploaded file for security and privacy
-      try {
-        this.logger.log(
-          `Deleting original audio file for transcription ${transcriptionId}`,
-        );
-
-        // Get the transcription to check for storagePath
-        const transcription = await this.firebaseService.getTranscription(
-          userId,
-          transcriptionId,
-        );
-
-        if (transcription?.storagePath) {
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-        } else {
-          await this.firebaseService.deleteFile(fileUrl);
-        }
-
-        this.logger.log(
-          `Successfully deleted original audio file for transcription ${transcriptionId}`,
-        );
-
-        // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(
-          transcriptionId,
-        );
-      } catch (deleteError) {
-        // Log but don't fail the entire job if file deletion fails
-        this.logger.warn(
-          `Failed to delete original audio file for transcription ${transcriptionId}:`,
-          deleteError,
-        );
-      }
+      // Audio files are retained for 30 days for support/recovery purposes
+      // Cleanup is handled by the scheduled 30-day cleanup job in cleanup.service.ts
 
       // Send completion notification
       this.websocketGateway.sendTranscriptionComplete(userId, {
@@ -361,40 +328,8 @@ export class TranscriptionProcessor {
         error,
       );
 
-      // Delete original uploaded file even on failure for security and privacy
-      try {
-        this.logger.log(
-          `Deleting original audio file for failed transcription ${transcriptionId}`,
-        );
-
-        // Get the transcription to check for storagePath
-        const transcription = await this.firebaseService.getTranscription(
-          userId,
-          transcriptionId,
-        );
-
-        if (transcription?.storagePath) {
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-        } else {
-          await this.firebaseService.deleteFile(fileUrl);
-        }
-
-        this.logger.log(
-          `Successfully deleted original audio file for failed transcription ${transcriptionId}`,
-        );
-
-        // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(
-          transcriptionId,
-        );
-      } catch (deleteError) {
-        this.logger.warn(
-          `Failed to delete original audio file for failed transcription ${transcriptionId}:`,
-          deleteError,
-        );
-      }
+      // Audio files are retained for 30 days even on failure for support/recovery purposes
+      // Cleanup is handled by the scheduled 30-day cleanup job in cleanup.service.ts
 
       // Check if transcription was already completed before marking as failed
       // This prevents post-completion cleanup errors from marking successful transcriptions as failed

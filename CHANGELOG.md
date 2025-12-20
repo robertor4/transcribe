@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **30-Day Audio Retention**: Audio files are now retained for 30 days after transcription for support and recovery purposes
+  - Removed immediate audio deletion from `transcription.processor.ts` (both success and failure cases)
+  - Added daily cleanup cron job in `cleanup.service.ts` running at 4:00 AM UTC
+  - Cleanup job deletes audio files when: completed > 30 days, soft-deleted > 30 days, or failed > 30 days
+  - Updated zombie transcription cleanup to not delete audio (lets 30-day cleanup handle it)
+  - Updated privacy policy data retention section in all 5 languages
+  - Updated terms of service storage description in all 5 languages
+  - Updated landing page FAQ, security sections, and trust indicators in all 5 languages
+  - Enables support team to recover audio if something goes wrong with transcription
+- **Soft-Delete Conversations**: Users can now delete conversations with 30-day recovery window
+  - Conversations are soft-deleted (set `deletedAt` timestamp) rather than permanently removed
+  - Delete button available on conversation detail page header
+  - Delete option in folder view via dropdown menu (with danger variant styling)
+  - Delete button on dashboard conversation cards (appears on hover with inline confirmation)
+  - Soft-deleted items filtered from all list queries automatically
+  - Audio files preserved until 30-day cleanup job runs (enables data recovery)
+  - New `DeleteConversationButton` reusable component with inline confirmation UI
+  - Extended `DropdownMenu` component with `variant: 'danger'` support for destructive actions
 - **Profile Photo Cropper**: LinkedIn-style image cropper for profile photo uploads
   - Circular crop area with drag-to-reposition and zoom controls
   - Optimizes output to 400×400px JPEG at 85% quality for fast loading

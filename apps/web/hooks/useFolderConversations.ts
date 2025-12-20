@@ -21,6 +21,7 @@ export interface UseFolderConversationsResult {
   isLoading: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
+  updateFolderLocally: (updates: Partial<Folder>) => void;
 }
 
 export function useFolderConversations(
@@ -74,11 +75,17 @@ export function useFolderConversations(
     await fetchFolderData();
   }, [fetchFolderData]);
 
+  // Update folder state locally without refetching
+  const updateFolderLocally = useCallback((updates: Partial<Folder>) => {
+    setFolder((prev) => (prev ? { ...prev, ...updates } : null));
+  }, []);
+
   return {
     folder,
     conversations,
     isLoading,
     error,
     refresh,
+    updateFolderLocally,
   };
 }

@@ -13,8 +13,9 @@ import { ConversationCreateModal, type CreateStep } from '@/components/Conversat
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useConversations } from '@/hooks/useConversations';
-import { useFolders } from '@/hooks/useFolders';
+import { useConversationsContext } from '@/contexts/ConversationsContext';
+import { useFoldersContext } from '@/contexts/FoldersContext';
+import { deleteConversation } from '@/lib/services/conversationService';
 import { getGreeting, getMilestoneMessage } from '@/lib/userHelpers';
 
 interface CreateModalConfig {
@@ -30,8 +31,8 @@ export function DashboardClient() {
   const locale = (params?.locale as string) || 'en';
   const { user } = useAuth();
 
-  const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversations();
-  const { folders, isLoading: foldersLoading, createFolder, moveToFolder } = useFolders();
+  const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversationsContext();
+  const { folders, isLoading: foldersLoading, createFolder, moveToFolder } = useFoldersContext();
 
   // Filter ungrouped conversations (no folderId or folderId is null)
   const ungroupedConversations = conversations.filter((c) => !c.folderId);
@@ -86,6 +87,15 @@ export function DashboardClient() {
     [createFolder]
   );
 
+  // Handle deleting conversation
+  const handleDeleteConversation = useCallback(
+    async (conversationId: string) => {
+      await deleteConversation(conversationId);
+      await refreshConversations();
+    },
+    [refreshConversations]
+  );
+
   // Calculate folder stats
   const getFolderStats = useCallback(
     (folderId: string) => {
@@ -134,7 +144,7 @@ export function DashboardClient() {
         leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
         showRightPanel={false}
         mainContent={
-          <div className="px-8 pr-12 py-12">
+          <div className="px-12 py-12">
             {/* Personalized Greeting */}
             <div className="mb-12">
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#b82d89] via-[#cc3399] to-[#ff66cc] bg-clip-text text-transparent">
@@ -189,13 +199,13 @@ export function DashboardClient() {
             ) : (
               <TwoColumnDashboardLayout
                 folders={folders}
-                conversations={conversations}
                 ungroupedConversations={ungroupedConversations}
                 locale={locale}
                 getFolderStats={getFolderStats}
                 onMoveToFolder={handleMoveToFolder}
                 onCreateFolder={handleCreateFolder}
                 onNewConversation={handleMoreTemplates}
+                onDeleteConversation={handleDeleteConversation}
               />
             )}
           </div>

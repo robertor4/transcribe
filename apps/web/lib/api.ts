@@ -26,22 +26,8 @@ const api = axios.create({
 
 // Add auth token to requests
 api.interceptors.request.use(async (config) => {
-  // Wait a moment for auth to stabilize if needed
-  let user = auth.currentUser;
-  
-  // If no user, wait briefly for auth state to settle (useful right after sign-in)
-  // This is especially important for email/password login
-  if (!user) {
-    // Try waiting up to 1 second with multiple checks
-    for (let i = 0; i < 10; i++) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      user = auth.currentUser;
-      if (user) {
-        break;
-      }
-    }
-  }
-  
+  const user = auth.currentUser;
+
   if (user) {
     try {
       const token = await user.getIdToken();

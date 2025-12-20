@@ -162,23 +162,49 @@ export class FirebaseService implements OnModuleInit {
   ): Promise<PaginatedResponse<Transcription>> {
     const offset = (page - 1) * pageSize;
 
-    const countSnapshot = await this.db
-      .collection('transcriptions')
-      .where('userId', '==', userId)
-      .count()
-      .get();
+    // Firestore can't efficiently filter for "field doesn't exist OR field is null"
+    // So we fetch more records than needed and filter in memory
+    // To optimize, we fetch in batches and stop once we have enough non-deleted items
 
-    const total = countSnapshot.data().count;
+    // For page 1, try to fetch just what we need plus some buffer for deleted items
+    // For later pages, we need to scan from the beginning (less efficient but correct)
+    const fetchLimit = page === 1 ? pageSize * 2 : offset + pageSize * 2;
 
     const snapshot = await this.db
       .collection('transcriptions')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
-      .limit(pageSize)
-      .offset(offset)
+      .limit(fetchLimit)
       .get();
 
-    const items = snapshot.docs.map((doc) => {
+    // Filter out soft-deleted items (where deletedAt exists and is not null)
+    const allDocs = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      return !data.deletedAt;
+    });
+
+    // If we didn't get enough non-deleted docs on page 1, fetch all
+    let finalDocs = allDocs;
+    if (allDocs.length < offset + pageSize && snapshot.docs.length === fetchLimit) {
+      // Need to fetch all to get accurate count and pagination
+      const fullSnapshot = await this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      finalDocs = fullSnapshot.docs.filter((doc) => {
+        const data = doc.data();
+        return !data.deletedAt;
+      });
+    }
+
+    const total = finalDocs.length;
+
+    // Apply pagination to filtered results
+    const paginatedDocs = finalDocs.slice(offset, offset + pageSize);
+
+    const items = paginatedDocs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -1412,13 +1438,17 @@ export class FirebaseService implements OnModuleInit {
       return snapshot.docs
         .filter((doc) => {
           const data = doc.data();
-          return !data.folderId;
+          // Exclude soft-deleted items and items in folders
+          return !data.folderId && !data.deletedAt;
         })
         .map((doc) => this.mapTranscriptionDoc(doc));
     } else {
       query = query.where('folderId', '==', folderId);
       const snapshot = await query.orderBy('createdAt', 'desc').get();
-      return snapshot.docs.map((doc) => this.mapTranscriptionDoc(doc));
+      // Filter out soft-deleted items
+      return snapshot.docs
+        .filter((doc) => !doc.data().deletedAt)
+        .map((doc) => this.mapTranscriptionDoc(doc));
     }
   }
 

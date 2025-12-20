@@ -97,12 +97,13 @@ export class UserService {
 
       // Also update Firebase Auth profile to keep them in sync
       // This ensures photoURL and displayName are reflected in the user object
-      const authUpdates: { displayName?: string; photoURL?: string } = {};
+      const authUpdates: { displayName?: string; photoURL?: string | null } = {};
       if (profile.displayName !== undefined) {
         authUpdates.displayName = profile.displayName;
       }
       if (profile.photoURL !== undefined) {
-        authUpdates.photoURL = profile.photoURL;
+        // Firebase Auth requires null to clear photoURL, empty string is invalid
+        authUpdates.photoURL = profile.photoURL || null;
       }
 
       if (Object.keys(authUpdates).length > 0) {

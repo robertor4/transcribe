@@ -823,7 +823,7 @@
     },
     "securitySection": {
       "headline": "Votre confidentialité compte.",
-      "description": "Audio supprimé en quelques secondes. Seul le texte reste. Chiffrement de niveau entreprise."
+      "description": "Audio auto-supprimé après 30 jours. Seul le texte reste de façon permanente. Chiffrement de niveau entreprise."
     },
     "warp": {
       "headline": "L'avenir du travail n'est pas la frappe.",
@@ -899,8 +899,8 @@
         "description": "Gérez des fichiers jusqu'à 500 Mo avec division intelligente automatique"
       },
       "security": {
-        "title": "Votre Audio N'est Jamais Stocké",
-        "description": "Fichiers supprimés immédiatement après traitement. Architecture zéro-connaissance garantit votre confidentialité."
+        "title": "Audio auto-supprimé après 30 jours",
+        "description": "Fichiers conservés brièvement pour le support, puis supprimés définitivement. Chiffrement de niveau entreprise garantit votre confidentialité."
       },
       "demo": {
         "dragDrop": "Glissez-déposez votre fichier audio ici",
@@ -986,16 +986,16 @@
         "description": "Construit avec les derniers modèles de langage affinés pour la communication professionnelle."
       },
       "encryption": {
-        "title": "Suppression immédiate après traitement",
-        "description": "Les fichiers audio sont supprimés en quelques secondes, jamais stockés sur nos serveurs"
+        "title": "Audio auto-supprimé après 30 jours",
+        "description": "Les fichiers audio sont conservés 30 jours pour le support, puis supprimés définitivement. Seules les transcriptions textuelles restent."
       },
       "retention": {
         "title": "Infrastructure cloud sécurisée",
         "description": "Vos données sont chiffrées au repos et en transit avec des protocoles standard de l'industrie"
       },
       "audit": {
-        "title": "Architecture zéro-connaissance",
-        "description": "Vos données restent privées - nous ne traitons que le nécessaire et supprimons l'audio immédiatement"
+        "title": "Privacy by Design",
+        "description": "Vos données restent privées - nous ne traitons que le nécessaire. L'audio est auto-supprimé après 30 jours."
       },
       "badges": {
         "soc2": "Conforme SOC 2",
@@ -1049,7 +1049,7 @@
       },
       "question6": {
         "question": "Mes données sont-elles privées et sécurisées?",
-        "answer": "Votre audio n'est JAMAIS stocké sur nos serveurs. Lorsque vous téléchargez un enregistrement, il est traité immédiatement et supprimé en quelques secondes. Nous ne conservons que le texte et les résultats d'analyse. Cette architecture à connaissance zéro garantit que vos conversations sensibles restent complètement privées—idéal pour les discussions commerciales, juridiques ou médicales confidentielles."
+        "answer": "Absolument. Votre audio est conservé seulement 30 jours pour le support et la récupération, puis automatiquement et définitivement supprimé. Nous ne conservons que les transcriptions textuelles et les résultats d'analyse. Le chiffrement de niveau entreprise protège vos données au repos et en transit—idéal pour les discussions commerciales, juridiques ou médicales confidentielles."
       },
       "question7": {
         "question": "Puis-je partager et exporter des documents?",
@@ -1168,7 +1168,7 @@
         "features": {
           "transcription": "Transcription automatique de fichiers audio utilisant une technologie IA avancée",
           "analysis": "Résumé intelligent et analyse du contenu transcrit",
-          "storage": "Stockage cloud sécurisé de vos transcriptions et fichiers audio",
+          "storage": "Stockage cloud sécurisé de vos transcriptions. Les fichiers audio sont conservés 30 jours pour le support, puis automatiquement supprimés",
           "sharing": "Capacité de partager les transcriptions avec un accès contrôlé"
         }
       },

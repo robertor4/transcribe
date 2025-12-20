@@ -823,7 +823,7 @@
     },
     "securitySection": {
       "headline": "Tu privacidad importa.",
-      "description": "Audio eliminado en segundos. Solo queda el texto. Encriptación de nivel empresarial."
+      "description": "Audio eliminado automáticamente después de 30 días. Solo el texto queda permanente. Encriptación de nivel empresarial."
     },
     "warp": {
       "headline": "El futuro del trabajo no es escribir.",
@@ -899,8 +899,8 @@
         "description": "Maneja archivos de hasta 5GB con transcripción avanzada de AssemblyAI"
       },
       "security": {
-        "title": "Tu Audio Nunca Se Almacena",
-        "description": "Los archivos se eliminan inmediatamente después del procesamiento. La arquitectura de conocimiento cero garantiza tu privacidad."
+        "title": "Audio eliminado automáticamente después de 30 días",
+        "description": "Los archivos se conservan brevemente para soporte, luego se eliminan permanentemente. Encriptación de nivel empresarial garantiza tu privacidad."
       },
       "demo": {
         "dragDrop": "Arrastra y suelta tu archivo de audio aquí",
@@ -986,16 +986,16 @@
         "description": "Construido con los últimos modelos de lenguaje ajustados para comunicación empresarial."
       },
       "encryption": {
-        "title": "Eliminación inmediata después del procesamiento",
-        "description": "Los archivos de audio se eliminan en segundos, nunca se almacenan en nuestros servidores"
+        "title": "Audio eliminado automáticamente después de 30 días",
+        "description": "Los archivos de audio se conservan 30 días para soporte, luego se eliminan permanentemente. Solo las transcripciones de texto permanecen."
       },
       "retention": {
         "title": "Infraestructura en la nube segura",
         "description": "Tus datos están cifrados en reposo y en tránsito con protocolos estándar de la industria"
       },
       "audit": {
-        "title": "Arquitectura de conocimiento cero",
-        "description": "Tus datos permanecen privados - solo procesamos lo necesario y eliminamos el audio de inmediato"
+        "title": "Privacy by Design",
+        "description": "Tus datos permanecen privados - solo procesamos lo necesario. El audio se elimina automáticamente después de 30 días."
       },
       "badges": {
         "soc2": "Cumple SOC 2",
@@ -1049,7 +1049,7 @@
       },
       "question6": {
         "question": "¿Mis datos son privados y seguros?",
-        "answer": "Tu audio NUNCA se almacena en nuestros servidores. Cuando subes una grabación, se procesa inmediatamente y se elimina en segundos. Solo conservamos el texto y los resultados del análisis. Esta arquitectura de conocimiento cero garantiza que tus conversaciones sensibles permanezcan completamente privadas—ideal para discusiones comerciales, legales o médicas confidenciales."
+        "answer": "Absolutamente. Tu audio se conserva solo 30 días para soporte y recuperación, luego se elimina automática y permanentemente. Solo conservamos las transcripciones de texto y los resultados del análisis. La encriptación de nivel empresarial protege tus datos en reposo y en tránsito—ideal para discusiones comerciales, legales o médicas confidenciales."
       },
       "question7": {
         "question": "¿Puedo compartir y exportar documentos?",
@@ -1168,7 +1168,7 @@
         "features": {
           "transcription": "Transcripción automática de archivos de audio utilizando tecnología de IA avanzada",
           "analysis": "Resumen inteligente y análisis del contenido transcrito",
-          "storage": "Almacenamiento seguro en la nube de sus transcripciones y archivos de audio",
+          "storage": "Almacenamiento seguro en la nube de sus transcripciones. Los archivos de audio se conservan 30 días para soporte, luego se eliminan automáticamente",
           "sharing": "Capacidad de compartir transcripciones con acceso controlado"
         }
       },

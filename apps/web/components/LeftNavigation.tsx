@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { Search, Plus, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X } from 'lucide-react';
-import { useFolders } from '@/hooks/useFolders';
-import { useConversations } from '@/hooks/useConversations';
+import { useFoldersContext } from '@/contexts/FoldersContext';
+import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 
 interface LeftNavigationProps {
@@ -24,10 +24,10 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
 
-  const { folders, isLoading: foldersLoading, createFolder } = useFolders();
+  const { folders, isLoading: foldersLoading, createFolder } = useFoldersContext();
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
-  const { conversations, isLoading: conversationsLoading } = useConversations({ pageSize: 5 });
+  const { conversations, isLoading: conversationsLoading } = useConversationsContext();
 
   // Get recent conversations (first 5)
   const recentConversations = conversations.slice(0, 5);

@@ -32,7 +32,7 @@ import {
 import type { User } from '@transcribe/shared';
 
 export default function ProfileSettingsPage() {
-  const { user: authUser, logout } = useAuth();
+  const { user: authUser, logout, refreshUser } = useAuth();
   const t = useTranslations('settings.profilePage');
   const tAccount = useTranslations('settings.accountPage');
   const router = useRouter();
@@ -107,7 +107,7 @@ export default function ProfileSettingsPage() {
         photoURL: photoURL.trim() || undefined,
       });
 
-      await authUser.reload();
+      await refreshUser();
       setSuccess(t('saveSuccess'));
       setTimeout(() => setSuccess(null), 3000);
       await loadUserProfile();
@@ -296,7 +296,7 @@ export default function ProfileSettingsPage() {
                   // Save immediately when using Google photo
                   try {
                     await updateUserProfile({ photoURL: newPhotoURL });
-                    await authUser?.reload();
+                    await refreshUser();
                     setSuccess(t('saveSuccess'));
                     setTimeout(() => setSuccess(null), 3000);
                   } catch (err) {
@@ -307,7 +307,7 @@ export default function ProfileSettingsPage() {
                 onUpload={async (file) => {
                   const newPhotoURL = await uploadProfilePhoto(file);
                   setPhotoURL(newPhotoURL);
-                  await authUser?.reload();
+                  await refreshUser();
                   await loadUserProfile();
                   setSuccess(t('saveSuccess'));
                   setTimeout(() => setSuccess(null), 3000);
@@ -316,7 +316,7 @@ export default function ProfileSettingsPage() {
                 onDelete={async () => {
                   await deleteProfilePhoto();
                   setPhotoURL('');
-                  await authUser?.reload();
+                  await refreshUser();
                   await loadUserProfile();
                   setSuccess(t('saveSuccess'));
                   setTimeout(() => setSuccess(null), 3000);

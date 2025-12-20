@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import websocketService from '@/lib/websocket';
 import { WEBSOCKET_EVENTS, UserRole } from '@transcribe/shared';
@@ -45,6 +45,10 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
 
+  // Track if we've already fetched for this user to prevent duplicate calls
+  const hasFetchedRef = useRef(false);
+  const lastUserIdRef = useRef<string | null>(null);
+
   const fetchUserProfile = async () => {
     if (!user) {
       setUserRole(null);
@@ -52,6 +56,8 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      console.log('[UsageContext] Fetching user profile...');
+      const startTime = performance.now();
       const token = await user.getIdToken();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/user/profile`,
@@ -64,7 +70,9 @@ export function UsageProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('[UsageContext] User profile data:', data);
+        console.log('[UsageContext] User profile fetched', {
+          elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
+        });
         const role = data.data?.role || UserRole.USER;
         console.log('[UsageContext] User role:', role);
         setUserRole(role);
@@ -86,6 +94,8 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      console.log('[UsageContext] Fetching usage stats...');
+      const startTime = performance.now();
       const token = await user.getIdToken();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/user/usage-stats`,
@@ -98,6 +108,9 @@ export function UsageProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[UsageContext] Usage stats fetched', {
+          elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
+        });
         setUsageStats(data.data);
         setError(null);
       } else {
@@ -154,10 +167,26 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Initial fetch - fetch both user profile and usage stats
+  // Initial fetch - only when user ID changes, not on every user object change
   useEffect(() => {
-    fetchUserProfile();
-    fetchUsage();
+    const userId = user?.uid || null;
+
+    // Only fetch if user ID changed (login/logout), not on every render
+    if (userId !== lastUserIdRef.current) {
+      lastUserIdRef.current = userId;
+      hasFetchedRef.current = false;
+    }
+
+    if (user && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      console.log('[UsageContext] Initial fetch triggered for user:', userId);
+      // Fetch in parallel
+      Promise.all([fetchUserProfile(), fetchUsage()]);
+    } else if (!user) {
+      setUserRole(null);
+      setUsageStats(null);
+      setLoading(false);
+    }
   }, [user]);
 
   // Auto-refresh when transcription completes

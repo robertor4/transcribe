@@ -714,7 +714,7 @@ export default async function LandingPage({
                       name: 'Is my data private and secure?',
                       acceptedAnswer: {
                         '@type': 'Answer',
-                        text: 'Your audio is NEVER stored on our servers. When you upload a recording, it\'s processed immediately and deleted within seconds. We only retain the text and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain completely private—ideal for confidential business, legal, or medical discussions.',
+                        text: 'Absolutely. Your audio is retained for only 30 days for support and recovery purposes, then automatically and permanently deleted. We retain only the text transcripts and analysis results. Enterprise-grade encryption protects your data at rest and in transit—ideal for confidential business, legal, or medical discussions.',
                       },
                     },
                     {

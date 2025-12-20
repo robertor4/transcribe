@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -10,15 +10,19 @@ import {
   AlertCircle,
   ArrowLeft,
   Trash2,
+  MoreVertical,
+  FolderMinus,
 } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
+import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
-import { formatDuration, formatRelativeTime } from '@/lib/formatters';
+import { deleteConversation } from '@/lib/services/conversationService';
+import { formatRelativeTime } from '@/lib/formatters';
 
 interface FolderClientProps {
   folderId: string;
@@ -33,8 +37,11 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { folder, conversations, isLoading, error } = useFolderConversations(folderId);
-  const { deleteFolder } = useFolders();
+  const { folder, conversations, isLoading, error, updateFolderLocally, refresh } = useFolderConversations(folderId);
+  const { deleteFolder, updateFolder, moveToFolder } = useFolders();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const handleDeleteFolder = async (deleteContents: boolean) => {
     setIsDeleting(true);
@@ -55,6 +62,67 @@ export function FolderClient({ folderId }: FolderClientProps) {
     } else {
       // Empty folder - use inline confirmation
       setShowDeleteConfirm(true);
+    }
+  };
+
+  // Handle starting name edit
+  const handleStartEditName = () => {
+    if (folder) {
+      setEditedName(folder.name);
+      setIsEditingName(true);
+    }
+  };
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditingName && nameInputRef.current) {
+      nameInputRef.current.focus();
+      nameInputRef.current.select();
+    }
+  }, [isEditingName]);
+
+  // Handle saving the edited name
+  const handleSaveName = async () => {
+    const trimmedName = editedName.trim();
+    if (trimmedName && trimmedName !== folder?.name) {
+      try {
+        await updateFolder(folderId, { name: trimmedName });
+        updateFolderLocally({ name: trimmedName });
+      } catch (err) {
+        console.error('Failed to rename folder:', err);
+      }
+    }
+    setIsEditingName(false);
+  };
+
+  // Handle key events in the name input
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveName();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsEditingName(false);
+    }
+  };
+
+  // Handle removing a conversation from this folder
+  const handleRemoveFromFolder = async (conversationId: string) => {
+    try {
+      await moveToFolder(conversationId, null);
+      await refresh();
+    } catch (err) {
+      console.error('Failed to remove conversation from folder:', err);
+    }
+  };
+
+  // Handle deleting a conversation
+  const handleDeleteConversation = async (conversationId: string) => {
+    try {
+      await deleteConversation(conversationId);
+      await refresh();
+    } catch (err) {
+      console.error('Failed to delete conversation:', err);
     }
   };
 
@@ -106,11 +174,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
     );
   }
 
-  // Calculate total duration
-  const totalDuration = conversations.reduce(
-    (sum, conv) => sum + (conv.source?.audioDuration || 0),
-    0
-  );
 
   return (
     <div className="h-screen flex flex-col">
@@ -131,14 +194,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </span>
                   <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {conversations.length}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
-                    Total Duration
-                  </span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {formatDuration(totalDuration)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -184,9 +239,25 @@ export function FolderClient({ folderId }: FolderClientProps) {
                     />
                   </div>
                   <div>
-                    <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
-                      {folder.name}
-                    </h1>
+                    {isEditingName ? (
+                      <input
+                        ref={nameInputRef}
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        onBlur={handleSaveName}
+                        onKeyDown={handleNameKeyDown}
+                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#cc3399] outline-none w-full"
+                      />
+                    ) : (
+                      <h1
+                        onClick={handleStartEditName}
+                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+                        title="Click to rename"
+                      >
+                        {folder.name}
+                      </h1>
+                    )}
                   </div>
                 </div>
                 {!showDeleteConfirm ? (
@@ -220,10 +291,8 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-4 text-sm font-medium text-gray-600 dark:text-gray-400 ml-20">
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-20">
                 <span>{conversations.length} conversations</span>
-                <span>·</span>
-                <span>{formatDuration(totalDuration)}</span>
               </div>
             </div>
 
@@ -256,46 +325,74 @@ export function FolderClient({ folderId }: FolderClientProps) {
               ) : (
                 <div className="divide-y divide-gray-100 dark:divide-gray-800 border-t border-b border-gray-100 dark:border-gray-800">
                   {conversations.map((conversation) => (
-                    <Link
+                    <div
                       key={conversation.id}
-                      href={`/${locale}/conversation/${conversation.id}`}
-                      className="group relative flex items-center justify-between py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                      className="group relative flex items-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="flex-shrink-0">
-                          <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110 transition-all duration-200" />
+                      <Link
+                        href={`/${locale}/conversation/${conversation.id}`}
+                        className="flex items-center justify-between py-3 px-4 flex-1 min-w-0"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0">
+                            <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110 transition-all duration-200" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] transition-colors duration-200 truncate">
+                                {conversation.title}
+                              </span>
+                            </div>
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              <span>{formatRelativeTime(conversation.createdAt)}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] transition-colors duration-200 truncate">
-                              {conversation.title}
+                        {conversation.status === 'processing' && (
+                          <div className="ml-4 flex-shrink-0">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+                              Processing
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                            <span>{formatDuration(conversation.source.audioDuration)}</span>
-                            <span>·</span>
-                            <span>{formatRelativeTime(conversation.createdAt)}</span>
+                        )}
+                        {conversation.status === 'failed' && (
+                          <div className="ml-4 flex-shrink-0">
+                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                              Failed
+                            </span>
                           </div>
+                        )}
+                        <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200 ml-2">
+                          →
                         </div>
+                      </Link>
+                      {/* Context menu for folder actions */}
+                      <div
+                        className="flex-shrink-0 pr-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <DropdownMenu
+                          trigger={
+                            <button className="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                              <MoreVertical className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            </button>
+                          }
+                          items={[
+                            {
+                              icon: FolderMinus,
+                              label: 'Remove from folder',
+                              onClick: () => handleRemoveFromFolder(conversation.id),
+                            },
+                            {
+                              icon: Trash2,
+                              label: 'Delete',
+                              onClick: () => handleDeleteConversation(conversation.id),
+                              variant: 'danger',
+                            },
+                          ]}
+                        />
                       </div>
-                      <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
-                        →
-                      </div>
-                      {conversation.status === 'processing' && (
-                        <div className="ml-4 flex-shrink-0">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
-                            Processing
-                          </span>
-                        </div>
-                      )}
-                      {conversation.status === 'failed' && (
-                        <div className="ml-4 flex-shrink-0">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
-                            Failed
-                          </span>
-                        </div>
-                      )}
-                    </Link>
+                    </div>
                   ))}
                 </div>
               )}

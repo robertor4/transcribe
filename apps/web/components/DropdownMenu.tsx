@@ -7,6 +7,7 @@ interface DropdownMenuItem {
   icon: LucideIcon;
   label: string;
   onClick: () => void;
+  variant?: 'default' | 'danger';
 }
 
 interface DropdownMenuProps {
@@ -53,13 +54,18 @@ export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
           <div className="py-1">
             {items.map((item, idx) => {
               const Icon = item.icon;
+              const isDanger = item.variant === 'danger';
               return (
                 <button
                   key={idx}
                   onClick={() => handleItemClick(item.onClick)}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors text-left ${
+                    isDanger
+                      ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
                 >
-                  <Icon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <Icon className={`w-4 h-4 ${isDanger ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`} />
                   <span>{item.label}</span>
                 </button>
               );

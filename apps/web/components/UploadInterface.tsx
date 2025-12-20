@@ -48,16 +48,7 @@ export function UploadInterface({
   const t = useTranslations('dashboard');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Notify parent when recording mode is active/inactive
-  useEffect(() => {
-    if (selectedMethod === 'record') {
-      onRecordingStateChange?.(true);
-    } else {
-      onRecordingStateChange?.(false);
-    }
-  }, [selectedMethod, onRecordingStateChange]);
-
-  // Cleanup: notify parent on unmount
+  // Cleanup: notify parent on unmount that recording is no longer active
   useEffect(() => {
     return () => {
       onRecordingStateChange?.(false);
@@ -224,6 +215,7 @@ export function UploadInterface({
       <SimpleAudioRecorder
         onComplete={handleRecordingComplete}
         onCancel={handleRecordingCancel}
+        onRecordingStateChange={onRecordingStateChange}
       />
     );
   }

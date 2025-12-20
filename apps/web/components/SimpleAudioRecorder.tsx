@@ -20,6 +20,8 @@ interface SimpleAudioRecorderProps {
    */
   onComplete: (blob: Blob, markAsUploaded: () => Promise<void>) => void;
   onCancel: () => void;
+  /** Called when actual recording state changes (recording/paused vs idle/stopped) */
+  onRecordingStateChange?: (isRecording: boolean) => void;
 }
 
 /**
@@ -42,6 +44,7 @@ interface SimpleAudioRecorderProps {
 export function SimpleAudioRecorder({
   onComplete,
   onCancel,
+  onRecordingStateChange,
 }: SimpleAudioRecorderProps) {
   const {
     state,
@@ -85,6 +88,12 @@ export function SimpleAudioRecorder({
 
   // Use raw audio level directly (no decay/smoothing)
   const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
+
+  // Notify parent when actual recording state changes
+  useEffect(() => {
+    const isActivelyRecording = state === 'recording' || state === 'paused';
+    onRecordingStateChange?.(isActivelyRecording);
+  }, [state, onRecordingStateChange]);
 
   // Fetch available audio input devices
   useEffect(() => {

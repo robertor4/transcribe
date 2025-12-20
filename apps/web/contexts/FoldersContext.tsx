@@ -1,13 +1,14 @@
 'use client';
 
 /**
- * useFolders Hook - V2 UI
+ * FoldersContext - Shared folders data
  *
- * Fetches and manages folders for the current user.
+ * Provides a single source of truth for folders data,
+ * preventing duplicate API calls when multiple components need the same data.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 import {
   listFolders,
   createFolder as createFolderService,
@@ -17,24 +18,24 @@ import {
   Folder,
 } from '@/lib/services/folderService';
 
-export interface UseFoldersResult {
+interface FoldersContextType {
   folders: Folder[];
   isLoading: boolean;
   error: Error | null;
   createFolder: (name: string, color?: string) => Promise<Folder>;
   updateFolder: (id: string, data: { name?: string; color?: string }) => Promise<Folder>;
-  /**
-   * Delete a folder
-   * @param id - Folder ID to delete
-   * @param deleteContents - If true, soft-delete all conversations in the folder.
-   *                         If false (default), move conversations to "unfiled".
-   */
   deleteFolder: (id: string, deleteContents?: boolean) => Promise<{ deletedConversations: number }>;
   moveToFolder: (conversationId: string, folderId: string | null) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
-export function useFolders(): UseFoldersResult {
+const FoldersContext = createContext<FoldersContextType | undefined>(undefined);
+
+interface FoldersProviderProps {
+  children: ReactNode;
+}
+
+export function FoldersProvider({ children }: FoldersProviderProps) {
   const { user } = useAuth();
 
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -45,21 +46,21 @@ export function useFolders(): UseFoldersResult {
   const hasFetchedRef = useRef(false);
   const lastUserIdRef = useRef<string | null>(null);
 
-  // Fetch folders - no user dependency to prevent recreation
+  // Fetch folders
   const fetchFolders = useCallback(async () => {
-    console.log('[useFolders] Fetching folders...');
+    console.log('[FoldersContext] Fetching folders...');
     const startTime = performance.now();
 
     try {
       setError(null);
       const result = await listFolders();
-      console.log('[useFolders] Folders fetched', {
+      console.log('[FoldersContext] Folders fetched', {
         count: result.length,
         elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
       });
       setFolders(result);
     } catch (err) {
-      console.error('[useFolders] Fetch failed', err);
+      console.error('[FoldersContext] Fetch failed', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch folders'));
     } finally {
       setIsLoading(false);
@@ -108,7 +109,6 @@ export function useFolders(): UseFoldersResult {
   );
 
   // Delete folder
-  // @param deleteContents - If true, soft-delete all conversations in the folder
   const deleteFolder = useCallback(
     async (id: string, deleteContents: boolean = false): Promise<{ deletedConversations: number }> => {
       const result = await deleteFolderService(id, deleteContents);
@@ -132,14 +132,28 @@ export function useFolders(): UseFoldersResult {
     await fetchFolders();
   }, [fetchFolders]);
 
-  return {
-    folders,
-    isLoading,
-    error,
-    createFolder,
-    updateFolder,
-    deleteFolder,
-    moveToFolder,
-    refresh,
-  };
+  return (
+    <FoldersContext.Provider
+      value={{
+        folders,
+        isLoading,
+        error,
+        createFolder,
+        updateFolder,
+        deleteFolder,
+        moveToFolder,
+        refresh,
+      }}
+    >
+      {children}
+    </FoldersContext.Provider>
+  );
+}
+
+export function useFoldersContext() {
+  const context = useContext(FoldersContext);
+  if (!context) {
+    throw new Error('useFoldersContext must be used within FoldersProvider');
+  }
+  return context;
 }

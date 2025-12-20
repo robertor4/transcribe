@@ -1,32 +1,22 @@
 'use client';
 
 /**
- * useConversations Hook - V2 UI
+ * ConversationsContext - Shared conversations data
  *
- * Fetches and manages the list of conversations with pagination,
- * real-time progress updates via WebSocket, and automatic refresh.
+ * Provides a single source of truth for conversations data,
+ * preventing duplicate API calls when multiple components need the same data.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import {
-  listConversations,
-  Conversation,
-} from '@/lib/services/conversationService';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
+import { listConversations, Conversation } from '@/lib/services/conversationService';
 import websocketService from '@/lib/websocket';
 import { WEBSOCKET_EVENTS } from '@transcribe/shared';
 import type { TranscriptionProgress } from '@transcribe/shared';
 
-export interface UseConversationsOptions {
-  pageSize?: number;
-  autoRefresh?: boolean;
-  refreshInterval?: number;
-}
-
-export interface UseConversationsResult {
+interface ConversationsContextType {
   conversations: Conversation[];
   isLoading: boolean;
-  isLoadingMore: boolean;
   error: Error | null;
   hasMore: boolean;
   total: number;
@@ -35,10 +25,14 @@ export interface UseConversationsResult {
   refresh: () => Promise<void>;
 }
 
-export function useConversations(
-  options: UseConversationsOptions = {}
-): UseConversationsResult {
-  const { pageSize = 20, autoRefresh = false, refreshInterval = 30000 } = options;
+const ConversationsContext = createContext<ConversationsContextType | undefined>(undefined);
+
+interface ConversationsProviderProps {
+  children: ReactNode;
+  pageSize?: number;
+}
+
+export function ConversationsProvider({ children, pageSize = 20 }: ConversationsProviderProps) {
   const { user } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -53,11 +47,15 @@ export function useConversations(
   );
 
   const subscribedIdsRef = useRef<Set<string>>(new Set());
+  const hasFetchedRef = useRef(false);
 
   // Fetch conversations
   const fetchConversations = useCallback(
     async (pageNum: number, append: boolean = false) => {
       if (!user) return;
+
+      console.log('[ConversationsContext] Fetching conversations...', { pageNum, append });
+      const startTime = performance.now();
 
       try {
         if (append) {
@@ -69,6 +67,11 @@ export function useConversations(
 
         const result = await listConversations(pageNum, pageSize);
 
+        console.log('[ConversationsContext] Conversations fetched', {
+          count: result.conversations.length,
+          elapsed: `${(performance.now() - startTime).toFixed(0)}ms`
+        });
+
         if (append) {
           setConversations((prev) => [...prev, ...result.conversations]);
         } else {
@@ -79,6 +82,7 @@ export function useConversations(
         setHasMore(result.hasMore);
         setPage(pageNum);
       } catch (err) {
+        console.error('[ConversationsContext] Fetch failed', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch conversations'));
       } finally {
         setIsLoading(false);
@@ -88,32 +92,22 @@ export function useConversations(
     [user, pageSize]
   );
 
-  // Initial fetch
+  // Initial fetch - only once when user is available
   useEffect(() => {
-    if (user) {
+    if (user && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
       fetchConversations(1);
-    } else {
+    } else if (!user) {
+      hasFetchedRef.current = false;
       setConversations([]);
       setIsLoading(false);
     }
   }, [user, fetchConversations]);
 
-  // Auto-refresh
-  useEffect(() => {
-    if (!autoRefresh || !user) return;
-
-    const interval = setInterval(() => {
-      fetchConversations(1);
-    }, refreshInterval);
-
-    return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, user, fetchConversations]);
-
-  // WebSocket listeners for real-time progress (using shared websocketService)
+  // WebSocket listeners for real-time progress
   useEffect(() => {
     if (!user) return;
 
-    // Listen for progress updates
     const unsubProgress = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_PROGRESS,
       (data: unknown) => {
@@ -126,23 +120,19 @@ export function useConversations(
       }
     );
 
-    // Listen for completion
     const unsubCompleted = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       (data: unknown) => {
         const { transcriptionId } = data as { transcriptionId: string };
-        // Remove from progress map
         setProgressMap((prev) => {
           const next = new Map(prev);
           next.delete(transcriptionId);
           return next;
         });
-        // Refresh to get the completed conversation
         fetchConversations(1);
       }
     );
 
-    // Listen for failures
     const unsubFailed = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_FAILED,
       (data: unknown) => {
@@ -152,7 +142,6 @@ export function useConversations(
           next.delete(transcriptionId);
           return next;
         });
-        // Refresh to show the failed state
         fetchConversations(1);
       }
     );
@@ -178,27 +167,38 @@ export function useConversations(
     });
   }, [user, conversations]);
 
-  // Load more
   const loadMore = useCallback(async () => {
     if (hasMore && !isLoadingMore) {
       await fetchConversations(page + 1, true);
     }
   }, [hasMore, isLoadingMore, page, fetchConversations]);
 
-  // Refresh
   const refresh = useCallback(async () => {
     await fetchConversations(1);
   }, [fetchConversations]);
 
-  return {
-    conversations,
-    isLoading,
-    isLoadingMore,
-    error,
-    hasMore,
-    total,
-    progressMap,
-    loadMore,
-    refresh,
-  };
+  return (
+    <ConversationsContext.Provider
+      value={{
+        conversations,
+        isLoading,
+        error,
+        hasMore,
+        total,
+        progressMap,
+        loadMore,
+        refresh,
+      }}
+    >
+      {children}
+    </ConversationsContext.Provider>
+  );
+}
+
+export function useConversationsContext() {
+  const context = useContext(ConversationsContext);
+  if (!context) {
+    throw new Error('useConversationsContext must be used within ConversationsProvider');
+  }
+  return context;
 }

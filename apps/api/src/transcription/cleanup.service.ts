@@ -80,21 +80,8 @@ export class CleanupService {
           );
 
           try {
-            // Delete the original file if it exists
-            if (data.storagePath) {
-              try {
-                await this.firebaseService.deleteFileByPath(data.storagePath);
-                this.logger.log(
-                  `[Cleanup] Deleted orphaned file: ${data.storagePath}`,
-                );
-              } catch (error) {
-                // File might already be deleted, that's OK
-                this.logger.warn(
-                  `[Cleanup] Could not delete file ${data.storagePath}:`,
-                  error.message,
-                );
-              }
-            }
+            // Audio files are retained for 30 days for support/recovery purposes
+            // The 30-day cleanup job will handle file deletion
 
             // Mark transcription as failed
             await this.firebaseService.updateTranscription(doc.id, {
@@ -153,6 +140,101 @@ export class CleanupService {
     } catch (error) {
       this.logger.error('[Cleanup] Error cleaning up orphaned files:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Clean up audio files older than 30 days
+   * Runs daily at 4:00 AM UTC
+   *
+   * Deletes audio files for transcriptions where:
+   * - completedAt > 30 days ago (successfully processed)
+   * - OR deletedAt > 30 days ago (soft-deleted by user)
+   * - OR status === 'failed' AND createdAt > 30 days ago
+   * - AND storagePath is not null (file still exists)
+   */
+  @Cron('0 4 * * *') // Daily at 4:00 AM UTC
+  async cleanupOldAudioFiles() {
+    this.logger.log('[Cleanup] Starting 30-day audio file cleanup...');
+
+    try {
+      const db = this.firebaseService.firestore;
+      const transcriptionsRef = db.collection('transcriptions');
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      let deletedCount = 0;
+      let errorCount = 0;
+
+      // Get all transcriptions with a storagePath (file still exists)
+      // We'll filter by age in memory since Firestore doesn't support OR queries well
+      const snapshot = await transcriptionsRef.get();
+
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+
+        // Skip if no file to delete
+        if (!data.storagePath) {
+          continue;
+        }
+
+        // Determine if this transcription's audio should be deleted
+        let shouldDelete = false;
+        let deleteReason = '';
+
+        // Check completedAt for successfully processed transcriptions
+        if (data.completedAt) {
+          const completedAt = data.completedAt.toDate?.() || new Date(data.completedAt);
+          if (completedAt < thirtyDaysAgo) {
+            shouldDelete = true;
+            deleteReason = `completed ${completedAt.toISOString()}`;
+          }
+        }
+
+        // Check deletedAt for soft-deleted transcriptions
+        if (data.deletedAt) {
+          const deletedAt = data.deletedAt.toDate?.() || new Date(data.deletedAt);
+          if (deletedAt < thirtyDaysAgo) {
+            shouldDelete = true;
+            deleteReason = `soft-deleted ${deletedAt.toISOString()}`;
+          }
+        }
+
+        // Check failed transcriptions by createdAt
+        if (data.status === TranscriptionStatus.FAILED && data.createdAt) {
+          const createdAt = data.createdAt.toDate?.() || new Date(data.createdAt);
+          if (createdAt < thirtyDaysAgo) {
+            shouldDelete = true;
+            deleteReason = `failed, created ${createdAt.toISOString()}`;
+          }
+        }
+
+        if (shouldDelete) {
+          try {
+            // Delete the audio file from storage
+            await this.firebaseService.deleteFileByPath(data.storagePath);
+
+            // Clear file references to prevent double deletion attempts
+            await this.firebaseService.clearTranscriptionFileReferences(doc.id);
+
+            deletedCount++;
+            this.logger.log(
+              `[Cleanup] Deleted audio file for transcription ${doc.id} (${deleteReason})`,
+            );
+          } catch (error) {
+            errorCount++;
+            this.logger.warn(
+              `[Cleanup] Failed to delete audio file for transcription ${doc.id}:`,
+              error.message,
+            );
+          }
+        }
+      }
+
+      this.logger.log(
+        `[Cleanup] 30-day audio cleanup complete: Deleted ${deletedCount} files, ${errorCount} errors`,
+      );
+    } catch (error) {
+      this.logger.error('[Cleanup] Error in 30-day audio cleanup:', error);
     }
   }
 }

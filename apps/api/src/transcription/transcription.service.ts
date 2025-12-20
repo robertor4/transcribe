@@ -1293,37 +1293,12 @@ ${fullCustomPrompt}`;
     );
 
     if (transcription) {
-      // Delete file from storage if it exists and hasn't been deleted already
-      try {
-        if (transcription.storagePath) {
-          // Use the storage path for reliable deletion (new transcriptions)
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-          this.logger.log(
-            `Deleted file via storage path for transcription ${transcriptionId}`,
-          );
-        } else if (transcription.fileUrl) {
-          // Fallback to URL-based deletion for older transcriptions
-          await this.firebaseService.deleteFile(transcription.fileUrl);
-          this.logger.log(
-            `Deleted file via URL for transcription ${transcriptionId}`,
-          );
-        } else {
-          // File already deleted (e.g., after processing)
-          this.logger.log(
-            `No file to delete for transcription ${transcriptionId} - already cleaned up`,
-          );
-        }
-      } catch (error) {
-        // Log but don't fail the deletion if file is already gone
-        this.logger.warn(
-          `File deletion failed for transcription ${transcriptionId}, continuing with document deletion`,
-        );
-      }
-
-      // Delete transcription document
-      await this.firebaseService.deleteTranscription(transcriptionId);
+      // Soft delete: set deletedAt timestamp instead of hard deleting
+      // Audio files are kept until cleanup job runs (allows 30-day recovery)
+      await this.firebaseService.updateTranscription(transcriptionId, {
+        deletedAt: new Date(),
+      });
+      this.logger.log(`Soft-deleted transcription ${transcriptionId}`);
     }
 
     return { success: true };

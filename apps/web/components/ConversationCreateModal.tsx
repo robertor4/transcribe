@@ -62,8 +62,18 @@ export function ConversationCreateModal({
 
   // Reset state when modal closes
   const handleClose = () => {
-    // If currently recording, processing, or uploading (with files selected), show confirmation dialog
-    if (isRecording || currentStep === 'processing' || (currentStep === 'capture' && uploadedFiles.length > 0)) {
+    // Only show confirmation when there's actual progress to lose:
+    // - Actively recording or paused
+    // - Processing in progress
+    // - Files selected for upload
+    // - Recording completed but not yet processed
+    const hasProgress =
+      isRecording ||
+      currentStep === 'processing' ||
+      uploadedFiles.length > 0 ||
+      recordedBlob !== null;
+
+    if (hasProgress) {
       const confirmed = window.confirm(
         'Are you sure you want to cancel? Your progress will be lost.'
       );
