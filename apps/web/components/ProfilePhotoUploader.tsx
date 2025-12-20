@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Camera, Upload, Trash2, Loader2, ChevronDown, X } from 'lucide-react';
 import { Button } from './Button';
+import { PhotoCropperModal } from './PhotoCropperModal';
 
 interface ProfilePhotoUploaderProps {
   currentPhotoURL?: string;
@@ -29,6 +30,8 @@ export function ProfilePhotoUploader({
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check if user has Google provider
@@ -80,21 +83,36 @@ export function ProfilePhotoUploader({
     }
 
     setError(null);
-    setIsUploading(true);
     setIsOpen(false);
 
+    // Open cropper modal instead of uploading directly
+    setSelectedFile(file);
+    setShowCropper(true);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCroppedImage = async (croppedFile: File) => {
+    setShowCropper(false);
+    setSelectedFile(null);
+    setIsUploading(true);
+
     try {
-      await onUpload(file);
+      await onUpload(croppedFile);
     } catch (err) {
       console.error('Error uploading photo:', err);
       setError(t('photoUploadError'));
     } finally {
       setIsUploading(false);
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
     }
+  };
+
+  const handleCropperClose = () => {
+    setShowCropper(false);
+    setSelectedFile(null);
   };
 
   const handleRemovePhoto = async () => {
@@ -229,6 +247,16 @@ export function ProfilePhotoUploader({
           <X className="h-4 w-4" />
           <span>{error}</span>
         </div>
+      )}
+
+      {/* Photo cropper modal */}
+      {selectedFile && (
+        <PhotoCropperModal
+          isOpen={showCropper}
+          imageFile={selectedFile}
+          onClose={handleCropperClose}
+          onSave={handleCroppedImage}
+        />
       )}
     </div>
   );

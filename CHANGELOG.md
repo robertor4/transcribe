@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Profile Photo Cropper**: LinkedIn-style image cropper for profile photo uploads
+  - Circular crop area with drag-to-reposition and zoom controls
+  - Optimizes output to 400×400px JPEG at 85% quality for fast loading
+  - Mobile-friendly with touch gestures (pinch zoom, drag pan)
+  - New `PhotoCropperModal` component using `react-easy-crop` library
+  - Translations added for all 5 languages (en, de, es, fr, nl)
+- **Inline Folder Renaming**: Click on folder name to edit it directly on the Folder page
+  - Auto-focuses and selects text when entering edit mode
+  - Save on Enter or blur, cancel with Escape
+  - Visual hover indicator (cursor + underline) hints at editability
 - **Profile Photo Upload**: Replaced URL-only profile photo input with intuitive uploader
   - New `ProfilePhotoUploader` component with dropdown menu
   - "Use Google Photo" option (one-click sync for Google-connected accounts)
@@ -20,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Translations added for all 5 languages (en, de, es, fr, nl)
 
 ### Fixed
+- **Profile photo not syncing to dashboard**: Added `refreshUser()` method to AuthContext to properly update user state after profile photo changes
+  - Profile photo uploads now immediately reflect in the left navigation UserProfileMenu
+  - Previously, `authUser.reload()` didn't trigger React state update since `onAuthStateChanged` isn't fired by reload
 - Dashboard greeting now uses display name instead of email prefix (shows "Good afternoon, Roberto" instead of "Good afternoon, Dreamone4")
 - Folder page crash: Added missing UsageProvider layout wrapper to fix "useUsage must be used within UsageProvider" error
 - Conversation page crash: Added UsageProvider layout wrapper for same issue
