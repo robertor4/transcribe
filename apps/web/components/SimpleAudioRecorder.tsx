@@ -60,6 +60,7 @@ export function SimpleAudioRecorder({
     resumeRecording,
     reset,
     markAsUploaded,
+    currentGain,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
   });
@@ -630,6 +631,15 @@ export function SimpleAudioRecorder({
               {state === 'requesting-permission' && 'Requesting permission...'}
               {state === 'idle' && 'Ready to record'}
             </span>
+            {/* Auto-gain boost indicator - shows when gain is actively boosting */}
+            {state === 'recording' && selectedSource === 'microphone' && currentGain > 1.1 && (
+              <span
+                className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium transition-opacity"
+                title={`Input boosted to ${Math.round(currentGain * 100)}%`}
+              >
+                +{Math.round((currentGain - 1) * 100)}%
+              </span>
+            )}
           </div>
           <div className="text-3xl font-mono font-bold text-gray-900 dark:text-gray-100">
             {formatTime(duration)}

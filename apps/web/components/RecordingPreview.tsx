@@ -30,11 +30,6 @@ export function RecordingPreview({
   const [actualDuration, setActualDuration] = useState(durationProp);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Web Audio API for volume boost
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
-
   // Use actual audio duration once loaded, fallback to prop
   const duration = actualDuration;
 
@@ -58,43 +53,6 @@ export function RecordingPreview({
     };
   }, []);
 
-  // Setup Web Audio gain node for volume boost
-  // This must be done on user interaction (play button) due to browser autoplay policy
-  const setupAudioGain = () => {
-    const audio = audioRef.current;
-    if (!audio || sourceNodeRef.current) return; // Already connected
-
-    try {
-      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      const ctx = new AudioContextClass();
-      const source = ctx.createMediaElementSource(audio);
-      const gain = ctx.createGain();
-
-      // Boost volume by 1.8x (adjust as needed)
-      gain.gain.value = 1.8;
-
-      source.connect(gain);
-      gain.connect(ctx.destination);
-
-      audioContextRef.current = ctx;
-      gainNodeRef.current = gain;
-      sourceNodeRef.current = source;
-    } catch {
-      // If Web Audio fails, audio will still play at normal volume
-    }
-  };
-
-  // Cleanup audio context on unmount
-  useEffect(() => {
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
-      }
-    };
-  }, []);
-
   // Get actual duration from audio element when metadata loads
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
     const audioDuration = e.currentTarget.duration;
@@ -112,14 +70,6 @@ export function RecordingPreview({
 
   const handlePlayPause = async () => {
     if (!audioRef.current) return;
-
-    // Setup audio gain on first play (must be on user interaction)
-    setupAudioGain();
-
-    // Resume AudioContext if suspended (browser autoplay policy)
-    if (audioContextRef.current?.state === 'suspended') {
-      await audioContextRef.current.resume();
-    }
 
     if (isPlaying) {
       audioRef.current.pause();

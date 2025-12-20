@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Auto-Gain Normalization for Microphone Recording**: Automatically adjusts microphone input levels in real-time during recording
+  - Boosts quiet microphones up to 150% gain to ensure audible recordings
+  - Reduces loud inputs down to 50% gain to prevent clipping
+  - AGC tuned for speech: fast 50ms attack (catch loud bursts), slow 500ms release (avoid breathing artifacts)
+  - RMS averaging over 5 frames (~500ms window) for stable gain adjustments
+  - Works silently in background with no extra UI steps required
+  - Optional subtle boost indicator shows "+X%" during recording when gain is actively boosting
+  - New `useAutoGain` hook available for standalone use if needed
+  - Configurable via `enableAutoGain` option in `useMediaRecorder` (enabled by default)
 - **No Audio Detection Warning**: Microphone selection now shows a warning if no audio is detected after 3 seconds
   - Helps users identify microphone issues (muted, wrong device, disconnected) before recording
   - Warning appears below the input level meter in the "Create a conversation" modal
