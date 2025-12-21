@@ -8,11 +8,26 @@ type Props = {
   children: ReactNode;
 };
 
+// Inline script to apply theme before React hydration (prevents flash)
+const themeScript = `
+(function() {
+  try {
+    var theme = localStorage.getItem('theme') || 'system';
+    var isDark = theme === 'dark' ||
+      (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch (e) {}
+})();
+`;
+
 // Root layout required for error pages (404, 500, etc.)
 export default function RootLayout({ children }: Props) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <ThemeColor />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

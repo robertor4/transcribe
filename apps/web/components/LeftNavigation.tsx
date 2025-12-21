@@ -90,12 +90,23 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
       <div className="py-5 px-4 pt-6 pl-7">
         <div className="flex items-center justify-between gap-2">
           <Link href={`/${locale}/dashboard`} className="hover:opacity-80 transition-opacity">
+            {/* Light mode logo */}
             <Image
               src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary"
               width={140}
               height={43}
               priority
+              className="dark:hidden"
+            />
+            {/* Dark mode logo */}
+            <Image
+              src="/assets/logos/neural-summary-logo-white.svg"
+              alt="Neural Summary"
+              width={140}
+              height={43}
+              priority
+              className="hidden dark:block"
             />
           </Link>
           {onToggleSidebar && (

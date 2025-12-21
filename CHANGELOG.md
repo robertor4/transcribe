@@ -11,6 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.0] - 2025-12-21
+
+### Dark Mode Improvements & Cleanup
+
+### Fixed
+- **Dark Mode Flash Prevention**: Added inline script to apply theme before React hydration
+  - Theme is now applied synchronously in `<head>` before page renders
+  - Eliminates white flash when loading in dark mode
+  - Reads theme preference from localStorage and respects system preference
+
+### Added
+- **Dark Mode Logo Support**: Navigation now displays white logo variant in dark mode
+  - Added conditional logo rendering in [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+  - Uses `neural-summary-logo.svg` for light mode, `neural-summary-logo-white.svg` for dark mode
+  - Optimized white logo SVG for smaller file size
+
+### Changed
+- **Dark Mode Card Styling**: Improved contrast with translucent backgrounds
+  - Dashboard quick action cards: `dark:bg-gray-800/50` with `dark:border-gray-700/50`
+  - Conversation output cards: Same translucent treatment for consistency
+  - Empty state containers: Matching translucent styling
+- **Theme Hook Cleanup**: Removed console.log debug statements from [useTheme.ts](apps/web/hooks/useTheme.ts)
+- **Right Panel Cleanup**: Removed unused Actions section from [RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx)
+  - Removed Download PDF, Share Link, Copy Transcript, Edit Details buttons (not yet implemented)
+
+---
+
 ## [2.2.0] - 2025-12-21
 
 ### UI Rebrand & Dashboard Refinements

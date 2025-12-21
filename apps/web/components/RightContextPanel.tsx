@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, FileIcon, Calendar, Users as UsersIcon, Share2, Download, Copy, Edit3 } from 'lucide-react';
+import { Clock, FileIcon, Calendar, Users as UsersIcon } from 'lucide-react';
 import { formatDuration } from '@/lib/formatters';
 
 interface ConversationDetails {
@@ -103,32 +103,6 @@ export function RightContextPanel({
               </span>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="mb-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-2 mb-4">
-          <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Actions</h2>
-        </div>
-        <div className="space-y-2">
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
-            <Download className="w-4 h-4 text-gray-500" />
-            <span>Download PDF</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
-            <Share2 className="w-4 h-4 text-gray-500" />
-            <span>Share Link</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
-            <Copy className="w-4 h-4 text-gray-500" />
-            <span>Copy Transcript</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-left">
-            <Edit3 className="w-4 h-4 text-gray-500" />
-            <span>Edit Details</span>
-          </button>
         </div>
       </div>
 
