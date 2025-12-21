@@ -24,6 +24,7 @@ import { useFolders } from '@/hooks/useFolders';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { formatRelativeTime } from '@/lib/formatters';
 import { AssetsCountBadge } from '@/components/dashboard/AssetsCountBadge';
+import { FolderRecentAssetsSection } from '@/components/dashboard/FolderRecentAssetsSection';
 
 interface FolderClientProps {
   folderId: string;
@@ -399,6 +400,11 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 </div>
               )}
             </div>
+
+            {/* Recent Outputs from this folder */}
+            {conversations.length > 0 && (
+              <FolderRecentAssetsSection folderId={folderId} locale={locale} />
+            )}
           </div>
         }
       />

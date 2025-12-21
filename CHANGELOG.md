@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Recent Outputs Dashboard Section**: New section on dashboard showing the 8 most recent AI-generated assets
+  - 4-column card grid layout (responsive: 2 columns on tablet, 1 on mobile)
+  - Each card displays: template icon, template name, conversation title, generation date, content preview
+  - Direct navigation to asset detail page on click
+  - Hidden when user has no AI assets
+  - New components: [RecentAssetCard.tsx](apps/web/components/dashboard/RecentAssetCard.tsx), [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx)
+  - New API endpoint: `GET /transcriptions/recent-analyses`
+- **Folder Recent Outputs Section**: Similar section in folder detail view, scoped to that folder's conversations
+  - Shows AI assets only from conversations within the current folder
+  - Same 4-column card grid layout as dashboard
+  - New component: [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+  - New API endpoint: `GET /transcriptions/recent-analyses/folder/:folderId`
+- **Recording Protection System**: Browser-based audio recording now has safeguards against storage exhaustion
+  - **3-hour maximum duration limit**: Recording auto-stops at 3 hours with 5-minute advance warning
+  - **Storage quota monitoring**: Checks available storage every 30 seconds during recording
+    - Warning at 85% storage usage, auto-stop at 95% (critical)
+  - **Memory usage tracking**: Monitors accumulated chunk size in memory
+    - Warning at 150MB, auto-stop at 250MB (critical)
+  - Warning priority system ensures only most critical warning is shown
+  - New exports from [useMediaRecorder.ts](apps/web/hooks/useMediaRecorder.ts): `RecordingWarningType`, `RecordingWarningInfo`
+  - Translations added for all 5 languages (en, nl, de, fr, es)
 - **Share Conversation Feature (V2)**: Re-introduced sharing functionality in the conversation view
   - Share button added to conversation header in [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
   - Simplified ShareModal with 3 content options: Summary, Full Transcript, AI Assets

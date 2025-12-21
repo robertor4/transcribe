@@ -11,6 +11,11 @@ import {
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
+// Extended type for recent analyses with conversation title
+export interface RecentAnalysis extends GeneratedAnalysis {
+  conversationTitle: string;
+}
+
 const API_URL = getApiUrl();
 
 const api = axios.create({
@@ -254,6 +259,14 @@ export const transcriptionApi = {
 
   deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/analyses/${analysisId}`);
+  },
+
+  getRecentAnalyses: async (limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {
+    return api.get(`/transcriptions/recent-analyses?limit=${limit}`);
+  },
+
+  getRecentAnalysesByFolder: async (folderId: string, limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {
+    return api.get(`/transcriptions/recent-analyses/folder/${folderId}?limit=${limit}`);
   },
 
   // Transcript Correction API methods

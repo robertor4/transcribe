@@ -346,6 +346,52 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Get recent AI-generated analyses for the current user
+   * Used for the dashboard "Recent Outputs" section
+   */
+  @Get('recent-analyses')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentAnalyses(
+    @Query('limit') limit: string = '8',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<any[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 8, 1), 20);
+    const analyses = await this.transcriptionService.getRecentAnalyses(
+      req.user.uid,
+      parsedLimit,
+    );
+
+    return {
+      success: true,
+      data: analyses,
+    };
+  }
+
+  /**
+   * Get recent AI-generated analyses for conversations in a specific folder
+   * Used for the folder page "Recent Outputs" section
+   */
+  @Get('recent-analyses/folder/:folderId')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentAnalysesByFolder(
+    @Param('folderId') folderId: string,
+    @Query('limit') limit: string = '8',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<any[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 8, 1), 20);
+    const analyses = await this.transcriptionService.getRecentAnalysesByFolder(
+      req.user.uid,
+      folderId,
+      parsedLimit,
+    );
+
+    return {
+      success: true,
+      data: analyses,
+    };
+  }
+
   @Get(':id')
   @UseGuards(FirebaseAuthGuard)
   async getTranscription(

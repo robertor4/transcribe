@@ -2745,4 +2745,28 @@ IMPORTANT:
     // Fetch and return updated transcription
     return this.firebaseService.getTranscription(userId, transcriptionId);
   }
+
+  /**
+   * Get recent generated analyses for a user across all conversations
+   * Used for the dashboard "Recent Outputs" section
+   */
+  async getRecentAnalyses(userId: string, limit: number = 8): Promise<any[]> {
+    return this.firebaseService.getRecentGeneratedAnalyses(userId, limit);
+  }
+
+  /**
+   * Get recent generated analyses for conversations in a specific folder
+   * Used for the folder page "Recent Outputs" section
+   */
+  async getRecentAnalysesByFolder(
+    userId: string,
+    folderId: string,
+    limit: number = 8,
+  ): Promise<any[]> {
+    return this.firebaseService.getRecentGeneratedAnalysesByFolder(
+      userId,
+      folderId,
+      limit,
+    );
+  }
 }

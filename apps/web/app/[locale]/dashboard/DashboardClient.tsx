@@ -12,6 +12,7 @@ import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
+import { RecentAssetsSection } from '@/components/dashboard/RecentAssetsSection';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
@@ -223,16 +224,21 @@ export function DashboardClient() {
                 <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA]" />
               </div>
             ) : (
-              <TwoColumnDashboardLayout
-                folders={folders}
-                ungroupedConversations={ungroupedConversations}
-                locale={locale}
-                getFolderStats={getFolderStats}
-                onMoveToFolder={handleMoveToFolder}
-                onCreateFolder={handleCreateFolder}
-                onNewConversation={handleMoreTemplates}
-                onDeleteConversation={handleDeleteConversation}
-              />
+              <>
+                <TwoColumnDashboardLayout
+                  folders={folders}
+                  ungroupedConversations={ungroupedConversations}
+                  locale={locale}
+                  getFolderStats={getFolderStats}
+                  onMoveToFolder={handleMoveToFolder}
+                  onCreateFolder={handleCreateFolder}
+                  onNewConversation={handleMoreTemplates}
+                  onDeleteConversation={handleDeleteConversation}
+                />
+
+                {/* Recent AI Outputs Section */}
+                <RecentAssetsSection locale={locale} />
+              </>
             )}
           </div>
         }
