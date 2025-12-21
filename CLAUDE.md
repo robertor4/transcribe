@@ -8,6 +8,26 @@ A production-ready monorepo application that **transforms conversations into wor
 ### Core Value Proposition
 **"Speaking becomes creating"** - Turn thinking (conversations) into working (documents) without the friction of manual writing, formatting, and structuring.
 
+## Terminology Mapping (UI vs Code)
+
+Since V2, the user-facing terminology differs from the internal code naming. This is intentional - renaming internal code would require database migrations, API changes, and significant testing effort.
+
+| UI Term (V2) | Code Term | Description |
+|--------------|-----------|-------------|
+| **Conversation** | `transcription` | An uploaded audio file with its transcript and metadata |
+| **AI Asset** | `analysis` | Generated content from a template (blog post, email, action items, etc.) |
+| **AI Asset Template** | `analysisTemplate` | The prompt configuration that generates an AI Asset |
+
+**Key locations:**
+- Database collections: `transcriptions`, `analyses` (Firestore)
+- Shared types: `Transcription`, `Analysis`, `AnalysisTemplate` (`packages/shared`)
+- API endpoints: `/transcription/*`, `/analysis/*`
+- WebSocket events: `transcription_progress`, `transcription_completed`
+- Frontend rendering: `outputTemplates/` (renders AI Asset content)
+- Backend prompts: `analysis-templates.ts`, `prompts.ts`
+
+**Rule:** Use V2 terminology in UI strings (translations, labels, tooltips). Keep code names unchanged.
+
 ## Brand Guidelines
 
 ### Brand Positioning
