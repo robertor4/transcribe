@@ -5,6 +5,7 @@ import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import { Button } from './Button';
 import { allTemplates, TemplateId } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 // Filter out transcribe-only since we're already in a conversation with transcription
 const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
@@ -18,6 +19,7 @@ interface OutputGeneratorModalProps {
 }
 
 export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated }: OutputGeneratorModalProps) {
+  const t = useTranslations('aiAssets.modal');
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<TemplateId | null>(null);
   const [customInstructions, setCustomInstructions] = useState('');
@@ -88,7 +90,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Generate Output
+              {t('title')}
             </h2>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
               {conversationTitle}
@@ -106,10 +108,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         <div className="px-8 py-4 bg-gray-50 dark:bg-gray-800/50">
           <div className="flex items-start">
             {[
-              { num: 1, label: 'Select Type' },
-              { num: 2, label: 'Instructions' },
-              { num: 3, label: 'Review' },
-              { num: 4, label: 'Generate' }
+              { num: 1, label: t('steps.selectType') },
+              { num: 2, label: t('steps.instructions') },
+              { num: 3, label: t('steps.review') },
+              { num: 4, label: t('steps.generate') }
             ].map((item, idx) => (
               <div key={item.num} className="flex flex-col items-center flex-1 relative">
                 {/* Circle */}

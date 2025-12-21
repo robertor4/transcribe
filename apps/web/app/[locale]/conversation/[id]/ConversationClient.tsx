@@ -32,6 +32,7 @@ import { useConversation } from '@/hooks/useConversation';
 import { updateConversationTitle } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { formatRelativeTime, formatDuration } from '@/lib/formatters';
+import { useTranslations } from 'next-intl';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -52,6 +53,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
   const { folders } = useFoldersContext();
+  const t = useTranslations('aiAssets');
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [, setIsLoadingOutputs] = useState(false);
 
@@ -338,24 +340,24 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             {/* Sticky Section Navigation */}
             <nav className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-6 px-6">
               <div className="flex items-center gap-6 py-3">
-                <a
-                  href="#summary"
+                <button
+                  onClick={() => document.getElementById('summary')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
                 >
                   Summary
-                </a>
-                <a
-                  href="#outputs"
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
-                >
-                  Generated Outputs
-                </a>
-                <a
-                  href="#transcript"
+                </button>
+                <Link
+                  href={`/${locale}/conversation/${conversationId}/transcript`}
                   className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
                 >
                   Transcript
-                </a>
+                </Link>
+                <button
+                  onClick={() => document.getElementById('outputs')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
+                >
+                  AI Assets
+                </button>
               </div>
             </nav>
 
@@ -390,23 +392,29 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               )}
             </section>
 
-            {/* Section: Generated Outputs */}
+            {/* Section: AI Assets */}
             <section
               id="outputs"
               className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
             >
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Zap className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        Generated Outputs
-                      </h2>
+              <div className="mb-6 relative">
+                {/* Accent bar on left */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#cc3399] to-[#cc3399]/50 rounded-full" />
+
+                <div className="pl-5 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    {/* Icon with brand gradient background */}
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#cc3399] to-[#b82d89] flex items-center justify-center shadow-lg shadow-[#cc3399]/20">
+                      <Zap className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                      Transform this conversation into various formats
-                    </p>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        {t('title')}
+                      </h2>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {t('description')}
+                      </p>
+                    </div>
                   </div>
                   {outputs.length > 0 && (
                     <Button
@@ -415,7 +423,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       icon={<Plus className="w-4 h-4" />}
                       onClick={() => setIsGeneratorOpen(true)}
                     >
-                      New Output
+                      {t('newAsset')}
                     </Button>
                   )}
                 </div>
@@ -472,14 +480,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
                   <div className="text-4xl mb-3">✨</div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                    No outputs yet
+                    {t('emptyTitle')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
-                    Generate your first output to transform this conversation into a deliverable
-                    format.
+                    {t('emptyDescription')}
                   </p>
                   <Button variant="brand" size="md" onClick={() => setIsGeneratorOpen(true)}>
-                    Generate Output
+                    {t('emptyButton')}
                   </Button>
                 </div>
               )}

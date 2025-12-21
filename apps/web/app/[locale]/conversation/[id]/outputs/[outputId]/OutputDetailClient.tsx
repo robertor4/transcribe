@@ -29,6 +29,7 @@ import { useConversation } from '@/hooks/useConversation';
 import { formatRelativeTime } from '@/lib/formatters';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
 import type { StructuredOutput } from '@transcribe/shared';
+import { useTranslations } from 'next-intl';
 
 interface OutputDetailClientProps {
   conversationId: string;
@@ -39,6 +40,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || 'en';
+  const t = useTranslations('aiAssets');
 
   const { conversation } = useConversation(conversationId);
   const [output, setOutput] = useState<GeneratedAnalysis | null>(null);
@@ -134,7 +136,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-[#cc3399] mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading output...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
         </div>
       </div>
     );
@@ -147,10 +149,10 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Output not found
+            {t('notFound')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error?.message || 'The output you are looking for does not exist or you do not have access to it.'}
+            {error?.message || t('notFoundDescription')}
           </p>
           <Link href={`/${locale}/conversation/${conversationId}`}>
             <Button variant="primary">Back to Conversation</Button>
