@@ -10,7 +10,6 @@ import {
   Check,
   Mail,
   Link,
-  Calendar,
   Lock,
   Trash2,
   Loader2,
@@ -20,14 +19,13 @@ import {
   Shield,
   FileText,
   MessageSquare,
-  Users,
-  ListChecks,
   Sparkles,
   Eye,
   EyeOff,
   Plus,
 } from 'lucide-react';
 import QRCode from 'qrcode';
+import { Button } from '@/components/Button';
 
 interface ShareModalProps {
   transcription: Transcription;
@@ -64,17 +62,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState(false);
   
-  // Content selection
-  const [contentPreset, setContentPreset] = useState<string>('complete');
-  const [contentOptions, setContentOptions] = useState<ShareContentOptions>({
-    includeTranscript: true,
-    includeSummary: true,
-    includeCommunicationStyles: true,
-    includeActionItems: true,
-    includeSpeakerInfo: true,
-    includeOnDemandAnalyses: true,
-    selectedAnalysisIds: [],
-  });
+  // Simplified content selection (V2)
+  const [includeSummary, setIncludeSummary] = useState(true);
+  const [includeTranscript, setIncludeTranscript] = useState(true);
+  const [includeAIAssets, setIncludeAIAssets] = useState(true);
   
   // Email functionality
   const [showEmailSection, setShowEmailSection] = useState(false);
@@ -125,12 +116,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       const url = `${window.location.origin}/${locale}/shared/${transcription.shareToken}`;
       setShareUrl(url);
       generateQRCode(url);
-      
-      // Load existing content options if available
+
+      // Load existing content options if available (map to simplified V2)
       if (transcription.shareSettings?.contentOptions) {
-        setContentOptions(transcription.shareSettings.contentOptions);
-        // Determine preset based on current options
-        determinePreset(transcription.shareSettings.contentOptions);
+        const opts = transcription.shareSettings.contentOptions;
+        setIncludeSummary(opts.includeSummary);
+        setIncludeTranscript(opts.includeTranscript);
+        setIncludeAIAssets(opts.includeOnDemandAnalyses);
       }
     } else if (!isOpen) {
       // Reset state when modal closes
@@ -146,68 +138,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     }
   }, [transcription, isOpen, locale]);
 
-  const determinePreset = (options: ShareContentOptions) => {
-    const allTrue = options.includeTranscript && options.includeSummary &&
-      options.includeCommunicationStyles && options.includeActionItems &&
-      options.includeSpeakerInfo && options.includeOnDemandAnalyses;
-    const summaryOnly = options.includeSummary && !options.includeTranscript &&
-      !options.includeCommunicationStyles && !options.includeActionItems &&
-      !options.includeSpeakerInfo && !options.includeOnDemandAnalyses;
-    const summaryAndTranscript = options.includeSummary && options.includeTranscript &&
-      !options.includeCommunicationStyles && !options.includeActionItems &&
-      !options.includeOnDemandAnalyses;
-
-    if (allTrue) setContentPreset('complete');
-    else if (summaryOnly) setContentPreset('summary');
-    else if (summaryAndTranscript) setContentPreset('summaryTranscript');
-    else setContentPreset('custom');
-  };
-
-  const handlePresetChange = (preset: string) => {
-    setContentPreset(preset);
-    
-    switch (preset) {
-      case 'summary':
-        setContentOptions({
-          includeTranscript: false,
-          includeSummary: true,
-          includeCommunicationStyles: false,
-          includeActionItems: false,
-          includeSpeakerInfo: false,
-          includeOnDemandAnalyses: false,
-          selectedAnalysisIds: [],
-        });
-        break;
-      case 'summaryTranscript':
-        setContentOptions({
-          includeTranscript: true,
-          includeSummary: true,
-          includeCommunicationStyles: false,
-          includeActionItems: false,
-          includeSpeakerInfo: true,
-          includeOnDemandAnalyses: false,
-          selectedAnalysisIds: [],
-        });
-        break;
-      case 'complete':
-        setContentOptions({
-          includeTranscript: true,
-          includeSummary: true,
-          includeCommunicationStyles: true,
-          includeActionItems: true,
-          includeSpeakerInfo: true,
-          includeOnDemandAnalyses: true,
-          selectedAnalysisIds: [],
-        });
-        break;
-    }
-  };
-
-  const handleContentOptionChange = (key: keyof ShareContentOptions) => {
-    const newOptions = { ...contentOptions, [key]: !contentOptions[key] };
-    setContentOptions(newOptions);
-    setContentPreset('custom');
-  };
+  // Build backend-compatible contentOptions from simplified V2 state
+  const buildContentOptions = (): ShareContentOptions => ({
+    includeSummary,
+    includeTranscript,
+    includeSpeakerInfo: includeTranscript, // Always include speaker info with transcript
+    includeCommunicationStyles: false, // Deprecated in V2
+    includeActionItems: false, // Deprecated in V2
+    includeOnDemandAnalyses: includeAIAssets,
+    selectedAnalysisIds: [], // Share all AI assets, not individual selection
+  });
 
   const generateQRCode = async (url: string) => {
     try {
@@ -229,7 +169,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setLoading(true);
     try {
       const settings: Record<string, unknown> = {
-        contentOptions,
+        contentOptions: buildContentOptions(),
       };
       
       // Calculate expiration date based on selected option
@@ -282,7 +222,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     setLoading(true);
     try {
       const settings: Record<string, unknown> = {
-        contentOptions,
+        contentOptions: buildContentOptions(),
       };
       
       // Calculate expiration date based on selected option
@@ -486,15 +426,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   const getSelectedContentSummary = () => {
     const selected = [];
-    if (contentOptions.includeSummary) selected.push(t('includeSummary'));
-    if (contentOptions.includeTranscript) selected.push(t('includeTranscript'));
-    if (contentOptions.includeActionItems) selected.push(t('includeActionItems'));
-    if (contentOptions.includeCommunicationStyles) selected.push(t('includeCommunication'));
-    if (contentOptions.includeSpeakerInfo) selected.push(t('includeSpeakerInfo'));
-    if (contentOptions.includeOnDemandAnalyses) selected.push(t('includeOnDemandAnalyses'));
+    if (includeSummary) selected.push(t('includeSummary'));
+    if (includeTranscript) selected.push(t('fullTranscript'));
+    if (includeAIAssets) selected.push(t('includeAIAssets'));
 
     if (selected.length === 0) return t('noContentSelected');
-    if (selected.length > 3) return `${selected.length} ${t('itemsSelected')}`;
     return selected.join(', ');
   };
 
@@ -524,140 +460,52 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         <div className="p-4 sm:p-6">
           {!localShareToken ? (
             <>
-              {/* Content Selection */}
+              {/* Content Selection - Simplified V2 */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
                   <FileText className="w-5 h-5 text-[#8D6AFA]" />
                   {t('contentSelection')}
                 </h3>
 
-                {/* Preset Options */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                  <button
-                    onClick={() => handlePresetChange('summary')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      contentPreset === 'summary'
-                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
-                    }`}
-                  >
-                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#8D6AFA]" />
-                    <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('summaryOnly')}</span>
-                  </button>
+                <div className="space-y-3 p-4 bg-purple-50/30 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-900/50">
+                  <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={includeSummary}
+                      onChange={() => setIncludeSummary(!includeSummary)}
+                      className="w-5 h-5 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                    />
+                    <MessageSquare className="w-5 h-5 text-[#8D6AFA]" />
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeSummary')}</span>
+                  </label>
 
-                  <button
-                    onClick={() => handlePresetChange('summaryTranscript')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      contentPreset === 'summaryTranscript'
-                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#8D6AFA]" />
-                    <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('summaryTranscript')}</span>
-                  </button>
+                  <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={includeTranscript}
+                      onChange={() => setIncludeTranscript(!includeTranscript)}
+                      className="w-5 h-5 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                    />
+                    <FileText className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('fullTranscript')}</span>
+                  </label>
 
-                  <button
-                    onClick={() => handlePresetChange('complete')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      contentPreset === 'complete'
-                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
-                    }`}
-                  >
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-green-600 dark:text-green-400" />
-                    <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('completeAnalysis')}</span>
-                  </button>
-
-                  <button
-                    onClick={() => setContentPreset('custom')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      contentPreset === 'custom'
-                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
-                    }`}
-                  >
-                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-orange-600 dark:text-orange-400" />
-                    <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('customSelection')}</span>
-                  </button>
+                  <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={includeAIAssets}
+                      onChange={() => setIncludeAIAssets(!includeAIAssets)}
+                      className="w-5 h-5 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                    />
+                    <Sparkles className="w-5 h-5 text-[#8D6AFA]" />
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeAIAssets')}</span>
+                  </label>
                 </div>
-                
-                {/* Custom Content Options */}
-                {contentPreset === 'custom' && (
-                  <div className="space-y-2 p-4 bg-purple-50/30 dark:bg-purple-900/20 rounded-lg border border-pink-100 dark:border-purple-900/50">
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeTranscript}
-                        onChange={() => handleContentOptionChange('includeTranscript')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <FileText className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeTranscript')}</span>
-                    </label>
-                    
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeSummary}
-                        onChange={() => handleContentOptionChange('includeSummary')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <MessageSquare className="w-4 h-4 text-[#8D6AFA]" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSummary')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeCommunicationStyles}
-                        onChange={() => handleContentOptionChange('includeCommunicationStyles')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <Users className="w-4 h-4 text-[#8D6AFA]" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeCommunication')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeActionItems}
-                        onChange={() => handleContentOptionChange('includeActionItems')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <ListChecks className="w-4 h-4 text-green-600 dark:text-green-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeActionItems')}</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeSpeakerInfo}
-                        onChange={() => handleContentOptionChange('includeSpeakerInfo')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <Users className="w-4 h-4 text-gray-700 dark:text-gray-400" />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSpeakerInfo')}</span>
-                    </label>
-
-                    {/* On-Demand Analyses Toggle */}
-                    <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={contentOptions.includeOnDemandAnalyses}
-                        onChange={() => handleContentOptionChange('includeOnDemandAnalyses')}
-                        className="w-4 h-4 text-[#8D6AFA] rounded"
-                      />
-                      <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeOnDemandAnalyses')}</span>
-                    </label>
-                  </div>
-                )}
               </div>
 
               {/* Share Settings */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
                   <Shield className="w-5 h-5 text-[#8D6AFA]" />
                   {t('shareSettings')}
                 </h3>
@@ -746,7 +594,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <button
                 onClick={handleCreateShareLink}
                 disabled={loading}
-                className="w-full py-3 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
+                className="w-full py-3 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
               >
                 {loading ? (
                   <>
@@ -780,7 +628,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     />
                     <button
                       onClick={handleCopyLink}
-                      className="p-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
+                      className="p-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
                     >
                       {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                     </button>
@@ -790,43 +638,44 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   )}
                 </div>
 
-                {/* Current Settings Display */}
+                {/* Current Settings Display - Flat layout without container box */}
                 {transcription.shareSettings && (
-                  <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
-                    <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('currentSettings')}</h4>
-
-                    {/* Content Settings */}
-                    <div className="mb-3">
-                      <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 mb-1">
-                        <FileText className="w-4 h-4" />
-                        <span className="font-medium">{t('sharedContent')}:</span>
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 ml-6">
+                  <div className="mb-4 space-y-2">
+                    {/* Shared Content */}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">{t('sharedContent')}</span>
+                      <span className="text-gray-900 dark:text-gray-100 font-medium text-right">
                         {getSelectedContentSummary()}
-                      </p>
+                      </span>
                     </div>
 
-                    {/* Security Settings */}
-                    <div className="space-y-2">
-                      {transcription.shareSettings.expiresAt && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                          <Calendar className="w-4 h-4" />
-                          <span>{t('expiresOn')}: {formatDate(transcription.shareSettings.expiresAt)}</span>
-                        </div>
-                      )}
-                      {transcription.shareSettings.password && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                          <Lock className="w-4 h-4" />
-                          <span>{t('passwordProtected')}</span>
-                        </div>
-                      )}
-                      {transcription.shareSettings.viewCount !== undefined && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                          <Eye className="w-4 h-4" />
-                          <span>{t('viewCount')}: {transcription.shareSettings.viewCount}</span>
-                        </div>
-                      )}
-                    </div>
+                    {/* Expires */}
+                    {transcription.shareSettings.expiresAt && formatDate(transcription.shareSettings.expiresAt) !== 'Date unavailable' && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">{t('expires')}</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-medium">
+                          {formatDate(transcription.shareSettings.expiresAt)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Password */}
+                    {transcription.shareSettings.password && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">{t('password')}</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-medium">{t('protected')}</span>
+                      </div>
+                    )}
+
+                    {/* View Count */}
+                    {transcription.shareSettings.viewCount !== undefined && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">{t('views')}</span>
+                        <span className="text-gray-900 dark:text-gray-100 font-medium">
+                          {transcription.shareSettings.viewCount}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1010,27 +859,123 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* Update Settings Section */}
                 <div className="border-t border-gray-300 dark:border-gray-600 pt-4 mt-6">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('updateSettings')}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {t('updateSettingsInfo')}
-                  </p>
-                  <button
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-4">{t('updateSettings')}</h4>
+
+                  {/* Content Selection */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('sharedContent')}
+                    </label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={includeSummary}
+                          onChange={() => setIncludeSummary(!includeSummary)}
+                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSummary')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={includeTranscript}
+                          onChange={() => setIncludeTranscript(!includeTranscript)}
+                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('fullTranscript')}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={includeAIAssets}
+                          onChange={() => setIncludeAIAssets(!includeAIAssets)}
+                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeAIAssets')}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Expiration */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('expiration')}
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => setExpirationOption('24hours')}
+                        className={`p-2 text-sm rounded-lg border ${
+                          expirationOption === '24hours'
+                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
+                        }`}
+                      >
+                        {t('24hours')}
+                      </button>
+                      <button
+                        onClick={() => setExpirationOption('7days')}
+                        className={`p-2 text-sm rounded-lg border ${
+                          expirationOption === '7days'
+                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
+                        }`}
+                      >
+                        {t('7days')}
+                      </button>
+                      <button
+                        onClick={() => setExpirationOption('never')}
+                        className={`p-2 text-sm rounded-lg border ${
+                          expirationOption === 'never'
+                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
+                        }`}
+                      >
+                        {t('never')}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer mb-2">
+                      <input
+                        type="checkbox"
+                        checked={enablePassword}
+                        onChange={() => setEnablePassword(!enablePassword)}
+                        className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('passwordProtect')}</span>
+                    </label>
+                    {enablePassword && (
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder={t('enterPassword')}
+                          className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="secondary"
                     onClick={handleUpdateShareSettings}
                     disabled={loading}
-                    className="w-full py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 border border-gray-400 dark:border-gray-600"
+                    icon={loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
+                    fullWidth
                   >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {t('updating')}
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-4 h-4" />
-                        {t('updateShareSettings')}
-                      </>
-                    )}
-                  </button>
+                    {loading ? t('updating') : t('updateShareSettings')}
+                  </Button>
                 </div>
               </div>
             </>

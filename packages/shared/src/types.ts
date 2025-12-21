@@ -534,6 +534,7 @@ export interface SharedTranscriptionView {
   title?: string;
   transcriptText?: string;
   analyses?: Partial<AnalysisResults>;  // Core analyses (legacy + new coreAnalyses)
+  summaryV2?: SummaryV2;  // V2 structured summary for rich rendering
   generatedAnalyses?: GeneratedAnalysis[];  // On-demand analyses from separate collection
   speakerSegments?: SpeakerSegment[];
   speakers?: Speaker[];

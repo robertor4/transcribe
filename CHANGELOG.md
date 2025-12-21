@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-*No unreleased changes yet.*
+### Added
+- **Share Conversation Feature (V2)**: Re-introduced sharing functionality in the conversation view
+  - Share button added to conversation header in [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+  - Simplified ShareModal with 3 content options: Summary, Full Transcript, AI Assets
+  - Backend returns `summaryV2` for rich structured summary rendering in shared views
+
+### Changed
+- **Shared Conversation Page Redesign**: Complete redesign of `/shared/[shareToken]` page
+  - Tabbed interface for Summary, Transcript, and AI Assets (preloaded for instant switching)
+  - Uses `SummaryRenderer` for rich V2 summary display with key points and detailed sections
+  - Uses `TranscriptTimeline` for speaker-segmented transcript display
+  - Removed redundant "Neural Summary" text from header (logo only)
+  - Added copy summary functionality
+  - Updated `SharedTranscriptionView` type to include `summaryV2` field
 
 ---
 

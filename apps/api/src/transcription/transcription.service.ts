@@ -1746,30 +1746,52 @@ ${fullCustomPrompt}`;
     // Support both old format (analyses) and new format (coreAnalyses)
     let filteredAnalyses: Partial<typeof transcription.analyses> = undefined;
 
-    // Build analyses object from either coreAnalyses (new) or analyses (old)
-    const analysesSource = transcription.coreAnalyses
-      ? {
-          summary: transcription.coreAnalyses.summary,
-          actionItems: transcription.coreAnalyses.actionItems,
-          communicationStyles: transcription.coreAnalyses.communicationStyles,
-        }
-      : transcription.analyses;
+    // Helper to get summary content - V2 uses summaryV2 (structured JSON), V1 uses summary (markdown)
+    const getSummaryContent = (): string => {
+      // V2 Architecture: Check for summaryV2 (structured JSON) and convert to markdown
+      const summaryV2Source =
+        transcription.summaryV2 || transcription.coreAnalyses?.summaryV2;
+      if (summaryV2Source) {
+        return summaryV2ToMarkdown(summaryV2Source);
+      }
+      // Fall back to V1 markdown summary
+      return (
+        transcription.coreAnalyses?.summary ||
+        transcription.analyses?.summary ||
+        ''
+      );
+    };
 
-    if (analysesSource) {
-      filteredAnalyses = {};
-      if (contentOptions.includeSummary && analysesSource.summary) {
-        filteredAnalyses.summary = analysesSource.summary;
-      }
-      if (
-        contentOptions.includeCommunicationStyles &&
-        analysesSource.communicationStyles
-      ) {
-        filteredAnalyses.communicationStyles =
-          analysesSource.communicationStyles;
-      }
-      if (contentOptions.includeActionItems && analysesSource.actionItems) {
-        filteredAnalyses.actionItems = analysesSource.actionItems;
-      }
+    // Build analyses object from either coreAnalyses (new) or analyses (old)
+    const analysesSource = {
+      summary: getSummaryContent(),
+      actionItems:
+        transcription.coreAnalyses?.actionItems ||
+        transcription.analyses?.actionItems ||
+        '',
+      communicationStyles:
+        transcription.coreAnalyses?.communicationStyles ||
+        transcription.analyses?.communicationStyles ||
+        '',
+    };
+
+    // Filter analyses based on content options
+    filteredAnalyses = {};
+    if (contentOptions.includeSummary && analysesSource.summary) {
+      filteredAnalyses.summary = analysesSource.summary;
+    }
+    if (
+      contentOptions.includeCommunicationStyles &&
+      analysesSource.communicationStyles
+    ) {
+      filteredAnalyses.communicationStyles = analysesSource.communicationStyles;
+    }
+    if (contentOptions.includeActionItems && analysesSource.actionItems) {
+      filteredAnalyses.actionItems = analysesSource.actionItems;
+    }
+    // Only include filteredAnalyses if it has content
+    if (Object.keys(filteredAnalyses).length === 0) {
+      filteredAnalyses = undefined;
     }
 
     // Fetch on-demand analyses if requested
@@ -1804,6 +1826,10 @@ ${fullCustomPrompt}`;
         ? transcription.transcriptText
         : undefined,
       analyses: filteredAnalyses,
+      // V2: Include structured summary for rich rendering in frontend
+      summaryV2: contentOptions.includeSummary
+        ? transcription.summaryV2 || transcription.coreAnalyses?.summaryV2
+        : undefined,
       generatedAnalyses: sharedOnDemandAnalyses,
       speakerSegments: contentOptions.includeSpeakerInfo
         ? transcription.speakerSegments

@@ -1200,7 +1200,7 @@
     }
   },
   "share": {
-    "title": "Share Transcript",
+    "title": "Share Conversation",
     "shareSettings": "Security Settings",
     "contentSelection": "Select Content to Share",
     "summaryOnly": "Summary Only",
@@ -1209,6 +1209,8 @@
     "customSelection": "Custom",
     "includeTranscript": "Full Transcript",
     "includeSummary": "Summary",
+    "fullTranscript": "Full Transcript",
+    "includeAIAssets": "AI Assets",
     "includeCommunication": "Communication Styles",
     "includeActionItems": "Action Items",
     "includeSpeakerInfo": "Speaker Information",
@@ -1245,8 +1247,12 @@
     "emailsSent": "Emails Sent!",
     "emailsSentSuccess": "Emails sent successfully! Recipients will receive the share link shortly.",
     "viewCount": "Views",
+    "views": "Views",
     "expiresOn": "Expires",
+    "expires": "Expires",
     "passwordProtected": "Password protected",
+    "password": "Password",
+    "protected": "Protected",
     "scanQR": "Scan QR code to share",
     "showQRCode": "Show QR Code",
     "confirmRevoke": "Are you sure you want to revoke this share link? Anyone with the link will no longer be able to access this transcript."

@@ -19,7 +19,7 @@ import {
   Copy,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, StructuredOutput } from '@transcribe/shared';
+import type { GeneratedAnalysis, StructuredOutput, Transcription } from '@transcribe/shared';
 import { getStructuredOutputPreview } from '@/components/outputTemplates';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
@@ -28,9 +28,11 @@ import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { DeleteConversationButton } from '@/components/DeleteConversationButton';
+import { ShareModal } from '@/components/ShareModal';
 import { useConversation } from '@/hooks/useConversation';
 import { updateConversationTitle } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatRelativeTime, formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 
@@ -45,12 +47,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
 
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  const { user } = useAuth();
   const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
   const { folders } = useFoldersContext();
   const t = useTranslations('aiAssets');
@@ -103,7 +108,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   // Fetch generated outputs for this conversation
   const fetchOutputs = useCallback(async () => {
-    if (!conversationId) return;
+    if (!conversationId || !user) return;
 
     setIsLoadingOutputs(true);
     try {
@@ -116,7 +121,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     } finally {
       setIsLoadingOutputs(false);
     }
-  }, [conversationId]);
+  }, [conversationId, user]);
 
   // Fetch outputs on mount and when conversation changes
   useEffect(() => {
@@ -143,6 +148,28 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const handleGenerateOutput = () => {
     setIsGeneratorOpen(true);
+  };
+
+  // Share modal handlers
+  const handleOpenShareModal = async () => {
+    const response = await transcriptionApi.get(conversationId);
+    if (response.success && response.data) {
+      setTranscriptionForShare(response.data as Transcription);
+      setIsShareModalOpen(true);
+    }
+  };
+
+  const handleShareUpdate = (updated: Transcription) => {
+    // Update local conversation sharing state
+    updateConversationLocally({
+      sharing: {
+        isPublic: !!updated.shareToken,
+        publicLinkId: updated.shareToken,
+        viewCount: updated.shareSettings?.viewCount || 0,
+        sharedWith: updated.sharedWith?.map((s) => s.email) || [],
+      },
+    });
+    setTranscriptionForShare(updated);
   };
 
   // Copy summary to clipboard as rich text HTML with plain text fallback
@@ -330,10 +357,20 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     })}
                   </span>
                 </div>
-                <DeleteConversationButton
-                  conversationId={conversationId}
-                  onDeleted={() => router.push(`/${locale}/dashboard`)}
-                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<Share2 className="w-4 h-4" />}
+                    onClick={handleOpenShareModal}
+                  >
+                    Share
+                  </Button>
+                  <DeleteConversationButton
+                    conversationId={conversationId}
+                    onDeleted={() => router.push(`/${locale}/dashboard`)}
+                  />
+                </div>
               </div>
             </div>
 
@@ -555,6 +592,16 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         conversationId={conversationId}
         onOutputGenerated={fetchOutputs}
       />
+
+      {/* Share Modal */}
+      {transcriptionForShare && (
+        <ShareModal
+          transcription={transcriptionForShare}
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          onShareUpdate={handleShareUpdate}
+        />
+      )}
     </div>
   );
 }

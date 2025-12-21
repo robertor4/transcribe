@@ -11,6 +11,7 @@
     "close": "Fermer",
     "back": "Retour",
     "next": "Suivant",
+    "previous": "Précédent",
     "submit": "Soumettre",
     "search": "Rechercher",
     "filter": "Filtrer",
@@ -333,6 +334,7 @@
     "status_processing": "En traitement",
     "status_completed": "Terminé",
     "status_failed": "Échec",
+    "uploadingFile": "Téléversement et préparation de la transcription...",
     "processingAudio": "Traitement de l'audio...",
     "analyzingContent": "Analyse du contenu...",
     "generatingSummary": "Génération du résumé...",
@@ -1529,7 +1531,7 @@
     }
   },
   "share": {
-    "title": "Partager la Transcription",
+    "title": "Partager la conversation",
     "shareSettings": "Paramètres de Sécurité",
     "contentSelection": "Sélectionner le Contenu à Partager",
     "summaryOnly": "Résumé Uniquement",
@@ -1538,6 +1540,8 @@
     "customSelection": "Personnalisé",
     "includeTranscript": "Transcription Complète",
     "includeSummary": "Résumé",
+    "fullTranscript": "Transcription complète",
+    "includeAIAssets": "Assets IA",
     "includeCommunication": "Styles de Communication",
     "includeActionItems": "Points d'Action",
     "includeSpeakerInfo": "Informations sur l'Orateur",
@@ -1551,6 +1555,8 @@
     "never": "Jamais",
     "passwordProtect": "Protection par Mot de Passe",
     "enterPassword": "Entrer le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "createLink": "Créer un Lien de Partage",
     "creating": "Création...",
     "linkCreated": "Lien de Partage Créé",
@@ -1572,9 +1578,14 @@
     "emailsSent": "E-mails Envoyés!",
     "emailsSentSuccess": "E-mails envoyés avec succès! Les destinataires recevront le lien de partage bientôt.",
     "viewCount": "Vues",
+    "views": "Vues",
     "expiresOn": "Expire",
+    "expires": "Expire",
     "passwordProtected": "Protégé par mot de passe",
+    "password": "Mot de passe",
+    "protected": "Protégé",
     "scanQR": "Scannez le code QR pour partager",
+    "showQRCode": "Afficher le code QR",
     "confirmRevoke": "Êtes-vous sûr de vouloir révoquer ce lien de partage? Les personnes avec le lien ne pourront plus accéder à cette transcription."
   },
   "shared": {
@@ -1602,25 +1613,9 @@
     }
   },
   "cookieConsent": {
-    "title": "Nous utilisons des cookies pour améliorer votre expérience",
-    "subtitle": "Aidez-nous à améliorer Neural Summary en autorisant les analytics",
-    "description": "Nous utilisons Firebase Analytics pour comprendre comment vous utilisez notre application et améliorer votre expérience. Cela inclut le suivi des pages vues, l'utilisation des fonctionnalités et les mesures de performance. Vos données ne sont jamais vendues à des tiers.",
-    "learnMore": "En savoir plus sur nos pratiques de confidentialité",
-    "whatWeCollect": "Ce que nous collectons:",
-    "whatWeCollectItems": {
-      "pageViews": "Pages vues et modèles de navigation",
-      "featureUsage": "Utilisation des fonctionnalités (téléchargements, transcriptions, résumés)",
-      "performance": "Mesures de performance et rapports d'erreurs",
-      "deviceInfo": "Informations sur l'appareil et le navigateur"
-    },
-    "whatWeDontCollect": "Ce que nous NE collectons PAS:",
-    "whatWeDontCollectItems": {
-      "audioFiles": "Vos fichiers audio ou contenu de transcription",
-      "personalInfo": "Informations personnellement identifiables sans consentement",
-      "advertising": "Données à des fins publicitaires"
-    },
-    "changePreference": "Vous pouvez modifier votre préférence à tout moment dans les paramètres du tableau de bord.",
-    "accept": "Accepter les Analytics",
+    "title": "Préférences de cookies",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre utilisation de cookies.",
+    "accept": "Accepter",
     "decline": "Refuser"
   },
   "pricing": {
@@ -2013,8 +2008,6 @@
     }
   },
   "analyses": {
-    "custom": "Analyse Personnalisée",
-    "default": "Analyse Standard",
     "copy": "Copier",
     "copied": "Copié!"
   },
