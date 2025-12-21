@@ -363,7 +363,7 @@
   "aiAssets": {
     "title": "AI Assets",
     "description": "Transform this conversation into professional deliverables",
-    "newAsset": "New AI Asset",
+    "newAsset": "Generate New",
     "createAsset": "Create AI Asset",
     "emptyTitle": "No AI assets yet",
     "emptyDescription": "Create your first AI asset to transform this conversation into a deliverable",

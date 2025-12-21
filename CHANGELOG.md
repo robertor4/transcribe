@@ -7,7 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*No unreleased changes yet.*
+
+---
+
+## [2.2.0] - 2025-12-21
+
+### UI Rebrand & Dashboard Refinements
+
 ### Changed
+- **Favicon Configuration**: Updated favicon paths to use new assets in `/assets/favicons/`
+  - All favicon references now point to `/assets/favicons/` directory
+  - Updated `site.webmanifest` with proper app name, description, and theme color
+  - Updated `manifest.json` icon paths and description
+  - Removed duplicate favicon files from root public folder
 - **Dashboard Visual Hierarchy Refinement**: Improved visual hierarchy so content stands out more than chrome
   - **Greeting**: Reduced from `text-4xl font-extrabold` to `text-2xl font-bold`, converted questions to statements
   - **Greeting Alignment**: Vertically aligned greeting baseline with logo bottom (`pt-[38px]`)
@@ -134,6 +147,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Legacy Recording Components**: Removed unused `FloatingRecordButton` and `RecordingModal` components
   - These were superseded by `SimpleAudioRecorder` integrated into `UploadInterface`
   - Removed 156 lines of deprecated code
+
+---
+
+## [2.1.0] - 2025-12-15
+
+### V2 Architecture & Recording UX
 
 ### Changed
 - **README Updated for V2**: Comprehensive documentation update reflecting V2 architecture
@@ -513,6 +532,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated output types summary: **NOW 5/5 core templates rendered** ✅ (was 2/5)
   - Key findings: Viral growth 0%, templates 5/5 ✅, UI 85%
   - File: [docs/UI_REDESIGN_PLAN_V2.md](docs/UI_REDESIGN_PLAN_V2.md)
+
+---
+
+## [2.0.1] - 2025-11-23
+
+### V2 Prototype & Multi-file Upload
 
 ### Removed
 - **ChatGPT-Style Sidebar Collapse (V2 Prototype)**: Redesigned sidebar collapse behavior to match modern app patterns

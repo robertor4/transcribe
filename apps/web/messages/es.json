@@ -361,7 +361,7 @@
   "aiAssets": {
     "title": "Assets de IA",
     "description": "Transforma esta conversación en entregables profesionales",
-    "newAsset": "Nuevo asset de IA",
+    "newAsset": "Generar nuevo",
     "createAsset": "Crear asset de IA",
     "emptyTitle": "Sin assets de IA",
     "emptyDescription": "Crea tu primer asset de IA para transformar esta conversación en un entregable",

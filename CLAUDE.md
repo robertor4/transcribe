@@ -150,6 +150,37 @@ When making any changes to the codebase, always update the `[Unreleased]` sectio
 
 The changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and helps track project evolution. Update it immediately after implementing changes, not at the end of a session.
 
+## Cutting a Release
+
+Neural Summary uses **feature-based versioning**. Cut a new version when a significant feature or set of features is complete.
+
+### Release Process
+
+1. **Move Unreleased to versioned section**:
+   - Change `## [Unreleased]` content to `## [X.Y.Z] - YYYY-MM-DD`
+   - Add new empty `## [Unreleased]` section at top
+   - Add a brief subtitle (e.g., `### UI Rebrand & Dashboard Refinements`)
+
+2. **Update version in package.json**:
+   - Bump version to match changelog (e.g., `"version": "2.2.0"`)
+
+3. **Commit and tag**:
+   ```bash
+   git add CHANGELOG.md package.json
+   git commit -m "chore: release vX.Y.Z"
+   git tag vX.Y.Z
+   git push && git push --tags
+   ```
+
+### Version Numbering
+- **Major (X.0.0)**: Breaking changes, major rewrites
+- **Minor (X.Y.0)**: New features, significant improvements
+- **Patch (X.Y.Z)**: Bug fixes, small tweaks
+
+### Changelog Entry Format
+Group changes by type: Added, Changed, Fixed, Removed, Security.
+Include file locations for significant changes using `[filename](path)` links.
+
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
 - **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS v4, React Dropzone, next-intl (5 languages)

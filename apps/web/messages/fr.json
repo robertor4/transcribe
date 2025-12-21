@@ -361,7 +361,7 @@
   "aiAssets": {
     "title": "Assets IA",
     "description": "Transformez cette conversation en livrables professionnels",
-    "newAsset": "Nouvel asset IA",
+    "newAsset": "Générer nouveau",
     "createAsset": "Créer un asset IA",
     "emptyTitle": "Aucun asset IA",
     "emptyDescription": "Créez votre premier asset IA pour transformer cette conversation en livrable",
