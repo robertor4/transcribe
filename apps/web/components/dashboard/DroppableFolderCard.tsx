@@ -35,7 +35,7 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
       ref={setNodeRef}
       className={`relative transition-all duration-200 ${
         isOver
-          ? 'ring-2 ring-[#cc3399] bg-pink-50/20 dark:bg-pink-900/10 scale-[1.02]'
+          ? 'ring-2 ring-[#8D6AFA] bg-purple-50/20 dark:bg-purple-900/10 scale-[1.02]'
           : ''
       }`}
     >
@@ -48,11 +48,11 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
             <Folder
               className={`w-5 h-5 transition-all duration-200 ${
                 isOver
-                  ? 'text-[#cc3399] scale-125'
-                  : 'text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110'
+                  ? 'text-[#8D6AFA] scale-125'
+                  : 'text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110'
               }`}
               style={{
-                color: isOver ? '#cc3399' : folder.color || undefined,
+                color: isOver ? '#8D6AFA' : folder.color || undefined,
               }}
             />
           </div>
@@ -60,13 +60,13 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
             <div
               className={`font-semibold mb-0.5 transition-colors duration-200 ${
                 isOver
-                  ? 'text-[#cc3399]'
-                  : 'text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399]'
+                  ? 'text-[#8D6AFA]'
+                  : 'text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA]'
               }`}
             >
               {folder.name}
             </div>
-            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            <div className="text-xs text-gray-400 dark:text-gray-500">
               <span>{stats.count} conversations</span>
             </div>
           </div>
@@ -74,8 +74,8 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
         <div
           className={`flex-shrink-0 pr-2 text-sm font-medium transition-all duration-200 ${
             isOver
-              ? 'text-[#cc3399] translate-x-1'
-              : 'text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1'
+              ? 'text-[#8D6AFA] translate-x-1'
+              : 'text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1'
           }`}
         >
           →
@@ -85,7 +85,7 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
       {/* Drop indicator text */}
       {isOver && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="bg-[#cc3399] text-white text-xs font-medium px-2 py-1 rounded-full shadow-lg">
+          <span className="bg-[#8D6AFA] text-white text-xs font-medium px-2 py-1 rounded-full shadow-lg">
             Drop to move here
           </span>
         </div>

@@ -42,7 +42,7 @@ export const RecordingGuide: React.FC = () => {
       id: 'ios',
       name: platformsData.ios?.name || 'iPhone / iPad',
       icon: <Smartphone className="h-5 w-5" />,
-      color: 'bg-pink-100 text-[#cc3399]',
+      color: 'bg-purple-100 text-[#8D6AFA]',
       steps: platformsData.ios?.steps || [],
       tips: platformsData.ios?.tips || [],
       apps: platformsData.ios?.apps || []
@@ -69,7 +69,7 @@ export const RecordingGuide: React.FC = () => {
       id: 'windows',
       name: platformsData.windows?.name || 'Windows PC',
       icon: <Monitor className="h-5 w-5" />,
-      color: 'bg-pink-100 text-[#cc3399]',
+      color: 'bg-purple-100 text-[#8D6AFA]',
       steps: platformsData.windows?.steps || [],
       tips: platformsData.windows?.tips || [],
       apps: platformsData.windows?.apps || []
@@ -86,7 +86,7 @@ export const RecordingGuide: React.FC = () => {
         <div className="flex items-start space-x-3">
           <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 uppercase tracking-wide">
               {t('proTips.title')}
             </h3>
             <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
@@ -112,8 +112,8 @@ export const RecordingGuide: React.FC = () => {
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-          <Mic className="h-5 w-5 mr-2 text-[#cc3399]" />
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center uppercase tracking-wide">
+          <Mic className="h-5 w-5 mr-2 text-[#8D6AFA]" />
           {t('recordingInstructions')}
         </h3>
 
@@ -122,7 +122,7 @@ export const RecordingGuide: React.FC = () => {
             <div key={platform.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => togglePlatform(platform.id)}
-                className="w-full px-4 py-3 bg-white dark:bg-gray-800 hover:bg-pink-50/30 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+                className="w-full px-4 py-3 bg-white dark:bg-gray-800 hover:bg-purple-50/30 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
               >
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${platform.color}`}>
@@ -131,7 +131,7 @@ export const RecordingGuide: React.FC = () => {
                   <span className="font-medium text-gray-900 dark:text-gray-100">{platform.name}</span>
                 </div>
                 {expandedPlatform === platform.id ? (
-                  <ChevronUp className="h-5 w-5 text-[#cc3399]" />
+                  <ChevronUp className="h-5 w-5 text-[#8D6AFA]" />
                 ) : (
                   <ChevronDown className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 )}
@@ -144,7 +144,7 @@ export const RecordingGuide: React.FC = () => {
                     <ol className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       {platform.steps.map((step, index) => (
                         <li key={index} className="flex">
-                          <span className="font-medium text-[#cc3399] mr-2">{index + 1}.</span>
+                          <span className="font-medium text-[#8D6AFA] mr-2">{index + 1}.</span>
                           <span>{step}</span>
                         </li>
                       ))}
@@ -156,7 +156,7 @@ export const RecordingGuide: React.FC = () => {
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       {platform.tips.map((tip, index) => (
                         <li key={index} className="flex items-start">
-                          <span className="text-[#cc3399] mr-2">✓</span>
+                          <span className="text-[#8D6AFA] mr-2">✓</span>
                           <span>{tip}</span>
                         </li>
                       ))}
@@ -181,7 +181,7 @@ export const RecordingGuide: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-pink-50 dark:bg-pink-900/30 border border-pink-200 dark:border-pink-700 rounded-xl p-4">
+      <div className="bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-pink-700 rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">

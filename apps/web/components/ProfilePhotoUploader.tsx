@@ -148,7 +148,7 @@ export function ProfilePhotoUploader({
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="h-16 w-16 rounded-full bg-[#cc3399] flex items-center justify-center text-white text-lg font-semibold">
+            <div className="h-16 w-16 rounded-full bg-[#8D6AFA] flex items-center justify-center text-white text-lg font-semibold">
               {getInitials()}
             </div>
           )}

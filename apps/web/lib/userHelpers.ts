@@ -67,27 +67,27 @@ export function getGreeting(emailOrName?: string): string {
  */
 const GREETINGS = {
   night: [
-    (name: string) => `Burning the midnight oil, ${name}?`,
-    (name: string) => `Late night ideas? Let's capture them, ${name}`,
-    (name: string) => `The quiet hours — perfect for thinking, ${name}`,
+    (name: string) => `Night owl mode, ${name}`,
+    (name: string) => `Late night session, ${name}`,
+    (name: string) => `Quiet hours, ${name}`,
   ],
   morning: [
     (name: string) => `Good morning, ${name}`,
-    (name: string) => `Morning, ${name} — ready to capture some ideas?`,
-    (name: string) => `A fresh morning for creating, ${name}`,
-    (name: string) => `Rise and record, ${name}`,
+    (name: string) => `Morning, ${name}`,
+    (name: string) => `Fresh start, ${name}`,
+    (name: string) => `Rise and create, ${name}`,
   ],
   afternoon: [
     (name: string) => `Good afternoon, ${name}`,
-    (name: string) => `Afternoon, ${name} — what will you create today?`,
-    (name: string) => `Good afternoon for capturing thoughts, ${name}`,
-    (name: string) => `Hey ${name}, ready to turn ideas into documents?`,
+    (name: string) => `Afternoon, ${name}`,
+    (name: string) => `Midday momentum, ${name}`,
+    (name: string) => `Hey ${name}`,
   ],
   evening: [
     (name: string) => `Good evening, ${name}`,
-    (name: string) => `Evening, ${name} — time to wrap up some thoughts?`,
-    (name: string) => `Good evening for recording, ${name}`,
-    (name: string) => `Wind down with a conversation, ${name}`,
+    (name: string) => `Evening, ${name}`,
+    (name: string) => `Winding down, ${name}`,
+    (name: string) => `Evening session, ${name}`,
   ],
 };
 

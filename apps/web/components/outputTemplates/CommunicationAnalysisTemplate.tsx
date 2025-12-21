@@ -120,9 +120,9 @@ export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTem
       </div>
 
       {/* Key Takeaway */}
-      <div className="bg-[#cc3399]/5 dark:bg-[#cc3399]/10 border border-[#cc3399]/20 rounded-xl p-4">
+      <div className="bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 border border-[#8D6AFA]/20 rounded-xl p-4">
         <div className="flex items-start gap-3">
-          <Target className="w-5 h-5 text-[#cc3399] flex-shrink-0 mt-0.5" />
+          <Target className="w-5 h-5 text-[#8D6AFA] flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Key takeaway</h4>
             <p className="text-gray-700 dark:text-gray-300">{data.keyTakeaway}</p>

@@ -87,7 +87,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
                 animation={index % 2 === 0 ? 'slideLeft' : 'slideRight'}
                 delay={index * 100}
               >
-                <div className="bg-white rounded-xl shadow-lg p-6 h-full border-2 border-transparent hover:border-[#cc3399] transition-all hover-lift">
+                <div className="bg-white rounded-xl shadow-lg p-6 h-full border-2 border-transparent hover:border-[#8D6AFA] transition-all hover-lift">
                   <div className={`w-14 h-14 ${platform.bgColor} rounded-xl flex items-center justify-center mb-4 mx-auto`}>
                     <Icon className={`h-7 w-7 ${platform.iconColor}`} aria-hidden="true" />
                   </div>

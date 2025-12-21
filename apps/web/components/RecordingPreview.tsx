@@ -235,8 +235,8 @@ export function RecordingPreview({
       />
 
       {/* Preview Card */}
-      <div className="p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399]">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      <div className="p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-[#8D6AFA]">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide">
           Your Recording
         </h3>
 
@@ -245,7 +245,7 @@ export function RecordingPreview({
           {/* Play/Pause button */}
           <button
             onClick={handlePlayPause}
-            className="flex-shrink-0 p-3 rounded-full bg-[#cc3399] text-white hover:bg-[#b82d89] transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-shrink-0 p-3 rounded-full bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? (
@@ -289,7 +289,7 @@ export function RecordingPreview({
                         className="flex-1 rounded-sm transition-colors duration-100"
                         style={{
                           height: `${height}%`,
-                          backgroundColor: isPast ? '#cc3399' : '#d1d5db',
+                          backgroundColor: isPast ? '#8D6AFA' : '#d1d5db',
                           opacity: isPast ? 1 : 0.5,
                         }}
                       />
@@ -300,7 +300,7 @@ export function RecordingPreview({
 
               {/* Playhead line */}
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[#cc3399] shadow-sm pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-[#8D6AFA] shadow-sm pointer-events-none"
                 style={{
                   left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
                   boxShadow: '0 0 4px rgba(204, 51, 153, 0.5)',

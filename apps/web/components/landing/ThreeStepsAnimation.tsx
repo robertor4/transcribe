@@ -77,7 +77,7 @@ export function ThreeStepsAnimation() {
               ease: "easeInOut",
             }}
           >
-            <Mic className="w-10 h-10 text-[#cc3399]" />
+            <Mic className="w-10 h-10 text-[#8D6AFA]" />
           </motion.div>
         </motion.div>
         <div className="text-6xl font-bold text-gray-300 mb-4">1</div>
@@ -134,7 +134,7 @@ export function ThreeStepsAnimation() {
               repeatDelay: 1,
             }}
           >
-            <FileText className="w-10 h-10 text-[#cc3399]" />
+            <FileText className="w-10 h-10 text-[#8D6AFA]" />
           </motion.div>
         </div>
         <div className="text-6xl font-bold text-gray-300 mb-4">3</div>

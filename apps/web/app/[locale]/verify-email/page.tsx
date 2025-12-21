@@ -96,7 +96,7 @@ export default function VerifyEmailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#cc3399] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8D6AFA] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
         <div>
           <div className="flex justify-center mb-6">
             <img
-              src="/assets/neural-summary-logo.webp"
+              src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary"
               className="h-24 w-auto"
             />
@@ -122,7 +122,7 @@ export default function VerifyEmailPage() {
           
           {success ? (
             <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
                 {tAuth('emailVerified')}
               </h2>
               <div className="mt-6 flex justify-center">
@@ -134,7 +134,7 @@ export default function VerifyEmailPage() {
             </>
           ) : (
             <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
                 {tAuth('verifyYourEmail')}
               </h2>
               <p className="mt-4 text-center text-sm text-gray-600">
@@ -178,7 +178,7 @@ export default function VerifyEmailPage() {
                   <button
                     onClick={handleResendEmail}
                     disabled={resendCooldown > 0 || checkingVerification}
-                    className="font-medium text-[#cc3399] hover:text-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {resendCooldown > 0 
                       ? `${tAuth('resendIn')} ${resendCooldown}s`

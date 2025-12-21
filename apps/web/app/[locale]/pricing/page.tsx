@@ -259,7 +259,7 @@ export default function PricingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#2c2c2c]">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-[#23194B]">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
             {t('finalCta.title')}

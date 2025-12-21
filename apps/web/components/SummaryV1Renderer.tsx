@@ -80,8 +80,8 @@ export const SummaryV1Renderer: React.FC<SummaryV1RendererProps> = ({ content })
 
       {/* Key Points Box */}
       {parsed.keyPoints.length > 0 && (
-        <div className="pl-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#cc3399] rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
+        <div className="pl-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
             {parsed.keyPointsTitle || 'Key Points'}
           </h3>
           <ul className="space-y-2 list-disc list-inside">

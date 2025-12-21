@@ -62,7 +62,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
       { bg: 'bg-green-50 dark:bg-green-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-700 dark:text-green-400', avatar: 'bg-green-500' },
       { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-400', avatar: 'bg-purple-500' },
       { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-700 dark:text-orange-400', avatar: 'bg-orange-500' },
-      { bg: 'bg-pink-50 dark:bg-pink-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-pink-500' },
+      { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-purple-500' },
       { bg: 'bg-teal-50 dark:bg-teal-900/30', border: 'border-teal-400 dark:border-teal-600', text: 'text-teal-700 dark:text-teal-400', avatar: 'bg-teal-500' },
     ];
 
@@ -201,7 +201,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
             placeholder="Search transcript..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-24 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
+            className="w-full pl-10 pr-24 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 focus:border-[#8D6AFA]"
           />
           {searchQuery && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -224,7 +224,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCorrectionModalOpen(true)}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 text-sm font-medium"
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 text-sm font-medium"
             >
               <Pencil className="w-4 h-4" />
               {t('fixTranscript')}
@@ -316,10 +316,10 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
           {/* Selected time indicator */}
           {selectedTime !== null && (
             <div
-              className="absolute top-0 h-full w-0.5 bg-[#cc3399]"
+              className="absolute top-0 h-full w-0.5 bg-[#8D6AFA]"
               style={{ left: `${(selectedTime / totalDuration) * 100}%` }}
             >
-              <div className="absolute -top-1 -left-1.5 w-4 h-4 bg-[#cc3399] rounded-full" />
+              <div className="absolute -top-1 -left-1.5 w-4 h-4 bg-[#8D6AFA] rounded-full" />
             </div>
           )}
         </div>

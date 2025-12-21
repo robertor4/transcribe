@@ -18,14 +18,14 @@ export function CTAButton({ href, locale, variant = 'primary', children, 'aria-l
 
   // Primary variant - solid dark background
   const primaryClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
-  const primaryStyle = { backgroundColor: isHovered ? '#3a3a3a' : '#2c2c2c' };
+  const primaryStyle = { backgroundColor: isHovered ? '#2D2360' : '#23194B' };
 
   // Secondary variant - outlined with white background, fills on hover
   const secondaryClasses = `${baseClasses} ${isHovered ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} border-2 border-gray-900`;
 
   // Brand variant - bold brand pink
   const brandClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
-  const brandStyle = { backgroundColor: isHovered ? '#b82d89' : '#cc3399' };
+  const brandStyle = { backgroundColor: isHovered ? '#7A5AE0' : '#8D6AFA' };
 
   if (!href) return null;
 

@@ -57,7 +57,7 @@ export function PublicFooter({ locale }: PublicFooterProps) {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center mb-4 md:mb-0">
               <img
-                src="/assets/NS-symbol.webp"
+                src="/assets/logos/neural-summary-logo.svg"
                 alt="Neural Summary"
                 className="h-6 w-auto mr-2"
                 width={24}

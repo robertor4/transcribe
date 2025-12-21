@@ -596,7 +596,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
   const getStatusIcon = (status: TranscriptionStatus) => {
     switch (status) {
       case TranscriptionStatus.PROCESSING:
-        return <Loader2 className="h-5 w-5 text-[#cc3399] animate-spin" />;
+        return <Loader2 className="h-5 w-5 text-[#8D6AFA] animate-spin" />;
       case TranscriptionStatus.FAILED:
         return <XCircle className="h-5 w-5 text-red-500" />;
       default:
@@ -636,7 +636,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="h-8 w-8 text-[#cc3399] animate-spin" />
+        <Loader2 className="h-8 w-8 text-[#8D6AFA] animate-spin" />
       </div>
     );
   }
@@ -644,8 +644,8 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
   if (transcriptions.length === 0) {
     return (
       <div className="text-center py-16">
-        <FileAudio className="h-16 w-16 text-[#cc3399] mx-auto mb-6" />
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+        <FileAudio className="h-16 w-16 text-[#8D6AFA] mx-auto mb-6" />
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
           {tDashboard('emptyStateTitle')}
         </h3>
         <p className="text-gray-700 dark:text-gray-300 mb-8 max-w-md mx-auto">
@@ -654,7 +654,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
         {onNavigateToUpload && (
           <button
             onClick={onNavigateToUpload}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#cc3399] text-white font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#8D6AFA] text-white font-medium rounded-lg hover:bg-[#7A5AE0] transition-colors shadow-sm hover:shadow-md"
           >
             <Upload className="h-5 w-5" />
             {tDashboard('emptyStateButton')}
@@ -671,7 +671,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
         <div className="flex justify-end mb-4">
           <button
             onClick={onNavigateToUpload}
-            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-[#cc3399] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#b82d89] transition-colors shadow-sm hover:shadow-md w-full sm:w-auto"
+            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-[#8D6AFA] text-white text-sm sm:text-base font-medium rounded-lg hover:bg-[#7A5AE0] transition-colors shadow-sm hover:shadow-md w-full sm:w-auto"
           >
             <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             {tDashboard('uploadNewAudio')}
@@ -721,7 +721,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                         value={editingTitleValue}
                         onChange={(e) => setEditingTitleValue(e.target.value)}
                         onKeyDown={(e) => handleTitleKeyPress(e, transcription.id)}
-                        className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg px-3 py-2 sm:py-1.5 w-full sm:min-w-0 sm:flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 resize-none"
+                        className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg px-3 py-2 sm:py-1.5 w-full sm:min-w-0 sm:flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none"
                         placeholder={t('editTitle')}
                         rows={2}
                         autoFocus
@@ -756,7 +756,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                           e.stopPropagation();
                           startEditingTitle(transcription);
                         }}
-                        className="hidden sm:block p-1 text-gray-400 dark:text-gray-500 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-all flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100"
+                        className="hidden sm:block p-1 text-gray-400 dark:text-gray-500 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-all flex-shrink-0 mt-0.5 opacity-0 group-hover:opacity-100"
                         title={t('editTitle')}
                       >
                         <Edit3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -865,7 +865,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                                 startEditingTitle(transcription);
                                 setOpenMenuId(null);
                               }}
-                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors"
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors"
                             >
                               <Edit3 className="h-4 w-4" />
                               <span className="text-gray-800 dark:text-gray-200">{t('editTitle')}</span>
@@ -946,7 +946,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                       className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-200 ${
                         isExpanded
                           ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                          : 'bg-[#cc3399] text-white hover:bg-[#b82d89] shadow-sm hover:shadow-md active:scale-95'
+                          : 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] shadow-sm hover:shadow-md active:scale-95'
                       }`}
                       title={isExpanded ? t('hideTranscript') : t('viewTranscription')}
                     >
@@ -964,7 +964,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                 <div className="mt-4">
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                     <div
-                      className="bg-[#cc3399] h-2.5 rounded-full transition-all duration-300"
+                      className="bg-[#8D6AFA] h-2.5 rounded-full transition-all duration-300"
                       style={{ width: `${progress.progress}%` }}
                     />
                   </div>
@@ -1037,19 +1037,19 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                         <FileText className="h-4 w-4 mr-2" />
                         Summary
                         {transcription.summaryVersion && transcription.summaryVersion > 1 && (
-                          <span className="ml-2 px-2 py-1 text-xs bg-[#cc3399] text-white rounded">
+                          <span className="ml-2 px-2 py-1 text-xs bg-[#8D6AFA] text-white rounded">
                             v{transcription.summaryVersion}
                           </span>
                         )}
                       </h4>
                       <button
                         onClick={() => handleCopy(transcription.summary || '', `summary-${transcription.id}`)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                         title="Copy summary"
                       >
                         {copiedId === `summary-${transcription.id}` ? (
                           <>
-                            <Check className="h-3 w-3 text-[#cc3399]" />
+                            <Check className="h-3 w-3 text-[#8D6AFA]" />
                             Copied!
                           </>
                         ) : (
@@ -1078,7 +1078,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                           onClick={() => toggleFormat(transcription.id)}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                             !unformattedTranscripts.has(transcription.id)
-                              ? 'bg-pink-100 dark:bg-pink-900/30 text-[#cc3399] hover:bg-pink-200 dark:hover:bg-pink-900/40'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-[#8D6AFA] hover:bg-purple-200 dark:hover:bg-purple-900/40'
                               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
@@ -1093,12 +1093,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                               : transcription.transcriptText || '',
                             `transcript-${transcription.id}`
                           )}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                           title="Copy transcript"
                         >
                           {copiedId === `transcript-${transcription.id}` ? (
                             <>
-                              <Check className="h-3 w-3 text-[#cc3399]" />
+                              <Check className="h-3 w-3 text-[#8D6AFA]" />
                               Copied!
                             </>
                           ) : (
@@ -1133,7 +1133,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                           onClick={() => toggleFormat(transcription.id)}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                             !unformattedTranscripts.has(transcription.id)
-                              ? 'bg-pink-100 dark:bg-pink-900/30 text-[#cc3399] hover:bg-pink-200 dark:hover:bg-pink-900/40'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-[#8D6AFA] hover:bg-purple-200 dark:hover:bg-purple-900/40'
                               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title={!unformattedTranscripts.has(transcription.id) ? "Show original format" : "Format transcript"}
@@ -1148,12 +1148,12 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
                               : transcription.transcriptText || '',
                             `transcript-${transcription.id}`
                           )}
-                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded transition-colors"
+                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                           title="Copy transcript"
                         >
                           {copiedId === `transcript-${transcription.id}` ? (
                             <>
-                              <Check className="h-3 w-3 text-[#cc3399]" />
+                              <Check className="h-3 w-3 text-[#8D6AFA]" />
                               Copied!
                             </>
                           ) : (

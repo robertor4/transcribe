@@ -98,16 +98,16 @@ export function BeforeAfterAnimation() {
             times: [0, 0.2, 0.4, 0.6, 1],
           }}
         >
-          <Zap className="w-12 h-12 text-[#cc3399] fill-[#cc3399]" />
+          <Zap className="w-12 h-12 text-[#8D6AFA] fill-[#8D6AFA]" />
         </motion.div>
 
         <motion.div
-          className="text-center px-4 py-2 bg-[#cc3399]/10 rounded-full"
+          className="text-center px-4 py-2 bg-[#8D6AFA]/10 rounded-full"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 1.4 }}
         >
-          <motion.p className="text-xl font-bold text-[#cc3399] font-mono">
+          <motion.p className="text-xl font-bold text-[#8D6AFA] font-mono">
             {rounded}
           </motion.p>
         </motion.div>
@@ -124,7 +124,7 @@ export function BeforeAfterAnimation() {
             ease: "easeInOut",
           }}
         >
-          <svg className="w-12 h-8 text-[#cc3399]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-12 h-8 text-[#8D6AFA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </motion.div>
@@ -148,7 +148,7 @@ export function BeforeAfterAnimation() {
             {[0, 1, 2, 3].map((i) => (
               <motion.div
                 key={i}
-                className="h-1.5 bg-[#cc3399]/30 rounded"
+                className="h-1.5 bg-[#8D6AFA]/30 rounded"
                 initial={{ width: 0 }}
                 animate={isInView ? { width: "100%" } : { width: 0 }}
                 transition={{ delay: 2 + i * 0.1, duration: 0.3 }}
@@ -156,7 +156,7 @@ export function BeforeAfterAnimation() {
             ))}
           </div>
 
-          <FileCheck className="w-16 h-16 text-[#cc3399] relative z-10" />
+          <FileCheck className="w-16 h-16 text-[#8D6AFA] relative z-10" />
         </motion.div>
 
         <motion.div

@@ -50,7 +50,7 @@ export function UsageIndicator({
             className={`h-2.5 rounded-full transition-all ${
               isExceeded ? 'bg-red-600' :
               isWarning ? 'bg-orange-500' :
-              'bg-[#cc3399]'
+              'bg-[#8D6AFA]'
             }`}
             style={{ width: `${Math.min(100, percentUsed)}%` }}
           />

@@ -69,7 +69,7 @@ export function QuotaExceededModal({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center">
             <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400 mr-3" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-wide">
               {message.title}
             </h2>
           </div>
@@ -128,7 +128,7 @@ export function QuotaExceededModal({
           </button>
           <Link
             href={message.upgradeLink}
-            className="flex-1 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors text-center"
+            className="flex-1 px-4 py-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors text-center"
           >
             {message.upgradeText}
           </Link>

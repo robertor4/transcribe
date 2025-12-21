@@ -139,7 +139,7 @@ export default function DiffViewer({ diff, summary }: DiffViewerProps) {
               {/* Header */}
               <button
                 onClick={() => toggleSegment(index)}
-                className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20"
+                className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">

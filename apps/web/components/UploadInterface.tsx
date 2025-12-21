@@ -227,15 +227,15 @@ export function UploadInterface({
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto items-start">
             {/* Record Audio (now first) */}
-            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200 overflow-hidden">
+            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200 overflow-hidden">
               <button
                 onClick={() => setSelectedMethod('record')}
                 className="group w-full p-8"
               >
-                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200">
                   <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#8D6AFA] uppercase tracking-wide">
                   {t('recordAudio')}
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-400">
@@ -269,15 +269,15 @@ export function UploadInterface({
             </div>
 
             {/* Upload File (now second) */}
-            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200 overflow-hidden">
+            <div className="rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200 overflow-hidden">
               <button
                 onClick={() => setSelectedMethod('upload')}
                 className="group w-full p-8"
               >
-                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+                <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200">
                   <Upload className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#cc3399]">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 group-hover:text-[#8D6AFA] uppercase tracking-wide">
                   {t('importAudio')}
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-400">
@@ -331,12 +331,12 @@ export function UploadInterface({
             onClick={handleUploadClick}
             className={`relative border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all duration-200 ${
               isDragging
-                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/10 scale-105'
-                : 'border-gray-300 dark:border-gray-700 hover:border-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800'
+                ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/10 scale-105'
+                : 'border-gray-300 dark:border-gray-700 hover:border-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
             <Upload className="w-16 h-16 mx-auto mb-6 text-gray-400" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
               {isDragging ? 'Drop your files here' : 'Drop your files here'}
             </h3>
             <p className="text-sm text-gray-700 dark:text-gray-400 mb-4">
@@ -369,7 +369,7 @@ export function UploadInterface({
           {/* File list */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                 Selected files ({selectedFiles.length})
               </h3>
               {selectedFiles.length > 1 && (
@@ -388,8 +388,8 @@ export function UploadInterface({
                   onDragEnd={handleDragEnd}
                   className={`flex items-center justify-between bg-white dark:bg-gray-700 border-2 rounded-lg p-3 transition-all ${
                     draggedIndex === index
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-[#cc3399]'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-[#8D6AFA]'
                   } ${selectedFiles.length > 1 ? 'cursor-move' : ''}`}
                 >
                   <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -397,11 +397,11 @@ export function UploadInterface({
                       <GripVertical className="h-5 w-5 text-gray-400" />
                     )}
                     <div className="flex items-center space-x-2 min-w-0 flex-1">
-                      <FileAudio className="h-5 w-5 text-[#cc3399] flex-shrink-0" />
+                      <FileAudio className="h-5 w-5 text-[#8D6AFA] flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center space-x-2">
                           {selectedFiles.length > 1 && (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#cc3399] text-white text-xs font-semibold flex-shrink-0">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#8D6AFA] text-white text-xs font-semibold flex-shrink-0">
                               {index + 1}
                             </span>
                           )}
@@ -438,12 +438,12 @@ export function UploadInterface({
               onClick={handleUploadClick}
               className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all duration-200 ${
                 isDragging
-                  ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] bg-white dark:bg-gray-700 hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                  ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA] bg-white dark:bg-gray-700 hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
               }`}
             >
               <div className="flex items-center justify-center space-x-2">
-                <Upload className="h-5 w-5 text-[#cc3399]" />
+                <Upload className="h-5 w-5 text-[#8D6AFA]" />
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Add more files
                 </p>
@@ -461,9 +461,9 @@ export function UploadInterface({
                 Processing mode
               </label>
               {processingMode === 'merged' && (
-                <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399]/30 dark:border-[#cc3399]/50 rounded-lg">
+                <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 border-2 border-[#8D6AFA]/30 dark:border-[#8D6AFA]/50 rounded-lg">
                   <div className="flex items-start space-x-2">
-                    <Info className="h-4 w-4 text-[#cc3399] mt-0.5 flex-shrink-0" />
+                    <Info className="h-4 w-4 text-[#8D6AFA] mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-gray-800 dark:text-gray-300">
                       Files will be merged in the order shown above. Drag to
                       reorder them chronologically.
@@ -477,15 +477,15 @@ export function UploadInterface({
                   onClick={() => setProcessingMode('individual')}
                   className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 ${
                     processingMode === 'individual'
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#8D6AFA] hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
                   }`}
                 >
                   <div className="flex items-center space-x-2 mb-1">
                     <FileAudio
                       className={`h-5 w-5 ${
                         processingMode === 'individual'
-                          ? 'text-[#cc3399]'
+                          ? 'text-[#8D6AFA]'
                           : 'text-gray-600 dark:text-gray-400'
                       }`}
                     />
@@ -503,15 +503,15 @@ export function UploadInterface({
                   onClick={() => setProcessingMode('merged')}
                   className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200 ${
                     processingMode === 'merged'
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#8D6AFA] hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
                   }`}
                 >
                   <div className="flex items-center space-x-2 mb-1">
                     <Upload
                       className={`h-5 w-5 ${
                         processingMode === 'merged'
-                          ? 'text-[#cc3399]'
+                          ? 'text-[#8D6AFA]'
                           : 'text-gray-600 dark:text-gray-400'
                       }`}
                     />

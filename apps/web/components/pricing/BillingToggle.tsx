@@ -20,13 +20,13 @@ export function BillingToggle({ billingCycle, onToggle }: BillingToggleProps) {
       {/* Toggle Switch */}
       <button
         onClick={() => onToggle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-        className="relative inline-flex h-8 w-16 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+        className="relative inline-flex h-8 w-16 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
         role="switch"
         aria-checked={billingCycle === 'annual'}
         aria-label="Toggle between monthly and annual billing"
       >
         <span
-          className={`inline-block h-6 w-6 transform rounded-full bg-[#cc3399] shadow-md transition-transform ${
+          className={`inline-block h-6 w-6 transform rounded-full bg-[#8D6AFA] shadow-md transition-transform ${
             billingCycle === 'annual' ? 'translate-x-9' : 'translate-x-1'
           }`}
         />

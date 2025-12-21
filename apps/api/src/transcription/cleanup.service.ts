@@ -183,7 +183,8 @@ export class CleanupService {
 
         // Check completedAt for successfully processed transcriptions
         if (data.completedAt) {
-          const completedAt = data.completedAt.toDate?.() || new Date(data.completedAt);
+          const completedAt =
+            data.completedAt.toDate?.() || new Date(data.completedAt);
           if (completedAt < thirtyDaysAgo) {
             shouldDelete = true;
             deleteReason = `completed ${completedAt.toISOString()}`;
@@ -192,7 +193,8 @@ export class CleanupService {
 
         // Check deletedAt for soft-deleted transcriptions
         if (data.deletedAt) {
-          const deletedAt = data.deletedAt.toDate?.() || new Date(data.deletedAt);
+          const deletedAt =
+            data.deletedAt.toDate?.() || new Date(data.deletedAt);
           if (deletedAt < thirtyDaysAgo) {
             shouldDelete = true;
             deleteReason = `soft-deleted ${deletedAt.toISOString()}`;
@@ -201,7 +203,8 @@ export class CleanupService {
 
         // Check failed transcriptions by createdAt
         if (data.status === TranscriptionStatus.FAILED && data.createdAt) {
-          const createdAt = data.createdAt.toDate?.() || new Date(data.createdAt);
+          const createdAt =
+            data.createdAt.toDate?.() || new Date(data.createdAt);
           if (createdAt < thirtyDaysAgo) {
             shouldDelete = true;
             deleteReason = `failed, created ${createdAt.toISOString()}`;

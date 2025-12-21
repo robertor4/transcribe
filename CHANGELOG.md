@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Dashboard Visual Hierarchy Refinement**: Improved visual hierarchy so content stands out more than chrome
+  - **Greeting**: Reduced from `text-4xl font-extrabold` to `text-2xl font-bold`, converted questions to statements
+  - **Greeting Alignment**: Vertically aligned greeting baseline with logo bottom (`pt-[38px]`)
+  - **Section Headers**: FOLDERS/CONVERSATIONS headers now subtler (`text-sm text-gray-400` vs bold dark)
+  - **Secondary Text**: Folder counts and conversation dates use lighter color (`text-gray-400`)
+  - **Spacing**: Reduced greeting margin (`mb-8`), quick actions margin (`mb-10`), header margin (`mb-4`)
+- **Complete UI Rebrand**: Updated entire application UI with new brand identity
+  - **New Color Palette**: Primary brand color changed from pink (`#cc3399`) to purple (`#8D6AFA`)
+  - **New Typography**: Switched from Geist to Montserrat font (geometric sans-serif)
+  - **New Tagline**: "You speak. It creates." replaces "Voice-to-output creation platform" in all 5 languages
+  - **New Logo**: Updated all logo references to use new SVG logo assets at `/assets/logos/`
+  - **CSS Variables**: Updated all brand colors in `globals.css` (primary, hover, secondary, accent-dark)
+  - **Button Component**: Updated `Button.tsx` with new color scheme (`#23194B` primary, `#8D6AFA` brand)
+  - **92+ Component Files**: Replaced hardcoded colors with new brand purple across all UI components
+  - **Pink to Purple**: All `pink-*` Tailwind classes updated to `purple-*` for consistent theming
+  - **Manifest**: Updated `theme_color` to new brand purple
+  - **Documentation**: Updated `CLAUDE.md` and `docs/UI_DESIGN_SYSTEM.md` with new brand guidelines
+
 ### Added
 - **Conversation Search**: Search through conversations by keyword from the left sidebar
   - Backend search endpoint `GET /transcriptions/search` with in-memory Firestore filtering

@@ -74,7 +74,7 @@ export function RecordingRecoveryDialog({
                 <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   Recover Unsaved Recordings
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -109,8 +109,8 @@ export function RecordingRecoveryDialog({
                     {/* Source Icon */}
                     <div className="flex-shrink-0">
                       {recording.source === 'microphone' ? (
-                        <div className="w-10 h-10 rounded-full bg-[#cc3399]/10 dark:bg-[#cc3399]/20 flex items-center justify-center">
-                          <Mic className="w-5 h-5 text-[#cc3399]" />
+                        <div className="w-10 h-10 rounded-full bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 flex items-center justify-center">
+                          <Mic className="w-5 h-5 text-[#8D6AFA]" />
                         </div>
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
@@ -157,10 +157,10 @@ export function RecordingRecoveryDialog({
                         onClick={() => onRecover(recording)}
                         className="
                           px-4 py-2 rounded-lg
-                          bg-[#cc3399] hover:bg-[#b82d89]
+                          bg-[#8D6AFA] hover:bg-[#7A5AE0]
                           text-white text-sm font-medium
                           transition-all duration-200
-                          focus:outline-none focus:ring-2 focus:ring-[#cc3399]/30
+                          focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/30
                         "
                       >
                         Recover

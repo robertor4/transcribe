@@ -98,7 +98,7 @@ export default function NotificationSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
@@ -148,8 +148,8 @@ export default function NotificationSettingsPage() {
                 disabled={saving}
                 className={`
                   relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2
-                  ${emailEnabled ? 'bg-[#cc3399]' : 'bg-gray-200 dark:bg-gray-600'}
+                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2
+                  ${emailEnabled ? 'bg-[#8D6AFA]' : 'bg-gray-200 dark:bg-gray-600'}
                   ${saving ? 'opacity-50 cursor-wait' : ''}
                 `}
               >
@@ -186,8 +186,8 @@ export default function NotificationSettingsPage() {
                 disabled={permission === 'denied'}
                 className={`
                   relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2
-                  ${browserEnabled ? 'bg-[#cc3399]' : 'bg-gray-200 dark:bg-gray-600'}
+                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2
+                  ${browserEnabled ? 'bg-[#8D6AFA]' : 'bg-gray-200 dark:bg-gray-600'}
                   ${permission === 'denied' ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
               >

@@ -175,7 +175,7 @@ export default function SignupForm() {
                 required
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('enterYourName')}
               />
             </div>
@@ -198,7 +198,7 @@ export default function SignupForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('enterYourEmail')}
               />
             </div>
@@ -221,7 +221,7 @@ export default function SignupForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('createPassword')}
               />
               <button
@@ -274,7 +274,7 @@ export default function SignupForm() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('confirmYourPassword')}
               />
               <button
@@ -304,15 +304,15 @@ export default function SignupForm() {
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setAcceptTerms(e.target.checked)}
-            className="h-4 w-4 text-[#cc3399] focus:ring-[#cc3399] border-gray-300 dark:border-gray-600 rounded mt-0.5"
+            className="h-4 w-4 text-[#8D6AFA] focus:ring-[#8D6AFA] border-gray-300 dark:border-gray-600 rounded mt-0.5"
           />
           <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-600 dark:text-gray-400">
             {tAuth('iAgreeToThe')}{' '}
-            <Link href="/terms" className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
+            <Link href="/terms" className="text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]">
               {tAuth('termsOfService')}
             </Link>{' '}
             {tAuth('and')}{' '}
-            <Link href="/privacy" className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
+            <Link href="/privacy" className="text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]">
               {tAuth('privacyPolicy')}
             </Link>
           </label>
@@ -322,7 +322,7 @@ export default function SignupForm() {
           <button
             type="submit"
             disabled={loading || !acceptTerms}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -346,7 +346,7 @@ export default function SignupForm() {
             type="button"
             onClick={handleGoogleSignup}
             disabled={loading}
-            className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
@@ -373,7 +373,7 @@ export default function SignupForm() {
         <div className="text-center">
           <span className="text-sm text-gray-600 dark:text-gray-400">
             {tAuth('alreadyHaveAccount')}{' '}
-            <Link href="/login" className="font-medium text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]">
+            <Link href="/login" className="font-medium text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]">
               {tAuth('signIn')}
             </Link>
           </span>

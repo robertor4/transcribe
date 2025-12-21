@@ -28,6 +28,7 @@ export interface Conversation {
   source: ConversationSource;
   tags: string[];
   sharing: ConversationSharing;
+  assetsCount: number; // Count of generated AI assets (from generatedAnalysisIds)
 }
 
 export type ConversationStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -214,6 +215,7 @@ export function transcriptionToConversation(transcription: Transcription): Conve
       viewCount: transcription.shareSettings?.viewCount || 0,
       sharedWith: transcription.sharedWith?.map(s => s.email) || [],
     },
+    assetsCount: transcription.generatedAnalysisIds?.length || 0,
   };
 }
 

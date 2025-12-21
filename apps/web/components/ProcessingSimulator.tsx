@@ -165,7 +165,7 @@ export function ProcessingSimulator({
                 key={`${file.name}-${index}`}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 dark:bg-gray-800 text-xs text-gray-700 dark:text-gray-400"
               >
-                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#cc3399] text-white text-[10px] font-semibold">
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#8D6AFA] text-white text-[10px] font-semibold">
                   {index + 1}
                 </span>
                 <span>{file.name}</span>
@@ -186,9 +186,9 @@ export function ProcessingSimulator({
                   key={`${template}-${index}`}
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ${
                     template === 'Just Transcribe'
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : stage === 'analyzing' || stage === 'complete'
-                      ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300'
+                      ? 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                   }`}
                 >
@@ -207,7 +207,7 @@ export function ProcessingSimulator({
       <div className="space-y-3">
         <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#cc3399] to-[#ff66cc] transition-all duration-300 ease-out"
+            className="h-full bg-gradient-to-r from-[#8D6AFA] to-[#ff66cc] transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -232,7 +232,7 @@ export function ProcessingSimulator({
               key={stageName}
               className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-300 ${
                 isActive
-                  ? 'bg-pink-50 dark:bg-pink-900/20 scale-105'
+                  ? 'bg-purple-50 dark:bg-purple-900/20 scale-105'
                   : isPast
                   ? 'bg-green-50 dark:bg-green-900/20'
                   : 'bg-gray-50 dark:bg-gray-800'
@@ -243,7 +243,7 @@ export function ProcessingSimulator({
                   isComplete
                     ? 'bg-green-500 text-white'
                     : isActive
-                    ? 'bg-[#cc3399] text-white animate-pulse'
+                    ? 'bg-[#8D6AFA] text-white animate-pulse'
                     : isPast
                     ? 'bg-green-500 text-white'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
@@ -288,7 +288,7 @@ export function ProcessingSimulator({
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Redirecting to your conversation in{' '}
-              <span className="font-bold text-[#cc3399]">{countdown}</span>{' '}
+              <span className="font-bold text-[#8D6AFA]">{countdown}</span>{' '}
               second{countdown !== 1 ? 's' : ''}...
             </p>
           </div>

@@ -94,13 +94,13 @@ export function PricingCard({
         relative bg-white rounded-2xl p-8 transition-all duration-300
         ${
           featured
-            ? 'border border-[#cc3399] shadow-2xl md:scale-105 ring-2 ring-[#cc3399]/10'
+            ? 'border border-[#8D6AFA] shadow-2xl md:scale-105 ring-2 ring-[#8D6AFA]/10'
             : 'border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
         }
       `}
     >
       {featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#cc3399] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8D6AFA] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
           Most Popular
         </div>
       )}
@@ -135,9 +135,9 @@ export function PricingCard({
           group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 text-gray-800
           ${
             featured
-              ? 'bg-[#2c2c2c] text-white hover:bg-[#3c3c3c] shadow-lg'
+              ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
               : tier === 'free'
-              ? 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
+              ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
               : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
           }
         `}
@@ -165,7 +165,7 @@ export function PricingCard({
               )}
               <li className="flex items-start gap-3">
                 {feature.icon && (
-                  <feature.icon className="h-5 w-5 text-[#cc3399] mt-0.5 flex-shrink-0" />
+                  <feature.icon className="h-5 w-5 text-[#8D6AFA] mt-0.5 flex-shrink-0" />
                 )}
                 {!feature.icon && (
                   feature.included ? (

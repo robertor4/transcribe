@@ -93,7 +93,8 @@ export class UserService {
 
       // Also update Firebase Auth profile to keep them in sync
       // This ensures photoURL and displayName are reflected in the user object
-      const authUpdates: { displayName?: string; photoURL?: string | null } = {};
+      const authUpdates: { displayName?: string; photoURL?: string | null } =
+        {};
       if (profile.displayName !== undefined) {
         authUpdates.displayName = profile.displayName;
       }
@@ -139,7 +140,9 @@ export class UserService {
       // Validate file type
       const allowedMimeTypes = ['image/jpeg', 'image/png'];
       if (!allowedMimeTypes.includes(file.mimetype)) {
-        throw new Error('Invalid file type. Only JPG and PNG files are allowed.');
+        throw new Error(
+          'Invalid file type. Only JPG and PNG files are allowed.',
+        );
       }
 
       // Validate file size (5MB max)
@@ -194,11 +197,15 @@ export class UserService {
           this.logger.log(`Deleted old profile photo: ${oldPhotoPath}`);
         } catch (error) {
           // Don't fail if old photo deletion fails
-          this.logger.warn(`Failed to delete old profile photo: ${oldPhotoPath}`);
+          this.logger.warn(
+            `Failed to delete old profile photo: ${oldPhotoPath}`,
+          );
         }
       }
 
-      this.logger.log(`Profile photo uploaded for user ${userId}: ${publicUrl}`);
+      this.logger.log(
+        `Profile photo uploaded for user ${userId}: ${publicUrl}`,
+      );
       return publicUrl;
     } catch (error) {
       this.logger.error(`Error uploading profile photo for ${userId}:`, error);
@@ -214,9 +221,9 @@ export class UserService {
       const user = await this.getUserProfile(userId);
 
       if (
-      user?.photoURL?.includes('profiles/') ||
-      user?.photoURL?.includes('profile-photos/')
-    ) {
+        user?.photoURL?.includes('profiles/') ||
+        user?.photoURL?.includes('profile-photos/')
+      ) {
         const filePath = this.extractPathFromUrl(user.photoURL);
         if (filePath) {
           const bucket = this.firebaseService.storageService.bucket();
@@ -257,9 +264,7 @@ export class UserService {
 
       // Google Cloud Storage format (with or without query params for signed URLs)
       // URL format: https://storage.googleapis.com/bucket-name/path/to/file?X-Goog-...
-      const gcsMatch = url.match(
-        /storage\.googleapis\.com\/[^/]+\/([^?]+)/,
-      );
+      const gcsMatch = url.match(/storage\.googleapis\.com\/[^/]+\/([^?]+)/);
       if (gcsMatch) {
         return decodeURIComponent(gcsMatch[1]);
       }

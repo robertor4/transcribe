@@ -17,7 +17,8 @@ export const PROMPT_INSTRUCTIONS = {
 If the transcript is in a non-English language, ALL headings and content must be in that same language.`,
 
   /** Instruction for JSON output */
-  jsonRequirement: 'Always respond with valid JSON matching the provided schema.',
+  jsonRequirement:
+    'Always respond with valid JSON matching the provided schema.',
 
   /** Instruction for using context in structured templates */
   useContext: `IMPORTANT: If context is provided above the transcript, USE IT to customize your output:
@@ -116,7 +117,8 @@ type StructuredTemplateInput = RequiredTemplateFields &
  * ```
  */
 export function createTemplate(
-  template: RequiredTemplateFields & OptionalTemplateFields & { jsonSchema?: string },
+  template: RequiredTemplateFields &
+    OptionalTemplateFields & { jsonSchema?: string },
 ): AnalysisTemplate {
   return {
     ...SYSTEM_TEMPLATE_DEFAULTS,

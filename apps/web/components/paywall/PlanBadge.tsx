@@ -18,7 +18,7 @@ export function PlanBadge({ tier, size = 'md', showIcon = true }: PlanBadgeProps
     professional: {
       label: 'Professional',
       icon: Crown,
-      className: 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300',
+      className: 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300',
     },
     business: {
       label: 'Business',

@@ -155,7 +155,7 @@ export default function SubscriptionPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
@@ -178,10 +178,10 @@ export default function SubscriptionPage() {
             </div>
             <div className="sm:w-2/3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-[#cc3399]" />
+                <Award className="h-5 w-5 text-[#8D6AFA]" />
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                   isFree ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
-                  isProfessional ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300' :
+                  isProfessional ? 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300' :
                   'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                 }`}>
                   {tier.charAt(0).toUpperCase() + tier.slice(1)}
@@ -190,7 +190,7 @@ export default function SubscriptionPage() {
               {isFree && (
                 <Link
                   href="/pricing"
-                  className="px-6 py-2 bg-[#cc3399] text-white rounded-full hover:bg-[#b82d89] transition-colors text-sm font-medium"
+                  className="px-6 py-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] transition-colors text-sm font-medium"
                 >
                   {t('upgrade')}
                 </Link>
@@ -274,7 +274,7 @@ export default function SubscriptionPage() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-4 w-4 text-[#cc3399]" />
+              <TrendingUp className="h-4 w-4 text-[#8D6AFA]" />
               <label className="text-base font-medium text-gray-900 dark:text-gray-100">
                 {t('usageThisMonth')}
               </label>
@@ -296,7 +296,7 @@ export default function SubscriptionPage() {
                   className={`h-2.5 rounded-full transition-all ${
                     usageStats.percentUsed >= 100 ? 'bg-red-600' :
                     usageStats.percentUsed >= 80 ? 'bg-orange-500' :
-                    'bg-[#cc3399]'
+                    'bg-[#8D6AFA]'
                   }`}
                   style={{ width: `${Math.min(100, usageStats.percentUsed)}%` }}
                 />
@@ -320,7 +320,7 @@ export default function SubscriptionPage() {
                   className={`h-2.5 rounded-full transition-all ${
                     usageStats.usage.transcriptions >= usageStats.limits.transcriptions ? 'bg-red-600' :
                     usageStats.usage.transcriptions >= usageStats.limits.transcriptions * 0.8 ? 'bg-orange-500' :
-                    'bg-[#cc3399]'
+                    'bg-[#8D6AFA]'
                   }`}
                   style={{ width: `${(usageStats.usage.transcriptions / usageStats.limits.transcriptions) * 100}%` }}
                 />
@@ -341,7 +341,7 @@ export default function SubscriptionPage() {
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                 <div
-                  className="h-2.5 rounded-full transition-all bg-[#cc3399]"
+                  className="h-2.5 rounded-full transition-all bg-[#8D6AFA]"
                   style={{ width: `${(usageStats.usage.onDemandAnalyses / usageStats.limits.onDemandAnalyses) * 100}%` }}
                 />
               </div>
@@ -384,7 +384,7 @@ export default function SubscriptionPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <CreditCard className="h-4 w-4 text-[#cc3399]" />
+            <CreditCard className="h-4 w-4 text-[#8D6AFA]" />
             <label className="text-base font-medium text-gray-900 dark:text-gray-100">
               {t('billingHistory.title')}
             </label>
@@ -421,7 +421,7 @@ export default function SubscriptionPage() {
                         href={invoice.invoicePdf}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#cc3399] hover:underline text-sm"
+                        className="text-[#8D6AFA] hover:underline text-sm"
                       >
                         {t('downloadInvoice')}
                       </a>

@@ -13,7 +13,7 @@ export default function NotFound() {
         <p className="text-gray-600 mb-8">The page you&apos;re looking for doesn&apos;t exist.</p>
         <Link
           href="/"
-          className="px-4 py-2 bg-[#cc3399] text-white rounded-md hover:bg-[#b82d89] transition-colors"
+          className="px-4 py-2 bg-[#8D6AFA] text-white rounded-md hover:bg-[#7A5AE0] transition-colors"
         >
           {t('back')}
         </Link>

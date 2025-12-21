@@ -75,8 +75,7 @@ export class OnDemandAnalysisService {
 
     // 4. Get transcript text (use transcriptText directly, no longer duplicated in coreAnalyses)
     const transcriptText =
-      transcription.transcriptText ||
-      transcription.analyses?.transcript; // Legacy fallback
+      transcription.transcriptText || transcription.analyses?.transcript; // Legacy fallback
 
     if (!transcriptText) {
       throw new BadRequestException(
@@ -103,16 +102,17 @@ export class OnDemandAnalysisService {
     );
 
     try {
-      const rawContent = await this.transcriptionService.generateSummaryWithModel(
-        transcriptText,
-        undefined, // No AnalysisType enum - use custom prompts
-        effectiveContext || undefined,
-        transcription.detectedLanguage,
-        template.modelPreference,
-        template.systemPrompt,
-        template.userPrompt,
-        template.outputFormat, // V2: Pass output format for JSON mode
-      );
+      const rawContent =
+        await this.transcriptionService.generateSummaryWithModel(
+          transcriptText,
+          undefined, // No AnalysisType enum - use custom prompts
+          effectiveContext || undefined,
+          transcription.detectedLanguage,
+          template.modelPreference,
+          template.systemPrompt,
+          template.userPrompt,
+          template.outputFormat, // V2: Pass output format for JSON mode
+        );
       const generationTimeMs = Date.now() - startTime;
 
       this.logger.log(
@@ -141,7 +141,10 @@ export class OnDemandAnalysisService {
         templateName: template.name,
         templateVersion: template.version, // Store version for compatibility tracking
         content,
-        contentType: isStructured && typeof content === 'object' ? 'structured' : 'markdown',
+        contentType:
+          isStructured && typeof content === 'object'
+            ? 'structured'
+            : 'markdown',
         model: template.modelPreference,
         generatedAt: new Date(),
         generationTimeMs,

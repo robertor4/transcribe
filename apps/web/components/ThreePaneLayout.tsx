@@ -16,7 +16,7 @@ interface ThreePaneLayoutProps {
 
 /**
  * Modern three-pane layout following 2025 best practices
- * - Left: Collapsible navigation (240px → 48px icon strip)
+ * - Left: Collapsible navigation (260px → 48px icon strip)
  * - Middle: Main content (flex-grow)
  * - Right: Optional contextual panel (360px → 48px)
  *
@@ -28,7 +28,7 @@ export function ThreePaneLayout({
   mainContent,
   rightPanel,
   showRightPanel = true,
-  leftSidebarWidth = 240,
+  leftSidebarWidth = 260,
   rightPanelWidth = 360,
 }: ThreePaneLayoutProps) {
   const leftSidebarState = useCollapsibleSidebar({

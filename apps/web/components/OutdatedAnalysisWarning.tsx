@@ -66,7 +66,7 @@ export default function OutdatedAnalysisWarning({
         <button
           onClick={handleRegenerate}
           disabled={isRegenerating}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-[#cc3399] text-white text-sm font-medium rounded-lg hover:bg-[#b82d89] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-[#8D6AFA] text-white text-sm font-medium rounded-lg hover:bg-[#7A5AE0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
         >
           {isRegenerating && <Loader2 className="h-4 w-4 animate-spin" />}
           {isRegenerating ? 'Regenerating...' : 'Regenerate'}

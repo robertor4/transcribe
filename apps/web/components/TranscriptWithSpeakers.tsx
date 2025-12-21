@@ -40,7 +40,7 @@ export default function TranscriptWithSpeakers({
       'border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30',
       'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30',
       'border-yellow-400 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/30',
-      'border-pink-400 dark:border-pink-600 bg-pink-50 dark:bg-pink-900/30',
+      'border-pink-400 dark:border-pink-600 bg-purple-50 dark:bg-purple-900/30',
       'border-indigo-400 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30',
       'border-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/30',
       'border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/30',
@@ -110,7 +110,7 @@ export default function TranscriptWithSpeakers({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setIsCorrectionModalOpen(true)}
-              className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 rounded px-2 py-1"
+              className="text-sm text-[#8D6AFA] hover:text-[#7A5AE0] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 rounded px-2 py-1"
             >
               <Pencil className="w-4 h-4" />
               Fix

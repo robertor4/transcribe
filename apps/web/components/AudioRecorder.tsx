@@ -624,11 +624,11 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
               disabled={disabled}
               className="
                 flex items-center justify-center gap-2
-                bg-[#cc3399] hover:bg-[#b82d89]
+                bg-[#8D6AFA] hover:bg-[#7A5AE0]
                 text-white font-medium
                 px-8 py-4 rounded-lg
                 transition-all duration-200
-                focus:outline-none focus:ring-4 focus:ring-[#cc3399]/30
+                focus:outline-none focus:ring-4 focus:ring-[#8D6AFA]/30
                 disabled:opacity-50 disabled:cursor-not-allowed
                 min-w-[200px] sm:min-w-[240px]
               "
@@ -713,11 +713,11 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
                 onClick={handlePlayPause}
                 className="
                   flex items-center justify-center
-                  bg-[#cc3399] hover:bg-[#b82d89]
+                  bg-[#8D6AFA] hover:bg-[#7A5AE0]
                   text-white
                   w-12 h-12 rounded-full flex-shrink-0
                   transition-all duration-200
-                  focus:outline-none focus:ring-4 focus:ring-[#cc3399]/30
+                  focus:outline-none focus:ring-4 focus:ring-[#8D6AFA]/30
                 "
               >
                 {isPlaying ? (
@@ -736,7 +736,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
                 >
                   {/* Progress Bar */}
                   <div
-                    className="absolute top-0 left-0 h-full bg-[#cc3399] rounded-full transition-all duration-100"
+                    className="absolute top-0 left-0 h-full bg-[#8D6AFA] rounded-full transition-all duration-100"
                     style={{
                       width: `${
                         (audioDuration > 0 || duration > 0)
@@ -748,7 +748,7 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
 
                   {/* Playhead - Always visible, positioned based on current time */}
                   <div
-                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#cc3399] rounded-full shadow-lg transition-all duration-100"
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#8D6AFA] rounded-full shadow-lg transition-all duration-100"
                     style={{
                       left: `calc(${
                         (audioDuration > 0 || duration > 0)
@@ -815,11 +815,11 @@ export function AudioRecorder({ onUpload, disabled = false }: AudioRecorderProps
               disabled={isUploading}
               className="
                 flex-1 flex items-center justify-center gap-2
-                bg-[#cc3399] hover:bg-[#b82d89]
+                bg-[#8D6AFA] hover:bg-[#7A5AE0]
                 text-white font-medium
                 px-6 py-3 rounded-lg
                 transition-all duration-200
-                focus:outline-none focus:ring-4 focus:ring-[#cc3399]/30
+                focus:outline-none focus:ring-4 focus:ring-[#8D6AFA]/30
                 disabled:opacity-50 disabled:cursor-not-allowed
               "
             >
@@ -917,7 +917,7 @@ function AudioLevelVisualizer({ level, frequencyData, isPaused = false }: AudioL
             key={index}
             className={`
               w-0.5 rounded-full transition-all duration-100 ease-out
-              ${isPaused ? 'bg-gray-300 dark:bg-gray-600' : 'bg-[#cc3399]'}
+              ${isPaused ? 'bg-gray-300 dark:bg-gray-600' : 'bg-[#8D6AFA]'}
             `}
             style={{
               height: `${calculatedHeight}px`,

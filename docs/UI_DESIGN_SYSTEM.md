@@ -3,10 +3,20 @@
 Neural Summary follows Apple-like design principles with pill-shaped CTAs and consistent styling across landing page and dashboard.
 
 ## Brand Colors
-- **Primary**: `#cc3399` (pink/magenta)
-- **Primary hover**: `#b82d89` (darker pink)
-- **Primary light**: `bg-pink-50` for subtle backgrounds
+- **Primary**: `#8D6AFA` (brand purple)
+- **Primary hover**: `#7A5AE0` (darker purple)
+- **Primary light**: `bg-purple-50` for subtle backgrounds
+- **Secondary**: `#14D0DC` (cyan for emphasis)
+- **Secondary Alt**: `#3F38A0` (deep purple for structure)
+- **Accent/Dark**: `#23194B` (dark purple for primary buttons)
 - Always use brand colors for new UI screens and components
+
+## Typography (Dual-Font System)
+- **Heading Font**: Montserrat (geometric sans-serif) - for h1-h6 headings, capitalized text
+- **Body Font**: Geist (readable sans-serif) - for body text, paragraphs, UI elements
+- **Weights**: 300-800 for clear hierarchy
+- Both fonts loaded via Google Fonts CDN
+- Headings automatically use Montserrat via CSS rules in globals.css
 
 ## Text Color Best Practices
 
@@ -25,8 +35,8 @@ When creating UI components, NEVER use text size classes without color:
 
 **Interactive Elements:**
 - **Default state**: `text-gray-700` minimum
-- **Hover state**: `hover:text-gray-900` or `hover:text-[#cc3399]`
-- **Selected/Active**: `text-[#cc3399]` or `text-gray-900`
+- **Hover state**: `hover:text-gray-900` or `hover:text-[#8D6AFA]`
+- **Selected/Active**: `text-[#8D6AFA]` or `text-gray-900`
 
 **Input Fields & Textareas:**
 - **Always include both text and placeholder colors**
@@ -35,7 +45,7 @@ When creating UI components, NEVER use text size classes without color:
 - **Input text**: `text-gray-800` (dark, readable)
 - **Placeholder text**: `placeholder:text-gray-500` (visible but subtle)
 - **Border**: `border-gray-400` minimum (not gray-300 or lighter)
-- **Focus state**: `focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20`
+- **Focus state**: `focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20`
 
 ## Button Design System
 
@@ -49,7 +59,7 @@ When creating UI components, NEVER use text size classes without color:
 ```tsx
 <Button variant="primary">Create Conversation</Button>
 ```
-- Background: `#2c2c2c` (hover: `#3a3a3a`)
+- Background: `#23194B` (hover: `#2D2360`)
 - Text: White
 - Shape: `rounded-full` (pill-shaped)
 - Effect: Shadow + scale on hover (`hover:scale-105`)
@@ -59,18 +69,18 @@ When creating UI components, NEVER use text size classes without color:
 ```tsx
 <Button variant="secondary">Cancel</Button>
 ```
-- Background: White/transparent (fills on hover to `#2c2c2c`)
+- Background: White/transparent (fills on hover to `#23194B`)
 - Border: `border-2 border-gray-900`
 - Text: Gray-900 (inverts to white on hover)
 - Shape: `rounded-full` (pill-shaped)
 - Effect: Fill + scale on hover
 - Use for: Secondary CTAs, cancel actions
 
-#### 3. Brand - Special CTAs (bold pink)
+#### 3. Brand - Special CTAs (bold purple)
 ```tsx
 <Button variant="brand">Get Started</Button>
 ```
-- Background: `#cc3399` (hover: `#b82d89`)
+- Background: `#8D6AFA` (hover: `#7A5AE0`)
 - Text: White
 - Shape: `rounded-full` (pill-shaped)
 - Effect: Shadow + scale on hover

@@ -8,32 +8,65 @@ A production-ready monorepo application that **transforms conversations into wor
 ### Core Value Proposition
 **"Speaking becomes creating"** - Turn thinking (conversations) into working (documents) without the friction of manual writing, formatting, and structuring.
 
-## Design Language: Calm Intelligence
+## Brand Guidelines
 
-Neural Summary embodies a **futuristic-minimal** aesthetic that blends human warmth with machine precision.
+### Brand Positioning
+Neural Summary is an AI workspace that turns spoken thinking into structured, professional output. Category: **Speech-to-Structure**.
 
-### Design Principles
-- **Tone**: Serene, confident, intelligent
-- **Style**: Minimal, cinematic, spatial, human-centric
-- **Visual DNA**: White space, soft gradients (gray-50 to white), precise typography (Geist font), subtle motion
-- **Philosophy**: Technology that listens rather than shouts — invisible, yet deeply present
+**Mission**: Transform spoken thinking, meetings, and rough notes into structured, finished outputs.
+
+**Primary Audience**: Product managers, engineering leads, consultants, and professional knowledge workers.
+
+### Brand Personality & Voice
+The brand feels like a highly capable professional assistant.
+
+**Personality Attributes**: Calm, precise, confident, structured, opinionated but not loud.
+
+**Voice Principles**:
+- Clear over clever
+- Professional, not academic
+- Direct, not apologetic
+- Human, not chatty
+
+**Language Rules**:
+- Use short sentences, active voice, concrete nouns
+- Avoid emojis, exclamation marks, buzzwords, and AI self-reference
+
+### Color Palette
+- **Primary**: `#8D6AFA` (brand purple for key actions)
+- **Primary Hover**: `#7A5AE0` (darker purple)
+- **Secondary**: `#14D0DC` (cyan for emphasis)
+- **Secondary Alt**: `#3F38A0` (deep purple for structure)
+- **Accent/Dark**: `#23194B` (rare, deliberate use for dark backgrounds)
+- **Text**: `text-gray-900` (headlines), `text-gray-700` (body)
+- Light backgrounds: `from-gray-50 to-white` gradients
+
+### Typography
+- **Primary Font**: Montserrat (geometric sans-serif via Google Fonts)
+- **Weights**: 300-800 for clear hierarchy
+- Clear/confident headings, readable paragraphs with generous line height
+
+### Tagline
+**"YOU SPEAK. IT CREATES."**
+
+### Logo & Brand Mark
+- **Full logo**: `/apps/web/public/assets/logos/neural-summary-logo-wTagLine.svg`
+- **Logo (no tagline)**: `/apps/web/public/assets/logos/neural-summary-logo.svg`
+- **Logotype only**: `/apps/web/public/assets/logos/neural-summary-logotype.svg`
+
+### Imagery Direction
+**Good**: Abstract geometric visuals, diagrams, flows, grids, systems, calm compositions with whitespace.
+**Bad**: Human faces, AI brains, glowing heads, robots, standard stock office scenes.
 
 ### UI Guidelines
 - **Minimal text**: Few words, no marketing fluff - clarity and emotion over explanation
-- **Futuristic-minimal**: Apple-like aesthetic with generous white space
-- **Typography**: Geist font (300-800 weights) applied globally via Google Fonts
-- **Color palette**:
-  - Light backgrounds: `from-gray-50 to-white` gradients
-  - Dark sections: `#2c2c2c` (warm dark gray) for emotional contrast
-  - Primary: `#cc3399` (brand pink) for accents only
-  - Text: `text-gray-900` (headlines), `text-gray-700` (body)
 - **Spacing**: Generous padding, `space-y-8` to `space-y-16` for breathing room
 - **No clutter**: Remove unnecessary badges, trust indicators, or marketing copy unless essential
-- **Button styling** (following Apple's design language):
+- **Button styling**:
   - Primary CTAs: `rounded-full` (pill-shaped) - distinctive, approachable, modern
   - Secondary buttons: `rounded-lg` (8px) - for utility actions, forms
   - Component: Use `Button` component (`/apps/web/components/Button.tsx`) for consistent styling
-  - Variants: `primary` (solid `#2c2c2c` background), `secondary` (outlined with hover fill), `ghost` (transparent with hover background), `brand` (pink), `danger` (red)
+  - Variants: `primary` (solid `#23194B` background), `secondary` (outlined with hover fill), `ghost` (transparent with hover background), `brand` (purple `#8D6AFA`), `danger` (red)
   - **Always prefer using the `Button` component** over custom styled `<button>` elements for consistency
 - **Inline action confirmations** (for destructive actions like Delete):
   - Initial state: `Button` with `variant="ghost"` showing the action (e.g., "Delete" with Trash icon)
@@ -43,8 +76,6 @@ Neural Summary embodies a **futuristic-minimal** aesthetic that blends human war
     - "Yes" button with `variant="danger"` and `size="sm"`
     - "No" button with `variant="ghost"` and `size="sm"`
   - Example: See `FolderClient.tsx` delete confirmation pattern
-
-*The visual equivalent of AI that feels effortless.*
 
 ## Messaging Framework: The Five W's
 
@@ -91,16 +122,16 @@ Neural Summary's landing page follows a strategic narrative arc using the **Five
 
 ## Brand Byline
 
-**Official Header Byline**: "Voice-to-output creation platform"
+**Official Header Byline**: "You speak. It creates."
 
-This category-defining tagline appears in the header beneath the Neural Summary logo and establishes market positioning as a voice-to-output platform rather than a traditional transcription service.
+This tagline appears in the header beneath the Neural Summary logo and embodies the core brand promise of Speech-to-Structure.
 
 **Translations:**
-- **English**: "Voice-to-output creation platform"
-- **German**: "Von Sprache zu Dokumenten" (From speech to documents)
-- **Spanish**: "Plataforma de creación de voz a documento" (Voice-to-document creation platform)
-- **French**: "Plateforme de création voix-vers-document" (Voice-to-document creation platform)
-- **Dutch**: "Van spraak naar document platform" (From speech to document platform)
+- **English**: "You speak. It creates."
+- **German**: "Du sprichst. Es kreiert."
+- **Spanish**: "Tú hablas. Crea."
+- **French**: "Vous parlez. Ça crée."
+- **Dutch**: "Jij spreekt. Het creëert."
 
 **Implementation:**
 - **Location**: Header component (`apps/web/components/PublicHeader.tsx:35`)

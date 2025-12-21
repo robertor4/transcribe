@@ -36,7 +36,7 @@ export function DetailPageHeader({
       {/* Breadcrumb Navigation */}
       <Link
         href={`/${locale}/conversation/${conversationId}`}
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors mb-6"
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to {conversationTitle}
@@ -51,7 +51,7 @@ export function DetailPageHeader({
               <Icon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                 {title}
               </h1>
               {subtitle && (

@@ -229,7 +229,7 @@ export default function ProfileSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
@@ -326,7 +326,7 @@ export default function ProfileSettingsPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={t('displayNamePlaceholder')}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
               />
             </div>
           </div>
@@ -411,7 +411,7 @@ export default function ProfileSettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('saveChanges')}
@@ -442,7 +442,7 @@ export default function ProfileSettingsPage() {
                     id="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -472,7 +472,7 @@ export default function ProfileSettingsPage() {
                     id="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -502,7 +502,7 @@ export default function ProfileSettingsPage() {
                     id="confirm-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
                   />
                   <button
                     type="button"
@@ -526,7 +526,7 @@ export default function ProfileSettingsPage() {
                   !newPassword ||
                   !confirmPassword
                 }
-                className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {changingPassword && (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

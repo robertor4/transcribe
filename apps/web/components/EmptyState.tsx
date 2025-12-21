@@ -29,7 +29,7 @@ export function EmptyState({
       <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-6">
         {icon}
       </div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
         {title}
       </h2>
       <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">

@@ -60,9 +60,9 @@ export function TemplateSelector({
         disabled={isMultiSelect && isBase}
         className={`group relative p-6 rounded-xl border-2 transition-all duration-200 text-left ${
           isBase && isMultiSelect
-            ? 'border-[#cc3399] bg-gradient-to-br from-pink-50 to-white dark:from-pink-900/10 dark:to-gray-800 shadow-lg cursor-default'
+            ? 'border-[#8D6AFA] bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/10 dark:to-gray-800 shadow-lg cursor-default'
             : isSelected
-            ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/10 shadow-lg scale-105'
+            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/10 shadow-lg scale-105'
             : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md'
         }`}
         aria-pressed={isSelected}
@@ -70,7 +70,7 @@ export function TemplateSelector({
         {/* Base indicator badge */}
         {isBase && isMultiSelect && (
           <div className="absolute top-4 left-4">
-            <span className="px-2 py-1 text-xs font-semibold bg-[#cc3399] text-white rounded-full">
+            <span className="px-2 py-1 text-xs font-semibold bg-[#8D6AFA] text-white rounded-full">
               BASE
             </span>
           </div>
@@ -80,7 +80,7 @@ export function TemplateSelector({
         <div
           className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-all duration-200 ${
             isSelected || (isBase && isMultiSelect)
-              ? 'bg-[#cc3399] text-white'
+              ? 'bg-[#8D6AFA] text-white'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-700'
           }`}
         >
@@ -91,8 +91,8 @@ export function TemplateSelector({
         <h3
           className={`font-semibold text-lg mb-2 ${
             isSelected || (isBase && isMultiSelect)
-              ? 'text-[#cc3399]'
-              : 'text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399]'
+              ? 'text-[#8D6AFA]'
+              : 'text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA]'
           }`}
         >
           {template.name}
@@ -106,7 +106,7 @@ export function TemplateSelector({
           <div className="absolute top-4 right-4">
             {isBase && isMultiSelect ? (
               // Locked checkmark for base template
-              <div className="w-6 h-6 rounded-full bg-[#cc3399] flex items-center justify-center opacity-60">
+              <div className="w-6 h-6 rounded-full bg-[#8D6AFA] flex items-center justify-center opacity-60">
                 <svg
                   className="w-4 h-4 text-white"
                   fill="none"
@@ -121,7 +121,7 @@ export function TemplateSelector({
               </div>
             ) : (
               // Regular checkmark for selected templates
-              <div className="w-6 h-6 rounded-full bg-[#cc3399] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#8D6AFA] flex items-center justify-center">
                 <svg
                   className="w-4 h-4 text-white"
                   fill="none"
@@ -141,7 +141,7 @@ export function TemplateSelector({
         {/* Unselected checkbox indicator for multi-select mode */}
         {isMultiSelect && !isBase && !isSelected && (
           <div className="absolute top-4 right-4">
-            <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[#cc3399] transition-colors" />
+            <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[#8D6AFA] transition-colors" />
           </div>
         )}
       </button>

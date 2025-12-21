@@ -18,7 +18,7 @@
 // ============================================================================
 
 export const SEO_BASE_URL = 'https://neuralsummary.com';
-export const DEFAULT_OG_IMAGE = '/assets/NS-symbol.webp';
+export const DEFAULT_OG_IMAGE = '/assets/logos/neural-summary-logo.svg';
 export const SITE_NAME = 'Neural Summary';
 
 const OG_LOCALE_MAP: Record<string, string> = {

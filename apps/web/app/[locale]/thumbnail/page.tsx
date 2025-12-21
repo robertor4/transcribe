@@ -66,7 +66,7 @@ export default function ThumbnailGenerator() {
                   onClick={() => setLayout('split')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     layout === 'split'
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -76,7 +76,7 @@ export default function ThumbnailGenerator() {
                   onClick={() => setLayout('overlay')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     layout === 'overlay'
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -86,7 +86,7 @@ export default function ThumbnailGenerator() {
                   onClick={() => setLayout('workflow')}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     layout === 'workflow'
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -102,7 +102,7 @@ export default function ThumbnailGenerator() {
                 onClick={() => setShowLogo(!showLogo)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   showLogo
-                    ? 'bg-[#cc3399] text-white'
+                    ? 'bg-[#8D6AFA] text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -117,7 +117,7 @@ export default function ThumbnailGenerator() {
                 type="text"
                 value={mainText}
                 onChange={(e) => setMainText(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 outline-none"
+                className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 outline-none"
                 placeholder="Main headline text"
               />
             </div>
@@ -129,7 +129,7 @@ export default function ThumbnailGenerator() {
                 type="text"
                 value={subText}
                 onChange={(e) => setSubText(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 outline-none"
+                className="w-full px-4 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 outline-none"
                 placeholder="Subtitle text"
               />
             </div>
@@ -140,7 +140,7 @@ export default function ThumbnailGenerator() {
             <button
               onClick={downloadThumbnail}
               disabled={isExporting}
-              className="px-8 py-4 bg-[#2c2c2c] text-white font-semibold rounded-full shadow-2xl hover:bg-[#3a3a3a] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="px-8 py-4 bg-[#23194B] text-white font-semibold rounded-full shadow-2xl hover:bg-[#2D2360] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {isExporting ? 'Generating...' : 'Download PNG (1280×720)'}
             </button>
@@ -184,12 +184,12 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
           style={{ width: '1280px', height: '720px' }}
         >
           {/* Dark Left Half */}
-          <div className="w-1/2 bg-[#2c2c2c] flex items-center justify-center p-12">
+          <div className="w-1/2 bg-[#23194B] flex items-center justify-center p-12">
             {/* Waveform Visualization */}
             <svg width="500" height="400" viewBox="0 0 500 400" className="opacity-90">
               <defs>
                 <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#cc3399" stopOpacity="0.8" />
+                  <stop offset="0%" stopColor="#8D6AFA" stopOpacity="0.8" />
                   <stop offset="100%" stopColor="#ffffff" stopOpacity="0.6" />
                 </linearGradient>
               </defs>
@@ -210,8 +210,8 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
                 );
               })}
               {/* Center circle (Neural Summary icon representation) */}
-              <circle cx="250" cy="200" r="60" fill="#cc3399" opacity="0.9" />
-              <circle cx="250" cy="200" r="40" fill="#2c2c2c" />
+              <circle cx="250" cy="200" r="60" fill="#8D6AFA" opacity="0.9" />
+              <circle cx="250" cy="200" r="40" fill="#23194B" />
             </svg>
           </div>
 
@@ -221,7 +221,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
             {showLogo && (
               <div className="absolute top-8 right-8">
                 <Image
-                  src="/assets/neural-summary-logo.webp"
+                  src="/assets/logos/neural-summary-logo.svg"
                   alt="Neural Summary"
                   width={64}
                   height={64}
@@ -235,7 +235,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
               <h1 className="text-6xl font-bold text-gray-900 leading-tight">
                 {mainText}
               </h1>
-              <div className="w-24 h-2 bg-[#cc3399] mx-auto rounded-full"></div>
+              <div className="w-24 h-2 bg-[#8D6AFA] mx-auto rounded-full"></div>
               <p className="text-3xl text-gray-700 font-medium">{subText}</p>
             </div>
           </div>
@@ -251,13 +251,13 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
           style={{ width: '1280px', height: '720px' }}
         >
           {/* Background with gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#2c2c2c] via-[#3a3a3a] to-[#2c2c2c]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#23194B] via-[#2D2360] to-[#23194B]"></div>
 
           {/* Abstract waveform background */}
           <svg className="absolute inset-0 opacity-20" width="1280" height="720">
             <defs>
               <linearGradient id="bgWave" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#cc3399" />
+                <stop offset="0%" stopColor="#8D6AFA" />
                 <stop offset="100%" stopColor="#ffffff" />
               </linearGradient>
             </defs>
@@ -284,7 +284,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
             {showLogo && (
               <div className="mb-8 flex-shrink-0">
                 <Image
-                  src="/assets/neural-summary-logo.webp"
+                  src="/assets/logos/neural-summary-logo.svg"
                   alt="Neural Summary"
                   width={96}
                   height={96}
@@ -298,7 +298,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
               <h1 className="text-7xl font-bold text-white leading-tight drop-shadow-2xl">
                 {mainText}
               </h1>
-              <div className="w-32 h-2 bg-[#cc3399] mx-auto rounded-full"></div>
+              <div className="w-32 h-2 bg-[#8D6AFA] mx-auto rounded-full"></div>
               <p className="text-4xl text-gray-200 font-medium">{subText}</p>
             </div>
           </div>
@@ -320,7 +320,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
             {showLogo && (
               <div className="inline-flex items-center gap-4 mb-6">
                 <Image
-                  src="/assets/neural-summary-logo.webp"
+                  src="/assets/logos/neural-summary-logo.svg"
                   alt="Neural Summary"
                   width={64}
                   height={64}
@@ -336,7 +336,7 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
           <div className="flex items-center justify-center gap-6 w-full max-w-6xl">
           {/* Step 1: Speak */}
           <div className="flex-1 bg-white rounded-3xl shadow-2xl p-12 text-center border-4 border-gray-100">
-            <div className="w-24 h-24 bg-[#cc3399] rounded-full mx-auto mb-6 flex items-center justify-center">
+            <div className="w-24 h-24 bg-[#8D6AFA] rounded-full mx-auto mb-6 flex items-center justify-center">
               <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
@@ -347,13 +347,13 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
           </div>
 
           {/* Arrow */}
-          <svg className="w-16 h-16 text-[#cc3399]" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-16 h-16 text-[#8D6AFA]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
           </svg>
 
           {/* Step 2: Extract */}
           <div className="flex-1 bg-white rounded-3xl shadow-2xl p-12 text-center border-4 border-gray-100">
-            <div className="w-24 h-24 bg-[#2c2c2c] rounded-full mx-auto mb-6 flex items-center justify-center">
+            <div className="w-24 h-24 bg-[#23194B] rounded-full mx-auto mb-6 flex items-center justify-center">
               <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
               </svg>
@@ -363,13 +363,13 @@ const ThumbnailPreview = React.forwardRef<HTMLDivElement, ThumbnailPreviewProps>
           </div>
 
           {/* Arrow */}
-          <svg className="w-16 h-16 text-[#cc3399]" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-16 h-16 text-[#8D6AFA]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
           </svg>
 
           {/* Step 3: Create */}
           <div className="flex-1 bg-white rounded-3xl shadow-2xl p-12 text-center border-4 border-gray-100">
-            <div className="w-24 h-24 bg-[#cc3399] rounded-full mx-auto mb-6 flex items-center justify-center">
+            <div className="w-24 h-24 bg-[#8D6AFA] rounded-full mx-auto mb-6 flex items-center justify-center">
               <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
               </svg>

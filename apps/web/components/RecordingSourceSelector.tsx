@@ -41,17 +41,17 @@ export function RecordingSourceSelector({
             relative flex items-center gap-3 p-4 rounded-lg border-2 transition-all
             ${
               selectedSource === 'microphone'
-                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-950/20'
+                ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-950/20'
                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500'
             }
             ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20
+            focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20
           `}
         >
           <div
             className={`
             flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-            ${selectedSource === 'microphone' ? 'bg-[#cc3399]' : 'bg-gray-100 dark:bg-gray-700'}
+            ${selectedSource === 'microphone' ? 'bg-[#8D6AFA]' : 'bg-gray-100 dark:bg-gray-700'}
           `}
           >
             <Mic
@@ -69,7 +69,7 @@ export function RecordingSourceSelector({
           </div>
 
           {selectedSource === 'microphone' && (
-            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#cc3399]" />
+            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#8D6AFA]" />
           )}
         </button>
 
@@ -82,17 +82,17 @@ export function RecordingSourceSelector({
             relative flex items-center gap-3 p-4 rounded-lg border-2 transition-all
             ${
               selectedSource === 'tab-audio'
-                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-950/20'
+                ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-950/20'
                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500'
             }
             ${disabled || !canUseTabAudio ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20
+            focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20
           `}
         >
           <div
             className={`
             flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
-            ${selectedSource === 'tab-audio' ? 'bg-[#cc3399]' : 'bg-gray-100 dark:bg-gray-700'}
+            ${selectedSource === 'tab-audio' ? 'bg-[#8D6AFA]' : 'bg-gray-100 dark:bg-gray-700'}
           `}
           >
             <Monitor
@@ -110,7 +110,7 @@ export function RecordingSourceSelector({
           </div>
 
           {selectedSource === 'tab-audio' && (
-            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#cc3399]" />
+            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#8D6AFA]" />
           )}
         </button>
       </div>
@@ -127,8 +127,8 @@ export function RecordingSourceSelector({
 
       {/* Tab Audio Instructions */}
       {selectedSource === 'tab-audio' && canUseTabAudio && (
-        <div className="flex items-start gap-2 p-3 bg-pink-50 dark:bg-pink-950/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-          <Info className="w-4 h-4 text-[#cc3399] dark:text-pink-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2 p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+          <Info className="w-4 h-4 text-[#8D6AFA] dark:text-pink-400 flex-shrink-0 mt-0.5" />
           <div className="text-xs text-gray-700 dark:text-gray-300">
             {t('source.tabAudioInstructions')}
           </div>

@@ -135,7 +135,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#cc3399] mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
         </div>
       </div>

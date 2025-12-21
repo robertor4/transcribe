@@ -163,14 +163,14 @@ export default function TranscriptCorrectionModal({
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#cc3399]" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <Sparkles className="h-5 w-5 text-[#8D6AFA]" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               Fix Transcript Issues
             </h2>
           </div>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20"
+            className="rounded-lg p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20"
           >
             <X className="h-5 w-5" />
           </button>
@@ -186,8 +186,8 @@ export default function TranscriptCorrectionModal({
                 <div className="mx-auto w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
                   <Sparkles className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  ✅ Transcript Corrected Successfully!
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
+                  Transcript Corrected Successfully
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {applyResult.deletedAnalysisIds.length} custom analyses deleted •{' '}
@@ -197,8 +197,8 @@ export default function TranscriptCorrectionModal({
 
               {/* Re-run Analyses Section */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  🔄 Next Step: Re-run Core Analyses
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
+                  Next Step: Re-run Core Analyses
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Update your Summary, Action Items, and Communication analyses based on the corrected transcript.
@@ -207,7 +207,7 @@ export default function TranscriptCorrectionModal({
                   <button
                     onClick={handleRegenerateAnalyses}
                     disabled={isRegenerating}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors disabled:opacity-50 font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors disabled:opacity-50 font-medium"
                   >
                     {isRegenerating && <Loader2 className="h-4 w-4 animate-spin" />}
                     {isRegenerating ? 'Regenerating...' : 'Re-run Analyses Now'}
@@ -244,7 +244,7 @@ export default function TranscriptCorrectionModal({
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Example: Change all instances of 'John' to 'Jon' and fix 'Acme' to 'ACME Corporation'"
-              className="w-full rounded-lg border border-gray-400 dark:border-gray-600 px-4 py-3 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-lg border border-gray-400 dark:border-gray-600 px-4 py-3 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               rows={4}
               disabled={isLoadingPreview || isApplying || !!preview}
             />
@@ -270,9 +270,9 @@ export default function TranscriptCorrectionModal({
           {/* Loading State for Processing */}
           {isLoadingPreview && !preview && (
             <div className="text-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-[#cc3399] mx-auto mb-4" />
-              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Processing Corrections...
+              <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
+              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
+                Processing Corrections
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Applying your corrections to the transcript. This may take a few moments.
@@ -292,7 +292,7 @@ export default function TranscriptCorrectionModal({
           {preview && !isLoadingPreview && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 uppercase tracking-wide">
                   Preview Changes
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
@@ -335,7 +335,7 @@ export default function TranscriptCorrectionModal({
             {!preview && (
               <button
                 onClick={handlePreview}
-                className="rounded-lg bg-[#cc3399] px-6 py-2 text-sm font-medium text-white hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="rounded-lg bg-[#8D6AFA] px-6 py-2 text-sm font-medium text-white hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 disabled={isLoadingPreview || !instructions.trim()}
               >
                 {isLoadingPreview && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -346,7 +346,7 @@ export default function TranscriptCorrectionModal({
             {preview && !showConfirmation && (
               <button
                 onClick={() => setShowConfirmation(true)}
-                className="rounded-lg bg-[#cc3399] px-6 py-2 text-sm font-medium text-white hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20"
+                className="rounded-lg bg-[#8D6AFA] px-6 py-2 text-sm font-medium text-white hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20"
               >
                 Apply Changes
               </button>
@@ -365,7 +365,7 @@ export default function TranscriptCorrectionModal({
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-semibold text-center text-gray-900 dark:text-gray-100 mb-4">
+              <h3 className="text-lg font-semibold text-center text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide">
                 Confirm Transcript Correction
               </h3>
 
@@ -386,7 +386,7 @@ export default function TranscriptCorrectionModal({
 
               {/* Loading State */}
               {isApplying && (
-                <div className="mb-4 flex items-center justify-center gap-3 text-[#cc3399]">
+                <div className="mb-4 flex items-center justify-center gap-3 text-[#8D6AFA]">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     Applying corrections...

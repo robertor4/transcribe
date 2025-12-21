@@ -113,7 +113,7 @@ export default async function LandingPage({
         </section>
 
         {/* The Cost of Translation - Dark Section (WHY) */}
-        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="cost-heading">
+        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#23194B' }} aria-labelledby="cost-heading">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <h2 id="cost-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
@@ -208,7 +208,7 @@ export default async function LandingPage({
         </section>
 
         {/* The Future of Work - Dark Section (WARP) */}
-        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="future-heading">
+        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#23194B' }} aria-labelledby="future-heading">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <h2 id="future-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
@@ -314,7 +314,7 @@ export default async function LandingPage({
         </section>
 
         {/* Security - Dark Section */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12" style={{ backgroundColor: '#2c2c2c' }} aria-labelledby="security-heading">
+        <section className="py-32 px-6 sm:px-8 lg:px-12" style={{ backgroundColor: '#23194B' }} aria-labelledby="security-heading">
           <div className="max-w-5xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <div className="flex justify-center mb-6">
@@ -536,7 +536,7 @@ export default async function LandingPage({
               <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="flex items-center mb-4 md:mb-0">
                   <img
-                    src="/assets/NS-symbol.webp"
+                    src="/assets/logos/neural-summary-logo.svg"
                     alt="Neural Summary"
                     className="h-6 w-auto mr-2"
                     width={24}
@@ -567,7 +567,7 @@ export default async function LandingPage({
                   url: 'https://neuralsummary.com',
                   logo: {
                     '@type': 'ImageObject',
-                    url: 'https://neuralsummary.com/assets/NS-symbol.webp',
+                    url: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
                   },
                   description: 'Voice-to-output creation platform that transforms conversations into work-ready documents',
                   sameAs: [

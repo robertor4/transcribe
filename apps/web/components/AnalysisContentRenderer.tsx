@@ -49,7 +49,7 @@ export const AnalysisContentRenderer: React.FC<AnalysisContentRendererProps> = (
               if (typeof children === 'string' && children.includes('[INTRO]')) {
                 const introText = children.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                 return (
-                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/30 dark:to-purple-950/30 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                  <div className="bg-gradient-to-r from-purple-50 to-purple-50 dark:from-purple-950/30 dark:to-purple-950/30 border-l-4 border-[#8D6AFA] rounded-r-lg p-6 mb-8">
                     <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
                       {introText}
                     </p>
@@ -66,7 +66,7 @@ export const AnalysisContentRenderer: React.FC<AnalysisContentRendererProps> = (
                 if (textContent.includes('[INTRO]')) {
                   const introText = textContent.replace(/\[INTRO\]|\[\/INTRO\]/g, '');
                   return (
-                    <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/30 dark:to-purple-950/30 border-l-4 border-[#cc3399] rounded-r-lg p-6 mb-8">
+                    <div className="bg-gradient-to-r from-purple-50 to-purple-50 dark:from-purple-950/30 dark:to-purple-950/30 border-l-4 border-[#8D6AFA] rounded-r-lg p-6 mb-8">
                       <p className="text-2xl leading-relaxed font-medium text-gray-800 dark:text-gray-200">
                         {introText}
                       </p>

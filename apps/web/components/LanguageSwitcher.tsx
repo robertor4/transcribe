@@ -58,11 +58,11 @@ export function LanguageSwitcher({ enableDarkMode = false }: LanguageSwitcherPro
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isPending}
-        className={`flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] rounded-md transition-colors disabled:opacity-50 ${enableDarkMode ? 'dark:text-gray-300 dark:hover:text-white' : ''}`}
+        className={`flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] rounded-md transition-colors disabled:opacity-50 ${enableDarkMode ? 'dark:text-gray-300 dark:hover:text-white' : ''}`}
         aria-label={`${t('language')}: ${localeNames[locale as keyof typeof localeNames]}`}
       >
         {isPending ? (
-          <div className={`h-4 w-4 border-2 border-gray-300 border-t-[#cc3399] rounded-full animate-spin ${enableDarkMode ? 'dark:border-gray-600' : ''}`} />
+          <div className={`h-4 w-4 border-2 border-gray-300 border-t-[#8D6AFA] rounded-full animate-spin ${enableDarkMode ? 'dark:border-gray-600' : ''}`} />
         ) : (
           <Globe className="w-4 h-4" />
         )}
@@ -89,7 +89,7 @@ export function LanguageSwitcher({ enableDarkMode = false }: LanguageSwitcherPro
                   className={`
                     block w-full text-left px-4 py-2 text-sm transition-colors
                     ${isActive
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : `text-gray-700 hover:bg-gray-100 ${enableDarkMode ? 'dark:text-gray-300 dark:hover:bg-gray-700' : ''}`
                     }
                   `}

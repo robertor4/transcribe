@@ -183,29 +183,29 @@ export function DashboardClient() {
         leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
         showRightPanel={false}
         mainContent={
-          <div className="px-12 py-12">
-            {/* Personalized Greeting */}
-            <div className="mb-12">
-              <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#b82d89] via-[#cc3399] to-[#ff66cc] bg-clip-text text-transparent">
+          <div className="px-12 pt-[38px] pb-12">
+            {/* Personalized Greeting - aligned with logo bottom */}
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#7A5AE0] via-[#8D6AFA] to-[#ff66cc] bg-clip-text text-transparent">
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
 
             {/* Quick Create Buttons */}
-            <section className="mb-16">
+            <section className="mb-10">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
                 {QUICK_CREATE_BUTTONS.map((type) => (
                   <button
                     key={type.label}
                     onClick={getButtonHandler(type.action)}
                     aria-label={`Create ${type.label}: ${type.desc}`}
-                    className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-700 dark:hover:border-gray-300 hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cc3399]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+                    className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-700 dark:hover:border-gray-300 hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-gray-700 group-hover:to-gray-800 dark:group-hover:from-gray-700 dark:group-hover:to-gray-800 group-hover:scale-105 transition-all duration-200">
                       <type.Icon className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] mb-0.5 transition-colors duration-200">
+                      <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
                         {type.label}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -220,7 +220,7 @@ export function DashboardClient() {
             {/* Loading State */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#cc3399]" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA]" />
               </div>
             ) : (
               <TwoColumnDashboardLayout

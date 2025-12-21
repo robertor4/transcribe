@@ -44,8 +44,8 @@ export function FeatureComparisonTable() {
     if (typeof value === 'boolean') {
       return value ? (
         <div className="flex items-center justify-center">
-          <div className={`rounded-full p-1 ${isPro ? 'bg-[#cc3399]/10' : 'bg-green-100 dark:bg-green-900/20'}`}>
-            <Check className={`h-5 w-5 ${isPro ? 'text-[#cc3399]' : 'text-green-600 dark:text-green-400'}`} />
+          <div className={`rounded-full p-1 ${isPro ? 'bg-[#8D6AFA]/10' : 'bg-green-100 dark:bg-green-900/20'}`}>
+            <Check className={`h-5 w-5 ${isPro ? 'text-[#8D6AFA]' : 'text-green-600 dark:text-green-400'}`} />
           </div>
         </div>
       ) : (
@@ -64,8 +64,8 @@ export function FeatureComparisonTable() {
     if (value === unlimitedText) {
       return (
         <div className="flex items-center justify-center gap-1">
-          <Sparkles className={`h-4 w-4 ${isPro ? 'text-[#cc3399]' : 'text-purple-500'}`} />
-          <span className={`font-semibold ${isPro ? 'text-[#cc3399]' : 'text-purple-600 dark:text-purple-400'}`}>
+          <Sparkles className={`h-4 w-4 ${isPro ? 'text-[#8D6AFA]' : 'text-purple-500'}`} />
+          <span className={`font-semibold ${isPro ? 'text-[#8D6AFA]' : 'text-purple-600 dark:text-purple-400'}`}>
             {value}
           </span>
         </div>
@@ -96,9 +96,9 @@ export function FeatureComparisonTable() {
             <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.free')}
             </th>
-            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-gradient-to-br from-[#cc3399]/10 via-purple-50/50 to-[#cc3399]/10 dark:from-[#cc3399]/20 dark:via-purple-900/20 dark:to-[#cc3399]/20 w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-gradient-to-br from-[#8D6AFA]/10 via-purple-50/50 to-[#8D6AFA]/10 dark:from-[#8D6AFA]/20 dark:via-purple-900/20 dark:to-[#8D6AFA]/20 w-1/5">
               <div className="flex items-center justify-center gap-2">
-                <span className="text-[#cc3399] dark:text-[#ff66cc] font-bold text-sm sm:text-base md:text-lg">
+                <span className="text-[#8D6AFA] dark:text-[#ff66cc] font-bold text-sm sm:text-base md:text-lg">
                   {t('tiers.professional')}
                 </span>
               </div>
@@ -130,7 +130,7 @@ export function FeatureComparisonTable() {
                   <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">
                     {renderCell(item.free, false)}
                   </td>
-                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-gradient-to-br from-[#cc3399]/5 via-purple-50/30 to-[#cc3399]/5 dark:from-[#cc3399]/10 dark:via-purple-900/10 dark:to-[#cc3399]/10 border-b border-[#cc3399]/10 dark:border-[#cc3399]/20">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-gradient-to-br from-[#8D6AFA]/5 via-purple-50/30 to-[#8D6AFA]/5 dark:from-[#8D6AFA]/10 dark:via-purple-900/10 dark:to-[#8D6AFA]/10 border-b border-[#8D6AFA]/10 dark:border-[#8D6AFA]/20">
                     {renderCell(item.pro, true)}
                   </td>
                   <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">

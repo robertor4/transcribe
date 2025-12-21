@@ -49,14 +49,14 @@ export function MilestoneToast({
       className={`
         fixed bottom-6 left-6 z-50
         max-w-sm bg-white dark:bg-gray-800
-        border-2 border-[#cc3399] rounded-xl shadow-2xl
+        border-2 border-[#8D6AFA] rounded-xl shadow-2xl
         p-4 pr-12
         transition-all duration-300 ease-out
         ${isVisible && !isAnimatingOut ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}
       `}
     >
       {/* Magenta accent bar */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#cc3399] rounded-l-xl"></div>
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#8D6AFA] rounded-l-xl"></div>
 
       {/* Content */}
       <p className="text-gray-900 dark:text-gray-100 font-medium">

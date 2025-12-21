@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, memo } from 'react';
+import { useRouter } from 'next/navigation';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import Link from 'next/link';
 import { MessageSquare, GripVertical, Trash2, Loader2 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/formatters';
+import { AssetsCountBadge } from './AssetsCountBadge';
 import type { Conversation } from '@/lib/types/conversation';
 
 interface DraggableConversationCardProps {
@@ -19,6 +20,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
   locale,
   onDelete,
 }: DraggableConversationCardProps) {
+  const router = useRouter();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -48,53 +50,55 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if dragging or clicking on interactive elements
+    if (isDragging) return;
+    if ((e.target as HTMLElement).closest('[data-no-navigate]')) return;
+
+    router.push(`/${locale}/conversation/${conversation.id}`);
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative flex items-center justify-between py-3 px-4 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 ${
-        isDragging ? 'opacity-50 scale-[0.98] shadow-xl z-50' : ''
+      {...listeners}
+      {...attributes}
+      onClick={handleCardClick}
+      className={`group relative flex items-center justify-between py-3 px-4 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer touch-none ${
+        isDragging ? 'opacity-50 scale-[0.98] shadow-xl z-50 cursor-grabbing' : ''
       }`}
     >
-      {/* Drag Handle */}
+      {/* Drag Handle - visual indicator */}
       <div
-        {...listeners}
-        {...attributes}
-        className="absolute left-0 top-1/2 -translate-y-1/2 p-2 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity duration-200 touch-none"
-        aria-label="Drag to move to folder"
+        className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-30 group-hover:opacity-60 transition-opacity duration-200"
+        aria-hidden="true"
       >
         <GripVertical className="w-4 h-4 text-gray-400" />
       </div>
 
-      <Link
-        href={`/${locale}/conversation/${conversation.id}`}
-        className="flex items-center gap-3 flex-1 min-w-0 ml-6"
-        onClick={(e) => {
-          // Prevent navigation while dragging
-          if (isDragging) {
-            e.preventDefault();
-          }
-        }}
-      >
+      <div className="flex items-center gap-3 flex-1 min-w-0 ml-6">
         <div className="flex-shrink-0">
-          <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110 transition-all duration-200" />
+          <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110 transition-all duration-200" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] transition-colors duration-200 truncate">
+            <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200 truncate">
               {conversation.title}
             </span>
+            <AssetsCountBadge count={conversation.assetsCount} />
           </div>
-          <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          <div className="text-xs text-gray-400 dark:text-gray-500">
             <span>{formatRelativeTime(conversation.createdAt)}</span>
           </div>
         </div>
-      </Link>
+      </div>
 
       {/* Delete Button - appears on hover */}
       {onDelete && (
         <div
           className="flex-shrink-0 mr-2"
+          data-no-navigate
           onClick={(e) => e.stopPropagation()}
         >
           {showDeleteConfirm ? (
@@ -127,7 +131,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
         </div>
       )}
 
-      <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
+      <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
         →
       </div>
 

@@ -73,7 +73,7 @@ export default function PreferencesSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
@@ -124,7 +124,7 @@ export default function PreferencesSettingsPage() {
                     p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-2
                     ${
                       theme === 'light'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20'
                         : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                     }
                   `}
@@ -142,7 +142,7 @@ export default function PreferencesSettingsPage() {
                     p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-2
                     ${
                       theme === 'dark'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20'
                         : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                     }
                   `}
@@ -160,7 +160,7 @@ export default function PreferencesSettingsPage() {
                     p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-2
                     ${
                       theme === 'system'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20'
                         : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                     }
                   `}
@@ -196,7 +196,7 @@ export default function PreferencesSettingsPage() {
                 id="language"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="w-full max-w-xs rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent"
+                className="w-full max-w-xs rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
               >
                 {SUPPORTED_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -213,7 +213,7 @@ export default function PreferencesSettingsPage() {
           <button
             onClick={handleSaveLanguage}
             disabled={saving || language === locale}
-            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('saveChanges')}

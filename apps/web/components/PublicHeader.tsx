@@ -22,7 +22,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
         <div className="flex items-center justify-between h-16">
           <Link href={`/${locale}/landing`} className="flex items-center">
             <img
-              src="/assets/NS-symbol.webp"
+              src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary"
               className="h-8 w-auto mr-2 sm:mr-3"
               width={32}
@@ -41,7 +41,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             {showFeaturesLink && (
               <Link
                 href={`/${locale}/landing#features`}
-                className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
+                className="text-gray-700 hover:text-[#8D6AFA] font-medium transition-colors"
                 aria-label="View features"
               >
                 {tLanding('nav.features')}
@@ -49,14 +49,14 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             )}
             <Link
               href={`/${locale}/landing#video-demo`}
-              className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
+              className="text-gray-700 hover:text-[#8D6AFA] font-medium transition-colors"
               aria-label="See how it works"
             >
               {tLanding('nav.howItWorks')}
             </Link>
             <Link
               href={`/${locale}/pricing`}
-              className="text-gray-700 hover:text-[#cc3399] font-medium transition-colors"
+              className="text-gray-700 hover:text-[#8D6AFA] font-medium transition-colors"
               aria-label="View pricing plans"
             >
               {tLanding('nav.pricing')}
@@ -65,7 +65,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             {user ? (
               <Link
                 href={`/${locale}/dashboard`}
-                className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-full hover:bg-[#b82d89] transition-colors"
+                className="px-4 py-2 bg-[#8D6AFA] text-white font-medium rounded-full hover:bg-[#7A5AE0] transition-colors"
                 aria-label="Go to Dashboard"
               >
                 {tLanding('nav.dashboard')}
@@ -81,7 +81,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
                 </Link>
                 <Link
                   href={`/${locale}/login`}
-                  className="px-4 py-2 bg-[#cc3399] text-white font-medium rounded-full hover:bg-[#b82d89] transition-colors"
+                  className="px-4 py-2 bg-[#8D6AFA] text-white font-medium rounded-full hover:bg-[#7A5AE0] transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
                   {tLanding('nav.getStarted')}

@@ -396,7 +396,7 @@ export function SimpleAudioRecorder({
     return (
       <div className="space-y-6">
         <div className="text-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
             Choose recording source
           </h3>
           <p className="text-sm text-gray-700 dark:text-gray-400">
@@ -406,11 +406,11 @@ export function SimpleAudioRecorder({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Microphone */}
-          <div className="group flex flex-col p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg transition-all duration-200">
-            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200">
+          <div className="group flex flex-col p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200">
+            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200">
               <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
             </div>
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center group-hover:text-[#cc3399]">
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center group-hover:text-[#8D6AFA] uppercase tracking-wide">
               Microphone
             </h3>
             <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
@@ -436,7 +436,7 @@ export function SimpleAudioRecorder({
                       setHasDetectedAudio(false);
                       setShowNoAudioWarning(false);
                     }}
-                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-transparent cursor-pointer"
+                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer"
                   >
                     {audioDevices.map((device) => (
                       <option key={device.deviceId} value={device.deviceId}>
@@ -474,7 +474,7 @@ export function SimpleAudioRecorder({
                       key={index}
                       className={`h-3 flex-1 rounded-sm transition-colors duration-75 ${
                         isActive
-                          ? 'bg-[#cc3399]'
+                          ? 'bg-[#8D6AFA]'
                           : 'bg-gray-300 dark:bg-gray-600'
                       }`}
                     />
@@ -501,7 +501,7 @@ export function SimpleAudioRecorder({
                 stopMicPreview();
                 handleSourceSelect('microphone');
               }}
-              className="w-full py-2.5 px-4 bg-[#cc3399] hover:bg-[#b82d89] text-white font-medium rounded-full transition-colors"
+              className="w-full py-2.5 px-4 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-full transition-colors"
             >
               Use this microphone
             </button>
@@ -511,14 +511,14 @@ export function SimpleAudioRecorder({
           <div
             className={`group flex flex-col p-8 rounded-xl border-2 transition-all duration-200 ${
               canUseTabAudio
-                ? 'border-gray-200 dark:border-gray-700 hover:border-[#cc3399] hover:shadow-lg'
+                ? 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg'
                 : 'border-gray-200 dark:border-gray-700 opacity-50'
             }`}
           >
             <div
               className={`w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 ${
                 canUseTabAudio
-                  ? 'group-hover:bg-[#cc3399] group-hover:scale-110 transition-all duration-200'
+                  ? 'group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200'
                   : ''
               }`}
             >
@@ -529,8 +529,8 @@ export function SimpleAudioRecorder({
               />
             </div>
             <h3
-              className={`font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center ${
-                canUseTabAudio ? 'group-hover:text-[#cc3399]' : ''
+              className={`font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center uppercase tracking-wide ${
+                canUseTabAudio ? 'group-hover:text-[#8D6AFA]' : ''
               }`}
             >
               Tab Audio
@@ -549,7 +549,7 @@ export function SimpleAudioRecorder({
                     type="checkbox"
                     checked={includeMicWithTabAudio}
                     onChange={(e) => setIncludeMicWithTabAudio(e.target.checked)}
-                    className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#cc3399] focus:ring-[#cc3399] cursor-pointer"
+                    className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#8D6AFA] focus:ring-[#8D6AFA] cursor-pointer"
                   />
                   <div className="flex-1">
                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100 block">
@@ -576,7 +576,7 @@ export function SimpleAudioRecorder({
 
                 <button
                   onClick={() => handleSourceSelect('tab-audio')}
-                  className="w-full py-2.5 px-4 bg-[#cc3399] hover:bg-[#b82d89] text-white font-medium rounded-full transition-colors"
+                  className="w-full py-2.5 px-4 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-full transition-colors"
                 >
                   Record tab audio
                 </button>
@@ -658,7 +658,7 @@ export function SimpleAudioRecorder({
             {waveformBars.map((height, index) => (
               <div
                 key={index}
-                className="bg-[#cc3399] rounded-full transition-all duration-150"
+                className="bg-[#8D6AFA] rounded-full transition-all duration-150"
                 style={{
                   width: '4px',
                   height: `${height * 100}%`,
@@ -728,7 +728,7 @@ export function SimpleAudioRecorder({
           {/* Requesting permission state */}
           {state === 'requesting-permission' && (
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#cc3399] mx-auto mb-3" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8D6AFA] mx-auto mb-3" />
               <p className="text-sm text-gray-700 dark:text-gray-400">
                 Please allow microphone access in your browser...
               </p>

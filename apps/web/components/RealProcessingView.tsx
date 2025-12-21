@@ -309,7 +309,7 @@ export function RealProcessingView({
             className={`h-full transition-all duration-500 ease-out ${
               stage === 'error'
                 ? 'bg-red-500'
-                : 'bg-gradient-to-r from-[#cc3399] to-[#ff66cc]'
+                : 'bg-gradient-to-r from-[#8D6AFA] to-[#ff66cc]'
             }`}
             style={{ width: `${progress}%` }}
           />
@@ -337,7 +337,7 @@ export function RealProcessingView({
                 key={stageName}
                 className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-300 ${
                   isActive
-                    ? 'bg-pink-50 dark:bg-pink-900/20 scale-105'
+                    ? 'bg-purple-50 dark:bg-purple-900/20 scale-105'
                     : isPast
                     ? 'bg-green-50 dark:bg-green-900/20'
                     : 'bg-gray-50 dark:bg-gray-800'
@@ -348,7 +348,7 @@ export function RealProcessingView({
                     isComplete
                       ? 'bg-green-500 text-white'
                       : isActive
-                      ? 'bg-[#cc3399] text-white'
+                      ? 'bg-[#8D6AFA] text-white'
                       : isPast
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
@@ -405,7 +405,7 @@ export function RealProcessingView({
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Redirecting to your conversation in{' '}
-              <span className="font-bold text-[#cc3399]">{countdown}</span>{' '}
+              <span className="font-bold text-[#8D6AFA]">{countdown}</span>{' '}
               second{countdown !== 1 ? 's' : ''}...
             </p>
           </div>

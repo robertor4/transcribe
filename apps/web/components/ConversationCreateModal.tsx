@@ -158,7 +158,7 @@ export function ConversationCreateModal({
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               {currentStep === 'capture' && 'Create a conversation'}
               {currentStep === 'context' && 'Add context'}
               {currentStep === 'processing' && 'Processing...'}
@@ -208,7 +208,7 @@ export function ConversationCreateModal({
                     value={overallContext}
                     onChange={(e) => setOverallContext(e.target.value)}
                     placeholder="Provide context about the conversation to help improve transcription accuracy and summary quality. For example: meeting type, participants, topics discussed, or any specialized terminology..."
-                    className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 resize-none transition-colors"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
                     rows={4}
                   />
                 </div>

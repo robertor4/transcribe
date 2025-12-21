@@ -21,7 +21,7 @@ export function UpgradePrompt({
 
   if (variant === 'banner') {
     return (
-      <div className="bg-gradient-to-r from-[#cc3399] to-purple-600 rounded-lg p-4 mb-6">
+      <div className="bg-gradient-to-r from-[#8D6AFA] to-purple-600 rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {showIcon && <Sparkles className="h-5 w-5 text-white mr-3" />}
@@ -32,7 +32,7 @@ export function UpgradePrompt({
           </div>
           <Link
             href="/pricing"
-            className="px-4 py-2 bg-white text-[#cc3399] rounded-lg hover:bg-gray-100 transition-colors font-semibold flex items-center whitespace-nowrap"
+            className="px-4 py-2 bg-white text-[#8D6AFA] rounded-lg hover:bg-gray-100 transition-colors font-semibold flex items-center whitespace-nowrap"
           >
             {t('cta')}
             <ArrowRight className="h-4 w-4 ml-2" />
@@ -50,7 +50,7 @@ export function UpgradePrompt({
         </span>
         <Link
           href="/pricing"
-          className="text-sm text-[#cc3399] hover:underline font-semibold flex items-center"
+          className="text-sm text-[#8D6AFA] hover:underline font-semibold flex items-center"
         >
           {t('cta')}
           <ArrowRight className="h-3 w-3 ml-1" />
@@ -61,11 +61,11 @@ export function UpgradePrompt({
 
   // Default: card variant
   return (
-    <div className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl p-6 border-2 border-dashed border-[#cc3399]/30 mb-6">
+    <div className="bg-gradient-to-br from-purple-50 to-purple-50 dark:from-purple-900/20 dark:to-purple-900/20 rounded-xl p-6 border-2 border-dashed border-[#8D6AFA]/30 mb-6">
       <div className="flex items-start">
         {showIcon && (
           <div className="flex-shrink-0">
-            <Sparkles className="h-8 w-8 text-[#cc3399]" />
+            <Sparkles className="h-8 w-8 text-[#8D6AFA]" />
           </div>
         )}
         <div className={showIcon ? 'ml-4' : ''}>
@@ -77,7 +77,7 @@ export function UpgradePrompt({
           </p>
           <Link
             href="/pricing"
-            className="inline-flex items-center px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors font-semibold"
+            className="inline-flex items-center px-4 py-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors font-semibold"
           >
             {t('cta')}
             <ArrowRight className="h-4 w-4 ml-2" />

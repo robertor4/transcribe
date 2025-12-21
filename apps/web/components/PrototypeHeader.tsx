@@ -17,7 +17,7 @@ export function PrototypeHeader() {
         <div className="flex items-center justify-between h-16">
           <Link href="/prototype-dashboard-v2" className="flex items-center hover:opacity-80 transition-opacity">
             <Image
-              src="/assets/NS-symbol.webp"
+              src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary Logo"
               width={32}
               height={32}
@@ -43,7 +43,7 @@ export function PrototypeHeader() {
 
             {/* Mock Profile Menu */}
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-[#cc3399] flex items-center justify-center text-white text-sm font-medium">
+              <div className="w-8 h-8 rounded-full bg-[#8D6AFA] flex items-center justify-center text-white text-sm font-medium">
                 R
               </div>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block">

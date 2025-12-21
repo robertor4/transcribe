@@ -122,7 +122,7 @@ export default function SharedTranscriptionPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#cc3399]" />
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#8D6AFA]" />
           <p className="text-gray-700">{t('loading')}</p>
         </div>
       </div>
@@ -134,8 +134,8 @@ export default function SharedTranscriptionPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
           <div className="text-center mb-6">
-            <Lock className="w-12 h-12 text-[#cc3399] mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-900">{t('passwordRequired')}</h2>
+            <Lock className="w-12 h-12 text-[#8D6AFA] mx-auto mb-4" />
+            <h2 className="text-2xl font-semibold text-gray-900 uppercase tracking-wide">{t('passwordRequired')}</h2>
             <p className="text-gray-600 mt-2">{t('passwordDescription')}</p>
           </div>
           
@@ -146,7 +146,7 @@ export default function SharedTranscriptionPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('enterPassword')}
-                className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] hover:border-gray-400 transition-colors text-gray-800 placeholder:text-gray-500"
+                className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-[#8D6AFA] hover:border-gray-400 transition-colors text-gray-800 placeholder:text-gray-500"
                 autoFocus
                 required
               />
@@ -165,7 +165,7 @@ export default function SharedTranscriptionPage() {
             </div>
             <button
               type="submit"
-              className="w-full bg-[#cc3399] text-white py-3 rounded-lg hover:bg-[#b82d89] transition-colors"
+              className="w-full bg-[#8D6AFA] text-white py-3 rounded-lg hover:bg-[#7A5AE0] transition-colors"
             >
               {t('submit')}
             </button>
@@ -180,7 +180,7 @@ export default function SharedTranscriptionPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('error.title')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2 uppercase tracking-wide">{t('error.title')}</h2>
           <p className="text-gray-700">{error}</p>
         </div>
       </div>
@@ -199,7 +199,7 @@ export default function SharedTranscriptionPage() {
           {/* Logo/Branding */}
           <div className="flex items-center gap-3 mb-6">
             <img
-              src="/assets/NS-symbol.webp"
+              src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary"
               className="h-8 w-auto"
             />
@@ -209,7 +209,7 @@ export default function SharedTranscriptionPage() {
           {/* Title and Metadata */}
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words uppercase tracking-wide">
                 {transcription.title || transcription.fileName}
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
@@ -225,7 +225,7 @@ export default function SharedTranscriptionPage() {
               </div>
             </div>
             <div className="flex-shrink-0">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 border border-pink-200 rounded-md text-xs font-medium text-[#cc3399]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-md text-xs font-medium text-[#8D6AFA]">
                 <Lock className="w-3.5 h-3.5" />
                 {t('readOnly')}
               </div>

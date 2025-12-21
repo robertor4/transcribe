@@ -16,12 +16,12 @@ export default async function SignupPage({
         <div>
           <div className="flex justify-center mb-4">
             <img
-              src="/assets/NS-symbol.webp"
+              src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary Logo"
               className="h-12 w-auto"
             />
           </div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
             {tAuth('createYourAccount')}
           </h2>
           <p className="text-center text-xs text-gray-500 mt-1">{tLanding('hero.byline')}</p>

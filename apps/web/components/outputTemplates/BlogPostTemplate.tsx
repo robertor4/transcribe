@@ -22,7 +22,7 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
         )}
 
         {/* Hook */}
-        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8 first-letter:text-4xl first-letter:font-bold first-letter:text-[#cc3399]">
+        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8 first-letter:text-4xl first-letter:font-bold first-letter:text-[#8D6AFA]">
           {data.hook}
         </p>
 
@@ -48,10 +48,10 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
                 {section.quotes.map((quote, qIndex) => (
                   <blockquote
                     key={qIndex}
-                    className="border-l-4 border-[#cc3399] pl-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-r-lg"
+                    className="border-l-4 border-[#8D6AFA] pl-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-r-lg"
                   >
                     <div className="flex items-start gap-2">
-                      <Quote className="w-5 h-5 text-[#cc3399] flex-shrink-0 mt-1" />
+                      <Quote className="w-5 h-5 text-[#8D6AFA] flex-shrink-0 mt-1" />
                       <div>
                         <p className="text-gray-700 dark:text-gray-300 italic mb-1">
                           &ldquo;{quote.text}&rdquo;
@@ -69,7 +69,7 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
         ))}
 
       {/* Call to Action */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-[#cc3399]/10 to-purple-500/10 dark:from-[#cc3399]/20 dark:to-purple-500/20 rounded-xl border border-[#cc3399]/20">
+      <div className="mt-8 p-6 bg-gradient-to-r from-[#8D6AFA]/10 to-purple-500/10 dark:from-[#8D6AFA]/20 dark:to-purple-500/20 rounded-xl border border-[#8D6AFA]/20">
         <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
           {data.callToAction}
         </p>

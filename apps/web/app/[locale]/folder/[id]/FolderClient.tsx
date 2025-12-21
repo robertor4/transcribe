@@ -23,6 +23,7 @@ import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { formatRelativeTime } from '@/lib/formatters';
+import { AssetsCountBadge } from '@/components/dashboard/AssetsCountBadge';
 
 interface FolderClientProps {
   folderId: string;
@@ -136,7 +137,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
           mainContent={
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#cc3399] mx-auto mb-4" />
+                <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400">Loading folder...</p>
               </div>
             </div>
@@ -157,7 +158,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
             <div className="flex items-center justify-center h-full">
               <div className="text-center max-w-md">
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide">
                   Folder not found
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -184,7 +185,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
           <div className="p-6">
             {/* Folder Stats */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
                 Folder Stats
               </h3>
               <div className="space-y-2 text-sm">
@@ -213,7 +214,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
             {/* Back Button */}
             <Link
               href={`/${locale}/dashboard`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] transition-colors mb-6"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] transition-colors mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
@@ -247,7 +248,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                         onChange={(e) => setEditedName(e.target.value)}
                         onBlur={handleSaveName}
                         onKeyDown={handleNameKeyDown}
-                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#cc3399] outline-none w-full"
+                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full"
                       />
                     ) : (
                       <h1
@@ -299,7 +300,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
             {/* Conversations in Folder */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   Conversations ({conversations.length})
                 </h2>
                 <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
@@ -312,7 +313,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-6">
                     <Folder className="w-10 h-10 text-gray-400" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                     No conversations yet
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
@@ -335,13 +336,14 @@ export function FolderClient({ folderId }: FolderClientProps) {
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className="flex-shrink-0">
-                            <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#cc3399] group-hover:scale-110 transition-all duration-200" />
+                            <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110 transition-all duration-200" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#cc3399] transition-colors duration-200 truncate">
+                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200 truncate">
                                 {conversation.title}
                               </span>
+                              <AssetsCountBadge count={conversation.assetsCount} />
                             </div>
                             <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               <span>{formatRelativeTime(conversation.createdAt)}</span>
@@ -362,7 +364,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                             </span>
                           </div>
                         )}
-                        <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200 ml-2">
+                        <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200 ml-2">
                           →
                         </div>
                       </Link>

@@ -39,11 +39,11 @@ export function CookieConsent() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-br from-[#cc3399] to-[#9933cc] rounded-lg">
+              <div className="p-2 bg-gradient-to-br from-[#8D6AFA] to-[#9933cc] rounded-lg">
                 <Cookie className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   We use cookies to improve your experience
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -70,7 +70,7 @@ export function CookieConsent() {
             {/* Expandable Details */}
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="flex items-center text-sm text-[#cc3399] hover:text-[#b82d89] transition-colors"
+              className="flex items-center text-sm text-[#8D6AFA] hover:text-[#7A5AE0] transition-colors"
             >
               <span className="mr-1">Learn more about our privacy practices</span>
               {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -111,7 +111,7 @@ export function CookieConsent() {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handleAccept}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-[#cc3399] to-[#9933cc] text-white font-medium rounded-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-[#8D6AFA] to-[#9933cc] text-white font-medium rounded-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               >
                 Accept Analytics
               </button>

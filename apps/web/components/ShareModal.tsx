@@ -507,14 +507,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         <div className="p-4 sm:p-6 border-b border-gray-300 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#cc3399]" />
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#8D6AFA]" />
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                 {t('title')}
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-pink-50 dark:hover:bg-pink-900/20 rounded-lg transition-colors"
+              className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
             >
               <X className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" />
             </button>
@@ -526,8 +526,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <>
               {/* Content Selection */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-[#cc3399]" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                  <FileText className="w-5 h-5 text-[#8D6AFA]" />
                   {t('contentSelection')}
                 </h3>
 
@@ -537,11 +537,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     onClick={() => handlePresetChange('summary')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       contentPreset === 'summary'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/50'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
                     }`}
                   >
-                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#cc3399]" />
+                    <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#8D6AFA]" />
                     <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('summaryOnly')}</span>
                   </button>
 
@@ -549,11 +549,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     onClick={() => handlePresetChange('summaryTranscript')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       contentPreset === 'summaryTranscript'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/50'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
                     }`}
                   >
-                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#cc3399]" />
+                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-[#8D6AFA]" />
                     <span className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">{t('summaryTranscript')}</span>
                   </button>
 
@@ -561,8 +561,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     onClick={() => handlePresetChange('complete')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       contentPreset === 'complete'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/50'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
                     }`}
                   >
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-green-600 dark:text-green-400" />
@@ -573,8 +573,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     onClick={() => setContentPreset('custom')}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       contentPreset === 'custom'
-                        ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/50'
+                        ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/50'
                     }`}
                   >
                     <Shield className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-orange-600 dark:text-orange-400" />
@@ -584,13 +584,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 
                 {/* Custom Content Options */}
                 {contentPreset === 'custom' && (
-                  <div className="space-y-2 p-4 bg-pink-50/30 dark:bg-pink-900/20 rounded-lg border border-pink-100 dark:border-pink-900/50">
+                  <div className="space-y-2 p-4 bg-purple-50/30 dark:bg-purple-900/20 rounded-lg border border-pink-100 dark:border-purple-900/50">
                     <label className="flex items-center gap-3 cursor-pointer hover:bg-white dark:hover:bg-gray-700 p-2 rounded">
                       <input
                         type="checkbox"
                         checked={contentOptions.includeTranscript}
                         onChange={() => handleContentOptionChange('includeTranscript')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
                       <FileText className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeTranscript')}</span>
@@ -601,9 +601,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="checkbox"
                         checked={contentOptions.includeSummary}
                         onChange={() => handleContentOptionChange('includeSummary')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
-                      <MessageSquare className="w-4 h-4 text-[#cc3399]" />
+                      <MessageSquare className="w-4 h-4 text-[#8D6AFA]" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSummary')}</span>
                     </label>
 
@@ -612,9 +612,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="checkbox"
                         checked={contentOptions.includeCommunicationStyles}
                         onChange={() => handleContentOptionChange('includeCommunicationStyles')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
-                      <Users className="w-4 h-4 text-[#cc3399]" />
+                      <Users className="w-4 h-4 text-[#8D6AFA]" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeCommunication')}</span>
                     </label>
 
@@ -623,7 +623,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="checkbox"
                         checked={contentOptions.includeActionItems}
                         onChange={() => handleContentOptionChange('includeActionItems')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
                       <ListChecks className="w-4 h-4 text-green-600 dark:text-green-400" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeActionItems')}</span>
@@ -634,7 +634,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="checkbox"
                         checked={contentOptions.includeSpeakerInfo}
                         onChange={() => handleContentOptionChange('includeSpeakerInfo')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
                       <Users className="w-4 h-4 text-gray-700 dark:text-gray-400" />
                       <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSpeakerInfo')}</span>
@@ -646,7 +646,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         type="checkbox"
                         checked={contentOptions.includeOnDemandAnalyses}
                         onChange={() => handleContentOptionChange('includeOnDemandAnalyses')}
-                        className="w-4 h-4 text-[#cc3399] rounded"
+                        className="w-4 h-4 text-[#8D6AFA] rounded"
                       />
                       <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeOnDemandAnalyses')}</span>
@@ -658,7 +658,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               {/* Share Settings */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-[#cc3399]" />
+                  <Shield className="w-5 h-5 text-[#8D6AFA]" />
                   {t('shareSettings')}
                 </h3>
 
@@ -673,8 +673,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       onClick={() => setExpirationOption('24hours')}
                       className={`p-2 text-sm rounded-lg border ${
                         expirationOption === '24hours'
-                          ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-[#cc3399]'
-                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-pink-50/50 dark:hover:bg-pink-900/20 hover:border-[#cc3399]/30'
+                          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
                       }`}
                     >
                       {t('24hours')}
@@ -683,8 +683,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       onClick={() => setExpirationOption('7days')}
                       className={`p-2 text-sm rounded-lg border ${
                         expirationOption === '7days'
-                          ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-[#cc3399]'
-                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-pink-50/50 dark:hover:bg-pink-900/20 hover:border-[#cc3399]/30'
+                          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
                       }`}
                     >
                       {t('7days')}
@@ -693,8 +693,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       onClick={() => setExpirationOption('never')}
                       className={`p-2 text-sm rounded-lg border ${
                         expirationOption === 'never'
-                          ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-[#cc3399]'
-                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-pink-50/50 dark:hover:bg-pink-900/20 hover:border-[#cc3399]/30'
+                          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
                       }`}
                     >
                       {t('never')}
@@ -709,7 +709,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       type="checkbox"
                       checked={enablePassword}
                       onChange={(e) => setEnablePassword(e.target.checked)}
-                      className="w-4 h-4 text-[#cc3399] rounded"
+                      className="w-4 h-4 text-[#8D6AFA] rounded"
                     />
                     <Lock className="w-4 h-4 text-gray-700 dark:text-gray-400" />
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -723,7 +723,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder={t('enterPassword')}
-                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20"
                       />
                       <button
                         type="button"
@@ -746,7 +746,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <button
                 onClick={handleCreateShareLink}
                 disabled={loading}
-                className="w-full py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+                className="w-full py-3 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
               >
                 {loading ? (
                   <>
@@ -770,7 +770,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </h3>
 
                 {/* Share URL */}
-                <div className="mb-4 p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg border border-pink-100 dark:border-pink-900/50">
+                <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-pink-100 dark:border-purple-900/50">
                   <div className="flex items-center gap-2 mb-2">
                     <input
                       type="text"
@@ -780,7 +780,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     />
                     <button
                       onClick={handleCopyLink}
-                      className="p-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+                      className="p-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
                     >
                       {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                     </button>
@@ -834,7 +834,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <button
                     onClick={() => setShowQrCode(!showQrCode)}
-                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-900/20 flex flex-col items-center gap-1 transition-colors"
+                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
                   >
                     <QrCode className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{t('qrCode')}</span>
@@ -842,7 +842,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                   <button
                     onClick={() => setShowEmailSection(!showEmailSection)}
-                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-900/20 flex flex-col items-center gap-1 transition-colors"
+                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
                   >
                     <Mail className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                     <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{t('sendEmail')}</span>
@@ -860,7 +860,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* QR Code */}
                 {showQrCode && qrCodeUrl && (
-                  <div className="mb-4 p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg flex flex-col items-center border border-pink-100 dark:border-pink-900/50">
+                  <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex flex-col items-center border border-pink-100 dark:border-purple-900/50">
                     <img src={qrCodeUrl} alt="QR Code" className="mb-2 w-48 h-48" />
                     <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{t('scanQR')}</p>
                   </div>
@@ -870,7 +870,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {showEmailSection && (
                   <div className="mb-4 p-3 sm:p-4 border border-gray-400 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
                     <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-[#cc3399]" />
+                      <Mail className="w-4 h-4 text-[#8D6AFA]" />
                       {t('sendViaEmail')}
                     </h4>
 
@@ -880,7 +880,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         {emailChips.map((chip) => (
                           <div
                             key={chip.id}
-                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-pink-50 dark:bg-pink-900/30 border border-[#cc3399]/30 dark:border-[#cc3399]/50 rounded-full"
+                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-purple-50 dark:bg-purple-900/30 border border-[#8D6AFA]/30 dark:border-[#8D6AFA]/50 rounded-full"
                           >
                             <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">{chip.email}</span>
                             <button
@@ -906,11 +906,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         onKeyDown={handleEmailInputKeyDown}
                         onBlur={addEmailChip}
                         placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
-                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-sm sm:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20"
+                        className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-sm sm:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20"
                       />
                       <button
                         onClick={addEmailChip}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 dark:text-gray-400 hover:text-[#cc3399]"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA]"
                       >
                         <Plus className="w-5 h-5" />
                       </button>
@@ -929,7 +929,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <button
                       onClick={handleSendEmails}
                       disabled={emailLoading || emailChips.length === 0 || emailSent}
-                      className="w-full py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2"
+                      className="w-full py-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
                     >
                       {emailLoading ? (
                         <>
@@ -967,7 +967,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       </h4>
                       <button
                         onClick={handleResendToAll}
-                        className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89] font-medium flex items-center gap-1"
+                        className="text-sm text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0] font-medium flex items-center gap-1"
                       >
                         <Mail className="w-4 h-4" />
                         Re-send to All
@@ -978,7 +978,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       {transcription.sharedWith.map((record, index) => (
                         <div
                           key={`${record.email}-${index}`}
-                          className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 hover:border-[#cc3399]/30 transition-colors"
+                          className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/30 transition-colors"
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
@@ -994,7 +994,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                           </div>
                           <button
                             onClick={() => handleResendToEmail(record.email)}
-                            className="ml-2 px-2 py-1 text-xs text-[#cc3399] hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded border border-[#cc3399]/30 hover:border-[#cc3399] transition-colors"
+                            className="ml-2 px-2 py-1 text-xs text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded border border-[#8D6AFA]/30 hover:border-[#8D6AFA] transition-colors"
                           >
                             Re-send
                           </button>

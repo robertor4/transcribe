@@ -102,9 +102,7 @@ export class UserController {
         data: { success: true },
       };
     } catch (error: any) {
-      throw new BadRequestException(
-        error.message || 'Failed to delete photo',
-      );
+      throw new BadRequestException(error.message || 'Failed to delete photo');
     }
   }
 

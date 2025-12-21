@@ -17,9 +17,9 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'cla
  * Based on landing page CTAButton patterns with additional variants for dashboard UI
  *
  * Design principles:
- * - Primary: Solid dark background (#2c2c2c) for main actions
+ * - Primary: Solid dark background (#23194B) for main actions
  * - Secondary: Outlined with hover fill for alternative actions
- * - Brand: Bold pink (#cc3399) for special CTAs
+ * - Brand: Bold purple (#8D6AFA) for special CTAs
  * - Ghost: Transparent with hover background for subtle actions
  * - Danger: Red for destructive actions
  *
@@ -48,13 +48,13 @@ export function Button({
   // Variant classes
   const variantClasses = {
     // Solid dark background - main actions (landing page primary)
-    primary: 'bg-[#2c2c2c] text-white hover:bg-[#3a3a3a] border-2 border-transparent shadow-md hover:scale-105',
+    primary: 'bg-[#23194B] text-white hover:bg-[#2D2360] border-2 border-transparent shadow-md hover:scale-105',
 
     // Outlined with hover fill - alternative actions (landing page secondary)
     secondary: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-2 border-gray-900 dark:border-gray-100 hover:bg-gray-900 dark:hover:bg-gray-100 hover:text-white dark:hover:text-gray-900 hover:scale-105',
 
-    // Brand pink - special CTAs (landing page brand)
-    brand: 'bg-[#cc3399] text-white hover:bg-[#b82d89] border-2 border-transparent shadow-md hover:scale-105',
+    // Brand purple - special CTAs (landing page brand)
+    brand: 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] border-2 border-transparent shadow-md hover:scale-105',
 
     // Transparent with hover - subtle actions (new for dashboard)
     ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-transparent',

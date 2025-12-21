@@ -118,8 +118,8 @@ export function TwoColumnDashboardLayout({
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
         {/* Left Column: Folders */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Folders
             </h2>
             <div className="flex items-center gap-1">
@@ -181,7 +181,7 @@ export function TwoColumnDashboardLayout({
                   <button
                     onClick={handleCreateFolder}
                     disabled={!newFolderName.trim()}
-                    className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Create folder"
                   >
                     <Plus className="w-4 h-4" />
@@ -221,8 +221,8 @@ export function TwoColumnDashboardLayout({
 
         {/* Right Column: Conversations */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Conversations
             </h2>
             <div className="flex items-center gap-2">
@@ -269,7 +269,7 @@ export function TwoColumnDashboardLayout({
               {hasMore && (
                 <button
                   onClick={() => setDisplayCount(prev => prev + ITEMS_PER_PAGE)}
-                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                 >
                   Show More ({remainingCount} remaining)
                 </button>

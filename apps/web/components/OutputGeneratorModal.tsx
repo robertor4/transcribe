@@ -89,7 +89,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               {t('title')}
             </h2>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
@@ -118,7 +118,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 relative z-10 ${
                     item.num === step
-                      ? 'bg-[#cc3399] text-white scale-110'
+                      ? 'bg-[#8D6AFA] text-white scale-110'
                       : item.num < step
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
@@ -152,7 +152,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
           {step === 1 && (
             <div className="space-y-4">
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                   What would you like to create?
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -171,15 +171,15 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                       onClick={() => setSelectedType(template.id)}
                       className={`group relative p-6 rounded-xl border-2 text-left transition-all duration-200 ${
                         isSelected
-                          ? 'border-[#cc3399] bg-pink-50 dark:bg-[#cc3399]/10 shadow-lg scale-105'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-[#cc3399]/50 hover:shadow-md'
+                          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-[#8D6AFA]/10 shadow-lg scale-105'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA]/50 hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-start gap-4">
                         <div
                           className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
                             isSelected
-                              ? 'bg-[#cc3399] text-white'
+                              ? 'bg-[#8D6AFA] text-white'
                               : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-600 dark:text-gray-300'
                           }`}
                         >
@@ -197,7 +197,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                           </p>
                         </div>
                         {isSelected && (
-                          <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#cc3399] flex items-center justify-center">
+                          <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#8D6AFA] flex items-center justify-center">
                             <span className="text-white text-sm">✓</span>
                           </div>
                         )}
@@ -213,7 +213,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                   Add custom instructions (optional)
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -229,7 +229,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   value={customInstructions}
                   onChange={(e) => setCustomInstructions(e.target.value)}
                   placeholder={`Example: Focus on the technical aspects, keep it under 500 words, and include specific metrics discussed.`}
-                  className="w-full h-40 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20 outline-none transition-colors resize-none text-sm font-medium"
+                  className="w-full h-40 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 outline-none transition-colors resize-none text-sm font-medium"
                 />
                 <p className="mt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
                   Leave blank to use default settings for {selectedOption?.name}
@@ -242,7 +242,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                   Review and confirm
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -256,7 +256,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   <div className="flex items-center gap-4 mb-4">
                     {selectedOption && (
                       <>
-                        <div className="w-12 h-12 rounded-lg bg-[#cc3399] flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-lg bg-[#8D6AFA] flex items-center justify-center">
                           <selectedOption.icon className="w-6 h-6 text-white" />
                         </div>
                         <div>
@@ -309,19 +309,19 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             <div className="py-12 text-center">
               {isGenerating ? (
                 <>
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#cc3399] to-[#b82d89] flex items-center justify-center mx-auto mb-6 animate-pulse">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center mx-auto mb-6 animate-pulse">
                     <Sparkles className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
                     Generating your {selectedOption?.name}...
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     This may take a few moments
                   </p>
                   <div className="mt-8 flex items-center justify-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#cc3399] animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <div className="w-3 h-3 rounded-full bg-[#cc3399] animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <div className="w-3 h-3 rounded-full bg-[#cc3399] animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </>
               ) : error ? (
@@ -329,7 +329,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
                     <AlertCircle className="w-10 h-10 text-red-500" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
                     Generation failed
                   </h3>
                   <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-6">
@@ -344,7 +344,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-6">
                     <span className="text-4xl text-white">✓</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
                     Output generated successfully!
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">

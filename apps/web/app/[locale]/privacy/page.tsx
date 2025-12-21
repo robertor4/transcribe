@@ -74,7 +74,7 @@ export default async function PrivacyPage({
                 </Link>
                 <div className="flex items-center">
                   <img 
-                    src="/assets/NS-symbol.webp" 
+                    src="/assets/logos/neural-summary-logo.svg" 
                     alt="Neural Summary" 
                     className="h-8 w-auto mr-3"
                     width={32}
@@ -97,7 +97,7 @@ export default async function PrivacyPage({
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             {/* Title Section */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#cc3399] to-[#9933cc] rounded-full mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#8D6AFA] to-[#9933cc] rounded-full mb-3">
                 <Shield className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('title')}</h1>
@@ -117,18 +117,18 @@ export default async function PrivacyPage({
             <nav className="bg-gray-50 rounded-lg p-4 mb-8">
               <h2 className="text-base font-semibold text-gray-900 mb-3">{t('tableOfContents')}</h2>
               <ol className="space-y-1 list-decimal list-inside text-sm text-gray-700">
-                <li><a href="#data-controller" className="hover:text-[#cc3399] transition-colors">{t('sections.dataController.title')}</a></li>
-                <li><a href="#data-collected" className="hover:text-[#cc3399] transition-colors">{t('sections.dataCollected.title')}</a></li>
-                <li><a href="#legal-basis" className="hover:text-[#cc3399] transition-colors">{t('sections.legalBasis.title')}</a></li>
-                <li><a href="#data-usage" className="hover:text-[#cc3399] transition-colors">{t('sections.dataUsage.title')}</a></li>
-                <li><a href="#data-sharing" className="hover:text-[#cc3399] transition-colors">{t('sections.dataSharing.title')}</a></li>
-                <li><a href="#data-retention" className="hover:text-[#cc3399] transition-colors">{t('sections.dataRetention.title')}</a></li>
-                <li><a href="#user-rights" className="hover:text-[#cc3399] transition-colors">{t('sections.userRights.title')}</a></li>
-                <li><a href="#data-security" className="hover:text-[#cc3399] transition-colors">{t('sections.dataSecurity.title')}</a></li>
-                <li><a href="#cookies" className="hover:text-[#cc3399] transition-colors">{t('sections.cookies.title')}</a></li>
-                <li><a href="#international-transfers" className="hover:text-[#cc3399] transition-colors">{t('sections.internationalTransfers.title')}</a></li>
-                <li><a href="#children" className="hover:text-[#cc3399] transition-colors">{t('sections.children.title')}</a></li>
-                <li><a href="#contact" className="hover:text-[#cc3399] transition-colors">{t('sections.contact.title')}</a></li>
+                <li><a href="#data-controller" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataController.title')}</a></li>
+                <li><a href="#data-collected" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataCollected.title')}</a></li>
+                <li><a href="#legal-basis" className="hover:text-[#8D6AFA] transition-colors">{t('sections.legalBasis.title')}</a></li>
+                <li><a href="#data-usage" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataUsage.title')}</a></li>
+                <li><a href="#data-sharing" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataSharing.title')}</a></li>
+                <li><a href="#data-retention" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataRetention.title')}</a></li>
+                <li><a href="#user-rights" className="hover:text-[#8D6AFA] transition-colors">{t('sections.userRights.title')}</a></li>
+                <li><a href="#data-security" className="hover:text-[#8D6AFA] transition-colors">{t('sections.dataSecurity.title')}</a></li>
+                <li><a href="#cookies" className="hover:text-[#8D6AFA] transition-colors">{t('sections.cookies.title')}</a></li>
+                <li><a href="#international-transfers" className="hover:text-[#8D6AFA] transition-colors">{t('sections.internationalTransfers.title')}</a></li>
+                <li><a href="#children" className="hover:text-[#8D6AFA] transition-colors">{t('sections.children.title')}</a></li>
+                <li><a href="#contact" className="hover:text-[#8D6AFA] transition-colors">{t('sections.contact.title')}</a></li>
               </ol>
             </nav>
 
@@ -137,7 +137,7 @@ export default async function PrivacyPage({
               {/* 1. Data Controller */}
               <section id="data-controller">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <UserCheck className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <UserCheck className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataController.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataController.content')}</p>
@@ -154,7 +154,7 @@ export default async function PrivacyPage({
               {/* 2. Data We Collect */}
               <section id="data-collected">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Database className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Database className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataCollected.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataCollected.content')}</p>
@@ -187,7 +187,7 @@ export default async function PrivacyPage({
               {/* 3. Legal Basis for Processing */}
               <section id="legal-basis">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <FileCheck className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <FileCheck className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.legalBasis.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.legalBasis.content')}</p>
@@ -218,7 +218,7 @@ export default async function PrivacyPage({
               {/* 4. How We Use Your Data */}
               <section id="data-usage">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Eye className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Eye className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataUsage.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataUsage.content')}</p>
@@ -235,7 +235,7 @@ export default async function PrivacyPage({
               {/* 5. Data Sharing */}
               <section id="data-sharing">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Users className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Users className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataSharing.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataSharing.content')}</p>
@@ -260,7 +260,7 @@ export default async function PrivacyPage({
               {/* 6. Data Retention */}
               <section id="data-retention">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Clock className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Clock className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataRetention.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataRetention.content')}</p>
@@ -280,7 +280,7 @@ export default async function PrivacyPage({
               {/* 7. Your Rights (GDPR) */}
               <section id="user-rights">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <UserCheck className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <UserCheck className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.userRights.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.userRights.content')}</p>
@@ -331,7 +331,7 @@ export default async function PrivacyPage({
               {/* 8. Data Security */}
               <section id="data-security">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Lock className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Lock className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.dataSecurity.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.dataSecurity.content')}</p>
@@ -354,7 +354,7 @@ export default async function PrivacyPage({
               {/* 9. Cookies */}
               <section id="cookies">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Cookie className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Cookie className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.cookies.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.cookies.content')}</p>
@@ -384,7 +384,7 @@ export default async function PrivacyPage({
               {/* 10. International Data Transfers */}
               <section id="international-transfers">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Globe className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Globe className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.internationalTransfers.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.internationalTransfers.content')}</p>
@@ -411,7 +411,7 @@ export default async function PrivacyPage({
               {/* 12. Contact Information */}
               <section id="contact">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Mail className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Mail className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.contact.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.contact.content')}</p>

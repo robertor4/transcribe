@@ -73,7 +73,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       {/* Simple spinner */}
-      <Loader2 className="h-5 w-5 text-[#cc3399] animate-spin" />
+      <Loader2 className="h-5 w-5 text-[#8D6AFA] animate-spin" />
 
       {/* Status message with shimmer */}
       <span className="relative text-sm text-gray-700 dark:text-gray-300 overflow-hidden">
@@ -82,7 +82,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
       </span>
 
       {/* Simple percentage */}
-      <span className="text-sm font-medium text-[#cc3399]">
+      <span className="text-sm font-medium text-[#8D6AFA]">
         {Math.round(progress)}%
       </span>
 

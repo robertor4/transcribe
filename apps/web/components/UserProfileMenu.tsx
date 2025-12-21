@@ -121,11 +121,11 @@ export function UserProfileMenu() {
             <img
               src={user.photoURL}
               alt={user.displayName || user.email || 'User'}
-              className="h-8 w-8 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
+              className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="h-8 w-8 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-sm font-semibold flex-shrink-0">
+            <div className="h-10 w-10 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-base font-semibold flex-shrink-0">
               {getInitials()}
             </div>
           )}
@@ -159,7 +159,7 @@ export function UserProfileMenu() {
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="h-10 w-10 rounded-full bg-[#cc3399] text-white flex items-center justify-center text-base font-semibold">
+                <div className="h-10 w-10 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-base font-semibold">
                   {getInitials()}
                 </div>
               )}
@@ -247,7 +247,7 @@ export function UserProfileMenu() {
               {usageStats.tier === 'free' && (
                 <button
                   onClick={handleUpgradeClick}
-                  className="mt-3 w-full px-3 py-1.5 bg-[#cc3399] text-white text-xs font-medium rounded-md hover:bg-[#b82d89] transition-colors"
+                  className="mt-3 w-full px-3 py-1.5 bg-[#8D6AFA] text-white text-xs font-medium rounded-md hover:bg-[#7A5AE0] transition-colors"
                 >
                   {tUsage('upgradePlan')}
                 </button>
@@ -262,10 +262,10 @@ export function UserProfileMenu() {
               <div className="pb-2 mb-2 border-b border-gray-200 dark:border-gray-700">
                 <button
                   onClick={handleAdminPanelClick}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-gray-700 transition-colors rounded-md"
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors rounded-md"
                 >
-                  <Shield className="h-5 w-5 text-[#cc3399]" />
-                  <span className="font-medium text-[#cc3399]">Admin Panel</span>
+                  <Shield className="h-5 w-5 text-[#8D6AFA]" />
+                  <span className="font-medium text-[#8D6AFA]">Admin Panel</span>
                 </button>
               </div>
             )}

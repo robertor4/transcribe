@@ -76,8 +76,8 @@ export const metadata: Metadata = {
     description: 'Speaking becomes creating. Transform conversations into product specs, articles, and strategies with AI that interviews you and generates deliverables.',
     images: [
       {
-        url: '/assets/NS-symbol.webp',
-        secureUrl: 'https://neuralsummary.com/assets/NS-symbol.webp',
+        url: '/assets/logos/neural-summary-logo.svg',
+        secureUrl: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
         width: 1200,
         height: 630,
         alt: 'Neural Summary - AI Transcription Platform',
@@ -91,7 +91,7 @@ export const metadata: Metadata = {
     description: 'Turn 3-minute conversations into complete product specs, articles, and strategies. AI interviews you, generates deliverables.',
     site: '@neuralsummary',
     creator: '@neuralsummary',
-    images: ['/assets/NS-symbol.webp'],
+    images: ['/assets/logos/neural-summary-logo.svg'],
   },
   robots: {
     index: true,

@@ -21,7 +21,7 @@ export function MobileNav({ locale }: MobileNavProps) {
       {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden p-2 rounded-md bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#cc3399] shadow-sm"
+        className="md:hidden p-2 rounded-md bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8D6AFA] shadow-sm"
         aria-expanded={isOpen}
         aria-label="Toggle navigation menu"
       >
@@ -48,10 +48,10 @@ export function MobileNav({ locale }: MobileNavProps) {
         }`}
       >
         <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Neural Summary</h2>
+          <h2 className="text-lg font-semibold text-gray-900 uppercase tracking-wide">Neural Summary</h2>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#cc3399]"
+            className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8D6AFA]"
             aria-label="Close menu"
           >
             <X className="h-6 w-6" aria-hidden="true" />
@@ -91,7 +91,7 @@ export function MobileNav({ locale }: MobileNavProps) {
                 <Link
                   href={`/${locale}/dashboard`}
                   onClick={() => setIsOpen(false)}
-                  className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-full transition-colors"
+                  className="block px-4 py-3 text-base font-medium text-center text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] rounded-full transition-colors"
                 >
                   {t('nav.dashboard')}
                 </Link>
@@ -108,7 +108,7 @@ export function MobileNav({ locale }: MobileNavProps) {
                   <Link
                     href={`/${locale}/login`}
                     onClick={() => setIsOpen(false)}
-                    className="block px-4 py-3 text-base font-medium text-center text-white bg-[#cc3399] hover:bg-[#b82d89] rounded-full transition-colors"
+                    className="block px-4 py-3 text-base font-medium text-center text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] rounded-full transition-colors"
                   >
                     {t('nav.getStarted')}
                   </Link>

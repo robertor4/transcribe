@@ -148,7 +148,7 @@ export default function CheckoutPage() {
           <div className="flex gap-4 justify-center">
             <a
               href={`/${params.locale}/pricing`}
-              className="px-6 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
+              className="px-6 py-3 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors"
             >
               {t('error.backToPricing')}
             </a>
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
       <div className="text-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#cc3399] mx-auto mb-4" />
+        <Loader2 className="h-12 w-12 animate-spin text-[#8D6AFA] mx-auto mb-4" />
         <p className="text-gray-700 dark:text-gray-300 text-lg">{t('processing')}</p>
         <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
           {t('redirecting')}

@@ -231,15 +231,15 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
         {/* Generated Analyses List */}
         {generatedAnalyses.length > 0 && (
           <div className="bg-gray-50 dark:bg-gray-900/30 p-4 rounded-lg mb-6">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Your Analyses</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">Your Analyses</h3>
             <div className="space-y-2">
               {generatedAnalyses.map((analysis) => (
                 <div
                   key={analysis.id}
                   className={`p-3 rounded-lg border cursor-pointer transition-all ${
                     selectedAnalysisId === analysis.id
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/40 shadow-sm dark:shadow-pink-500/20'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/40 shadow-sm dark:shadow-pink-500/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}
                   onClick={() => setSelectedAnalysisId(analysis.id)}
                 >
@@ -269,8 +269,8 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
 
         {/* Template Catalog */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            <Sparkles className="w-4 h-4 inline mr-1 text-[#cc3399]" />
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+            <Sparkles className="w-4 h-4 inline mr-1 text-[#8D6AFA]" />
             Generate More Analyses
           </h3>
 
@@ -365,7 +365,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedAnalysis.templateName}</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">{selectedAnalysis.templateName}</h2>
                   <div className="flex items-center gap-3 mt-2 text-xs text-gray-600 dark:text-gray-400">
                     <span className="flex items-center gap-1" title={new Date(selectedAnalysis.generatedAt).toLocaleString()}>
                       <Clock className="w-3.5 h-3.5" />
@@ -422,8 +422,8 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
             </div>
           </div>
         ) : (
-          <div className="text-center py-16 px-6 bg-gradient-to-br from-gray-50 to-pink-50/20 dark:from-gray-900/50 dark:to-pink-900/5 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-            <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#cc3399] animate-pulse" />
+          <div className="text-center py-16 px-6 bg-gradient-to-br from-gray-50 to-purple-50/20 dark:from-gray-900/50 dark:to-purple-900/5 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+            <Sparkles className="w-16 h-16 mx-auto mb-4 text-[#8D6AFA] animate-pulse" />
             <p className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
               No analyses generated yet
             </p>
@@ -438,7 +438,7 @@ export const MoreAnalysesTab: React.FC<MoreAnalysesTabProps> = ({
                 <button
                   onClick={() => handleGenerate(categorizedTemplates.featured[0].id)}
                   disabled={isGenerating !== null}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg text-sm font-medium"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>{categorizedTemplates.featured[0]?.name || 'Featured Template'}</span>
@@ -472,7 +472,7 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, isAnyGenerating, onGenerate }) => {
   const colorClasses: Record<string, string> = {
-    pink: 'bg-pink-100 text-pink-800 border-pink-300 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700',
+    pink: 'bg-purple-100 text-purple-800 border-pink-300 dark:bg-purple-900/30 dark:text-pink-300 dark:border-pink-700',
     orange: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
     teal: 'bg-teal-100 text-teal-800 border-teal-300 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700',
     purple: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
@@ -488,8 +488,8 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, isA
   return (
     <div className={`p-3 border rounded-lg transition-all duration-200 bg-white dark:bg-gray-800 ${
       isGenerating
-        ? 'border-[#cc3399] shadow-md animate-pulse'
-        : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] hover:shadow-lg dark:hover:shadow-pink-500/10 hover:-translate-y-0.5'
+        ? 'border-[#8D6AFA] shadow-md animate-pulse'
+        : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA] hover:shadow-lg dark:hover:shadow-pink-500/10 hover:-translate-y-0.5'
     }`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
@@ -509,7 +509,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, isGenerating, isA
         <button
           onClick={() => onGenerate(template.id)}
           disabled={isAnyGenerating}
-          className="flex-shrink-0 px-3 py-1.5 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center gap-1"
+          className="flex-shrink-0 px-3 py-1.5 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center gap-1"
         >
           {isGenerating ? (
             <>

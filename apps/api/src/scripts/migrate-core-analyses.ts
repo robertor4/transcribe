@@ -85,9 +85,13 @@ async function migrateTranscription(
   // 1. Promote summaryV2 to top-level if it exists in coreAnalyses
   if (data.coreAnalyses.summaryV2) {
     updates.summaryV2 = data.coreAnalyses.summaryV2;
-    console.log(`  [MIGRATE] ${transcriptionId} - Promoting summaryV2 to root level`);
+    console.log(
+      `  [MIGRATE] ${transcriptionId} - Promoting summaryV2 to root level`,
+    );
   } else {
-    console.log(`  [WARN] ${transcriptionId} - No summaryV2 in coreAnalyses, only removing field`);
+    console.log(
+      `  [WARN] ${transcriptionId} - No summaryV2 in coreAnalyses, only removing field`,
+    );
   }
 
   // 2. Delete the coreAnalyses field
@@ -95,10 +99,14 @@ async function migrateTranscription(
 
   // Log what would be discarded
   if (data.coreAnalyses.actionItems) {
-    console.log(`    - Discarding actionItems (${data.coreAnalyses.actionItems.length} chars)`);
+    console.log(
+      `    - Discarding actionItems (${data.coreAnalyses.actionItems.length} chars)`,
+    );
   }
   if (data.coreAnalyses.communicationStyles) {
-    console.log(`    - Discarding communicationStyles (${data.coreAnalyses.communicationStyles.length} chars)`);
+    console.log(
+      `    - Discarding communicationStyles (${data.coreAnalyses.communicationStyles.length} chars)`,
+    );
   }
 
   if (options.dryRun) {
@@ -121,7 +129,9 @@ async function runMigration(options: MigrationOptions): Promise<void> {
   console.log('='.repeat(60));
   console.log('Migration: coreAnalyses → summaryV2 (V2 Architecture)');
   console.log('='.repeat(60));
-  console.log(`Mode: ${options.dryRun ? 'DRY-RUN (no changes)' : 'LIVE (making changes)'}`);
+  console.log(
+    `Mode: ${options.dryRun ? 'DRY-RUN (no changes)' : 'LIVE (making changes)'}`,
+  );
   if (options.limit) {
     console.log(`Limit: ${options.limit} transcriptions`);
   }
@@ -141,7 +151,8 @@ async function runMigration(options: MigrationOptions): Promise<void> {
 
   while (true) {
     // Query transcriptions with coreAnalyses field
-    let query = db.collection('transcriptions')
+    let query = db
+      .collection('transcriptions')
       .orderBy('createdAt', 'desc')
       .limit(batchSize);
 
@@ -176,7 +187,7 @@ async function runMigration(options: MigrationOptions): Promise<void> {
     lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
     // Small delay to avoid rate limiting
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // Print summary
@@ -203,7 +214,7 @@ const options: MigrationOptions = {
   limit: undefined,
 };
 
-const limitArg = args.find(arg => arg.startsWith('--limit='));
+const limitArg = args.find((arg) => arg.startsWith('--limit='));
 if (limitArg) {
   options.limit = parseInt(limitArg.split('=')[1], 10);
 }
@@ -214,7 +225,7 @@ runMigration(options)
     console.log('\nMigration complete.');
     process.exit(0);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('\nMigration failed:', error);
     process.exit(1);
   });

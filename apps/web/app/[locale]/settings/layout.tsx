@@ -35,7 +35,7 @@ export default function SettingsLayout({
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#cc3399]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8D6AFA]"></div>
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function SettingsLayout({
                   {t('backToDashboard')}
                 </Link>
                 {/* Page Title */}
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   {t('title')}
                 </h1>
               </div>
@@ -122,7 +122,7 @@ export default function SettingsLayout({
                       className={`
                         group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
                         ${item.current
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399] border-l-4 border-[#cc3399] -ml-1 pl-4'
+                          ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA] border-l-4 border-[#8D6AFA] -ml-1 pl-4'
                           : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
                         }
                       `}
@@ -130,7 +130,7 @@ export default function SettingsLayout({
                       <Icon
                         className={`
                           flex-shrink-0 -ml-1 mr-3 h-5 w-5
-                          ${item.current ? 'text-[#cc3399]' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}
+                          ${item.current ? 'text-[#8D6AFA]' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}
                         `}
                       />
                       <span className="truncate">{item.name}</span>
@@ -161,7 +161,7 @@ export default function SettingsLayout({
                       className={`
                         group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
                         ${item.current
-                          ? 'bg-pink-50 dark:bg-pink-900/30 text-[#cc3399]'
+                          ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
                           : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }
                       `}
@@ -169,7 +169,7 @@ export default function SettingsLayout({
                       <Icon
                         className={`
                           flex-shrink-0 mr-3 h-5 w-5
-                          ${item.current ? 'text-[#cc3399]' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}
+                          ${item.current ? 'text-[#8D6AFA]' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-500 dark:group-hover:text-gray-400'}
                         `}
                       />
                       <span className="truncate">{item.name}</span>

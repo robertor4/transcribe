@@ -24,8 +24,8 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
       title: useCaseStrings.oneOnOnes.title,
       description: useCaseStrings.oneOnOnes.description,
       icon: UserCheck,
-      bgGradient: 'from-pink-50 to-purple-50',
-      iconBg: 'bg-[#cc3399]',
+      bgGradient: 'from-purple-50 to-purple-50',
+      iconBg: 'bg-[#8D6AFA]',
       iconColor: 'text-white',
     },
     {

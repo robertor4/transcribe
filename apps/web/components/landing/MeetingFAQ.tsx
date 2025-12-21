@@ -36,7 +36,7 @@ function FAQItem({ question, answer, isOpen, onToggle, delay = 0 }: FAQItemProps
             {question}
           </span>
           {isOpen ? (
-            <ChevronUp className="h-5 w-5 text-[#cc3399] flex-shrink-0" aria-hidden="true" />
+            <ChevronUp className="h-5 w-5 text-[#8D6AFA] flex-shrink-0" aria-hidden="true" />
           ) : (
             <ChevronDown className="h-5 w-5 text-gray-400 flex-shrink-0" aria-hidden="true" />
           )}

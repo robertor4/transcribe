@@ -176,7 +176,7 @@ export default function WorkflowCarousel() {
             onClick={() => handleDotClick(index)}
             className={`transition-all ${
               index === currentIndex
-                ? 'w-8 h-2 bg-[#cc3399]'
+                ? 'w-8 h-2 bg-[#8D6AFA]'
                 : 'w-2 h-2 bg-white/60 hover:bg-white'
             } rounded-full`}
             aria-label={`Go to slide ${index + 1}`}

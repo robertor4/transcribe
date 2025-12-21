@@ -53,7 +53,7 @@ export function DeleteFolderModal({
               <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                 Delete Folder
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -84,7 +84,7 @@ export function DeleteFolderModal({
                 <label
                   className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedOption === 'move'
-                      ? 'border-[#cc3399] bg-pink-50/50 dark:bg-pink-900/10'
+                      ? 'border-[#8D6AFA] bg-purple-50/50 dark:bg-purple-900/10'
                       : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
@@ -94,7 +94,7 @@ export function DeleteFolderModal({
                     value="move"
                     checked={selectedOption === 'move'}
                     onChange={() => setSelectedOption('move')}
-                    className="mt-1 text-[#cc3399] focus:ring-[#cc3399]"
+                    className="mt-1 text-[#8D6AFA] focus:ring-[#8D6AFA]"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">

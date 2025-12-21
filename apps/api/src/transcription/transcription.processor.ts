@@ -154,9 +154,7 @@ export class TranscriptionProcessor {
               { skipDuplicateCheck: true },
             );
           generatedAnalysisIds.push(actionItemsDoc.id);
-          this.logger.log(
-            `ActionItems analysis created: ${actionItemsDoc.id}`,
-          );
+          this.logger.log(`ActionItems analysis created: ${actionItemsDoc.id}`);
         } catch (err) {
           this.logger.error('Failed to generate actionItems analysis:', err);
           // Continue processing even if this fails
@@ -177,14 +175,9 @@ export class TranscriptionProcessor {
               { skipDuplicateCheck: true },
             );
           generatedAnalysisIds.push(commDoc.id);
-          this.logger.log(
-            `CommunicationAnalysis created: ${commDoc.id}`,
-          );
+          this.logger.log(`CommunicationAnalysis created: ${commDoc.id}`);
         } catch (err) {
-          this.logger.error(
-            'Failed to generate communicationAnalysis:',
-            err,
-          );
+          this.logger.error('Failed to generate communicationAnalysis:', err);
           // Continue processing even if this fails
         }
       }

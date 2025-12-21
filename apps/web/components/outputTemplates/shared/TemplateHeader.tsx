@@ -15,7 +15,7 @@ interface TemplateHeaderProps {
 export function TemplateHeader({
   icon: Icon,
   label,
-  iconColor = 'text-[#cc3399]',
+  iconColor = 'text-[#8D6AFA]',
   metadata,
 }: TemplateHeaderProps) {
   return (

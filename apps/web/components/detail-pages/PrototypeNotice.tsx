@@ -9,7 +9,7 @@ interface PrototypeNoticeProps {
  */
 export function PrototypeNotice({ title, description }: PrototypeNoticeProps) {
   return (
-    <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800 border-2 border-[#cc3399] rounded-xl">
+    <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800 border-2 border-[#8D6AFA] rounded-xl">
       <div className="flex items-start gap-3">
         <div className="text-2xl">🧪</div>
         <div>

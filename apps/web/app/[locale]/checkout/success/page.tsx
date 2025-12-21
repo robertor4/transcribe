@@ -97,7 +97,7 @@ export default function CheckoutSuccessPage({
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-md w-full text-center">
         <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400 mx-auto mb-6" />
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wide">
           {t('title')}
         </h1>
         <p className="text-gray-700 dark:text-gray-300 mb-8">
@@ -105,20 +105,20 @@ export default function CheckoutSuccessPage({
         </p>
 
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
-          <h2 className="font-semibold text-gray-900 dark:text-white mb-3">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-3 uppercase tracking-wide">
             {t('nextSteps.title')}
           </h2>
           <ul className="text-left space-y-2 text-gray-700 dark:text-gray-300">
             <li className="flex items-start">
-              <span className="text-[#cc3399] mr-2">•</span>
+              <span className="text-[#8D6AFA] mr-2">•</span>
               <span>{t('nextSteps.step1')}</span>
             </li>
             <li className="flex items-start">
-              <span className="text-[#cc3399] mr-2">•</span>
+              <span className="text-[#8D6AFA] mr-2">•</span>
               <span>{t('nextSteps.step2')}</span>
             </li>
             <li className="flex items-start">
-              <span className="text-[#cc3399] mr-2">•</span>
+              <span className="text-[#8D6AFA] mr-2">•</span>
               <span>{t('nextSteps.step3')}</span>
             </li>
           </ul>
@@ -126,7 +126,7 @@ export default function CheckoutSuccessPage({
 
         <Link
           href={`/${locale}/dashboard`}
-          className="inline-flex items-center px-8 py-3 bg-[#cc3399] text-white font-semibold rounded-lg hover:bg-[#b82d89] transition-colors"
+          className="inline-flex items-center px-8 py-3 bg-[#8D6AFA] text-white font-semibold rounded-lg hover:bg-[#7A5AE0] transition-colors"
         >
           {t('cta')}
           <ArrowRight className="ml-2 h-5 w-5" />

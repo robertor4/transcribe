@@ -237,7 +237,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#cc3399] mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">Loading conversation...</p>
         </div>
       </div>
@@ -250,7 +250,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
       <div className="h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
             Conversation not found
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -293,7 +293,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             <div className="mb-8">
               <Link
                 href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors mb-6"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-6"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {folder ? folder.name : 'Dashboard'}
@@ -306,7 +306,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onChange={(e) => setEditedTitle(e.target.value)}
                   onBlur={handleSaveTitle}
                   onKeyDown={handleTitleKeyDown}
-                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#cc3399] outline-none w-full mb-3"
+                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3"
                 />
               ) : (
                 <h1
@@ -342,19 +342,19 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className="flex items-center gap-6 py-3">
                 <button
                   onClick={() => document.getElementById('summary')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
                 >
                   Summary
                 </button>
                 <Link
                   href={`/${locale}/conversation/${conversationId}/transcript`}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
                 >
                   Transcript
                 </Link>
                 <button
                   onClick={() => document.getElementById('outputs')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] transition-colors duration-200"
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
                 >
                   AI Assets
                 </button>
@@ -366,7 +366,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Summary</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Summary</h2>
                 </div>
                 {(conversation.source.summary.summaryV2 || conversation.source.summary.text) && (
                   <Button
@@ -399,16 +399,16 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             >
               <div className="mb-6 relative">
                 {/* Accent bar on left */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#cc3399] to-[#cc3399]/50 rounded-full" />
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8D6AFA] to-[#8D6AFA]/50 rounded-full" />
 
                 <div className="pl-5 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     {/* Icon with brand gradient background */}
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#cc3399] to-[#b82d89] flex items-center justify-center shadow-lg shadow-[#cc3399]/20">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center shadow-lg shadow-[#8D6AFA]/20">
                       <Zap className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                         {t('title')}
                       </h2>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -451,14 +451,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       <Link
                         key={output.id}
                         href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
-                        className="group relative p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#cc3399] dark:hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
+                        className="group relative p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
                       >
                         <div className="flex items-start gap-4">
                           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
                             <OutputIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#cc3399] transition-colors">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
                               {output.templateName}
                             </h3>
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
@@ -468,7 +468,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                               Generated {formatRelativeTime(new Date(output.generatedAt))}
                             </div>
                           </div>
-                          <div className="flex-shrink-0 text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
+                          <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
                             →
                           </div>
                         </div>
@@ -479,7 +479,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               ) : (
                 <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
                   <div className="text-4xl mb-3">✨</div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                     {t('emptyTitle')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
@@ -500,7 +500,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-2">
                   <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                     Transcript
                   </h2>
                 </div>
@@ -512,14 +512,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {/* Transcript Card - Links to dedicated page */}
               <Link
                 href={`/${locale}/conversation/${conversation.id}/transcript`}
-                className="group block p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#cc3399] dark:hover:border-[#cc3399] hover:shadow-lg transition-all duration-200"
+                className="group block p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
                     <FileText className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#cc3399] transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
                       Full Transcript with Timeline
                     </h3>
                     <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
@@ -537,7 +537,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       </div>
                     )}
                   </div>
-                  <div className="flex-shrink-0 text-gray-400 group-hover:text-[#cc3399] group-hover:translate-x-1 transition-all duration-200">
+                  <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
                     →
                   </div>
                 </div>

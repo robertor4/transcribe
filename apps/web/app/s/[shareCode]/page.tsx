@@ -34,7 +34,7 @@ export default function LegacyShareRedirect() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#cc3399] border-r-transparent mb-4"></div>
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#8D6AFA] border-r-transparent mb-4"></div>
         <p className="text-gray-600">Redirecting...</p>
       </div>
     </div>
