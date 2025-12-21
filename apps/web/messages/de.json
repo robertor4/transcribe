@@ -31,6 +31,13 @@
     "browserNotifications": "Browser-Benachrichtigungen",
     "allRightsReserved": "Alle Rechte vorbehalten"
   },
+  "search": {
+    "placeholder": "Gespräche suchen...",
+    "resultsTitle": "Suchergebnisse",
+    "resultsCount": "{count} gefunden",
+    "noResults": "Keine Gespräche gefunden für \"{query}\"",
+    "clearSearch": "Suche löschen"
+  },
   "auth": {
     "signIn": "Anmelden",
     "signUp": "Registrieren",
@@ -348,6 +355,30 @@
     "share": "Teilen",
     "loadingMore": "Mehr laden...",
     "noMoreTranscriptions": "Sie haben das Ende erreicht"
+  },
+  "aiAssets": {
+    "title": "KI-Assets",
+    "description": "Verwandeln Sie dieses Gespräch in professionelle Dokumente",
+    "newAsset": "Neues KI-Asset",
+    "createAsset": "KI-Asset erstellen",
+    "emptyTitle": "Noch keine KI-Assets",
+    "emptyDescription": "Erstellen Sie Ihr erstes KI-Asset, um dieses Gespräch in ein Dokument umzuwandeln",
+    "emptyButton": "KI-Asset erstellen",
+    "loading": "KI-Asset wird geladen...",
+    "notFound": "KI-Asset nicht gefunden",
+    "notFoundDescription": "Das gesuchte KI-Asset existiert nicht oder Sie haben keinen Zugriff darauf.",
+    "modal": {
+      "title": "KI-Asset erstellen",
+      "steps": {
+        "selectType": "Typ wählen",
+        "instructions": "Anweisungen",
+        "review": "Überprüfen",
+        "generate": "Generieren"
+      },
+      "generating": "Ihr KI-Asset wird erstellt...",
+      "success": "KI-Asset erstellt!",
+      "error": "KI-Asset konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+    }
   },
   "howItWorks": {
     "title": "So funktioniert's",

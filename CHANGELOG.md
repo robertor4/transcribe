@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Conversation Search**: Search through conversations by keyword from the left sidebar
+  - Backend search endpoint `GET /transcriptions/search` with in-memory Firestore filtering
+  - Searches title, fileName, and summary headlines/key points (case-insensitive)
+  - Frontend `useSearch` hook with 300ms debounce and 2-character minimum
+  - Search results appear directly under search box, pushing sidebar content down
+  - Escape key clears search, clicking a result navigates and clears
+  - Supports all 5 locales (en, nl, de, fr, es)
 - **Auto-Gain Normalization for Microphone Recording**: Automatically adjusts microphone input levels in real-time during recording
   - Boosts quiet microphones up to 150% gain to ensure audible recordings
   - Reduces loud inputs down to 50% gain to prevent clipping

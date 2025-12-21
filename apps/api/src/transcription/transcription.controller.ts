@@ -33,6 +33,7 @@ import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { PaginationDto } from './dto/pagination.dto';
+import { SearchTranscriptionsDto } from './dto/search.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
 import {
   CreateShareLinkDto,
@@ -279,6 +280,29 @@ export class TranscriptionController {
       req.user.uid,
       paginationDto.page,
       paginationDto.pageSize,
+    );
+
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
+  /**
+   * Search transcriptions by query string
+   * Searches across title, fileName, and summary content
+   */
+  @Get('search')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 30, ttl: 60000 } }) // 30 searches per minute
+  async searchTranscriptions(
+    @Req() req: Request & { user: any },
+    @Query() searchDto: SearchTranscriptionsDto,
+  ): Promise<ApiResponse<{ items: Partial<Transcription>[]; total: number }>> {
+    const result = await this.transcriptionService.searchTranscriptions(
+      req.user.uid,
+      searchDto.query,
+      searchDto.limit,
     );
 
     return {

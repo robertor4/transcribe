@@ -31,6 +31,13 @@
     "browserNotifications": "Browsermeldingen",
     "allRightsReserved": "Alle rechten voorbehouden"
   },
+  "search": {
+    "placeholder": "Zoek gesprekken...",
+    "resultsTitle": "Zoekresultaten",
+    "resultsCount": "{count} gevonden",
+    "noResults": "Geen gesprekken gevonden voor \"{query}\"",
+    "clearSearch": "Zoekopdracht wissen"
+  },
   "auth": {
     "signIn": "Inloggen",
     "signUp": "Registreren",
@@ -351,6 +358,30 @@
     "share": "Delen",
     "loadingMore": "Meer laden...",
     "noMoreTranscriptions": "Je hebt het einde bereikt"
+  },
+  "aiAssets": {
+    "title": "AI Assets",
+    "description": "Transformeer dit gesprek naar professionele deliverables",
+    "newAsset": "Nieuwe AI Asset",
+    "createAsset": "AI Asset maken",
+    "emptyTitle": "Nog geen AI assets",
+    "emptyDescription": "Maak je eerste AI asset om dit gesprek om te zetten naar een deliverable",
+    "emptyButton": "AI Asset maken",
+    "loading": "AI asset laden...",
+    "notFound": "AI asset niet gevonden",
+    "notFoundDescription": "De AI asset die je zoekt bestaat niet of je hebt geen toegang.",
+    "modal": {
+      "title": "AI Asset maken",
+      "steps": {
+        "selectType": "Type kiezen",
+        "instructions": "Instructies",
+        "review": "Controleren",
+        "generate": "Genereren"
+      },
+      "generating": "Je AI asset wordt gemaakt...",
+      "success": "AI asset gemaakt!",
+      "error": "AI asset maken mislukt. Probeer het opnieuw."
+    }
   },
   "howItWorks": {
     "title": "Hoe het werkt",

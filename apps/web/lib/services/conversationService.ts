@@ -191,5 +191,87 @@ export async function listConversationsByFolder(
   return transcriptionsToConversations(response.data as Transcription[]);
 }
 
+/**
+ * Search result item - lightweight version for search results
+ */
+export interface SearchResult {
+  id: string;
+  title: string;
+  fileName: string;
+  status: 'pending' | 'processing' | 'ready' | 'failed';
+  folderId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Search results container
+ */
+export interface SearchResults {
+  results: SearchResult[];
+  total: number;
+  query: string;
+}
+
+/**
+ * Search conversations by query
+ * Searches across title, fileName, and summary content
+ */
+export async function searchConversations(
+  query: string,
+  limit = 20
+): Promise<SearchResults> {
+  const response = await transcriptionApi.search(query, limit);
+
+  if (!response.success || !response.data) {
+    throw new Error((response as { error?: string }).error || 'Failed to search conversations');
+  }
+
+  const data = response.data as {
+    items: Array<{
+      id: string;
+      title?: string;
+      fileName?: string;
+      status: string;
+      folderId?: string | null;
+      createdAt: string | Date;
+      updatedAt: string | Date;
+    }>;
+    total: number;
+  };
+
+  return {
+    results: data.items.map((item) => ({
+      id: item.id,
+      title: item.title || item.fileName || 'Untitled',
+      fileName: item.fileName || '',
+      status: mapStatus(item.status),
+      folderId: item.folderId || null,
+      createdAt: new Date(item.createdAt),
+      updatedAt: new Date(item.updatedAt),
+    })),
+    total: data.total,
+    query,
+  };
+}
+
+/**
+ * Map backend status to frontend status
+ */
+function mapStatus(status: string): 'pending' | 'processing' | 'ready' | 'failed' {
+  switch (status) {
+    case 'pending':
+      return 'pending';
+    case 'processing':
+      return 'processing';
+    case 'completed':
+      return 'ready';
+    case 'failed':
+      return 'failed';
+    default:
+      return 'pending';
+  }
+}
+
 // Re-export the Conversation type for convenience
 export type { Conversation } from '../types/conversation';

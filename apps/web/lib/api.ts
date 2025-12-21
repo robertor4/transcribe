@@ -162,6 +162,12 @@ export const transcriptionApi = {
     });
   },
 
+  search: async (query: string, limit = 20): Promise<ApiResponse<{ items: unknown[]; total: number }>> => {
+    return api.get('/transcriptions/search', {
+      params: { query, limit },
+    });
+  },
+
   get: async (id: string): Promise<ApiResponse<unknown>> => {
     return api.get(`/transcriptions/${id}`);
   },

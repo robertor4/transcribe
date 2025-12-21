@@ -30,6 +30,13 @@
     "browserNotifications": "Notifications du navigateur",
     "allRightsReserved": "Tous droits réservés"
   },
+  "search": {
+    "placeholder": "Rechercher des conversations...",
+    "resultsTitle": "Résultats de recherche",
+    "resultsCount": "{count} trouvé(s)",
+    "noResults": "Aucune conversation trouvée pour \"{query}\"",
+    "clearSearch": "Effacer la recherche"
+  },
   "auth": {
     "signIn": "Se connecter",
     "signUp": "S'inscrire",
@@ -350,6 +357,30 @@
     "share": "Partager",
     "loadingMore": "Chargement...",
     "noMoreTranscriptions": "Vous avez atteint la fin"
+  },
+  "aiAssets": {
+    "title": "Assets IA",
+    "description": "Transformez cette conversation en livrables professionnels",
+    "newAsset": "Nouvel asset IA",
+    "createAsset": "Créer un asset IA",
+    "emptyTitle": "Aucun asset IA",
+    "emptyDescription": "Créez votre premier asset IA pour transformer cette conversation en livrable",
+    "emptyButton": "Créer un asset IA",
+    "loading": "Chargement de l'asset IA...",
+    "notFound": "Asset IA introuvable",
+    "notFoundDescription": "L'asset IA que vous recherchez n'existe pas ou vous n'y avez pas accès.",
+    "modal": {
+      "title": "Créer un asset IA",
+      "steps": {
+        "selectType": "Choisir le type",
+        "instructions": "Instructions",
+        "review": "Vérifier",
+        "generate": "Générer"
+      },
+      "generating": "Création de votre asset IA...",
+      "success": "Asset IA créé !",
+      "error": "Échec de la création. Veuillez réessayer."
+    }
   },
   "howItWorks": {
     "title": "Comment ça marche",

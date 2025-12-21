@@ -8,6 +8,7 @@ import { Search, Plus, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
+import { useSearch } from '@/hooks/useSearch';
 
 interface LeftNavigationProps {
   onToggleSidebar?: () => void;
@@ -28,6 +29,16 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const { conversations, isLoading: conversationsLoading } = useConversationsContext();
+
+  // Search state
+  const {
+    query: searchQuery,
+    setQuery: setSearchQuery,
+    results: searchResults,
+    isSearching,
+    clearSearch,
+    isActive: isSearchActive,
+  } = useSearch({ debounceMs: 300, minChars: 2 });
 
   // Memoize recent conversations to prevent recalculation on every render
   const recentConversations = useMemo(() => conversations.slice(0, 5), [conversations]);
@@ -106,15 +117,72 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') clearSearch();
+            }}
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-3 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-600 rounded-lg
+            className="w-full pl-10 pr-8 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-600 rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-[#cc3399]/30 focus:border-[#cc3399]
                      bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200
                      placeholder:text-gray-500 dark:placeholder:text-gray-400
                      transition-all duration-200
                      hover:border-gray-300 dark:hover:border-gray-500"
           />
+          {/* Clear button or loading spinner */}
+          {searchQuery && (
+            <button
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              aria-label="Clear search"
+            >
+              {isSearching ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <X className="w-4 h-4" />
+              )}
+            </button>
+          )}
         </div>
+
+        {/* Search Results - shown directly under search box */}
+        {isSearchActive && (
+          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-600">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Results
+              </h3>
+              <span className="text-xs text-gray-400">
+                {searchResults?.total ?? 0} found
+              </span>
+            </div>
+
+            {searchResults && searchResults.results.length > 0 ? (
+              <div className="space-y-1 max-h-48 overflow-y-auto">
+                {searchResults.results.map((result) => (
+                  <Link
+                    key={result.id}
+                    href={`/${locale}/conversation/${result.id}`}
+                    onClick={clearSearch}
+                    className="group block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate block">
+                      {result.title}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {result.createdAt.toLocaleDateString()}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 dark:text-gray-400 py-2">
+                No conversations found for &quot;{searchQuery}&quot;
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Scrollable Content */}
@@ -226,39 +294,39 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
 
         {/* Recent Conversations Section */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Recent
-            </h3>
-          </div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Recent
+              </h3>
+            </div>
 
-          {conversationsLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
-            </div>
-          ) : recentConversations.length === 0 ? (
-            <p className="text-xs text-gray-500 dark:text-gray-400 px-3 py-2">No conversations yet</p>
-          ) : (
-            <div className="space-y-1">
-              {recentConversations.map((conversation) => (
-                <Link
-                  key={conversation.id}
-                  href={`/${locale}/conversation/${conversation.id}`}
-                  className="group block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-                      {conversation.title}
-                    </span>
-                    {conversation.status === 'processing' && (
-                      <span className="flex-shrink-0 text-xs text-yellow-600 dark:text-yellow-400">⏳</span>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
+            {conversationsLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+              </div>
+            ) : recentConversations.length === 0 ? (
+              <p className="text-xs text-gray-500 dark:text-gray-400 px-3 py-2">No conversations yet</p>
+            ) : (
+              <div className="space-y-1">
+                {recentConversations.map((conversation) => (
+                  <Link
+                    key={conversation.id}
+                    href={`/${locale}/conversation/${conversation.id}`}
+                    className="group block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3 h-3 text-gray-400 flex-shrink-0" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
+                        {conversation.title}
+                      </span>
+                      {conversation.status === 'processing' && (
+                        <span className="flex-shrink-0 text-xs text-yellow-600 dark:text-yellow-400">⏳</span>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
         </div>
       </div>
 

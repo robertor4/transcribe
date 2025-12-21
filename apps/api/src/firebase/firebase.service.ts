@@ -185,7 +185,10 @@ export class FirebaseService implements OnModuleInit {
 
     // If we didn't get enough non-deleted docs on page 1, fetch all
     let finalDocs = allDocs;
-    if (allDocs.length < offset + pageSize && snapshot.docs.length === fetchLimit) {
+    if (
+      allDocs.length < offset + pageSize &&
+      snapshot.docs.length === fetchLimit
+    ) {
       // Need to fetch all to get accurate count and pagination
       const fullSnapshot = await this.db
         .collection('transcriptions')
@@ -236,6 +239,99 @@ export class FirebaseService implements OnModuleInit {
       page,
       pageSize,
       hasMore: offset + items.length < total,
+    };
+  }
+
+  /**
+   * Search transcriptions by query string
+   * Searches across title, fileName, and summary content
+   */
+  async searchTranscriptions(
+    userId: string,
+    query: string,
+    limit = 20,
+  ): Promise<{ items: Partial<Transcription>[]; total: number }> {
+    const normalizedQuery = query.toLowerCase().trim();
+
+    // Fetch all user transcriptions - Firestore doesn't support full-text search
+    // so we fetch with a lightweight projection and filter in memory
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    // Filter out soft-deleted items and search across relevant fields
+    const results = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+
+      // Skip soft-deleted items
+      if (data.deletedAt) {
+        return false;
+      }
+
+      // Build searchable text from relevant fields
+      const searchableFields: string[] = [
+        data.title || '',
+        data.fileName || '',
+      ];
+
+      // Add V2 summary fields if available
+      if (data.summaryV2) {
+        if (data.summaryV2.headline) {
+          searchableFields.push(data.summaryV2.headline);
+        }
+        if (
+          data.summaryV2.keyPoints &&
+          Array.isArray(data.summaryV2.keyPoints)
+        ) {
+          for (const kp of data.summaryV2.keyPoints) {
+            if (kp.topic) searchableFields.push(kp.topic);
+            if (kp.description) searchableFields.push(kp.description);
+          }
+        }
+        if (data.summaryV2.themes && Array.isArray(data.summaryV2.themes)) {
+          searchableFields.push(...data.summaryV2.themes);
+        }
+      }
+
+      // Also check legacy summary fields for older transcriptions
+      if (data.coreAnalyses?.summaryV2) {
+        const v2 = data.coreAnalyses.summaryV2;
+        if (v2.headline) searchableFields.push(v2.headline);
+        if (v2.keyPoints && Array.isArray(v2.keyPoints)) {
+          for (const kp of v2.keyPoints) {
+            if (kp.topic) searchableFields.push(kp.topic);
+            if (kp.description) searchableFields.push(kp.description);
+          }
+        }
+      }
+
+      const searchableText = searchableFields.join(' ').toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    });
+
+    const total = results.length;
+    const limitedResults = results.slice(0, limit);
+
+    return {
+      items: limitedResults.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || data.fileName || 'Untitled',
+          fileName: data.fileName,
+          status: data.status,
+          folderId: data.folderId || null,
+          createdAt: data.createdAt?.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt,
+          updatedAt: data.updatedAt?.toDate
+            ? data.updatedAt.toDate()
+            : data.updatedAt,
+        };
+      }),
+      total,
     };
   }
 

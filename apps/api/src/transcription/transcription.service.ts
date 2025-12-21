@@ -756,7 +756,9 @@ ${fullCustomPrompt}`;
         ],
         max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
         // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
-        ...(useJsonFormat && { response_format: { type: 'json_object' as const } }),
+        ...(useJsonFormat && {
+          response_format: { type: 'json_object' as const },
+        }),
       });
 
       return completion.choices[0].message.content || '';
@@ -1142,6 +1144,10 @@ ${fullCustomPrompt}`;
 
   async getTranscriptions(userId: string, page = 1, pageSize = 20) {
     return this.firebaseService.getTranscriptions(userId, page, pageSize);
+  }
+
+  async searchTranscriptions(userId: string, query: string, limit?: number) {
+    return this.firebaseService.searchTranscriptions(userId, query, limit);
   }
 
   async getTranscription(userId: string, transcriptionId: string) {
