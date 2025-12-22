@@ -20,6 +20,10 @@ import {
 import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordingStorage';
 import { mixAudioStreams } from '@/utils/audioMixer';
 
+// Duration limits
+const MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
+const DURATION_WARNING_THRESHOLD = 2.5 * 60 * 60; // 2.5 hours - warn user
+
 export type RecordingSource = 'microphone' | 'tab-audio';
 
 export type RecordingState = 'idle' | 'requesting-permission' | 'recording' | 'paused' | 'stopped';
@@ -29,8 +33,8 @@ export interface UseMediaRecorderOptions {
   onError?: (error: Error) => void;
   onStateChange?: (state: RecordingState) => void;
   onRecoveryAvailable?: (recordings: RecoverableRecording[]) => void;
+  onDurationWarning?: () => void; // Called when approaching max duration
   enableAutoSave?: boolean; // Default: true
-  enableAutoGain?: boolean; // Default: true - Automatically normalize microphone input levels
 }
 
 export interface UseMediaRecorderReturn {
@@ -54,11 +58,14 @@ export interface UseMediaRecorderReturn {
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
   clearWarning: () => void; // Clear the warning message
 
-  // Audio stream (for visualization)
+  // Audio stream (for visualization via useAudioVisualization)
   audioStream: MediaStream | null;
 
-  // Auto-gain info (for optional UI display)
-  currentGain: number; // Current gain multiplier (1.0 = no change)
+  // Recording source (for conditional UI rendering)
+  recordingSource: RecordingSource | null;
+
+  // Chunk count for tab audio visualization (increments on each ondataavailable)
+  chunkCount: number;
 }
 
 export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMediaRecorderReturn {
@@ -67,8 +74,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onError,
     onStateChange,
     onRecoveryAvailable,
+    onDurationWarning,
     enableAutoSave = true,
-    enableAutoGain = true,
   } = options;
 
   // State
@@ -78,7 +85,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-  const [currentGain, setCurrentGain] = useState(1.0);
+  const [recordingSource, setRecordingSource] = useState<RecordingSource | null>(null);
+  const [chunkCount, setChunkCount] = useState(0);
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -98,13 +106,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const mixerCleanupRef = useRef<(() => void) | null>(null);
   const originalStreamsRef = useRef<MediaStream[]>([]);
 
-  // Auto-gain refs
-  const autoGainContextRef = useRef<AudioContext | null>(null);
-  const autoGainNodeRef = useRef<GainNode | null>(null);
-  const autoGainAnalyserRef = useRef<AnalyserNode | null>(null);
-  const autoGainIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const autoGainSourceStreamRef = useRef<MediaStream | null>(null);
-  const currentGainRef = useRef(1.0);
+  // Chunk count ref to avoid frequent state updates from ondataavailable (fires every 100ms)
+  const chunkCountRef = useRef<number>(0);
+
+  // Duration warning ref (to avoid showing warning multiple times)
+  const durationWarningShownRef = useRef<boolean>(false);
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -129,16 +135,34 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     if (reset) {
       setDuration(0);
       durationRef.current = 0;
+      durationWarningShownRef.current = false;
     }
 
     timerRef.current = setInterval(() => {
       setDuration((prev) => {
         const newDuration = prev + 1;
         durationRef.current = newDuration;
+
+        // Sync chunkCount ref to state once per second (avoids 10x/sec updates from ondataavailable)
+        setChunkCount(chunkCountRef.current);
+
+        // Check duration limits
+        if (newDuration >= MAX_RECORDING_DURATION) {
+          // Auto-stop at max duration
+          console.log('[useMediaRecorder] Max duration reached, auto-stopping');
+          if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+          }
+        } else if (newDuration >= DURATION_WARNING_THRESHOLD && !durationWarningShownRef.current) {
+          // Warn user when approaching limit
+          durationWarningShownRef.current = true;
+          onDurationWarning?.();
+        }
+
         return newDuration;
       });
     }, 1000);
-  }, []);
+  }, [onDurationWarning]);
 
   // Stop duration timer
   const stopTimer = useCallback(() => {
@@ -162,203 +186,35 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     originalStreamsRef.current = [];
   }, []);
 
-  // Cleanup auto-gain resources
-  const cleanupAutoGain = useCallback(() => {
-    // Stop analysis interval
-    if (autoGainIntervalRef.current) {
-      clearInterval(autoGainIntervalRef.current);
-      autoGainIntervalRef.current = null;
-    }
-
-    // Disconnect nodes
-    try {
-      autoGainNodeRef.current?.disconnect();
-      autoGainAnalyserRef.current?.disconnect();
-    } catch {
-      // Nodes may already be disconnected
-    }
-
-    // Close audio context
-    if (autoGainContextRef.current && autoGainContextRef.current.state !== 'closed') {
-      autoGainContextRef.current.close().catch(() => {});
-    }
-
-    // Stop the original source stream tracks (releases the microphone)
-    if (autoGainSourceStreamRef.current) {
-      autoGainSourceStreamRef.current.getTracks().forEach((track) => track.stop());
-    }
-
-    // Clear refs
-    autoGainContextRef.current = null;
-    autoGainNodeRef.current = null;
-    autoGainAnalyserRef.current = null;
-    autoGainSourceStreamRef.current = null;
-    currentGainRef.current = 1.0;
-    setCurrentGain(1.0);
-  }, []);
-
   // Clear warning message
   const clearWarning = useCallback(() => {
     setWarning(null);
   }, []);
-
-  // Apply auto-gain to a microphone stream
-  const applyAutoGain = useCallback(
-    async (rawStream: MediaStream): Promise<MediaStream> => {
-      // Auto-gain configuration based on speech AGC best practices:
-      // - Fast attack to catch loud bursts quickly
-      // - Slow release to avoid "breathing" (background noise pumping during pauses)
-      // - RMS averaging over multiple frames for stability
-      const TARGET_LEVEL = 55; // Target normalized level (0-100)
-      const MAX_GAIN = 1.5; // Maximum gain multiplier (150%)
-      const MIN_GAIN = 0.5; // Minimum gain multiplier (50%)
-      const ATTACK_TIME = 0.05; // Fast attack: 50ms to catch loud bursts
-      const RELEASE_TIME = 0.5; // Slow release: 500ms to avoid breathing artifacts
-      const ANALYSIS_INTERVAL = 100; // Analysis interval (ms) - phoneme-length
-      const RMS_HISTORY_SIZE = 5; // Number of RMS samples to average
-
-      // RMS history for averaging
-      const rmsHistory: number[] = [];
-
-      try {
-        // Create AudioContext
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-
-        const ctx = new AudioContextClass();
-
-        // Resume if suspended
-        if (ctx.state === 'suspended') {
-          await ctx.resume();
-        }
-
-        // Create nodes
-        const source = ctx.createMediaStreamSource(rawStream);
-        const analyser = ctx.createAnalyser();
-        const gainNode = ctx.createGain();
-        const destination = ctx.createMediaStreamDestination();
-
-        // Configure analyser
-        analyser.fftSize = 256;
-        analyser.smoothingTimeConstant = 0.5; // More smoothing for stability
-
-        // Set initial gain
-        gainNode.gain.value = 1.0;
-
-        // Connect: source → analyser → gainNode → destination
-        source.connect(analyser);
-        analyser.connect(gainNode);
-        gainNode.connect(destination);
-
-        // Store refs
-        autoGainContextRef.current = ctx;
-        autoGainNodeRef.current = gainNode;
-        autoGainAnalyserRef.current = analyser;
-        autoGainSourceStreamRef.current = rawStream;
-
-        // Calculate RMS level from audio samples
-        const calculateRMS = (): number => {
-          const dataArray = new Float32Array(analyser.fftSize);
-          analyser.getFloatTimeDomainData(dataArray);
-
-          let sum = 0;
-          for (let i = 0; i < dataArray.length; i++) {
-            sum += dataArray[i] * dataArray[i];
-          }
-          const rms = Math.sqrt(sum / dataArray.length);
-
-          // Convert to 0-100 scale (RMS of typical speech is ~0.1-0.3)
-          return Math.min(100, rms * 300);
-        };
-
-        // Calculate averaged RMS over recent history
-        const getAveragedRMS = (currentRMS: number): number => {
-          rmsHistory.push(currentRMS);
-          if (rmsHistory.length > RMS_HISTORY_SIZE) {
-            rmsHistory.shift();
-          }
-          const sum = rmsHistory.reduce((a, b) => a + b, 0);
-          return sum / rmsHistory.length;
-        };
-
-        // Start analysis loop
-        autoGainIntervalRef.current = setInterval(() => {
-          if (!autoGainAnalyserRef.current || !autoGainNodeRef.current || !autoGainContextRef.current) {
-            return;
-          }
-
-          const instantRMS = calculateRMS();
-          const averagedRMS = getAveragedRMS(instantRMS);
-
-          // Don't adjust gain during silence (use instant RMS for silence detection)
-          if (instantRMS < 3) {
-            return;
-          }
-
-          // Calculate target gain based on averaged RMS
-          const idealGain = TARGET_LEVEL / averagedRMS;
-
-          // Smooth toward ideal gain (10% per cycle for more stability)
-          const smoothedGain = currentGainRef.current + (idealGain - currentGainRef.current) * 0.1;
-
-          // Clamp to allowed range
-          const targetGain = Math.max(MIN_GAIN, Math.min(MAX_GAIN, smoothedGain));
-
-          // Apply gain with smooth ramping if changed significantly
-          if (Math.abs(targetGain - currentGainRef.current) > 0.01) {
-            const isIncreasing = targetGain > currentGainRef.current;
-            // Fast attack for loud sounds, slow release for quiet periods
-            const timeConstant = isIncreasing ? ATTACK_TIME : RELEASE_TIME;
-
-            autoGainNodeRef.current.gain.setTargetAtTime(
-              targetGain,
-              autoGainContextRef.current.currentTime,
-              timeConstant
-            );
-
-            currentGainRef.current = targetGain;
-            setCurrentGain(targetGain);
-          }
-        }, ANALYSIS_INTERVAL);
-
-        console.log('[useMediaRecorder] Auto-gain enabled for microphone');
-        return destination.stream;
-      } catch (error) {
-        console.error('[useMediaRecorder] Failed to apply auto-gain, using raw stream:', error);
-        return rawStream;
-      }
-    },
-    []
-  );
 
   // Get media stream based on source
   const getMediaStream = useCallback(
     async (source: RecordingSource, deviceId?: string): Promise<MediaStream> => {
       if (source === 'microphone') {
         // Request microphone access with optional device selection
+        // Note: We use simple deviceId (not { exact: deviceId }) to avoid
+        // complex stream handling that could cause issues in Chrome
         const audioConstraints: MediaTrackConstraints = {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 44100,
         };
 
-        // Add device ID if specified
+        // Add deviceId if provided (simple constraint, not exact)
         if (deviceId) {
-          audioConstraints.deviceId = { exact: deviceId };
+          audioConstraints.deviceId = deviceId;
         }
 
-        const rawStream = await navigator.mediaDevices.getUserMedia({
+        return await navigator.mediaDevices.getUserMedia({
           audio: audioConstraints,
         });
-
-        // Apply auto-gain if enabled
-        if (enableAutoGain) {
-          return await applyAutoGain(rawStream);
-        }
-
-        return rawStream;
       } else {
+        // Tab audio recording - auto-gain is NOT applied here
+        // Auto-gain is designed for microphone normalization, not for mixed/tab audio
         // Request tab audio capture (getDisplayMedia) with microphone mixing
         if (!canUseTabAudio) {
           throw new Error(
@@ -371,11 +227,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         let micStream: MediaStream | null = null;
         if (deviceId) {
           try {
+            // Use simpler constraints - avoid { exact: } which can cause issues in Chrome
             const micConstraints: MediaTrackConstraints = {
               echoCancellation: true,
               noiseSuppression: true,
               sampleRate: 44100,
-              deviceId: { exact: deviceId },
+              deviceId: deviceId, // Use selected microphone device
             };
 
             micStream = await navigator.mediaDevices.getUserMedia({
@@ -455,7 +312,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         return displayStream;
       }
     },
-    [canUseTabAudio, enableAutoGain, applyAutoGain]
+    [canUseTabAudio]
   );
 
   // Start recording
@@ -468,6 +325,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         setAudioBlob(null);
         chunksRef.current = [];
         hasUploadedRef.current = false;
+
+        // Reset audio visualization state
+        chunkCountRef.current = 0;
+        setChunkCount(0);
+        setRecordingSource(source);
 
         // Generate unique recording ID for auto-save
         recordingIdRef.current = `recording-${Date.now()}-${Math.random().toString(36).substring(7)}`;
@@ -496,6 +358,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         mediaRecorder.ondataavailable = (event) => {
           if (event.data && event.data.size > 0) {
             chunksRef.current.push(event.data);
+            chunkCountRef.current += 1;
           }
         };
 
@@ -546,15 +409,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           // Clean up audio mixer resources (if used for tab audio + mic mixing)
           cleanupMixer();
 
-          // Clean up auto-gain resources
-          cleanupAutoGain();
-
-          // Stop original source stream if auto-gain was used
-          if (autoGainSourceStreamRef.current) {
-            autoGainSourceStreamRef.current.getTracks().forEach((track) => track.stop());
-            autoGainSourceStreamRef.current = null;
-          }
-
           updateState('stopped');
         };
 
@@ -566,10 +420,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           updateState('idle');
         };
 
-        // Start recording
-        // Use smaller timeslice (100ms) to ensure we don't lose audio at the end
-        // Larger timeslices (1000ms) can cause the last partial chunk to be lost
-        mediaRecorder.start(100);
+        // Start recording with 10 second timeslice
+        // Larger timeslice = fewer callbacks = less resource pressure for long recordings
+        // Worst case data loss on crash: ~10 seconds (acceptable for meeting recordings)
+        mediaRecorder.start(10000);
         updateState('recording');
         startTimer();
 
@@ -589,7 +443,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         }
         setAudioStream(null);
         cleanupMixer();
-        cleanupAutoGain();
       }
     },
     [
@@ -602,7 +455,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       stopTimer,
       updateState,
       cleanupMixer,
-      cleanupAutoGain,
     ]
   );
 
@@ -669,6 +521,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     recordingIdRef.current = null;
     recordingSourceRef.current = null;
 
+    // Reset audio visualization state
+    chunkCountRef.current = 0;
+    setChunkCount(0);
+    setRecordingSource(null);
+
     // Stop all tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -679,15 +536,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     // Clean up audio mixer resources
     cleanupMixer();
 
-    // Clean up auto-gain resources
-    cleanupAutoGain();
-
     // Release wake lock
     releaseWakeLock(wakeLockRef.current);
     wakeLockRef.current = null;
 
     updateState('idle');
-  }, [state, stopTimer, updateState, cleanupMixer, cleanupAutoGain]);
+  }, [state, stopTimer, updateState, cleanupMixer]);
 
   // Load a recovered recording into preview (for recovery flow)
   const loadRecoveredRecording = useCallback(
@@ -858,16 +712,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       originalStreamsRef.current.forEach((stream) => {
         stream.getTracks().forEach((track) => track.stop());
       });
-      // Clean up auto-gain resources
-      if (autoGainIntervalRef.current) {
-        clearInterval(autoGainIntervalRef.current);
-      }
-      if (autoGainContextRef.current && autoGainContextRef.current.state !== 'closed') {
-        autoGainContextRef.current.close().catch(() => {});
-      }
-      if (autoGainSourceStreamRef.current) {
-        autoGainSourceStreamRef.current.getTracks().forEach((track) => track.stop());
-      }
     };
   }, [stopTimer]);
 
@@ -892,10 +736,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     loadRecoveredRecording,
     clearWarning,
 
-    // Audio stream
+    // Audio stream (for visualization via useAudioVisualization)
     audioStream,
 
-    // Auto-gain info
-    currentGain,
+    // Recording source (for conditional UI rendering)
+    recordingSource,
+
+    // Chunk count for tab audio visualization
+    chunkCount,
   };
 }

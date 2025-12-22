@@ -1,11 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useMediaRecorder, RecordingSource } from '@/hooks/useMediaRecorder';
 import { useAudioVisualization } from '@/hooks/useAudioVisualization';
+import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { RecordingPreview } from './RecordingPreview';
+import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
-import { Mic, Monitor, AlertCircle, Pause, Square, ChevronDown, Volume2 } from 'lucide-react';
+import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X } from 'lucide-react';
+import { estimateFileSize, formatFileSize } from '@/utils/audio';
+import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
 
 interface AudioDevice {
   deviceId: string;
@@ -46,29 +51,54 @@ export function SimpleAudioRecorder({
   onCancel,
   onRecordingStateChange,
 }: SimpleAudioRecorderProps) {
+  const t = useTranslations('recording');
+  const { trackEvent } = useAnalytics();
+
+  // Recording source state (declared early for analytics callbacks)
+  const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
+
   const {
     state,
     duration,
     audioBlob,
     error,
+    warning,
     isSupported,
     canUseTabAudio,
-    audioStream,
     startRecording,
     stopRecording,
     pauseRecording,
     resumeRecording,
     reset,
     markAsUploaded,
-    currentGain,
+    clearWarning,
+    chunkCount,
+    audioStream,
+    recordingSource,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
+    onStateChange: (newState) => {
+      if (newState === 'recording') {
+        trackEvent('recording_started', {
+          source: selectedSource,
+        });
+      }
+    },
+    onDataAvailable: (blob) => {
+      trackEvent('recording_stopped', {
+        duration_seconds: duration,
+        file_size_bytes: blob.size,
+        source: selectedSource,
+      });
+    },
+    onError: (err) => {
+      trackEvent('recording_error', {
+        error_message: err.message,
+        source: selectedSource,
+      });
+    },
   });
 
-  // Real audio visualization from microphone/tab audio
-  const { frequencyData } = useAudioVisualization(audioStream);
-
-  const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
   const [showSourceSelector, setShowSourceSelector] = useState(true);
 
   // Tab audio options
@@ -88,8 +118,14 @@ export function SimpleAudioRecorder({
   const [hasDetectedAudio, setHasDetectedAudio] = useState(false);
   const [showNoAudioWarning, setShowNoAudioWarning] = useState(false);
 
-  // Audio visualization for preview (separate from recording visualization)
+  // Audio visualization for preview (before recording starts)
   const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
+
+  // Audio visualization during microphone recording
+  // Only active for microphone source - tab audio uses chunk-based visualization
+  const { audioLevel: recordingAudioLevel } = useAudioVisualization(
+    recordingSource === 'microphone' ? audioStream : null
+  );
 
   // Use raw audio level directly (no decay/smoothing)
   const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
@@ -124,8 +160,13 @@ export function SimpleAudioRecorder({
     onRecordingStateChange?.(isActivelyRecording);
   }, [state, onRecordingStateChange]);
 
-  // Fetch available audio input devices
+  // Fetch available audio input devices (only when not recording)
   useEffect(() => {
+    // Don't enumerate devices during recording - this can interfere with active streams
+    if (state === 'recording' || state === 'paused') {
+      return;
+    }
+
     const getAudioDevices = async () => {
       setIsLoadingDevices(true);
       try {
@@ -166,55 +207,12 @@ export function SimpleAudioRecorder({
 
     getAudioDevices();
 
-    // Listen for device changes
+    // Listen for device changes (only when not recording)
     navigator.mediaDevices.addEventListener('devicechange', getAudioDevices);
     return () => {
       navigator.mediaDevices.removeEventListener('devicechange', getAudioDevices);
     };
-  }, [selectedDeviceId]);
-
-  // Helper function to generate waveform bars from frequency data
-  const generateWaveformBars = useCallback((data: Uint8Array | null): number[] => {
-    if (!data) {
-      return Array(30).fill(0.1); // Minimal bars when no data
-    }
-
-    // Check if this is time domain data (values centered around 128) or frequency data (values from 0)
-    // Time domain: silence is 128, frequency: silence is 0
-    const isTimeDomain = data[0] > 100 && data[0] < 156;
-
-    const bars: number[] = [];
-    const relevantBins = Math.min(64, data.length);
-    const step = Math.max(1, Math.floor(relevantBins / 30));
-
-    for (let i = 0; i < 30; i++) {
-      const binIndex = Math.min(i * step, relevantBins - 1);
-      const rawValue = data[binIndex] || 0;
-
-      let normalized: number;
-      if (isTimeDomain) {
-        // Time domain: deviation from 128 (silence)
-        // Max deviation is 128 (0 or 255), so normalize accordingly
-        const deviation = Math.abs(rawValue - 128);
-        normalized = Math.min(1, (deviation / 128) * 3); // 3x boost for visibility
-      } else {
-        // Frequency domain: 0-255 scale
-        normalized = Math.min(1, (rawValue / 255) * 2);
-      }
-
-      bars.push(Math.max(0.1, normalized));
-    }
-    return bars;
-  }, []);
-
-  // Generate waveform bars from real frequency data (recording)
-  const waveformBars = useMemo(() => {
-    if (state !== 'recording') {
-      return Array(30).fill(0.1); // Minimal bars when not recording
-    }
-    return generateWaveformBars(frequencyData);
-  }, [frequencyData, state, generateWaveformBars]);
-
+  }, [selectedDeviceId, state]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -262,6 +260,17 @@ export function SimpleAudioRecorder({
 
   // Define handleStart before the useEffect that uses it
   const handleStart = useCallback(async () => {
+    // Ensure mic preview is fully stopped before starting recording
+    // This prevents having multiple AudioContexts active simultaneously
+    if (previewStreamRef.current) {
+      previewStreamRef.current.getTracks().forEach(track => track.stop());
+      previewStreamRef.current = null;
+      setPreviewStream(null);
+      setIsTestingMic(false);
+      // Small delay to allow AudioContext cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
     // Resolve pseudo 'default' device ID to real device ID for reliable getUserMedia
     const realDeviceId = selectedDeviceId ? resolveRealDeviceId(selectedDeviceId) : undefined;
 
@@ -278,16 +287,13 @@ export function SimpleAudioRecorder({
   const startMicPreview = useCallback(async () => {
     try {
       setIsTestingMic(true);
-      const audioConstraints: MediaTrackConstraints = {
-        echoCancellation: true,
-        noiseSuppression: true,
-        sampleRate: 44100,
-      };
-      if (selectedDeviceId) {
-        audioConstraints.deviceId = { exact: selectedDeviceId };
-      }
+      // Use simple constraints (no exact deviceId) to match production recording behavior
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: audioConstraints,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
       });
       previewStreamRef.current = stream;
       setPreviewStream(stream);
@@ -295,7 +301,7 @@ export function SimpleAudioRecorder({
       console.error('Failed to start mic preview:', err);
       setIsTestingMic(false);
     }
-  }, [selectedDeviceId]);
+  }, []);
 
   // Stop microphone preview test
   const stopMicPreview = useCallback(() => {
@@ -323,6 +329,32 @@ export function SimpleAudioRecorder({
     };
   }, []);
 
+  // Storage quota monitoring during recording (5-minute interval to minimize resource usage)
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
+  useEffect(() => {
+    if (state !== 'recording' && state !== 'paused') {
+      setStorageWarning(null);
+      return;
+    }
+
+    const checkStorage = async () => {
+      const quota = await checkStorageQuota();
+      if (quota) {
+        const level = getStorageWarningLevel(quota.percentUsed);
+        const message = getStorageWarningMessage(level, quota.available);
+        setStorageWarning(message);
+      }
+    };
+
+    // Check immediately when recording starts
+    checkStorage();
+
+    // Then check every 5 minutes
+    const interval = setInterval(checkStorage, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [state]);
+
   // Back button handler - go back to source selection
   const handleBackToSourceSelection = useCallback(() => {
     stopMicPreview();
@@ -336,12 +368,18 @@ export function SimpleAudioRecorder({
 
   const handleConfirm = useCallback(() => {
     if (audioBlob) {
+      // Track recording upload
+      trackEvent('recording_uploaded', {
+        duration_seconds: duration,
+        file_size_bytes: audioBlob.size,
+        source: selectedSource,
+      });
       // Pass blob and markAsUploaded callback to parent
       // Parent should call markAsUploaded() after successful upload to clean up IndexedDB
       onComplete(audioBlob, markAsUploaded);
       reset();
     }
-  }, [audioBlob, onComplete, markAsUploaded, reset]);
+  }, [audioBlob, onComplete, markAsUploaded, reset, trackEvent, duration, selectedSource]);
 
   const handleReRecord = useCallback(() => {
     reset();
@@ -609,13 +647,38 @@ export function SimpleAudioRecorder({
                 onCancel();
               }}
             >
-              Cancel
+              {t('controls.cancel')}
             </Button>
           </div>
         </div>
       )}
 
-      <div className="p-12 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700">
+      {/* Warning Display (recording warnings or storage warnings) */}
+      {(warning || storageWarning) && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+              {t('warnings.title')}
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+              {warning || storageWarning}
+            </p>
+          </div>
+          {warning && (
+            <button
+              type="button"
+              onClick={clearWarning}
+              className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 p-1 -mr-1 -mt-1"
+              aria-label={t('controls.dismissWarning')}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="p-10 rounded-3xl bg-white dark:bg-gray-800/50 shadow-lg shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700/50">
         {/* Recording indicator */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -626,20 +689,11 @@ export function SimpleAudioRecorder({
               <div className="w-4 h-4 bg-yellow-500 rounded-full" />
             )}
             <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              {state === 'recording' && 'Recording...'}
-              {state === 'paused' && 'Paused'}
-              {state === 'requesting-permission' && 'Requesting permission...'}
-              {state === 'idle' && 'Ready to record'}
+              {state === 'recording' && t('status.recording')}
+              {state === 'paused' && t('status.paused')}
+              {state === 'requesting-permission' && t('status.requesting')}
+              {state === 'idle' && t('status.ready')}
             </span>
-            {/* Auto-gain boost indicator - shows when gain is actively boosting */}
-            {state === 'recording' && selectedSource === 'microphone' && currentGain > 1.1 && (
-              <span
-                className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium transition-opacity"
-                title={`Input boosted to ${Math.round(currentGain * 100)}%`}
-              >
-                +{Math.round((currentGain - 1) * 100)}%
-              </span>
-            )}
           </div>
           <div className="text-3xl font-mono font-bold text-gray-900 dark:text-gray-100">
             {formatTime(duration)}
@@ -647,33 +701,16 @@ export function SimpleAudioRecorder({
         </div>
 
         {/* Waveform area - maintains consistent height across states */}
-        {state === 'idle' && (
-          <div className="flex items-center justify-center h-24 mb-8">
-            <div className="w-full max-w-md h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
-          </div>
-        )}
-
-        {state === 'recording' && waveformBars.length > 0 && (
-          <div className="flex items-center justify-center gap-1 h-24 mb-8">
-            {waveformBars.map((height, index) => (
-              <div
-                key={index}
-                className="bg-[#8D6AFA] rounded-full transition-all duration-150"
-                style={{
-                  width: '4px',
-                  height: `${height * 100}%`,
-                  opacity: 0.7 + height * 0.3,
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {state === 'paused' && (
-          <div className="flex items-center justify-center h-24 mb-8">
-            <p className="text-gray-600 dark:text-gray-400">
-              Recording paused. Click Resume to continue.
-            </p>
+        {(state === 'idle' || state === 'recording' || state === 'paused') && (
+          <div className="mb-8">
+            <RecordingWaveform
+              isRecording={state === 'recording'}
+              isPaused={state === 'paused'}
+              // Microphone: use real-time audio level from useAudioVisualization
+              // Tab audio: use chunk-based pulse visualization
+              audioLevel={recordingSource === 'microphone' ? recordingAudioLevel : undefined}
+              chunkCount={recordingSource === 'tab-audio' ? chunkCount : undefined}
+            />
           </div>
         )}
 
@@ -682,7 +719,7 @@ export function SimpleAudioRecorder({
           {/* Idle state - start button */}
           {state === 'idle' && (
             <Button variant="brand" onClick={handleStart} fullWidth icon={<Mic />}>
-              Start Recording
+              {t('controls.start')}
             </Button>
           )}
 
@@ -695,7 +732,7 @@ export function SimpleAudioRecorder({
                 fullWidth
                 icon={<Pause className="w-5 h-5" />}
               >
-                Pause
+                {t('controls.pause')}
               </Button>
               <Button
                 variant="brand"
@@ -703,7 +740,7 @@ export function SimpleAudioRecorder({
                 fullWidth
                 icon={<Square className="w-5 h-5" />}
               >
-                Stop Recording
+                {t('controls.stop')}
               </Button>
             </div>
           )}
@@ -712,7 +749,7 @@ export function SimpleAudioRecorder({
           {state === 'paused' && (
             <div className="flex gap-3 w-full">
               <Button variant="brand" onClick={resumeRecording} fullWidth icon={<Mic />}>
-                Resume
+                {t('controls.resume')}
               </Button>
               <Button
                 variant="secondary"
@@ -720,7 +757,7 @@ export function SimpleAudioRecorder({
                 fullWidth
                 icon={<Square className="w-5 h-5" />}
               >
-                Stop
+                {t('controls.stop')}
               </Button>
             </div>
           )}
@@ -730,25 +767,32 @@ export function SimpleAudioRecorder({
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8D6AFA] mx-auto mb-3" />
               <p className="text-sm text-gray-700 dark:text-gray-400">
-                Please allow microphone access in your browser...
+                {t('status.requesting')}
               </p>
             </div>
           )}
         </div>
+
+        {/* File size estimate */}
+        {duration > 0 && (state === 'recording' || state === 'paused') && (
+          <div className="text-center text-xs text-gray-600 dark:text-gray-400 mt-4">
+            {t('fileSize', { size: formatFileSize(estimateFileSize(duration)) })}
+          </div>
+        )}
       </div>
 
       {/* Back/Cancel button - left-aligned, outside the recording box */}
       {state === 'idle' && (
         <div className="flex justify-start">
           <Button variant="ghost" onClick={handleBackToSourceSelection}>
-            ← Change source
+            ← {t('source.changeSource')}
           </Button>
         </div>
       )}
       {(state === 'recording' || state === 'paused') && (
         <div className="flex justify-start">
           <Button variant="ghost" onClick={handleCancelRecording}>
-            Cancel
+            {t('controls.cancel')}
           </Button>
         </div>
       )}
@@ -756,9 +800,9 @@ export function SimpleAudioRecorder({
       {/* Source indicator */}
       {(state === 'recording' || state === 'paused') && (
         <div className="text-center text-xs text-gray-600 dark:text-gray-400">
-          Recording from:{' '}
+          {t('source.recordingFrom')}{' '}
           <span className="font-medium text-gray-800 dark:text-gray-300">
-            {selectedSource === 'microphone' ? 'Microphone' : 'Tab Audio'}
+            {selectedSource === 'microphone' ? t('source.microphone') : t('source.tabAudio')}
           </span>
         </div>
       )}

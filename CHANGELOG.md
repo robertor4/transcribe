@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Chrome Crash During Long Recordings**: Fixed browser crashes (EXC_BREAKPOINT/SIGTRAP) after ~10 minutes of tab audio recording
+  - **Root cause**: MediaRecorder timeslice was 100ms (10 callbacks/sec), causing resource exhaustion over time
+  - **Solution**: Increased timeslice to 10,000ms (0.1 callbacks/sec) - 100x reduction in callback frequency
+  - Acceptable tradeoff: worst-case data loss on crash is ~10 seconds (vs 0.1 seconds before)
+- **Recording Waveform Performance**: RecordingWaveform now uses direct DOM manipulation instead of React state
+  - Eliminates ~60 state updates per second during recording animation
+  - Prevents accumulated garbage collection pressure over long recordings
+
+### Changed
+- **Recording Resource Optimization**: Simplified recording infrastructure for stability
+  - Removed auto-gain feature (~200 lines) - marginal benefit, significant complexity
+  - Removed memory monitoring from ondataavailable callback - not actionable
+  - Storage quota monitoring reduced from 30-second to 5-minute interval
+  - Device enumeration disabled during active recording to prevent stream interference
+  - Microphone constraints simplified (removed `{ exact: deviceId }` which caused issues)
+- **Recording Visualization**: Different visualization modes for different sources
+  - Microphone: Real-time audio level visualization via useAudioVisualization
+  - Tab audio: Chunk-based pulse visualization (no additional AudioContext needed)
+
 ### Added
 - **Recent Outputs Dashboard Section**: New section on dashboard showing the 8 most recent AI-generated assets
   - 4-column card grid layout (responsive: 2 columns on tablet, 1 on mobile)

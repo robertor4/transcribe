@@ -41,7 +41,6 @@ export function useAudioVisualization(
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const clonedStreamRef = useRef<MediaStream | null>(null);
 
   // Analyze audio levels
   const analyze = useCallback(() => {
@@ -139,24 +138,17 @@ export function useAudioVisualization(
         audioContextRef.current = null;
       }
 
-      // Stop cloned stream tracks
-      if (clonedStreamRef.current) {
-        clonedStreamRef.current.getTracks().forEach(track => track.stop());
-        clonedStreamRef.current = null;
-      }
-
       return;
     }
 
     // Create audio context and analyzer
     try {
-      // Clone the stream to avoid conflicts with MediaRecorder
-      // Some browsers have issues when the same stream is used by multiple consumers
-      const clonedStream = audioStream.clone();
-      clonedStreamRef.current = clonedStream;
-
+      // Note: We no longer clone the stream. The original concern about MediaRecorder conflicts
+      // is not valid for modern browsers, and cloning creates additional resource pressure.
+      // This hook is now only used for mic preview (not during recording).
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
+      console.log('[useAudioVisualization] Created preview AudioContext, state:', audioContext.state);
       const analyzer = audioContext.createAnalyser();
 
       analyzer.fftSize = fftSize;
@@ -164,7 +156,7 @@ export function useAudioVisualization(
       analyzer.minDecibels = minDecibels;
       analyzer.maxDecibels = maxDecibels;
 
-      const source = audioContext.createMediaStreamSource(clonedStream);
+      const source = audioContext.createMediaStreamSource(audioStream);
 
       // Create a gain node set to 0 to mute output (prevents audio feedback)
       // but allows the analyzer to receive data
@@ -223,14 +215,9 @@ export function useAudioVisualization(
       }
 
       if (audioContextRef.current) {
+        console.log('[useAudioVisualization] Closing preview AudioContext');
         audioContextRef.current.close();
         audioContextRef.current = null;
-      }
-
-      // Stop cloned stream tracks
-      if (clonedStreamRef.current) {
-        clonedStreamRef.current.getTracks().forEach(track => track.stop());
-        clonedStreamRef.current = null;
       }
 
       setIsAnalyzing(false);
