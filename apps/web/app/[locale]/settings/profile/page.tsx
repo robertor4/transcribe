@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
@@ -71,11 +71,7 @@ export default function ProfileSettingsPage() {
     (provider) => provider?.providerId === 'google.com'
   );
 
-  useEffect(() => {
-    loadUserProfile();
-  }, [authUser]);
-
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     if (!authUser) return;
 
     try {
@@ -92,7 +88,11 @@ export default function ProfileSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser, t]);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, [authUser, loadUserProfile]);
 
   const handleSave = async () => {
     if (!authUser) return;

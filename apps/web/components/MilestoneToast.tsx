@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { X } from 'lucide-react';
 
 interface MilestoneToastProps {
@@ -23,6 +23,14 @@ export function MilestoneToast({
 }: MilestoneToastProps) {
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
+  const handleDismiss = useCallback(() => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+      setIsAnimatingOut(false);
+      onDismiss();
+    }, 300); // Match animation duration
+  }, [onDismiss]);
+
   // Auto-dismiss after duration
   useEffect(() => {
     if (isVisible) {
@@ -32,15 +40,7 @@ export function MilestoneToast({
 
       return () => clearTimeout(timer);
     }
-  }, [isVisible, duration]);
-
-  const handleDismiss = () => {
-    setIsAnimatingOut(true);
-    setTimeout(() => {
-      setIsAnimatingOut(false);
-      onDismiss();
-    }, 300); // Match animation duration
-  };
+  }, [isVisible, duration, handleDismiss]);
 
   if (!isVisible && !isAnimatingOut) return null;
 

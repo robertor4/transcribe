@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import { UserActivity, TranscriptionStatus } from '@transcribe/shared';
@@ -30,7 +30,7 @@ export default function UserActivityPage() {
   const [error, setError] = useState<string | null>(null);
   const [resettingUsage, setResettingUsage] = useState(false);
 
-  const fetchActivity = async () => {
+  const fetchActivity = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -63,7 +63,7 @@ export default function UserActivityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, userId]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -75,7 +75,7 @@ export default function UserActivityPage() {
     if (user && userId) {
       fetchActivity();
     }
-  }, [user, userId]);
+  }, [user, userId, fetchActivity]);
 
   const handleResetUsage = async () => {
     if (!activity) return;

@@ -45,7 +45,7 @@ export class TranscriptionProcessor {
       transcriptionId,
       userId,
       fileUrl,
-      analysisType,
+      // analysisType is kept in job.data for future use but currently unused
       context,
       selectedTemplates,
     } = job.data;
@@ -211,8 +211,8 @@ export class TranscriptionProcessor {
         stage: 'summarizing',
       });
 
-      // Save transcription results
-      const transcriptUrl = await this.firebaseService.uploadText(
+      // Save transcription results (upload but URL not needed since we store text directly)
+      await this.firebaseService.uploadText(
         transcriptText,
         `transcriptions/${userId}/${transcriptionId}/transcript.txt`,
       );

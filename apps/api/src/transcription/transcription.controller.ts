@@ -14,7 +14,6 @@ import {
   UploadedFiles,
   Req,
   BadRequestException,
-  ParseIntPipe,
   UnauthorizedException,
   Logger,
 } from '@nestjs/common';
@@ -29,9 +28,7 @@ import {
   TranscriptCorrectionRouterService,
   RoutingPlan,
 } from './transcript-correction-router.service';
-import { ShareContentOptions } from '@transcribe/shared';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { SubscriptionGuard } from '../guards/subscription.guard';
 import { PaginationDto } from './dto/pagination.dto';
 import { SearchTranscriptionsDto } from './dto/search.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
@@ -52,7 +49,6 @@ import {
   PaginatedResponse,
   Transcription,
   SummaryComment,
-  RegenerateSummaryRequest,
   AnalysisType,
   SharedTranscriptionView,
   BatchUploadResponse,

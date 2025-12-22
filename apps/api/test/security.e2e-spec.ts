@@ -106,7 +106,7 @@ describe('Security Features (e2e)', () => {
           .collection('transcriptions')
           .doc(transcriptionId)
           .delete();
-      } catch (error) {
+      } catch {
         // Ignore cleanup errors
       }
     }
@@ -115,7 +115,7 @@ describe('Security Features (e2e)', () => {
       try {
         await admin.firestore().collection('users').doc(userId).delete();
         await admin.auth().deleteUser(userId);
-      } catch (error) {
+      } catch {
         // Ignore cleanup errors
       }
     }

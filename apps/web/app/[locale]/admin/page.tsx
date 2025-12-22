@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { User, UserRole } from '@transcribe/shared';
@@ -58,7 +58,7 @@ export default function AdminPanel() {
   }, [user, authLoading, router]);
 
   // Fetch all users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -91,13 +91,13 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       fetchUsers();
     }
-  }, [user]);
+  }, [user, fetchUsers]);
 
   const handleDeleteUser = async (userId: string, hardDelete: boolean) => {
     const confirmMessage = hardDelete

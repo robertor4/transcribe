@@ -31,7 +31,7 @@ export function ConversationCreateModal({
   onClose,
   onComplete,
   folderId,
-  initialStep: _initialStep,
+  // initialStep is defined in interface but not yet implemented
   uploadMethod,
 }: ConversationCreateModalProps) {
   // State for flow

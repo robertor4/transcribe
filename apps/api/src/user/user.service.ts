@@ -195,7 +195,7 @@ export class UserService {
         try {
           await bucket.file(oldPhotoPath).delete();
           this.logger.log(`Deleted old profile photo: ${oldPhotoPath}`);
-        } catch (error) {
+        } catch {
           // Don't fail if old photo deletion fails
           this.logger.warn(
             `Failed to delete old profile photo: ${oldPhotoPath}`,
@@ -230,7 +230,7 @@ export class UserService {
           try {
             await bucket.file(filePath).delete();
             this.logger.log(`Deleted profile photo: ${filePath}`);
-          } catch (error) {
+          } catch {
             this.logger.warn(`Failed to delete profile photo: ${filePath}`);
           }
         }

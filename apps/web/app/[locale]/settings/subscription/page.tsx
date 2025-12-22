@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
 import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
@@ -68,13 +68,7 @@ export default function SubscriptionPage() {
     return `${day}-${month}-${year}`;
   };
 
-  useEffect(() => {
-    if (user) {
-      loadSubscriptionData();
-    }
-  }, [user]);
-
-  async function loadSubscriptionData() {
+  const loadSubscriptionData = useCallback(async () => {
     try {
       setLoading(true);
       const token = await user?.getIdToken();
@@ -118,7 +112,13 @@ export default function SubscriptionPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadSubscriptionData();
+    }
+  }, [user, loadSubscriptionData]);
 
   async function handleCancelSubscription() {
     if (!confirm(t('cancelConfirm'))) {

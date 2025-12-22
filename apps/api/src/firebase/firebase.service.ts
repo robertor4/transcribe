@@ -4,9 +4,7 @@ import * as admin from 'firebase-admin';
 import {
   Transcription,
   PaginatedResponse,
-  TranscriptionStatus,
   SummaryComment,
-  GeneratedAnalysis,
   Folder,
   CreateFolderRequest,
   UpdateFolderRequest,
@@ -68,13 +66,13 @@ export class FirebaseService implements OnModuleInit {
    */
   private extractIdFromPath(path: string): string {
     // Try transcriptions path first: transcriptions/{userId}/{transcriptionId}/...
-    const transcriptionMatch = path.match(/transcriptions\/[^\/]+\/([^\/]+)/);
+    const transcriptionMatch = path.match(/transcriptions\/[^/]+\/([^/]+)/);
     if (transcriptionMatch) {
       return transcriptionMatch[1];
     }
 
     // Try audio path: audio/{userId}/{timestamp}_{filename}
-    const audioMatch = path.match(/audio\/[^\/]+\/(.+)/);
+    const audioMatch = path.match(/audio\/[^/]+\/(.+)/);
     if (audioMatch) {
       // Return truncated filename for readability
       const filename = audioMatch[1];
@@ -1300,9 +1298,7 @@ export class FirebaseService implements OnModuleInit {
         )
         .slice(0, limit);
     } catch (error) {
-      this.logger.error(
-        `Error fetching folder analyses: ${error.message}`,
-      );
+      this.logger.error(`Error fetching folder analyses: ${error.message}`);
       return [];
     }
   }

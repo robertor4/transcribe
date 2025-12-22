@@ -58,7 +58,7 @@ export default function WorkflowCarousel() {
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, workflows.length]);
 
   // Scroll to current card
   useEffect(() => {

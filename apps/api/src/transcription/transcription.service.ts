@@ -35,7 +35,7 @@ import {
 import * as prompts from './prompts';
 import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
-import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
+import { AudioSplitter } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
 import { EmailService } from '../email/email.service';
@@ -529,7 +529,7 @@ export class TranscriptionService {
           fileExtension = `.${match[1]}`;
           this.logger.log(`Detected file extension: ${fileExtension}`);
         }
-      } catch (e) {
+      } catch {
         this.logger.warn(
           'Could not extract file extension from URL, using .m4a',
         );

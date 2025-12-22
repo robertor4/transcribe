@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { CheckCircle, AlertCircle, Loader2, Sun, Moon, Monitor } from 'lucide-react';
@@ -30,11 +30,7 @@ export default function PreferencesSettingsPage() {
 
   const [language, setLanguage] = useState(locale);
 
-  useEffect(() => {
-    loadUserProfile();
-  }, [authUser]);
-
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     if (!authUser) return;
 
     try {
@@ -49,7 +45,11 @@ export default function PreferencesSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser, locale, t]);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, [authUser, loadUserProfile]);
 
   const handleSaveLanguage = async () => {
     setError(null);

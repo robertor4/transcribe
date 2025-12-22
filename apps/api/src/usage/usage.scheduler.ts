@@ -4,7 +4,7 @@ import {
   OnModuleInit,
   OnApplicationShutdown,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { UsageService } from './usage.service';
 import { FirebaseService } from '../firebase/firebase.service';
 

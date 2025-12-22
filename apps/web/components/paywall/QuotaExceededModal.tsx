@@ -20,7 +20,7 @@ export function QuotaExceededModal({
   isOpen,
   onClose,
   quotaType,
-  currentTier: _currentTier,
+  // currentTier is available for future tier-specific messaging
   details,
 }: QuotaExceededModalProps) {
   const t = useTranslations('paywall.quotaExceeded');

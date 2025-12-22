@@ -318,14 +318,14 @@ export class UsageService {
    */
   async trackOnDemandAnalysis(
     userId: string,
-    analysisId: string,
+    _analysisId: string, // Reserved for future analytics/logging
   ): Promise<void> {
     const user = await this.firebaseService.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const tier = user.subscriptionTier || 'free';
+    // tier is available for future tier-specific tracking
     const usage = user.usageThisMonth || {
       hours: 0,
       transcriptions: 0,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
@@ -20,17 +20,7 @@ export default function CheckoutPage() {
   const tier = params.tier as string;
   const locale = params.locale as string;
 
-  useEffect(() => {
-    if (!user) {
-      // Redirect to login with return URL
-      router.push(`/login?redirect=/checkout/${tier}`);
-      return;
-    }
-
-    createCheckoutSession();
-  }, [user, tier]);
-
-  async function createCheckoutSession() {
+  const createCheckoutSession = useCallback(async () => {
     try {
       setError(null);
 
@@ -132,9 +122,18 @@ export default function CheckoutPage() {
       });
 
       setError(err instanceof Error ? err.message : 'Failed to create checkout session');
-      setLoading(false);
     }
-  }
+  }, [user, tier, locale, trackEvent]);
+
+  useEffect(() => {
+    if (!user) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=/checkout/${tier}`);
+      return;
+    }
+
+    createCheckoutSession();
+  }, [user, tier, router, createCheckoutSession]);
 
   if (error) {
     return (

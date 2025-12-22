@@ -44,7 +44,7 @@ export class EmailService {
       });
 
       // Verify transporter configuration
-      this.transporter?.verify((error, success) => {
+      this.transporter?.verify((error, _success) => {
         if (error) {
           this.logger.error('Gmail configuration error:', error);
           this.logger.warn(
@@ -163,7 +163,7 @@ export class EmailService {
     shareToken: string,
     transcriptionTitle: string,
     request: ShareEmailRequest,
-    locale: string = 'en',
+    _locale: string = 'en',
   ): Promise<boolean> {
     if (!this.transporter) {
       this.logger.warn('Email service not configured, skipping email send');
@@ -460,8 +460,8 @@ export class EmailService {
     transcription: Transcription,
     locale: string,
   ): string {
-    // Calculate processing statistics
-    const processingTime =
+    // Calculate processing statistics (reserved for future template use)
+    const _processingTime =
       transcription.completedAt && transcription.createdAt
         ? Math.round(
             (new Date(transcription.completedAt).getTime() -

@@ -255,6 +255,7 @@ export function RealProcessingView({
     };
 
     upload();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Upload runs once on mount, selectedTemplates is captured at that time
   }, [file, context, folderId, handleCompletion, handleError]);
 
   const getStageIcon = (stageName: ProcessingStage) => {

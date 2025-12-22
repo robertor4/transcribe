@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **ESLint Configuration**: Updated API eslint config to ignore underscore-prefixed unused variables
+  - Pattern `^_` now ignored for both `argsIgnorePattern` and `varsIgnorePattern`
+  - Aligns with TypeScript convention for intentionally unused parameters
+
 ### Fixed
+- **React Hook Dependency Warnings**: Fixed exhaustive-deps warnings across multiple components
+  - Wrapped async functions in `useCallback` in admin, checkout, and settings pages
+  - Added proper dependency arrays to `useEffect` hooks
+  - Added `eslint-disable` comments where intentional missing dependencies exist
+- **Unused Variable Warnings**: Cleaned up unused imports and variables
+  - Removed unused imports from API controllers and services
+  - Fixed unused catch clause variables by using bare `catch` syntax
+  - Removed unused prop destructuring in React components
+
 - **Chrome Crash During Long Recordings**: Fixed browser crashes (EXC_BREAKPOINT/SIGTRAP) after ~10 minutes of tab audio recording
   - **Root cause**: MediaRecorder timeslice was 100ms (10 callbacks/sec), causing resource exhaustion over time
   - **Solution**: Increased timeslice to 10,000ms (0.1 callbacks/sec) - 100x reduction in callback frequency

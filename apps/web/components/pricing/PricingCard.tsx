@@ -47,7 +47,7 @@ export function PricingCard({
   ctaLink,
   locale,
   currency = 'USD',
-  currencySymbol: _currencySymbol = '$',
+  // currencySymbol is kept for backwards compatibility but we use formatPriceLocale
   showGuarantee = false,
   guaranteeText,
   billingNote,

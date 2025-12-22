@@ -451,6 +451,7 @@ export const TranscriptionList: React.FC<TranscriptionListProps> = ({
       // Clear all timeout timers
       timeoutTimers.forEach(timer => clearTimeout(timer));
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- transcriptions is accessed via setProgressMap callback which gets fresh value
   }, [t, user, loadTranscriptions, notifyProgress]);
 
   const handleDelete = async (id: string) => {

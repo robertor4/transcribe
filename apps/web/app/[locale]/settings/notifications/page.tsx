@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -23,12 +23,7 @@ export default function NotificationSettingsPage() {
   const [browserEnabled, setBrowserEnabled] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
-  useEffect(() => {
-    loadUserProfile();
-    checkBrowserNotifications();
-  }, [authUser]);
-
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     if (!authUser) return;
 
     try {
@@ -43,7 +38,12 @@ export default function NotificationSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser, t]);
+
+  useEffect(() => {
+    loadUserProfile();
+    checkBrowserNotifications();
+  }, [authUser, loadUserProfile]);
 
   const checkBrowserNotifications = () => {
     if ('Notification' in window) {

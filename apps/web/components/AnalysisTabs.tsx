@@ -307,7 +307,8 @@ export const AnalysisTabs: React.FC<AnalysisTabsProps> = ({ analyses, generatedA
         });
       }
     }
-  }, [transcription]); // Only run when transcription changes (on mount or update)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transcription]);
 
   // Get translated languages
   const translatedLanguages = transcription?.translations
