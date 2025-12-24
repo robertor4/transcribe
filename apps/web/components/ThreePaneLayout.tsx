@@ -49,7 +49,7 @@ export function ThreePaneLayout({
     : leftSidebar;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-gray-950">
+    <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-gray-900">
       {/* Left Sidebar */}
       <CollapsibleSidebar
         side="left"
@@ -63,7 +63,7 @@ export function ThreePaneLayout({
       </CollapsibleSidebar>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-white dark:bg-gray-950">
+      <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 scrollbar-subtle">
         {mainContent}
       </main>
 

@@ -251,6 +251,33 @@ npm run lint          # Run Next.js ESLint
 npm run lint          # Run ESLint across all packages
 ```
 
+### Linting Requirements
+
+**CRITICAL**: Check and fix linter issues after every code change.
+
+1. **Run linter after each change**: After modifying any file, run the appropriate lint command:
+   ```bash
+   # Frontend changes
+   cd apps/web && npm run lint
+
+   # Backend changes
+   cd apps/api && npm run lint
+
+   # Or run from root for all packages
+   npm run lint
+   ```
+
+2. **Fix issues immediately**: Do not leave linter errors or warnings unresolved. Fix them before moving to the next task.
+
+3. **Common issues to watch for**:
+   - Unused imports and variables
+   - Missing type annotations
+   - Incorrect import paths
+   - React hooks dependency arrays
+   - Tailwind class ordering (if configured)
+
+4. **Auto-fix when possible**: Use `npm run lint -- --fix` to automatically fix issues that can be resolved programmatically.
+
 ### Testing Requirements
 
 **CRITICAL**: Follow these testing practices:

@@ -55,7 +55,7 @@ function ScoreRing({ score, size = 'lg' }: { score: number; size?: 'sm' | 'lg' }
 
 function DimensionCard({ dimension }: { dimension: CommunicationDimension }) {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-4">
       <div className="flex items-center gap-4 mb-4">
         <ScoreRing score={dimension.score} size="sm" />
         <div>

@@ -53,7 +53,7 @@ export function RecentAssetsSection({ locale }: RecentAssetsSectionProps) {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl animate-pulse"
+              className="p-4 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl animate-pulse"
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-7 h-7 rounded-lg bg-gray-200 dark:bg-gray-700" />

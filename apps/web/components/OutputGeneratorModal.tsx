@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import { Button } from './Button';
 import { allTemplates, TemplateId } from '@/lib/outputTemplates';
@@ -25,6 +25,29 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
   const [customInstructions, setCustomInstructions] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    // Reset state after animation
+    setTimeout(() => {
+      setStep(1);
+      setSelectedType(null);
+      setCustomInstructions('');
+      setIsGenerating(false);
+      setError(null);
+    }, 300);
+  }, [onClose]);
+
+  // Handle Escape key to close modal (blocked during generation)
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isGenerating) {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, isGenerating, handleClose]);
 
   if (!isOpen) return null;
 
@@ -60,18 +83,6 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
       setIsGenerating(false);
       setError(err instanceof Error ? err.message : 'Failed to generate output. Please try again.');
     }
-  };
-
-  const handleClose = () => {
-    onClose();
-    // Reset state after animation
-    setTimeout(() => {
-      setStep(1);
-      setSelectedType(null);
-      setCustomInstructions('');
-      setIsGenerating(false);
-      setError(null);
-    }, 300);
   };
 
   const canProceedFromStep1 = selectedType !== null;
@@ -120,7 +131,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                     item.num === step
                       ? 'bg-[#8D6AFA] text-white scale-110'
                       : item.num < step
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-[#14D0DC] text-white'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                   }`}
                 >
@@ -131,7 +142,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 {idx < 3 && (
                   <div
                     className={`absolute top-4 left-1/2 w-full h-1 transition-all duration-300 ${
-                      item.num < step ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
+                      item.num < step ? 'bg-[#14D0DC]' : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                     style={{ transform: 'translateY(-50%)' }}
                   />
@@ -341,7 +352,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 </>
               ) : (
                 <>
-                  <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-6">
+                  <div className="w-20 h-20 rounded-full bg-[#14D0DC] flex items-center justify-center mx-auto mb-6">
                     <span className="text-4xl text-white">✓</span>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">

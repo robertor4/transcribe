@@ -47,18 +47,18 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
     <div className="space-y-8">
       {/* Intro Paragraph */}
       {summary.intro && (
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">
           {summary.intro}
         </p>
       )}
 
       {/* Key Points Box */}
       {summary.keyPoints.length > 0 && (
-        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
+        <div className="px-6 py-6 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
           <h3 className="text-lg font-bold text-[#8D6AFA] mb-5 uppercase tracking-wide">
             Key Points
           </h3>
-          <ul className="space-y-4 pl-4 list-outside" style={{ listStyleType: 'square' }}>
+          <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.keyPoints.map((point, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
@@ -67,7 +67,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
                 {point.description}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       )}
 
@@ -89,33 +89,33 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
 
       {/* Decisions (only shown if present) */}
       {summary.decisions && summary.decisions.length > 0 && (
-        <div className="px-6 py-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+        <div className="px-6 py-6 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-5 uppercase tracking-wide">
             Decisions Made
           </h3>
-          <ul className="space-y-2 list-disc list-inside">
+          <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.decisions.map((decision, idx) => (
-              <li key={idx} className="text-gray-700 dark:text-gray-300">
+              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {decision}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       )}
 
       {/* Next Steps (only shown if present) */}
       {summary.nextSteps && summary.nextSteps.length > 0 && (
-        <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+        <div className="px-6 py-6 bg-[#3F38A0]/10 dark:bg-[#3F38A0]/20 border-l-4 border-[#3F38A0] rounded-r-lg">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-5 uppercase tracking-wide">
             Next Steps
           </h3>
-          <ul className="space-y-2 list-disc list-inside">
+          <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.nextSteps.map((step, idx) => (
-              <li key={idx} className="text-gray-700 dark:text-gray-300">
+              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {step}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       )}
     </div>

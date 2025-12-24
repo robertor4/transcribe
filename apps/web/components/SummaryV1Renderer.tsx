@@ -73,24 +73,24 @@ export const SummaryV1Renderer: React.FC<SummaryV1RendererProps> = ({ content })
     <div className="space-y-8">
       {/* Intro Paragraph */}
       {parsed.intro && (
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">
           {parsed.intro}
         </p>
       )}
 
       {/* Key Points Box */}
       {parsed.keyPoints.length > 0 && (
-        <div className="pl-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+        <div className="px-6 py-6 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
+          <h3 className="text-lg font-bold text-[#8D6AFA] mb-5 uppercase tracking-wide">
             {parsed.keyPointsTitle || 'Key Points'}
           </h3>
-          <ul className="space-y-2 list-disc list-inside">
+          <ol className="space-y-5 mx-4 list-decimal list-inside">
             {parsed.keyPoints.map((point, idx) => (
-              <li key={idx} className="font-medium text-gray-700 dark:text-gray-300">
+              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {renderBoldText(point)}
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       )}
 

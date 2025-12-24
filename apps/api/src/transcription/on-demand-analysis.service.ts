@@ -115,6 +115,16 @@ export class OnDemandAnalysisService {
         );
       const generationTimeMs = Date.now() - startTime;
 
+      // Validate that we got actual content from the AI
+      if (!rawContent || rawContent.trim().length === 0) {
+        this.logger.error(
+          `AI returned empty content for template ${templateId}. This may indicate a content filter, timeout, or API issue.`,
+        );
+        throw new BadRequestException(
+          'AI returned empty content. Please try again or contact support if the issue persists.',
+        );
+      }
+
       this.logger.log(
         `Analysis generated in ${generationTimeMs}ms using ${template.modelPreference} (format: ${template.outputFormat || 'markdown'})`,
       );
@@ -123,13 +133,23 @@ export class OnDemandAnalysisService {
       let content: GeneratedAnalysis['content'] = rawContent;
       if (isStructured) {
         try {
-          content = JSON.parse(rawContent);
-          this.logger.log('Successfully parsed structured JSON output');
-        } catch (parseError) {
-          this.logger.warn(
-            `Failed to parse JSON output, storing as markdown: ${parseError.message}`,
+          const parsed = JSON.parse(rawContent);
+
+          // Validate structured output based on template type
+          this.validateStructuredOutput(templateId, parsed);
+
+          content = parsed;
+          this.logger.log(
+            'Successfully parsed and validated structured JSON output',
           );
-          // Fall back to storing as markdown if JSON parsing fails
+        } catch (parseError) {
+          // For structured templates, JSON parse failure is an error, not a fallback
+          this.logger.error(
+            `Failed to parse/validate JSON output for ${templateId}: ${parseError.message}`,
+          );
+          throw new BadRequestException(
+            `Failed to generate valid output. The AI response was malformed. Please try again.`,
+          );
         }
       }
 
@@ -204,6 +224,111 @@ export class OnDemandAnalysisService {
     }
 
     return analysis;
+  }
+
+  /**
+   * Validate structured output based on template type.
+   * Ensures required fields exist and have correct types.
+   * Throws an error if validation fails.
+   */
+  private validateStructuredOutput(
+    templateId: string,
+    parsed: Record<string, unknown>,
+  ): void {
+    // Ensure type field exists
+    if (!parsed.type) {
+      parsed.type = templateId;
+    }
+
+    switch (templateId) {
+      case 'actionItems':
+        // Ensure arrays exist (AI might omit them if no items)
+        parsed.immediateActions = Array.isArray(parsed.immediateActions)
+          ? parsed.immediateActions
+          : [];
+        parsed.shortTermActions = Array.isArray(parsed.shortTermActions)
+          ? parsed.shortTermActions
+          : [];
+        parsed.longTermActions = Array.isArray(parsed.longTermActions)
+          ? parsed.longTermActions
+          : [];
+        this.logger.log(
+          `Action items validated: immediate=${(parsed.immediateActions as unknown[]).length}, ` +
+            `short=${(parsed.shortTermActions as unknown[]).length}, ` +
+            `long=${(parsed.longTermActions as unknown[]).length}`,
+        );
+        break;
+
+      case 'email':
+        // Ensure required email fields exist
+        if (!parsed.subject || typeof parsed.subject !== 'string') {
+          throw new Error('Email output missing required field: subject');
+        }
+        if (!parsed.body || !Array.isArray(parsed.body)) {
+          // Convert non-array body to array
+          if (typeof parsed.body === 'string') {
+            parsed.body = [parsed.body];
+          } else {
+            parsed.body = [];
+          }
+        }
+        parsed.keyPoints = Array.isArray(parsed.keyPoints)
+          ? parsed.keyPoints
+          : [];
+        parsed.actionItems = Array.isArray(parsed.actionItems)
+          ? parsed.actionItems
+          : [];
+        break;
+
+      case 'blogPost':
+        // Ensure required blog post fields exist
+        if (!parsed.headline || typeof parsed.headline !== 'string') {
+          throw new Error('Blog post output missing required field: headline');
+        }
+        if (!parsed.hook || typeof parsed.hook !== 'string') {
+          throw new Error('Blog post output missing required field: hook');
+        }
+        parsed.sections = Array.isArray(parsed.sections) ? parsed.sections : [];
+        break;
+
+      case 'linkedin':
+        // Ensure required LinkedIn fields exist
+        if (!parsed.hook || typeof parsed.hook !== 'string') {
+          throw new Error('LinkedIn output missing required field: hook');
+        }
+        if (!parsed.content || typeof parsed.content !== 'string') {
+          throw new Error('LinkedIn output missing required field: content');
+        }
+        parsed.hashtags = Array.isArray(parsed.hashtags) ? parsed.hashtags : [];
+        break;
+
+      case 'communicationAnalysis':
+        // Ensure required communication analysis fields exist
+        if (
+          typeof parsed.overallScore !== 'number' ||
+          parsed.overallScore < 0 ||
+          parsed.overallScore > 100
+        ) {
+          // Try to coerce to number if possible
+          const score = Number(parsed.overallScore);
+          if (isNaN(score)) {
+            throw new Error(
+              'Communication analysis missing required field: overallScore',
+            );
+          }
+          parsed.overallScore = Math.min(100, Math.max(0, score));
+        }
+        parsed.dimensions = Array.isArray(parsed.dimensions)
+          ? parsed.dimensions
+          : [];
+        break;
+
+      default:
+        // For unknown templates, just log and allow
+        this.logger.log(
+          `No specific validation for template ${templateId}, allowing output`,
+        );
+    }
   }
 
   /**

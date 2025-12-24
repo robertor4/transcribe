@@ -333,7 +333,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onChange={(e) => setEditedTitle(e.target.value)}
                   onBlur={handleSaveTitle}
                   onKeyDown={handleTitleKeyDown}
-                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3"
+                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3 font-[Montserrat]"
                 />
               ) : (
                 <h1
@@ -488,7 +488,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       <Link
                         key={output.id}
                         href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
-                        className="group relative p-6 bg-white dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
+                        className="group relative p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
                       >
                         <div className="flex items-start gap-4">
                           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
@@ -514,7 +514,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   })}
                 </div>
               ) : (
-                <div className="text-center py-16 bg-white dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600/50">
+                <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
                   <div className="text-4xl mb-3">✨</div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                     {t('emptyTitle')}
@@ -549,7 +549,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {/* Transcript Card - Links to dedicated page */}
               <Link
                 href={`/${locale}/conversation/${conversation.id}/transcript`}
-                className="group block p-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
+                className="group block p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">

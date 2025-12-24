@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -24,6 +25,17 @@ export function QuotaExceededModal({
   details,
 }: QuotaExceededModalProps) {
   const t = useTranslations('paywall.quotaExceeded');
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

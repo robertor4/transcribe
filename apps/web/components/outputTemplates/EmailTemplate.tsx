@@ -8,7 +8,7 @@ interface EmailTemplateProps {
 
 export function EmailTemplate({ data }: EmailTemplateProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden">
         {/* Subject Line */}
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-1">

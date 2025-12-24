@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Loader2, AlertTriangle, Sparkles } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import { CorrectionPreview, CorrectionApplyResponse } from '@transcribe/shared';
@@ -28,6 +28,27 @@ export default function TranscriptCorrectionModal({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [applyResult, setApplyResult] = useState<CorrectionApplyResponse | null>(null);
+
+  const handleClose = useCallback(() => {
+    setInstructions('');
+    setPreview(null);
+    setError(null);
+    setShowConfirmation(false);
+    setShowSuccess(false);
+    setApplyResult(null);
+    onClose();
+  }, [onClose]);
+
+  // Handle Escape key to close modal (blocked during loading states)
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isLoadingPreview && !isApplying && !isRegenerating) {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, isLoadingPreview, isApplying, isRegenerating, handleClose]);
 
   // Generate preview with corrections
   const handlePreview = async () => {
@@ -143,16 +164,6 @@ export default function TranscriptCorrectionModal({
   const handleSkipRegenerate = () => {
     onSuccess(); // Refresh the parent component
     handleClose();
-  };
-
-  const handleClose = () => {
-    setInstructions('');
-    setPreview(null);
-    setError(null);
-    setShowConfirmation(false);
-    setShowSuccess(false);
-    setApplyResult(null);
-    onClose();
   };
 
   if (!isOpen) return null;

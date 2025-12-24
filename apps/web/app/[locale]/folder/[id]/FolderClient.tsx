@@ -226,18 +226,16 @@ export function FolderClient({ folderId }: FolderClientProps) {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-4">
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                    style={{
-                      backgroundColor: folder.color
-                        ? `${folder.color}20`
-                        : 'rgb(243 244 246)',
-                    }}
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+                    style={folder.color ? {
+                      backgroundColor: `${folder.color}20`,
+                    } : undefined}
                   >
                     <Folder
-                      className="w-8 h-8"
-                      style={{
-                        color: folder.color || 'rgb(107 114 128)',
-                      }}
+                      className="w-8 h-8 text-gray-500 dark:text-gray-400"
+                      style={folder.color ? {
+                        color: folder.color,
+                      } : undefined}
                     />
                   </div>
                   <div>
@@ -249,7 +247,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                         onChange={(e) => setEditedName(e.target.value)}
                         onBlur={handleSaveName}
                         onKeyDown={handleNameKeyDown}
-                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full"
+                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full font-[Montserrat]"
                       />
                     ) : (
                       <h1
@@ -310,7 +308,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
               </div>
 
               {conversations.length === 0 ? (
-                <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+                <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-6">
                     <Folder className="w-10 h-10 text-gray-400" />
                   </div>
@@ -325,11 +323,11 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </Button>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100 dark:divide-gray-800 border-t border-b border-gray-100 dark:border-gray-800">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {conversations.map((conversation) => (
                     <div
                       key={conversation.id}
-                      className="group relative flex items-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                      className="group relative flex items-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-200"
                     >
                       <Link
                         href={`/${locale}/conversation/${conversation.id}`}

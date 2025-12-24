@@ -65,7 +65,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
       {...listeners}
       {...attributes}
       onClick={handleCardClick}
-      className={`group relative flex items-center justify-between py-3 px-4 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 cursor-pointer touch-none ${
+      className={`group relative flex items-center justify-between py-3 px-4 bg-white dark:bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 cursor-pointer touch-none ${
         isDragging ? 'opacity-50 scale-[0.98] shadow-xl z-50 cursor-grabbing' : ''
       }`}
     >

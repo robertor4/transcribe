@@ -7,12 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Action Items Persistence**: Checkmarks on action items are now persisted in localStorage
+  - Completing an action item saves state by analysis ID
+  - State is restored when revisiting the same AI asset
+  - File: [ActionItemsTemplate.tsx](apps/web/components/outputTemplates/ActionItemsTemplate.tsx)
+- **Action Items Collapsible Categories**: Added expand/collapse for action item priority categories
+  - Categories can be collapsed to reduce visual clutter
+  - Collapse state is persisted in localStorage per analysis
+  - Shows item count and completed count in collapsed header
+- **Escape Key Support for Modals**: Added keyboard navigation for modal dialogs
+  - ConversationCreateModal, TranscriptCorrectionModal, ShareModal now close on Escape
+  - Blocked during loading states to prevent accidental data loss
+
 ### Changed
-- **ESLint Configuration**: Updated API eslint config to ignore underscore-prefixed unused variables
-  - Pattern `^_` now ignored for both `argsIgnorePattern` and `varsIgnorePattern`
-  - Aligns with TypeScript convention for intentionally unused parameters
+- **Email Templates Branding Update**: Redesigned email templates to align with new Neural Summary brand guidelines
+  - Updated primary color from pink (#cc3399) to brand purple (#8D6AFA)
+  - Added Montserrat font family (brand typography) with system font fallbacks
+  - Updated V2 terminology: "Transcription" → "Conversation", "Transcript" → "Conversation"
+  - Pill-shaped CTA buttons (border-radius: 9999px) matching brand UI guidelines
+  - Added dark mode support with brand-aligned colors (#23194B background, #A78BFA accents)
+  - Updated all localized content for 5 languages (en, nl, de, fr, es)
+  - File: [email.service.ts](apps/api/src/email/email.service.ts)
+- **Dark Mode Refinements**: Softened dark mode colors for reduced eye strain
+  - Background changed from pure black (#0a0a0a) to blue-tinted gray (#111827)
+  - Text colors softened (gray-50 → gray-200, gray-200 → gray-300)
+  - Prose styles updated for consistent soft contrast
+  - Added subtle scrollbar styling for main content areas
+  - File: [globals.css](apps/web/app/globals.css)
+- **Summary Renderer Improvements**: Enhanced V2 summary display
+  - Intro paragraph uses lighter font weight for elegance
+  - Key points now use numbered list (ordered list) instead of squares
+  - Decisions and Next Steps use brand colors (#14D0DC cyan, #3F38A0 deep purple)
+  - Increased spacing between list items for readability
+  - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
+- **Action Items Template Redesign**: Improved action items display
+  - Priority badges with color coding (red=high, amber=medium, gray=low)
+  - Sorted by priority (high first) within each category
+  - Deadline formatting improved (ISO dates → human-readable)
+  - "Why priority?" toggle with chevron indicators
+  - Better visual hierarchy with spacing adjustments
+- **GPT-5 Token Budget Optimization**: Improved handling of GPT-5 reasoning tokens
+  - Increased max_completion_tokens for structured JSON outputs (8K → 16K)
+  - Added `reasoning_effort: 'low'` for structured outputs to prioritize content over reasoning
+  - Added detailed logging of reasoning vs output token usage
+  - Better error handling when AI uses all tokens for reasoning
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+- **Creative Greeting First Name**: Dashboard greeting now extracts first name from email/display name
+  - "Good morning, Roberto" instead of "Good morning, roberto@example.com"
+  - File: [userHelpers.ts](apps/web/lib/userHelpers.ts)
+- **Dark Mode Input Fields**: Consistent semi-transparent backgrounds for form inputs
+  - Login form, search inputs, and modals use `bg-gray-800/40` with subtle borders
+  - Files: [LoginForm.tsx](apps/web/components/LoginForm.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
 
 ### Fixed
+- **Structured Output Validation**: Added validation for AI-generated structured outputs
+  - Validates required fields exist for each template type (actionItems, email, blogPost, etc.)
+  - Initializes missing arrays to empty arrays (prevents undefined errors)
+  - Throws clear error when AI returns empty or malformed content
+  - File: [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+- **Empty Output Handling**: Added user-friendly error state for empty AI outputs
+  - Shows "Content unavailable" message with regenerate suggestion
+  - File: [outputTemplates/index.tsx](apps/web/components/outputTemplates/index.tsx)
+- **Regex Escape Warning**: Fixed regex escape sequence in AssemblyAI URL parsing
+  - Changed `[^%\/]` to `[^%/]` to avoid unnecessary escape
+  - File: [assembly-ai.service.ts](apps/api/src/assembly-ai/assembly-ai.service.ts)
 - **React Hook Dependency Warnings**: Fixed exhaustive-deps warnings across multiple components
   - Wrapped async functions in `useCallback` in admin, checkout, and settings pages
   - Added proper dependency arrays to `useEffect` hooks
@@ -76,6 +135,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed redundant "Neural Summary" text from header (logo only)
   - Added copy summary functionality
   - Updated `SharedTranscriptionView` type to include `summaryV2` field
+
+### Removed
+- **AudioRecorder Component**: Deleted unused legacy audio recorder component (930 lines)
+  - Functionality superseded by RecordingInterface and useMediaRecorder hook
+  - File removed: `apps/web/components/AudioRecorder.tsx`
 
 ---
 

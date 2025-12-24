@@ -263,10 +263,12 @@
       "label": "Recording Source",
       "microphone": "Microphone",
       "microphoneDescription": "Record from your device microphone",
-      "tabAudio": "Meeting Tab Audio",
+      "tabAudio": "Tab Audio",
       "tabAudioDescription": "Capture meeting audio + your microphone (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tab audio capture is only supported in Chrome and Edge browsers. Please use microphone recording or switch to a supported browser.",
-      "tabAudioInstructions": "First allow microphone access (to capture your voice), then select the browser tab with your meeting and check 'Share tab audio'."
+      "tabAudioInstructions": "First allow microphone access (to capture your voice), then select the browser tab with your meeting and check 'Share tab audio'.",
+      "changeSource": "Change source",
+      "recordingFrom": "Recording from:"
     },
     "status": {
       "ready": "Ready to record",
@@ -282,7 +284,9 @@
       "resume": "Resume",
       "reset": "Re-record",
       "upload": "Upload & Transcribe",
-      "uploading": "Uploading..."
+      "uploading": "Uploading...",
+      "cancel": "Cancel",
+      "dismissWarning": "Dismiss warning"
     },
     "preview": {
       "title": "Preview Recording"
@@ -299,7 +303,14 @@
       "uploadFailed": "Upload failed. Please try again."
     },
     "warnings": {
-      "title": "Notice"
+      "title": "Notice",
+      "durationApproaching": "Recording will automatically stop in {minutes} minutes (3-hour limit)",
+      "durationLimit": "Maximum recording duration reached (3 hours). Recording has been saved.",
+      "storageCritical": "Storage almost full ({remaining} remaining). Recording stopped to prevent data loss.",
+      "storageLow": "Storage running low ({remaining} remaining). Consider stopping soon.",
+      "memoryHigh": "Recording memory usage is high ({size}). Consider stopping soon to prevent issues.",
+      "memoryCritical": "Recording memory nearly full ({size}). Recording stopped to prevent data loss.",
+      "micUnavailable": "Microphone unavailable - recording tab audio only. Your voice won't be included."
     }
   },
   "transcription": {

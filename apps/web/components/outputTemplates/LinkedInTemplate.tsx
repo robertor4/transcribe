@@ -12,7 +12,7 @@ export function LinkedInTemplate({ data }: LinkedInTemplateProps) {
   return (
     <div className="space-y-6">
       {/* LinkedIn Post Preview */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+      <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden">
         {/* Post Header - LinkedIn Style */}
         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0077b5] to-[#00a0dc] flex items-center justify-center">

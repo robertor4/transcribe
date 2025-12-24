@@ -28,25 +28,48 @@ export { CommunicationAnalysisTemplate } from './CommunicationAnalysisTemplate';
  * Template component registry - add new templates here
  * This eliminates the need for a switch statement when adding new template types
  */
-const TEMPLATE_COMPONENTS: Record<string, React.ComponentType<{ data: unknown }>> = {
-  actionItems: ActionItemsTemplate as React.ComponentType<{ data: unknown }>,
-  email: EmailTemplate as React.ComponentType<{ data: unknown }>,
-  blogPost: BlogPostTemplate as React.ComponentType<{ data: unknown }>,
-  linkedin: LinkedInTemplate as React.ComponentType<{ data: unknown }>,
-  communicationAnalysis: CommunicationAnalysisTemplate as React.ComponentType<{ data: unknown }>,
+const TEMPLATE_COMPONENTS: Record<
+  string,
+  React.ComponentType<{ data: unknown; analysisId?: string }>
+> = {
+  actionItems: ActionItemsTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  email: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  blogPost: BlogPostTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  linkedin: LinkedInTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  communicationAnalysis: CommunicationAnalysisTemplate as React.ComponentType<{
+    data: unknown;
+    analysisId?: string;
+  }>,
 };
 
 interface OutputRendererProps {
   content: string | StructuredOutput;
   contentType?: 'markdown' | 'structured';
   templateId?: string;
+  /** Unique ID for this output - used for persisting state like checkmarks */
+  analysisId?: string;
 }
 
 /**
  * Smart output renderer that automatically selects the appropriate template
  * based on content type and structure.
  */
-export function OutputRenderer({ content, contentType }: OutputRendererProps) {
+export function OutputRenderer({ content, contentType, analysisId }: OutputRendererProps) {
+  // Handle empty content - show error state
+  if (!content || (typeof content === 'string' && content.trim().length === 0)) {
+    return (
+      <div className="text-center py-12">
+        <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Content unavailable
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+          This output couldn&apos;t be generated properly. Please try regenerating it.
+        </p>
+      </div>
+    );
+  }
+
   // If contentType is explicitly markdown or content is a string, render as markdown
   if (contentType === 'markdown' || typeof content === 'string') {
     return (
@@ -62,7 +85,7 @@ export function OutputRenderer({ content, contentType }: OutputRendererProps) {
     const Component = TEMPLATE_COMPONENTS[structuredContent.type];
 
     if (Component) {
-      return <Component data={structuredContent} />;
+      return <Component data={structuredContent} analysisId={analysisId} />;
     }
 
     // Unknown structured type - render as JSON
@@ -72,7 +95,7 @@ export function OutputRenderer({ content, contentType }: OutputRendererProps) {
           <FileText className="w-5 h-5" />
           <span className="text-sm font-medium">Structured Output</span>
         </div>
-        <pre className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg overflow-auto text-sm">
+        <pre className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg overflow-auto text-sm">
           {JSON.stringify(content, null, 2)}
         </pre>
       </div>
@@ -94,10 +117,11 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
   switch (content.type) {
     case 'actionItems': {
       const data = content as ActionItemsOutput;
+      // Defensive: ensure arrays exist
       const total =
-        data.immediateActions.length +
-        data.shortTermActions.length +
-        data.longTermActions.length;
+        (data.immediateActions?.length || 0) +
+        (data.shortTermActions?.length || 0) +
+        (data.longTermActions?.length || 0);
       return `${total} action item${total !== 1 ? 's' : ''} extracted`;
     }
 

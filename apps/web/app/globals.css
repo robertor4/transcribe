@@ -34,8 +34,8 @@
 
 /* Dark mode via manual toggle - this takes precedence */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
+  --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
 
   /* Theme Colors (Dark Mode) */
   --color-primary: #8D6AFA;
@@ -45,9 +45,9 @@
   --color-secondary-alt: #3F38A0;
   --color-accent-dark: #23194B;
 
-  /* Text Colors (Dark Mode) */
-  --color-text-primary: #f9fafb; /* gray-50 */
-  --color-text-secondary: #e5e7eb; /* gray-200 */
+  /* Text Colors (Dark Mode) - softened for less contrast */
+  --color-text-primary: #e5e7eb; /* gray-200 */
+  --color-text-secondary: #d1d5db; /* gray-300 */
   --color-text-muted: #9ca3af; /* gray-400 */
   --color-text-light: #6b7280; /* gray-500 */
 
@@ -58,8 +58,8 @@
 /* Dark mode via OS preference (only when no manual override) */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
+    --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
 
     /* Theme Colors (Dark Mode) */
     --color-primary: #8D6AFA;
@@ -69,9 +69,9 @@
     --color-secondary-alt: #3F38A0;
     --color-accent-dark: #23194B;
 
-    /* Text Colors (Dark Mode) */
-    --color-text-primary: #f9fafb; /* gray-50 */
-    --color-text-secondary: #e5e7eb; /* gray-200 */
+    /* Text Colors (Dark Mode) - softened for less contrast */
+    --color-text-primary: #e5e7eb; /* gray-200 */
+    --color-text-secondary: #d1d5db; /* gray-300 */
     --color-text-muted: #9ca3af; /* gray-400 */
     --color-text-light: #6b7280; /* gray-500 */
 
@@ -164,13 +164,13 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5em !important;
 }
 
-/* Dark mode prose styles */
+/* Dark mode prose styles - softened for less contrast */
 .dark .prose {
   color: #d1d5db !important; /* gray-300 */
 }
 
 .dark .prose p {
-  color: #e5e7eb !important; /* gray-200 */
+  color: #d1d5db !important; /* gray-300 - softened */
 }
 
 .dark .prose h1,
@@ -179,15 +179,15 @@ h1, h2, h3, h4, h5, h6 {
 .dark .prose h4,
 .dark .prose h5,
 .dark .prose h6 {
-  color: #f9fafb !important; /* gray-50 */
+  color: #e5e7eb !important; /* gray-200 - softened from gray-50 */
 }
 
 .dark .prose strong {
-  color: #f9fafb !important; /* gray-50 */
+  color: #e5e7eb !important; /* gray-200 - softened */
 }
 
 .dark .prose li {
-  color: #e5e7eb !important; /* gray-200 */
+  color: #d1d5db !important; /* gray-300 - softened */
 }
 
 .dark .prose code {
@@ -585,4 +585,43 @@ h1, h2, h3, h4, h5, h6 {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
+}
+
+/* Subtle scrollbar styling for main content areas */
+.scrollbar-subtle {
+  scrollbar-width: thin;  /* Firefox */
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;  /* Firefox: thumb track */
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.3);  /* gray-400 at 30% */
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.5);  /* gray-400 at 50% */
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-subtle {
+  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;  /* Firefox: gray-600 at 40% */
+}
+
+.dark .scrollbar-subtle::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.4);  /* gray-600 at 40% */
+}
+
+.dark .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(75, 85, 99, 0.6);  /* gray-600 at 60% */
 }

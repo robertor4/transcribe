@@ -107,6 +107,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     }
   };
 
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     // Sync local share token with prop
     setLocalShareToken(transcription.shareToken);

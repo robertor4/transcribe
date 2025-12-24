@@ -41,7 +41,7 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
     >
       <Link
         href={`/${locale}/folder/${folder.id}`}
-        className="group flex items-center justify-between py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+        className="group flex items-center justify-between py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-200"
       >
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="flex-shrink-0">

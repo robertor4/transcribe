@@ -166,7 +166,7 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-8">
       {/* Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-gray-800/40 rounded-lg border border-gray-200 dark:border-gray-700/50 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
@@ -194,11 +194,11 @@ export const ActionItemsTable: React.FC<ActionItemsTableProps> = ({ content }) =
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-transparent divide-y divide-gray-200 dark:divide-gray-700">
               {actionItems.map((item, index) => (
                 <tr
                   key={item.number}
-                  className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50/50 dark:bg-gray-900/50'}`}
+                  className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-transparent' : 'bg-gray-50/50 dark:bg-gray-800/30'}`}
                 >
                   <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-medium">
                     {item.number}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 import { UploadInterface } from './UploadInterface';
@@ -46,22 +46,8 @@ export function ConversationCreateModal({
   // Store processing error for display
   const [, setProcessingError] = useState<string | null>(null);
 
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentStep('capture');
-      setOverallContext('');
-      setUploadedFiles([]);
-      setRecordedBlob(null);
-      setProcessingMode('individual');
-      setIsRecording(false);
-      setMarkAsUploadedCallback(null);
-      setProcessingError(null);
-    }
-  }, [isOpen, uploadMethod]);
-
   // Reset state when modal closes
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     // Only show confirmation when there's actual progress to lose:
     // - Actively recording or paused
     // - Processing in progress
@@ -93,7 +79,32 @@ export function ConversationCreateModal({
     setMarkAsUploadedCallback(null);
     setProcessingError(null);
     onClose();
-  };
+  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose]);
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep('capture');
+      setOverallContext('');
+      setUploadedFiles([]);
+      setRecordedBlob(null);
+      setProcessingMode('individual');
+      setIsRecording(false);
+      setMarkAsUploadedCallback(null);
+      setProcessingError(null);
+    }
+  }, [isOpen, uploadMethod]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, handleClose]);
 
   // Upload handlers
   const handleFileUpload = (files: File[], mode: 'individual' | 'merged') => {

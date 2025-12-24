@@ -232,20 +232,20 @@ export function ProcessingSimulator({
               key={stageName}
               className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-300 ${
                 isActive
-                  ? 'bg-purple-50 dark:bg-purple-900/20 scale-105'
+                  ? 'bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 scale-105'
                   : isPast
-                  ? 'bg-green-50 dark:bg-green-900/20'
+                  ? 'bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20'
                   : 'bg-gray-50 dark:bg-gray-800'
               }`}
             >
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                   isComplete
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-[#14D0DC] text-white'
                     : isActive
                     ? 'bg-[#8D6AFA] text-white animate-pulse'
                     : isPast
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-[#14D0DC] text-white'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
                 }`}
               >

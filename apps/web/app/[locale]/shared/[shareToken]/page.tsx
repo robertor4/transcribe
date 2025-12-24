@@ -26,6 +26,20 @@ export default function SharedTranscriptionPage() {
   const t = useTranslations('shared');
   const shareToken = params.shareToken as string;
 
+  // Force light mode on shared pages (they don't have theme controls)
+  useEffect(() => {
+    const html = document.documentElement;
+    const wasDark = html.classList.contains('dark');
+    html.classList.remove('dark');
+
+    // Restore dark mode if it was active when leaving the page
+    return () => {
+      if (wasDark) {
+        html.classList.add('dark');
+      }
+    };
+  }, []);
+
   const [transcription, setTranscription] = useState<SharedTranscriptionView | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');

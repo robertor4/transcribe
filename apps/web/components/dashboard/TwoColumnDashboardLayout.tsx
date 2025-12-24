@@ -164,7 +164,7 @@ export function TwoColumnDashboardLayout({
             <div className="space-y-2">
               {/* Add New Folder - appears at top when creating */}
               {isCreatingFolder && (
-                <div className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+                <div className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700/50 rounded-lg bg-white dark:bg-gray-800/40">
                   <FolderIcon className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   <input
                     type="text"
@@ -197,7 +197,7 @@ export function TwoColumnDashboardLayout({
               )}
 
               {sortedFolders.length > 0 && (
-                <div className="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {sortedFolders.map((folder) => (
                     <DroppableFolderCard
                       key={folder.id}
@@ -257,7 +257,7 @@ export function TwoColumnDashboardLayout({
               </Button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
               {visibleConversations.map((conversation) => (
                 <DraggableConversationCard
                   key={conversation.id}

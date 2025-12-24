@@ -134,12 +134,13 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
               if (e.key === 'Escape') clearSearch();
             }}
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-8 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-600 rounded-lg
+            className="w-full pl-10 pr-8 py-2.5 text-sm border-2 border-gray-200 dark:border-gray-500 rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA]
-                     bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200
+                     bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
                      placeholder:text-gray-500 dark:placeholder:text-gray-400
                      transition-all duration-200
-                     hover:border-gray-300 dark:hover:border-gray-500"
+                     hover:border-gray-300 dark:hover:border-gray-400
+                     dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]"
           />
           {/* Clear button or loading spinner */}
           {searchQuery && (

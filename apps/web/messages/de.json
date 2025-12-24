@@ -266,7 +266,9 @@
       "tabAudio": "Meeting-Tab-Audio",
       "tabAudioDescription": "Meeting-Audio + Ihr Mikrofon aufnehmen (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tab-Audio-Aufnahme wird nur in Chrome und Edge Browsern unterstützt. Bitte verwenden Sie Mikrofon-Aufnahme oder wechseln Sie zu einem unterstützten Browser.",
-      "tabAudioInstructions": "Erlauben Sie zuerst den Mikrofon-Zugriff (um Ihre Stimme aufzunehmen), wählen Sie dann den Browser-Tab mit Ihrem Meeting und aktivieren Sie 'Tab-Audio teilen'."
+      "tabAudioInstructions": "Erlauben Sie zuerst den Mikrofon-Zugriff (um Ihre Stimme aufzunehmen), wählen Sie dann den Browser-Tab mit Ihrem Meeting und aktivieren Sie 'Tab-Audio teilen'.",
+      "changeSource": "Quelle ändern",
+      "recordingFrom": "Aufnahme von:"
     },
     "status": {
       "ready": "Bereit zur Aufnahme",
@@ -282,7 +284,9 @@
       "resume": "Fortsetzen",
       "reset": "Neu aufnehmen",
       "upload": "Hochladen & Transkribieren",
-      "uploading": "Hochladen..."
+      "uploading": "Hochladen...",
+      "cancel": "Abbrechen",
+      "dismissWarning": "Warnung schließen"
     },
     "preview": {
       "title": "Aufnahme-Vorschau"
@@ -299,7 +303,14 @@
       "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
     "warnings": {
-      "title": "Hinweis"
+      "title": "Hinweis",
+      "durationApproaching": "Aufnahme stoppt automatisch in {minutes} Minuten (3-Stunden-Limit)",
+      "durationLimit": "Maximale Aufnahmedauer erreicht (3 Stunden). Aufnahme wurde gespeichert.",
+      "storageCritical": "Speicher fast voll ({remaining} verbleibend). Aufnahme gestoppt um Datenverlust zu verhindern.",
+      "storageLow": "Speicher wird knapp ({remaining} verbleibend). Erwägen Sie, bald zu stoppen.",
+      "memoryHigh": "Aufnahme-Speichernutzung ist hoch ({size}). Erwägen Sie zu stoppen, um Probleme zu vermeiden.",
+      "memoryCritical": "Aufnahme-Speicher fast voll ({size}). Aufnahme gestoppt um Datenverlust zu verhindern.",
+      "micUnavailable": "Mikrofon nicht verfügbar - nur Tab-Audio wird aufgenommen. Ihre Stimme wird nicht aufgezeichnet."
     }
   },
   "transcription": {

@@ -282,11 +282,12 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
 
       <div className="max-w-4xl mx-auto px-6 pb-8">
         {/* Output Content */}
-        <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 md:p-8">
+        <div className="bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl p-6 md:p-8">
           <OutputRenderer
             content={output.content}
             contentType={output.contentType}
             templateId={output.templateId}
+            analysisId={output.id}
           />
         </div>
       </div>

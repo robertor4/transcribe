@@ -67,7 +67,7 @@ export class AssemblyAIService {
   ): Promise<AssemblyAIResult> {
     try {
       // Extract transcription ID from URL for concise logging
-      const idMatch = audioUrl.match(/transcriptions%2F([^%\/]+)/);
+      const idMatch = audioUrl.match(/transcriptions%2F([^%/]+)/);
       const transcriptionId = idMatch ? idMatch[1] : 'unknown';
       this.logger.log(
         `Starting AssemblyAI transcription for job ${transcriptionId}`,

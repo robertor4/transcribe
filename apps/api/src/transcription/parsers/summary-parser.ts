@@ -97,8 +97,12 @@ function validateString(value: unknown, fallback: string): string {
   if (value === null || value === undefined) {
     return fallback;
   }
-  // Coerce other types to string
-  return String(value).trim();
+  // Coerce other types to string - explicitly handle as primitive or object
+  if (typeof value === 'object') {
+    return JSON.stringify(value).trim();
+  }
+  // Value is a primitive (number, boolean, etc.) - safe to convert
+  return String(value as string | number | boolean).trim();
 }
 
 /**

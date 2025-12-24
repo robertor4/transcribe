@@ -153,7 +153,7 @@ export default function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-800/40 rounded-t-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('email')}
               />
             </div>
@@ -174,7 +174,7 @@ export default function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-800/40 rounded-b-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('password')}
               />
               <button
@@ -231,7 +231,7 @@ export default function LoginForm() {
             <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('alreadyHaveAccount')}</span>
+            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('orContinueWith')}</span>
           </div>
         </div>
 
@@ -243,7 +243,7 @@ export default function LoginForm() {
             className={`w-full flex justify-center items-center px-4 py-3 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
               suggestGoogle
                 ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-purple-900/40 animate-pulse'
-                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                : 'border-gray-300 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-700/50'
             }`}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

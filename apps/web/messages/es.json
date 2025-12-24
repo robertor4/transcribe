@@ -266,7 +266,9 @@
       "tabAudio": "Audio de pestaña de reunión",
       "tabAudioDescription": "Capturar audio de reunión + tu micrófono (Google Meet, Zoom)",
       "tabAudioNotSupported": "La captura de audio de pestaña solo es compatible con navegadores Chrome y Edge. Utilice la grabación por micrófono o cambie a un navegador compatible.",
-      "tabAudioInstructions": "Primero permite el acceso al micrófono (para capturar tu voz), luego selecciona la pestaña con tu reunión y marca 'Compartir audio de pestaña'."
+      "tabAudioInstructions": "Primero permite el acceso al micrófono (para capturar tu voz), luego selecciona la pestaña con tu reunión y marca 'Compartir audio de pestaña'.",
+      "changeSource": "Cambiar fuente",
+      "recordingFrom": "Grabando desde:"
     },
     "status": {
       "ready": "Listo para grabar",
@@ -282,7 +284,9 @@
       "resume": "Reanudar",
       "reset": "Volver a grabar",
       "upload": "Subir y transcribir",
-      "uploading": "Subiendo..."
+      "uploading": "Subiendo...",
+      "cancel": "Cancelar",
+      "dismissWarning": "Cerrar advertencia"
     },
     "preview": {
       "title": "Vista previa de grabación"
@@ -299,7 +303,14 @@
       "uploadFailed": "Error en la carga. Inténtelo de nuevo."
     },
     "warnings": {
-      "title": "Aviso"
+      "title": "Aviso",
+      "durationApproaching": "La grabación se detendrá automáticamente en {minutes} minutos (límite de 3 horas)",
+      "durationLimit": "Duración máxima de grabación alcanzada (3 horas). La grabación ha sido guardada.",
+      "storageCritical": "Almacenamiento casi lleno ({remaining} restante). Grabación detenida para evitar pérdida de datos.",
+      "storageLow": "Almacenamiento bajo ({remaining} restante). Considere detenerse pronto.",
+      "memoryHigh": "Uso de memoria de grabación alto ({size}). Considere detenerse para evitar problemas.",
+      "memoryCritical": "Memoria de grabación casi llena ({size}). Grabación detenida para evitar pérdida de datos.",
+      "micUnavailable": "Micrófono no disponible - grabando solo audio de la pestaña. Su voz no se incluirá."
     }
   },
   "transcription": {

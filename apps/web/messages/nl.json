@@ -266,7 +266,9 @@
       "tabAudio": "Vergadertabblad audio",
       "tabAudioDescription": "Vergadering audio + je microfoon vastleggen (Google Meet, Zoom)",
       "tabAudioNotSupported": "Tabblad-audio-opname wordt alleen ondersteund in Chrome en Edge browsers. Gebruik microfoonopname of schakel over naar een ondersteunde browser.",
-      "tabAudioInstructions": "Sta eerst microfoon toegang toe (om je stem vast te leggen), selecteer dan het browsertabblad met je vergadering en vink 'Tabblad audio delen' aan."
+      "tabAudioInstructions": "Sta eerst microfoon toegang toe (om je stem vast te leggen), selecteer dan het browsertabblad met je vergadering en vink 'Tabblad audio delen' aan.",
+      "changeSource": "Bron wijzigen",
+      "recordingFrom": "Opname van:"
     },
     "status": {
       "ready": "Klaar om op te nemen",
@@ -282,7 +284,9 @@
       "resume": "Hervat",
       "reset": "Opnieuw opnemen",
       "upload": "Uploaden & transcriberen",
-      "uploading": "Uploaden..."
+      "uploading": "Uploaden...",
+      "cancel": "Annuleren",
+      "dismissWarning": "Waarschuwing sluiten"
     },
     "preview": {
       "title": "Opname voorbeeld"
@@ -299,7 +303,14 @@
       "uploadFailed": "Upload mislukt. Probeer opnieuw."
     },
     "warnings": {
-      "title": "Let op"
+      "title": "Let op",
+      "durationApproaching": "Opname stopt automatisch over {minutes} minuten (3 uur limiet)",
+      "durationLimit": "Maximale opnameduur bereikt (3 uur). Opname is opgeslagen.",
+      "storageCritical": "Opslag bijna vol ({remaining} beschikbaar). Opname gestopt om gegevensverlies te voorkomen.",
+      "storageLow": "Opslag raakt vol ({remaining} beschikbaar). Overweeg binnenkort te stoppen.",
+      "memoryHigh": "Opname geheugengebruik is hoog ({size}). Overweeg te stoppen om problemen te voorkomen.",
+      "memoryCritical": "Opname geheugen bijna vol ({size}). Opname gestopt om gegevensverlies te voorkomen.",
+      "micUnavailable": "Microfoon niet beschikbaar - alleen tabgeluid wordt opgenomen. Je stem wordt niet meegenomen."
     }
   },
   "transcription": {

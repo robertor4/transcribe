@@ -6,7 +6,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AlertCircle, Clock, HardDrive, Mic, Monitor, X } from 'lucide-react';
 import type { RecoverableRecording } from '@/utils/recordingStorage';
 
@@ -51,6 +51,17 @@ export function RecordingRecoveryDialog({
   onDiscard,
   onClose,
 }: RecordingRecoveryDialogProps) {
+  // Handle Escape key to close dialog
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && recordings.length > 0) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [recordings.length, onClose]);
+
   if (recordings.length === 0) return null;
 
   return (

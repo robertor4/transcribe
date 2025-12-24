@@ -94,12 +94,15 @@ const GREETINGS = {
 /**
  * Get a creative, personalized greeting that changes daily
  * Uses date-based rotation so greeting stays consistent throughout the day
- * @param name - User's display name or email
+ * @param nameOrEmail - User's display name or email (first name will be extracted)
  * @returns Creative greeting string
  */
-export function getCreativeGreeting(name: string): string {
+export function getCreativeGreeting(nameOrEmail: string): string {
   const hour = new Date().getHours();
   const dayOfMonth = new Date().getDate();
+
+  // Extract first name from display name or email
+  const firstName = getFirstName(nameOrEmail);
 
   // Determine time period
   let period: keyof typeof GREETINGS;
@@ -117,7 +120,7 @@ export function getCreativeGreeting(name: string): string {
   // Use day of month for consistent daily rotation
   const index = dayOfMonth % greetings.length;
 
-  return greetings[index](name);
+  return greetings[index](firstName);
 }
 
 /**

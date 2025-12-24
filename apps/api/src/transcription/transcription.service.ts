@@ -748,20 +748,81 @@ ${fullCustomPrompt}`;
         this.logger.log('Using JSON output format for structured response');
       }
 
+      // GPT-5 models use reasoning tokens that count against max_completion_tokens.
+      // For structured JSON outputs, we use low reasoning effort to prioritize output tokens.
+      // For complex analysis, we use higher token budget to allow for reasoning.
+      const isGpt5Model =
+        selectedModel.startsWith('gpt-5') || selectedModel.startsWith('o1');
+      const maxTokens = useJsonFormat ? 16000 : 8000; // Higher budget for structured outputs
+
       const completion = await this.openai.chat.completions.create({
         model: selectedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
+        max_completion_tokens: maxTokens,
         // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
+        // For GPT-5 structured outputs, use low reasoning effort to leave tokens for the actual output
+        ...(isGpt5Model &&
+          useJsonFormat && {
+            reasoning_effort: 'low' as const,
+          }),
         ...(useJsonFormat && {
           response_format: { type: 'json_object' as const },
         }),
       });
 
-      return completion.choices[0].message.content || '';
+      // Log completion details for debugging
+      const choice = completion.choices[0];
+      if (!choice) {
+        this.logger.error('OpenAI returned no choices in response');
+        throw new Error('OpenAI returned no choices in response');
+      }
+
+      // Check finish reason for issues
+      if (choice.finish_reason === 'content_filter') {
+        this.logger.error(
+          'OpenAI content filter triggered - response was blocked',
+        );
+        throw new Error(
+          'Content was blocked by safety filters. Please review the transcript for sensitive content.',
+        );
+      }
+
+      if (choice.finish_reason === 'length') {
+        this.logger.warn(
+          'OpenAI response truncated due to max tokens - may be incomplete',
+        );
+      }
+
+      const content = choice.message.content;
+      const usage = completion.usage;
+      const reasoningTokens =
+        (usage as { reasoning_tokens?: number })?.reasoning_tokens || 0;
+      const outputTokens = (usage?.completion_tokens || 0) - reasoningTokens;
+
+      if (!content) {
+        this.logger.error(
+          `OpenAI returned empty content. Finish reason: ${choice.finish_reason}, ` +
+            `Model: ${selectedModel}, Reasoning: ${reasoningTokens}, Output: ${outputTokens}, ` +
+            `Total: ${usage?.total_tokens || 'unknown'}`,
+        );
+        // If reasoning consumed all tokens, provide actionable error
+        if (reasoningTokens > 0 && outputTokens === 0) {
+          throw new Error(
+            'AI used all tokens for reasoning with no output. This is a token budget issue.',
+          );
+        }
+      } else {
+        this.logger.log(
+          `OpenAI response received. Length: ${content.length} chars, ` +
+            `Finish reason: ${choice.finish_reason}, Reasoning: ${reasoningTokens}, ` +
+            `Output: ${outputTokens}, Total: ${usage?.total_tokens || 'unknown'}`,
+        );
+      }
+
+      return content || '';
     } catch (error) {
       this.logger.error('Error generating summary:', error);
       throw error;

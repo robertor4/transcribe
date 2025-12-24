@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Trash2, FolderMinus, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/Button';
 
@@ -21,6 +21,17 @@ export function DeleteFolderModal({
 }: DeleteFolderModalProps) {
   const [selectedOption, setSelectedOption] = useState<'move' | 'delete'>('move');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isDeleting) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, isDeleting, onClose]);
 
   if (!isOpen) return null;
 
