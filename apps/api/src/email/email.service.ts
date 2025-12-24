@@ -277,22 +277,6 @@ export class EmailService {
       text-align: center;
       margin-bottom: 30px;
     }
-    .logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 15px;
-    }
-    .logo-text {
-      font-size: 22px;
-      font-weight: 700;
-      color: #8D6AFA;
-      margin: 0;
-    }
-    .share-icon {
-      text-align: center;
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
     h1 {
       color: #111827;
       font-size: 24px;
@@ -643,22 +627,6 @@ export class EmailService {
     .header {
       text-align: center;
       margin-bottom: 30px;
-    }
-    .logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 15px;
-    }
-    .logo-text {
-      font-size: 22px;
-      font-weight: 700;
-      color: #8D6AFA;
-      margin: 0;
-    }
-    .completion-icon {
-      text-align: center;
-      font-size: 48px;
-      margin-bottom: 20px;
     }
     h1 {
       color: #111827;

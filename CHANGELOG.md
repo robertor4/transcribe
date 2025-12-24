@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pill-shaped CTA buttons (border-radius: 9999px) matching brand UI guidelines
   - Added dark mode support with brand-aligned colors (#23194B background, #A78BFA accents)
   - Updated all localized content for 5 languages (en, nl, de, fr, es)
+  - Replaced symbol logo with full Neural Summary logo SVG (includes wordmark)
+  - Removed redundant "Neural Summary" text and emoji icons for cleaner design
   - File: [email.service.ts](apps/api/src/email/email.service.ts)
 - **Dark Mode Refinements**: Softened dark mode colors for reduced eye strain
   - Background changed from pure black (#0a0a0a) to blue-tinted gray (#111827)
