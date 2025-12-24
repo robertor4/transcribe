@@ -416,7 +416,7 @@ export class EmailService {
           <tr>
             <td>
               <div class="header" style="text-align: center; margin-bottom: 30px;">
-                <img src="https://neuralsummary.com/assets/logos/neural-summary-logo.svg" alt="Neural Summary" style="width: 200px; height: auto; margin: 0 auto;" />
+                <img src="https://neuralsummary.com/assets/logos/neural-summary-logo.png" alt="Neural Summary" style="width: 200px; height: auto; margin: 0 auto;" />
               </div>
               <h1 style="color: #111827; font-size: 24px; font-weight: 600; text-align: center; margin: 0 0 10px 0;">Conversation Shared With You</h1>
               <p class="greeting" style="font-size: 16px; color: #6b7280; text-align: center; margin-bottom: 10px;">Hi ${recipientName || 'there'},</p>
@@ -754,7 +754,7 @@ export class EmailService {
           <tr>
             <td>
               <div class="header" style="text-align: center; margin-bottom: 30px;">
-                <img src="https://neuralsummary.com/assets/logos/neural-summary-logo.svg" alt="Neural Summary" style="width: 200px; height: auto; margin: 0 auto;" />
+                <img src="https://neuralsummary.com/assets/logos/neural-summary-logo.png" alt="Neural Summary" style="width: 200px; height: auto; margin: 0 auto;" />
               </div>
               <h1 style="color: #111827; font-size: 24px; font-weight: 600; text-align: center; margin: 0 0 10px 0;">Conversation Ready!</h1>
               <p class="greeting" style="font-size: 16px; color: #6b7280; text-align: center; margin-bottom: 10px;">${getLocalizedContent('greeting')},</p>
