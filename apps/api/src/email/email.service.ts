@@ -119,7 +119,7 @@ export class EmailService {
     }
 
     try {
-      const transcriptionUrl = `${this.frontendUrl}/${user.preferredLanguage || 'en'}/dashboard?transcriptionId=${transcription.id}`;
+      const transcriptionUrl = `${this.frontendUrl}/${user.preferredLanguage || 'en'}/conversation/${transcription.id}`;
       const recipientName = user.displayName || 'there';
       const transcriptionTitle = transcription.title || transcription.fileName;
 

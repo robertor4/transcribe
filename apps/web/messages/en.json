@@ -405,6 +405,7 @@
       "generateNew": "Create New",
       "emptyTitle": "No assets yet",
       "emptyDescription": "Generate your first AI asset",
+      "recordingContext": "Recording Context",
       "metadata": "File Information"
     },
     "panel": {
@@ -420,6 +421,18 @@
     "tabs": {
       "summary": "Summary",
       "transcript": "Transcript"
+    },
+    "translation": {
+      "original": "Original",
+      "viewOriginal": "View original",
+      "availableTranslations": "Available translations",
+      "translateTo": "Translate to",
+      "translating": "Translating...",
+      "translationComplete": "Translation complete",
+      "translationFailed": "Translation failed",
+      "noTranslationsAvailable": "No translations available",
+      "assetsTranslated": "assets translated",
+      "changeLanguage": "Change language"
     }
   },
   "howItWorks": {

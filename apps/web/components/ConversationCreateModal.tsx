@@ -218,7 +218,7 @@ export function ConversationCreateModal({
                   <textarea
                     value={overallContext}
                     onChange={(e) => setOverallContext(e.target.value)}
-                    placeholder="Provide context about the conversation to help improve transcription accuracy and summary quality. For example: meeting type, participants, topics discussed, or any specialized terminology..."
+                    placeholder="e.g., product meeting, sales call, interview..."
                     className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
                     rows={4}
                   />
@@ -228,12 +228,12 @@ export function ConversationCreateModal({
                   <Button variant="ghost" onClick={() => setCurrentStep('capture')}>
                     Back
                   </Button>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => setCurrentStep('processing')}>
+                  <div className="flex gap-3">
+                    <Button variant="brand-outline" onClick={() => setCurrentStep('processing')}>
                       Skip
                     </Button>
-                    <Button variant="primary" onClick={handleContextSubmit}>
-                      Start processing
+                    <Button variant="brand" onClick={handleContextSubmit}>
+                      Continue
                     </Button>
                   </div>
                 </div>

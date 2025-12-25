@@ -405,6 +405,7 @@
       "generateNew": "Neu erstellen",
       "emptyTitle": "Noch keine Assets",
       "emptyDescription": "Generieren Sie Ihr erstes KI-Asset",
+      "recordingContext": "Aufnahmekontext",
       "metadata": "Dateiinformationen"
     },
     "panel": {
@@ -420,6 +421,18 @@
     "tabs": {
       "summary": "Zusammenfassung",
       "transcript": "Transkript"
+    },
+    "translation": {
+      "original": "Original",
+      "viewOriginal": "Original anzeigen",
+      "availableTranslations": "Verfügbare Übersetzungen",
+      "translateTo": "Übersetzen in",
+      "translating": "Übersetze...",
+      "translationComplete": "Übersetzung abgeschlossen",
+      "translationFailed": "Übersetzung fehlgeschlagen",
+      "noTranslationsAvailable": "Keine Übersetzungen verfügbar",
+      "assetsTranslated": "Assets übersetzt",
+      "changeLanguage": "Sprache ändern"
     }
   },
   "howItWorks": {

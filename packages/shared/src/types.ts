@@ -419,9 +419,11 @@ export interface Transcription {
   shareSettings?: ShareSettings;
   sharedAt?: Date;
   sharedWith?: SharedEmailRecord[]; // Email addresses this transcript was shared with (cleared when shareToken is revoked)
-  // Translation fields
-  translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
-  preferredTranslationLanguage?: string; // User's preferred language for this transcription (e.g., 'es', 'fr', or 'original')
+  // Translation fields (V1 - deprecated, use translations collection)
+  translations?: Record<string, TranslationData>; // DEPRECATED: Key is language code (e.g., 'es', 'fr')
+  preferredTranslationLanguage?: string; // DEPRECATED: Use preferredLocale instead
+  // Translation V2: Uses separate 'translations' collection
+  preferredLocale?: string; // User's preferred locale: 'original' | 'es-ES' | 'nl-NL' | etc.
   // Soft delete fields
   deletedAt?: Date; // When the transcription was soft-deleted (null = not deleted)
   // V2: Template selection - controls which analyses are generated
@@ -706,6 +708,169 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   { code: 'pl', name: 'Polish', nativeName: 'Polski' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' }
 ];
+
+// ============================================================
+// TRANSLATION V2 - SEPARATE COLLECTION ARCHITECTURE
+// ============================================================
+
+/**
+ * V2 Supported Locale - Uses ISO country codes for extensibility
+ * Examples: 'en-US', 'es-ES', 'nl-NL', 'pt-BR', 'zh-CN'
+ */
+export interface SupportedLocale {
+  code: string;        // ISO: 'en-US', 'es-ES', 'nl-NL', 'de-DE', 'fr-FR'
+  language: string;    // 'English', 'Spanish', 'Dutch', 'German', 'French'
+  nativeName: string;  // 'English', 'Español', 'Nederlands', 'Deutsch', 'Français'
+  region?: string;     // 'United States', 'Spain', etc.
+}
+
+/**
+ * Supported locales for translation (V2)
+ * Easy to extend with regional variants: pt-BR, zh-CN, zh-TW, etc.
+ */
+export const SUPPORTED_LOCALES: SupportedLocale[] = [
+  { code: 'en-US', language: 'English', nativeName: 'English', region: 'United States' },
+  { code: 'es-ES', language: 'Spanish', nativeName: 'Español', region: 'Spain' },
+  { code: 'nl-NL', language: 'Dutch', nativeName: 'Nederlands', region: 'Netherlands' },
+  { code: 'de-DE', language: 'German', nativeName: 'Deutsch', region: 'Germany' },
+  { code: 'fr-FR', language: 'French', nativeName: 'Français', region: 'France' },
+  { code: 'it-IT', language: 'Italian', nativeName: 'Italiano', region: 'Italy' },
+  { code: 'pt-PT', language: 'Portuguese', nativeName: 'Português', region: 'Portugal' },
+  { code: 'pt-BR', language: 'Portuguese', nativeName: 'Português', region: 'Brazil' },
+  { code: 'zh-CN', language: 'Chinese', nativeName: '简体中文', region: 'China' },
+  { code: 'zh-TW', language: 'Chinese', nativeName: '繁體中文', region: 'Taiwan' },
+  { code: 'ja-JP', language: 'Japanese', nativeName: '日本語', region: 'Japan' },
+  { code: 'ko-KR', language: 'Korean', nativeName: '한국어', region: 'South Korea' },
+  { code: 'ar-SA', language: 'Arabic', nativeName: 'العربية', region: 'Saudi Arabia' },
+  { code: 'ru-RU', language: 'Russian', nativeName: 'Русский', region: 'Russia' },
+  { code: 'hi-IN', language: 'Hindi', nativeName: 'हिन्दी', region: 'India' },
+  { code: 'pl-PL', language: 'Polish', nativeName: 'Polski', region: 'Poland' },
+  { code: 'tr-TR', language: 'Turkish', nativeName: 'Türkçe', region: 'Turkey' },
+];
+
+/**
+ * Get locale by code
+ */
+export function getLocaleByCode(code: string): SupportedLocale | undefined {
+  return SUPPORTED_LOCALES.find(l => l.code === code);
+}
+
+/**
+ * Translated Summary V2 - Mirrors SummaryV2 structure for translated content
+ */
+export interface TranslatedSummaryV2 {
+  type: 'summaryV2';
+  title: string;
+  intro: string;
+  keyPoints: Array<{ topic: string; description: string }>;
+  detailedSections: Array<{ topic: string; content: string }>;
+  decisions?: string[];
+  nextSteps?: string[];
+}
+
+/**
+ * Translated Summary V1 - Simple text for legacy markdown summaries
+ */
+export interface TranslatedSummaryV1 {
+  type: 'summaryV1';
+  text: string;
+}
+
+/**
+ * Translated Analysis - For GeneratedAnalysis content
+ */
+export interface TranslatedAnalysis {
+  type: 'analysis';
+  content: string | StructuredOutput;
+  contentType: 'markdown' | 'structured';
+}
+
+/**
+ * Union of all translated content types
+ */
+export type TranslatedContent =
+  | TranslatedSummaryV2
+  | TranslatedSummaryV1
+  | TranslatedAnalysis;
+
+/**
+ * Translation Document - Stored in 'translations' collection (V2 architecture)
+ *
+ * Each document represents a translation of a specific content item
+ * (either a Summary or an AI Asset) into a target locale.
+ */
+export interface Translation {
+  id: string;
+
+  // Reference to source content
+  sourceType: 'summary' | 'analysis';
+  sourceId: string;           // transcriptionId for summary, analysisId for AI assets
+  transcriptionId: string;    // Always set for querying all translations of a conversation
+  userId: string;             // Owner for access control
+
+  // Target locale
+  localeCode: string;         // ISO: 'es-ES', 'nl-NL', 'de-DE'
+  localeName: string;         // Human-readable: 'Spanish', 'Dutch', 'German'
+
+  // Translated content
+  content: TranslatedContent;
+
+  // Metadata
+  translatedAt: Date;
+  translatedBy: 'gpt-5' | 'gpt-5-mini';
+  tokenUsage?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Status of translation for a specific locale
+ */
+export interface LocaleTranslationStatus {
+  code: string;                  // 'es-ES'
+  name: string;                  // 'Spanish'
+  nativeName: string;            // 'Español'
+  hasSummaryTranslation: boolean;
+  translatedAssetCount: number;
+  totalAssetCount: number;
+  lastTranslatedAt?: Date;
+}
+
+/**
+ * Aggregated translation status for a conversation
+ */
+export interface ConversationTranslations {
+  transcriptionId: string;
+  originalLocale?: string;       // Detected from audio (e.g., 'en-US')
+  availableLocales: LocaleTranslationStatus[];
+  preferredLocale: string;       // 'original' | 'es-ES' | etc.
+}
+
+/**
+ * Request to translate conversation content
+ */
+export interface TranslateConversationRequest {
+  targetLocale: string;          // ISO locale code: 'es-ES', 'nl-NL'
+  translateSummary?: boolean;    // Default: true
+  translateAssets?: boolean;     // Default: true (all existing assets)
+  assetIds?: string[];           // Optional: specific asset IDs to translate
+}
+
+/**
+ * Response with translation results
+ */
+export interface TranslateConversationResponse {
+  transcriptionId: string;
+  localeCode: string;
+  localeName: string;
+  translationsCreated: number;
+  translations: Translation[];
+}
 
 // NEW: Subscription and pricing types
 

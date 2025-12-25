@@ -15,7 +15,7 @@ import {
   ExternalLink,
   Sparkles,
 } from 'lucide-react';
-import type { GeneratedAnalysis, StructuredOutput } from '@transcribe/shared';
+import type { GeneratedAnalysis, StructuredOutput, Translation } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { Button } from '@/components/Button';
 import { formatRelativeTime } from '@/lib/formatters';
@@ -30,6 +30,10 @@ interface AIAssetSlidePanelProps {
   onDelete: (assetId: string) => Promise<void>;
   conversationId: string;
   locale: string;
+  /** Current translation locale ('original' or locale code like 'nl-NL') */
+  currentTranslationLocale?: string;
+  /** Function to get translated content for an asset */
+  getTranslatedContent?: (sourceType: 'summary' | 'analysis', sourceId: string) => Translation | undefined;
 }
 
 // Icon mapping for output types
@@ -62,6 +66,8 @@ export function AIAssetSlidePanel({
   onDelete,
   conversationId,
   locale,
+  currentTranslationLocale = 'original',
+  getTranslatedContent,
 }: AIAssetSlidePanelProps) {
   const t = useTranslations('aiAssets');
   const [copied, setCopied] = useState(false);
@@ -69,6 +75,20 @@ export function AIAssetSlidePanel({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Get translated content if viewing a translation
+  const assetTranslation = asset && currentTranslationLocale !== 'original' && getTranslatedContent
+    ? getTranslatedContent('analysis', asset.id)
+    : null;
+
+  // Determine content to display (translated or original)
+  const displayContent = assetTranslation?.content.type === 'analysis'
+    ? assetTranslation.content.content
+    : asset?.content;
+
+  const displayContentType = assetTranslation?.content.type === 'analysis'
+    ? assetTranslation.content.contentType
+    : asset?.contentType;
 
   // Handle client-side mounting for portal
   useEffect(() => {
@@ -93,14 +113,14 @@ export function AIAssetSlidePanel({
 
   // Copy content to clipboard as rich text (HTML) with plain text fallback
   const handleCopy = async () => {
-    if (!asset) return;
+    if (!asset || !displayContent) return;
 
     try {
-      if (typeof asset.content === 'string') {
-        await navigator.clipboard.writeText(asset.content);
+      if (typeof displayContent === 'string') {
+        await navigator.clipboard.writeText(displayContent);
       } else {
-        const html = structuredOutputToHtml(asset.content as StructuredOutput);
-        const plainText = structuredOutputToMarkdown(asset.content as StructuredOutput);
+        const html = structuredOutputToHtml(displayContent as StructuredOutput);
+        const plainText = structuredOutputToMarkdown(displayContent as StructuredOutput);
 
         await navigator.clipboard.write([
           new ClipboardItem({
@@ -191,12 +211,14 @@ export function AIAssetSlidePanel({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 scrollbar-subtle">
           <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-5">
-            <OutputRenderer
-              content={asset.content}
-              contentType={asset.contentType}
-              templateId={asset.templateId}
-              analysisId={asset.id}
-            />
+            {displayContent && (
+              <OutputRenderer
+                content={displayContent}
+                contentType={displayContentType || 'markdown'}
+                templateId={asset.templateId}
+                analysisId={asset.id}
+              />
+            )}
           </div>
         </div>
 

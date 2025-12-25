@@ -24,8 +24,10 @@ import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { InlineTranscript } from '@/components/InlineTranscript';
 import { DeleteConversationButton } from '@/components/DeleteConversationButton';
 import { ShareModal } from '@/components/ShareModal';
+import { TranslationDropdown } from '@/components/TranslationDropdown';
 import { useConversation } from '@/hooks/useConversation';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
+import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 import { updateConversationTitle } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -61,6 +63,16 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const { folders } = useFoldersContext();
   const { refreshRecentlyOpened } = useConversationsContext();
   const tConversation = useTranslations('conversation');
+
+  // Translation state
+  const {
+    status: translationStatus,
+    isTranslating,
+    currentLocale,
+    translate,
+    setLocale,
+    getTranslatedContent,
+  } = useConversationTranslations(conversationId);
 
   // Slide panel for AI Assets
   const {
@@ -191,8 +203,34 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const handleCopySummary = async () => {
     if (!conversation) return;
 
-    const summaryV2 = conversation.source.summary.summaryV2;
-    const summaryText = conversation.source.summary.text;
+    // Check if viewing a translation
+    const summaryTranslation = currentLocale !== 'original'
+      ? getTranslatedContent('summary', conversationId)
+      : null;
+
+    // Use translated content if available, otherwise use original
+    let summaryV2 = conversation.source.summary.summaryV2;
+    let summaryText = conversation.source.summary.text;
+
+    if (summaryTranslation) {
+      if (summaryTranslation.content.type === 'summaryV2') {
+        const translated = summaryTranslation.content;
+        summaryV2 = {
+          version: 2,
+          title: translated.title,
+          intro: translated.intro,
+          keyPoints: translated.keyPoints,
+          detailedSections: translated.detailedSections,
+          decisions: translated.decisions,
+          nextSteps: translated.nextSteps,
+          generatedAt: summaryTranslation.translatedAt,
+        };
+        summaryText = '';
+      } else if (summaryTranslation.content.type === 'summaryV1') {
+        summaryV2 = undefined;
+        summaryText = summaryTranslation.content.text;
+      }
+    }
 
     let html = '';
     let plainText = '';
@@ -354,6 +392,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     createdAt: conversation.createdAt,
     status: conversation.status,
     speakers: conversation.source.transcript.speakers,
+    context: conversation.context,
   };
 
   return (
@@ -418,6 +457,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <TranslationDropdown
+                    status={translationStatus}
+                    currentLocale={currentLocale}
+                    isTranslating={isTranslating}
+                    onSelectLocale={setLocale}
+                    onTranslate={translate}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
@@ -472,10 +518,47 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             {activeTab === 'summary' && (
               <section id="summary" className="scroll-mt-16">
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
-                  <SummaryRenderer
-                    content={conversation.source.summary.text}
-                    summaryV2={conversation.source.summary.summaryV2}
-                  />
+                  (() => {
+                    // Check if viewing a translation
+                    const summaryTranslation = currentLocale !== 'original'
+                      ? getTranslatedContent('summary', conversationId)
+                      : null;
+
+                    if (summaryTranslation && summaryTranslation.content.type === 'summaryV2') {
+                      // Display translated structured summary
+                      const translated = summaryTranslation.content;
+                      return (
+                        <SummaryRenderer
+                          content=""
+                          summaryV2={{
+                            version: 2,
+                            title: translated.title,
+                            intro: translated.intro,
+                            keyPoints: translated.keyPoints,
+                            detailedSections: translated.detailedSections,
+                            decisions: translated.decisions,
+                            nextSteps: translated.nextSteps,
+                            generatedAt: summaryTranslation.translatedAt,
+                          }}
+                        />
+                      );
+                    } else if (summaryTranslation && summaryTranslation.content.type === 'summaryV1') {
+                      // Display translated markdown summary
+                      return (
+                        <SummaryRenderer
+                          content={summaryTranslation.content.text}
+                        />
+                      );
+                    }
+
+                    // Display original summary
+                    return (
+                      <SummaryRenderer
+                        content={conversation.source.summary.text}
+                        summaryV2={conversation.source.summary.summaryV2}
+                      />
+                    );
+                  })()
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <p>Summary is being generated...</p>
@@ -519,6 +602,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onDelete={handleDeleteAsset}
         conversationId={conversationId}
         locale={locale}
+        currentTranslationLocale={currentLocale}
+        getTranslatedContent={getTranslatedContent}
       />
 
       {/* Mobile Asset Sheet */}

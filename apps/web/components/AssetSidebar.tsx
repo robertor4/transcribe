@@ -11,6 +11,7 @@ import {
   Calendar,
   Users as UsersIcon,
   Loader2,
+  MessageSquareText,
 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
@@ -23,6 +24,7 @@ interface ConversationMetadata {
   createdAt: Date;
   status: 'pending' | 'processing' | 'ready' | 'failed';
   speakers?: number;
+  context?: string;
 }
 
 interface AssetSidebarProps {
@@ -44,6 +46,7 @@ export function AssetSidebar({
   selectedAssetId,
   metadata,
 }: AssetSidebarProps) {
+  const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
   const t = useTranslations('aiAssets');
 
@@ -117,6 +120,34 @@ export function AssetSidebar({
           </div>
         )}
       </div>
+
+      {/* Collapsible Recording Context Section */}
+      {metadata.context && (
+        <div className="border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setIsContextExpanded(!isContextExpanded)}
+            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+          >
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide flex items-center gap-1.5">
+              <MessageSquareText className="w-3.5 h-3.5" />
+              {t('sidebar.recordingContext')}
+            </span>
+            {isContextExpanded ? (
+              <ChevronUp className="w-4 h-4 text-gray-500" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            )}
+          </button>
+
+          {isContextExpanded && (
+            <div className="px-4 pb-4">
+              <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                {metadata.context}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Collapsible Metadata Section */}
       <div className="border-t border-gray-200 dark:border-gray-700">

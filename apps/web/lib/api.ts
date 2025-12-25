@@ -9,6 +9,9 @@ import {
   CorrectionApplyResponse,
   RoutingPlan,
   BlogHeroImage,
+  Translation,
+  ConversationTranslations,
+  TranslateConversationResponse,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -358,6 +361,73 @@ export const folderApi = {
 
   getTranscriptions: async (id: string): Promise<ApiResponse<unknown[]>> => {
     return api.get(`/folders/${id}/transcriptions`);
+  },
+};
+
+// Translation API (V2 - uses separate translations collection)
+export const translationApi = {
+  /**
+   * Translate conversation content to target locale
+   */
+  translate: async (
+    transcriptionId: string,
+    targetLocale: string,
+    options?: { translateSummary?: boolean; translateAssets?: boolean; assetIds?: string[] }
+  ): Promise<ApiResponse<TranslateConversationResponse>> => {
+    return api.post(`/translations/${transcriptionId}`, {
+      targetLocale,
+      ...options,
+    });
+  },
+
+  /**
+   * Get translation status for a conversation
+   */
+  getStatus: async (transcriptionId: string): Promise<ApiResponse<ConversationTranslations>> => {
+    return api.get(`/translations/${transcriptionId}/status`);
+  },
+
+  /**
+   * Get all translations for a specific locale
+   */
+  getForLocale: async (transcriptionId: string, localeCode: string): Promise<ApiResponse<Translation[]>> => {
+    return api.get(`/translations/${transcriptionId}/${localeCode}`);
+  },
+
+  /**
+   * Delete all translations for a locale
+   */
+  deleteForLocale: async (transcriptionId: string, localeCode: string): Promise<ApiResponse<{ deletedCount: number }>> => {
+    return api.delete(`/translations/${transcriptionId}/${localeCode}`);
+  },
+
+  /**
+   * Update locale preference for a conversation
+   */
+  updatePreference: async (transcriptionId: string, localeCode: string): Promise<ApiResponse> => {
+    return api.patch(`/translations/${transcriptionId}/preference`, { localeCode });
+  },
+
+  // ============================================================
+  // PUBLIC ENDPOINTS (FOR SHARED CONVERSATIONS)
+  // ============================================================
+
+  /**
+   * Get translation status for a shared conversation (no auth required)
+   */
+  getSharedStatus: async (shareToken: string, transcriptionId: string): Promise<ApiResponse<ConversationTranslations>> => {
+    return api.get(`/translations/shared/${shareToken}/status?transcriptionId=${transcriptionId}`);
+  },
+
+  /**
+   * Get translations for a specific locale (shared conversation, no auth required)
+   */
+  getSharedForLocale: async (
+    shareToken: string,
+    localeCode: string,
+    transcriptionId: string
+  ): Promise<ApiResponse<Translation[]>> => {
+    return api.get(`/translations/shared/${shareToken}/${localeCode}?transcriptionId=${transcriptionId}`);
   },
 };
 

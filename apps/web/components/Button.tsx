@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import Link from 'next/link';
 
 interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
-  variant?: 'primary' | 'secondary' | 'brand' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'brand' | 'brand-outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   children?: ReactNode;
@@ -55,6 +55,9 @@ export function Button({
 
     // Brand purple - special CTAs (landing page brand)
     brand: 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] border-2 border-transparent shadow-md hover:scale-105',
+
+    // Brand purple outline - secondary brand actions
+    'brand-outline': 'bg-transparent text-[#8D6AFA] border-2 border-[#8D6AFA] hover:bg-[#8D6AFA] hover:text-white hover:scale-105',
 
     // Transparent with hover - subtle actions (new for dashboard)
     ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-transparent',

@@ -405,6 +405,7 @@
       "generateNew": "Nieuwe maken",
       "emptyTitle": "Nog geen assets",
       "emptyDescription": "Genereer je eerste AI asset",
+      "recordingContext": "Opnamecontext",
       "metadata": "Bestandsinformatie"
     },
     "panel": {
@@ -420,6 +421,18 @@
     "tabs": {
       "summary": "Samenvatting",
       "transcript": "Transcript"
+    },
+    "translation": {
+      "original": "Origineel",
+      "viewOriginal": "Bekijk origineel",
+      "availableTranslations": "Beschikbare vertalingen",
+      "translateTo": "Vertalen naar",
+      "translating": "Bezig met vertalen...",
+      "translationComplete": "Vertaling voltooid",
+      "translationFailed": "Vertaling mislukt",
+      "noTranslationsAvailable": "Geen vertalingen beschikbaar",
+      "assetsTranslated": "items vertaald",
+      "changeLanguage": "Taal wijzigen"
     }
   },
   "howItWorks": {

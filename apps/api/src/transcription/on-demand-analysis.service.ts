@@ -19,6 +19,7 @@ import { AnalysisTemplateService } from './analysis-template.service';
 import { ImagePromptService } from './image-prompt.service';
 import { ReplicateService } from '../replicate/replicate.service';
 import { EmailService } from '../email/email.service';
+import { TranslationService } from '../translation/translation.service';
 
 // Email template type IDs
 const EMAIL_TEMPLATE_IDS = [
@@ -51,6 +52,7 @@ export class OnDemandAnalysisService {
     private imagePromptService: ImagePromptService,
     private replicateService: ReplicateService,
     private emailService: EmailService,
+    private translationService: TranslationService,
   ) {}
 
   /**
@@ -231,7 +233,19 @@ export class OnDemandAnalysisService {
 
       this.logger.log(`Analysis saved with ID: ${analysisId}`);
 
-      return { ...analysis, id: analysisId };
+      const savedAnalysis = { ...analysis, id: analysisId };
+
+      // 8. Auto-translate to existing translation locales (fire-and-forget)
+      // This runs in the background and doesn't block the response
+      this.translationService
+        .translateNewAsset(savedAnalysis, transcriptionId, userId)
+        .catch((err) => {
+          this.logger.error(
+            `Background auto-translation failed for asset ${analysisId}: ${err.message}`,
+          );
+        });
+
+      return savedAnalysis;
     } catch (error) {
       this.logger.error(
         `Failed to generate analysis: ${error.message}`,

@@ -16,6 +16,7 @@ import { UsageModule } from './usage/usage.module';
 import { AdminModule } from './admin/admin.module';
 import { QueueModule } from './queue/queue.module';
 import { FolderModule } from './folder/folder.module';
+import { TranslationModule } from './translation/translation.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { FolderModule } from './folder/folder.module';
     UsageModule,
     AdminModule,
     FolderModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [

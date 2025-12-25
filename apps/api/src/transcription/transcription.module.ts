@@ -16,6 +16,7 @@ import { EmailModule } from '../email/email.module';
 import { UserModule } from '../user/user.module';
 import { UsageModule } from '../usage/usage.module';
 import { ReplicateModule } from '../replicate/replicate.module';
+import { TranslationModule } from '../translation/translation.module';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
@@ -29,6 +30,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     UserModule,
     UsageModule,
     ReplicateModule,
+    TranslationModule,
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),

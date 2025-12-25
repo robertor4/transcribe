@@ -20,6 +20,8 @@ import {
   Check,
   Sparkles,
 } from 'lucide-react';
+import { TranslationDropdown } from '@/components/TranslationDropdown';
+import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 
 export default function SharedTranscriptionPage() {
   const params = useParams();
@@ -49,6 +51,18 @@ export default function SharedTranscriptionPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [activeTab, setActiveTab] = useState<'summary' | 'transcript' | 'ai-assets'>('summary');
+
+  // Translation state for shared view (read-only)
+  const {
+    status: translationStatus,
+    isTranslating,
+    currentLocale,
+    setLocale,
+    getTranslatedContent,
+  } = useConversationTranslations(transcription?.id, {
+    isShared: true,
+    shareToken,
+  });
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
@@ -146,8 +160,34 @@ export default function SharedTranscriptionPage() {
   const handleCopySummary = async () => {
     if (!transcription) return;
 
-    const summaryV2 = transcription.summaryV2;
-    const summaryText = transcription.analyses?.summary || '';
+    // Check if viewing a translation
+    const summaryTranslation = currentLocale !== 'original'
+      ? getTranslatedContent('summary', transcription.id)
+      : null;
+
+    // Use translated content if available, otherwise use original
+    let summaryV2 = transcription.summaryV2;
+    let summaryText = transcription.analyses?.summary || '';
+
+    if (summaryTranslation) {
+      if (summaryTranslation.content.type === 'summaryV2') {
+        const translated = summaryTranslation.content;
+        summaryV2 = {
+          version: 2,
+          title: translated.title,
+          intro: translated.intro,
+          keyPoints: translated.keyPoints,
+          detailedSections: translated.detailedSections,
+          decisions: translated.decisions,
+          nextSteps: translated.nextSteps,
+          generatedAt: summaryTranslation.translatedAt,
+        };
+        summaryText = '';
+      } else if (summaryTranslation.content.type === 'summaryV1') {
+        summaryV2 = undefined;
+        summaryText = summaryTranslation.content.text;
+      }
+    }
 
     let textToCopy = '';
 
@@ -285,9 +325,21 @@ export default function SharedTranscriptionPage() {
               alt="Neural Summary"
               className="h-8 w-auto"
             />
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full text-xs font-medium text-[#8D6AFA]">
-              <Lock className="w-3.5 h-3.5" />
-              {t('readOnly')}
+            <div className="flex items-center gap-3">
+              {/* Translation dropdown (read-only for shared view) */}
+              {translationStatus && translationStatus.availableLocales.length > 0 && (
+                <TranslationDropdown
+                  status={translationStatus}
+                  currentLocale={currentLocale}
+                  isTranslating={isTranslating}
+                  onSelectLocale={setLocale}
+                  readOnly
+                />
+              )}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full text-xs font-medium text-[#8D6AFA]">
+                <Lock className="w-3.5 h-3.5" />
+                {t('readOnly')}
+              </div>
             </div>
           </div>
 
@@ -379,10 +431,47 @@ export default function SharedTranscriptionPage() {
                     {copiedSummary ? 'Copied!' : 'Copy'}
                   </Button>
                 </div>
-                <SummaryRenderer
-                  content={transcription.analyses?.summary || ''}
-                  summaryV2={transcription.summaryV2}
-                />
+                {(() => {
+                  // Check if viewing a translation
+                  const summaryTranslation = currentLocale !== 'original'
+                    ? getTranslatedContent('summary', transcription.id)
+                    : null;
+
+                  if (summaryTranslation && summaryTranslation.content.type === 'summaryV2') {
+                    // Display translated structured summary
+                    const translated = summaryTranslation.content;
+                    return (
+                      <SummaryRenderer
+                        content=""
+                        summaryV2={{
+                          version: 2,
+                          title: translated.title,
+                          intro: translated.intro,
+                          keyPoints: translated.keyPoints,
+                          detailedSections: translated.detailedSections,
+                          decisions: translated.decisions,
+                          nextSteps: translated.nextSteps,
+                          generatedAt: summaryTranslation.translatedAt,
+                        }}
+                      />
+                    );
+                  } else if (summaryTranslation && summaryTranslation.content.type === 'summaryV1') {
+                    // Display translated markdown summary
+                    return (
+                      <SummaryRenderer
+                        content={summaryTranslation.content.text}
+                      />
+                    );
+                  }
+
+                  // Display original summary
+                  return (
+                    <SummaryRenderer
+                      content={transcription.analyses?.summary || ''}
+                      summaryV2={transcription.summaryV2}
+                    />
+                  );
+                })()}
               </div>
             )}
 

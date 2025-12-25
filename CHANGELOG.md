@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **AI Asset Translation System**: Full translation support for summaries and AI assets
+  - New `TranslationModule` with `TranslationService` and `TranslationController` for backend translation via OpenAI
+  - New `translations` Firestore collection to store translated content
+  - `TranslationDropdown` component for selecting translation locale (supports 30+ languages)
+  - `useConversationTranslations` hook for managing translation state and caching
+  - Auto-translation of new AI assets when existing translations exist for the conversation
+  - Translation support on shared conversation pages (read-only viewing of existing translations)
+  - Files: [translation.module.ts](apps/api/src/translation/translation.module.ts), [translation.service.ts](apps/api/src/translation/translation.service.ts), [translation.controller.ts](apps/api/src/translation/translation.controller.ts), [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [TranslationDropdown.tsx](apps/web/components/TranslationDropdown.tsx), [useConversationTranslations.ts](apps/web/hooks/useConversationTranslations.ts)
+- **Recording Context in AI Assets Sidebar**: Context notes now displayed in collapsible section
+  - Shows the user-provided context that was used to guide AI analysis
+  - New "Recording Context" section with MessageSquareText icon
+  - File: [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx)
+- **Brand Outline Button Variant**: New `brand-outline` variant for Button component
+  - Purple outline with transparent background, fills on hover
+  - Matches brand styling for secondary actions
+  - File: [Button.tsx](apps/web/components/Button.tsx)
+
+### Fixed
+- **Email Notification Link**: "View Your Conversation" link now goes directly to conversation page
+  - Previously linked to `/dashboard?transcriptionId=...` which didn't navigate to the conversation
+  - Now correctly links to `/conversation/{id}` for direct access
+  - File: [email.service.ts](apps/api/src/email/email.service.ts)
+
+### Changed
+- **Conversation Create Modal Context Field**: Improved context/description textarea
+  - Increased to 4 rows for better visibility of longer context
+  - Enhanced placeholder text with specific examples
+  - File: [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+
 - **Folder Page AI Assets Sidebar**: Redesigned folder view with AI assets panel in right sidebar
   - Replaces inline "Recent Outputs" section with a dedicated sidebar showing assets from all conversations in the folder
   - New `FolderAssetCard` component with icon mapping by template type, content preview, and conversation title

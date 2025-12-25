@@ -405,6 +405,7 @@
       "generateNew": "Crear nuevo",
       "emptyTitle": "Sin assets",
       "emptyDescription": "Genera tu primer asset de IA",
+      "recordingContext": "Contexto de grabación",
       "metadata": "Información del archivo"
     },
     "panel": {
@@ -420,6 +421,18 @@
     "tabs": {
       "summary": "Resumen",
       "transcript": "Transcripción"
+    },
+    "translation": {
+      "original": "Original",
+      "viewOriginal": "Ver original",
+      "availableTranslations": "Traducciones disponibles",
+      "translateTo": "Traducir a",
+      "translating": "Traduciendo...",
+      "translationComplete": "Traducción completada",
+      "translationFailed": "Traducción fallida",
+      "noTranslationsAvailable": "No hay traducciones disponibles",
+      "assetsTranslated": "elementos traducidos",
+      "changeLanguage": "Cambiar idioma"
     }
   },
   "howItWorks": {
