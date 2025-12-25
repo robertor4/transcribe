@@ -150,7 +150,13 @@
     "importAudioDesc": "Téléverser fichier audio/vidéo",
     "recordAudioDesc": "Enregistrer une conversation en direct",
     "recordAudioInfo": "Démarrez une session d'enregistrement en direct. Vous pouvez choisir d'enregistrer depuis votre microphone ou capturer l'audio d'un onglet de navigateur (pour les appels vidéo).",
-    "importAudioInfo": "Importez un fichier audio ou vidéo existant depuis votre appareil. Formats pris en charge : MP3, M4A, WAV, MP4, MOV, WebM. La taille maximale du fichier dépend de votre abonnement."
+    "importAudioInfo": "Importez un fichier audio ou vidéo existant depuis votre appareil. Formats pris en charge : MP3, M4A, WAV, MP4, MOV, WebM. La taille maximale du fichier dépend de votre abonnement.",
+    "recordRoom": "Enregistrer la pièce",
+    "recordRoomDesc": "Réunions, mémos vocaux, entretiens",
+    "recordTab": "Enregistrer l'onglet",
+    "recordTabDesc": "Google Meet, Zoom (web), vidéos YouTube",
+    "uploadFileLabel": "Téléverser fichier",
+    "uploadFileDesc": "Fichiers audio ou vidéo de toute source"
   },
   "upload": {
     "title": "Téléverser un fichier audio",

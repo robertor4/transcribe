@@ -150,7 +150,13 @@
     "importAudioDesc": "Upload audio/video file",
     "recordAudioDesc": "Record live conversation",
     "recordAudioInfo": "Start a live recording session. You can choose to record from your microphone or capture audio from a browser tab (for video calls).",
-    "importAudioInfo": "Import an existing audio or video file from your device. Supported formats: MP3, M4A, WAV, MP4, MOV, WebM. Maximum file size depends on your subscription plan."
+    "importAudioInfo": "Import an existing audio or video file from your device. Supported formats: MP3, M4A, WAV, MP4, MOV, WebM. Maximum file size depends on your subscription plan.",
+    "recordRoom": "Record the room",
+    "recordRoomDesc": "In-person meetings, voice memos, interviews",
+    "recordTab": "Record browser tab",
+    "recordTabDesc": "Google Meet, Zoom (web), YouTube videos",
+    "uploadFileLabel": "Upload file",
+    "uploadFileDesc": "Audio or video files from any source"
   },
   "upload": {
     "title": "Upload Audio File",

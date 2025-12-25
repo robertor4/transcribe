@@ -27,6 +27,8 @@ interface SimpleAudioRecorderProps {
   onCancel: () => void;
   /** Called when actual recording state changes (recording/paused vs idle/stopped) */
   onRecordingStateChange?: (isRecording: boolean) => void;
+  /** When set, skips source selection and starts with this source */
+  initialSource?: RecordingSource | null;
 }
 
 /**
@@ -50,12 +52,14 @@ export function SimpleAudioRecorder({
   onComplete,
   onCancel,
   onRecordingStateChange,
+  initialSource,
 }: SimpleAudioRecorderProps) {
   const t = useTranslations('recording');
   const { trackEvent } = useAnalytics();
 
   // Recording source state (declared early for analytics callbacks)
-  const [selectedSource, setSelectedSource] = useState<RecordingSource>('microphone');
+  // If initialSource is provided, use it and skip source selection
+  const [selectedSource, setSelectedSource] = useState<RecordingSource>(initialSource || 'microphone');
 
   const {
     state,
@@ -99,7 +103,8 @@ export function SimpleAudioRecorder({
     },
   });
 
-  const [showSourceSelector, setShowSourceSelector] = useState(true);
+  // Skip source selection if initialSource was provided
+  const [showSourceSelector, setShowSourceSelector] = useState(!initialSource);
 
   // Tab audio options
   const [includeMicWithTabAudio, setIncludeMicWithTabAudio] = useState(true);
@@ -314,11 +319,18 @@ export function SimpleAudioRecorder({
   }, []);
 
   // Auto-start mic preview when device is selected and we're on source selection screen
+  // OR when we came directly to microphone recording (initialSource === 'microphone')
   useEffect(() => {
-    if (showSourceSelector && state === 'idle' && selectedDeviceId && !isTestingMic) {
+    const shouldAutoStart =
+      (showSourceSelector || initialSource === 'microphone') &&
+      state === 'idle' &&
+      selectedDeviceId &&
+      !isTestingMic;
+
+    if (shouldAutoStart) {
       startMicPreview();
     }
-  }, [showSourceSelector, state, selectedDeviceId, isTestingMic, startMicPreview]);
+  }, [showSourceSelector, initialSource, state, selectedDeviceId, isTestingMic, startMicPreview]);
 
   // Cleanup preview stream on unmount
   useEffect(() => {
@@ -355,11 +367,17 @@ export function SimpleAudioRecorder({
     return () => clearInterval(interval);
   }, [state]);
 
-  // Back button handler - go back to source selection
+  // Back button handler - go back to source selection or cancel if we came from direct action
   const handleBackToSourceSelection = useCallback(() => {
     stopMicPreview();
-    setShowSourceSelector(true);
-  }, [stopMicPreview]);
+    if (initialSource) {
+      // If we came from a direct action (e.g., "Record the room"), go back to cancel (close modal)
+      onCancel();
+    } else {
+      // If we came from source selection, go back to it
+      setShowSourceSelector(true);
+    }
+  }, [stopMicPreview, initialSource, onCancel]);
 
   const handleSourceSelect = useCallback((source: RecordingSource) => {
     setSelectedSource(source);
@@ -383,8 +401,12 @@ export function SimpleAudioRecorder({
 
   const handleReRecord = useCallback(() => {
     reset();
-    setShowSourceSelector(true);
-  }, [reset]);
+    // If we came from a direct action, stay on the recording interface (don't show source selector)
+    // Otherwise, go back to source selection
+    if (!initialSource) {
+      setShowSourceSelector(true);
+    }
+  }, [reset, initialSource]);
 
   const handleCancelPreview = useCallback(() => {
     reset();
@@ -700,6 +722,67 @@ export function SimpleAudioRecorder({
           </div>
         </div>
 
+        {/* Inline microphone selector (shown when coming from direct microphone action) */}
+        {initialSource === 'microphone' && state === 'idle' && audioDevices.length > 1 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Volume2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-xs text-gray-600 dark:text-gray-400">
+                {isTestingMic ? 'Input level' : 'Initializing...'}
+              </span>
+            </div>
+            <div className="flex items-center gap-[3px] mb-4">
+              {Array.from({ length: 12 }).map((_, index) => {
+                const threshold = (index + 1) * 8.33;
+                const isActive = isTestingMic && displayedAudioLevel >= threshold;
+                return (
+                  <div
+                    key={index}
+                    className={`h-3 flex-1 rounded-sm transition-colors duration-75 ${
+                      isActive
+                        ? 'bg-[#8D6AFA]'
+                        : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  />
+                );
+              })}
+            </div>
+            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
+              Select microphone
+            </label>
+            <div className="relative">
+              <select
+                value={selectedDeviceId}
+                onChange={(e) => {
+                  if (isTestingMic) {
+                    stopMicPreview();
+                  }
+                  setSelectedDeviceId(e.target.value);
+                  setHasDetectedAudio(false);
+                  setShowNoAudioWarning(false);
+                }}
+                className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer"
+              >
+                {audioDevices.map((device) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            </div>
+            {/* No audio detected warning */}
+            {showNoAudioWarning && !hasDetectedAudio && (
+              <div className="flex items-center gap-2 mt-2 text-amber-600 dark:text-amber-400">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs">
+                  No audio detected. Check your microphone is working and not muted.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Waveform area - maintains consistent height across states */}
         {(state === 'idle' || state === 'recording' || state === 'paused') && (
           <div className="mb-8">
@@ -785,7 +868,7 @@ export function SimpleAudioRecorder({
       {state === 'idle' && (
         <div className="flex justify-start">
           <Button variant="ghost" onClick={handleBackToSourceSelection}>
-            ← {t('source.changeSource')}
+            ← {initialSource ? t('controls.cancel') : t('source.changeSource')}
           </Button>
         </div>
       )}

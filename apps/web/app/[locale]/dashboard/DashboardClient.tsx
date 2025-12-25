@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   Mic,
+  Monitor,
   Upload,
   Loader2,
 } from 'lucide-react';
@@ -19,27 +20,34 @@ import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { getCreativeGreeting, getMilestoneMessage } from '@/lib/userHelpers';
+import { useTranslations } from 'next-intl';
 import type { LucideIcon } from 'lucide-react';
 
 // Quick create button config - defined outside component to avoid recreation
 interface QuickCreateButton {
   Icon: LucideIcon;
-  label: string;
-  desc: string;
-  action: 'record' | 'upload';
+  labelKey: 'recordRoom' | 'recordTab' | 'uploadFileLabel';
+  descKey: 'recordRoomDesc' | 'recordTabDesc' | 'uploadFileDesc';
+  action: 'record-microphone' | 'record-tab-audio' | 'upload';
 }
 
 const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
   {
     Icon: Mic,
-    label: 'Record audio',
-    desc: 'Start live conversation',
-    action: 'record',
+    labelKey: 'recordRoom',
+    descKey: 'recordRoomDesc',
+    action: 'record-microphone',
+  },
+  {
+    Icon: Monitor,
+    labelKey: 'recordTab',
+    descKey: 'recordTabDesc',
+    action: 'record-tab-audio',
   },
   {
     Icon: Upload,
-    label: 'Import audio',
-    desc: 'Upload audio/video file',
+    labelKey: 'uploadFileLabel',
+    descKey: 'uploadFileDesc',
     action: 'upload',
   },
 ];
@@ -47,7 +55,7 @@ const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
 interface CreateModalConfig {
   isOpen: boolean;
   initialStep?: CreateStep;
-  uploadMethod?: 'file' | 'record' | null;
+  uploadMethod?: 'file' | 'record' | 'record-microphone' | 'record-tab-audio' | null;
 }
 
 export function DashboardClient() {
@@ -56,6 +64,7 @@ export function DashboardClient() {
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) || 'en';
   const { user } = useAuth();
+  const t = useTranslations('dashboard');
 
   const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversationsContext();
   const { folders, isLoading: foldersLoading, createFolder, moveToFolder } = useFoldersContext();
@@ -126,15 +135,23 @@ export function DashboardClient() {
   );
 
   // Context-aware button handlers - memoized to prevent re-renders
-  const handleRecordAudio = useCallback(() => {
+  const handleRecordMicrophone = useCallback(() => {
     setCreateModalConfig({
       isOpen: true,
       initialStep: 'capture',
-      uploadMethod: 'record',
+      uploadMethod: 'record-microphone',
     });
   }, []);
 
-  const handleImportAudio = useCallback(() => {
+  const handleRecordTabAudio = useCallback(() => {
+    setCreateModalConfig({
+      isOpen: true,
+      initialStep: 'capture',
+      uploadMethod: 'record-tab-audio',
+    });
+  }, []);
+
+  const handleUploadFile = useCallback(() => {
     setCreateModalConfig({
       isOpen: true,
       initialStep: 'capture',
@@ -150,9 +167,13 @@ export function DashboardClient() {
   }, []);
 
   // Memoized handler getter for quick create buttons
-  const getButtonHandler = useCallback((action: 'record' | 'upload') => {
-    return action === 'record' ? handleRecordAudio : handleImportAudio;
-  }, [handleRecordAudio, handleImportAudio]);
+  const getButtonHandler = useCallback((action: 'record-microphone' | 'record-tab-audio' | 'upload') => {
+    switch (action) {
+      case 'record-microphone': return handleRecordMicrophone;
+      case 'record-tab-audio': return handleRecordTabAudio;
+      case 'upload': return handleUploadFile;
+    }
+  }, [handleRecordMicrophone, handleRecordTabAudio, handleUploadFile]);
 
   const isLoading = conversationsLoading || foldersLoading;
 
@@ -173,12 +194,12 @@ export function DashboardClient() {
 
             {/* Quick Create Buttons */}
             <section className="mb-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl">
                 {QUICK_CREATE_BUTTONS.map((type) => (
                   <button
-                    key={type.label}
+                    key={type.action}
                     onClick={getButtonHandler(type.action)}
-                    aria-label={`Create ${type.label}: ${type.desc}`}
+                    aria-label={`Create ${t(type.labelKey)}: ${t(type.descKey)}`}
                     className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
@@ -186,10 +207,10 @@ export function DashboardClient() {
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
-                        {type.label}
+                        {t(type.labelKey)}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {type.desc}
+                        {t(type.descKey)}
                       </div>
                     </div>
                   </button>

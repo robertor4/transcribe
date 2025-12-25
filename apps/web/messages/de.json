@@ -150,7 +150,13 @@
     "importAudioDesc": "Audio-/Videodatei hochladen",
     "recordAudioDesc": "Live-Gespräch aufnehmen",
     "recordAudioInfo": "Starte eine Live-Aufnahmesitzung. Du kannst wählen, ob du über dein Mikrofon aufnimmst oder Audio von einem Browser-Tab aufzeichnest (für Videoanrufe).",
-    "importAudioInfo": "Importiere eine vorhandene Audio- oder Videodatei von deinem Gerät. Unterstützte Formate: MP3, M4A, WAV, MP4, MOV, WebM. Die maximale Dateigröße hängt von deinem Abonnement ab."
+    "importAudioInfo": "Importiere eine vorhandene Audio- oder Videodatei von deinem Gerät. Unterstützte Formate: MP3, M4A, WAV, MP4, MOV, WebM. Die maximale Dateigröße hängt von deinem Abonnement ab.",
+    "recordRoom": "Raum aufnehmen",
+    "recordRoomDesc": "Meetings, Sprachnotizen, Interviews",
+    "recordTab": "Browser-Tab aufnehmen",
+    "recordTabDesc": "Google Meet, Zoom (Web), YouTube-Videos",
+    "uploadFileLabel": "Datei hochladen",
+    "uploadFileDesc": "Audio- oder Videodateien aus beliebiger Quelle"
   },
   "upload": {
     "title": "Audiodatei hochladen",

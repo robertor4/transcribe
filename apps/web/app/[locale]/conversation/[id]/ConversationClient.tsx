@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  BarChart3,
   Share2,
   ArrowLeft,
   Loader2,
@@ -275,6 +274,48 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     }
   };
 
+  // Copy transcript to clipboard
+  const handleCopyTranscript = async () => {
+    if (!conversation) return;
+
+    const transcript = conversation.source.transcript;
+    if (transcript.speakerSegments && transcript.speakerSegments.length > 0) {
+      const formattedTranscript = transcript.speakerSegments
+        .map((segment) => {
+          const minutes = Math.floor(segment.startTime / 60);
+          const seconds = Math.floor(segment.startTime % 60);
+          const timestamp = `[${minutes}:${seconds.toString().padStart(2, '0')}]`;
+          return `${timestamp} ${segment.speakerTag}: ${segment.text}`;
+        })
+        .join('\n\n');
+
+      try {
+        await navigator.clipboard.writeText(formattedTranscript);
+        setCopiedSummary(true);
+        setTimeout(() => setCopiedSummary(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy transcript:', err);
+      }
+    } else if (transcript.text) {
+      try {
+        await navigator.clipboard.writeText(transcript.text);
+        setCopiedSummary(true);
+        setTimeout(() => setCopiedSummary(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy transcript:', err);
+      }
+    }
+  };
+
+  // Context-aware copy handler
+  const handleCopy = () => {
+    if (activeTab === 'summary') {
+      handleCopySummary();
+    } else {
+      handleCopyTranscript();
+    }
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -380,6 +421,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   <Button
                     variant="ghost"
                     size="sm"
+                    icon={<Copy className="w-4 h-4" />}
+                    onClick={handleCopy}
+                  >
+                    {copiedSummary ? 'Copied!' : 'Copy'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     icon={<Share2 className="w-4 h-4" />}
                     onClick={handleOpenShareModal}
                   >
@@ -422,23 +471,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             {/* Tab Content */}
             {activeTab === 'summary' && (
               <section id="summary" className="scroll-mt-16">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Summary</h2>
-                  </div>
-                  {(conversation.source.summary.summaryV2 || conversation.source.summary.text) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={<Copy className="w-4 h-4" />}
-                      onClick={handleCopySummary}
-                    >
-                      {copiedSummary ? 'Copied!' : 'Copy'}
-                    </Button>
-                  )}
-                </div>
-
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
                   <SummaryRenderer
                     content={conversation.source.summary.text}

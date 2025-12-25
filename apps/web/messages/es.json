@@ -150,7 +150,13 @@
     "importAudioDesc": "Subir archivo de audio/video",
     "recordAudioDesc": "Grabar conversación en vivo",
     "recordAudioInfo": "Inicia una sesión de grabación en vivo. Puedes elegir grabar desde tu micrófono o capturar audio de una pestaña del navegador (para videollamadas).",
-    "importAudioInfo": "Importa un archivo de audio o video existente desde tu dispositivo. Formatos compatibles: MP3, M4A, WAV, MP4, MOV, WebM. El tamaño máximo del archivo depende de tu suscripción."
+    "importAudioInfo": "Importa un archivo de audio o video existente desde tu dispositivo. Formatos compatibles: MP3, M4A, WAV, MP4, MOV, WebM. El tamaño máximo del archivo depende de tu suscripción.",
+    "recordRoom": "Grabar la sala",
+    "recordRoomDesc": "Reuniones, notas de voz, entrevistas",
+    "recordTab": "Grabar pestaña",
+    "recordTabDesc": "Google Meet, Zoom (web), videos de YouTube",
+    "uploadFileLabel": "Subir archivo",
+    "uploadFileDesc": "Archivos de audio o video de cualquier fuente"
   },
   "upload": {
     "title": "Subir archivo de audio",

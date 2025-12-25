@@ -14,7 +14,7 @@ interface ConversationCreateModalProps {
 
   // Context-aware entry props
   initialStep?: CreateStep;
-  uploadMethod?: 'file' | 'record' | null;
+  uploadMethod?: 'file' | 'record' | 'record-microphone' | 'record-tab-audio' | null;
 }
 
 export type CreateStep = 'capture' | 'context' | 'processing' | 'complete';
@@ -201,7 +201,7 @@ export function ConversationCreateModal({
                   // Close modal when back is clicked from method selection
                   handleClose();
                 }}
-                initialMethod={uploadMethod === 'record' ? 'record' : uploadMethod === 'file' ? 'file' : null}
+                initialMethod={uploadMethod}
                 onRecordingStateChange={setIsRecording}
               />
             </div>

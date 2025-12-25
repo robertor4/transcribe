@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Simplified Dashboard Quick Actions**: Replaced 2 quick action buttons with 3 direct-entry buttons for faster workflow
+  - "Record the room" - Direct microphone recording (skips source selection)
+  - "Record browser tab" - Direct tab audio capture for Google Meet, Zoom (web), YouTube
+  - "Upload file" - File upload interface
+  - Descriptive use-case hints on each button (e.g., "In-person meetings, voice memos, interviews")
+  - Modal still used for workflow, but with fewer clicks to start recording
+  - Inline microphone selector shown when recording directly from dashboard
+  - Files: [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx), [UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+
+### Added
 - **True "Recently Opened" Tracking**: Left sidebar now shows actually recently opened conversations, not just recently created ones
   - Added `lastAccessedAt` timestamp field to track when conversations are accessed
   - New backend endpoints: `POST /transcriptions/:id/access` and `GET /transcriptions/recently-opened`

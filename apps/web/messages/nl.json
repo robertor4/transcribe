@@ -150,7 +150,13 @@
     "importAudioDesc": "Upload audio/video bestand",
     "recordAudioDesc": "Neem live gesprek op",
     "recordAudioInfo": "Start een live opnamesessie. Je kunt kiezen om op te nemen via je microfoon of audio van een browsertabblad vastleggen (voor videogesprekken).",
-    "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement."
+    "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement.",
+    "recordRoom": "Neem de ruimte op",
+    "recordRoomDesc": "Vergaderingen, spraaknotities, interviews",
+    "recordTab": "Neem browsertabblad op",
+    "recordTabDesc": "Google Meet, Zoom (web), YouTube video's",
+    "uploadFileLabel": "Bestand uploaden",
+    "uploadFileDesc": "Audio- of videobestanden van elke bron"
   },
   "upload": {
     "title": "Audiobestand uploaden",

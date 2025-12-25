@@ -341,7 +341,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                               </span>
                               <AssetsCountBadge count={conversation.assetsCount} />
                             </div>
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            <div className="text-xs text-gray-400 dark:text-gray-500">
                               <span>{formatRelativeTime(conversation.createdAt)}</span>
                             </div>
                           </div>
