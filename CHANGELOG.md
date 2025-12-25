@@ -8,6 +8,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Folder Page AI Assets Sidebar**: Redesigned folder view with AI assets panel in right sidebar
+  - Replaces inline "Recent Outputs" section with a dedicated sidebar showing assets from all conversations in the folder
+  - New `FolderAssetCard` component with icon mapping by template type, content preview, and conversation title
+  - Clicking an asset opens the `AIAssetSlidePanel` with full content and actions
+  - Collapsible "Folder Stats" section at the bottom (conversations count, created date)
+  - Empty state with branded icon when no assets exist
+  - Loading skeleton during asset fetch
+  - Files: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx), [FolderAssetCard.tsx](apps/web/components/FolderAssetCard.tsx)
+- **Collapsed Sidebar Actions**: Search and New Conversation buttons in collapsed sidebar are now functional
+  - Search button expands sidebar and auto-focuses the search input
+  - New Conversation button navigates to dashboard with `?newConversation=true` query param to open modal
+  - Files: [LeftNavigationCollapsed.tsx](apps/web/components/LeftNavigationCollapsed.tsx), [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+### Changed
+- **Recording Waveform Visualization**: Tab audio recording now uses real-time audio level visualization
+  - Previously used chunk-based pulse animation for tab audio
+  - Now uses Web Audio API analyzer for reactive waveform (same as microphone recording)
+  - Removed unused `chunkCount` and `recordingSource` dependencies
+  - File: [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx)
+- **Summary Key Points Layout**: Added visual dividers between key points for better readability
+  - Each key point now separated by subtle horizontal line (`divide-y`)
+  - Consistent vertical padding on each item
+  - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
+- **Recent Assets Section Label**: Changed "Recent Outputs" to "Recent AI Assets" for terminology consistency
+  - Updated in both dashboard and folder page sections
+  - Files: [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx), [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+- **Folder Page Empty State**: Hide "+ New Conversation" button when folder is empty
+  - The empty state already has a prominent "Create your first conversation" button
+  - Removes redundant CTA from section header when no conversations exist
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
+
+### Added
 - **Simplified Dashboard Quick Actions**: Replaced 2 quick action buttons with 3 direct-entry buttons for faster workflow
   - "Record the room" - Direct microphone recording (skips source selection)
   - "Record browser tab" - Direct tab audio capture for Google Meet, Zoom (web), YouTube

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -12,6 +13,9 @@ import {
   Trash2,
   MoreVertical,
   FolderMinus,
+  Zap,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
@@ -19,12 +23,15 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
+import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
+import { FolderAssetCard } from '@/components/FolderAssetCard';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
+import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { deleteConversation } from '@/lib/services/conversationService';
+import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
 import { AssetsCountBadge } from '@/components/dashboard/AssetsCountBadge';
-import { FolderRecentAssetsSection } from '@/components/dashboard/FolderRecentAssetsSection';
 
 interface FolderClientProps {
   folderId: string;
@@ -44,6 +51,19 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // AI Assets sidebar state
+  const [assets, setAssets] = useState<RecentAnalysis[]>([]);
+  const [isLoadingAssets, setIsLoadingAssets] = useState(true);
+  const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+
+  const {
+    selectedItem: selectedAsset,
+    isOpen: isPanelOpen,
+    isClosing: isPanelClosing,
+    open: openAssetPanel,
+    close: closeAssetPanel,
+  } = useSlidePanel<RecentAnalysis>();
 
   const handleDeleteFolder = async (deleteContents: boolean) => {
     setIsDeleting(true);
@@ -118,6 +138,31 @@ export function FolderClient({ folderId }: FolderClientProps) {
     }
   };
 
+  // Fetch assets for this folder
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await transcriptionApi.getRecentAnalysesByFolder(folderId, 8);
+        if (response.success && response.data) {
+          setAssets(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch folder assets:', error);
+      } finally {
+        setIsLoadingAssets(false);
+      }
+    };
+    fetchAssets();
+  }, [folderId]);
+
+  // Handle deleting an asset from the slide panel
+  const handleDeleteAsset = async (assetId: string) => {
+    if (!selectedAsset) return;
+    await transcriptionApi.deleteAnalysis(selectedAsset.transcriptionId, assetId);
+    setAssets(prev => prev.filter(a => a.id !== assetId));
+    closeAssetPanel();
+  };
+
   // Handle deleting a conversation
   const handleDeleteConversation = async (conversationId: string) => {
     try {
@@ -183,30 +228,101 @@ export function FolderClient({ folderId }: FolderClientProps) {
         leftSidebar={<LeftNavigation />}
         showRightPanel={true}
         rightPanel={
-          <div className="p-6">
-            {/* Folder Stats */}
-            <div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
-                Folder Stats
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
-                    Conversations
-                  </span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {conversations.length}
-                  </span>
+          <div className="h-full flex flex-col">
+            {/* Header */}
+            <div className={`p-4 ${assets.length > 0 ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
-                    Created
-                  </span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {formatRelativeTime(folder.createdAt)}
-                  </span>
+                <div>
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide leading-tight">
+                    AI Assets
+                  </h2>
+                  {assets.length > 0 && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
+                      {assets.length} item{assets.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
                 </div>
               </div>
+            </div>
+
+            {/* Asset List - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-subtle">
+              {isLoadingAssets ? (
+                // Loading skeleton
+                <div className="space-y-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg animate-pulse"
+                    >
+                      <div className="flex gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                        <div className="flex-1">
+                          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+                          <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+                          <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : assets.length > 0 ? (
+                assets.map((asset) => (
+                  <FolderAssetCard
+                    key={asset.id}
+                    asset={asset}
+                    onClick={() => openAssetPanel(asset)}
+                    isActive={selectedAsset?.id === asset.id}
+                  />
+                ))
+              ) : (
+                // Empty state
+                <div className="text-center py-6 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+                  <Image
+                    src="/assets/symbols/ai-icon-brand-color.svg"
+                    alt="AI Assets"
+                    width={48}
+                    height={48}
+                    className="mx-auto mb-3 opacity-50"
+                  />
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    No AI Assets yet
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                    Generate assets from your conversations
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Collapsible Folder Stats */}
+            <div className="border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setIsStatsExpanded(!isStatsExpanded)}
+                className="w-full p-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+              >
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Folder Stats</span>
+                {isStatsExpanded ? (
+                  <ChevronUp className="w-4 h-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                )}
+              </button>
+              {isStatsExpanded && (
+                <div className="px-4 pb-4 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600 dark:text-gray-400">Conversations</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{conversations.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-gray-600 dark:text-gray-400">Created</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{formatRelativeTime(folder.createdAt)}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         }
@@ -299,9 +415,11 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
                   Conversations ({conversations.length})
                 </h2>
-                <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
-                  + New Conversation
-                </Button>
+                {conversations.length > 0 && (
+                  <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
+                    + New Conversation
+                  </Button>
+                )}
               </div>
 
               {conversations.length === 0 ? (
@@ -395,14 +513,22 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 </div>
               )}
             </div>
-
-            {/* Recent Outputs from this folder */}
-            {conversations.length > 0 && (
-              <FolderRecentAssetsSection folderId={folderId} locale={locale} />
-            )}
           </div>
         }
       />
+
+      {/* AI Asset Slide Panel */}
+      {selectedAsset && (
+        <AIAssetSlidePanel
+          asset={selectedAsset}
+          isOpen={isPanelOpen}
+          isClosing={isPanelClosing}
+          onClose={closeAssetPanel}
+          onDelete={handleDeleteAsset}
+          conversationId={selectedAsset.transcriptionId}
+          locale={locale}
+        />
+      )}
 
       {/* Conversation Create Modal */}
       <ConversationCreateModal

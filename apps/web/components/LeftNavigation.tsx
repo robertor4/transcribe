@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -13,6 +13,8 @@ import { useSearch } from '@/hooks/useSearch';
 interface LeftNavigationProps {
   onToggleSidebar?: () => void;
   onNewConversation?: () => void;
+  focusSearch?: boolean;
+  onSearchFocused?: () => void;
 }
 
 /**
@@ -20,14 +22,27 @@ interface LeftNavigationProps {
  * Shows: Logo, Folders, Recent Conversations, User Profile
  * Follows ChatGPT/Claude/Linear navigation patterns
  */
-export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavigationProps) {
+export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch, onSearchFocused }: LeftNavigationProps) {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const [isFoldersExpanded, setIsFoldersExpanded] = useState(false);
   const { conversations, recentlyOpened, isLoading: conversationsLoading } = useConversationsContext();
+
+  // Focus search input when focusSearch prop becomes true
+  useEffect(() => {
+    if (focusSearch && searchInputRef.current) {
+      // Small delay to ensure sidebar animation has started
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+        onSearchFocused?.();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [focusSearch, onSearchFocused]);
 
   // Search state
   const {
@@ -90,6 +105,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

@@ -38,7 +38,7 @@ export function RecentAssetsSection({ locale }: RecentAssetsSectionProps) {
     <section className="mt-10">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
-          Recent Outputs
+          Recent AI Assets
         </h2>
         {!isLoading && assets.length > 0 && (
           <span className="text-sm text-gray-500 dark:text-gray-400">

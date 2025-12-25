@@ -76,9 +76,7 @@ export function SimpleAudioRecorder({
     reset,
     markAsUploaded,
     clearWarning,
-    chunkCount,
     audioStream,
-    recordingSource,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
     onStateChange: (newState) => {
@@ -126,11 +124,9 @@ export function SimpleAudioRecorder({
   // Audio visualization for preview (before recording starts)
   const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
 
-  // Audio visualization during microphone recording
-  // Only active for microphone source - tab audio uses chunk-based visualization
-  const { audioLevel: recordingAudioLevel } = useAudioVisualization(
-    recordingSource === 'microphone' ? audioStream : null
-  );
+  // Audio visualization during recording (both microphone and tab audio)
+  // Web Audio API analyzes the audio stream in real-time for reactive waveform
+  const { audioLevel: recordingAudioLevel } = useAudioVisualization(audioStream);
 
   // Use raw audio level directly (no decay/smoothing)
   const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
@@ -789,10 +785,8 @@ export function SimpleAudioRecorder({
             <RecordingWaveform
               isRecording={state === 'recording'}
               isPaused={state === 'paused'}
-              // Microphone: use real-time audio level from useAudioVisualization
-              // Tab audio: use chunk-based pulse visualization
-              audioLevel={recordingSource === 'microphone' ? recordingAudioLevel : undefined}
-              chunkCount={recordingSource === 'tab-audio' ? chunkCount : undefined}
+              // Real-time audio level from useAudioVisualization (works for both mic and tab audio)
+              audioLevel={recordingAudioLevel}
             />
           </div>
         )}

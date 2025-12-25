@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, cloneElement, isValidElement } from 'react';
+import { ReactNode, cloneElement, isValidElement, useState, useCallback } from 'react';
 import { CollapsibleSidebar } from './CollapsibleSidebar';
 import { LeftNavigationCollapsed } from './LeftNavigationCollapsed';
 import { useCollapsibleSidebar } from '@/hooks/useCollapsibleSidebar';
@@ -41,10 +41,26 @@ export function ThreePaneLayout({
     defaultCollapsed: false,
   });
 
-  // Clone leftSidebar element to inject toggle function
+  // Track if we should focus search after sidebar expands
+  const [shouldFocusSearch, setShouldFocusSearch] = useState(false);
+
+  // Handler for search button in collapsed state
+  const handleSearchFromCollapsed = useCallback(() => {
+    setShouldFocusSearch(true);
+    leftSidebarState.toggle();
+  }, [leftSidebarState]);
+
+  // Called by LeftNavigation after it focuses the search input
+  const clearFocusSearch = useCallback(() => {
+    setShouldFocusSearch(false);
+  }, []);
+
+  // Clone leftSidebar element to inject toggle function and focus search state
   const leftSidebarWithToggle = isValidElement(leftSidebar)
-    ? cloneElement(leftSidebar as React.ReactElement<{ onToggleSidebar?: () => void }>, {
+    ? cloneElement(leftSidebar as React.ReactElement<{ onToggleSidebar?: () => void; focusSearch?: boolean; onSearchFocused?: () => void }>, {
         onToggleSidebar: leftSidebarState.toggle,
+        focusSearch: shouldFocusSearch,
+        onSearchFocused: clearFocusSearch,
       })
     : leftSidebar;
 
@@ -57,7 +73,7 @@ export function ThreePaneLayout({
         onToggle={leftSidebarState.toggle}
         width={leftSidebarWidth}
         collapsedWidth={48}
-        collapsedContent={<LeftNavigationCollapsed onToggle={leftSidebarState.toggle} />}
+        collapsedContent={<LeftNavigationCollapsed onToggle={leftSidebarState.toggle} onSearch={handleSearchFromCollapsed} />}
       >
         {leftSidebarWithToggle}
       </CollapsibleSidebar>
