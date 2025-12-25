@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useConversationScrollRestoration } from '@/hooks/useScrollRestoration';
 import {
   BarChart3,
   Zap,
@@ -17,6 +18,8 @@ import {
   AlertCircle,
   MessageSquareQuote,
   Copy,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, StructuredOutput, Transcription } from '@transcribe/shared';
@@ -40,6 +43,9 @@ interface ConversationClientProps {
   conversationId: string;
 }
 
+type AssetsViewMode = 'card' | 'list';
+const ASSETS_VIEW_STORAGE_KEY = 'neural-summary-assets-view-mode';
+
 export function ConversationClient({ conversationId }: ConversationClientProps) {
   const params = useParams();
   const router = useRouter();
@@ -59,8 +65,29 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
   const { folders } = useFoldersContext();
   const t = useTranslations('aiAssets');
+  // Scroll restoration - only trigger when conversation is loaded
+  const { saveScrollPosition } = useConversationScrollRestoration(
+    conversationId,
+    !isLoading && !!conversation
+  );
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [, setIsLoadingOutputs] = useState(false);
+  const [assetsViewMode, setAssetsViewMode] = useState<AssetsViewMode>('card');
+
+  // Load assets view mode from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(ASSETS_VIEW_STORAGE_KEY);
+    if (stored === 'card' || stored === 'list') {
+      setAssetsViewMode(stored);
+    }
+  }, []);
+
+  // Save assets view mode to localStorage when it changes
+  const toggleAssetsViewMode = () => {
+    const newMode = assetsViewMode === 'card' ? 'list' : 'card';
+    setAssetsViewMode(newMode);
+    localStorage.setItem(ASSETS_VIEW_STORAGE_KEY, newMode);
+  };
 
   // Find the folder for this conversation
   const folder = conversation?.folderId
@@ -434,11 +461,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               id="outputs"
               className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
             >
-              <div className="mb-6 relative">
-                {/* Accent bar on left */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#8D6AFA] to-[#8D6AFA]/50 rounded-full" />
-
-                <div className="pl-5 flex items-center justify-between">
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     {/* Icon with brand gradient background */}
                     <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center shadow-lg shadow-[#8D6AFA]/20">
@@ -454,65 +478,116 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     </div>
                   </div>
                   {outputs.length > 0 && (
-                    <Button
-                      variant="brand"
-                      size="md"
-                      icon={<Plus className="w-4 h-4" />}
-                      onClick={() => setIsGeneratorOpen(true)}
-                    >
-                      {t('newAsset')}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleAssetsViewMode}
+                        icon={assetsViewMode === 'card' ? (
+                          <List className="w-4 h-4" />
+                        ) : (
+                          <LayoutGrid className="w-4 h-4" />
+                        )}
+                      >
+                        {assetsViewMode === 'card' ? 'List' : 'Cards'}
+                      </Button>
+                      <Button
+                        variant="brand"
+                        size="md"
+                        icon={<Plus className="w-4 h-4" />}
+                        onClick={() => setIsGeneratorOpen(true)}
+                      >
+                        {t('newAsset')}
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* Outputs Gallery */}
               {outputs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {outputs.map((output) => {
-                    const OutputIcon = getOutputIcon(output.templateId);
-                    // Create a preview from the content - handle both markdown and structured
-                    let preview: string;
-                    if (output.contentType === 'structured' && typeof output.content === 'object') {
-                      preview = getStructuredOutputPreview(output.content as StructuredOutput);
-                    } else {
-                      const contentStr = typeof output.content === 'string' ? output.content : JSON.stringify(output.content);
-                      preview = contentStr
-                        .replace(/^#+ /gm, '') // Remove markdown headers
-                        .replace(/\*\*/g, '') // Remove bold markers
-                        .slice(0, 150)
-                        .trim() + (contentStr.length > 150 ? '...' : '');
-                    }
+                assetsViewMode === 'card' ? (
+                  // Card View
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {outputs.map((output) => {
+                      const OutputIcon = getOutputIcon(output.templateId);
+                      // Create a preview from the content - handle both markdown and structured
+                      let preview: string;
+                      if (output.contentType === 'structured' && typeof output.content === 'object') {
+                        preview = getStructuredOutputPreview(output.content as StructuredOutput);
+                      } else {
+                        const contentStr = typeof output.content === 'string' ? output.content : JSON.stringify(output.content);
+                        preview = contentStr
+                          .replace(/^#+ /gm, '') // Remove markdown headers
+                          .replace(/\*\*/g, '') // Remove bold markers
+                          .slice(0, 150)
+                          .trim() + (contentStr.length > 150 ? '...' : '');
+                      }
 
-                    return (
-                      <Link
-                        key={output.id}
-                        href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
-                        className="group relative p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
-                            <OutputIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
-                              {output.templateName}
-                            </h3>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                              {preview}
-                            </p>
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Generated {formatRelativeTime(new Date(output.generatedAt))}
+                      return (
+                        <Link
+                          key={output.id}
+                          href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
+                          onClick={saveScrollPosition}
+                          className="group relative p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                              <OutputIcon className="w-6 h-6 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
+                                {output.templateName}
+                              </h3>
+                              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+                                {preview}
+                              </p>
+                              <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Generated {formatRelativeTime(new Date(output.generatedAt))}
+                              </div>
+                            </div>
+                            <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
+                              →
                             </div>
                           </div>
-                          <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  // List View
+                  <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                    {outputs.map((output) => {
+                      const OutputIcon = getOutputIcon(output.templateId);
+
+                      return (
+                        <Link
+                          key={output.id}
+                          href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
+                          onClick={saveScrollPosition}
+                          className="group flex items-center justify-between py-3 px-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex-shrink-0">
+                              <OutputIcon className="w-5 h-5 text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110 transition-all duration-200" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200 truncate block">
+                                {output.templateName}
+                              </span>
+                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                {formatRelativeTime(new Date(output.generatedAt))}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200 ml-2">
                             →
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )
               ) : (
                 <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
                   <div className="text-4xl mb-3">✨</div>
@@ -549,11 +624,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {/* Transcript Card - Links to dedicated page */}
               <Link
                 href={`/${locale}/conversation/${conversation.id}/transcript`}
+                onClick={saveScrollPosition}
                 className="group block p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+                    <FileText className="w-6 h-6 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">

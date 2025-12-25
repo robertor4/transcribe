@@ -391,16 +391,13 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             <div className="py-12 text-center">
               {isGenerating ? (
                 <>
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center mx-auto mb-6 animate-pulse">
-                    <Sparkles className="w-10 h-10 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+                  <GeneratingLoader className="mb-8" size="lg" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                     Generating your {selectedOption?.name}...
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     This may take a few moments
                   </p>
-                  <GeneratingLoader className="mt-8" />
                 </>
               ) : error ? (
                 <>
@@ -422,7 +419,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   <div className="w-20 h-20 rounded-full bg-[#14D0DC] flex items-center justify-center mx-auto mb-6">
                     <span className="text-4xl text-white">✓</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                     Output generated successfully!
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">

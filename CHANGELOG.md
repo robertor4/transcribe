@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Scroll Position Restoration**: Conversation pages now remember and restore scroll position when navigating to AI assets and back
+  - New `useScrollRestoration` and `useConversationScrollRestoration` hooks
+  - Saves position when clicking on AI asset or transcript links
+  - Restores position when returning via browser back button
+  - Works with ThreePaneLayout's custom scroll container
+  - File: [useScrollRestoration.ts](apps/web/hooks/useScrollRestoration.ts)
+- **AI Assets List/Card View Toggle**: Added view mode toggle for AI assets gallery
+  - Switch between card grid (default) and compact list view
+  - View preference persisted in localStorage
+  - List view shows template name, relative time, and hover effects
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **GeneratingLoader Size Variants**: Added `sm`, `md`, `lg` size options to the audio wave loader component
+  - Default is `sm` (original size), `lg` used in generation modal
+  - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
+
+### Changed
+- **Email Template Prompts Refinement**: Improved AI prompts for all email templates to produce more natural-sounding output
+  - Added explicit instructions to avoid labels like "Summary:", "Context:", "Challenge:" in email body text
+  - Prompts now emphasize writing natural prose that flows conversationally
+  - Closing field now generates only sign-off phrase (e.g., "Best regards,") - user name added automatically by UI
+  - BAD/GOOD examples added to guide AI toward human-like email writing
+  - File: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts)
+- **Email Template UI Overhaul**: Redesigned email template rendering with brand-aligned styling
+  - Header now shows From/To/Subject fields like an email client with integrated "Send to myself" button
+  - Signature block displays user photo (or initial avatar), name, and email automatically
+  - All sections use brand colors: purple (#8D6AFA), cyan (#14D0DC), deep purple (#3F38A0)
+  - Consistent left border accent, uppercase tracking-wide headers, generous spacing
+  - Removed shared BulletList component in favor of inline styled lists
+  - File: [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx)
+- **AI Asset Card Styling**: Improved hover effects on AI asset cards in conversation view
+  - Purple gradient icon background transitions to solid purple on hover
+  - Consistent with RecentAssetCard styling in dashboard
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **RecentAssetCard Layout Update**: Improved dashboard recent AI asset cards
+  - Reordered to show conversation title prominently with template name + time as secondary
+  - Extended content preview from 80 to 150 characters with 2-line clamp
+  - Added subtle lift animation on hover (`hover:-translate-y-0.5`)
+  - File: [RecentAssetCard.tsx](apps/web/components/dashboard/RecentAssetCard.tsx)
+- **Generation Modal Loading State**: Replaced pulsing icon with larger audio wave loader
+  - Uses new `GeneratingLoader` with `size="lg"` for more prominent animation
+  - Removed uppercase tracking from modal headers
+  - File: [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **AI Assets Section Copy**: Updated description text to "Transform this conversation into action" (was "into professional deliverables")
+  - More concise and action-oriented messaging
+  - Updated across all 5 languages
+  - Files: [en.json](apps/web/messages/en.json), [de.json](apps/web/messages/de.json), [es.json](apps/web/messages/es.json), [fr.json](apps/web/messages/fr.json), [nl.json](apps/web/messages/nl.json)
+- **Analysis Regeneration with Custom Instructions**: Allow regenerating AI assets when custom instructions differ
+  - Previously, any existing analysis for a template would be returned from cache
+  - Now compares custom instructions - regenerates if they differ from cached version
+  - File: [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+
 ### Fixed
 - **Folder Conversation Counts**: Fixed incorrect conversation counts in both sidebar and dashboard folder cards
   - Backend now returns `conversationCount` with each folder (calculated server-side)

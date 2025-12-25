@@ -3,6 +3,8 @@
 interface GeneratingLoaderProps {
   /** Additional CSS classes */
   className?: string;
+  /** Size variant: 'sm' (default), 'md', 'lg' */
+  size?: 'sm' | 'md' | 'lg';
 }
 
 /**
@@ -14,17 +16,26 @@ interface GeneratingLoaderProps {
  *
  * Used in the AI Asset generation modal during processing.
  */
-export function GeneratingLoader({ className = '' }: GeneratingLoaderProps) {
+export function GeneratingLoader({ className = '', size = 'sm' }: GeneratingLoaderProps) {
   const bars = [0, 1, 2, 3, 4];
 
+  // Size configurations
+  const sizeConfig = {
+    sm: { barWidth: 'w-1', barHeight: '28px', gap: 'gap-1.5' },
+    md: { barWidth: 'w-1.5', barHeight: '48px', gap: 'gap-2' },
+    lg: { barWidth: 'w-1.5', barHeight: '56px', gap: 'gap-2.5' },
+  };
+
+  const { barWidth, barHeight, gap } = sizeConfig[size];
+
   return (
-    <div className={`flex items-center justify-center gap-1.5 ${className}`}>
+    <div className={`flex items-center justify-center ${gap} ${className}`}>
       {bars.map((i) => (
         <div
           key={i}
-          className="w-1 rounded-full bg-gradient-to-t from-[#7A5AE0] to-[#8D6AFA]"
+          className={`${barWidth} rounded-full bg-gradient-to-t from-[#7A5AE0] to-[#8D6AFA]`}
           style={{
-            height: '28px',
+            height: barHeight,
             animation: 'pulseBar 1.2s ease-in-out infinite',
             animationDelay: `${i * 0.15}s`,
           }}

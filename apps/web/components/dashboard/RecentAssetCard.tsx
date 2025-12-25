@@ -52,8 +52,8 @@ function getContentPreview(asset: RecentAnalysis): string {
     .replace(/^#+ /gm, '') // Remove markdown headers
     .replace(/\*\*/g, '') // Remove bold markers
     .replace(/\n+/g, ' ') // Replace newlines with spaces
-    .slice(0, 80)
-    .trim() + (contentStr.length > 80 ? '...' : '');
+    .slice(0, 150)
+    .trim() + (contentStr.length > 150 ? '...' : '');
 }
 
 export function RecentAssetCard({ asset, locale }: RecentAssetCardProps) {
@@ -64,30 +64,25 @@ export function RecentAssetCard({ asset, locale }: RecentAssetCardProps) {
   return (
     <Link
       href={`/${locale}/conversation/${asset.transcriptionId}/outputs/${asset.id}`}
-      className="group block p-4 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-md transition-all duration-200"
+      className="group block p-4 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
     >
-      {/* Row 1: Icon + Template Name + Date */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
-            <OutputIcon className="w-4 h-4 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
-          </div>
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-            {asset.templateName}
-          </span>
+      {/* Header: Icon + Title/Meta */}
+      <div className="flex gap-3 mb-3">
+        <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
+          <OutputIcon className="w-4.5 h-4.5 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
         </div>
-        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 ml-2">
-          {relativeTime}
-        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+            {asset.conversationTitle}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {asset.templateName} · {relativeTime}
+          </p>
+        </div>
       </div>
 
-      {/* Row 2: Conversation Title */}
-      <p className="text-xs text-gray-500 dark:text-gray-400 truncate mb-1.5">
-        {asset.conversationTitle}
-      </p>
-
-      {/* Row 3: Content Preview */}
-      <p className="text-xs text-gray-600 dark:text-gray-500 line-clamp-1">
+      {/* Content Preview (2 lines) */}
+      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
         {preview}
       </p>
     </Link>

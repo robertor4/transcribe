@@ -90,16 +90,25 @@ export class OnDemandAnalysisService {
       );
     }
 
-    // 3. Check if this analysis already exists (prevent duplicates)
+    // 3. Check if this analysis already exists (prevent exact duplicates)
     // Skip this check when called from processor during initial transcription
+    // Allow regeneration if custom instructions differ from existing analysis
     if (!options?.skipDuplicateCheck) {
       const existing = await this.getUserAnalyses(transcriptionId, userId);
       const duplicate = existing.find((a) => a.templateId === templateId);
       if (duplicate) {
+        // Allow regeneration if custom instructions are different
+        const existingInstructions = duplicate.customInstructions || '';
+        const newInstructions = customInstructions || '';
+        if (existingInstructions === newInstructions) {
+          this.logger.log(
+            `Analysis already exists for template ${templateId} with same instructions, returning cached version`,
+          );
+          return duplicate; // Return existing instead of regenerating
+        }
         this.logger.log(
-          `Analysis already exists for template ${templateId}, returning cached version`,
+          `Regenerating analysis for template ${templateId} with different custom instructions`,
         );
-        return duplicate; // Return existing instead of regenerating
       }
     }
 

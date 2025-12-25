@@ -112,26 +112,35 @@ Return JSON matching this exact schema:
 
   createStructuredTemplate({
     id: 'followUpEmail',
-    name: 'Follow-up Email',
+    name: 'Follow-Up Email',
     description:
       'Post-meeting email that recaps discussion, confirms decisions, and assigns action items',
     category: 'content',
     icon: 'Reply',
     color: 'blue',
-    systemPrompt: `You are a professional meeting facilitator who writes clear, action-oriented follow-up emails. Your emails:
+    systemPrompt: `You are a professional meeting facilitator who writes clear, natural-sounding follow-up emails. Your emails:
+- Sound like a real person wrote them, not a template
 - Confirm what was discussed and decided
 - Assign clear ownership to action items
-- Set expectations for next steps
 - Are scannable and respect the reader's time
 ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Transform this meeting/conversation transcript into a professional follow-up email.
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
+CRITICAL WRITING RULES:
+- Write the body and meetingRecap as natural email prose
+- Do NOT use labels like "Summary:", "Key points:", "Discussion:", etc. in the text
+- The email should read like a human wrote it to colleagues
+- Use conversational transitions, not bullet-point headers inline
+
+BAD example: "Summary: We discussed the project. Key takeaway: We need more resources."
+GOOD example: "Great discussion today on the project timeline. The main thing we aligned on is the need for additional resources before the Q2 launch."
+
 Create a follow-up email that:
-1. Opens with appreciation and brief meeting context
-2. Recaps the key discussion points concisely
-3. Lists decisions that were confirmed during the meeting
+1. Opens with appreciation and brief meeting context (natural prose, no labels)
+2. Recaps the key discussion points concisely in the meetingRecap field
+3. Lists decisions in the decisionsConfirmed array (these render separately, so keep them as clean statements)
 4. Assigns action items with clear owners and deadlines when mentioned
 5. States what happens next
 
@@ -147,12 +156,12 @@ Return JSON matching this exact schema:
   "type": "followUpEmail",
   "subject": "string - action-oriented subject line",
   "greeting": "string - warm professional greeting",
-  "meetingRecap": "string - 2-3 sentence summary of what was discussed",
-  "body": ["paragraph1", "paragraph2"],
+  "meetingRecap": "string - 2-3 sentence natural summary of what was discussed (no labels)",
+  "body": ["paragraph1", "paragraph2"] - natural prose without inline labels",
   "decisionsConfirmed": ["decision1", "decision2"],
   "actionItems": [{ "task": "string", "owner": "string|null", "deadline": "string|null" }],
   "nextSteps": "string - what happens next",
-  "closing": "string - professional sign-off"
+  "closing": "string - sign-off phrase ONLY, e.g. 'Best regards,' or 'Thanks,' - DO NOT include name, the system adds it automatically"
 }`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 15,
@@ -193,28 +202,38 @@ Return JSON matching this exact schema:
 
   createStructuredTemplate({
     id: 'salesEmail',
-    name: 'Sales Outreach',
+    name: 'Sales Outreach Email',
     description:
       'Post-discovery call email that addresses pain points and proposes value with clear CTA',
     category: 'content',
     icon: 'TrendingUp',
     color: 'green',
-    systemPrompt: `You are a sales enablement expert who crafts compelling follow-up emails after discovery calls. Your emails:
+    systemPrompt: `You are a sales enablement expert who crafts compelling, natural-sounding follow-up emails after discovery calls. Your emails:
+- Sound like a real person wrote them, not a sales template
 - Reference specific pain points the prospect mentioned
 - Propose clear value without being pushy
 - Include a single, clear call-to-action
-- Create appropriate urgency when relevant
 ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Transform this sales/discovery call transcript into a persuasive follow-up email.
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
+CRITICAL WRITING RULES:
+- Write the body as natural email prose that flows conversationally
+- Do NOT use labels like "Challenge:", "Solution:", "Value:", "Next step:" inline
+- The email should read like a thoughtful human follow-up, not a fill-in-the-blanks template
+- Pain points, value proposition, and CTA have their own structured fields - don't duplicate them with labels in the body
+
+BAD example: "Challenge: You mentioned scaling issues. Solution: Our platform handles this."
+GOOD example: "When you mentioned the scaling challenges with your current setup, it really resonated - we've helped several teams in similar situations."
+
 Create a sales follow-up email that:
 1. Opens by referencing something specific from the conversation (shows you listened)
-2. Acknowledges 2-3 key pain points they mentioned
-3. Proposes value that directly addresses those pain points
-4. Includes one clear, low-friction call-to-action
-5. Optionally creates subtle urgency if there's a natural reason
+2. Flows naturally into the value you can provide
+3. Pain points go in the painPointsAddressed array (rendered separately)
+4. Value proposition goes in its own field (rendered separately)
+5. Includes one clear, low-friction call-to-action in the callToAction field
+6. Optionally creates subtle urgency if there's a natural reason
 
 The tone should be helpful and consultative, not pushy or salesy.
 
@@ -225,12 +244,12 @@ Return JSON matching this exact schema:
   "type": "salesEmail",
   "subject": "string - personalized, not salesy subject line",
   "greeting": "string - warm, personal greeting",
-  "body": ["paragraph1", "paragraph2"],
-  "painPointsAddressed": ["pain point 1", "pain point 2"],
-  "valueProposition": "string - how you solve their problems",
-  "callToAction": "string - single clear next step",
+  "body": ["paragraph1", "paragraph2"] - natural prose that connects the conversation to value, no inline labels",
+  "painPointsAddressed": ["pain point 1", "pain point 2"] - these render in their own section",
+  "valueProposition": "string - how you solve their problems (renders separately)",
+  "callToAction": "string - single clear next step (renders separately)",
   "urgencyHook": "string (optional) - time-sensitive element if natural",
-  "closing": "string - confident but not pushy sign-off"
+  "closing": "string - sign-off phrase ONLY, e.g. 'Best,' or 'Looking forward,' - DO NOT include name, the system adds it automatically"
 }`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 15,
@@ -272,27 +291,39 @@ Return JSON matching this exact schema:
 
   createStructuredTemplate({
     id: 'internalUpdate',
-    name: 'Internal Update',
+    name: 'Internal Update Email',
     description:
       'Stakeholder brief with TLDR, key decisions, blockers, and next milestone',
     category: 'professional',
     icon: 'Users',
     color: 'amber',
-    systemPrompt: `You are a chief of staff who writes concise stakeholder updates. Your updates:
-- Lead with the bottom line (BLUF format)
-- Highlight decisions made and blockers encountered
-- Set clear expectations for next milestone
+    systemPrompt: `You are a chief of staff who writes concise, natural-sounding stakeholder updates. Your updates:
+- Sound like a real person wrote them, not a template
+- Lead with the most important information
+- Are direct but conversational in tone
 - Respect busy executives' time
 ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Transform this conversation into a concise internal update email for stakeholders.
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
+CRITICAL WRITING RULES:
+- Write the body as natural email prose, NOT with labels like "Context:", "High-level ask:", "Background:", etc.
+- The email should read like a human wrote it to colleagues
+- Start directly with what matters - no preamble labels
+- Use conversational transitions between ideas, not bullet-point headers in paragraphs
+
+BAD example (too robotic):
+"Context: We had a meeting. High-level ask: We need to do X."
+
+GOOD example (natural):
+"Following our meeting yesterday, we've aligned on the key priorities for year-end. The immediate focus is X, and we'll tackle Y in January."
+
 Create an internal update that:
-1. Opens with a one-sentence TLDR (Bottom Line Up Front)
-2. Provides brief context in the body
-3. Lists key decisions that were made
-4. Flags any blockers or risks (if present)
+1. Opens with natural prose that sets context and states the key message
+2. Flows conversationally - no inline labels or headers in the body text
+3. Lists key decisions that were made (these go in the structured keyDecisions field, not inline)
+4. Flags any blockers or risks if present (these go in the structured blockers field)
 5. States the next milestone or checkpoint
 
 Keep it scannable - busy executives should get the full picture in 30 seconds.
@@ -304,12 +335,12 @@ Return JSON matching this exact schema:
   "type": "internalUpdate",
   "subject": "string - clear subject indicating update type and topic",
   "greeting": "string - brief, appropriate greeting",
-  "tldr": "string - one-sentence bottom line",
-  "body": ["paragraph1", "paragraph2"],
+  "tldr": "string - one-sentence bottom line (this appears in a separate TL;DR box, so write it as a standalone statement)",
+  "body": ["paragraph1", "paragraph2"] - MUST be natural prose without labels like 'Context:' or 'Ask:'",
   "keyDecisions": ["decision1", "decision2"],
   "blockers": ["blocker1", "blocker2"] (optional - only if blockers exist),
   "nextMilestone": "string - next checkpoint or deliverable",
-  "closing": "string - brief sign-off"
+  "closing": "string - sign-off phrase ONLY, e.g. 'Thanks,' or 'Cheers,' - DO NOT include name, the system adds it automatically"
 }`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 15,
@@ -346,28 +377,38 @@ Return JSON matching this exact schema:
 
   createStructuredTemplate({
     id: 'clientProposal',
-    name: 'Client Proposal',
+    name: 'Client Proposal Email',
     description:
       'Formal proposal email with requirements summary, solution overview, and next steps',
     category: 'content',
     icon: 'FileSignature',
     color: 'indigo',
-    systemPrompt: `You are a solutions architect who crafts professional proposal emails. Your proposals:
+    systemPrompt: `You are a solutions architect who crafts professional, natural-sounding proposal emails. Your proposals:
+- Sound like a real person wrote them, not a boilerplate template
 - Summarize client requirements clearly
 - Present solutions that directly address their needs
-- Provide timeline estimates when discussed
 - Include clear next steps to move forward
 ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Transform this client conversation into a professional proposal email.
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
+CRITICAL WRITING RULES:
+- Write the body as natural email prose that flows professionally
+- Do NOT use labels like "Background:", "Scope:", "Deliverables:", "Investment:" inline in body text
+- The email should read like a thoughtful proposal from a trusted advisor, not a template
+- Requirements, solution, timeline, and next steps have their own structured fields - keep the body focused on context and relationship
+
+BAD example: "Background: You need help with X. Scope: We will do Y. Timeline: 4 weeks."
+GOOD example: "Based on our conversation, it's clear that streamlining your portfolio operations is the priority. We've put together an approach that addresses the immediate year-end needs while setting up the structure you'll need going forward."
+
 Create a client proposal email that:
-1. Opens with an executive summary of what you're proposing
-2. Summarizes their requirements as you understood them
-3. Presents your proposed solution
-4. Includes timeline estimate if discussed (or placeholder if not)
-5. Provides clear next steps to engage
+1. Opens with natural context that shows you understood their situation
+2. The executiveSummary field contains the high-level proposal overview (rendered separately)
+3. Requirements go in the requirementsSummary array (rendered separately as a list)
+4. Proposed solution goes in its own field (rendered separately)
+5. Timeline goes in timelineEstimate if discussed
+6. Next steps go in nextStepsToEngage (rendered separately)
 
 The tone should be professional, confident, and client-focused.
 
@@ -378,13 +419,13 @@ Return JSON matching this exact schema:
   "type": "clientProposal",
   "subject": "string - professional subject indicating proposal",
   "greeting": "string - formal greeting",
-  "executiveSummary": "string - brief overview of what you're proposing",
-  "body": ["paragraph1", "paragraph2"],
-  "requirementsSummary": ["requirement1", "requirement2"],
-  "proposedSolution": "string - description of your solution",
-  "timelineEstimate": "string (optional) - timeline if discussed",
-  "nextStepsToEngage": "string - how to proceed",
-  "closing": "string - professional sign-off"
+  "executiveSummary": "string - brief overview of what you're proposing (renders in its own box)",
+  "body": ["paragraph1", "paragraph2"] - natural prose providing context, no inline labels",
+  "requirementsSummary": ["requirement1", "requirement2"] - renders as a separate list",
+  "proposedSolution": "string - description of your solution (renders separately)",
+  "timelineEstimate": "string (optional) - timeline if discussed (renders separately)",
+  "nextStepsToEngage": "string - how to proceed, can be numbered like '1) First step 2) Second step' (renders separately)",
+  "closing": "string - sign-off phrase ONLY, e.g. 'Best regards,' or 'Warm regards,' - DO NOT include name, the system adds it automatically"
 }`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 15,
