@@ -4,7 +4,10 @@ import React from 'react';
 import type {
   StructuredOutput,
   ActionItemsOutput,
-  EmailOutput,
+  FollowUpEmailOutput,
+  SalesEmailOutput,
+  InternalUpdateOutput,
+  ClientProposalOutput,
   BlogPostOutput,
   LinkedInOutput,
   CommunicationAnalysisOutput,
@@ -33,7 +36,12 @@ const TEMPLATE_COMPONENTS: Record<
   React.ComponentType<{ data: unknown; analysisId?: string }>
 > = {
   actionItems: ActionItemsTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
-  email: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  // Specialized email templates
+  followUpEmail: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  salesEmail: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  internalUpdate: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  clientProposal: EmailTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  // Other templates
   blogPost: BlogPostTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
   linkedin: LinkedInTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
   communicationAnalysis: CommunicationAnalysisTemplate as React.ComponentType<{
@@ -125,8 +133,24 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
       return `${total} action item${total !== 1 ? 's' : ''} extracted`;
     }
 
-    case 'email': {
-      const data = content as EmailOutput;
+    // Specialized email templates
+    case 'followUpEmail': {
+      const data = content as FollowUpEmailOutput;
+      return data.subject;
+    }
+
+    case 'salesEmail': {
+      const data = content as SalesEmailOutput;
+      return data.subject;
+    }
+
+    case 'internalUpdate': {
+      const data = content as InternalUpdateOutput;
+      return data.subject;
+    }
+
+    case 'clientProposal': {
+      const data = content as ClientProposalOutput;
       return data.subject;
     }
 

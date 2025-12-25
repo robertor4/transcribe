@@ -8,12 +8,33 @@ import {
   GeneratedAnalysis,
   BlogPostOutput,
   BlogHeroImage,
+  FollowUpEmailOutput,
+  SalesEmailOutput,
+  InternalUpdateOutput,
+  ClientProposalOutput,
 } from '@transcribe/shared';
 import { FirebaseService } from '../firebase/firebase.service';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { ImagePromptService } from './image-prompt.service';
 import { ReplicateService } from '../replicate/replicate.service';
+import { EmailService } from '../email/email.service';
+
+// Email template type IDs
+const EMAIL_TEMPLATE_IDS = [
+  'followUpEmail',
+  'salesEmail',
+  'internalUpdate',
+  'clientProposal',
+] as const;
+
+type EmailTemplateId = (typeof EMAIL_TEMPLATE_IDS)[number];
+
+type EmailDraftData =
+  | FollowUpEmailOutput
+  | SalesEmailOutput
+  | InternalUpdateOutput
+  | ClientProposalOutput;
 
 /**
  * Service for managing on-demand analysis generation
@@ -29,6 +50,7 @@ export class OnDemandAnalysisService {
     private templateService: AnalysisTemplateService,
     private imagePromptService: ImagePromptService,
     private replicateService: ReplicateService,
+    private emailService: EmailService,
   ) {}
 
   /**
@@ -555,5 +577,64 @@ export class OnDemandAnalysisService {
     );
 
     return heroImage;
+  }
+
+  /**
+   * Send an email analysis to the user's own email address
+   * This allows users to review, edit, and forward from their own mailbox
+   */
+  async sendEmailToSelf(
+    analysisId: string,
+    userId: string,
+  ): Promise<{ success: boolean; message: string }> {
+    // 1. Get the analysis
+    const analysis =
+      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+
+    if (!analysis) {
+      throw new BadRequestException(`Analysis not found: ${analysisId}`);
+    }
+
+    if (analysis.userId !== userId) {
+      throw new UnauthorizedException('Cannot access this analysis');
+    }
+
+    // 2. Verify it's an email template
+    if (!EMAIL_TEMPLATE_IDS.includes(analysis.templateId as EmailTemplateId)) {
+      throw new BadRequestException(
+        'This analysis type cannot be sent as an email',
+      );
+    }
+
+    // 3. Get user info
+    const user = await this.firebaseService.getUser(userId);
+    if (!user || !user.email) {
+      throw new BadRequestException('User email not found');
+    }
+
+    // 4. Send the email
+    const emailData = analysis.content as EmailDraftData;
+    const userName = user.displayName || user.email.split('@')[0];
+
+    this.logger.log(
+      `Sending email draft "${emailData.subject}" to ${user.email}`,
+    );
+
+    const success = await this.emailService.sendEmailDraftToSelf(
+      user.email,
+      userName,
+      emailData,
+    );
+
+    if (!success) {
+      throw new BadRequestException(
+        'Failed to send email. Please try again later.',
+      );
+    }
+
+    return {
+      success: true,
+      message: `Email draft sent to ${user.email}`,
+    };
   }
 }

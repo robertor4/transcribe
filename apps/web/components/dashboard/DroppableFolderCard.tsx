@@ -6,20 +6,13 @@ import Link from 'next/link';
 import { Folder } from 'lucide-react';
 import type { Folder as FolderType } from '@/lib/services/folderService';
 
-interface FolderStats {
-  count: number;
-  duration: number;
-}
-
 interface DroppableFolderCardProps {
   folder: FolderType;
-  stats: FolderStats;
   locale: string;
 }
 
 export const DroppableFolderCard = memo(function DroppableFolderCard({
   folder,
-  stats,
   locale,
 }: DroppableFolderCardProps) {
   const { isOver, setNodeRef } = useDroppable({
@@ -67,7 +60,7 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
               {folder.name}
             </div>
             <div className="text-xs text-gray-400 dark:text-gray-500">
-              <span>{stats.count} conversations</span>
+              <span>{folder.conversationCount ?? 0} conversations</span>
             </div>
           </div>
         </div>

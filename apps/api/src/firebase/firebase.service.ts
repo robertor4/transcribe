@@ -1528,17 +1528,37 @@ export class FirebaseService implements OnModuleInit {
   }
 
   /**
-   * Get all folders for a user
+   * Get all folders for a user with conversation counts
    */
   async getUserFolders(userId: string): Promise<Folder[]> {
-    const snapshot = await this.db
-      .collection('folders')
-      .where('userId', '==', userId)
-      .orderBy('sortOrder', 'asc')
-      .orderBy('createdAt', 'asc')
-      .get();
+    // Get folders and transcriptions in parallel for efficiency
+    const [foldersSnapshot, transcriptionsSnapshot] = await Promise.all([
+      this.db
+        .collection('folders')
+        .where('userId', '==', userId)
+        .orderBy('sortOrder', 'asc')
+        .orderBy('createdAt', 'asc')
+        .get(),
+      this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .select('folderId', 'deletedAt') // Only fetch needed fields
+        .get(),
+    ]);
 
-    return snapshot.docs.map((doc) => {
+    // Count conversations per folder (excluding soft-deleted)
+    const folderCounts = new Map<string, number>();
+    for (const doc of transcriptionsSnapshot.docs) {
+      const data = doc.data();
+      if (data.folderId && !data.deletedAt) {
+        folderCounts.set(
+          data.folderId,
+          (folderCounts.get(data.folderId) || 0) + 1,
+        );
+      }
+    }
+
+    return foldersSnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -1546,6 +1566,7 @@ export class FirebaseService implements OnModuleInit {
         name: data.name,
         color: data.color,
         sortOrder: data.sortOrder,
+        conversationCount: folderCounts.get(doc.id) || 0,
         createdAt: data.createdAt?.toDate
           ? data.createdAt.toDate()
           : data.createdAt,

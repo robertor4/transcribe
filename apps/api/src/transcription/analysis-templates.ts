@@ -106,58 +106,155 @@ Return JSON matching this exact schema:
     },
   }),
 
+  // ============================================================
+  // SPECIALIZED EMAIL TEMPLATES
+  // ============================================================
+
   createStructuredTemplate({
-    id: 'email',
-    name: 'Email Summary',
-    description: 'Transform conversations into professional follow-up emails',
+    id: 'followUpEmail',
+    name: 'Follow-up Email',
+    description:
+      'Post-meeting email that recaps discussion, confirms decisions, and assigns action items',
     category: 'content',
-    icon: 'Mail',
+    icon: 'Reply',
     color: 'blue',
-    systemPrompt: `You are an expert email writer. Transform conversation transcripts into clear, concise emails. Adapt your tone based on context — professional for business, casual for friends, formal for executives, etc. Default to professional when no tone is specified. Focus on key points, action items, and next steps. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Based on this conversation transcript, write an email summary and return as JSON.
+    systemPrompt: `You are a professional meeting facilitator who writes clear, action-oriented follow-up emails. Your emails:
+- Confirm what was discussed and decided
+- Assign clear ownership to action items
+- Set expectations for next steps
+- Are scannable and respect the reader's time
+${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Transform this meeting/conversation transcript into a professional follow-up email.
 
 ${PROMPT_INSTRUCTIONS.useContext}
-Additionally for emails:
-- Use the recipient's name in the greeting if provided
-- Default to professional tone only if no tone is specified in context
 
-Extract and structure:
-- subject: Clear, actionable subject line
-- greeting: Greeting appropriate to the tone and recipient
-- body: Array of paragraphs summarizing the key points
-- keyPoints: Array of bullet points highlighting main takeaways
-- actionItems: Array of next steps or actions required
-- closing: Closing appropriate to the tone
+Create a follow-up email that:
+1. Opens with appreciation and brief meeting context
+2. Recaps the key discussion points concisely
+3. Lists decisions that were confirmed during the meeting
+4. Assigns action items with clear owners and deadlines when mentioned
+5. States what happens next
 
-Keep the email focused and easy to scan.
+For action items, extract:
+- task: What needs to be done (be specific)
+- owner: Person's name if mentioned, or null
+- deadline: Due date/timeframe if discussed, or null
+
 ${PROMPT_INSTRUCTIONS.languageConsistency}
 
 Return JSON matching this exact schema:
 {
-  "type": "email",
-  "subject": "string",
-  "greeting": "string",
+  "type": "followUpEmail",
+  "subject": "string - action-oriented subject line",
+  "greeting": "string - warm professional greeting",
+  "meetingRecap": "string - 2-3 sentence summary of what was discussed",
   "body": ["paragraph1", "paragraph2"],
-  "keyPoints": ["point1", "point2"],
-  "actionItems": ["action1", "action2"],
-  "closing": "string"
+  "decisionsConfirmed": ["decision1", "decision2"],
+  "actionItems": [{ "task": "string", "owner": "string|null", "deadline": "string|null" }],
+  "nextSteps": "string - what happens next",
+  "closing": "string - professional sign-off"
 }`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 15,
     featured: true,
-    order: 0,
-    tags: ['email', 'communication', 'follow-up', 'business'],
-    targetRoles: ['sales', 'account-manager', 'founder', 'consultant'],
+    order: 1,
+    tags: ['email', 'follow-up', 'meeting', 'action-items'],
+    targetRoles: ['project-manager', 'team-lead', 'consultant', 'founder'],
     templateGroup: 'email',
     jsonSchema: {
       type: 'object',
       properties: {
-        type: { type: 'string', const: 'email' },
+        type: { type: 'string', const: 'followUpEmail' },
+        subject: { type: 'string' },
+        greeting: { type: 'string' },
+        meetingRecap: { type: 'string' },
+        body: SCHEMA_FRAGMENTS.stringArray,
+        decisionsConfirmed: SCHEMA_FRAGMENTS.stringArray,
+        actionItems: {
+          type: 'array',
+          items: SCHEMA_FRAGMENTS.emailActionItem,
+        },
+        nextSteps: { type: 'string' },
+        closing: { type: 'string' },
+      },
+      required: [
+        'type',
+        'subject',
+        'greeting',
+        'meetingRecap',
+        'body',
+        'decisionsConfirmed',
+        'actionItems',
+        'nextSteps',
+        'closing',
+      ],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'salesEmail',
+    name: 'Sales Outreach',
+    description:
+      'Post-discovery call email that addresses pain points and proposes value with clear CTA',
+    category: 'content',
+    icon: 'TrendingUp',
+    color: 'green',
+    systemPrompt: `You are a sales enablement expert who crafts compelling follow-up emails after discovery calls. Your emails:
+- Reference specific pain points the prospect mentioned
+- Propose clear value without being pushy
+- Include a single, clear call-to-action
+- Create appropriate urgency when relevant
+${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Transform this sales/discovery call transcript into a persuasive follow-up email.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+Create a sales follow-up email that:
+1. Opens by referencing something specific from the conversation (shows you listened)
+2. Acknowledges 2-3 key pain points they mentioned
+3. Proposes value that directly addresses those pain points
+4. Includes one clear, low-friction call-to-action
+5. Optionally creates subtle urgency if there's a natural reason
+
+The tone should be helpful and consultative, not pushy or salesy.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "salesEmail",
+  "subject": "string - personalized, not salesy subject line",
+  "greeting": "string - warm, personal greeting",
+  "body": ["paragraph1", "paragraph2"],
+  "painPointsAddressed": ["pain point 1", "pain point 2"],
+  "valueProposition": "string - how you solve their problems",
+  "callToAction": "string - single clear next step",
+  "urgencyHook": "string (optional) - time-sensitive element if natural",
+  "closing": "string - confident but not pushy sign-off"
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    featured: true,
+    order: 2,
+    tags: ['email', 'sales', 'outreach', 'discovery', 'follow-up'],
+    targetRoles: [
+      'sales',
+      'account-executive',
+      'founder',
+      'business-development',
+    ],
+    templateGroup: 'email',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'salesEmail' },
         subject: { type: 'string' },
         greeting: { type: 'string' },
         body: SCHEMA_FRAGMENTS.stringArray,
-        keyPoints: SCHEMA_FRAGMENTS.stringArray,
-        actionItems: SCHEMA_FRAGMENTS.stringArray,
+        painPointsAddressed: SCHEMA_FRAGMENTS.stringArray,
+        valueProposition: { type: 'string' },
+        callToAction: { type: 'string' },
+        urgencyHook: { type: 'string' },
         closing: { type: 'string' },
       },
       required: [
@@ -165,8 +262,160 @@ Return JSON matching this exact schema:
         'subject',
         'greeting',
         'body',
-        'keyPoints',
-        'actionItems',
+        'painPointsAddressed',
+        'valueProposition',
+        'callToAction',
+        'closing',
+      ],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'internalUpdate',
+    name: 'Internal Update',
+    description:
+      'Stakeholder brief with TLDR, key decisions, blockers, and next milestone',
+    category: 'professional',
+    icon: 'Users',
+    color: 'amber',
+    systemPrompt: `You are a chief of staff who writes concise stakeholder updates. Your updates:
+- Lead with the bottom line (BLUF format)
+- Highlight decisions made and blockers encountered
+- Set clear expectations for next milestone
+- Respect busy executives' time
+${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Transform this conversation into a concise internal update email for stakeholders.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+Create an internal update that:
+1. Opens with a one-sentence TLDR (Bottom Line Up Front)
+2. Provides brief context in the body
+3. Lists key decisions that were made
+4. Flags any blockers or risks (if present)
+5. States the next milestone or checkpoint
+
+Keep it scannable - busy executives should get the full picture in 30 seconds.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "internalUpdate",
+  "subject": "string - clear subject indicating update type and topic",
+  "greeting": "string - brief, appropriate greeting",
+  "tldr": "string - one-sentence bottom line",
+  "body": ["paragraph1", "paragraph2"],
+  "keyDecisions": ["decision1", "decision2"],
+  "blockers": ["blocker1", "blocker2"] (optional - only if blockers exist),
+  "nextMilestone": "string - next checkpoint or deliverable",
+  "closing": "string - brief sign-off"
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    featured: true,
+    order: 3,
+    tags: ['email', 'internal', 'update', 'stakeholder', 'status'],
+    targetRoles: ['project-manager', 'chief-of-staff', 'team-lead', 'founder'],
+    templateGroup: 'email',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'internalUpdate' },
+        subject: { type: 'string' },
+        greeting: { type: 'string' },
+        tldr: { type: 'string' },
+        body: SCHEMA_FRAGMENTS.stringArray,
+        keyDecisions: SCHEMA_FRAGMENTS.stringArray,
+        blockers: SCHEMA_FRAGMENTS.stringArray,
+        nextMilestone: { type: 'string' },
+        closing: { type: 'string' },
+      },
+      required: [
+        'type',
+        'subject',
+        'greeting',
+        'tldr',
+        'body',
+        'keyDecisions',
+        'nextMilestone',
+        'closing',
+      ],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'clientProposal',
+    name: 'Client Proposal',
+    description:
+      'Formal proposal email with requirements summary, solution overview, and next steps',
+    category: 'content',
+    icon: 'FileSignature',
+    color: 'indigo',
+    systemPrompt: `You are a solutions architect who crafts professional proposal emails. Your proposals:
+- Summarize client requirements clearly
+- Present solutions that directly address their needs
+- Provide timeline estimates when discussed
+- Include clear next steps to move forward
+${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Transform this client conversation into a professional proposal email.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+Create a client proposal email that:
+1. Opens with an executive summary of what you're proposing
+2. Summarizes their requirements as you understood them
+3. Presents your proposed solution
+4. Includes timeline estimate if discussed (or placeholder if not)
+5. Provides clear next steps to engage
+
+The tone should be professional, confident, and client-focused.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "clientProposal",
+  "subject": "string - professional subject indicating proposal",
+  "greeting": "string - formal greeting",
+  "executiveSummary": "string - brief overview of what you're proposing",
+  "body": ["paragraph1", "paragraph2"],
+  "requirementsSummary": ["requirement1", "requirement2"],
+  "proposedSolution": "string - description of your solution",
+  "timelineEstimate": "string (optional) - timeline if discussed",
+  "nextStepsToEngage": "string - how to proceed",
+  "closing": "string - professional sign-off"
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    featured: true,
+    order: 4,
+    tags: ['email', 'proposal', 'client', 'business', 'sales'],
+    targetRoles: ['consultant', 'sales', 'founder', 'account-manager'],
+    templateGroup: 'email',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'clientProposal' },
+        subject: { type: 'string' },
+        greeting: { type: 'string' },
+        executiveSummary: { type: 'string' },
+        body: SCHEMA_FRAGMENTS.stringArray,
+        requirementsSummary: SCHEMA_FRAGMENTS.stringArray,
+        proposedSolution: { type: 'string' },
+        timelineEstimate: { type: 'string' },
+        nextStepsToEngage: { type: 'string' },
+        closing: { type: 'string' },
+      },
+      required: [
+        'type',
+        'subject',
+        'greeting',
+        'executiveSummary',
+        'body',
+        'requirementsSummary',
+        'proposedSolution',
+        'nextStepsToEngage',
         'closing',
       ],
     },

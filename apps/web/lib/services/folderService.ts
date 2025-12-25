@@ -17,6 +17,7 @@ export interface Folder {
   name: string;
   color?: string;
   sortOrder?: number;
+  conversationCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -30,6 +31,7 @@ function toFolder(data: BackendFolder): Folder {
     name: data.name,
     color: data.color,
     sortOrder: data.sortOrder,
+    conversationCount: data.conversationCount,
     createdAt: new Date(data.createdAt),
     updatedAt: new Date(data.updatedAt),
   };

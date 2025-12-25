@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, Plus, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -42,22 +42,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
 
   // Memoize recent conversations to prevent recalculation on every render
   const recentConversations = useMemo(() => conversations.slice(0, 5), [conversations]);
-
-  // Pre-compute folder counts to avoid O(n*m) filtering in render
-  const folderCounts = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const conv of conversations) {
-      if (conv.folderId) {
-        counts.set(conv.folderId, (counts.get(conv.folderId) || 0) + 1);
-      }
-    }
-    return counts;
-  }, [conversations]);
-
-  // Memoized getter for folder count
-  const getFolderCount = useCallback((folderId: string) => {
-    return folderCounts.get(folderId) || 0;
-  }, [folderCounts]);
 
   const handleNewConversation = () => {
     if (onNewConversation) {
@@ -296,7 +280,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation }: LeftNavig
                     </span>
                   </div>
                   <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                    {getFolderCount(folder.id)}
+                    {folder.conversationCount ?? 0}
                   </span>
                 </Link>
               ))}

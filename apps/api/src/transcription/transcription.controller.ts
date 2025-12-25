@@ -1000,6 +1000,29 @@ export class TranscriptionController {
   }
 
   /**
+   * Send an email analysis draft to the user's own email address
+   * Rate limited to 5 emails per minute to prevent abuse
+   */
+  @Post('analyses/:analysisId/send-to-self')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 emails per minute
+  async sendEmailToSelf(
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    const result = await this.onDemandAnalysisService.sendEmailToSelf(
+      analysisId,
+      req.user.uid,
+    );
+
+    return {
+      success: result.success,
+      data: { message: result.message },
+      message: result.message,
+    };
+  }
+
+  /**
    * Estimate audio duration based on file size and mime type
    * This is a rough estimate - actual duration will be determined after transcription
    */

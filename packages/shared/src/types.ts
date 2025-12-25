@@ -91,6 +91,7 @@ export interface Folder {
   name: string;
   color?: string;
   sortOrder?: number;
+  conversationCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -188,14 +189,67 @@ export interface ActionItemsOutput {
   longTermActions: ActionItem[]; // Beyond this month
 }
 
-/** Structured email output */
-export interface EmailOutput {
-  type: 'email';
+// ============================================================
+// SPECIALIZED EMAIL OUTPUT TYPES
+// ============================================================
+
+/** Action item with owner for email templates */
+export interface EmailActionItem {
+  task: string;
+  owner: string | null;
+  deadline: string | null;
+}
+
+/** Follow-up Email - Post-meeting recap with decisions and action items */
+export interface FollowUpEmailOutput {
+  type: 'followUpEmail';
+  subject: string;
+  greeting: string;
+  meetingRecap: string;
+  body: string[];
+  decisionsConfirmed: string[];
+  actionItems: EmailActionItem[];
+  nextSteps: string;
+  closing: string;
+}
+
+/** Sales Outreach Email - Post-discovery call with value proposition */
+export interface SalesEmailOutput {
+  type: 'salesEmail';
   subject: string;
   greeting: string;
   body: string[];
-  keyPoints: string[];
-  actionItems: string[];
+  painPointsAddressed: string[];
+  valueProposition: string;
+  callToAction: string;
+  urgencyHook?: string;
+  closing: string;
+}
+
+/** Internal Update Email - Stakeholder brief with TLDR and decisions */
+export interface InternalUpdateOutput {
+  type: 'internalUpdate';
+  subject: string;
+  greeting: string;
+  tldr: string;
+  body: string[];
+  keyDecisions: string[];
+  blockers?: string[];
+  nextMilestone: string;
+  closing: string;
+}
+
+/** Client Proposal Email - Formal proposal with requirements and solution */
+export interface ClientProposalOutput {
+  type: 'clientProposal';
+  subject: string;
+  greeting: string;
+  executiveSummary: string;
+  body: string[];
+  requirementsSummary: string[];
+  proposedSolution: string;
+  timelineEstimate?: string;
+  nextStepsToEngage: string;
   closing: string;
 }
 
@@ -260,7 +314,10 @@ export interface CommunicationAnalysisOutput {
 /** Union type for all structured outputs */
 export type StructuredOutput =
   | ActionItemsOutput
-  | EmailOutput
+  | FollowUpEmailOutput
+  | SalesEmailOutput
+  | InternalUpdateOutput
+  | ClientProposalOutput
   | BlogPostOutput
   | LinkedInOutput
   | CommunicationAnalysisOutput;

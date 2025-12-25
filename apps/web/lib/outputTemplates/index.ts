@@ -10,7 +10,12 @@ export * from './types';
 
 // Export individual templates
 export { transcribeOnlyTemplate } from './transcribeOnly';
-export { emailTemplate } from './email';
+// Specialized email templates (replaced generic email)
+export { followUpEmailTemplate } from './followUpEmail';
+export { salesEmailTemplate } from './salesEmail';
+export { internalUpdateTemplate } from './internalUpdate';
+export { clientProposalTemplate } from './clientProposal';
+// Other templates
 export { blogPostTemplate } from './blogPost';
 export { linkedinPostTemplate } from './linkedinPost';
 export { actionItemsTemplate } from './actionItems';
@@ -19,7 +24,10 @@ export { userStoriesTemplate } from './userStories'; // Keep for future, not in 
 
 // Import templates for registry
 import { transcribeOnlyTemplate } from './transcribeOnly';
-import { emailTemplate } from './email';
+import { followUpEmailTemplate } from './followUpEmail';
+import { salesEmailTemplate } from './salesEmail';
+import { internalUpdateTemplate } from './internalUpdate';
+import { clientProposalTemplate } from './clientProposal';
 import { blogPostTemplate } from './blogPost';
 import { linkedinPostTemplate } from './linkedinPost';
 import { actionItemsTemplate } from './actionItems';
@@ -27,12 +35,17 @@ import { communicationAnalysisTemplate } from './communicationAnalysis';
 import { OutputTemplate } from './types';
 
 /**
- * Array of all output templates (6 types: 1 quick action + 5 output templates)
+ * Array of all output templates
  * Use this for iteration in UI components
  */
 export const allTemplates: readonly OutputTemplate[] = [
   transcribeOnlyTemplate, // Quick action first
-  emailTemplate,
+  // Specialized email templates
+  followUpEmailTemplate,
+  salesEmailTemplate,
+  internalUpdateTemplate,
+  clientProposalTemplate,
+  // Other templates
   blogPostTemplate,
   linkedinPostTemplate,
   actionItemsTemplate,
@@ -51,4 +64,4 @@ export function getTemplateById(id: string): OutputTemplate | undefined {
 /**
  * Type helper to extract all template IDs as a union type
  */
-export type TemplateId = typeof allTemplates[number]['id'];
+export type TemplateId = (typeof allTemplates)[number]['id'];

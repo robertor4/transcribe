@@ -164,6 +164,17 @@ export const SCHEMA_FRAGMENTS = {
     required: ['task', 'owner', 'deadline', 'priority', 'priorityReason'],
   },
 
+  /** Email action item schema (simplified, no priority) */
+  emailActionItem: {
+    type: 'object',
+    properties: {
+      task: { type: 'string' },
+      owner: { type: ['string', 'null'] },
+      deadline: { type: ['string', 'null'] },
+    },
+    required: ['task', 'owner', 'deadline'],
+  },
+
   /** String array schema */
   stringArray: {
     type: 'array',

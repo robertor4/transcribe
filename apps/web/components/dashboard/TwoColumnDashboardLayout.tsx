@@ -9,16 +9,10 @@ import { DroppableFolderCard } from './DroppableFolderCard';
 import type { Conversation } from '@/lib/types/conversation';
 import type { Folder } from '@/lib/services/folderService';
 
-interface FolderStats {
-  count: number;
-  duration: number;
-}
-
 interface TwoColumnDashboardLayoutProps {
   folders: Folder[];
   ungroupedConversations: Conversation[];
   locale: string;
-  getFolderStats: (folderId: string) => FolderStats;
   onMoveToFolder: (conversationId: string, folderId: string) => Promise<void>;
   onCreateFolder: (name: string) => Promise<void>;
   onNewConversation: () => void;
@@ -42,7 +36,6 @@ export function TwoColumnDashboardLayout({
   folders,
   ungroupedConversations,
   locale,
-  getFolderStats,
   onMoveToFolder,
   onCreateFolder,
   onNewConversation,
@@ -202,7 +195,6 @@ export function TwoColumnDashboardLayout({
                     <DroppableFolderCard
                       key={folder.id}
                       folder={folder}
-                      stats={getFolderStats(folder.id)}
                       locale={locale}
                     />
                   ))}

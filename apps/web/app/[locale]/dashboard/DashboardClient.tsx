@@ -124,29 +124,6 @@ export function DashboardClient() {
     [refreshConversations]
   );
 
-  // Pre-compute folder stats map to avoid O(n*m) filtering in render
-  const folderStatsMap = useMemo(() => {
-    const map = new Map<string, { count: number; duration: number }>();
-    for (const conv of conversations) {
-      if (conv.folderId) {
-        const existing = map.get(conv.folderId) || { count: 0, duration: 0 };
-        map.set(conv.folderId, {
-          count: existing.count + 1,
-          duration: existing.duration + (conv.source?.audioDuration || 0),
-        });
-      }
-    }
-    return map;
-  }, [conversations]);
-
-  // Memoized getter for folder stats - O(1) lookup instead of O(n) filter
-  const getFolderStats = useCallback(
-    (folderId: string) => {
-      return folderStatsMap.get(folderId) || { count: 0, duration: 0 };
-    },
-    [folderStatsMap]
-  );
-
   // Context-aware button handlers - memoized to prevent re-renders
   const handleRecordAudio = useCallback(() => {
     setCreateModalConfig({
@@ -229,7 +206,6 @@ export function DashboardClient() {
                   folders={folders}
                   ungroupedConversations={ungroupedConversations}
                   locale={locale}
-                  getFolderStats={getFolderStats}
                   onMoveToFolder={handleMoveToFolder}
                   onCreateFolder={handleCreateFolder}
                   onNewConversation={handleMoreTemplates}

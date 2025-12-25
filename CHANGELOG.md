@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Folder Conversation Counts**: Fixed incorrect conversation counts in both sidebar and dashboard folder cards
+  - Backend now returns `conversationCount` with each folder (calculated server-side)
+  - Sidebar and dashboard folder cards now use backend-provided count instead of counting from paginated context
+  - Previously, folders showed counts based only on conversations loaded in memory (first 20)
+  - Now accurately reflects total conversations per folder regardless of pagination
+  - Files: [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [types.ts](packages/shared/src/types.ts), [folderService.ts](apps/web/lib/services/folderService.ts), [DroppableFolderCard.tsx](apps/web/components/dashboard/DroppableFolderCard.tsx), [TwoColumnDashboardLayout.tsx](apps/web/components/dashboard/TwoColumnDashboardLayout.tsx), [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx)
+
+### Added
+- **Specialized Email Templates**: Replaced generic "Email Summary" with 4 purpose-built email templates for business professionals
+  - **Follow-up Email** (`followUpEmail`): Post-meeting recap with decisions confirmed, action items with owners/deadlines, and next steps
+  - **Sales Outreach** (`salesEmail`): Post-discovery call email addressing pain points, value proposition, and clear CTA
+  - **Internal Update** (`internalUpdate`): Stakeholder brief with TL;DR, key decisions, blockers/risks, and next milestone
+  - **Client Proposal** (`clientProposal`): Formal proposal with executive summary, requirements, solution, and timeline
+  - Each template has specialized UI sections with semantic colors (purple for decisions, green for actions, amber for challenges, etc.)
+  - Updated "Create AI Asset" modal to show 4 specialized email options instead of generic "Email"
+  - Files: [types.ts](packages/shared/src/types.ts), [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [index.tsx](apps/web/components/outputTemplates/index.tsx), [outputToMarkdown.ts](apps/web/lib/outputToMarkdown.ts), [lib/outputTemplates/](apps/web/lib/outputTemplates/)
+- **Send Email Draft to Myself**: Email templates now include a "Send to myself" feature
+  - Displays user's email address with a send button in brand purple styling
+  - Sends the email draft to the user's own inbox for review and forwarding
+  - Email HTML is clean and natural-looking (not templated) - can be forwarded professionally
+  - Includes a branded draft banner at top with instructions
+  - Rate limited to 5 emails per minute to prevent abuse
+  - Files: [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [email.service.ts](apps/api/src/email/email.service.ts), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [api.ts](apps/web/lib/api.ts)
+- **Firebase Cleanup Script**: Added one-time script to remove legacy email analyses
+  - File: [cleanup-email-analyses.ts](scripts/cleanup-email-analyses.ts)
+
+### Removed
+- **Legacy Email Summary Template**: Removed generic `email` template type in favor of specialized templates
+  - Old `EmailOutput` type replaced with `FollowUpEmailOutput`, `SalesEmailOutput`, `InternalUpdateOutput`, `ClientProposalOutput`
+  - Run cleanup script before deployment to remove existing email analyses from Firebase
+
 ### Changed
 - **ESLint Configuration Cleanup**: Resolved all linter warnings across the codebase
   - Frontend: Added eslint-disable comments for legitimate `<img>` element usage (SVG logos, user profile photos, QR codes)

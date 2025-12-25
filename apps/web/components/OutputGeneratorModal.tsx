@@ -1,15 +1,72 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle, Mail, FileText, BarChart3 } from 'lucide-react';
 import { Button } from './Button';
 import { GeneratingLoader } from './GeneratingLoader';
-import { allTemplates, TemplateId } from '@/lib/outputTemplates';
+import { allTemplates, TemplateId, OutputTemplate } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
 
 // Filter out transcribe-only since we're already in a conversation with transcription
 const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
+
+// Categorize templates
+const EMAIL_IDS = ['followUpEmail', 'salesEmail', 'internalUpdate', 'clientProposal'];
+const CONTENT_IDS = ['blogPost', 'linkedin'];
+const ANALYSIS_IDS = ['actionItems', 'communicationAnalysis'];
+
+const emailTemplates = outputTemplates.filter(t => EMAIL_IDS.includes(t.id));
+const contentTemplates = outputTemplates.filter(t => CONTENT_IDS.includes(t.id));
+const analysisTemplates = outputTemplates.filter(t => ANALYSIS_IDS.includes(t.id));
+
+// Template card component
+function TemplateCard({
+  template,
+  isSelected,
+  onSelect,
+}: {
+  template: OutputTemplate;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const Icon = template.icon;
+  return (
+    <button
+      onClick={onSelect}
+      className={`group relative p-5 rounded-xl border-2 text-left transition-all duration-200 ${
+        isSelected
+          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-[#8D6AFA]/10 shadow-md'
+          : 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA]/50 hover:shadow-sm'
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
+            isSelected
+              ? 'bg-[#8D6AFA] text-white'
+              : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-600 dark:text-gray-300'
+          }`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="flex-1 min-w-0 pr-4">
+          <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1">
+            {template.name}
+          </h4>
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
+            {template.description}
+          </p>
+        </div>
+        {isSelected && (
+          <div className="absolute top-4 right-4 w-5 h-5 rounded-full bg-[#8D6AFA] flex items-center justify-center">
+            <span className="text-white text-xs">✓</span>
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
 
 interface OutputGeneratorModalProps {
   isOpen: boolean;
@@ -97,9 +154,9 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
       />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-3xl w-full mx-4 max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex-shrink-0 flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-700">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               {t('title')}
@@ -117,7 +174,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         </div>
 
         {/* Progress Indicator */}
-        <div className="px-8 py-4 bg-gray-50 dark:bg-gray-800/50">
+        <div className="flex-shrink-0 px-8 py-4 bg-gray-50 dark:bg-gray-800/50">
           <div className="flex items-start">
             {[
               { num: 1, label: t('steps.selectType') },
@@ -159,11 +216,11 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         </div>
 
         {/* Content */}
-        <div className="px-8 py-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 220px)' }}>
+        <div className="px-8 py-6 overflow-y-auto flex-1 min-h-0">
           {/* Step 1: Select Output Type */}
           {step === 1 && (
-            <div className="space-y-4">
-              <div className="mb-6">
+            <div className="space-y-8">
+              <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
                   What would you like to create?
                 </h3>
@@ -172,51 +229,64 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {outputTemplates.map((template) => {
-                  const Icon = template.icon;
-                  const isSelected = selectedType === template.id;
-
-                  return (
-                    <button
+              {/* Email Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Mail className="w-4 h-4 text-blue-500" />
+                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Emails
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {emailTemplates.map((template) => (
+                    <TemplateCard
                       key={template.id}
-                      onClick={() => setSelectedType(template.id)}
-                      className={`group relative p-6 rounded-xl border-2 text-left transition-all duration-200 ${
-                        isSelected
-                          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-[#8D6AFA]/10 shadow-lg scale-105'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA]/50 hover:shadow-md'
-                      }`}
-                    >
-                      <div className="flex items-start gap-4">
-                        <div
-                          className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
-                            isSelected
-                              ? 'bg-[#8D6AFA] text-white'
-                              : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-600 dark:text-gray-300'
-                          }`}
-                        >
-                          <Icon className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">
-                            {template.name}
-                          </h4>
-                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                            {template.description}
-                          </p>
-                          <p className="text-xs font-medium text-gray-500 dark:text-gray-500 italic">
-                            {template.example}
-                          </p>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#8D6AFA] flex items-center justify-center">
-                            <span className="text-white text-sm">✓</span>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Content Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="w-4 h-4 text-purple-500" />
+                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Content
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {contentTemplates.map((template) => (
+                    <TemplateCard
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Analysis Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <BarChart3 className="w-4 h-4 text-green-500" />
+                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Analysis
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {analysisTemplates.map((template) => (
+                    <TemplateCard
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -366,7 +436,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
 
         {/* Footer */}
         {step < 4 && (
-          <div className="px-8 py-6 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="flex-shrink-0 px-8 py-5 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <div>
               {step > 1 && (
                 <Button

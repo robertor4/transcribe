@@ -1,7 +1,11 @@
 import type {
   StructuredOutput,
   ActionItemsOutput,
-  EmailOutput,
+  FollowUpEmailOutput,
+  SalesEmailOutput,
+  InternalUpdateOutput,
+  ClientProposalOutput,
+  EmailActionItem,
   BlogPostOutput,
   LinkedInOutput,
   CommunicationAnalysisOutput,
@@ -15,8 +19,15 @@ export function structuredOutputToHtml(content: StructuredOutput): string {
   switch (content.type) {
     case 'actionItems':
       return actionItemsToHtml(content as ActionItemsOutput);
-    case 'email':
-      return emailToHtml(content as EmailOutput);
+    // Specialized email templates
+    case 'followUpEmail':
+      return followUpEmailToHtml(content as FollowUpEmailOutput);
+    case 'salesEmail':
+      return salesEmailToHtml(content as SalesEmailOutput);
+    case 'internalUpdate':
+      return internalUpdateToHtml(content as InternalUpdateOutput);
+    case 'clientProposal':
+      return clientProposalToHtml(content as ClientProposalOutput);
     case 'blogPost':
       return blogPostToHtml(content as BlogPostOutput);
     case 'linkedin':
@@ -36,8 +47,15 @@ export function structuredOutputToMarkdown(content: StructuredOutput): string {
   switch (content.type) {
     case 'actionItems':
       return actionItemsToMarkdown(content as ActionItemsOutput);
-    case 'email':
-      return emailToMarkdown(content as EmailOutput);
+    // Specialized email templates
+    case 'followUpEmail':
+      return followUpEmailToMarkdown(content as FollowUpEmailOutput);
+    case 'salesEmail':
+      return salesEmailToMarkdown(content as SalesEmailOutput);
+    case 'internalUpdate':
+      return internalUpdateToMarkdown(content as InternalUpdateOutput);
+    case 'clientProposal':
+      return clientProposalToMarkdown(content as ClientProposalOutput);
     case 'blogPost':
       return blogPostToMarkdown(content as BlogPostOutput);
     case 'linkedin':
@@ -104,7 +122,22 @@ function actionItemsToMarkdown(data: ActionItemsOutput): string {
   return sections.join('\n').trim();
 }
 
-function emailToMarkdown(data: EmailOutput): string {
+// ============================================================
+// SPECIALIZED EMAIL MARKDOWN FUNCTIONS
+// ============================================================
+
+function formatEmailActionItem(item: EmailActionItem): string {
+  let line = `- ${item.task}`;
+  const meta: string[] = [];
+  if (item.owner) meta.push(`@${item.owner}`);
+  if (item.deadline) meta.push(`Due: ${item.deadline}`);
+  if (meta.length > 0) {
+    line += ` (${meta.join(' · ')})`;
+  }
+  return line;
+}
+
+function followUpEmailToMarkdown(data: FollowUpEmailOutput): string {
   const sections: string[] = [];
 
   sections.push(`# ${data.subject}`);
@@ -117,21 +150,154 @@ function emailToMarkdown(data: EmailOutput): string {
     sections.push('');
   });
 
-  if (data.keyPoints.length > 0) {
-    sections.push('**Key Points:**');
-    data.keyPoints.forEach(point => {
-      sections.push(`- ${point}`);
+  sections.push('**Meeting Recap:**');
+  sections.push(data.meetingRecap);
+  sections.push('');
+
+  if (data.decisionsConfirmed.length > 0) {
+    sections.push('**Decisions Confirmed:**');
+    data.decisionsConfirmed.forEach(decision => {
+      sections.push(`- ${decision}`);
     });
     sections.push('');
   }
 
   if (data.actionItems.length > 0) {
     sections.push('**Action Items:**');
-    data.actionItems.forEach(action => {
-      sections.push(`- ${action}`);
+    data.actionItems.forEach(item => {
+      sections.push(formatEmailActionItem(item));
     });
     sections.push('');
   }
+
+  sections.push('**Next Steps:**');
+  sections.push(data.nextSteps);
+  sections.push('');
+
+  sections.push(data.closing);
+
+  return sections.join('\n').trim();
+}
+
+function salesEmailToMarkdown(data: SalesEmailOutput): string {
+  const sections: string[] = [];
+
+  sections.push(`# ${data.subject}`);
+  sections.push('');
+  sections.push(data.greeting);
+  sections.push('');
+
+  data.body.forEach(paragraph => {
+    sections.push(paragraph);
+    sections.push('');
+  });
+
+  if (data.painPointsAddressed.length > 0) {
+    sections.push('**Challenges We Discussed:**');
+    data.painPointsAddressed.forEach(point => {
+      sections.push(`- ${point}`);
+    });
+    sections.push('');
+  }
+
+  sections.push('**How We Can Help:**');
+  sections.push(data.valueProposition);
+  sections.push('');
+
+  sections.push('**Next Step:**');
+  sections.push(data.callToAction);
+  sections.push('');
+
+  if (data.urgencyHook) {
+    sections.push(`*${data.urgencyHook}*`);
+    sections.push('');
+  }
+
+  sections.push(data.closing);
+
+  return sections.join('\n').trim();
+}
+
+function internalUpdateToMarkdown(data: InternalUpdateOutput): string {
+  const sections: string[] = [];
+
+  sections.push(`# ${data.subject}`);
+  sections.push('');
+  sections.push(data.greeting);
+  sections.push('');
+
+  sections.push('**TL;DR:**');
+  sections.push(data.tldr);
+  sections.push('');
+
+  data.body.forEach(paragraph => {
+    sections.push(paragraph);
+    sections.push('');
+  });
+
+  if (data.keyDecisions.length > 0) {
+    sections.push('**Key Decisions:**');
+    data.keyDecisions.forEach(decision => {
+      sections.push(`- ${decision}`);
+    });
+    sections.push('');
+  }
+
+  if (data.blockers && data.blockers.length > 0) {
+    sections.push('**Blockers / Risks:**');
+    data.blockers.forEach(blocker => {
+      sections.push(`- ${blocker}`);
+    });
+    sections.push('');
+  }
+
+  sections.push('**Next Milestone:**');
+  sections.push(data.nextMilestone);
+  sections.push('');
+
+  sections.push(data.closing);
+
+  return sections.join('\n').trim();
+}
+
+function clientProposalToMarkdown(data: ClientProposalOutput): string {
+  const sections: string[] = [];
+
+  sections.push(`# ${data.subject}`);
+  sections.push('');
+  sections.push(data.greeting);
+  sections.push('');
+
+  sections.push('**Executive Summary:**');
+  sections.push(data.executiveSummary);
+  sections.push('');
+
+  data.body.forEach(paragraph => {
+    sections.push(paragraph);
+    sections.push('');
+  });
+
+  if (data.requirementsSummary.length > 0) {
+    sections.push('**Your Requirements:**');
+    data.requirementsSummary.forEach(req => {
+      sections.push(`- ${req}`);
+    });
+    sections.push('');
+  }
+
+  sections.push('**Proposed Solution:**');
+  sections.push(data.proposedSolution);
+  sections.push('');
+
+  if (data.timelineEstimate) {
+    sections.push('**Timeline Estimate:**');
+    sections.push(data.timelineEstimate);
+    sections.push('');
+  }
+
+  sections.push('**Next Steps:**');
+  sections.push(data.nextStepsToEngage);
+  sections.push('');
 
   sections.push(data.closing);
 
@@ -300,7 +466,25 @@ function actionItemsToHtml(data: ActionItemsOutput): string {
   return parts.join('');
 }
 
-function emailToHtml(data: EmailOutput): string {
+// ============================================================
+// SPECIALIZED EMAIL HTML FUNCTIONS
+// ============================================================
+
+function formatEmailActionItemHtml(item: EmailActionItem): string {
+  const meta: string[] = [];
+  if (item.owner) meta.push(`@${escapeHtml(item.owner)}`);
+  if (item.deadline) meta.push(`Due: ${escapeHtml(item.deadline)}`);
+
+  let html = `<li>${escapeHtml(item.task)}`;
+  if (meta.length > 0) {
+    html += `<br><span style="color: #666; font-size: 0.9em;">${meta.join(' · ')}</span>`;
+  }
+  html += '</li>';
+
+  return html;
+}
+
+function followUpEmailToHtml(data: FollowUpEmailOutput): string {
   const parts: string[] = [];
 
   parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
@@ -310,19 +494,128 @@ function emailToHtml(data: EmailOutput): string {
     parts.push(`<p>${escapeHtml(paragraph)}</p>`);
   });
 
-  if (data.keyPoints.length > 0) {
-    parts.push('<p><strong>Key Points:</strong></p>');
+  parts.push(`<p><strong>Meeting Recap:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.meetingRecap)}</p>`);
+
+  if (data.decisionsConfirmed.length > 0) {
+    parts.push('<p><strong>Decisions Confirmed:</strong></p>');
     parts.push('<ul>');
-    data.keyPoints.forEach(point => parts.push(`<li>${escapeHtml(point)}</li>`));
+    data.decisionsConfirmed.forEach(decision => parts.push(`<li>${escapeHtml(decision)}</li>`));
     parts.push('</ul>');
   }
 
   if (data.actionItems.length > 0) {
     parts.push('<p><strong>Action Items:</strong></p>');
     parts.push('<ul>');
-    data.actionItems.forEach(action => parts.push(`<li>${escapeHtml(action)}</li>`));
+    data.actionItems.forEach(item => parts.push(formatEmailActionItemHtml(item)));
     parts.push('</ul>');
   }
+
+  parts.push(`<p><strong>Next Steps:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.nextSteps)}</p>`);
+
+  parts.push(`<p>${escapeHtml(data.closing)}</p>`);
+
+  return parts.join('');
+}
+
+function salesEmailToHtml(data: SalesEmailOutput): string {
+  const parts: string[] = [];
+
+  parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
+  parts.push(`<p>${escapeHtml(data.greeting)}</p>`);
+
+  data.body.forEach(paragraph => {
+    parts.push(`<p>${escapeHtml(paragraph)}</p>`);
+  });
+
+  if (data.painPointsAddressed.length > 0) {
+    parts.push('<p><strong>Challenges We Discussed:</strong></p>');
+    parts.push('<ul>');
+    data.painPointsAddressed.forEach(point => parts.push(`<li>${escapeHtml(point)}</li>`));
+    parts.push('</ul>');
+  }
+
+  parts.push(`<p><strong>How We Can Help:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.valueProposition)}</p>`);
+
+  parts.push(`<p><strong>Next Step:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.callToAction)}</p>`);
+
+  if (data.urgencyHook) {
+    parts.push(`<p><em>${escapeHtml(data.urgencyHook)}</em></p>`);
+  }
+
+  parts.push(`<p>${escapeHtml(data.closing)}</p>`);
+
+  return parts.join('');
+}
+
+function internalUpdateToHtml(data: InternalUpdateOutput): string {
+  const parts: string[] = [];
+
+  parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
+  parts.push(`<p>${escapeHtml(data.greeting)}</p>`);
+
+  parts.push(`<p><strong>TL;DR:</strong></p>`);
+  parts.push(`<p style="background: #e0f7fa; padding: 10px; border-radius: 4px;"><strong>${escapeHtml(data.tldr)}</strong></p>`);
+
+  data.body.forEach(paragraph => {
+    parts.push(`<p>${escapeHtml(paragraph)}</p>`);
+  });
+
+  if (data.keyDecisions.length > 0) {
+    parts.push('<p><strong>Key Decisions:</strong></p>');
+    parts.push('<ul>');
+    data.keyDecisions.forEach(decision => parts.push(`<li>${escapeHtml(decision)}</li>`));
+    parts.push('</ul>');
+  }
+
+  if (data.blockers && data.blockers.length > 0) {
+    parts.push('<p><strong>Blockers / Risks:</strong></p>');
+    parts.push('<ul style="color: #c62828;">');
+    data.blockers.forEach(blocker => parts.push(`<li>${escapeHtml(blocker)}</li>`));
+    parts.push('</ul>');
+  }
+
+  parts.push(`<p><strong>Next Milestone:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.nextMilestone)}</p>`);
+
+  parts.push(`<p>${escapeHtml(data.closing)}</p>`);
+
+  return parts.join('');
+}
+
+function clientProposalToHtml(data: ClientProposalOutput): string {
+  const parts: string[] = [];
+
+  parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
+  parts.push(`<p>${escapeHtml(data.greeting)}</p>`);
+
+  parts.push(`<p><strong>Executive Summary:</strong></p>`);
+  parts.push(`<p style="background: #f5f5f5; padding: 10px; border-left: 3px solid #3f51b5; border-radius: 4px;">${escapeHtml(data.executiveSummary)}</p>`);
+
+  data.body.forEach(paragraph => {
+    parts.push(`<p>${escapeHtml(paragraph)}</p>`);
+  });
+
+  if (data.requirementsSummary.length > 0) {
+    parts.push('<p><strong>Your Requirements:</strong></p>');
+    parts.push('<ul>');
+    data.requirementsSummary.forEach(req => parts.push(`<li>${escapeHtml(req)}</li>`));
+    parts.push('</ul>');
+  }
+
+  parts.push(`<p><strong>Proposed Solution:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.proposedSolution)}</p>`);
+
+  if (data.timelineEstimate) {
+    parts.push(`<p><strong>Timeline Estimate:</strong></p>`);
+    parts.push(`<p>${escapeHtml(data.timelineEstimate)}</p>`);
+  }
+
+  parts.push(`<p><strong>Next Steps:</strong></p>`);
+  parts.push(`<p>${escapeHtml(data.nextStepsToEngage)}</p>`);
 
   parts.push(`<p>${escapeHtml(data.closing)}</p>`);
 

@@ -314,6 +314,11 @@ export const transcriptionApi = {
   moveToFolder: async (id: string, folderId: string | null): Promise<ApiResponse<{ message: string }>> => {
     return api.patch(`/transcriptions/${id}/folder`, { folderId });
   },
+
+  // Send email draft to self
+  sendEmailToSelf: async (analysisId: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.post(`/transcriptions/analyses/${analysisId}/send-to-self`);
+  },
 };
 
 // Folder API
