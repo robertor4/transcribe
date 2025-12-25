@@ -153,11 +153,11 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
     >
       <div className="flex items-start gap-3">
         {/* Checkbox */}
-        <div className="mt-0.5 flex-shrink-0 text-gray-400">
+        <div className="mt-0.5 flex-shrink-0">
           {isCompleted ? (
-            <CheckSquare className="w-5 h-5 text-emerald-500" />
+            <CheckSquare className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           ) : (
-            <Square className="w-5 h-5" />
+            <Square className="w-5 h-5 text-gray-400" />
           )}
         </div>
 
@@ -183,7 +183,11 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
           >
             {/* Priority badge */}
             <span
-              className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
+              className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                isCompleted
+                  ? 'bg-gray-100 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500'
+                  : `${priorityStyle.bg} ${priorityStyle.text}`
+              }`}
             >
               {priorityStyle.label}
             </span>

@@ -29,7 +29,7 @@ ${PROMPT_INSTRUCTIONS.useContext}
 
 CRITICAL REQUIREMENTS:
 1. Only include action items that were EXPLICITLY discussed or committed to
-2. Each action item must be SMART-formatted: Specific, Measurable, with clear context
+2. Keep task descriptions CONCISE (8-15 words maximum)
 
 DO NOT include:
 - General topics or ideas mentioned casually
@@ -37,29 +37,35 @@ DO NOT include:
 - Inferred or assumed tasks not explicitly stated
 - Recommendations unless someone explicitly committed to doing them
 
-Each action item MUST be SMART:
-- SPECIFIC: Include WHAT needs to be done and any relevant details (who, where, how)
-- MEASURABLE: Clear completion criteria when possible
-- ACTION-ORIENTED: Start with a clear verb (send, schedule, create, review, call, etc.)
-- COMPLETE: Include enough context that someone reading it later understands the full task
+CONCISENESS RULES:
+- Task descriptions: 8-15 words MAXIMUM
+- Lead with action verb (Send, Review, Call, Schedule, Create, Finalize, etc.)
+- Focus on WHAT needs to be done, not WHY or HOW
+- Put additional details in the "context" field, not the task
+- Remove filler phrases: "in order to", "so that", "to ensure", "for the purpose of"
+- Cut parenthetical explanations from the task - move them to context
 
-EXAMPLES of good vs bad action items:
-❌ BAD: "Book it tomorrow" (Book what? Where? For whom?)
-✅ GOOD: "Book the conference room for the Q1 planning meeting tomorrow at 2pm"
+EXAMPLES - Bad vs Good:
+❌ TOO VAGUE: "Book it tomorrow"
+❌ TOO WORDY: "Book the conference room for the Q1 planning meeting tomorrow at 2pm"
+✅ CONCISE: "Book conference room for Q1 planning" (context: "Tomorrow 2pm")
 
-❌ BAD: "Send the thing" (What thing? To whom?)
-✅ GOOD: "Send the updated proposal to Sarah at Acme Corp"
+❌ TOO WORDY: "Resolve the budget so there is a definitive budget before year-end (confirm assumptions and finalize numbers)"
+✅ CONCISE: "Finalize Symmetric Incubator budget" (context: "Confirm assumptions before year-end")
 
-❌ BAD: "Follow up" (On what? With whom?)
-✅ GOOD: "Follow up with the design team about the homepage mockups"
+❌ TOO WORDY: "Start the wind-down process for Olympia Tech (begin liquidation discussion) — discuss with Michael"
+✅ CONCISE: "Start Olympia Tech wind-down" (context: "Discuss liquidation details with Michael")
+
+❌ TOO WORDY: "Follow up with the design team about the homepage mockups and get their feedback"
+✅ CONCISE: "Get design team feedback on homepage mockups"
 
 For each action item, extract:
-- task: Complete, specific task description with full context (SMART format)
+- task: Concise task description (8-15 words, action verb first)
 - owner: Person's name if mentioned, or null
 - deadline: Due date or timeframe if discussed, or null
 - priority: "high", "medium", or "low"
-- priorityReason: One sentence explaining WHY this priority level
-- context: Any dependencies or additional context (optional)
+- priorityReason: Brief explanation for priority (one sentence)
+- context: Additional details, dependencies, or clarifications (use this for anything that would make the task too long)
 
 Priority guidelines:
 - HIGH: Explicitly urgent, blocking other work, or has immediate deadline (this week)
@@ -424,7 +430,7 @@ Return JSON matching this exact schema:
   "requirementsSummary": ["requirement1", "requirement2"] - renders as a separate list",
   "proposedSolution": "string - description of your solution (renders separately)",
   "timelineEstimate": "string (optional) - timeline if discussed (renders separately)",
-  "nextStepsToEngage": "string - how to proceed, can be numbered like '1) First step 2) Second step' (renders separately)",
+  "nextStepsToEngage": ["step1", "step2", "step3"] - array of next steps, each as a separate string (rendered as numbered list)",
   "closing": "string - sign-off phrase ONLY, e.g. 'Best regards,' or 'Warm regards,' - DO NOT include name, the system adds it automatically"
 }`,
     modelPreference: 'gpt-5-mini',
@@ -445,7 +451,7 @@ Return JSON matching this exact schema:
         requirementsSummary: SCHEMA_FRAGMENTS.stringArray,
         proposedSolution: { type: 'string' },
         timelineEstimate: { type: 'string' },
-        nextStepsToEngage: { type: 'string' },
+        nextStepsToEngage: SCHEMA_FRAGMENTS.stringArray,
         closing: { type: 'string' },
       },
       required: [
@@ -634,32 +640,41 @@ Return JSON matching this exact schema:
     category: 'professional',
     icon: 'MessageSquare',
     color: 'teal',
-    systemPrompt: `You are a communication coach and analyst. Your task is to evaluate conversations across multiple dimensions of effective communication. Provide constructive, actionable feedback with specific examples from the conversation. Be objective yet encouraging. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Analyze this conversation transcript for communication effectiveness and return as JSON.
+    systemPrompt: `You are a communication coach who gives sharp, actionable feedback. Be direct and specific. Every word must earn its place. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this conversation for communication effectiveness. Return concise, punchy feedback.
 
 ${PROMPT_INSTRUCTIONS.useContext}
-Additionally for communication analysis:
-- Focus on specific speakers or roles if mentioned in context
-- Weight dimensions differently if context specifies priorities
 
-Evaluate and score (0-100) the conversation across these 6 dimensions:
-1. Clarity - How clearly were ideas expressed?
-2. Active Listening - Evidence of listening and building on others' ideas
-3. Empathy - Understanding and acknowledging others' perspectives
-4. Persuasiveness - Effectiveness in presenting arguments and influencing
-5. Collaboration - Working together towards shared understanding
-6. Conciseness - Getting to the point without unnecessary words
+CRITICAL: BREVITY IS MANDATORY
+- Strengths/improvements: MAX 15 words each. One clear point per bullet.
+- overallAssessment: MAX 2 sentences, ~40 words total
+- keyTakeaway: ONE sentence, actionable, under 25 words
 
-For each dimension, provide:
-- name: The dimension name
-- score: Number from 0-100
-- strengths: 1-2 specific examples of what was done well
-- improvements: 1-2 actionable suggestions for improvement
+BAD (too wordy):
+"The chair invited input from multiple people (e.g., asking Jeroen, Marlene, Roberto, Sophia) and paused to get confirmations and clarifications."
+
+GOOD (punchy):
+"Chair actively sought input from all participants and confirmed understanding."
+
+BAD: "There were moments where colleagues responded with concrete updates (e.g., Marlene confirming documentation readiness, Roberto and Art planning follow-ups), showing two-way information flow."
+GOOD: "Team responded with concrete updates, showing two-way dialogue."
+
+Score (0-100) these 4 dimensions:
+1. Clarity - Were ideas expressed clearly?
+2. Active Listening - Did people build on each other's ideas?
+3. Empathy - Were others' perspectives acknowledged?
+4. Persuasiveness - Were arguments effective?
+
+For each dimension:
+- name: Dimension name
+- score: 0-100
+- strengths: 1-2 bullet points (MAX 15 words each, no examples in parentheses)
+- improvements: 1-2 bullet points (MAX 15 words each, actionable)
 
 Also provide:
-- overallScore: Weighted average of all dimensions
-- overallAssessment: 2-3 sentence summary of communication quality
-- keyTakeaway: Single most important insight
+- overallScore: Weighted average
+- overallAssessment: 2 sentences MAX summarizing quality (~40 words)
+- keyTakeaway: Single actionable insight (under 25 words)
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}
 

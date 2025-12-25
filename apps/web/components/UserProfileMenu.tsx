@@ -9,7 +9,11 @@ import { LogOut, Settings, User as UserIcon, ChevronDown, Shield } from 'lucide-
 import { NotificationToggle } from '@/components/NotificationToggle';
 import { UsageIndicator } from '@/components/paywall/UsageIndicator';
 
-export function UserProfileMenu() {
+interface UserProfileMenuProps {
+  collapsed?: boolean;
+}
+
+export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
   const { user, logout } = useAuth();
   const { usageStats, isAdmin } = useUsage();
   const router = useRouter();
@@ -109,38 +113,45 @@ export function UserProfileMenu() {
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+        className={`flex items-center transition-colors focus:outline-none ${
+          collapsed
+            ? 'p-1 rounded-full hover:bg-white/10'
+            : 'w-full justify-between px-3 py-2 rounded-lg hover:bg-white/10'
+        }`}
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label={tCommon('userMenu')}
       >
-        {/* Left side: Avatar + Name */}
-        <div className="flex items-center gap-2 min-w-0">
-          {/* Profile Picture or Initials Avatar */}
-          {user.photoURL ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={user.photoURL}
-              alt={user.displayName || user.email || 'User'}
-              className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
-              referrerPolicy="no-referrer"
+        {/* Profile Picture or Initials Avatar */}
+        {user.photoURL ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={user.photoURL}
+            alt={user.displayName || user.email || 'User'}
+            className={`rounded-full object-cover border border-white/20 flex-shrink-0 ${
+              collapsed ? 'h-8 w-8' : 'h-10 w-10'
+            }`}
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <div className={`rounded-full bg-[#8D6AFA] text-white flex items-center justify-center font-semibold flex-shrink-0 ${
+            collapsed ? 'h-8 w-8 text-sm' : 'h-10 w-10 text-base'
+          }`}>
+            {getInitials()}
+          </div>
+        )}
+
+        {/* User Name/Email and Chevron - hidden when collapsed */}
+        {!collapsed && (
+          <>
+            <span className="hidden md:block text-sm font-medium text-white truncate ml-2 flex-1 text-left">
+              {user.displayName || user.email}
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-white/70 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
             />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-base font-semibold flex-shrink-0">
-              {getInitials()}
-            </div>
-          )}
-
-          {/* User Name/Email (hidden on mobile) */}
-          <span className="hidden md:block text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-            {user.displayName || user.email}
-          </span>
-        </div>
-
-        {/* Chevron Icon */}
-        <ChevronDown
-          className={`h-4 w-4 text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
-        />
+          </>
+        )}
       </button>
 
       {/* Dropdown Menu - uses fixed positioning to escape sidebar overflow constraints */}

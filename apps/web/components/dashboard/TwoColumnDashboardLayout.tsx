@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Folder as FolderIcon, MessageSquare, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01, Mic } from 'lucide-react';
 import { Button } from '@/components/Button';
-import { DashboardDndProvider } from './DashboardDndProvider';
 import { DraggableConversationCard } from './DraggableConversationCard';
 import { DroppableFolderCard } from './DroppableFolderCard';
 import type { Conversation } from '@/lib/types/conversation';
@@ -13,7 +12,6 @@ interface TwoColumnDashboardLayoutProps {
   folders: Folder[];
   ungroupedConversations: Conversation[];
   locale: string;
-  onMoveToFolder: (conversationId: string, folderId: string) => Promise<void>;
   onCreateFolder: (name: string) => Promise<void>;
   onNewConversation: () => void;
   onDeleteConversation?: (conversationId: string) => Promise<void>;
@@ -36,7 +34,6 @@ export function TwoColumnDashboardLayout({
   folders,
   ungroupedConversations,
   locale,
-  onMoveToFolder,
   onCreateFolder,
   onNewConversation,
   onDeleteConversation,
@@ -107,12 +104,70 @@ export function TwoColumnDashboardLayout({
   };
 
   return (
-    <DashboardDndProvider onMoveToFolder={onMoveToFolder}>
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
-        {/* Left Column: Folders */}
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
+        {/* Left Column: Conversations */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
+              Conversations
+            </h2>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {hasMore
+                  ? `${displayCount} of ${ungroupedConversations.length}`
+                  : `${ungroupedConversations.length} items`}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onNewConversation}
+                icon={<Mic className="h-4 w-4" />}
+              >
+                New
+              </Button>
+            </div>
+          </div>
+
+          {ungroupedConversations.length === 0 ? (
+            <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+              <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Start by recording or uploading your first conversation
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onNewConversation}
+              >
+                Start First Conversation
+              </Button>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+              {visibleConversations.map((conversation) => (
+                <DraggableConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  locale={locale}
+                  onDelete={onDeleteConversation}
+                />
+              ))}
+              {hasMore && (
+                <button
+                  onClick={() => setDisplayCount(prev => prev + ITEMS_PER_PAGE)}
+                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
+                >
+                  Show More ({remainingCount} remaining)
+                </button>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* Right Column: Folders */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
               Folders
             </h2>
             <div className="flex items-center gap-1">
@@ -190,7 +245,7 @@ export function TwoColumnDashboardLayout({
               )}
 
               {sortedFolders.length > 0 && (
-                <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {sortedFolders.map((folder) => (
                     <DroppableFolderCard
                       key={folder.id}
@@ -210,66 +265,6 @@ export function TwoColumnDashboardLayout({
             </p>
           )}
         </section>
-
-        {/* Right Column: Conversations */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-              Conversations
-            </h2>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {hasMore
-                  ? `${displayCount} of ${ungroupedConversations.length}`
-                  : `${ungroupedConversations.length} items`}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onNewConversation}
-                icon={<Mic className="h-4 w-4" />}
-              >
-                New
-              </Button>
-            </div>
-          </div>
-
-          {ungroupedConversations.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-              <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Start by recording or uploading your first conversation
-              </p>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={onNewConversation}
-              >
-                Start First Conversation
-              </Button>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
-              {visibleConversations.map((conversation) => (
-                <DraggableConversationCard
-                  key={conversation.id}
-                  conversation={conversation}
-                  locale={locale}
-                  onDelete={onDeleteConversation}
-                />
-              ))}
-              {hasMore && (
-                <button
-                  onClick={() => setDisplayCount(prev => prev + ITEMS_PER_PAGE)}
-                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                >
-                  Show More ({remainingCount} remaining)
-                </button>
-              )}
-            </div>
-          )}
-        </section>
-      </div>
-    </DashboardDndProvider>
+    </div>
   );
 }

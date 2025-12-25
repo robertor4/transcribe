@@ -419,18 +419,6 @@ function InternalUpdateContent({ data }: { data: InternalUpdateOutput }) {
 
 // Client Proposal specific content
 function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
-  // Parse numbered list from nextStepsToEngage if present
-  const parseNumberedList = (text: string): string[] => {
-    // Match patterns like "1) item", "1. item", "1: item"
-    const matches = text.match(/\d+[.):\s]+[^0-9]+/g);
-    if (matches && matches.length > 1) {
-      return matches.map((item) => item.replace(/^\d+[.):\s]+/, '').trim());
-    }
-    return [];
-  };
-
-  const nextStepsList = parseNumberedList(data.nextStepsToEngage);
-
   return (
     <>
       {/* Executive Summary - Brand purple styling matching Key Points */}
@@ -486,25 +474,21 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
       )}
 
       {/* Next Steps to Engage - Cyan styling with numbered list */}
-      <div className="mt-6 px-6 py-6 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide flex items-center gap-2">
-          <Users className="w-5 h-5 text-[#14D0DC]" />
-          Next steps
-        </h3>
-        {nextStepsList.length > 0 ? (
+      {data.nextStepsToEngage.length > 0 && (
+        <div className="mt-6 px-6 py-6 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide flex items-center gap-2">
+            <Users className="w-5 h-5 text-[#14D0DC]" />
+            Next steps
+          </h3>
           <ol className="space-y-3 ml-4 list-decimal list-inside">
-            {nextStepsList.map((step, idx) => (
+            {data.nextStepsToEngage.map((step, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {step}
               </li>
             ))}
           </ol>
-        ) : (
-          <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-            {data.nextStepsToEngage}
-          </p>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }

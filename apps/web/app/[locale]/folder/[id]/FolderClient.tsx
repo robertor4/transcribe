@@ -211,7 +211,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
           </div>
         }
         mainContent={
-          <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="px-12 py-8">
             {/* Back Button */}
             <Link
               href={`/${locale}/dashboard`}
@@ -291,15 +291,12 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </div>
                 )}
               </div>
-              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-20">
-                <span>{conversations.length} conversations</span>
-              </div>
             </div>
 
             {/* Conversations in Folder */}
             <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
                   Conversations ({conversations.length})
                 </h2>
                 <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
@@ -323,7 +320,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </Button>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {conversations.map((conversation) => (
                     <div
                       key={conversation.id}

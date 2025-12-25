@@ -9,7 +9,11 @@ interface CommunicationAnalysisTemplateProps {
 }
 
 function ScoreRing({ score, size = 'lg' }: { score: number; size?: 'sm' | 'lg' }) {
-  const radius = size === 'lg' ? 45 : 30;
+  // Use fixed viewBox coordinates, container size determines display size
+  const strokeWidth = size === 'lg' ? 8 : 6;
+  const viewBoxSize = 100;
+  const radius = (viewBoxSize - strokeWidth) / 2; // 46 for lg, 47 for sm
+  const center = viewBoxSize / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
 
@@ -21,22 +25,22 @@ function ScoreRing({ score, size = 'lg' }: { score: number; size?: 'sm' | 'lg' }
 
   return (
     <div className={`relative ${size === 'lg' ? 'w-28 h-28' : 'w-16 h-16'}`}>
-      <svg className="w-full h-full transform -rotate-90">
+      <svg className="w-full h-full transform -rotate-90" viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}>
         <circle
-          cx="50%"
-          cy="50%"
+          cx={center}
+          cy={center}
           r={radius}
           stroke="currentColor"
-          strokeWidth={size === 'lg' ? 8 : 6}
+          strokeWidth={strokeWidth}
           fill="none"
           className="text-gray-200 dark:text-gray-700"
         />
         <circle
-          cx="50%"
-          cy="50%"
+          cx={center}
+          cy={center}
           r={radius}
           stroke={getColor(score)}
-          strokeWidth={size === 'lg' ? 8 : 6}
+          strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
           strokeDashoffset={offset}

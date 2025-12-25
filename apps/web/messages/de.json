@@ -393,6 +393,27 @@
       "generating": "Ihr KI-Asset wird erstellt...",
       "success": "KI-Asset erstellt!",
       "error": "KI-Asset konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+    },
+    "sidebar": {
+      "title": "KI-Assets",
+      "generateNew": "Neu erstellen",
+      "emptyTitle": "Noch keine Assets",
+      "emptyDescription": "Generieren Sie Ihr erstes KI-Asset",
+      "metadata": "Dateiinformationen"
+    },
+    "panel": {
+      "close": "Schließen",
+      "copy": "Kopieren",
+      "copied": "Kopiert!",
+      "delete": "Löschen",
+      "confirmDelete": "Dieses Asset löschen?",
+      "viewFull": "Vollständige Seite anzeigen"
+    }
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Zusammenfassung",
+      "transcript": "Transkript"
     }
   },
   "howItWorks": {

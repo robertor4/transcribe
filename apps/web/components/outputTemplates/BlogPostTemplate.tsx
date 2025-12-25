@@ -23,7 +23,7 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
 
         {/* Hero Image - Magazine-style float right, positioned early so hook wraps around it */}
         {data.heroImage && (
-          <figure className="sm:float-right sm:ml-8 sm:mb-4 mb-6 w-full sm:w-72 md:w-80 lg:w-96">
+          <figure className="sm:float-right sm:ml-6 sm:mb-4 mb-6 w-full sm:w-56 md:w-64 lg:w-72">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.heroImage.url}

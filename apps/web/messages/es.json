@@ -393,6 +393,27 @@
       "generating": "Creando tu asset de IA...",
       "success": "¡Asset de IA creado!",
       "error": "Error al crear. Por favor, inténtalo de nuevo."
+    },
+    "sidebar": {
+      "title": "Assets de IA",
+      "generateNew": "Crear nuevo",
+      "emptyTitle": "Sin assets",
+      "emptyDescription": "Genera tu primer asset de IA",
+      "metadata": "Información del archivo"
+    },
+    "panel": {
+      "close": "Cerrar",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar este asset?",
+      "viewFull": "Ver página completa"
+    }
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Resumen",
+      "transcript": "Transcripción"
     }
   },
   "howItWorks": {

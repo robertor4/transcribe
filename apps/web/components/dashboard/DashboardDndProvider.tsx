@@ -12,7 +12,9 @@ import {
   useSensors,
   pointerWithin,
 } from '@dnd-kit/core';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, GripVertical } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/formatters';
+import { AssetsCountBadge } from './AssetsCountBadge';
 import type { Conversation } from '@/lib/types/conversation';
 
 interface DashboardDndProviderProps {
@@ -97,11 +99,32 @@ export function DashboardDndProvider({
       {/* Drag Overlay - follows cursor during drag */}
       <DragOverlay dropAnimation={null}>
         {activeConversation && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 opacity-90 max-w-xs">
-            <MessageSquare className="w-5 h-5 text-[#8D6AFA] flex-shrink-0" />
-            <span className="font-medium text-gray-900 dark:text-gray-100 truncate">
-              {activeConversation.title}
-            </span>
+          <div className="relative flex items-center justify-between py-3 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-[#8D6AFA] w-[650px] cursor-grabbing">
+            {/* Drag Handle - visual indicator */}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-60">
+              <GripVertical className="w-4 h-4 text-gray-400" />
+            </div>
+
+            <div className="flex items-center gap-3 flex-1 min-w-0 ml-6">
+              <div className="flex-shrink-0">
+                <MessageSquare className="w-5 h-5 text-[#8D6AFA]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                    {activeConversation.title}
+                  </span>
+                  <AssetsCountBadge count={activeConversation.assetsCount} />
+                </div>
+                <div className="text-xs text-gray-400 dark:text-gray-500">
+                  <span>{formatRelativeTime(activeConversation.createdAt)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-shrink-0 text-sm font-medium text-gray-400">
+              →
+            </div>
           </div>
         )}
       </DragOverlay>

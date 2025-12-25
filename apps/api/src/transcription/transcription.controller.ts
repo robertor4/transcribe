@@ -389,6 +389,29 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Get recently opened conversations for the current user
+   * Returns conversations ordered by lastAccessedAt (most recent first)
+   */
+  @Get('recently-opened')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentlyOpened(
+    @Query('limit') limit: string = '5',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 5, 1), 10);
+    const transcriptions =
+      await this.transcriptionService.getRecentlyOpenedTranscriptions(
+        req.user.uid,
+        parsedLimit,
+      );
+
+    return {
+      success: true,
+      data: transcriptions,
+    };
+  }
+
   @Get(':id')
   @UseGuards(FirebaseAuthGuard)
   async getTranscription(
@@ -407,6 +430,24 @@ export class TranscriptionController {
     return {
       success: true,
       data: transcription,
+    };
+  }
+
+  /**
+   * Record that the user accessed/opened a conversation
+   * Updates the lastAccessedAt timestamp for "Recently Opened" tracking
+   */
+  @Post(':id/access')
+  @UseGuards(FirebaseAuthGuard)
+  async recordAccess(
+    @Param('id') id: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    await this.transcriptionService.recordTranscriptionAccess(req.user.uid, id);
+
+    return {
+      success: true,
+      data: { message: 'Access recorded' },
     };
   }
 

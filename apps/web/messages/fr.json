@@ -393,6 +393,27 @@
       "generating": "Création de votre asset IA...",
       "success": "Asset IA créé !",
       "error": "Échec de la création. Veuillez réessayer."
+    },
+    "sidebar": {
+      "title": "Assets IA",
+      "generateNew": "Créer nouveau",
+      "emptyTitle": "Aucun asset",
+      "emptyDescription": "Générez votre premier asset IA",
+      "metadata": "Informations du fichier"
+    },
+    "panel": {
+      "close": "Fermer",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "delete": "Supprimer",
+      "confirmDelete": "Supprimer cet asset ?",
+      "viewFull": "Voir page complète"
+    }
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Résumé",
+      "transcript": "Transcription"
     }
   },
   "howItWorks": {

@@ -333,6 +333,82 @@ export class FirebaseService implements OnModuleInit {
     };
   }
 
+  /**
+   * Record that a user accessed/opened a transcription
+   * Updates the lastAccessedAt timestamp
+   */
+  async recordTranscriptionAccess(userId: string, id: string): Promise<void> {
+    const doc = await this.db.collection('transcriptions').doc(id).get();
+
+    if (!doc.exists) {
+      throw new Error('Transcription not found');
+    }
+
+    const data = doc.data();
+    if (!data || data.userId !== userId) {
+      throw new Error('Transcription not found');
+    }
+
+    await this.db.collection('transcriptions').doc(id).update({
+      lastAccessedAt: new Date(),
+    });
+  }
+
+  /**
+   * Get recently opened transcriptions for a user
+   * Returns transcriptions ordered by lastAccessedAt (most recent first)
+   */
+  async getRecentlyOpenedTranscriptions(
+    userId: string,
+    limit = 5,
+  ): Promise<Transcription[]> {
+    // Query for transcriptions with lastAccessedAt, ordered by most recent
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .orderBy('lastAccessedAt', 'desc')
+      .limit(limit * 2) // Fetch extra to account for soft-deleted items
+      .get();
+
+    // Filter out soft-deleted items
+    const validDocs = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      return !data.deletedAt && data.lastAccessedAt;
+    });
+
+    // Take only the requested limit
+    const limitedDocs = validDocs.slice(0, limit);
+
+    return limitedDocs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt,
+        updatedAt: data.updatedAt?.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt,
+        completedAt: data.completedAt?.toDate
+          ? data.completedAt.toDate()
+          : data.completedAt,
+        lastAccessedAt: data.lastAccessedAt?.toDate
+          ? data.lastAccessedAt.toDate()
+          : data.lastAccessedAt,
+        sharedAt: data.sharedAt?.toDate
+          ? data.sharedAt.toDate()
+          : data.sharedAt,
+        sharedWith: data.sharedWith?.map((record: any) => ({
+          email: record.email,
+          sentAt: record.sentAt?.toDate
+            ? record.sentAt.toDate()
+            : record.sentAt,
+        })),
+      } as Transcription;
+    });
+  }
+
   async deleteTranscription(id: string) {
     await this.db.collection('transcriptions').doc(id).delete();
   }

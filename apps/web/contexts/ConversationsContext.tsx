@@ -10,12 +10,15 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { listConversations, Conversation } from '@/lib/services/conversationService';
+import { transcriptionApi } from '@/lib/api';
+import { transcriptionsToConversations } from '@/lib/types/conversation';
 import websocketService from '@/lib/websocket';
-import { WEBSOCKET_EVENTS } from '@transcribe/shared';
+import { WEBSOCKET_EVENTS, Transcription } from '@transcribe/shared';
 import type { TranscriptionProgress } from '@transcribe/shared';
 
 interface ConversationsContextType {
   conversations: Conversation[];
+  recentlyOpened: Conversation[];
   isLoading: boolean;
   error: Error | null;
   hasMore: boolean;
@@ -23,6 +26,7 @@ interface ConversationsContextType {
   progressMap: Map<string, TranscriptionProgress>;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
+  refreshRecentlyOpened: () => Promise<void>;
 }
 
 const ConversationsContext = createContext<ConversationsContextType | undefined>(undefined);
@@ -45,9 +49,11 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
   const [progressMap, setProgressMap] = useState<Map<string, TranscriptionProgress>>(
     new Map()
   );
+  const [recentlyOpened, setRecentlyOpened] = useState<Conversation[]>([]);
 
   const subscribedIdsRef = useRef<Set<string>>(new Set());
   const hasFetchedRef = useRef(false);
+  const hasFetchedRecentlyOpenedRef = useRef(false);
 
   // Fetch conversations
   const fetchConversations = useCallback(
@@ -83,6 +89,22 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     [user, pageSize]
   );
 
+  // Fetch recently opened conversations
+  const fetchRecentlyOpened = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const response = await transcriptionApi.getRecentlyOpened(5);
+      if (response.success && response.data) {
+        const transcriptions = response.data as Transcription[];
+        setRecentlyOpened(transcriptionsToConversations(transcriptions));
+      }
+    } catch {
+      // Silently ignore errors - recently opened is non-critical
+      // Fall back to using conversations list in the component
+    }
+  }, [user]);
+
   // Initial fetch - only once when user is available
   useEffect(() => {
     if (user && !hasFetchedRef.current) {
@@ -94,6 +116,17 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
       setIsLoading(false);
     }
   }, [user, fetchConversations]);
+
+  // Initial fetch of recently opened - only once when user is available
+  useEffect(() => {
+    if (user && !hasFetchedRecentlyOpenedRef.current) {
+      hasFetchedRecentlyOpenedRef.current = true;
+      fetchRecentlyOpened();
+    } else if (!user) {
+      hasFetchedRecentlyOpenedRef.current = false;
+      setRecentlyOpened([]);
+    }
+  }, [user, fetchRecentlyOpened]);
 
   // WebSocket listeners for real-time progress
   useEffect(() => {
@@ -142,7 +175,7 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
       unsubCompleted();
       unsubFailed();
     };
-  }, [user, fetchConversations]);
+  }, [user, fetchConversations, fetchRecentlyOpened]);
 
   // Subscribe to in-progress conversations
   useEffect(() => {
@@ -168,9 +201,14 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     await fetchConversations(1);
   }, [fetchConversations]);
 
+  const refreshRecentlyOpened = useCallback(async () => {
+    await fetchRecentlyOpened();
+  }, [fetchRecentlyOpened]);
+
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     conversations,
+    recentlyOpened,
     isLoading,
     error,
     hasMore,
@@ -178,7 +216,8 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     progressMap,
     loadMore,
     refresh,
-  }), [conversations, isLoading, error, hasMore, total, progressMap, loadMore, refresh]);
+    refreshRecentlyOpened,
+  }), [conversations, recentlyOpened, isLoading, error, hasMore, total, progressMap, loadMore, refresh, refreshRecentlyOpened]);
 
   return (
     <ConversationsContext.Provider value={contextValue}>

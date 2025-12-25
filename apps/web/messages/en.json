@@ -393,6 +393,27 @@
       "generating": "Creating your AI asset...",
       "success": "AI asset created!",
       "error": "Failed to create AI asset. Please try again."
+    },
+    "sidebar": {
+      "title": "AI Assets",
+      "generateNew": "Create New",
+      "emptyTitle": "No assets yet",
+      "emptyDescription": "Generate your first AI asset",
+      "metadata": "File Information"
+    },
+    "panel": {
+      "close": "Close",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "delete": "Delete",
+      "confirmDelete": "Delete this asset?",
+      "viewFull": "View Full Page"
+    }
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Summary",
+      "transcript": "Transcript"
     }
   },
   "howItWorks": {

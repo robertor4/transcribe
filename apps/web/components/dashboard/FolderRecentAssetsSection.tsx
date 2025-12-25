@@ -38,7 +38,7 @@ export function FolderRecentAssetsSection({ folderId, locale }: FolderRecentAsse
   return (
     <section className="mt-12">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
           Recent Outputs
         </h2>
         {!isLoading && assets.length > 0 && (

@@ -249,7 +249,7 @@ export interface ClientProposalOutput {
   requirementsSummary: string[];
   proposedSolution: string;
   timelineEstimate?: string;
-  nextStepsToEngage: string;
+  nextStepsToEngage: string[];
   closing: string;
 }
 
@@ -405,6 +405,7 @@ export interface Transcription {
   createdAt: Date;
   updatedAt: Date;
   completedAt?: Date;
+  lastAccessedAt?: Date; // When the user last opened this conversation
   cost?: number;
   metadata?: Record<string, any>;
   // Speaker diarization fields

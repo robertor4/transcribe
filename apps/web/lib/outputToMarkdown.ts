@@ -226,14 +226,14 @@ function internalUpdateToMarkdown(data: InternalUpdateOutput): string {
   sections.push(data.greeting);
   sections.push('');
 
-  sections.push('**TL;DR:**');
-  sections.push(data.tldr);
-  sections.push('');
-
   data.body.forEach(paragraph => {
     sections.push(paragraph);
     sections.push('');
   });
+
+  sections.push('**TL;DR:**');
+  sections.push(data.tldr);
+  sections.push('');
 
   if (data.keyDecisions.length > 0) {
     sections.push('**Key Decisions:**');
@@ -268,14 +268,14 @@ function clientProposalToMarkdown(data: ClientProposalOutput): string {
   sections.push(data.greeting);
   sections.push('');
 
-  sections.push('**Executive Summary:**');
-  sections.push(data.executiveSummary);
-  sections.push('');
-
   data.body.forEach(paragraph => {
     sections.push(paragraph);
     sections.push('');
   });
+
+  sections.push('**Executive Summary:**');
+  sections.push(data.executiveSummary);
+  sections.push('');
 
   if (data.requirementsSummary.length > 0) {
     sections.push('**Your Requirements:**');
@@ -557,12 +557,12 @@ function internalUpdateToHtml(data: InternalUpdateOutput): string {
   parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
   parts.push(`<p>${escapeHtml(data.greeting)}</p>`);
 
-  parts.push(`<p><strong>TL;DR:</strong></p>`);
-  parts.push(`<p style="background: #e0f7fa; padding: 10px; border-radius: 4px;"><strong>${escapeHtml(data.tldr)}</strong></p>`);
-
   data.body.forEach(paragraph => {
     parts.push(`<p>${escapeHtml(paragraph)}</p>`);
   });
+
+  parts.push(`<p><strong>TL;DR:</strong></p>`);
+  parts.push(`<p style="background: #e0f7fa; padding: 10px; border-radius: 4px;"><strong>${escapeHtml(data.tldr)}</strong></p>`);
 
   if (data.keyDecisions.length > 0) {
     parts.push('<p><strong>Key Decisions:</strong></p>');
@@ -592,12 +592,12 @@ function clientProposalToHtml(data: ClientProposalOutput): string {
   parts.push(`<h1>${escapeHtml(data.subject)}</h1>`);
   parts.push(`<p>${escapeHtml(data.greeting)}</p>`);
 
-  parts.push(`<p><strong>Executive Summary:</strong></p>`);
-  parts.push(`<p style="background: #f5f5f5; padding: 10px; border-left: 3px solid #3f51b5; border-radius: 4px;">${escapeHtml(data.executiveSummary)}</p>`);
-
   data.body.forEach(paragraph => {
     parts.push(`<p>${escapeHtml(paragraph)}</p>`);
   });
+
+  parts.push(`<p><strong>Executive Summary:</strong></p>`);
+  parts.push(`<p style="background: #f5f5f5; padding: 10px; border-left: 3px solid #3f51b5; border-radius: 4px;">${escapeHtml(data.executiveSummary)}</p>`);
 
   if (data.requirementsSummary.length > 0) {
     parts.push('<p><strong>Your Requirements:</strong></p>');

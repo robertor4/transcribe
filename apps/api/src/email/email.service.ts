@@ -1008,8 +1008,13 @@ export class EmailService {
       content += `<p style="margin: 0 0 1em 0;"><strong>Timeline:</strong> ${data.timelineEstimate}</p>`;
     }
 
-    if (data.nextStepsToEngage) {
-      content += `<p style="margin: 1em 0 0.5em 0;"><strong>Next steps:</strong> ${data.nextStepsToEngage}</p>`;
+    if (data.nextStepsToEngage && data.nextStepsToEngage.length > 0) {
+      content += `<p style="margin: 1em 0 0.5em 0;"><strong>Next steps:</strong></p>`;
+      content += `<ol style="margin: 0; padding-left: 1.5em;">`;
+      data.nextStepsToEngage.forEach((step) => {
+        content += `<li style="margin: 0.25em 0;">${step}</li>`;
+      });
+      content += `</ol>`;
     }
 
     return content;
@@ -1087,8 +1092,8 @@ export class EmailService {
           text += `PROPOSED SOLUTION:\n${data.proposedSolution}\n\n`;
         if (data.timelineEstimate)
           text += `TIMELINE: ${data.timelineEstimate}\n\n`;
-        if (data.nextStepsToEngage)
-          text += `NEXT STEPS: ${data.nextStepsToEngage}\n\n`;
+        if (data.nextStepsToEngage && data.nextStepsToEngage.length > 0)
+          text += `NEXT STEPS:\n${data.nextStepsToEngage.map((step, i) => `${i + 1}. ${step}`).join('\n')}\n\n`;
         break;
     }
 

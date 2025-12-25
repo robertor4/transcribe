@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **True "Recently Opened" Tracking**: Left sidebar now shows actually recently opened conversations, not just recently created ones
+  - Added `lastAccessedAt` timestamp field to track when conversations are accessed
+  - New backend endpoints: `POST /transcriptions/:id/access` and `GET /transcriptions/recently-opened`
+  - ConversationsContext now fetches and exposes `recentlyOpened` list separately
+  - Sidebar updates immediately when opening a conversation
+  - Graceful fallback to recently created for users with no access history
+  - Files: [types.ts](packages/shared/src/types.ts), [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [ConversationsContext.tsx](apps/web/contexts/ConversationsContext.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
 - **Scroll Position Restoration**: Conversation pages now remember and restore scroll position when navigating to AI assets and back
   - New `useScrollRestoration` and `useConversationScrollRestoration` hooks
   - Saves position when clicking on AI asset or transcript links
@@ -23,7 +30,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Default is `sm` (original size), `lg` used in generation modal
   - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
 
+### Fixed
+- **Client Proposal Email Next Steps**: Fixed empty numbered items appearing in "Next Steps" section
+  - Changed `nextStepsToEngage` from string (with embedded numbering) to string array
+  - AI now generates each step as a separate array item
+  - Frontend renders array directly as numbered list without regex parsing
+  - Email service updated to format array as proper HTML/text lists
+  - Files: [types.ts](packages/shared/src/types.ts), [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [email.service.ts](apps/api/src/email/email.service.ts)
+
 ### Changed
+- **Dashboard Layout Swap**: Switched Conversations and Folders columns on the dashboard
+  - Conversations now appear on the left (wider, 2fr) as the primary content
+  - Folders now appear on the right (narrower, 1fr) as the organizational sidebar
+  - Section headers now use brand purple (#8D6AFA) for better visibility
+  - Files: [TwoColumnDashboardLayout.tsx](apps/web/components/dashboard/TwoColumnDashboardLayout.tsx), [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx), [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+- **Folder Page Cleanup**: Removed redundant "X conversations" subtitle from folder header
+  - The count is already shown in the "CONVERSATIONS (X)" section header
+  - Section header styling now matches dashboard (brand purple, smaller text)
+  - Increased horizontal padding (`px-12`) to match dashboard layout
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
 - **Email Template Prompts Refinement**: Improved AI prompts for all email templates to produce more natural-sounding output
   - Added explicit instructions to avoid labels like "Summary:", "Context:", "Challenge:" in email body text
   - Prompts now emphasize writing natural prose that flows conversationally

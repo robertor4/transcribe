@@ -3,48 +3,42 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useConversationScrollRestoration } from '@/hooks/useScrollRestoration';
 import {
   BarChart3,
-  Zap,
-  FileText,
-  Mail,
-  CheckSquare,
-  Edit3,
   Share2,
   ArrowLeft,
-  Plus,
   Loader2,
   AlertCircle,
-  MessageSquareQuote,
   Copy,
-  LayoutGrid,
-  List,
+  Zap,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, StructuredOutput, Transcription } from '@transcribe/shared';
-import { getStructuredOutputPreview } from '@/components/outputTemplates';
+import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
-import { RightContextPanel } from '@/components/RightContextPanel';
+import { AssetSidebar } from '@/components/AssetSidebar';
+import { AssetMobileSheet } from '@/components/AssetMobileSheet';
+import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
+import { InlineTranscript } from '@/components/InlineTranscript';
 import { DeleteConversationButton } from '@/components/DeleteConversationButton';
 import { ShareModal } from '@/components/ShareModal';
 import { useConversation } from '@/hooks/useConversation';
+import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { updateConversationTitle } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
+import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { formatRelativeTime, formatDuration } from '@/lib/formatters';
+import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 
 interface ConversationClientProps {
   conversationId: string;
 }
 
-type AssetsViewMode = 'card' | 'list';
-const ASSETS_VIEW_STORAGE_KEY = 'neural-summary-assets-view-mode';
+type ContentTab = 'summary' | 'transcript';
 
 export function ConversationClient({ conversationId }: ConversationClientProps) {
   const params = useParams();
@@ -55,6 +49,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
+  const [activeTab, setActiveTab] = useState<ContentTab>('summary');
+  const [mobileAssetSheetOpen, setMobileAssetSheetOpen] = useState(false);
 
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -62,32 +58,22 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
-  const { conversation, isLoading, error, updateConversationLocally } = useConversation(conversationId);
+  const { conversation, isLoading, error, updateConversationLocally, refresh } = useConversation(conversationId);
   const { folders } = useFoldersContext();
-  const t = useTranslations('aiAssets');
-  // Scroll restoration - only trigger when conversation is loaded
-  const { saveScrollPosition } = useConversationScrollRestoration(
-    conversationId,
-    !isLoading && !!conversation
-  );
+  const { refreshRecentlyOpened } = useConversationsContext();
+  const tConversation = useTranslations('conversation');
+
+  // Slide panel for AI Assets
+  const {
+    selectedItem: selectedAsset,
+    isOpen: isPanelOpen,
+    isClosing: isPanelClosing,
+    open: openAssetPanel,
+    close: closeAssetPanel,
+  } = useSlidePanel<GeneratedAnalysis>();
+
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
-  const [, setIsLoadingOutputs] = useState(false);
-  const [assetsViewMode, setAssetsViewMode] = useState<AssetsViewMode>('card');
-
-  // Load assets view mode from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(ASSETS_VIEW_STORAGE_KEY);
-    if (stored === 'card' || stored === 'list') {
-      setAssetsViewMode(stored);
-    }
-  }, []);
-
-  // Save assets view mode to localStorage when it changes
-  const toggleAssetsViewMode = () => {
-    const newMode = assetsViewMode === 'card' ? 'list' : 'card';
-    setAssetsViewMode(newMode);
-    localStorage.setItem(ASSETS_VIEW_STORAGE_KEY, newMode);
-  };
+  const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
 
   // Find the folder for this conversation
   const folder = conversation?.folderId
@@ -155,26 +141,29 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     fetchOutputs();
   }, [fetchOutputs]);
 
-  // Icon mapping for output types
-  const getOutputIcon = (type: string) => {
-    switch (type) {
-      case 'email':
-        return Mail;
-      case 'actionItems':
-        return CheckSquare;
-      case 'blogPost':
-        return Edit3;
-      case 'linkedin':
-        return Share2;
-      case 'communicationAnalysis':
-        return MessageSquareQuote;
-      default:
-        return FileText;
+  // Record access for "Recently Opened" tracking
+  useEffect(() => {
+    if (conversation && user) {
+      // Fire-and-forget - don't await, don't block rendering
+      transcriptionApi.recordAccess(conversationId)
+        .then(() => {
+          // Refresh the recently opened list in the sidebar
+          refreshRecentlyOpened();
+        })
+        .catch(() => {
+          // Silently ignore errors - this is non-critical
+        });
     }
-  };
+  }, [conversation, user, conversationId, refreshRecentlyOpened]);
 
   const handleGenerateOutput = () => {
     setIsGeneratorOpen(true);
+  };
+
+  // Delete asset handler for slide panel
+  const handleDeleteAsset = async (assetId: string) => {
+    await transcriptionApi.deleteAnalysis(conversationId, assetId);
+    fetchOutputs();
   };
 
   // Share modal handlers
@@ -318,28 +307,31 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     );
   }
 
-  // Conversation details for right panel
-  const conversationDetails = {
+  // Metadata for the asset sidebar
+  const sidebarMetadata = {
     duration: conversation.source.audioDuration,
-    fileSize: '—', // TODO: Add file size to Conversation type
     createdAt: conversation.createdAt,
     status: conversation.status,
-    folder: folder ? { id: folder.id, name: folder.name } : undefined,
-    tags: conversation.tags,
     speakers: conversation.source.transcript.speakers,
-    summaryFormat: conversation.source.summary.summaryV2 ? 'v2' as const : 'v1' as const,
   };
-
 
   return (
     <div className="h-screen flex flex-col">
       <ThreePaneLayout
         leftSidebar={<LeftNavigation />}
         rightPanel={
-          <RightContextPanel
-            conversation={conversationDetails}
-            onGenerateOutput={handleGenerateOutput}
-          />
+          <div className="hidden lg:block h-full">
+            <AssetSidebar
+              assets={outputs}
+              isLoading={isLoadingOutputs}
+              conversationId={conversationId}
+              locale={locale}
+              onGenerateNew={handleGenerateOutput}
+              onAssetClick={openAssetPanel}
+              selectedAssetId={selectedAsset?.id}
+              metadata={sidebarMetadata}
+            />
+          </div>
         }
         mainContent={
           <div className="max-w-4xl mx-auto px-6 py-8">
@@ -401,263 +393,110 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               </div>
             </div>
 
-            {/* Sticky Section Navigation */}
+            {/* Tab Navigation */}
             <nav className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-6 px-6">
-              <div className="flex items-center gap-6 py-3">
+              <div className="flex items-center gap-1 py-1">
                 <button
-                  onClick={() => document.getElementById('summary')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
+                  onClick={() => setActiveTab('summary')}
+                  className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    activeTab === 'summary'
+                      ? 'text-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`}
                 >
-                  Summary
+                  {tConversation('tabs.summary')}
                 </button>
-                <Link
-                  href={`/${locale}/conversation/${conversationId}/transcript`}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
-                >
-                  Transcript
-                </Link>
                 <button
-                  onClick={() => document.getElementById('outputs')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors duration-200"
+                  onClick={() => setActiveTab('transcript')}
+                  className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
+                    activeTab === 'transcript'
+                      ? 'text-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`}
                 >
-                  AI Assets
+                  {tConversation('tabs.transcript')}
                 </button>
               </div>
             </nav>
 
-            {/* Section: Summary */}
-            <section id="summary" className="mb-12 scroll-mt-16">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Summary</h2>
-                </div>
-                {(conversation.source.summary.summaryV2 || conversation.source.summary.text) && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<Copy className="w-4 h-4" />}
-                    onClick={handleCopySummary}
-                  >
-                    {copiedSummary ? 'Copied!' : 'Copy'}
-                  </Button>
-                )}
-              </div>
-
-              {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
-                <SummaryRenderer
-                  content={conversation.source.summary.text}
-                  summaryV2={conversation.source.summary.summaryV2}
-                />
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>Summary is being generated...</p>
-                </div>
-              )}
-            </section>
-
-            {/* Section: AI Assets */}
-            <section
-              id="outputs"
-              className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
-            >
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {/* Icon with brand gradient background */}
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center shadow-lg shadow-[#8D6AFA]/20">
-                      <Zap className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                        {t('title')}
-                      </h2>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {t('description')}
-                      </p>
-                    </div>
+            {/* Tab Content */}
+            {activeTab === 'summary' && (
+              <section id="summary" className="scroll-mt-16">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Summary</h2>
                   </div>
-                  {outputs.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={toggleAssetsViewMode}
-                        icon={assetsViewMode === 'card' ? (
-                          <List className="w-4 h-4" />
-                        ) : (
-                          <LayoutGrid className="w-4 h-4" />
-                        )}
-                      >
-                        {assetsViewMode === 'card' ? 'List' : 'Cards'}
-                      </Button>
-                      <Button
-                        variant="brand"
-                        size="md"
-                        icon={<Plus className="w-4 h-4" />}
-                        onClick={() => setIsGeneratorOpen(true)}
-                      >
-                        {t('newAsset')}
-                      </Button>
-                    </div>
+                  {(conversation.source.summary.summaryV2 || conversation.source.summary.text) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<Copy className="w-4 h-4" />}
+                      onClick={handleCopySummary}
+                    >
+                      {copiedSummary ? 'Copied!' : 'Copy'}
+                    </Button>
                   )}
                 </div>
-              </div>
 
-              {/* Outputs Gallery */}
-              {outputs.length > 0 ? (
-                assetsViewMode === 'card' ? (
-                  // Card View
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {outputs.map((output) => {
-                      const OutputIcon = getOutputIcon(output.templateId);
-                      // Create a preview from the content - handle both markdown and structured
-                      let preview: string;
-                      if (output.contentType === 'structured' && typeof output.content === 'object') {
-                        preview = getStructuredOutputPreview(output.content as StructuredOutput);
-                      } else {
-                        const contentStr = typeof output.content === 'string' ? output.content : JSON.stringify(output.content);
-                        preview = contentStr
-                          .replace(/^#+ /gm, '') // Remove markdown headers
-                          .replace(/\*\*/g, '') // Remove bold markers
-                          .slice(0, 150)
-                          .trim() + (contentStr.length > 150 ? '...' : '');
-                      }
-
-                      return (
-                        <Link
-                          key={output.id}
-                          href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
-                          onClick={saveScrollPosition}
-                          className="group relative p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
-                              <OutputIcon className="w-6 h-6 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
-                                {output.templateName}
-                              </h3>
-                              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                                {preview}
-                              </p>
-                              <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                Generated {formatRelativeTime(new Date(output.generatedAt))}
-                              </div>
-                            </div>
-                            <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
-                              →
-                            </div>
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
+                  <SummaryRenderer
+                    content={conversation.source.summary.text}
+                    summaryV2={conversation.source.summary.summaryV2}
+                  />
                 ) : (
-                  // List View
-                  <div className="divide-y divide-gray-100 dark:divide-gray-700/50 border border-gray-100 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
-                    {outputs.map((output) => {
-                      const OutputIcon = getOutputIcon(output.templateId);
+                  <div className="text-center py-8 text-gray-500">
+                    <p>Summary is being generated...</p>
+                  </div>
+                )}
+              </section>
+            )}
 
-                      return (
-                        <Link
-                          key={output.id}
-                          href={`/${locale}/conversation/${conversation.id}/outputs/${output.id}`}
-                          onClick={saveScrollPosition}
-                          className="group flex items-center justify-between py-3 px-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="flex-shrink-0">
-                              <OutputIcon className="w-5 h-5 text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110 transition-all duration-200" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200 truncate block">
-                                {output.templateName}
-                              </span>
-                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                {formatRelativeTime(new Date(output.generatedAt))}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200 ml-2">
-                            →
-                          </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )
-              ) : (
-                <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
-                  <div className="text-4xl mb-3">✨</div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-                    {t('emptyTitle')}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
-                    {t('emptyDescription')}
-                  </p>
-                  <Button variant="brand" size="md" onClick={() => setIsGeneratorOpen(true)}>
-                    {t('emptyButton')}
-                  </Button>
-                </div>
-              )}
-            </section>
-
-            {/* Section: Transcript */}
-            <section
-              id="transcript"
-              className="mb-12 scroll-mt-8 pt-8 border-t border-gray-100 dark:border-gray-800"
-            >
-              <div className="mb-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                    Transcript
-                  </h2>
-                </div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  View the full conversation with speaker diarization and timeline
-                </p>
-              </div>
-
-              {/* Transcript Card - Links to dedicated page */}
-              <Link
-                href={`/${locale}/conversation/${conversation.id}/transcript`}
-                onClick={saveScrollPosition}
-                className="group block p-6 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
-                    <FileText className="w-6 h-6 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#8D6AFA] transition-colors">
-                      Full Transcript with Timeline
-                    </h3>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                      Interactive speaker timeline with {conversation.source.transcript.speakers}{' '}
-                      speakers and{' '}
-                      {Math.floor(conversation.source.transcript.confidence * 100)}% confidence
-                    </p>
-                    {conversation.source.transcript.speakerSegments && (
-                      <div className="flex items-center gap-4 text-xs font-semibold text-gray-600 dark:text-gray-400">
-                        <span>
-                          {conversation.source.transcript.speakerSegments.length} segments
-                        </span>
-                        <span>·</span>
-                        <span>{formatDuration(conversation.source.audioDuration)} duration</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-shrink-0 text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
-                    →
-                  </div>
-                </div>
-              </Link>
-            </section>
+            {activeTab === 'transcript' && (
+              <InlineTranscript
+                conversation={conversation}
+                onRefresh={refresh}
+              />
+            )}
           </div>
         }
+      />
+
+      {/* Mobile FAB for AI Assets */}
+      <div className="lg:hidden fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setMobileAssetSheetOpen(true)}
+          className="relative w-14 h-14 rounded-full bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white shadow-lg flex items-center justify-center transition-colors"
+          aria-label="Open AI Assets"
+        >
+          <Zap className="w-6 h-6" />
+          {outputs.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-white text-[#8D6AFA] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
+              {outputs.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* AI Asset Slide Panel */}
+      <AIAssetSlidePanel
+        asset={selectedAsset}
+        isOpen={isPanelOpen}
+        isClosing={isPanelClosing}
+        onClose={closeAssetPanel}
+        onDelete={handleDeleteAsset}
+        conversationId={conversationId}
+        locale={locale}
+      />
+
+      {/* Mobile Asset Sheet */}
+      <AssetMobileSheet
+        assets={outputs}
+        isLoading={isLoadingOutputs}
+        isOpen={mobileAssetSheetOpen}
+        onClose={() => setMobileAssetSheetOpen(false)}
+        onGenerateNew={() => setIsGeneratorOpen(true)}
+        onAssetClick={openAssetPanel}
       />
 
       {/* Output Generator Modal */}

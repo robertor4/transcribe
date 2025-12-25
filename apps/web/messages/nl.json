@@ -393,6 +393,27 @@
       "generating": "Je AI asset wordt gemaakt...",
       "success": "AI asset gemaakt!",
       "error": "AI asset maken mislukt. Probeer het opnieuw."
+    },
+    "sidebar": {
+      "title": "AI Assets",
+      "generateNew": "Nieuwe maken",
+      "emptyTitle": "Nog geen assets",
+      "emptyDescription": "Genereer je eerste AI asset",
+      "metadata": "Bestandsinformatie"
+    },
+    "panel": {
+      "close": "Sluiten",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "delete": "Verwijderen",
+      "confirmDelete": "Deze asset verwijderen?",
+      "viewFull": "Bekijk volledige pagina"
+    }
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Samenvatting",
+      "transcript": "Transcript"
     }
   },
   "howItWorks": {

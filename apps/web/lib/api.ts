@@ -185,6 +185,16 @@ export const transcriptionApi = {
     });
   },
 
+  getRecentlyOpened: async (limit = 5): Promise<ApiResponse<unknown[]>> => {
+    return api.get('/transcriptions/recently-opened', {
+      params: { limit },
+    });
+  },
+
+  recordAccess: async (id: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.post(`/transcriptions/${id}/access`);
+  },
+
   get: async (id: string): Promise<ApiResponse<unknown>> => {
     return api.get(`/transcriptions/${id}`);
   },

@@ -1211,6 +1211,17 @@ ${fullCustomPrompt}`;
     return this.firebaseService.searchTranscriptions(userId, query, limit);
   }
 
+  async recordTranscriptionAccess(userId: string, transcriptionId: string) {
+    return this.firebaseService.recordTranscriptionAccess(
+      userId,
+      transcriptionId,
+    );
+  }
+
+  async getRecentlyOpenedTranscriptions(userId: string, limit?: number) {
+    return this.firebaseService.getRecentlyOpenedTranscriptions(userId, limit);
+  }
+
   async getTranscription(userId: string, transcriptionId: string) {
     return this.firebaseService.getTranscription(userId, transcriptionId);
   }

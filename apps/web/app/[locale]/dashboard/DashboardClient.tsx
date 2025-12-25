@@ -12,6 +12,7 @@ import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { MilestoneToast } from '@/components/MilestoneToast';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
+import { DashboardDndProvider } from '@/components/dashboard/DashboardDndProvider';
 import { RecentAssetsSection } from '@/components/dashboard/RecentAssetsSection';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -156,11 +157,12 @@ export function DashboardClient() {
   const isLoading = conversationsLoading || foldersLoading;
 
   return (
-    <div className="h-screen flex flex-col">
-      <ThreePaneLayout
-        leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
-        showRightPanel={false}
-        mainContent={
+    <DashboardDndProvider onMoveToFolder={handleMoveToFolder}>
+      <div className="h-screen flex flex-col">
+        <ThreePaneLayout
+          leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
+          showRightPanel={false}
+          mainContent={
           <div className="px-12 pt-[38px] pb-12">
             {/* Personalized Greeting - aligned with logo bottom */}
             <div className="mb-8">
@@ -206,7 +208,6 @@ export function DashboardClient() {
                   folders={folders}
                   ungroupedConversations={ungroupedConversations}
                   locale={locale}
-                  onMoveToFolder={handleMoveToFolder}
                   onCreateFolder={handleCreateFolder}
                   onNewConversation={handleMoreTemplates}
                   onDeleteConversation={handleDeleteConversation}
@@ -235,6 +236,7 @@ export function DashboardClient() {
         initialStep={createModalConfig.initialStep}
         uploadMethod={createModalConfig.uploadMethod}
       />
-    </div>
+      </div>
+    </DashboardDndProvider>
   );
 }
