@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Files: [types.ts](packages/shared/src/types.ts), [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [email.service.ts](apps/api/src/email/email.service.ts)
 
 ### Changed
+- **Compact Folder Display**: Folder cards now show name and count inline as "Folder Name (3)" instead of on two separate lines
+  - Cleaner, more compact appearance in the dashboard folders list
+  - File: [DroppableFolderCard.tsx](apps/web/components/dashboard/DroppableFolderCard.tsx)
 - **Dashboard Layout Swap**: Switched Conversations and Folders columns on the dashboard
   - Conversations now appear on the left (wider, 2fr) as the primary content
   - Folders now appear on the right (narrower, 1fr) as the organizational sidebar

@@ -51,16 +51,16 @@ export const DroppableFolderCard = memo(function DroppableFolderCard({
           </div>
           <div className="flex-1 min-w-0">
             <div
-              className={`font-semibold mb-0.5 transition-colors duration-200 ${
+              className={`font-semibold transition-colors duration-200 ${
                 isOver
                   ? 'text-[#8D6AFA]'
                   : 'text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA]'
               }`}
             >
-              {folder.name}
-            </div>
-            <div className="text-xs text-gray-400 dark:text-gray-500">
-              <span>{folder.conversationCount ?? 0} conversations</span>
+              {folder.name}{' '}
+              <span className="text-gray-400 dark:text-gray-500 font-normal">
+                ({folder.conversationCount ?? 0})
+              </span>
             </div>
           </div>
         </div>
