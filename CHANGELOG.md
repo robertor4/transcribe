@@ -36,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Increased to 4 rows for better visibility of longer context
   - Enhanced placeholder text with specific examples
   - File: [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+- **Detail Metadata Panel Icons**: Improved icon semantics in AI Asset detail view
+  - Section title now uses MessageSquare icon (was FileText)
+  - Details section uses Info icon as default
+  - Added `sectionIcon` prop for customization
+  - Removed unused Clock icon import from OutputDetailClient
+  - Files: [DetailMetadataPanel.tsx](apps/web/components/detail-pages/DetailMetadataPanel.tsx), [OutputDetailClient.tsx](apps/web/app/[locale]/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
 
 - **Folder Page AI Assets Sidebar**: Redesigned folder view with AI assets panel in right sidebar
   - Replaces inline "Recent Outputs" section with a dedicated sidebar showing assets from all conversations in the folder

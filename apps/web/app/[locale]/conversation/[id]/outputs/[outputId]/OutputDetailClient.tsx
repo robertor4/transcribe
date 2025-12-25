@@ -12,7 +12,6 @@ import {
   Share2,
   FileText,
   MessageSquareQuote,
-  Clock,
   Copy,
   Trash2,
   StickyNote,
@@ -268,7 +267,6 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           }}
           details={detailsData}
           sectionTitle="Conversation"
-          detailsIcon={Clock}
           customSections={customSections}
         />
       }

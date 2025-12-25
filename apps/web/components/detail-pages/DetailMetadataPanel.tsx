@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LucideIcon, FileText, Share2 } from 'lucide-react';
+import { LucideIcon, MessageSquare, Info, Share2 } from 'lucide-react';
 import { DetailRightPanel } from './DetailRightPanel';
 import { RightPanelSection } from './RightPanelSection';
 import { DetailItem } from './DetailItem';
@@ -22,6 +22,7 @@ interface DetailMetadataPanelProps {
     onClick?: () => void;
   }>;
   sectionTitle?: string;
+  sectionIcon?: LucideIcon;
   detailsIcon?: LucideIcon;
   actionsIcon?: LucideIcon;
   customSections?: ReactNode;
@@ -37,17 +38,19 @@ export function DetailMetadataPanel({
   details,
   actions,
   sectionTitle = 'Source',
+  sectionIcon,
   detailsIcon,
   actionsIcon,
   customSections
 }: DetailMetadataPanelProps) {
-  // Use FileText as default icon if not provided
-  const DetailsIcon = detailsIcon || FileText;
+  // Use appropriate default icons for each section
+  const SectionIcon = sectionIcon || MessageSquare;
+  const DetailsIcon = detailsIcon || Info;
   const ActionsIcon = actionsIcon || Share2;
 
   return (
     <DetailRightPanel>
-      <RightPanelSection icon={DetailsIcon} title={sectionTitle}>
+      <RightPanelSection icon={SectionIcon} title={sectionTitle}>
         <ConversationCard conversation={conversation} />
       </RightPanelSection>
 
