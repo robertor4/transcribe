@@ -55,6 +55,7 @@ import {
   MAX_FILE_SIZE,
   AnalysisTemplate,
   GeneratedAnalysis,
+  BlogHeroImage,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -971,6 +972,30 @@ export class TranscriptionController {
     return {
       success: true,
       message: 'Analysis deleted successfully',
+    };
+  }
+
+  /**
+   * Generate a hero image for an existing blog post analysis (Premium only)
+   */
+  @Post(':id/analyses/:analysisId/generate-image')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 image generations per minute
+  async generateBlogImage(
+    @Param('id') transcriptionId: string,
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ heroImage: BlogHeroImage }>> {
+    const heroImage =
+      await this.onDemandAnalysisService.generateImageForBlogPost(
+        analysisId,
+        req.user.uid,
+      );
+
+    return {
+      success: true,
+      data: { heroImage },
+      message: 'Hero image generated successfully',
     };
   }
 

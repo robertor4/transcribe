@@ -207,6 +207,13 @@ export interface BlogSection {
   quotes?: { text: string; attribution: string }[];
 }
 
+/** Hero image for blog posts (AI-generated) */
+export interface BlogHeroImage {
+  url: string;
+  alt: string;
+  prompt?: string; // Store prompt for regeneration
+}
+
 /** Structured blog post output */
 export interface BlogPostOutput {
   type: 'blogPost';
@@ -215,6 +222,7 @@ export interface BlogPostOutput {
   hook: string;
   sections: BlogSection[];
   callToAction: string;
+  heroImage?: BlogHeroImage;
   metadata: {
     wordCount: number;
     targetAudience?: string;

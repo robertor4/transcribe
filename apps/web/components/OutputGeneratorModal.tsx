@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import { Button } from './Button';
+import { GeneratingLoader } from './GeneratingLoader';
 import { allTemplates, TemplateId } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
@@ -329,11 +330,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     This may take a few moments
                   </p>
-                  <div className="mt-8 flex items-center justify-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <div className="w-3 h-3 rounded-full bg-[#8D6AFA] animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
+                  <GeneratingLoader className="mt-8" />
                 </>
               ) : error ? (
                 <>

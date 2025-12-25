@@ -31,6 +31,7 @@ export default function RootLayout({ children }: Props) {
         <ThemeColor />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: 'Geist, system-ui, sans-serif' }}>

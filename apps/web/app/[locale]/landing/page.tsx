@@ -104,6 +104,7 @@ export default async function LandingPage({
 
           {/* Hero Image - Full width, aligned to bottom, scales up on mobile for better visibility */}
           <div className="absolute inset-0 flex items-end justify-center overflow-hidden" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/images/hero-bg-02.webp"
               alt=""
@@ -131,6 +132,7 @@ export default async function LandingPage({
             <ScrollAnimation delay={600}>
               <div className="flex justify-center py-8 my-8">
                 <div className="max-w-2xl mx-auto">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/assets/images/landing-thinkinvoice.webp"
                     alt="From thinking in conversations to working in documents"
@@ -248,6 +250,7 @@ export default async function LandingPage({
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <ScrollAnimation animation="slideLeft">
                   <div className="rounded-2xl aspect-[4/3] overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src="/assets/images/features/feature-accuracy.webp"
                       alt="99.5% transcription accuracy with speaker labels"
@@ -270,6 +273,7 @@ export default async function LandingPage({
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <ScrollAnimation animation="slideLeft" className="md:order-2">
                   <div className="rounded-2xl aspect-[4/3] overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src="/assets/images/features/feature-large-files.webp"
                       alt="Handle large audio files up to 5GB"
@@ -292,6 +296,7 @@ export default async function LandingPage({
               <div className="grid md:grid-cols-2 gap-16 items-center">
                 <ScrollAnimation animation="slideLeft">
                   <div className="rounded-2xl aspect-[4/3] overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src="/assets/images/features/feature-languages.webp"
                       alt="Support for 99 languages with automatic detection"
@@ -371,7 +376,8 @@ export default async function LandingPage({
                   &ldquo;{t('testimonials.testimonial1.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
-                  <img 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/assets/images/avatars/avatar-sarah-martinez.webp"
                     alt="Sarah Martinez"
                     className="w-10 h-10 rounded-full mr-3 object-cover"
@@ -397,7 +403,8 @@ export default async function LandingPage({
                   &ldquo;{t('testimonials.testimonial2.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
-                  <img 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/assets/images/avatars/avatar-james-liu.webp"
                     alt="Dr. James Liu"
                     className="w-10 h-10 rounded-full mr-3 object-cover"
@@ -423,7 +430,8 @@ export default async function LandingPage({
                   &ldquo;{t('testimonials.testimonial3.quote')}&rdquo;
                 </p>
                 <footer className="flex items-center">
-                  <img 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/assets/images/avatars/avatar-emily-chen.webp"
                     alt="Emily Chen"
                     className="w-10 h-10 rounded-full mr-3 object-cover"
@@ -535,6 +543,7 @@ export default async function LandingPage({
               </div>
               <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="flex items-center mb-4 md:mb-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/assets/logos/neural-summary-logo.svg"
                     alt="Neural Summary"

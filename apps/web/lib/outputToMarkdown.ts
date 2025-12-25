@@ -146,6 +146,13 @@ function blogPostToMarkdown(data: BlogPostOutput): string {
     sections.push(`*${data.subheading}*`);
   }
   sections.push('');
+
+  // Include hero image if available
+  if (data.heroImage) {
+    sections.push(`![${data.heroImage.alt}](${data.heroImage.url})`);
+    sections.push('');
+  }
+
   sections.push(data.hook);
   sections.push('');
 
@@ -329,6 +336,12 @@ function blogPostToHtml(data: BlogPostOutput): string {
   if (data.subheading) {
     parts.push(`<p><em>${escapeHtml(data.subheading)}</em></p>`);
   }
+
+  // Include hero image if available (floated right for editorial layout)
+  if (data.heroImage) {
+    parts.push(`<img src="${escapeHtml(data.heroImage.url)}" alt="${escapeHtml(data.heroImage.alt)}" style="float: right; margin: 0 0 1em 1em; max-width: 300px; border-radius: 8px;">`);
+  }
+
   parts.push(`<p>${escapeHtml(data.hook)}</p>`);
 
   data.sections.forEach(section => {

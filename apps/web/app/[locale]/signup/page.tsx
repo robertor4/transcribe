@@ -15,6 +15,7 @@ export default async function SignupPage({
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary Logo"

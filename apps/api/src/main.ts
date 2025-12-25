@@ -132,4 +132,4 @@ async function bootstrap() {
   console.log(`HTTP timeout: 30 minutes (for large file uploads)`);
   console.log('Graceful shutdown enabled');
 }
-bootstrap();
+void bootstrap();

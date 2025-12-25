@@ -73,9 +73,10 @@ export default async function PrivacyPage({
                   <span className="hidden sm:inline">{tCommon('back')}</span>
                 </Link>
                 <div className="flex items-center">
-                  <img 
-                    src="/assets/logos/neural-summary-logo.svg" 
-                    alt="Neural Summary" 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/logos/neural-summary-logo.svg"
+                    alt="Neural Summary"
                     className="h-8 w-auto mr-3"
                     width={32}
                     height={32}

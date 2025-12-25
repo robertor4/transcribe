@@ -16,6 +16,8 @@ import {
   Copy,
   Trash2,
   StickyNote,
+  ImagePlus,
+  Sparkles,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput } from '@transcribe/shared';
@@ -30,6 +32,7 @@ import { formatRelativeTime } from '@/lib/formatters';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
 import type { StructuredOutput } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
+import { useUsage } from '@/contexts/UsageContext';
 
 interface OutputDetailClientProps {
   conversationId: string;
@@ -43,12 +46,15 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const t = useTranslations('aiAssets');
 
   const { conversation } = useConversation(conversationId);
+  const { usageStats, isAdmin } = useUsage();
   const [output, setOutput] = useState<GeneratedAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [copied, setCopied] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
@@ -129,6 +135,44 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       setShowDeleteConfirm(false);
     }
   };
+
+  // Generate hero image for blog post (Premium only)
+  const handleGenerateImage = async () => {
+    if (!output) return;
+
+    setIsGeneratingImage(true);
+    setImageError(null);
+
+    try {
+      const response = await transcriptionApi.generateBlogImage(conversationId, outputId);
+      if (response.success && response.data?.heroImage) {
+        // Update the output with the new hero image
+        const updatedContent = {
+          ...(output.content as BlogPostOutput),
+          heroImage: response.data.heroImage,
+        };
+        setOutput({
+          ...output,
+          content: updatedContent,
+        });
+      }
+    } catch (err: unknown) {
+      console.error('Failed to generate image:', err);
+      const errorMessage = err instanceof Error ? err.message :
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Failed to generate image';
+      setImageError(errorMessage);
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  // Check if this is a blog post
+  const isBlogPost = output?.templateId === 'blogPost' && typeof output?.content === 'object';
+  const hasHeroImage = isBlogPost && !!(output.content as BlogPostOutput)?.heroImage;
+
+  // Check if user has premium access (not free tier, or is admin)
+  const isPremiumUser = isAdmin || (usageStats?.tier && usageStats.tier !== 'free');
 
   // Loading state
   if (isLoading) {
@@ -237,6 +281,35 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         subtitle={`Generated ${formatRelativeTime(new Date(output.generatedAt))}`}
         actions={
           <>
+            {/* Generate Image button - for blog posts, premium users can generate or regenerate */}
+            {isBlogPost && isPremiumUser && (
+              <Button
+                variant="ghost"
+                size="md"
+                icon={isGeneratingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                onClick={handleGenerateImage}
+                disabled={isGeneratingImage}
+              >
+                {isGeneratingImage ? 'Generating...' : hasHeroImage ? 'Regenerate Image' : 'Generate Image'}
+              </Button>
+            )}
+
+            {/* Show upgrade hint for free users on blog posts without images */}
+            {isBlogPost && !hasHeroImage && !isPremiumUser && (
+              <Link href={`/${locale}/pricing`}>
+                <Button
+                  variant="ghost"
+                  size="md"
+                  icon={<ImagePlus className="w-4 h-4" />}
+                >
+                  <span className="flex items-center gap-1">
+                    Generate Image
+                    <span className="text-xs bg-[#8D6AFA]/10 text-[#8D6AFA] px-1.5 py-0.5 rounded-full">Pro</span>
+                  </span>
+                </Button>
+              </Link>
+            )}
+
             <Button
               variant="ghost"
               size="md"
@@ -281,6 +354,23 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       />
 
       <div className="max-w-4xl mx-auto px-6 pb-8">
+        {/* Image generation error */}
+        {imageError && (
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                  Failed to generate image
+                </p>
+                <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                  {imageError}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Output Content */}
         <div className="bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl p-6 md:p-8">
           <OutputRenderer

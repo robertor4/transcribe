@@ -118,6 +118,7 @@ export function UserProfileMenu() {
         <div className="flex items-center gap-2 min-w-0">
           {/* Profile Picture or Initials Avatar */}
           {user.photoURL ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={user.photoURL}
               alt={user.displayName || user.email || 'User'}
@@ -152,6 +153,7 @@ export function UserProfileMenu() {
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
               {user.photoURL ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={user.photoURL}
                   alt={user.displayName || user.email || 'User'}

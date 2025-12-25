@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **ESLint Configuration Cleanup**: Resolved all linter warnings across the codebase
+  - Frontend: Added eslint-disable comments for legitimate `<img>` element usage (SVG logos, user profile photos, QR codes)
+  - Backend: Disabled overly strict `no-unsafe-*` TypeScript rules that are common patterns in NestJS apps
+  - Fixed floating promise warnings in [main.ts](apps/api/src/main.ts) and test files
+  - Files: [eslint.config.mjs](apps/api/eslint.config.mjs), various component files
+
 ### Added
+- **AI-Generated Hero Images for Blog Posts**: Blog posts now automatically include an AI-generated hero image
+  - Uses Replicate's Flux Schnell model for fast image generation (~2 seconds)
+  - Content-aware prompts: GPT analyzes headline, subheading, and hook to generate images that reflect the article's theme and emotional tone
+  - Editorial illustration style (not abstract geometric) - symbolic imagery that helps readers sense what the article is about
+  - Magazine-style float-right layout with responsive sizing (full width on mobile, 384px on large screens)
+  - Images stored in Firebase Storage for persistence
+  - Graceful fallback: blog posts work fine without images if Replicate is not configured
+  - Cost: ~$0.003 per image
+  - Files: [replicate.service.ts](apps/api/src/replicate/replicate.service.ts), [image-prompt.service.ts](apps/api/src/transcription/image-prompt.service.ts), [BlogPostTemplate.tsx](apps/web/components/outputTemplates/BlogPostTemplate.tsx)
+- **Generate Image Button for Blog Posts (Premium)**: Premium users can generate hero images for existing blog posts
+  - "Generate Image" button appears in blog post detail view header when no image exists
+  - Free users see the button with a "Pro" badge linking to the pricing page
+  - Loading state with spinner during image generation
+  - Error handling with clear error messages
+  - Image is persisted to the analysis and displayed immediately after generation
+  - Files: [OutputDetailClient.tsx](apps/web/app/[locale]/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts)
 - **Action Items Persistence**: Checkmarks on action items are now persisted in localStorage
   - Completing an action item saves state by analysis ID
   - State is restored when revisiting the same AI asset

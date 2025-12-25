@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
@@ -20,6 +20,28 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Promise that resolves when Firebase Auth has finished initializing
+// This is critical for preventing race conditions where API requests
+// are made before auth.currentUser is populated from IndexedDB
+let authReadyResolve: (user: User | null) => void;
+export const authReady: Promise<User | null> = new Promise((resolve) => {
+  authReadyResolve = resolve;
+});
+
+// Track if auth has been initialized
+let authInitialized = false;
+
+// Listen for auth state changes - the first callback indicates auth is ready
+if (typeof window !== 'undefined') {
+  onAuthStateChanged(auth, (user) => {
+    if (!authInitialized) {
+      authInitialized = true;
+      authReadyResolve(user);
+      // Keep listening for subsequent auth changes (handled by AuthContext)
+    }
+  });
+}
 
 // Initialize Analytics only in browser environment
 let analytics: Analytics | null = null;

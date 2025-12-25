@@ -21,12 +21,27 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
           </p>
         )}
 
+        {/* Hero Image - Magazine-style float right, positioned early so hook wraps around it */}
+        {data.heroImage && (
+          <figure className="sm:float-right sm:ml-8 sm:mb-4 mb-6 w-full sm:w-72 md:w-80 lg:w-96">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={data.heroImage.url}
+              alt={data.heroImage.alt}
+              className="w-full rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+            />
+            <figcaption className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center italic">
+              AI-generated
+            </figcaption>
+          </figure>
+        )}
+
         {/* Hook */}
         <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8 first-letter:text-4xl first-letter:font-bold first-letter:text-[#8D6AFA]">
           {data.hook}
         </p>
 
-        {/* Sections */}
+        {/* Sections - text continues to wrap around the floated image */}
         {data.sections.map((section, index) => (
           <section key={index} className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -48,15 +63,15 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
                 {section.quotes.map((quote, qIndex) => (
                   <blockquote
                     key={qIndex}
-                    className="border-l-4 border-[#8D6AFA] pl-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-r-lg"
+                    className="border-l-4 border-[#8D6AFA] pl-5 py-5 bg-gray-50 dark:bg-gray-800/50 rounded-r-lg"
                   >
-                    <div className="flex items-start gap-2">
-                      <Quote className="w-5 h-5 text-[#8D6AFA] flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-gray-700 dark:text-gray-300 italic mb-1">
-                          &ldquo;{quote.text}&rdquo;
+                    <div className="flex items-start gap-3">
+                      <Quote className="w-7 h-7 text-[#8D6AFA] flex-shrink-0" />
+                      <div className="pr-4">
+                        <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed !mt-0">
+                          {quote.text}
                         </p>
-                        <cite className="text-sm text-gray-500 dark:text-gray-500 not-italic">
+                        <cite className="block mt-2 text-sm text-gray-500 dark:text-gray-400 not-italic">
                           — {quote.attribution}
                         </cite>
                       </div>
@@ -68,9 +83,12 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
           </section>
         ))}
 
+      {/* Clear float before Call to Action */}
+      <div className="clear-both" />
+
       {/* Call to Action */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-[#8D6AFA]/10 to-purple-500/10 dark:from-[#8D6AFA]/20 dark:to-purple-500/20 rounded-xl border border-[#8D6AFA]/20">
-        <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+      <div className="mt-4 border-l-4 border-[#14D0DC] pl-5 py-8 bg-[#14D0DC]/5 dark:bg-[#14D0DC]/10 rounded-r-lg">
+        <p className="text-lg font-medium text-gray-900 dark:text-gray-100 leading-relaxed !my-0">
           {data.callToAction}
         </p>
       </div>

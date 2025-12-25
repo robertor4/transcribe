@@ -16,11 +16,13 @@ export default async function LoginPage({
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center mb-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-wTagLine.png"
               alt="Neural Summary - You speak. It creates."
               className="w-full max-w-[280px] dark:hidden"
             />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-white-wTagLine.svg"
               alt="Neural Summary - You speak. It creates."

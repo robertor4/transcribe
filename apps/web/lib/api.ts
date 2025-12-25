@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { auth } from './firebase';
+import { auth, authReady } from './firebase';
 import {
   ApiResponse,
   AnalysisType,
@@ -8,6 +8,7 @@ import {
   CorrectionPreview,
   CorrectionApplyResponse,
   RoutingPlan,
+  BlogHeroImage,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -29,7 +30,13 @@ const api = axios.create({
 });
 
 // Add auth token to requests
+// IMPORTANT: Wait for Firebase Auth to initialize before checking currentUser
+// This prevents race conditions on page refresh where requests fire before
+// auth.currentUser is populated from IndexedDB
 api.interceptors.request.use(async (config) => {
+  // Wait for auth to be ready (resolves immediately if already initialized)
+  await authReady;
+
   const user = auth.currentUser;
 
   if (user) {
@@ -65,6 +72,11 @@ api.interceptors.response.use(
         });
       }
       
+      // Wait for auth to be ready before checking user state
+      // This is critical on page refresh - auth.currentUser may be null
+      // while Firebase is still restoring the session from IndexedDB
+      await authReady;
+
       // Check if user is still authenticated
       const user = auth.currentUser;
       if (user) {
@@ -72,26 +84,26 @@ api.interceptors.response.use(
           // Try to get a fresh token
           const newToken = await user.getIdToken(true); // force refresh
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          
+
           // Retry the request with the new token
           return api(originalRequest);
         } catch (refreshError) {
           // If token refresh fails, then redirect to login
           window.location.href = '/login';
           // Still return a rejected promise with proper error
-          return Promise.reject({ 
-            status: 401, 
-            message: 'Authentication failed', 
-            originalError: refreshError 
+          return Promise.reject({
+            status: 401,
+            message: 'Authentication failed',
+            originalError: refreshError
           });
         }
       } else {
-        // User is not authenticated, redirect to login
+        // User is genuinely not authenticated (auth is ready and no user)
         window.location.href = '/login';
         // Return a rejected promise with proper error
-        return Promise.reject({ 
-          status: 401, 
-          message: 'User not authenticated' 
+        return Promise.reject({
+          status: 401,
+          message: 'User not authenticated'
         });
       }
     }
@@ -259,6 +271,10 @@ export const transcriptionApi = {
 
   deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/analyses/${analysisId}`);
+  },
+
+  generateBlogImage: async (id: string, analysisId: string): Promise<ApiResponse<{ heroImage: BlogHeroImage }>> => {
+    return api.post(`/transcriptions/${id}/analyses/${analysisId}/generate-image`);
   },
 
   getRecentAnalyses: async (limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {

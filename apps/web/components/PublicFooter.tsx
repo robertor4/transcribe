@@ -56,6 +56,7 @@ export function PublicFooter({ locale }: PublicFooterProps) {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center mb-4 md:mb-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/assets/logos/neural-summary-logo.svg"
                 alt="Neural Summary"

@@ -279,6 +279,7 @@ export default function SharedTranscriptionPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Logo/Branding - Logo only, no text */}
           <div className="flex items-center justify-between mb-6">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary"

@@ -721,6 +721,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {/* QR Code */}
                 {showQrCode && qrCodeUrl && (
                   <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex flex-col items-center border border-pink-100 dark:border-purple-900/50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={qrCodeUrl} alt="QR Code" className="mb-2 w-48 h-48" />
                     <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{t('scanQR')}</p>
                   </div>

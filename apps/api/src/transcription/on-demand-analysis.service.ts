@@ -4,10 +4,16 @@ import {
   UnauthorizedException,
   Logger,
 } from '@nestjs/common';
-import { GeneratedAnalysis } from '@transcribe/shared';
+import {
+  GeneratedAnalysis,
+  BlogPostOutput,
+  BlogHeroImage,
+} from '@transcribe/shared';
 import { FirebaseService } from '../firebase/firebase.service';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
+import { ImagePromptService } from './image-prompt.service';
+import { ReplicateService } from '../replicate/replicate.service';
 
 /**
  * Service for managing on-demand analysis generation
@@ -21,6 +27,8 @@ export class OnDemandAnalysisService {
     private firebaseService: FirebaseService,
     private transcriptionService: TranscriptionService,
     private templateService: AnalysisTemplateService,
+    private imagePromptService: ImagePromptService,
+    private replicateService: ReplicateService,
   ) {}
 
   /**
@@ -142,6 +150,15 @@ export class OnDemandAnalysisService {
           this.logger.log(
             'Successfully parsed and validated structured JSON output',
           );
+
+          // Generate hero image for blog posts
+          if (
+            templateId === 'blogPost' &&
+            this.replicateService.isAvailable()
+          ) {
+            const blogContent = content as BlogPostOutput;
+            await this.generateBlogHeroImage(blogContent, userId);
+          }
         } catch (parseError) {
           // For structured templates, JSON parse failure is an error, not a fallback
           this.logger.error(
@@ -332,6 +349,75 @@ export class OnDemandAnalysisService {
   }
 
   /**
+   * Generate a hero image for a blog post using AI.
+   * Generates a prompt using GPT, then creates the image with Replicate's Flux model.
+   * The image is uploaded to Firebase Storage for persistence.
+   */
+  private async generateBlogHeroImage(
+    blogContent: BlogPostOutput,
+    userId: string,
+  ): Promise<void> {
+    try {
+      this.logger.log(
+        `Generating hero image for blog post: "${blogContent.headline.substring(0, 50)}..."`,
+      );
+
+      // 1. Generate image prompt using GPT
+      const promptResult = await this.imagePromptService.generateImagePrompt({
+        headline: blogContent.headline,
+        subheading: blogContent.subheading,
+        hook: blogContent.hook,
+      });
+
+      // 2. Generate image with Replicate
+      const imageResult = await this.replicateService.generateImage({
+        prompt: promptResult.prompt,
+        aspectRatio: '4:5', // Portrait ratio for float layout
+        outputFormat: 'webp',
+        model: 'flux-schnell', // Fast model for quick generation
+      });
+
+      if (!imageResult) {
+        this.logger.warn(
+          'Image generation failed, blog post will not have hero image',
+        );
+        return;
+      }
+
+      // 3. Download and upload to Firebase Storage for persistence
+      const imageBuffer = await this.replicateService.downloadImage(
+        imageResult.url,
+      );
+      if (!imageBuffer) {
+        this.logger.warn('Failed to download generated image');
+        return;
+      }
+
+      const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
+      const uploadResult = await this.firebaseService.uploadFile(
+        imageBuffer,
+        storagePath,
+        'image/webp',
+      );
+
+      // 4. Add hero image to blog content
+      blogContent.heroImage = {
+        url: uploadResult.url,
+        alt: promptResult.alt,
+        prompt: promptResult.prompt,
+      };
+
+      this.logger.log(
+        `Hero image generated and uploaded in ${imageResult.generationTimeMs}ms`,
+      );
+    } catch (error) {
+      // Don't fail the entire blog post generation if image fails
+      this.logger.error('Error generating blog hero image:', error);
+      this.logger.warn('Continuing without hero image');
+    }
+  }
+
+  /**
    * Delete a generated analysis
    */
   async deleteAnalysis(analysisId: string, userId: string): Promise<void> {
@@ -354,5 +440,120 @@ export class OnDemandAnalysisService {
     await this.firebaseService.deleteGeneratedAnalysis(analysisId);
 
     this.logger.log(`Analysis ${analysisId} deleted successfully`);
+  }
+
+  /**
+   * Generate a hero image for an existing blog post analysis.
+   * Only available for premium users (professional or payg tiers).
+   */
+  async generateImageForBlogPost(
+    analysisId: string,
+    userId: string,
+  ): Promise<BlogHeroImage> {
+    // 1. Check if Replicate is available
+    if (!this.replicateService.isAvailable()) {
+      throw new BadRequestException(
+        'Image generation is not available. Please contact support.',
+      );
+    }
+
+    // 2. Get user and check premium status (admins bypass)
+    const user = await this.firebaseService.getUser(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isAdmin = user.role === 'admin';
+    const tier = user.subscriptionTier || 'free';
+    if (!isAdmin && tier === 'free') {
+      throw new BadRequestException(
+        'Image generation is only available for Premium users. Upgrade to Professional or purchase credits to access this feature.',
+      );
+    }
+
+    // 3. Get the analysis
+    const analysis =
+      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+
+    if (!analysis) {
+      throw new BadRequestException(`Analysis not found: ${analysisId}`);
+    }
+
+    if (analysis.userId !== userId) {
+      throw new UnauthorizedException('Cannot access this analysis');
+    }
+
+    // 4. Verify it's a blog post
+    if (analysis.templateId !== 'blogPost') {
+      throw new BadRequestException(
+        'Image generation is only available for blog posts',
+      );
+    }
+
+    const blogContent = analysis.content as BlogPostOutput;
+    if (!blogContent || !blogContent.headline) {
+      throw new BadRequestException('Invalid blog post content');
+    }
+
+    this.logger.log(
+      `Generating hero image for existing blog post: "${blogContent.headline.substring(0, 50)}..."`,
+    );
+
+    // 5. Generate image prompt using GPT
+    const promptResult = await this.imagePromptService.generateImagePrompt({
+      headline: blogContent.headline,
+      subheading: blogContent.subheading,
+      hook: blogContent.hook,
+    });
+
+    // 6. Generate image with Replicate (flux-dev for premium/admin users)
+    const imageResult = await this.replicateService.generateImage({
+      prompt: promptResult.prompt,
+      aspectRatio: '4:5',
+      outputFormat: 'webp',
+      model: 'flux-dev',
+    });
+
+    if (!imageResult) {
+      throw new BadRequestException(
+        'Failed to generate image. Please try again.',
+      );
+    }
+
+    // 7. Download and upload to Firebase Storage
+    const imageBuffer = await this.replicateService.downloadImage(
+      imageResult.url,
+    );
+    if (!imageBuffer) {
+      throw new BadRequestException(
+        'Failed to download generated image. Please try again.',
+      );
+    }
+
+    const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
+    const uploadResult = await this.firebaseService.uploadFile(
+      imageBuffer,
+      storagePath,
+      'image/webp',
+    );
+
+    // 8. Create hero image object
+    const heroImage: BlogHeroImage = {
+      url: uploadResult.url,
+      alt: promptResult.alt,
+      prompt: promptResult.prompt,
+    };
+
+    // 9. Update the analysis with the new hero image
+    blogContent.heroImage = heroImage;
+    await this.firebaseService.updateGeneratedAnalysis(analysisId, {
+      content: blogContent,
+    });
+
+    this.logger.log(
+      `Hero image generated and saved for analysis ${analysisId} in ${imageResult.generationTimeMs}ms`,
+    );
+
+    return heroImage;
   }
 }

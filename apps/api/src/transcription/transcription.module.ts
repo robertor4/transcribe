@@ -8,12 +8,14 @@ import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { TranscriptCorrectionRouterService } from './transcript-correction-router.service';
 import { CleanupService } from './cleanup.service';
+import { ImagePromptService } from './image-prompt.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { AssemblyAIModule } from '../assembly-ai/assembly-ai.module';
 import { EmailModule } from '../email/email.module';
 import { UserModule } from '../user/user.module';
 import { UsageModule } from '../usage/usage.module';
+import { ReplicateModule } from '../replicate/replicate.module';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
@@ -26,6 +28,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     EmailModule,
     UserModule,
     UsageModule,
+    ReplicateModule,
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),
@@ -41,6 +44,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     OnDemandAnalysisService,
     TranscriptCorrectionRouterService,
     CleanupService,
+    ImagePromptService,
     SubscriptionGuard,
   ],
   exports: [
