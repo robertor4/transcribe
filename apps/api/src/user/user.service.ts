@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { StripeService } from '../stripe/stripe.service';
-import { User, UserRole } from '@transcribe/shared';
+import { User } from '@transcribe/shared';
 
 @Injectable()
 export class UserService {
@@ -9,29 +11,22 @@ export class UserService {
 
   constructor(
     private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private userRepository: UserRepository,
     private stripeService: StripeService,
   ) {}
 
   async getUserProfile(userId: string): Promise<User | null> {
     try {
-      const userDoc = await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .get();
+      const user = await this.userRepository.getUser(userId);
 
-      if (!userDoc.exists) {
+      if (!user) {
         // Create user profile if it doesn't exist
         const userData = await this.createUserProfile(userId);
         return userData;
       }
 
-      const data = userDoc.data();
-      return {
-        uid: userId,
-        ...data,
-        createdAt: data?.createdAt?.toDate() || new Date(),
-        updatedAt: data?.updatedAt?.toDate() || new Date(),
-      } as User;
+      return user;
     } catch (error) {
       this.logger.error(`Error getting user profile for ${userId}:`, error);
       throw error;
@@ -41,31 +36,16 @@ export class UserService {
   async createUserProfile(userId: string): Promise<User> {
     try {
       // Get user info from Firebase Auth
-      const authUser = await this.firebaseService.auth.getUser(userId);
+      const authUser = await this.userRepository.getUserById(userId);
 
-      const userData: Omit<User, 'uid'> = {
-        email: authUser.email || '',
-        emailVerified: authUser.emailVerified || false,
-        displayName: authUser.displayName || undefined,
-        photoURL: authUser.photoURL || undefined,
-        role: UserRole.USER,
-        subscriptionTier: 'free', // Default to free tier
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      const user = await this.userRepository.createUser({
+        uid: userId,
+        email: authUser?.email || '',
+        displayName: authUser?.displayName || undefined,
+        photoURL: authUser?.photoURL || undefined,
+      });
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .set(userData);
-
-      return { uid: userId, ...userData };
+      return user;
     } catch (error) {
       this.logger.error(`Error creating user profile for ${userId}:`, error);
       throw error;
@@ -105,10 +85,7 @@ export class UserService {
 
       // Run Firestore and Auth updates in parallel for better performance
       await Promise.all([
-        this.firebaseService.firestore
-          .collection('users')
-          .doc(userId)
-          .update(updates),
+        this.userRepository.updateUser(userId, updates),
         Object.keys(authUpdates).length > 0
           ? this.firebaseService.auth.updateUser(userId, authUpdates)
           : Promise.resolve(),
@@ -290,13 +267,9 @@ export class UserService {
       // Update preferences
       const updates = {
         ...preferences,
-        updatedAt: new Date(),
       };
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
+      await this.userRepository.updateUser(userId, updates);
 
       // Return updated user
       const updatedUser = await this.getUserProfile(userId);
@@ -345,13 +318,9 @@ export class UserService {
       // Update email notification preferences
       const updates = {
         emailNotifications: updatedEmailNotifications,
-        updatedAt: new Date(),
       };
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
+      await this.userRepository.updateUser(userId, updates);
 
       // Return updated user
       const updatedUser = await this.getUserProfile(userId);
@@ -410,17 +379,17 @@ export class UserService {
 
         // 1. Delete all user transcriptions
         const transcriptionsDeleted =
-          await this.firebaseService.deleteUserTranscriptions(userId);
+          await this.userRepository.deleteUserTranscriptions(userId);
         deletedData.transcriptions = transcriptionsDeleted;
 
         // 2. Delete all generated analyses
         const analysesDeleted =
-          await this.firebaseService.deleteUserGeneratedAnalyses(userId);
+          await this.userRepository.deleteUserGeneratedAnalyses(userId);
         deletedData.analyses = analysesDeleted;
 
         // 3. Delete all storage files
         const storageFilesDeleted =
-          await this.firebaseService.deleteUserStorageFiles(userId);
+          await this.storageService.deleteUserFiles(userId);
         deletedData.storageFiles = storageFilesDeleted;
 
         // 4. Cancel Stripe subscription and delete customer
@@ -461,7 +430,7 @@ export class UserService {
         }
 
         // 5. Delete Firestore user document
-        await this.firebaseService.deleteUser(userId);
+        await this.userRepository.deleteUser(userId);
         deletedData.firestoreUser = true;
 
         // 6. Delete Firebase Auth account (LAST - no going back after this!)
@@ -497,7 +466,7 @@ export class UserService {
           `Performing soft delete - user will be marked as deleted, data preserved`,
         );
 
-        await this.firebaseService.softDeleteUser(userId);
+        await this.userRepository.softDeleteUser(userId);
         deletedData.firestoreUser = true;
 
         // Note: We do NOT cancel Stripe subscription on soft delete

@@ -1,7 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class StripeService {
 
   constructor(
     private configService: ConfigService,
-    private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
     private analyticsService: AnalyticsService,
   ) {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
@@ -45,7 +45,7 @@ export class StripeService {
     name?: string,
   ): Promise<string> {
     // Check if user already has a Stripe customer ID
-    const user = await this.firebaseService.getUserById(userId);
+    const user = await this.userRepository.getUserById(userId);
     if (user?.stripeCustomerId) {
       this.logger.log(
         `User ${userId} already has Stripe customer: ${user.stripeCustomerId}`,
@@ -64,7 +64,7 @@ export class StripeService {
     });
 
     // Save customer ID to user document
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       stripeCustomerId: customer.id,
       updatedAt: new Date(),
     });
@@ -409,7 +409,7 @@ export class StripeService {
       }
 
       // Update user with subscription info and reset usage
-      await this.firebaseService.updateUser(userId, {
+      await this.userRepository.updateUser(userId, {
         subscriptionTier: tier,
         stripeSubscriptionId: subscriptionId,
         subscriptionStatus: 'active',
@@ -439,12 +439,12 @@ export class StripeService {
     ) {
       // Add PAYG credits
       const hours = parseInt(session.metadata.hours || '0', 10);
-      const user = await this.firebaseService.getUserById(userId);
+      const user = await this.userRepository.getUserById(userId);
       const currentCredits = user?.paygCredits || 0;
       const amount = session.amount_total || 0;
       const currency = session.currency || 'usd';
 
-      await this.firebaseService.updateUser(userId, {
+      await this.userRepository.updateUser(userId, {
         subscriptionTier: 'payg',
         paygCredits: currentCredits + hours,
         updatedAt: new Date(),
@@ -503,7 +503,7 @@ export class StripeService {
       this.logger.log(`User ${userId} downgraded to free tier`);
     }
 
-    await this.firebaseService.updateUser(userId, updates);
+    await this.userRepository.updateUser(userId, updates);
   }
 
   /**
@@ -521,7 +521,7 @@ export class StripeService {
     this.logger.log(`Processing subscription deletion for user ${userId}`);
 
     // Downgrade to free tier
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       subscriptionTier: 'free',
       subscriptionStatus: undefined,
       stripeSubscriptionId: undefined,
@@ -545,7 +545,7 @@ export class StripeService {
 
     // Find user by customer ID
     const user =
-      await this.firebaseService.getUserByStripeCustomerId(customerId);
+      await this.userRepository.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
@@ -553,7 +553,7 @@ export class StripeService {
 
     // Reset usage if this is the start of a new billing period
     if (invoice.billing_reason === 'subscription_cycle') {
-      await this.firebaseService.updateUser(user.uid, {
+      await this.userRepository.updateUser(user.uid, {
         usageThisMonth: {
           hours: 0,
           transcriptions: 0,
@@ -580,14 +580,14 @@ export class StripeService {
 
     // Find user by customer ID
     const user =
-      await this.firebaseService.getUserByStripeCustomerId(customerId);
+      await this.userRepository.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
     }
 
     // Update subscription status
-    await this.firebaseService.updateUser(user.uid, {
+    await this.userRepository.updateUser(user.uid, {
       subscriptionStatus: 'past_due',
       updatedAt: new Date(),
     });

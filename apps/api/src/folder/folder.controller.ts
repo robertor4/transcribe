@@ -15,7 +15,8 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { FirebaseService } from '../firebase/firebase.service';
+import { FolderRepository } from '../firebase/repositories/folder.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import type { ApiResponse, Folder, Transcription } from '@transcribe/shared';
 import { CreateFolderDto, UpdateFolderDto } from './folder.dto';
 
@@ -24,7 +25,10 @@ import { CreateFolderDto, UpdateFolderDto } from './folder.dto';
 export class FolderController {
   private readonly logger = new Logger(FolderController.name);
 
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(
+    private readonly folderRepository: FolderRepository,
+    private readonly transcriptionRepository: TranscriptionRepository,
+  ) {}
 
   /**
    * Create a new folder
@@ -43,12 +47,12 @@ export class FolderController {
       );
     }
 
-    const folderId = await this.firebaseService.createFolder(userId, {
+    const folderId = await this.folderRepository.createFolder(userId, {
       name: body.name.trim(),
       color: body.color,
     });
 
-    const folder = await this.firebaseService.getFolder(userId, folderId);
+    const folder = await this.folderRepository.getFolder(userId, folderId);
 
     this.logger.log(`Created folder ${folderId} for user ${userId}`);
 
@@ -65,7 +69,7 @@ export class FolderController {
   async getFolders(@Req() req: Request): Promise<ApiResponse<Folder[]>> {
     const userId = (req as any).user.uid;
 
-    const folders = await this.firebaseService.getUserFolders(userId);
+    const folders = await this.folderRepository.getUserFolders(userId);
 
     return {
       success: true,
@@ -83,7 +87,7 @@ export class FolderController {
   ): Promise<ApiResponse<Folder>> {
     const userId = (req as any).user.uid;
 
-    const folder = await this.firebaseService.getFolder(userId, folderId);
+    const folder = await this.folderRepository.getFolder(userId, folderId);
 
     if (!folder) {
       throw new HttpException('Folder not found', HttpStatus.NOT_FOUND);
@@ -106,15 +110,16 @@ export class FolderController {
     const userId = (req as any).user.uid;
 
     // Verify folder exists and belongs to user
-    const folder = await this.firebaseService.getFolder(userId, folderId);
+    const folder = await this.folderRepository.getFolder(userId, folderId);
     if (!folder) {
       throw new HttpException('Folder not found', HttpStatus.NOT_FOUND);
     }
 
-    const transcriptions = await this.firebaseService.getTranscriptionsByFolder(
-      userId,
-      folderId,
-    );
+    const transcriptions =
+      await this.transcriptionRepository.getTranscriptionsByFolder(
+        userId,
+        folderId,
+      );
 
     return {
       success: true,
@@ -142,13 +147,13 @@ export class FolderController {
     }
 
     try {
-      await this.firebaseService.updateFolder(userId, folderId, {
+      await this.folderRepository.updateFolder(userId, folderId, {
         name: body.name?.trim(),
         color: body.color,
         sortOrder: body.sortOrder,
       });
 
-      const folder = await this.firebaseService.getFolder(userId, folderId);
+      const folder = await this.folderRepository.getFolder(userId, folderId);
 
       this.logger.log(`Updated folder ${folderId}`);
 
@@ -192,7 +197,7 @@ export class FolderController {
     }
 
     try {
-      const result = await this.firebaseService.deleteFolder(
+      const result = await this.folderRepository.deleteFolder(
         userId,
         folderId,
         shouldDeleteContents,

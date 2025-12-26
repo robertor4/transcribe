@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { SUBSCRIPTION_TIERS, UserRole } from '@transcribe/shared';
 import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
 
@@ -10,6 +11,7 @@ export class UsageService {
 
   constructor(
     private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
     private configService: ConfigService,
   ) {}
 
@@ -22,7 +24,7 @@ export class UsageService {
     fileSizeBytes: number,
     estimatedDurationMinutes: number,
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -203,7 +205,7 @@ export class UsageService {
    * @throws PaymentRequiredException if quota exceeded
    */
   async checkOnDemandAnalysisQuota(userId: string): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -253,7 +255,7 @@ export class UsageService {
     transcriptionId: string,
     durationSeconds: number,
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -280,7 +282,7 @@ export class UsageService {
       const currentCredits = user.paygCredits || 0;
       const newCredits = Math.max(0, currentCredits - durationHours);
 
-      await this.firebaseService.updateUser(userId, {
+      await this.userRepository.updateUser(userId, {
         paygCredits: newCredits,
         usageThisMonth: usage,
       });
@@ -289,7 +291,7 @@ export class UsageService {
         `Deducted ${durationHours.toFixed(2)} PAYG credits from user ${userId}. Remaining: ${newCredits.toFixed(2)}`,
       );
     } else {
-      await this.firebaseService.updateUser(userId, {
+      await this.userRepository.updateUser(userId, {
         usageThisMonth: usage,
       });
     }
@@ -320,7 +322,7 @@ export class UsageService {
     userId: string,
     _analysisId: string, // Reserved for future analytics/logging
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -335,7 +337,7 @@ export class UsageService {
 
     usage.onDemandAnalyses += 1;
 
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       usageThisMonth: usage,
     });
 
@@ -351,7 +353,7 @@ export class UsageService {
     hours: number;
     amount: number; // in cents
   }> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       return { hours: 0, amount: 0 };
     }
@@ -389,7 +391,7 @@ export class UsageService {
    * Reset monthly usage (called by cron job)
    */
   async resetMonthlyUsage(userId: string): Promise<void> {
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       usageThisMonth: {
         hours: 0,
         transcriptions: 0,
@@ -423,7 +425,7 @@ export class UsageService {
     percentUsed: number;
     warnings: string[];
   }> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }

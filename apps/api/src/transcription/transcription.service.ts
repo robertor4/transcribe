@@ -35,6 +35,11 @@ import {
 import * as prompts from './prompts';
 import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
+import { CommentRepository } from '../firebase/repositories/comment.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { AudioSplitter } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
@@ -57,6 +62,11 @@ export class TranscriptionService {
     @InjectQueue(QUEUE_NAMES.SUMMARY) private summaryQueue: Queue,
     private configService: ConfigService,
     private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private userRepository: UserRepository,
+    private analysisRepository: AnalysisRepository,
+    private commentRepository: CommentRepository,
+    private transcriptionRepository: TranscriptionRepository,
     @Inject(forwardRef(() => WebSocketGateway))
     private websocketGateway: WebSocketGateway,
     @Inject(forwardRef(() => AssemblyAIService))
@@ -139,7 +149,7 @@ export class TranscriptionService {
     );
 
     // Upload file to Firebase Storage
-    const uploadResult = await this.firebaseService.uploadFile(
+    const uploadResult = await this.storageService.uploadFile(
       file.buffer,
       `audio/${userId}/${Date.now()}_${file.originalname}`,
       file.mimetype,
@@ -173,7 +183,7 @@ export class TranscriptionService {
     }
 
     const transcriptionId =
-      await this.firebaseService.createTranscription(transcription);
+      await this.transcriptionRepository.createTranscription(transcription);
 
     // Create job and add to queue
     const job: TranscriptionJob = {
@@ -247,7 +257,7 @@ export class TranscriptionService {
         );
 
         // Upload merged file to Firebase
-        const uploadResult = await this.firebaseService.uploadFile(
+        const uploadResult = await this.storageService.uploadFile(
           mergedBuffer,
           `audio/${userId}/${Date.now()}_${mergedFileName}`,
           'audio/mpeg',
@@ -276,7 +286,7 @@ export class TranscriptionService {
         if (contextId) transcription.contextId = contextId;
 
         const transcriptionId =
-          await this.firebaseService.createTranscription(transcription);
+          await this.transcriptionRepository.createTranscription(transcription);
 
         // Create job and add to queue
         const job: TranscriptionJob = {
@@ -434,7 +444,7 @@ export class TranscriptionService {
 
       // AssemblyAI needs a publicly accessible URL
       // Since our Firebase Storage URLs require auth, we need to create a temporary public URL
-      const publicUrl = await this.firebaseService.getPublicUrl(fileUrl);
+      const publicUrl = await this.storageService.getPublicUrl(fileUrl);
 
       if (onProgress) {
         onProgress(15, 'Audio uploaded successfully...');
@@ -517,7 +527,7 @@ export class TranscriptionService {
       );
 
       // Download file from Firebase Storage
-      const fileBuffer = await this.firebaseService.downloadFile(fileUrl);
+      const fileBuffer = await this.storageService.downloadFile(fileUrl);
 
       // Extract file extension from URL
       let fileExtension = '.m4a'; // default for compatibility
@@ -1204,26 +1214,40 @@ ${fullCustomPrompt}`;
   }
 
   async getTranscriptions(userId: string, page = 1, pageSize = 20) {
-    return this.firebaseService.getTranscriptions(userId, page, pageSize);
+    return this.transcriptionRepository.getTranscriptions(
+      userId,
+      page,
+      pageSize,
+    );
   }
 
   async searchTranscriptions(userId: string, query: string, limit?: number) {
-    return this.firebaseService.searchTranscriptions(userId, query, limit);
+    return this.transcriptionRepository.searchTranscriptions(
+      userId,
+      query,
+      limit,
+    );
   }
 
   async recordTranscriptionAccess(userId: string, transcriptionId: string) {
-    return this.firebaseService.recordTranscriptionAccess(
+    return this.transcriptionRepository.recordTranscriptionAccess(
       userId,
       transcriptionId,
     );
   }
 
   async getRecentlyOpenedTranscriptions(userId: string, limit?: number) {
-    return this.firebaseService.getRecentlyOpenedTranscriptions(userId, limit);
+    return this.transcriptionRepository.getRecentlyOpenedTranscriptions(
+      userId,
+      limit,
+    );
   }
 
   async getTranscription(userId: string, transcriptionId: string) {
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+    return this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
   }
 
   extractTitleFromSummary(summary: string): string | null {
@@ -1325,7 +1349,7 @@ ${fullCustomPrompt}`;
     title: string,
   ): Promise<Transcription> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1340,12 +1364,16 @@ ${fullCustomPrompt}`;
       updatedAt: new Date(),
     };
 
-    await this.firebaseService.updateTranscription(transcriptionId, updates);
-
-    const updatedTranscription = await this.firebaseService.getTranscription(
-      userId,
+    await this.transcriptionRepository.updateTranscription(
       transcriptionId,
+      updates,
     );
+
+    const updatedTranscription =
+      await this.transcriptionRepository.getTranscription(
+        userId,
+        transcriptionId,
+      );
     if (!updatedTranscription) {
       throw new Error('Failed to retrieve updated transcription');
     }
@@ -1361,11 +1389,15 @@ ${fullCustomPrompt}`;
     transcriptionId: string,
     folderId: string | null,
   ): Promise<void> {
-    await this.firebaseService.moveToFolder(userId, transcriptionId, folderId);
+    await this.transcriptionRepository.moveToFolder(
+      userId,
+      transcriptionId,
+      folderId,
+    );
   }
 
   async deleteTranscription(userId: string, transcriptionId: string) {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1373,7 +1405,7 @@ ${fullCustomPrompt}`;
     if (transcription) {
       // Soft delete: set deletedAt timestamp instead of hard deleting
       // Audio files are kept until cleanup job runs (allows 30-day recovery)
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         deletedAt: new Date(),
       });
       this.logger.log(`Soft-deleted transcription ${transcriptionId}`);
@@ -1390,7 +1422,7 @@ ${fullCustomPrompt}`;
     content: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1406,13 +1438,13 @@ ${fullCustomPrompt}`;
       resolved: false,
     };
 
-    const commentId = await this.firebaseService.addSummaryComment(
+    const commentId = await this.commentRepository.addSummaryComment(
       transcriptionId,
       commentData,
     );
 
     // Fetch the complete comment object
-    const comment = await this.firebaseService.getSummaryComment(
+    const comment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1430,7 +1462,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<any[]> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1438,7 +1470,7 @@ ${fullCustomPrompt}`;
       throw new Error('Transcription not found or access denied');
     }
 
-    return this.firebaseService.getSummaryComments(transcriptionId);
+    return this.commentRepository.getSummaryComments(transcriptionId);
   }
 
   async updateSummaryComment(
@@ -1448,7 +1480,7 @@ ${fullCustomPrompt}`;
     updates: any,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1457,7 +1489,7 @@ ${fullCustomPrompt}`;
     }
 
     // Verify user owns this comment
-    const existingComment = await this.firebaseService.getSummaryComment(
+    const existingComment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1465,13 +1497,13 @@ ${fullCustomPrompt}`;
       throw new Error('Comment not found or access denied');
     }
 
-    await this.firebaseService.updateSummaryComment(
+    await this.commentRepository.updateSummaryComment(
       transcriptionId,
       commentId,
       updates,
     );
 
-    const updatedComment = await this.firebaseService.getSummaryComment(
+    const updatedComment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1493,7 +1525,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1502,7 +1534,7 @@ ${fullCustomPrompt}`;
     }
 
     // Verify user owns this comment
-    const commentToDelete = await this.firebaseService.getSummaryComment(
+    const commentToDelete = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1510,7 +1542,10 @@ ${fullCustomPrompt}`;
       throw new Error('Comment not found or access denied');
     }
 
-    await this.firebaseService.deleteSummaryComment(transcriptionId, commentId);
+    await this.commentRepository.deleteSummaryComment(
+      transcriptionId,
+      commentId,
+    );
 
     // Notify via WebSocket
     this.websocketGateway.notifyCommentDeleted(transcriptionId, commentId);
@@ -1522,7 +1557,7 @@ ${fullCustomPrompt}`;
     instructions?: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1536,7 +1571,7 @@ ${fullCustomPrompt}`;
 
     // Get existing comments for this transcription
     const comments =
-      await this.firebaseService.getSummaryComments(transcriptionId);
+      await this.commentRepository.getSummaryComments(transcriptionId);
 
     // Generate new summary with feedback in the same language
     const newSummary = await this.generateSummaryWithFeedback(
@@ -1555,9 +1590,15 @@ ${fullCustomPrompt}`;
       updatedAt: new Date(),
     };
 
-    await this.firebaseService.updateTranscription(transcriptionId, updates);
+    await this.transcriptionRepository.updateTranscription(
+      transcriptionId,
+      updates,
+    );
 
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+    return this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
   }
 
   // Share-related methods
@@ -1576,7 +1617,7 @@ ${fullCustomPrompt}`;
 
       // Check if this token already exists
       const existing =
-        await this.firebaseService.getTranscriptionByShareToken(token);
+        await this.transcriptionRepository.getTranscriptionByShareToken(token);
       if (!existing) {
         return token;
       }
@@ -1604,7 +1645,7 @@ ${fullCustomPrompt}`;
     },
   ): Promise<{ shareToken: string; shareUrl: string }> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1646,7 +1687,7 @@ ${fullCustomPrompt}`;
     }
 
     // Update transcription with share info
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       shareToken,
       shareSettings,
       sharedAt: new Date(),
@@ -1667,7 +1708,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1676,7 +1717,7 @@ ${fullCustomPrompt}`;
     }
 
     // Remove share info - use special method to delete fields
-    await this.firebaseService.deleteShareInfo(transcriptionId);
+    await this.transcriptionRepository.deleteShareInfo(transcriptionId);
 
     this.logger.log(`Share link revoked for transcription ${transcriptionId}`);
   }
@@ -1692,7 +1733,7 @@ ${fullCustomPrompt}`;
     },
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1740,7 +1781,7 @@ ${fullCustomPrompt}`;
       updatedSettings.contentOptions = settings.contentOptions;
     }
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       shareSettings: updatedSettings,
       updatedAt: new Date(),
     });
@@ -1757,7 +1798,9 @@ ${fullCustomPrompt}`;
   ): Promise<SharedTranscriptionView | null> {
     // Find transcription by share token
     const transcription =
-      await this.firebaseService.getTranscriptionByShareToken(shareToken);
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
 
     if (!transcription || !transcription.shareSettings?.enabled) {
       return null;
@@ -1791,7 +1834,7 @@ ${fullCustomPrompt}`;
         ...settings,
         viewCount: finalViewCount,
       };
-      await this.firebaseService.updateTranscription(transcription.id, {
+      await this.transcriptionRepository.updateTranscription(transcription.id, {
         shareSettings: updatedSettings,
       });
       this.logger.log(
@@ -1800,7 +1843,7 @@ ${fullCustomPrompt}`;
     }
 
     // Get user display name for sharedBy field
-    const user = await this.firebaseService.getUserById(transcription.userId);
+    const user = await this.userRepository.getUserById(transcription.userId);
     const sharedBy = user?.displayName || user?.email || 'Anonymous';
 
     // Get content options (default to core analyses for backward compatibility)
@@ -1870,7 +1913,7 @@ ${fullCustomPrompt}`;
     let sharedOnDemandAnalyses: GeneratedAnalysis[] = [];
     if (contentOptions.includeOnDemandAnalyses) {
       const allGeneratedAnalyses =
-        await this.firebaseService.getGeneratedAnalyses(
+        await this.analysisRepository.getGeneratedAnalyses(
           transcription.id,
           transcription.userId,
         );
@@ -1928,7 +1971,7 @@ ${fullCustomPrompt}`;
     emailRequest: ShareEmailRequest,
   ): Promise<boolean> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1948,7 +1991,7 @@ ${fullCustomPrompt}`;
     }
 
     // Get user info for sender name
-    const user = await this.firebaseService.getUserById(userId);
+    const user = await this.userRepository.getUserById(userId);
     const senderName =
       emailRequest.senderName || user?.displayName || user?.email || 'Someone';
 
@@ -1975,7 +2018,7 @@ ${fullCustomPrompt}`;
         sentAt: new Date(),
       });
 
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         sharedWith,
       });
     }
@@ -2102,7 +2145,7 @@ ${transcription}`;
     targetLanguage: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2194,7 +2237,7 @@ ${transcription}`;
     const translations = transcription.translations || {};
     translations[targetLanguage] = translationData;
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       translations,
       preferredTranslationLanguage: targetLanguage, // Auto-save user's language preference
       updatedAt: new Date(),
@@ -2210,10 +2253,11 @@ ${transcription}`;
       );
 
       // Fetch all generated analyses for this transcription
-      const generatedAnalyses = await this.firebaseService.getGeneratedAnalyses(
-        transcriptionId,
-        transcription.userId,
-      );
+      const generatedAnalyses =
+        await this.analysisRepository.getGeneratedAnalyses(
+          transcriptionId,
+          transcription.userId,
+        );
 
       if (generatedAnalyses.length > 0) {
         // Translate all on-demand analyses in parallel
@@ -2242,10 +2286,13 @@ ${transcription}`;
               const updatedTranslations = analysis.translations || {};
               updatedTranslations[targetLanguage] = translatedContent;
 
-              await this.firebaseService.updateGeneratedAnalysis(analysis.id, {
-                translations: updatedTranslations,
-                updatedAt: new Date(),
-              });
+              await this.analysisRepository.updateGeneratedAnalysis(
+                analysis.id,
+                {
+                  translations: updatedTranslations,
+                  updatedAt: new Date(),
+                },
+              );
 
               this.logger.log(
                 `Translated on-demand analysis ${analysis.id} (${analysis.templateName}) to ${targetLang.name}`,
@@ -2313,7 +2360,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     language: string,
   ): Promise<any> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2335,7 +2382,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     language: string,
   ): Promise<void> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2353,7 +2400,7 @@ CRITICAL INSTRUCTIONS:
     const translations = { ...transcription.translations };
     delete translations[language];
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       translations,
       updatedAt: new Date(),
     });
@@ -2368,7 +2415,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     languageCode: string,
   ): Promise<void> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2377,7 +2424,7 @@ CRITICAL INSTRUCTIONS:
     }
 
     // Update the preferred translation language
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       preferredTranslationLanguage: languageCode,
       updatedAt: new Date(),
     });
@@ -2403,7 +2450,7 @@ CRITICAL INSTRUCTIONS:
     );
 
     // Fetch transcription and validate ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2650,13 +2697,13 @@ IMPORTANT:
 
     // Delete custom analyses
     const deletedAnalysisIds =
-      await this.firebaseService.deleteGeneratedAnalysesByTranscription(
+      await this.analysisRepository.deleteGeneratedAnalysesByTranscription(
         transcriptionId,
         userId,
       );
 
     // Update Firestore
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       transcriptText: correctedTranscript,
       // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
       speakerSegments: correctedSegments,
@@ -2667,10 +2714,11 @@ IMPORTANT:
     });
 
     // Fetch updated transcription
-    const updatedTranscription = await this.firebaseService.getTranscription(
-      userId,
-      transcriptionId,
-    );
+    const updatedTranscription =
+      await this.transcriptionRepository.getTranscription(
+        userId,
+        transcriptionId,
+      );
 
     this.logger.log(
       `Transcript correction applied successfully. Deleted ${deletedAnalysisIds.length} custom analyses, cleared ${existingTranslations.length} translations`,
@@ -2781,7 +2829,7 @@ IMPORTANT:
     );
 
     // Fetch transcription and validate ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2804,7 +2852,7 @@ IMPORTANT:
     );
 
     // Update transcription with new core analyses
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       coreAnalyses,
       coreAnalysesOutdated: false, // Clear stale flag
       updatedAt: new Date(),
@@ -2815,7 +2863,10 @@ IMPORTANT:
     );
 
     // Fetch and return updated transcription
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+    return this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
   }
 
   /**
@@ -2823,7 +2874,7 @@ IMPORTANT:
    * Used for the dashboard "Recent Outputs" section
    */
   async getRecentAnalyses(userId: string, limit: number = 8): Promise<any[]> {
-    return this.firebaseService.getRecentGeneratedAnalyses(userId, limit);
+    return this.analysisRepository.getRecentGeneratedAnalyses(userId, limit);
   }
 
   /**
@@ -2835,7 +2886,7 @@ IMPORTANT:
     folderId: string,
     limit: number = 8,
   ): Promise<any[]> {
-    return this.firebaseService.getRecentGeneratedAnalysesByFolder(
+    return this.analysisRepository.getRecentGeneratedAnalysesByFolder(
       userId,
       folderId,
       limit,

@@ -17,7 +17,9 @@ import {
   isStructuredOutput,
   SummaryV2,
 } from '@transcribe/shared';
-import { FirebaseService } from '../firebase/firebase.service';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
+import { TranslationRepository } from '../firebase/repositories/translation.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 
 @Injectable()
 export class TranslationService {
@@ -26,7 +28,9 @@ export class TranslationService {
 
   constructor(
     private configService: ConfigService,
-    private firebaseService: FirebaseService,
+    private analysisRepository: AnalysisRepository,
+    private translationRepository: TranslationRepository,
+    private transcriptionRepository: TranscriptionRepository,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
@@ -53,7 +57,7 @@ export class TranslationService {
     } = options;
 
     // Verify ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -75,7 +79,7 @@ export class TranslationService {
     // 1. Translate Summary (if requested and not already translated)
     if (translateSummary) {
       const existingSummaryTranslation =
-        await this.firebaseService.getTranslation(
+        await this.translationRepository.getTranslation(
           transcriptionId,
           'summary',
           transcriptionId, // For summary, sourceId = transcriptionId
@@ -108,7 +112,9 @@ export class TranslationService {
         };
 
         const id =
-          await this.firebaseService.createTranslation(summaryTranslation);
+          await this.translationRepository.createTranslation(
+            summaryTranslation,
+          );
         translationsCreated.push({ id, ...summaryTranslation });
       } else {
         this.logger.log(
@@ -119,7 +125,7 @@ export class TranslationService {
 
     // 2. Translate AI Assets (if requested)
     if (translateAssets) {
-      const analyses = await this.firebaseService.getGeneratedAnalyses(
+      const analyses = await this.analysisRepository.getGeneratedAnalyses(
         transcriptionId,
         userId,
       );
@@ -128,13 +134,14 @@ export class TranslationService {
         : analyses;
 
       for (const analysis of toTranslate) {
-        const existingTranslation = await this.firebaseService.getTranslation(
-          transcriptionId,
-          'analysis',
-          analysis.id,
-          targetLocale,
-          userId,
-        );
+        const existingTranslation =
+          await this.translationRepository.getTranslation(
+            transcriptionId,
+            'analysis',
+            analysis.id,
+            targetLocale,
+            userId,
+          );
 
         if (!existingTranslation) {
           this.logger.log(
@@ -161,14 +168,16 @@ export class TranslationService {
           };
 
           const id =
-            await this.firebaseService.createTranslation(analysisTranslation);
+            await this.translationRepository.createTranslation(
+              analysisTranslation,
+            );
           translationsCreated.push({ id, ...analysisTranslation });
         }
       }
     }
 
     // Update user's locale preference on transcription
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       preferredLocale: targetLocale,
       updatedAt: now,
     });
@@ -194,7 +203,7 @@ export class TranslationService {
     userId: string,
   ): Promise<ConversationTranslations> {
     // Get transcription for original locale
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -204,13 +213,13 @@ export class TranslationService {
 
     // Get all translations
     const translations =
-      await this.firebaseService.getTranslationsByConversation(
+      await this.translationRepository.getTranslationsByConversation(
         transcriptionId,
         userId,
       );
 
     // Get total asset count
-    const analyses = await this.firebaseService.getGeneratedAnalyses(
+    const analyses = await this.analysisRepository.getGeneratedAnalyses(
       transcriptionId,
       userId,
     );
@@ -272,19 +281,21 @@ export class TranslationService {
   ): Promise<ConversationTranslations> {
     // Verify share token
     const transcription =
-      await this.firebaseService.getTranscriptionByShareToken(shareToken);
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
     if (!transcription || transcription.id !== transcriptionId) {
       throw new BadRequestException('Invalid share token or transcription');
     }
 
     // Get all translations (no userId filter for shared)
     const translations =
-      await this.firebaseService.getTranslationsForSharedConversation(
+      await this.translationRepository.getTranslationsForSharedConversation(
         transcriptionId,
       );
 
     // Get total asset count
-    const analyses = await this.firebaseService.getGeneratedAnalyses(
+    const analyses = await this.analysisRepository.getGeneratedAnalyses(
       transcriptionId,
       transcription.userId,
     );
@@ -339,7 +350,7 @@ export class TranslationService {
     userId: string,
   ): Promise<Translation[]> {
     // Verify ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -347,7 +358,7 @@ export class TranslationService {
       throw new BadRequestException('Transcription not found or access denied');
     }
 
-    return this.firebaseService.getTranslationsForLocale(
+    return this.translationRepository.getTranslationsForLocale(
       transcriptionId,
       localeCode,
       userId,
@@ -364,13 +375,15 @@ export class TranslationService {
   ): Promise<Translation[]> {
     // Verify share token
     const transcription =
-      await this.firebaseService.getTranscriptionByShareToken(shareToken);
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
     if (!transcription || transcription.id !== transcriptionId) {
       throw new BadRequestException('Invalid share token or transcription');
     }
 
     const allTranslations =
-      await this.firebaseService.getTranslationsForSharedConversation(
+      await this.translationRepository.getTranslationsForSharedConversation(
         transcriptionId,
       );
 
@@ -386,7 +399,7 @@ export class TranslationService {
     userId: string,
   ): Promise<number> {
     // Verify ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -394,11 +407,12 @@ export class TranslationService {
       throw new BadRequestException('Transcription not found or access denied');
     }
 
-    const deletedCount = await this.firebaseService.deleteTranslationsForLocale(
-      transcriptionId,
-      localeCode,
-      userId,
-    );
+    const deletedCount =
+      await this.translationRepository.deleteTranslationsForLocale(
+        transcriptionId,
+        localeCode,
+        userId,
+      );
 
     this.logger.log(
       `Deleted ${deletedCount} translations for ${localeCode} from ${transcriptionId}`,
@@ -416,7 +430,7 @@ export class TranslationService {
     userId: string,
   ): Promise<void> {
     // Verify ownership
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -429,7 +443,7 @@ export class TranslationService {
       throw new BadRequestException(`Unsupported locale: ${localeCode}`);
     }
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       preferredLocale: localeCode,
       updatedAt: new Date(),
     });
@@ -642,7 +656,7 @@ CRITICAL INSTRUCTIONS:
   ): Promise<void> {
     // Get existing translations to find which locales we need to translate to
     const existingTranslations =
-      await this.firebaseService.getTranslationsByConversation(
+      await this.translationRepository.getTranslationsByConversation(
         transcriptionId,
         userId,
       );
@@ -694,7 +708,7 @@ CRITICAL INSTRUCTIONS:
           updatedAt: now,
         };
 
-        await this.firebaseService.createTranslation(translation);
+        await this.translationRepository.createTranslation(translation);
         this.logger.log(
           `Successfully translated asset ${asset.id} to ${locale.language}`,
         );

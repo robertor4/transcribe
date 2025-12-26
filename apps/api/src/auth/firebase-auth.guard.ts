@@ -5,13 +5,17 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
   // Throttle login updates to once per hour (reduces Firestore writes)
   private readonly LOGIN_UPDATE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(
+    private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -35,9 +39,9 @@ export class FirebaseAuthGuard implements CanActivate {
       }
 
       // Ensure user exists in database
-      const user = await this.firebaseService.getUser(decodedToken.uid);
+      const user = await this.userRepository.getUser(decodedToken.uid);
       if (!user) {
-        await this.firebaseService.createUser({
+        await this.userRepository.createUser({
           uid: decodedToken.uid,
           email: decodedToken.email || '',
           displayName: decodedToken.name || undefined,
@@ -47,7 +51,7 @@ export class FirebaseAuthGuard implements CanActivate {
         // Update lastLogin timestamp (throttled to once per hour)
         const shouldUpdateLogin = this.shouldUpdateLastLogin(user.lastLogin);
         if (shouldUpdateLogin) {
-          await this.firebaseService.updateUser(decodedToken.uid, {
+          await this.userRepository.updateUser(decodedToken.uid, {
             lastLogin: new Date(),
           });
         }

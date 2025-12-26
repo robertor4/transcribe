@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { UserService } from '../user/user.service';
 import { UsageService } from '../usage/usage.service';
 import { ApiResponse, User, UserActivity } from '@transcribe/shared';
@@ -26,7 +26,7 @@ export class AdminController {
   private readonly logger = new Logger(AdminController.name);
 
   constructor(
-    private readonly firebaseService: FirebaseService,
+    private readonly userRepository: UserRepository,
     private readonly userService: UserService,
     private readonly usageService: UsageService,
   ) {}
@@ -39,7 +39,7 @@ export class AdminController {
   async getAllUsers(): Promise<ApiResponse<User[]>> {
     this.logger.log('Admin: Fetching all users');
 
-    const users = await this.firebaseService.getAllUsers();
+    const users = await this.userRepository.getAllUsers();
 
     this.logger.log(`Admin: Returned ${users.length} users`);
 
@@ -60,7 +60,7 @@ export class AdminController {
   ): Promise<ApiResponse<User[]>> {
     this.logger.log(`Admin: Fetching users by tier: ${tier}`);
 
-    const users = await this.firebaseService.getUsersByTier(tier);
+    const users = await this.userRepository.getUsersByTier(tier);
 
     this.logger.log(`Admin: Returned ${users.length} users for tier ${tier}`);
 
@@ -81,7 +81,7 @@ export class AdminController {
   ): Promise<ApiResponse<User>> {
     this.logger.log(`Admin: Fetching user details for ${userId}`);
 
-    const user: User | null = await this.firebaseService.getUser(userId);
+    const user: User | null = await this.userRepository.getUser(userId);
 
     if (!user) {
       return {
@@ -108,7 +108,7 @@ export class AdminController {
     this.logger.log(`Admin: Fetching activity for user ${userId}`);
 
     const activity: UserActivity | null =
-      await this.firebaseService.getUserActivity(userId);
+      await this.userRepository.getUserActivity(userId);
 
     if (!activity) {
       return {
@@ -158,7 +158,7 @@ export class AdminController {
     );
 
     // Get user info before deletion for logging
-    const user: User | null = await this.firebaseService.getUser(userId);
+    const user: User | null = await this.userRepository.getUser(userId);
     const userEmail: string = user?.email || 'unknown';
 
     const result = await this.userService.deleteAccount(userId, isHardDelete);
@@ -200,7 +200,7 @@ export class AdminController {
     this.logger.log(`Admin: Resetting usage for user ${userId}`);
 
     // Get user and current usage before reset
-    const user: User | null = await this.firebaseService.getUser(userId);
+    const user: User | null = await this.userRepository.getUser(userId);
     if (!user) {
       return {
         success: false,

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **FirebaseService Refactoring**: Extracted ~2000 line god service into domain-specific repositories
+  - Created `StorageService` for file upload/download/delete operations
+  - Created `UserRepository` for user CRUD, Stripe lookup, admin queries
+  - Created `AnalysisRepository` for generated analyses CRUD and references
+  - Created `FolderRepository` for folder CRUD and conversation management
+  - Created `CommentRepository` for summary comments CRUD
+  - Created `TranslationRepository` for translation CRUD and batch operations
+  - Created `TranscriptionRepository` for transcription CRUD, search, and folder operations
+  - Added 78 unit tests across all new repositories
+  - Updated all 15+ consumer services to use new repositories
+  - `FirebaseService` now slim (~500 lines) with only SDK initialization and raw getters
+  - Files: [storage.service.ts](apps/api/src/firebase/services/storage.service.ts), [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts), [analysis.repository.ts](apps/api/src/firebase/repositories/analysis.repository.ts), [folder.repository.ts](apps/api/src/firebase/repositories/folder.repository.ts), [comment.repository.ts](apps/api/src/firebase/repositories/comment.repository.ts), [translation.repository.ts](apps/api/src/firebase/repositories/translation.repository.ts), [transcription.repository.ts](apps/api/src/firebase/repositories/transcription.repository.ts)
+
 ### Added
 - **AI Asset Translation System**: Full translation support for summaries and AI assets
   - New `TranslationModule` with `TranslationService` and `TranslationController` for backend translation via OpenAI

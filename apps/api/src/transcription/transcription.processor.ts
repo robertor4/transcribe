@@ -8,7 +8,8 @@ import {
 } from '@transcribe/shared';
 import { TranscriptionService } from './transcription.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
-import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { EmailService } from '../email/email.service';
 import { UserService } from '../user/user.service';
@@ -21,7 +22,8 @@ export class TranscriptionProcessor {
   constructor(
     private transcriptionService: TranscriptionService,
     private onDemandAnalysisService: OnDemandAnalysisService,
-    private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private transcriptionRepository: TranscriptionRepository,
     private websocketGateway: WebSocketGateway,
     private emailService: EmailService,
     private userService: UserService,
@@ -60,7 +62,7 @@ export class TranscriptionProcessor {
 
     try {
       // Update status to processing
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.PROCESSING,
         updatedAt: new Date(),
       });
@@ -212,7 +214,7 @@ export class TranscriptionProcessor {
       });
 
       // Save transcription results (upload but URL not needed since we store text directly)
-      await this.firebaseService.uploadText(
+      await this.storageService.uploadText(
         transcriptText,
         `transcriptions/${userId}/${transcriptionId}/transcript.txt`,
       );
@@ -252,7 +254,7 @@ export class TranscriptionProcessor {
         );
       }
 
-      await this.firebaseService.updateTranscription(
+      await this.transcriptionRepository.updateTranscription(
         transcriptionId,
         updateData,
       );
@@ -290,10 +292,11 @@ export class TranscriptionProcessor {
       try {
         const user = await this.userService.getUserProfile(userId);
         if (user) {
-          const transcription = await this.firebaseService.getTranscription(
-            userId,
-            transcriptionId,
-          );
+          const transcription =
+            await this.transcriptionRepository.getTranscription(
+              userId,
+              transcriptionId,
+            );
           if (transcription) {
             await this.emailService.sendTranscriptionCompleteEmail(
               user,
@@ -326,10 +329,11 @@ export class TranscriptionProcessor {
 
       // Check if transcription was already completed before marking as failed
       // This prevents post-completion cleanup errors from marking successful transcriptions as failed
-      const currentTranscription = await this.firebaseService.getTranscription(
-        userId,
-        transcriptionId,
-      );
+      const currentTranscription =
+        await this.transcriptionRepository.getTranscription(
+          userId,
+          transcriptionId,
+        );
 
       if (currentTranscription?.status === TranscriptionStatus.COMPLETED) {
         this.logger.warn(
@@ -340,7 +344,7 @@ export class TranscriptionProcessor {
       }
 
       // Update status to failed only if it wasn't completed
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.FAILED,
         error: error.message || 'Transcription failed',
         updatedAt: new Date(),

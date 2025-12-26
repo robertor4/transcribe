@@ -13,7 +13,10 @@ import {
   InternalUpdateOutput,
   ClientProposalOutput,
 } from '@transcribe/shared';
-import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { ImagePromptService } from './image-prompt.service';
@@ -46,7 +49,10 @@ export class OnDemandAnalysisService {
   private readonly logger = new Logger(OnDemandAnalysisService.name);
 
   constructor(
-    private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private userRepository: UserRepository,
+    private analysisRepository: AnalysisRepository,
+    private transcriptionRepository: TranscriptionRepository,
     private transcriptionService: TranscriptionService,
     private templateService: AnalysisTemplateService,
     private imagePromptService: ImagePromptService,
@@ -82,7 +88,7 @@ export class OnDemandAnalysisService {
     );
 
     // 2. Get transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -223,10 +229,10 @@ export class OnDemandAnalysisService {
       };
 
       const analysisId =
-        await this.firebaseService.createGeneratedAnalysis(analysis);
+        await this.analysisRepository.createGeneratedAnalysis(analysis);
 
       // 7. Add reference to transcription
-      await this.firebaseService.addAnalysisReference(
+      await this.analysisRepository.addAnalysisReference(
         transcriptionId,
         analysisId,
       );
@@ -264,7 +270,10 @@ export class OnDemandAnalysisService {
     transcriptionId: string,
     userId: string,
   ): Promise<GeneratedAnalysis[]> {
-    return this.firebaseService.getGeneratedAnalyses(transcriptionId, userId);
+    return this.analysisRepository.getGeneratedAnalyses(
+      transcriptionId,
+      userId,
+    );
   }
 
   /**
@@ -275,7 +284,7 @@ export class OnDemandAnalysisService {
     userId: string,
   ): Promise<GeneratedAnalysis> {
     const analysis =
-      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+      await this.analysisRepository.getGeneratedAnalysisById(analysisId);
 
     if (!analysis) {
       throw new BadRequestException(`Analysis not found: ${analysisId}`);
@@ -439,7 +448,7 @@ export class OnDemandAnalysisService {
       }
 
       const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
-      const uploadResult = await this.firebaseService.uploadFile(
+      const uploadResult = await this.storageService.uploadFile(
         imageBuffer,
         storagePath,
         'image/webp',
@@ -467,7 +476,7 @@ export class OnDemandAnalysisService {
    */
   async deleteAnalysis(analysisId: string, userId: string): Promise<void> {
     const analysis =
-      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+      await this.analysisRepository.getGeneratedAnalysisById(analysisId);
 
     if (!analysis || analysis.userId !== userId) {
       throw new UnauthorizedException('Cannot delete this analysis');
@@ -476,13 +485,13 @@ export class OnDemandAnalysisService {
     this.logger.log(`Deleting analysis ${analysisId}`);
 
     // Remove from transcription reference
-    await this.firebaseService.removeAnalysisReference(
+    await this.analysisRepository.removeAnalysisReference(
       analysis.transcriptionId,
       analysisId,
     );
 
     // Delete the analysis
-    await this.firebaseService.deleteGeneratedAnalysis(analysisId);
+    await this.analysisRepository.deleteGeneratedAnalysis(analysisId);
 
     this.logger.log(`Analysis ${analysisId} deleted successfully`);
   }
@@ -503,7 +512,7 @@ export class OnDemandAnalysisService {
     }
 
     // 2. Get user and check premium status (admins bypass)
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -518,7 +527,7 @@ export class OnDemandAnalysisService {
 
     // 3. Get the analysis
     const analysis =
-      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+      await this.analysisRepository.getGeneratedAnalysisById(analysisId);
 
     if (!analysis) {
       throw new BadRequestException(`Analysis not found: ${analysisId}`);
@@ -576,7 +585,7 @@ export class OnDemandAnalysisService {
     }
 
     const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
-    const uploadResult = await this.firebaseService.uploadFile(
+    const uploadResult = await this.storageService.uploadFile(
       imageBuffer,
       storagePath,
       'image/webp',
@@ -591,7 +600,7 @@ export class OnDemandAnalysisService {
 
     // 9. Update the analysis with the new hero image
     blogContent.heroImage = heroImage;
-    await this.firebaseService.updateGeneratedAnalysis(analysisId, {
+    await this.analysisRepository.updateGeneratedAnalysis(analysisId, {
       content: blogContent,
     });
 
@@ -612,7 +621,7 @@ export class OnDemandAnalysisService {
   ): Promise<{ success: boolean; message: string }> {
     // 1. Get the analysis
     const analysis =
-      await this.firebaseService.getGeneratedAnalysisById(analysisId);
+      await this.analysisRepository.getGeneratedAnalysisById(analysisId);
 
     if (!analysis) {
       throw new BadRequestException(`Analysis not found: ${analysisId}`);
@@ -630,7 +639,7 @@ export class OnDemandAnalysisService {
     }
 
     // 3. Get user info
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user || !user.email) {
       throw new BadRequestException('User email not found');
     }

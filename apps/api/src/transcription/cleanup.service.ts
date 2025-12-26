@@ -7,13 +7,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { TranscriptionStatus } from '@transcribe/shared';
 
 @Injectable()
 export class CleanupService {
   private readonly logger = new Logger(CleanupService.name);
 
-  constructor(private readonly firebaseService: FirebaseService) {}
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly storageService: StorageService,
+    private readonly transcriptionRepository: TranscriptionRepository,
+  ) {}
 
   /**
    * Cleanup orphaned files and zombie documents
@@ -84,7 +90,7 @@ export class CleanupService {
             // The 30-day cleanup job will handle file deletion
 
             // Mark transcription as failed
-            await this.firebaseService.updateTranscription(doc.id, {
+            await this.transcriptionRepository.updateTranscription(doc.id, {
               status: TranscriptionStatus.FAILED,
               error:
                 'Transcription timed out or was orphaned. Please try uploading again.',
@@ -214,10 +220,12 @@ export class CleanupService {
         if (shouldDelete) {
           try {
             // Delete the audio file from storage
-            await this.firebaseService.deleteFileByPath(data.storagePath);
+            await this.storageService.deleteFileByPath(data.storagePath);
 
             // Clear file references to prevent double deletion attempts
-            await this.firebaseService.clearTranscriptionFileReferences(doc.id);
+            await this.transcriptionRepository.clearTranscriptionFileReferences(
+              doc.id,
+            );
 
             deletedCount++;
             this.logger.log(
