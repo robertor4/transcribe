@@ -19,6 +19,7 @@ import type { TranscriptionProgress } from '@transcribe/shared';
 interface ConversationsContextType {
   conversations: Conversation[];
   recentlyOpened: Conversation[];
+  recentlyOpenedCleared: boolean;
   isLoading: boolean;
   error: Error | null;
   hasMore: boolean;
@@ -27,6 +28,7 @@ interface ConversationsContextType {
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   refreshRecentlyOpened: () => Promise<void>;
+  clearRecentlyOpened: () => Promise<void>;
 }
 
 const ConversationsContext = createContext<ConversationsContextType | undefined>(undefined);
@@ -50,6 +52,7 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     new Map()
   );
   const [recentlyOpened, setRecentlyOpened] = useState<Conversation[]>([]);
+  const [recentlyOpenedCleared, setRecentlyOpenedCleared] = useState(false);
 
   const subscribedIdsRef = useRef<Set<string>>(new Set());
   const hasFetchedRef = useRef(false);
@@ -205,10 +208,23 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     await fetchRecentlyOpened();
   }, [fetchRecentlyOpened]);
 
+  const clearRecentlyOpened = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      await transcriptionApi.clearRecentlyOpened();
+      setRecentlyOpened([]);
+      setRecentlyOpenedCleared(true);
+    } catch {
+      // Silently ignore errors - user can retry
+    }
+  }, [user]);
+
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({
     conversations,
     recentlyOpened,
+    recentlyOpenedCleared,
     isLoading,
     error,
     hasMore,
@@ -217,7 +233,8 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     loadMore,
     refresh,
     refreshRecentlyOpened,
-  }), [conversations, recentlyOpened, isLoading, error, hasMore, total, progressMap, loadMore, refresh, refreshRecentlyOpened]);
+    clearRecentlyOpened,
+  }), [conversations, recentlyOpened, recentlyOpenedCleared, isLoading, error, hasMore, total, progressMap, loadMore, refresh, refreshRecentlyOpened, clearRecentlyOpened]);
 
   return (
     <ConversationsContext.Provider value={contextValue}>

@@ -6,7 +6,7 @@
  */
 
 import { transcriptionApi, folderApi } from '../api';
-import type { Transcription } from '@transcribe/shared';
+import type { Transcription, FindResponse, ConversationMatch, MatchedSnippet } from '@transcribe/shared';
 import {
   Conversation,
   transcriptionToConversation,
@@ -192,7 +192,7 @@ export async function listConversationsByFolder(
 }
 
 /**
- * Search result item - lightweight version for search results
+ * Search result item - enhanced with matched snippets for semantic search
  */
 export interface SearchResult {
   id: string;
@@ -200,8 +200,12 @@ export interface SearchResult {
   fileName: string;
   status: 'pending' | 'processing' | 'ready' | 'failed';
   folderId: string | null;
+  folderName: string | null;
   createdAt: Date;
   updatedAt: Date;
+  // Semantic search additions
+  matchedSnippets?: MatchedSnippet[];
+  relevanceScore?: number;
 }
 
 /**
@@ -211,16 +215,52 @@ export interface SearchResults {
   results: SearchResult[];
   total: number;
   query: string;
+  searchType: 'semantic' | 'keyword';
 }
 
 /**
- * Search conversations by query
- * Searches across title, fileName, and summary content
+ * Search conversations using semantic search (vector similarity).
+ * Falls back to keyword search if semantic search fails or returns no results.
  */
 export async function searchConversations(
   query: string,
   limit = 20
 ): Promise<SearchResults> {
+  // Try semantic search first
+  try {
+    const response = await transcriptionApi.semanticSearch(query, limit);
+
+    // The vector endpoint returns FindResponse directly (not wrapped in ApiResponse)
+    // Due to axios interceptor unwrapping response.data, we receive FindResponse directly
+    // Handle both wrapped and unwrapped response formats for compatibility
+    const data = (response as unknown as FindResponse).conversations
+      ? (response as unknown as FindResponse)
+      : response.data;
+
+    if (data && data.conversations && data.conversations.length > 0) {
+      return {
+        results: data.conversations.map((conv: ConversationMatch) => ({
+          id: conv.transcriptionId,
+          title: conv.title || 'Untitled',
+          fileName: '', // Not available from semantic search
+          status: 'ready' as const, // Indexed conversations are completed
+          folderId: conv.folderId,
+          folderName: conv.folderName,
+          createdAt: new Date(conv.createdAt),
+          updatedAt: new Date(conv.createdAt), // Use createdAt as fallback
+          matchedSnippets: conv.matchedSnippets,
+          relevanceScore: conv.matchedSnippets?.[0]?.relevanceScore,
+        })),
+        total: data.totalConversations,
+        query,
+        searchType: 'semantic',
+      };
+    }
+  } catch (error) {
+    console.warn('Semantic search failed, falling back to keyword search:', error);
+  }
+
+  // Fallback to keyword search
   const response = await transcriptionApi.search(query, limit);
 
   if (!response.success || !response.data) {
@@ -247,11 +287,13 @@ export async function searchConversations(
       fileName: item.fileName || '',
       status: mapStatus(item.status),
       folderId: item.folderId || null,
+      folderName: null,
       createdAt: new Date(item.createdAt),
       updatedAt: new Date(item.updatedAt),
     })),
     total: data.total,
     query,
+    searchType: 'keyword',
   };
 }
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -25,7 +24,6 @@ import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
 import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { FolderAssetCard } from '@/components/FolderAssetCard';
-import { QASidebarEntry } from '@/components/QASidebarEntry';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
@@ -34,6 +32,8 @@ import { deleteConversation } from '@/lib/services/conversationService';
 import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
 import { AssetsCountBadge } from '@/components/dashboard/AssetsCountBadge';
+import { AiIcon } from '@/components/icons/AiIcon';
+import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 
 interface FolderClientProps {
   folderId: string;
@@ -284,12 +284,9 @@ export function FolderClient({ folderId }: FolderClientProps) {
               ) : (
                 // Empty state
                 <div className="text-center py-6 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-                  <Image
-                    src="/assets/symbols/ai-icon-brand-color.svg"
-                    alt="AI Assets"
-                    width={48}
-                    height={48}
-                    className="mx-auto mb-3 opacity-50"
+                  <AiIcon
+                    size={48}
+                    className="mx-auto mb-3 text-[#8D6AFA] opacity-50"
                   />
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                     No AI Assets yet
@@ -299,15 +296,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </p>
                 </div>
               )}
-            </div>
-
-            {/* Q&A Section */}
-            <div className="px-4 pb-4">
-              <QASidebarEntry
-                onClick={() => setIsQAPanelOpen(true)}
-                scope="folder"
-                conversationCount={conversations.length}
-              />
             </div>
 
             {/* Q&A Slide Panel */}
@@ -437,9 +425,19 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   Conversations ({conversations.length})
                 </h2>
                 {conversations.length > 0 && (
-                  <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
-                    + New Conversation
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="md"
+                      icon={<AnimatedAiIcon size={16} />}
+                      onClick={() => setIsQAPanelOpen(true)}
+                    >
+                      Ask Questions
+                    </Button>
+                    <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
+                      + New Conversation
+                    </Button>
+                  </div>
                 )}
               </div>
 

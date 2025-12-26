@@ -713,3 +713,27 @@ h1, h2, h3, h4, h5, h6 {
 .animate-backdropFadeOut {
   animation: backdropFadeOut 0.15s ease-in forwards;
 }
+
+/* ===== AI Icon Sparkle Animation ===== */
+
+@keyframes sparkle-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.25) rotate(180deg);
+    fill: #8D6AFA;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.animate-sparkle-pulse {
+  animation: sparkle-pulse 900ms ease-out forwards;
+}
+
+/* Trigger animation when parent with group class is hovered */
+.group:hover .group-hover-sparkle-pulse {
+  animation: sparkle-pulse 900ms ease-out forwards;
+}

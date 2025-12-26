@@ -157,7 +157,7 @@ export class QdrantService implements OnModuleInit {
     vector: number[],
     filter: { userId: string; transcriptionId?: string; folderId?: string },
     limit: number = 10,
-    scoreThreshold: number = 0.3,
+    scoreThreshold: number = 0.2,
   ): Promise<ScoredChunk[]> {
     if (!this.isConfigured()) {
       throw new Error('Qdrant not configured');

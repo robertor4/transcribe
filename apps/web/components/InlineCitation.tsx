@@ -33,32 +33,33 @@ export function InlineCitation({ citation }: InlineCitationProps) {
 
     const triggerRect = triggerRef.current.getBoundingClientRect();
     const popoverWidth = 288; // w-72 = 18rem = 288px
-    const popoverHeight = 160; // Approximate height
+    const estimatedPopoverHeight = 100; // Estimated height for placement decision
     const padding = 8;
 
-    // Determine vertical placement
+    // Determine vertical placement based on available space
     const spaceAbove = triggerRect.top;
     const spaceBelow = window.innerHeight - triggerRect.bottom;
-    const placement: 'top' | 'bottom' = spaceAbove < popoverHeight + padding && spaceBelow > spaceAbove ? 'bottom' : 'top';
+    const placement: 'top' | 'bottom' = spaceBelow >= estimatedPopoverHeight + padding ? 'bottom' :
+      spaceAbove >= estimatedPopoverHeight + padding ? 'top' : 'bottom';
 
-    // Calculate top position
+    // Calculate top position - position directly relative to trigger
     let top: number;
     if (placement === 'top') {
-      top = triggerRect.top - popoverHeight - padding;
+      // Position above: popover bottom edge aligns just above trigger top
+      // We'll use a transform to handle the actual height
+      top = triggerRect.top - padding;
     } else {
+      // Position below: popover top edge aligns just below trigger bottom
       top = triggerRect.bottom + padding;
     }
 
-    // Calculate left position, keeping within viewport
+    // Calculate left position, centered on trigger
     let left = triggerRect.left + triggerRect.width / 2 - popoverWidth / 2;
 
     // Ensure popover stays within horizontal bounds
     const minLeft = padding;
     const maxLeft = window.innerWidth - popoverWidth - padding;
     left = Math.max(minLeft, Math.min(maxLeft, left));
-
-    // Ensure popover stays within vertical bounds
-    top = Math.max(padding, Math.min(window.innerHeight - popoverHeight - padding, top));
 
     setPopoverPosition({ top, left, placement });
   }, []);
@@ -123,6 +124,8 @@ export function InlineCitation({ citation }: InlineCitationProps) {
         top: popoverPosition.top,
         left: popoverPosition.left,
         zIndex: 9999,
+        // For 'top' placement, translate up by 100% so bottom edge aligns with the top value
+        transform: popoverPosition.placement === 'top' ? 'translateY(-100%)' : undefined,
       }}
       className="w-72 p-3 rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 animate-in fade-in-0 zoom-in-95 duration-150"
     >

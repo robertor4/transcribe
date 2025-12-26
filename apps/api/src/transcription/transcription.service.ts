@@ -1243,6 +1243,10 @@ ${fullCustomPrompt}`;
     );
   }
 
+  async clearRecentlyOpened(userId: string): Promise<number> {
+    return this.transcriptionRepository.clearRecentlyOpened(userId);
+  }
+
   async getTranscription(userId: string, transcriptionId: string) {
     return this.transcriptionRepository.getTranscription(
       userId,

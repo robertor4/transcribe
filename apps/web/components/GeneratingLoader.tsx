@@ -3,8 +3,8 @@
 interface GeneratingLoaderProps {
   /** Additional CSS classes */
   className?: string;
-  /** Size variant: 'sm' (default), 'md', 'lg' */
-  size?: 'sm' | 'md' | 'lg';
+  /** Size variant: 'xs', 'xxs', 'sm' (default), 'md', 'lg' */
+  size?: 'xs' | 'xxs' | 'sm' | 'md' | 'lg';
 }
 
 /**
@@ -21,6 +21,8 @@ export function GeneratingLoader({ className = '', size = 'sm' }: GeneratingLoad
 
   // Size configurations
   const sizeConfig = {
+    xxs: { barWidth: 'w-0.5', barHeight: '12px', gap: 'gap-0.5' },
+    xs: { barWidth: 'w-0.5', barHeight: '18px', gap: 'gap-1' },
     sm: { barWidth: 'w-1', barHeight: '28px', gap: 'gap-1.5' },
     md: { barWidth: 'w-1.5', barHeight: '48px', gap: 'gap-2' },
     lg: { barWidth: 'w-1.5', barHeight: '56px', gap: 'gap-2.5' },

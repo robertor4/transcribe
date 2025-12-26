@@ -419,6 +419,26 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Clear recently opened history for the current user
+   * Removes lastAccessedAt from all user's transcriptions
+   */
+  @Delete('recently-opened')
+  @UseGuards(FirebaseAuthGuard)
+  async clearRecentlyOpened(
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ cleared: number }>> {
+    const cleared = await this.transcriptionService.clearRecentlyOpened(
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: { cleared },
+      message: 'Recently opened history cleared',
+    };
+  }
+
   @Get(':id')
   @UseGuards(FirebaseAuthGuard)
   async getTranscription(

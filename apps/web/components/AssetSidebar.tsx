@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import {
   Zap,
   Plus,
@@ -16,10 +15,9 @@ import {
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
-import { QASidebarEntry } from '@/components/QASidebarEntry';
-import { QASlidePanel } from '@/components/QASlidePanel';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
+import { AiIcon } from '@/components/icons/AiIcon';
 
 interface ConversationMetadata {
   duration: number;
@@ -32,28 +30,22 @@ interface ConversationMetadata {
 interface AssetSidebarProps {
   assets: GeneratedAnalysis[];
   isLoading: boolean;
-  conversationId: string;
-  locale: string;
   onGenerateNew: () => void;
   onAssetClick: (asset: GeneratedAnalysis) => void;
   selectedAssetId?: string | null;
   metadata: ConversationMetadata;
-  conversationTitle?: string;
 }
 
 export function AssetSidebar({
   assets,
   isLoading,
-  conversationId,
   onGenerateNew,
   onAssetClick,
   selectedAssetId,
   metadata,
-  conversationTitle,
 }: AssetSidebarProps) {
   const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
-  const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
   const t = useTranslations('aiAssets');
 
   return (
@@ -105,12 +97,9 @@ export function AssetSidebar({
           ))
         ) : (
           <div className="text-center py-6 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-            <Image
-              src="/assets/symbols/ai-icon-brand-color.svg"
-              alt="AI"
-              width={36}
-              height={36}
-              className="mx-auto mb-3 opacity-40"
+            <AiIcon
+              size={36}
+              className="mx-auto mb-3 text-[#8D6AFA] opacity-40"
             />
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
               {t('sidebar.emptyTitle')}
@@ -126,23 +115,7 @@ export function AssetSidebar({
           </div>
         )}
 
-        {/* Q&A Section - right under assets */}
-        <div className="pt-2">
-          <QASidebarEntry
-            onClick={() => setIsQAPanelOpen(true)}
-            scope="conversation"
-          />
-        </div>
       </div>
-
-      {/* Q&A Slide Panel */}
-      <QASlidePanel
-        isOpen={isQAPanelOpen}
-        onClose={() => setIsQAPanelOpen(false)}
-        scope="conversation"
-        transcriptionId={conversationId}
-        title={conversationTitle}
-      />
 
       {/* Collapsible Recording Context Section */}
       {metadata.context && (

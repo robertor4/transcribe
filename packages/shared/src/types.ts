@@ -1160,6 +1160,23 @@ export interface QAHistoryItem {
 }
 
 /**
+ * Debug information for Q&A requests
+ */
+export interface QADebugInfo {
+  summaryTokens: number;           // Tokens from summary context
+  chunksTokens: number;            // Tokens from transcript excerpts
+  historyTokens: number;           // Tokens from Q&A history
+  questionTokens: number;          // Tokens from user question
+  systemPromptTokens: number;      // Tokens from system prompt
+  totalInputTokens: number;        // Total input tokens
+  outputTokens: number;            // Output tokens (from response)
+  historyCount: number;            // Number of Q&A pairs in context
+  chunksCount: number;             // Number of transcript chunks found
+  estimatedCostUsd: number;        // Estimated cost in USD
+  model: string;                   // Model used
+}
+
+/**
  * Response from Q&A "ask" endpoints
  */
 export interface AskResponse {
@@ -1168,6 +1185,7 @@ export interface AskResponse {
   searchScope: 'conversation' | 'folder' | 'global';
   processingTimeMs: number;
   indexed?: boolean;        // Whether the conversation was already indexed
+  debug?: QADebugInfo;      // Debug info (only in development)
 }
 
 /**
@@ -1211,6 +1229,7 @@ export interface TranscriptChunkPayload {
   userId: string;
   transcriptionId: string;
   folderId: string | null;
+  chunkType: 'content' | 'metadata';  // 'metadata' for title/summary chunks
   segmentIndex: number;
   speaker: string;
   startTime: number;        // seconds

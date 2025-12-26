@@ -35,8 +35,8 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  // Base classes
-  const baseClasses = "inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed";
+  // Base classes (group enables group-hover for child elements like animated icons)
+  const baseClasses = "group inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed";
 
   // Size variants
   const sizeClasses = {

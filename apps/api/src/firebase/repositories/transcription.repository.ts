@@ -295,6 +295,46 @@ export class TranscriptionRepository {
   }
 
   /**
+   * Clear recently opened history by removing lastAccessedAt from all user's transcriptions
+   */
+  async clearRecentlyOpened(userId: string): Promise<number> {
+    // Get all transcriptions with lastAccessedAt set
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .get();
+
+    const docsWithAccess = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      return data.lastAccessedAt && !data.deletedAt;
+    });
+
+    if (docsWithAccess.length === 0) {
+      return 0;
+    }
+
+    // Use batched writes for efficiency (max 500 per batch)
+    const batchSize = 500;
+    let cleared = 0;
+
+    for (let i = 0; i < docsWithAccess.length; i += batchSize) {
+      const batch = this.db.batch();
+      const chunk = docsWithAccess.slice(i, i + batchSize);
+
+      for (const doc of chunk) {
+        batch.update(doc.ref, {
+          lastAccessedAt: admin.firestore.FieldValue.delete(),
+        });
+      }
+
+      await batch.commit();
+      cleared += chunk.length;
+    }
+
+    return cleared;
+  }
+
+  /**
    * Delete a transcription (hard delete)
    */
   async deleteTranscription(id: string): Promise<void> {

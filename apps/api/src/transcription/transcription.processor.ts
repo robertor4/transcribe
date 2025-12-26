@@ -14,6 +14,7 @@ import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { EmailService } from '../email/email.service';
 import { UserService } from '../user/user.service';
 import { UsageService } from '../usage/usage.service';
+import { VectorService } from '../vector/vector.service';
 
 @Processor(QUEUE_NAMES.TRANSCRIPTION)
 export class TranscriptionProcessor {
@@ -28,6 +29,7 @@ export class TranscriptionProcessor {
     private emailService: EmailService,
     private userService: UserService,
     private usageService: UsageService,
+    private vectorService: VectorService,
   ) {
     const concurrency = parseInt(
       process.env.TRANSCRIPTION_CONCURRENCY || '2',
@@ -279,6 +281,22 @@ export class TranscriptionProcessor {
 
       // Audio files are retained for 30 days for support/recovery purposes
       // Cleanup is handled by the scheduled 30-day cleanup job in cleanup.service.ts
+
+      // Index for semantic search (non-blocking - fallback to keyword search if fails)
+      try {
+        const chunkCount = await this.vectorService.indexTranscription(
+          userId,
+          transcriptionId,
+        );
+        this.logger.log(
+          `Indexed ${chunkCount} chunks for search (transcription ${transcriptionId})`,
+        );
+      } catch (indexError) {
+        // Log but don't fail - keyword search fallback will work
+        this.logger.warn(
+          `Failed to index transcription ${transcriptionId} for search: ${indexError instanceof Error ? indexError.message : 'Unknown error'}`,
+        );
+      }
 
       // Send completion notification
       this.websocketGateway.sendTranscriptionComplete(userId, {

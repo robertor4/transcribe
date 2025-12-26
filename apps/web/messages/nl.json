@@ -422,6 +422,15 @@
       "summary": "Samenvatting",
       "transcript": "Transcript"
     },
+    "actions": {
+      "askQuestions": "Stel vragen",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "share": "Delen",
+      "delete": "Verwijderen",
+      "exportPDF": "Exporteren als PDF",
+      "generatingPDF": "PDF wordt gegenereerd..."
+    },
     "translation": {
       "original": "Origineel",
       "viewOriginal": "Bekijk origineel",

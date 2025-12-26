@@ -14,6 +14,7 @@ import {
   TranslateConversationResponse,
   AskResponse,
   QAHistoryItem,
+  FindResponse,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -190,10 +191,19 @@ export const transcriptionApi = {
     });
   },
 
+  // Semantic search using vector similarity (Qdrant)
+  semanticSearch: async (query: string, limit = 10): Promise<ApiResponse<FindResponse>> => {
+    return api.post('/vector/find', { query, maxResults: limit });
+  },
+
   getRecentlyOpened: async (limit = 5): Promise<ApiResponse<unknown[]>> => {
     return api.get('/transcriptions/recently-opened', {
       params: { limit },
     });
+  },
+
+  clearRecentlyOpened: async (): Promise<ApiResponse<{ cleared: number }>> => {
+    return api.delete('/transcriptions/recently-opened');
   },
 
   recordAccess: async (id: string): Promise<ApiResponse<{ message: string }>> => {

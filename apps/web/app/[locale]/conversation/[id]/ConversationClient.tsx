@@ -10,6 +10,8 @@ import {
   AlertCircle,
   Copy,
   Zap,
+  MoreVertical,
+  Trash2,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
@@ -22,18 +24,21 @@ import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { InlineTranscript } from '@/components/InlineTranscript';
-import { DeleteConversationButton } from '@/components/DeleteConversationButton';
 import { ShareModal } from '@/components/ShareModal';
-import { TranslationDropdown } from '@/components/TranslationDropdown';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { TranslationMenuItems } from '@/components/TranslationMenuItems';
+import { ExportPDFMenuItem } from '@/components/ExportPDFMenuItem';
 import { useConversation } from '@/hooks/useConversation';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
-import { updateConversationTitle } from '@/lib/services/conversationService';
+import { updateConversationTitle, deleteConversation } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
+import { QASlidePanel } from '@/components/QASlidePanel';
+import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -52,6 +57,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
   const [activeTab, setActiveTab] = useState<ContentTab>('summary');
   const [mobileAssetSheetOpen, setMobileAssetSheetOpen] = useState(false);
+  const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
 
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -183,6 +189,19 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     if (response.success && response.data) {
       setTranscriptionForShare(response.data as Transcription);
       setIsShareModalOpen(true);
+    }
+  };
+
+  // Delete conversation handler
+  const handleDeleteConversation = async () => {
+    if (!window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+      return;
+    }
+    try {
+      await deleteConversation(conversationId);
+      router.push(`/${locale}/dashboard`);
+    } catch (error) {
+      console.error('Failed to delete conversation:', error);
     }
   };
 
@@ -404,13 +423,10 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             <AssetSidebar
               assets={outputs}
               isLoading={isLoadingOutputs}
-              conversationId={conversationId}
-              locale={locale}
               onGenerateNew={handleGenerateOutput}
               onAssetClick={openAssetPanel}
               selectedAssetId={selectedAsset?.id}
               metadata={sidebarMetadata}
-              conversationTitle={conversation.title}
             />
           </div>
         }
@@ -444,7 +460,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   {conversation.title}
                 </h1>
               )}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
                 <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                   <span>{formatDuration(conversation.source.audioDuration)}</span>
                   <span>·</span>
@@ -458,32 +474,75 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <TranslationDropdown
-                    status={translationStatus}
-                    currentLocale={currentLocale}
-                    isTranslating={isTranslating}
-                    onSelectLocale={setLocale}
-                    onTranslate={translate}
-                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<AnimatedAiIcon size={14} />}
+                    onClick={() => setIsQAPanelOpen(true)}
+                  >
+                    {tConversation('actions.askQuestions')}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     icon={<Copy className="w-4 h-4" />}
                     onClick={handleCopy}
                   >
-                    {copiedSummary ? 'Copied!' : 'Copy'}
+                    {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<Share2 className="w-4 h-4" />}
-                    onClick={handleOpenShareModal}
-                  >
-                    Share
-                  </Button>
-                  <DeleteConversationButton
-                    conversationId={conversationId}
-                    onDeleted={() => router.push(`/${locale}/dashboard`)}
+                  <DropdownMenu
+                    trigger={
+                      <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    }
+                    items={[
+                      {
+                        type: 'custom',
+                        content: (
+                          <TranslationMenuItems
+                            status={translationStatus}
+                            currentLocale={currentLocale}
+                            isTranslating={isTranslating}
+                            onSelectLocale={setLocale}
+                            onTranslate={translate}
+                          />
+                        ),
+                      },
+                      ...(conversation.source.summary.summaryV2
+                        ? [
+                            {
+                              type: 'custom' as const,
+                              content: (
+                                <ExportPDFMenuItem
+                                  summary={conversation.source.summary.summaryV2}
+                                  metadata={{
+                                    title: conversation.title,
+                                    createdAt: conversation.createdAt,
+                                    duration: conversation.source.audioDuration,
+                                    speakerCount: conversation.source.transcript.speakers,
+                                  }}
+                                  currentLocale={currentLocale}
+                                  getTranslatedContent={getTranslatedContent}
+                                  conversationId={conversationId}
+                                />
+                              ),
+                            },
+                          ]
+                        : []),
+                      { type: 'divider' },
+                      {
+                        icon: Share2,
+                        label: tConversation('actions.share'),
+                        onClick: handleOpenShareModal,
+                      },
+                      {
+                        icon: Trash2,
+                        label: tConversation('actions.delete'),
+                        onClick: () => handleDeleteConversation(),
+                        variant: 'danger',
+                      },
+                    ]}
                   />
                 </div>
               </div>
@@ -642,6 +701,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           onShareUpdate={handleShareUpdate}
         />
       )}
+
+      {/* Q&A Slide Panel */}
+      <QASlidePanel
+        isOpen={isQAPanelOpen}
+        onClose={() => setIsQAPanelOpen(false)}
+        scope="conversation"
+        transcriptionId={conversationId}
+        title={conversation.title}
+      />
     </div>
   );
 }

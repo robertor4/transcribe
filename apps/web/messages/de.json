@@ -422,6 +422,15 @@
       "summary": "Zusammenfassung",
       "transcript": "Transkript"
     },
+    "actions": {
+      "askQuestions": "Fragen stellen",
+      "copy": "Kopieren",
+      "copied": "Kopiert!",
+      "share": "Teilen",
+      "delete": "Löschen",
+      "exportPDF": "Als PDF exportieren",
+      "generatingPDF": "PDF wird erstellt..."
+    },
     "translation": {
       "original": "Original",
       "viewOriginal": "Original anzeigen",

@@ -4,16 +4,33 @@ import { ReactNode, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { LucideIcon } from 'lucide-react';
 
-interface DropdownMenuItem {
+interface DropdownMenuItemBase {
+  variant?: 'default' | 'danger';
+}
+
+interface DropdownMenuItemStandard extends DropdownMenuItemBase {
+  type?: 'item';
   icon: LucideIcon;
   label: string;
   onClick: () => void;
-  variant?: 'default' | 'danger';
 }
+
+interface DropdownMenuItemDivider {
+  type: 'divider';
+}
+
+interface DropdownMenuItemCustom {
+  type: 'custom';
+  content: ReactNode;
+}
+
+export type DropdownMenuItem = DropdownMenuItemStandard | DropdownMenuItemDivider | DropdownMenuItemCustom;
 
 interface DropdownMenuProps {
   trigger: ReactNode;
   items: DropdownMenuItem[];
+  /** Alignment of dropdown relative to trigger */
+  align?: 'left' | 'right';
 }
 
 export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
@@ -100,6 +117,22 @@ export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
         >
           <div className="py-1">
             {items.map((item, idx) => {
+              // Divider
+              if (item.type === 'divider') {
+                return (
+                  <div
+                    key={idx}
+                    className="my-1 border-t border-gray-200 dark:border-gray-700"
+                  />
+                );
+              }
+
+              // Custom content
+              if (item.type === 'custom') {
+                return <div key={idx}>{item.content}</div>;
+              }
+
+              // Standard item (default)
               const Icon = item.icon;
               const isDanger = item.variant === 'danger';
               return (

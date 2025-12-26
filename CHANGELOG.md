@@ -8,6 +8,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **PDF Export for Summaries**: Export conversation summaries to professionally formatted PDFs
+  - New `ExportPDFMenuItem` component for dropdown menu integration
+  - `SummaryPDFDocument` React-PDF component with full branding (logo, colors, typography)
+  - Supports translated summaries (exports current locale translation if available)
+  - Includes key points with proper bullet formatting, action items with checkboxes
+  - Montserrat font embedded for brand consistency
+  - Files: [ExportPDFMenuItem.tsx](apps/web/components/ExportPDFMenuItem.tsx), [SummaryPDFDocument.tsx](apps/web/lib/pdf/SummaryPDFDocument.tsx), [pdfStyles.ts](apps/web/lib/pdf/pdfStyles.ts)
+- **Vector Index Backfill Script**: One-time script to index existing conversations into Qdrant
+  - Indexes all transcriptions without `vectorIndexedAt` field
+  - Rate limiting to avoid OpenAI API quota issues
+  - Progress reporting with success/failure counts
+  - File: [backfill-vector-index.ts](apps/api/scripts/backfill-vector-index.ts)
+- **Mobile App Planning Document**: Comprehensive plan for React Native Expo companion app
+  - Architecture decisions, tech stack comparison, monorepo integration strategy
+  - Feature priorities: recording, uploads, real-time progress, offline support
+  - File: [2025-12-26_MOBILE_APP_PLAN.md](docs/2025-12-26_MOBILE_APP_PLAN.md)
+- **Animated AI Icon Component**: Custom animated sparkle icon for Q&A feature
+  - Subtle pulse animation for visual interest
+  - Reusable across conversation header and sidebar
+  - Files: [AnimatedAiIcon.tsx](apps/web/components/icons/AnimatedAiIcon.tsx), [AiIcon.tsx](apps/web/components/icons/AiIcon.tsx)
+- **Q&A Debug Info**: Token usage and cost tracking for Q&A requests (development only)
+  - New `QADebugInfo` shared type with token counts, history/chunk counts, estimated cost
+  - Returned in `AskResponse.debug` field when in development mode
+  - File: [types.ts](packages/shared/src/types.ts)
+
+### Changed
+- **Vector Indexing Enhanced**: Metadata chunks for better semantic search
+  - Now indexes title + summary intro + key point topics as separate "metadata" chunk
+  - Improves search relevance for high-level queries about conversation topics
+  - Bumped `vectorIndexVersion` to 2 to track enhanced index format
+  - Added `chunkType` field to `TranscriptChunkPayload` ('content' | 'metadata')
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+- **Q&A Synthesis Prompt Refined**: More concise, brand-aligned AI responses
+  - Includes conversation summary as context for general questions
+  - Shorter, more direct prompt following brand voice guidelines
+  - Removed verbose instructions and AI self-reference phrases
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+- **Semantic Search in Navigation**: Global search now uses vector similarity first
+  - `searchConversations` tries semantic search via `/vector/find` endpoint
+  - Falls back to keyword search if semantic search fails or returns no results
+  - Search results now include `matchedSnippets` and `relevanceScore`
+  - Shows matched snippet preview in search results dropdown
+  - Files: [conversationService.ts](apps/web/lib/services/conversationService.ts), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **Conversation Actions Redesign**: Streamlined header action buttons
+  - Moved Translation, Share, Delete into overflow dropdown menu (three-dot)
+  - Added "Ask Questions" button with animated AI icon as primary action
+  - New `TranslationMenuItems` component renders translations as expandable menu section
+  - PDF export added to dropdown menu when summary exists
+  - Inline delete confirmation replaced `DeleteConversationButton` component
+  - Files: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx), [TranslationMenuItems.tsx](apps/web/components/TranslationMenuItems.tsx)
+- **DropdownMenu Custom Content**: Enhanced dropdown to support custom React nodes
+  - New `type: 'custom'` item type with `content` property for arbitrary JSX
+  - Enables complex nested menus like translation selection
+  - File: [DropdownMenu.tsx](apps/web/components/DropdownMenu.tsx)
+- **Recently Opened Clearing**: Users can now clear recently opened conversations list
+  - New "Clear" button with trash icon in navigation sidebar
+  - `clearRecentlyOpened` function in ConversationsContext
+  - Persists cleared state so fallback list doesn't reappear
+  - Files: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [ConversationsContext.tsx](apps/web/contexts/ConversationsContext.tsx)
+- **Navigation Visual Polish**: Minor styling improvements
+  - Dashboard and New Conversation links now use `font-normal text-white/80` (less bold)
+  - Added divider between main nav and folders section
+  - File: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+### Fixed
+- **InlineCitation Tooltip Positioning**: Fixed tooltip appearing behind other elements
+  - Added explicit z-index to tooltip content for proper layering
+  - File: [InlineCitation.tsx](apps/web/components/InlineCitation.tsx)
+- **GeneratingLoader Animation**: Fixed SVG animation smoothness
+  - Adjusted keyframe timing for smoother pulse effect
+  - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
+
+### Added
 - **Q&A Vector Search Feature**: Semantic Q&A across conversations using Qdrant Cloud
   - New `VectorModule` with services for vector indexing and search
   - `QdrantService` for Qdrant Cloud client management and collection operations

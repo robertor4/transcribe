@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight } from 'lucide-react';
+import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2 } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
@@ -30,7 +30,8 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const [isFoldersExpanded, setIsFoldersExpanded] = useState(false);
-  const { conversations, recentlyOpened, isLoading: conversationsLoading } = useConversationsContext();
+  const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
+  const [isClearing, setIsClearing] = useState(false);
 
   // Focus search input when focusSearch prop becomes true
   useEffect(() => {
@@ -55,13 +56,18 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   } = useSearch({ debounceMs: 300, minChars: 2 });
 
   // Use recently opened from context, fallback to first 5 conversations by createdAt
+  // Don't show fallback if user explicitly cleared the list
   const recentConversations = useMemo(() => {
     if (recentlyOpened.length > 0) {
       return recentlyOpened;
     }
+    // Don't show fallback if user explicitly cleared the list
+    if (recentlyOpenedCleared) {
+      return [];
+    }
     // Fallback for users who haven't opened any conversations yet
     return conversations.slice(0, 5);
-  }, [recentlyOpened, conversations]);
+  }, [recentlyOpened, recentlyOpenedCleared, conversations]);
 
   const handleNewConversation = () => {
     if (onNewConversation) {
@@ -69,6 +75,16 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
     } else {
       // Navigate to dashboard with query param to open modal
       router.push(`/${locale}/dashboard?newConversation=true`);
+    }
+  };
+
+  const handleClearRecentlyOpened = async () => {
+    if (isClearing || recentConversations.length === 0) return;
+    setIsClearing(true);
+    try {
+      await clearRecentlyOpened();
+    } finally {
+      setIsClearing(false);
     }
   };
 
@@ -160,6 +176,12 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                     <span className="text-sm font-medium text-white truncate block">
                       {result.title}
                     </span>
+                    {/* Show matched snippet for semantic search results */}
+                    {result.matchedSnippets?.[0] && (
+                      <span className="text-xs text-white/60 truncate block mt-0.5 italic">
+                        &quot;{result.matchedSnippets[0].text.slice(0, 60)}...&quot;
+                      </span>
+                    )}
                     <span className="text-xs text-white/50">
                       {result.createdAt.toLocaleDateString()}
                     </span>
@@ -185,7 +207,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               className="group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               <Home className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors" />
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-normal text-white/80">
                 Dashboard
               </span>
             </Link>
@@ -194,15 +216,19 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               className="group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors w-full text-left"
             >
               <MessageSquarePlus className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors" />
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-normal text-white/80">
                 New Conversation
               </span>
             </button>
           </div>
         </div>
+
+        {/* Divider */}
+        <div className="mx-4 border-t border-black/20" />
+
         {/* Folders Section */}
         <div className="py-4 px-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className={`flex items-center justify-between ${isFoldersExpanded ? 'mb-3' : ''}`}>
             <button
               onClick={() => setIsFoldersExpanded(!isFoldersExpanded)}
               className="flex items-center gap-1.5 text-white/50 hover:text-white/70 transition-colors"
@@ -246,7 +272,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                         className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors"
                         style={{ color: folder.color || undefined }}
                       />
-                      <span className="text-sm font-medium text-white truncate">
+                      <span className="text-sm font-normal text-white/80 truncate">
                         {folder.name}
                       </span>
                     </div>
@@ -260,12 +286,30 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
           </div>
         </div>
 
+        {/* Divider */}
+        <div className="mx-4 border-t border-black/20" />
+
         {/* Recent Conversations Section */}
         <div className="py-4 px-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
                 Recently opened
               </h3>
+              {recentConversations.length > 0 && (
+                <button
+                  onClick={handleClearRecentlyOpened}
+                  disabled={isClearing}
+                  className="p-1 rounded text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors disabled:opacity-50"
+                  aria-label="Clear recently opened"
+                  title="Clear recently opened"
+                >
+                  {isClearing ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3 h-3" />
+                  )}
+                </button>
+              )}
             </div>
 
             {conversationsLoading ? (
@@ -284,7 +328,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                   >
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3 text-white/50 flex-shrink-0" />
-                      <span className="text-sm font-medium text-white truncate">
+                      <span className="text-sm font-normal text-white/80 truncate">
                         {conversation.title}
                       </span>
                       {conversation.status === 'processing' && (
