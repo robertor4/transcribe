@@ -6,6 +6,8 @@ import { X, Zap, Plus, Loader2 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
+import { QASidebarEntry } from '@/components/QASidebarEntry';
+import { QASlidePanel } from '@/components/QASlidePanel';
 import { useTranslations } from 'next-intl';
 
 interface AssetMobileSheetProps {
@@ -16,6 +18,8 @@ interface AssetMobileSheetProps {
   onGenerateNew: () => void;
   onAssetClick: (asset: GeneratedAnalysis) => void;
   selectedAssetId?: string | null;
+  conversationId: string;
+  conversationTitle?: string;
 }
 
 export function AssetMobileSheet({
@@ -25,10 +29,13 @@ export function AssetMobileSheet({
   onClose,
   onGenerateNew,
   onAssetClick,
+  conversationId,
+  conversationTitle,
 }: AssetMobileSheetProps) {
   const t = useTranslations('aiAssets');
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
 
   // Handle client-side mounting for portal
   useEffect(() => {
@@ -154,6 +161,17 @@ export function AssetMobileSheet({
           </Button>
         </div>
 
+        {/* Q&A Section */}
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <QASidebarEntry
+            onClick={() => {
+              handleClose();
+              setTimeout(() => setIsQAPanelOpen(true), 100);
+            }}
+            scope="conversation"
+          />
+        </div>
+
         {/* Asset List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-subtle">
           {isLoading ? (
@@ -180,6 +198,15 @@ export function AssetMobileSheet({
             </div>
           )}
         </div>
+
+        {/* Q&A Slide Panel */}
+        <QASlidePanel
+          isOpen={isQAPanelOpen}
+          onClose={() => setIsQAPanelOpen(false)}
+          scope="conversation"
+          transcriptionId={conversationId}
+          title={conversationTitle}
+        />
       </div>
     </div>,
     document.body

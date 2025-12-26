@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Q&A Vector Search Feature**: Semantic Q&A across conversations using Qdrant Cloud
+  - New `VectorModule` with services for vector indexing and search
+  - `QdrantService` for Qdrant Cloud client management and collection operations
+  - `EmbeddingService` for OpenAI `text-embedding-3-small` embeddings
+  - `ChunkingService` for intelligent speaker segment chunking with overlap
+  - `VectorService` orchestrating indexing, search, and GPT-5 answer synthesis
+  - On-demand indexing: conversations indexed when first Q&A request is made
+  - Timestamped citations: answers include speaker name and timestamp references
+  - Three search scopes: single conversation, folder, or global (all conversations)
+  - Two search modes: "Ask" (synthesized answer) and "Find" (conversation cards with snippets)
+  - Conversation history support: sliding window (first + last 5 exchanges) for follow-up questions
+  - New API endpoints: `POST /transcriptions/:id/ask`, `POST /folders/:id/ask`, `POST /vector/ask`, `POST /vector/find`
+  - New shared types: `Citation`, `AskResponse`, `FindResponse`, `ConversationMatch`, `MatchedSnippet`, `QAHistoryItem`
+  - New Firestore fields: `vectorIndexedAt`, `vectorChunkCount`, `vectorIndexVersion`
+  - Files: [vector.module.ts](apps/api/src/vector/vector.module.ts), [vector.service.ts](apps/api/src/vector/vector.service.ts), [qdrant.service.ts](apps/api/src/vector/qdrant.service.ts), [embedding.service.ts](apps/api/src/vector/embedding.service.ts), [chunking.service.ts](apps/api/src/vector/chunking.service.ts), [types.ts](packages/shared/src/types.ts)
+- **Q&A Frontend Components**: Full chat-like Q&A interface in slide panel
+  - `QASidebarEntry`: Compact entry point in AI Assets sidebar to launch Q&A
+  - `QASlidePanel`: Full-screen slide panel with chat interface, history, and input
+  - `QAMessage`: Individual Q&A exchange with question bubble, answer, and citations
+  - `CitationCard`: Displays citation with timestamp, speaker, and quote
+  - `InlineCitation`: Clickable inline citation chips with popover showing full quote
+  - Integrated into `AssetSidebar` (conversation page) and `AssetMobileSheet` (mobile)
+  - Copy answer to clipboard functionality
+  - Expandable/collapsible citations section
+  - Translations for all 5 locales (en, nl, de, fr, es)
+  - Files: [QASidebarEntry.tsx](apps/web/components/QASidebarEntry.tsx), [QASlidePanel.tsx](apps/web/components/QASlidePanel.tsx), [QAMessage.tsx](apps/web/components/QAMessage.tsx), [CitationCard.tsx](apps/web/components/CitationCard.tsx), [InlineCitation.tsx](apps/web/components/InlineCitation.tsx)
+
+### Fixed
+- **Q&A Answer Synthesis**: GPT prompt was too conservative, returning "couldn't find information" even when relevant content existed
+  - Updated synthesis prompt to be more helpful and extract partial information
+  - Changed from strict "ONLY the context" to "Answer based on the provided transcript excerpts"
+  - Added instruction to provide available information even if it only partially answers the question
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+
 ### Changed
 - **FirebaseService Refactoring**: Extracted ~2000 line god service into domain-specific repositories
   - Created `StorageService` for file upload/download/delete operations

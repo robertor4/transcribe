@@ -31,6 +31,7 @@
     "@nestjs/schedule": "^6.1.0",
     "@nestjs/throttler": "^6.5.0",
     "@nestjs/websockets": "^11.1.9",
+    "@qdrant/js-client-rest": "^1.16.2",
     "@transcribe/shared": "file:../../packages/shared",
     "@types/fluent-ffmpeg": "^2.1.28",
     "@types/multer": "^2.0.0",

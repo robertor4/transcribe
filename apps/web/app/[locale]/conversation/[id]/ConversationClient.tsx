@@ -410,6 +410,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               onAssetClick={openAssetPanel}
               selectedAssetId={selectedAsset?.id}
               metadata={sidebarMetadata}
+              conversationTitle={conversation.title}
             />
           </div>
         }
@@ -614,6 +615,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onClose={() => setMobileAssetSheetOpen(false)}
         onGenerateNew={() => setIsGeneratorOpen(true)}
         onAssetClick={openAssetPanel}
+        conversationId={conversationId}
+        conversationTitle={conversation.title}
       />
 
       {/* Output Generator Modal */}
@@ -622,7 +625,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onClose={() => setIsGeneratorOpen(false)}
         conversationTitle={conversation.title}
         conversationId={conversationId}
-        onOutputGenerated={fetchOutputs}
+        onOutputGenerated={(asset) => {
+          // Add the new asset to the list
+          setOutputs((prev) => [asset, ...prev]);
+          // Open the slide panel with the new asset
+          openAssetPanel(asset);
+        }}
       />
 
       {/* Share Modal */}

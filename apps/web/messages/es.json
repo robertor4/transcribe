@@ -2136,5 +2136,28 @@
       "failedToFetch": "Error al obtener datos",
       "userNotFound": "Usuario no encontrado"
     }
+  },
+  "qa": {
+    "title": "Hacer preguntas",
+    "titleConversation": "Preguntar sobre esta conversación",
+    "titleFolder": "Buscar en esta carpeta",
+    "description": "Haz una pregunta sobre esta conversación",
+    "descriptionFolder": "Buscar en {count} conversaciones",
+    "placeholder": "Haz una pregunta...",
+    "submit": "Preguntar",
+    "loading": "Buscando respuesta...",
+    "sources": "Fuentes",
+    "answeredIn": "Respondido en {time}",
+    "noResults": "No pude encontrar información relevante sobre eso.",
+    "error": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "indexing": "Preparando búsqueda...",
+    "back": "Volver",
+    "in": "En",
+    "emptyState": "Haz una pregunta para buscar en la conversación",
+    "showMore": "Mostrar {count} más",
+    "showLess": "Mostrar menos",
+    "jumpToTimestamp": "Ir al momento",
+    "copy": "Copiar respuesta",
+    "copied": "¡Copiado!"
   }
 }

@@ -2136,5 +2136,28 @@
       "failedToFetch": "Daten konnten nicht abgerufen werden",
       "userNotFound": "Benutzer nicht gefunden"
     }
+  },
+  "qa": {
+    "title": "Fragen stellen",
+    "titleConversation": "Frage zu diesem Gespräch",
+    "titleFolder": "In diesem Ordner suchen",
+    "description": "Stelle eine Frage zu diesem Gespräch",
+    "descriptionFolder": "Suche in {count} Gesprächen",
+    "placeholder": "Stelle eine Frage...",
+    "submit": "Fragen",
+    "loading": "Antwort suchen...",
+    "sources": "Quellen",
+    "answeredIn": "Beantwortet in {time}",
+    "noResults": "Ich konnte keine relevanten Informationen dazu finden.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "indexing": "Suche vorbereiten...",
+    "back": "Zurück",
+    "in": "In",
+    "emptyState": "Stelle eine Frage, um das Gespräch zu durchsuchen",
+    "showMore": "{count} weitere anzeigen",
+    "showLess": "Weniger anzeigen",
+    "jumpToTimestamp": "Zum Zeitstempel springen",
+    "copy": "Antwort kopieren",
+    "copied": "Kopiert!"
   }
 }

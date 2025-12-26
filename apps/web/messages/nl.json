@@ -2136,5 +2136,28 @@
       "failedToFetch": "Gegevens ophalen mislukt",
       "userNotFound": "Gebruiker niet gevonden"
     }
+  },
+  "qa": {
+    "title": "Stel vragen",
+    "titleConversation": "Vraag over dit gesprek",
+    "titleFolder": "Zoek in deze map",
+    "description": "Stel een vraag over dit gesprek",
+    "descriptionFolder": "Zoek in {count} gesprekken",
+    "placeholder": "Stel een vraag...",
+    "submit": "Vraag",
+    "loading": "Antwoord zoeken...",
+    "sources": "Bronnen",
+    "answeredIn": "Beantwoord in {time}",
+    "noResults": "Ik kon geen relevante informatie hierover vinden.",
+    "error": "Er ging iets mis. Probeer het opnieuw.",
+    "indexing": "Voorbereiden voor zoeken...",
+    "back": "Terug",
+    "in": "In",
+    "emptyState": "Stel een vraag om door het gesprek te zoeken",
+    "showMore": "Toon {count} meer",
+    "showLess": "Toon minder",
+    "jumpToTimestamp": "Ga naar tijdstip",
+    "copy": "Kopieer antwoord",
+    "copied": "Gekopieerd!"
   }
 }

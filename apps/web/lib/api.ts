@@ -12,6 +12,8 @@ import {
   Translation,
   ConversationTranslations,
   TranslateConversationResponse,
+  AskResponse,
+  QAHistoryItem,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -332,6 +334,15 @@ export const transcriptionApi = {
   sendEmailToSelf: async (analysisId: string): Promise<ApiResponse<{ message: string }>> => {
     return api.post(`/transcriptions/analyses/${analysisId}/send-to-self`);
   },
+
+  // Q&A API methods
+  askQuestion: async (id: string, question: string, maxResults = 10, history?: QAHistoryItem[]): Promise<ApiResponse<AskResponse>> => {
+    return api.post(`/transcriptions/${id}/ask`, { question, maxResults, history });
+  },
+
+  getIndexingStatus: async (id: string): Promise<ApiResponse<{ indexed: boolean; chunkCount: number; indexedAt?: string }>> => {
+    return api.get(`/transcriptions/${id}/indexing-status`);
+  },
 };
 
 // Folder API
@@ -361,6 +372,11 @@ export const folderApi = {
 
   getTranscriptions: async (id: string): Promise<ApiResponse<unknown[]>> => {
     return api.get(`/folders/${id}/transcriptions`);
+  },
+
+  // Q&A API methods
+  askQuestion: async (id: string, question: string, maxResults = 15, history?: QAHistoryItem[]): Promise<ApiResponse<AskResponse>> => {
+    return api.post(`/folders/${id}/ask`, { question, maxResults, history });
   },
 };
 

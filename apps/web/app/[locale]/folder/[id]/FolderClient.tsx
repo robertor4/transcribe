@@ -25,6 +25,8 @@ import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
 import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { FolderAssetCard } from '@/components/FolderAssetCard';
+import { QASidebarEntry } from '@/components/QASidebarEntry';
+import { QASlidePanel } from '@/components/QASlidePanel';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
@@ -56,6 +58,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [assets, setAssets] = useState<RecentAnalysis[]>([]);
   const [isLoadingAssets, setIsLoadingAssets] = useState(true);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
+  const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
 
   const {
     selectedItem: selectedAsset,
@@ -297,6 +300,24 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 </div>
               )}
             </div>
+
+            {/* Q&A Section */}
+            <div className="px-4 pb-4">
+              <QASidebarEntry
+                onClick={() => setIsQAPanelOpen(true)}
+                scope="folder"
+                conversationCount={conversations.length}
+              />
+            </div>
+
+            {/* Q&A Slide Panel */}
+            <QASlidePanel
+              isOpen={isQAPanelOpen}
+              onClose={() => setIsQAPanelOpen(false)}
+              scope="folder"
+              folderId={folderId}
+              title={folder.name}
+            />
 
             {/* Collapsible Folder Stats */}
             <div className="border-t border-gray-200 dark:border-gray-700">

@@ -17,6 +17,7 @@ import { AdminModule } from './admin/admin.module';
 import { QueueModule } from './queue/queue.module';
 import { FolderModule } from './folder/folder.module';
 import { TranslationModule } from './translation/translation.module';
+import { VectorModule } from './vector/vector.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { TranslationModule } from './translation/translation.module';
     AdminModule,
     FolderModule,
     TranslationModule,
+    VectorModule,
   ],
   controllers: [AppController],
   providers: [

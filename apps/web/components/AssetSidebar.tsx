@@ -16,6 +16,8 @@ import {
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
+import { QASidebarEntry } from '@/components/QASidebarEntry';
+import { QASlidePanel } from '@/components/QASlidePanel';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 
@@ -36,18 +38,22 @@ interface AssetSidebarProps {
   onAssetClick: (asset: GeneratedAnalysis) => void;
   selectedAssetId?: string | null;
   metadata: ConversationMetadata;
+  conversationTitle?: string;
 }
 
 export function AssetSidebar({
   assets,
   isLoading,
+  conversationId,
   onGenerateNew,
   onAssetClick,
   selectedAssetId,
   metadata,
+  conversationTitle,
 }: AssetSidebarProps) {
   const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
+  const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
   const t = useTranslations('aiAssets');
 
   return (
@@ -119,7 +125,24 @@ export function AssetSidebar({
             </Button>
           </div>
         )}
+
+        {/* Q&A Section - right under assets */}
+        <div className="pt-2">
+          <QASidebarEntry
+            onClick={() => setIsQAPanelOpen(true)}
+            scope="conversation"
+          />
+        </div>
       </div>
+
+      {/* Q&A Slide Panel */}
+      <QASlidePanel
+        isOpen={isQAPanelOpen}
+        onClose={() => setIsQAPanelOpen(false)}
+        scope="conversation"
+        transcriptionId={conversationId}
+        title={conversationTitle}
+      />
 
       {/* Collapsible Recording Context Section */}
       {metadata.context && (

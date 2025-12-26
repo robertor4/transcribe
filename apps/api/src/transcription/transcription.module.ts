@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigModule } from '@nestjs/config';
 import { TranscriptionController } from './transcription.controller';
@@ -17,6 +17,7 @@ import { UserModule } from '../user/user.module';
 import { UsageModule } from '../usage/usage.module';
 import { ReplicateModule } from '../replicate/replicate.module';
 import { TranslationModule } from '../translation/translation.module';
+import { VectorModule } from '../vector/vector.module';
 import { SubscriptionGuard } from '../guards/subscription.guard';
 import { QUEUE_NAMES } from '@transcribe/shared';
 
@@ -31,6 +32,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     UsageModule,
     ReplicateModule,
     TranslationModule,
+    forwardRef(() => VectorModule),
     BullModule.registerQueue({
       name: QUEUE_NAMES.TRANSCRIPTION,
     }),

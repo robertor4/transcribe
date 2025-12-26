@@ -19,7 +19,7 @@ import type { Conversation } from '@/lib/types/conversation';
 
 interface DashboardDndProviderProps {
   children: React.ReactNode;
-  onMoveToFolder: (conversationId: string, folderId: string) => Promise<void>;
+  onMoveToFolder: (conversationId: string, folderId: string, previousFolderId?: string | null) => Promise<void>;
 }
 
 export function DashboardDndProvider({
@@ -71,7 +71,7 @@ export function DashboardDndProvider({
 
         setIsMoving(true);
         try {
-          await onMoveToFolder(conversationId, folderId);
+          await onMoveToFolder(conversationId, folderId, conversation?.folderId || null);
         } catch (error) {
           console.error('Failed to move conversation to folder:', error);
         } finally {

@@ -428,6 +428,10 @@ export interface Transcription {
   deletedAt?: Date; // When the transcription was soft-deleted (null = not deleted)
   // V2: Template selection - controls which analyses are generated
   selectedTemplates?: string[]; // Array of template IDs from frontend (e.g., ['transcribe-only', 'actionItems'])
+  // Vector indexing metadata (for Q&A feature)
+  vectorIndexedAt?: Date;      // When last indexed in Qdrant
+  vectorChunkCount?: number;   // Number of chunks stored in Qdrant
+  vectorIndexVersion?: number; // Schema version for future migrations
 }
 
 export interface TranscriptionJob {
@@ -1127,4 +1131,123 @@ export interface UserActivity {
   recentAnalyses: GeneratedAnalysis[];
   usageRecords: UsageRecord[];
   accountEvents: AccountEvent[];
+}
+
+// ============================================================
+// Q&A VECTOR SEARCH TYPES
+// ============================================================
+
+/**
+ * Citation from a conversation used in Q&A answers
+ */
+export interface Citation {
+  transcriptionId: string;
+  conversationTitle: string;
+  speaker: string;
+  timestamp: string;        // "12:34" format
+  timestampSeconds: number; // Raw seconds for seeking
+  text: string;             // The quoted text
+  relevanceScore: number;   // 0-1 similarity score
+}
+
+/**
+ * A single Q&A exchange for conversation history
+ * Used to provide context for follow-up questions
+ */
+export interface QAHistoryItem {
+  question: string;
+  answer: string;
+}
+
+/**
+ * Response from Q&A "ask" endpoints
+ */
+export interface AskResponse {
+  answer: string;
+  citations: Citation[];
+  searchScope: 'conversation' | 'folder' | 'global';
+  processingTimeMs: number;
+  indexed?: boolean;        // Whether the conversation was already indexed
+}
+
+/**
+ * Response from "find conversations" endpoint
+ */
+export interface FindResponse {
+  conversations: ConversationMatch[];
+  totalConversations: number;
+  searchScope: 'folder' | 'global';
+  processingTimeMs: number;
+}
+
+/**
+ * A conversation matching a search query
+ */
+export interface ConversationMatch {
+  transcriptionId: string;
+  title: string;
+  createdAt: Date;
+  folderId: string | null;
+  folderName: string | null;
+  matchedSnippets: MatchedSnippet[];
+  totalMatches: number;
+}
+
+/**
+ * A text snippet matching the search query
+ */
+export interface MatchedSnippet {
+  text: string;
+  speaker: string;
+  timestamp: string;        // "12:34" format
+  timestampSeconds: number;
+  relevanceScore: number;
+}
+
+/**
+ * Payload structure for vector chunks stored in Qdrant
+ */
+export interface TranscriptChunkPayload {
+  userId: string;
+  transcriptionId: string;
+  folderId: string | null;
+  segmentIndex: number;
+  speaker: string;
+  startTime: number;        // seconds
+  endTime: number;          // seconds
+  text: string;
+  chunkIndex: number;       // 0 if segment not split
+  totalChunks: number;      // 1 if segment not split
+  conversationTitle: string;
+  conversationDate: string; // ISO date
+  indexedAt: string;        // ISO timestamp
+}
+
+/**
+ * A chunk prepared for embedding
+ */
+export interface TranscriptChunk {
+  segmentIndex: number;
+  chunkIndex: number;
+  totalChunks: number;
+  speaker: string;
+  startTime: number;
+  endTime: number;
+  text: string;
+}
+
+/**
+ * A chunk with its embedding vector
+ */
+export interface EmbeddedChunk extends TranscriptChunk {
+  embedding: number[];
+}
+
+/**
+ * Search result from Qdrant
+ */
+export interface ScoredChunk {
+  id: string;
+  score: number;
+  payload: TranscriptChunkPayload;
 }

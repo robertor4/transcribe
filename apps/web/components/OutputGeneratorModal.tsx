@@ -7,6 +7,7 @@ import { GeneratingLoader } from './GeneratingLoader';
 import { allTemplates, TemplateId, OutputTemplate } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
+import type { GeneratedAnalysis } from '@transcribe/shared';
 
 // Filter out transcribe-only since we're already in a conversation with transcription
 const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
@@ -73,7 +74,7 @@ interface OutputGeneratorModalProps {
   onClose: () => void;
   conversationTitle: string;
   conversationId: string;
-  onOutputGenerated?: () => void;
+  onOutputGenerated?: (asset: GeneratedAnalysis) => void;
 }
 
 export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated }: OutputGeneratorModalProps) {
@@ -125,10 +126,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         customInstructions || undefined
       );
 
-      if (response.success) {
+      if (response.success && response.data) {
         setIsGenerating(false);
-        // Notify parent to refresh outputs
-        onOutputGenerated?.();
+        // Notify parent with the generated asset
+        onOutputGenerated?.(response.data);
         // Close modal after showing success
         setTimeout(() => {
           handleClose();
@@ -229,16 +230,16 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 </p>
               </div>
 
-              {/* Email Templates */}
+              {/* Analysis Templates */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <Mail className="w-4 h-4 text-blue-500" />
+                  <BarChart3 className="w-4 h-4 text-green-500" />
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Emails
+                    Analysis
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {emailTemplates.map((template) => (
+                  {analysisTemplates.map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}
@@ -269,16 +270,16 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 </div>
               </div>
 
-              {/* Analysis Templates */}
+              {/* Email Templates */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <BarChart3 className="w-4 h-4 text-green-500" />
+                  <Mail className="w-4 h-4 text-blue-500" />
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Analysis
+                    Emails
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {analysisTemplates.map((template) => (
+                  {emailTemplates.map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}

@@ -10,15 +10,23 @@ import {
   UseGuards,
   Req,
   Logger,
-  HttpException,
+  HttpCode,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { FolderRepository } from '../firebase/repositories/folder.repository';
 import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
-import type { ApiResponse, Folder, Transcription } from '@transcribe/shared';
+import { VectorService } from '../vector/vector.service';
+import type {
+  ApiResponse,
+  Folder,
+  Transcription,
+  AskResponse,
+} from '@transcribe/shared';
 import { CreateFolderDto, UpdateFolderDto } from './folder.dto';
+import { AskQuestionDto } from '../vector/dto/ask-question.dto';
 
 @Controller('folders')
 @UseGuards(FirebaseAuthGuard)
@@ -28,6 +36,7 @@ export class FolderController {
   constructor(
     private readonly folderRepository: FolderRepository,
     private readonly transcriptionRepository: TranscriptionRepository,
+    private readonly vectorService: VectorService,
   ) {}
 
   /**
@@ -222,5 +231,46 @@ export class FolderController {
       }
       throw error;
     }
+  }
+
+  /**
+   * Ask a question about conversations in this folder
+   * Uses semantic search to find relevant context and synthesizes an answer
+   */
+  @Post(':id/ask')
+  @HttpCode(HttpStatus.OK)
+  async askFolderQuestion(
+    @Req() req: Request,
+    @Param('id') folderId: string,
+    @Body() body: AskQuestionDto,
+  ): Promise<ApiResponse<AskResponse>> {
+    const userId = (req as any).user.uid;
+
+    // Verify folder exists
+    const folder = await this.folderRepository.getFolder(userId, folderId);
+    if (!folder) {
+      throw new HttpException('Folder not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Check if vector search is available
+    if (!this.vectorService.isAvailable()) {
+      throw new HttpException(
+        'Q&A feature is not available',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    }
+
+    const response = await this.vectorService.askFolder(
+      userId,
+      folderId,
+      body.question,
+      body.maxResults,
+      body.history,
+    );
+
+    return {
+      success: true,
+      data: response,
+    };
   }
 }

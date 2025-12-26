@@ -110,8 +110,8 @@ export function DashboardClient() {
 
   // Handle moving conversation to folder with refresh
   const handleMoveToFolder = useCallback(
-    async (conversationId: string, folderId: string) => {
-      await moveToFolder(conversationId, folderId);
+    async (conversationId: string, folderId: string, previousFolderId?: string | null) => {
+      await moveToFolder(conversationId, folderId, previousFolderId);
       await refreshConversations();
     },
     [moveToFolder, refreshConversations]

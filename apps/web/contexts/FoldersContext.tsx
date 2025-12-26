@@ -25,7 +25,7 @@ interface FoldersContextType {
   createFolder: (name: string, color?: string) => Promise<Folder>;
   updateFolder: (id: string, data: { name?: string; color?: string }) => Promise<Folder>;
   deleteFolder: (id: string, deleteContents?: boolean) => Promise<{ deletedConversations: number }>;
-  moveToFolder: (conversationId: string, folderId: string | null) => Promise<void>;
+  moveToFolder: (conversationId: string, folderId: string | null, previousFolderId?: string | null) => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -110,10 +110,31 @@ export function FoldersProvider({ children }: FoldersProviderProps) {
     []
   );
 
-  // Move conversation to folder
+  // Move conversation to folder (with optimistic count update)
   const moveToFolder = useCallback(
-    async (conversationId: string, folderId: string | null): Promise<void> => {
+    async (conversationId: string, folderId: string | null, previousFolderId?: string | null): Promise<void> => {
       await moveToFolderService(conversationId, folderId);
+
+      // Optimistically update folder counts
+      setFolders((prev) =>
+        prev.map((folder) => {
+          // Decrement count on previous folder
+          if (previousFolderId && folder.id === previousFolderId) {
+            return {
+              ...folder,
+              conversationCount: Math.max(0, (folder.conversationCount ?? 0) - 1),
+            };
+          }
+          // Increment count on new folder
+          if (folderId && folder.id === folderId) {
+            return {
+              ...folder,
+              conversationCount: (folder.conversationCount ?? 0) + 1,
+            };
+          }
+          return folder;
+        })
+      );
     },
     []
   );

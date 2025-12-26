@@ -15,6 +15,9 @@ import {
   Req,
   BadRequestException,
   UnauthorizedException,
+  ServiceUnavailableException,
+  HttpCode,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -24,11 +27,13 @@ import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { UsageService } from '../usage/usage.service';
+import { VectorService } from '../vector/vector.service';
 import {
   TranscriptCorrectionRouterService,
   RoutingPlan,
 } from './transcript-correction-router.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { AskQuestionDto } from '../vector/dto/ask-question.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { SearchTranscriptionsDto } from './dto/search.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
@@ -56,6 +61,7 @@ import {
   AnalysisTemplate,
   GeneratedAnalysis,
   BlogHeroImage,
+  AskResponse,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -68,6 +74,7 @@ export class TranscriptionController {
     private readonly onDemandAnalysisService: OnDemandAnalysisService,
     private readonly usageService: UsageService,
     private readonly correctionRouter: TranscriptCorrectionRouterService,
+    private readonly vectorService: VectorService,
   ) {}
 
   // Public endpoint for shared transcripts (no auth required)
@@ -1092,5 +1099,62 @@ export class TranscriptionController {
 
     // Cap estimate at reasonable max (e.g., 8 hours = 480 minutes)
     return Math.min(estimatedMinutes, 480);
+  }
+
+  /**
+   * Ask a question about a specific conversation
+   * Uses semantic search to find relevant context and synthesizes an answer with citations
+   */
+  @Post(':id/ask')
+  @UseGuards(FirebaseAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async askQuestion(
+    @Param('id') transcriptionId: string,
+    @Body() body: AskQuestionDto,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<AskResponse>> {
+    const userId = req.user.uid;
+
+    // Check if vector search is available
+    if (!this.vectorService.isAvailable()) {
+      throw new ServiceUnavailableException('Q&A feature is not available');
+    }
+
+    const response = await this.vectorService.askConversation(
+      userId,
+      transcriptionId,
+      body.question,
+      body.maxResults,
+      body.history,
+    );
+
+    return {
+      success: true,
+      data: response,
+    };
+  }
+
+  /**
+   * Get indexing status for a conversation (for Q&A feature)
+   */
+  @Get(':id/indexing-status')
+  @UseGuards(FirebaseAuthGuard)
+  async getIndexingStatus(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<
+    ApiResponse<{ indexed: boolean; chunkCount: number; indexedAt?: Date }>
+  > {
+    const userId = req.user.uid;
+
+    const status = await this.vectorService.getIndexingStatus(
+      userId,
+      transcriptionId,
+    );
+
+    return {
+      success: true,
+      data: status,
+    };
   }
 }

@@ -2136,5 +2136,28 @@
       "failedToFetch": "Échec de la récupération des données",
       "userNotFound": "Utilisateur non trouvé"
     }
+  },
+  "qa": {
+    "title": "Poser des questions",
+    "titleConversation": "Poser une question sur cette conversation",
+    "titleFolder": "Rechercher dans ce dossier",
+    "description": "Posez une question sur cette conversation",
+    "descriptionFolder": "Rechercher dans {count} conversations",
+    "placeholder": "Posez une question...",
+    "submit": "Demander",
+    "loading": "Recherche de réponse...",
+    "sources": "Sources",
+    "answeredIn": "Répondu en {time}",
+    "noResults": "Je n'ai pas pu trouver d'informations pertinentes à ce sujet.",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "indexing": "Préparation de la recherche...",
+    "back": "Retour",
+    "in": "Dans",
+    "emptyState": "Posez une question pour rechercher dans la conversation",
+    "showMore": "Afficher {count} de plus",
+    "showLess": "Afficher moins",
+    "jumpToTimestamp": "Aller au moment",
+    "copy": "Copier la réponse",
+    "copied": "Copié !"
   }
 }

@@ -2136,5 +2136,28 @@
       "failedToFetch": "Failed to fetch data",
       "userNotFound": "User not found"
     }
+  },
+  "qa": {
+    "title": "Ask Questions",
+    "titleConversation": "Ask about this conversation",
+    "titleFolder": "Ask across this folder",
+    "description": "Ask anything about this conversation",
+    "descriptionFolder": "Search across {count} conversations",
+    "placeholder": "Ask a question...",
+    "submit": "Ask",
+    "loading": "Finding answer...",
+    "sources": "Sources",
+    "answeredIn": "Answered in {time}",
+    "noResults": "I couldn't find relevant information about that.",
+    "error": "Something went wrong. Please try again.",
+    "indexing": "Preparing for search...",
+    "back": "Back",
+    "in": "In",
+    "emptyState": "Ask a question to search through the conversation",
+    "showMore": "Show {count} more",
+    "showLess": "Show less",
+    "jumpToTimestamp": "Jump to timestamp",
+    "copy": "Copy answer",
+    "copied": "Copied!"
   }
 }
