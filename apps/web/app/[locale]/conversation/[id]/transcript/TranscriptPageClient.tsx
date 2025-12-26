@@ -109,10 +109,7 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
         {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
           <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-8">
             <TranscriptTimeline
-              transcriptionId={conversation.id}
               segments={transcript.speakerSegments}
-              readOnlyMode={false}
-              onRefresh={refresh}
             />
           </div>
         ) : (

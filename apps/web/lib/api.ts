@@ -5,9 +5,6 @@ import {
   AnalysisType,
   AnalysisTemplate,
   GeneratedAnalysis,
-  CorrectionPreview,
-  CorrectionApplyResponse,
-  RoutingPlan,
   BlogHeroImage,
   Translation,
   ConversationTranslations,
@@ -308,31 +305,6 @@ export const transcriptionApi = {
 
   getRecentAnalysesByFolder: async (folderId: string, limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {
     return api.get(`/transcriptions/recent-analyses/folder/${folderId}?limit=${limit}`);
-  },
-
-  // Transcript Correction API methods
-  analyzeCorrections: async (
-    id: string,
-    instructions: string,
-  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> => {
-    return api.post(`/transcriptions/${id}/analyze-corrections`, {
-      instructions,
-    });
-  },
-
-  correctTranscript: async (
-    id: string,
-    instructions: string,
-    previewOnly: boolean = true,
-  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> => {
-    return api.post(`/transcriptions/${id}/correct-transcript`, {
-      instructions,
-      previewOnly,
-    });
-  },
-
-  regenerateCoreAnalyses: async (id: string): Promise<ApiResponse<unknown>> => {
-    return api.post(`/transcriptions/${id}/regenerate-core-analyses`);
   },
 
   // Folder API method

@@ -364,8 +364,6 @@
     "copyToClipboard": "In Zwischenablage kopieren",
     "copyTranscript": "Transkript kopieren",
     "copySummary": "Zusammenfassung kopieren",
-    "fixTranscript": "Transkript korrigieren",
-    "fixTranscriptTooltip": "Tippfehler und andere Fehler mit KI korrigieren",
     "shareTranscription": "Transkription teilen",
     "failedToLoad": "Laden der Transkriptionen fehlgeschlagen",
     "failedToDelete": "Löschen der Transkription fehlgeschlagen",

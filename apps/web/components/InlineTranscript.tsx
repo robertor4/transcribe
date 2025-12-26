@@ -6,14 +6,13 @@ import { formatDuration } from '@/lib/formatters';
 
 interface InlineTranscriptProps {
   conversation: Conversation;
-  onRefresh?: () => void;
 }
 
 /**
  * Inline transcript component for the tabbed conversation view.
  * Renders the transcript with speaker timeline directly in the tab.
  */
-export function InlineTranscript({ conversation, onRefresh }: InlineTranscriptProps) {
+export function InlineTranscript({ conversation }: InlineTranscriptProps) {
   const transcript = conversation.source.transcript;
 
   return (
@@ -29,10 +28,7 @@ export function InlineTranscript({ conversation, onRefresh }: InlineTranscriptPr
       {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
         <div>
           <TranscriptTimeline
-            transcriptionId={conversation.id}
             segments={transcript.speakerSegments}
-            readOnlyMode={false}
-            onRefresh={onRefresh}
           />
         </div>
       ) : (

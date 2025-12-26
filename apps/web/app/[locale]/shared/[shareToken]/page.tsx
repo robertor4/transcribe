@@ -480,9 +480,7 @@ export default function SharedTranscriptionPage() {
               <div className={activeTab === 'transcript' ? 'block' : 'hidden'}>
                 {transcription.speakerSegments && transcription.speakerSegments.length > 0 ? (
                   <TranscriptTimeline
-                    transcriptionId={transcription.id}
                     segments={transcription.speakerSegments}
-                    readOnlyMode={true}
                   />
                 ) : (
                   <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono bg-gray-50 p-4 rounded-lg">

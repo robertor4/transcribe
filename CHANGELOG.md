@@ -71,6 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dashboard and New Conversation links now use `font-normal text-white/80` (less bold)
   - Added divider between main nav and folders section
   - File: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **Summary Renderer Parsing**: Improved summary parsing for multilingual content
+  - Now correctly handles `###` subsection headers in detailed discussion sections
+  - Better handling of `##` section transitions (stops detailed parsing when new section starts)
+  - Reduced section title font size from `text-lg` to `text-base` for better hierarchy
+  - Changed body text from `font-medium leading-relaxed` to `leading-loose` for improved readability
+  - Cleans markdown artifacts (stray `#` characters) from parsed content
+  - File: [SummaryV1Renderer.tsx](apps/web/components/SummaryV1Renderer.tsx)
 
 ### Fixed
 - **InlineCitation Tooltip Positioning**: Fixed tooltip appearing behind other elements
@@ -79,6 +86,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **GeneratingLoader Animation**: Fixed SVG animation smoothness
   - Adjusted keyframe timing for smoother pulse effect
   - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
+
+### Removed
+- **Fix Transcript Feature**: Removed AI-powered transcript correction feature entirely
+  - Removed frontend components: `TranscriptCorrectionModal`, `DiffViewer`, `OutdatedAnalysisWarning`
+  - Removed backend service: `TranscriptCorrectionRouterService` and 7 correction methods from `TranscriptionService`
+  - Removed API endpoints: `POST /transcriptions/:id/correct-transcript`, `POST /transcriptions/:id/regenerate-core-analyses`, `POST /transcriptions/:id/analyze-corrections`
+  - Removed shared types: `CorrectTranscriptRequest`, `TranscriptDiff`, `CorrectionPreview`, `CorrectionApplyResponse`, `SimpleReplacement`, `ComplexCorrection`, `RoutingPlan`
+  - Removed `coreAnalysesOutdated` field from `Transcription` interface
+  - Removed translation keys: `fixTranscript`, `fixTranscriptTooltip` from all 5 locales
+  - Removed documentation: `TRANSCRIPT_CORRECTION_FEATURE.md`, `TRANSCRIPT_CORRECTION_FUTURE_ENHANCEMENTS.md`, `TRANSCRIPT_CORRECTION_OPTIMIZATION_PLAN.md`
+  - Cleaned up `TranscriptTimeline` component props (removed `transcriptionId`, `onRefresh`, `readOnlyMode`)
 
 ### Added
 - **Q&A Vector Search Feature**: Semantic Q&A across conversations using Qdrant Cloud

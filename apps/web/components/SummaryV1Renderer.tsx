@@ -45,7 +45,7 @@ const SectionContent: React.FC<{ content: string }> = ({ content }) => {
     const introText = items[0] && !content.trim().startsWith('-') ? items.shift() : null;
 
     return (
-      <div className="text-base font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
+      <div className="text-base text-gray-700 dark:text-gray-300 leading-loose">
         {introText && <p className="mb-2">{introText}</p>}
         {items.length > 0 && (
           <ul className="space-y-1 list-disc list-inside">
@@ -60,7 +60,7 @@ const SectionContent: React.FC<{ content: string }> = ({ content }) => {
 
   // No bullet points, render as paragraph
   return (
-    <p className="text-base font-medium text-gray-700 dark:text-gray-300 leading-relaxed">
+    <p className="text-base text-gray-700 dark:text-gray-300 leading-loose">
       {content}
     </p>
   );
@@ -96,10 +96,10 @@ export const SummaryV1Renderer: React.FC<SummaryV1RendererProps> = ({ content })
 
       {/* Detailed Discussion Sections */}
       {parsed.detailedSections.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-2">
           {parsed.detailedSections.map((section, idx) => (
             <div key={idx} className="pl-6 border-l-2 border-gray-200 dark:border-gray-700">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {section.title.replace(/:$/, '')}
               </h4>
               <SectionContent content={section.content} />
@@ -160,7 +160,6 @@ function parseSummaryContent(content: string): ParsedSummary {
     }
 
     // Check for detailed discussion section header (e.g., "## Gedetailleerde bespreking")
-    // This indicates content with inline **bold** markers that need special parsing
     if (isDetailedSectionHeader(line)) {
       currentSection = 'detailed_blob';
       detailedBlobContent = [];
@@ -169,8 +168,28 @@ function parseSummaryContent(content: string): ParsedSummary {
 
     // Collect all content after detailed section header for blob parsing
     if (currentSection === 'detailed_blob') {
-      detailedBlobContent.push(line);
-      continue;
+      // Check for ### subsection headers (common format)
+      if (line.startsWith('### ')) {
+        // Save previous detailed section if exists
+        if (currentDetailedTitle && currentDetailedContent.length > 0) {
+          result.detailedSections.push({
+            title: currentDetailedTitle,
+            content: cleanSectionContent(currentDetailedContent.join(' ')),
+          });
+        }
+        currentDetailedTitle = line.replace(/^###\s*/, '');
+        currentDetailedContent = [];
+        currentSection = 'detailed'; // Switch to detailed mode for line-by-line collection
+        continue;
+      }
+      // Also check for other section headers that end detailed blob (## Besluiten, ## Volgende stappen, etc.)
+      if (line.startsWith('## ') && !isDetailedSectionHeader(line)) {
+        // This is a new top-level section, stop collecting detailed blob
+        // Don't continue - let it fall through to be processed
+      } else {
+        detailedBlobContent.push(line);
+        continue;
+      }
     }
 
     // Check for detailed section headers (bold text or ## headers)
@@ -213,12 +232,40 @@ function parseSummaryContent(content: string): ParsedSummary {
 
     // Process detailed section content
     if (currentSection === 'detailed' && currentDetailedTitle) {
-      // Skip if it's a bullet point in detailed section (convert to text)
-      const cleanLine = line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '');
-      if (cleanLine && !cleanLine.startsWith('#')) {
-        currentDetailedContent.push(cleanLine);
+      // Check for new ### subsection header
+      if (line.startsWith('### ')) {
+        // Save previous detailed section
+        if (currentDetailedContent.length > 0) {
+          result.detailedSections.push({
+            title: currentDetailedTitle,
+            content: cleanSectionContent(currentDetailedContent.join(' ')),
+          });
+        }
+        currentDetailedTitle = line.replace(/^###\s*/, '');
+        currentDetailedContent = [];
+        continue;
       }
-      continue;
+      // Check for ## header (end of detailed sections)
+      if (line.startsWith('## ')) {
+        // Save current section and reset
+        if (currentDetailedContent.length > 0) {
+          result.detailedSections.push({
+            title: currentDetailedTitle,
+            content: cleanSectionContent(currentDetailedContent.join(' ')),
+          });
+        }
+        currentDetailedTitle = null;
+        currentDetailedContent = [];
+        currentSection = 'intro'; // Reset to allow other sections to be parsed
+        // Don't continue - let this ## header be processed by other logic
+      } else {
+        // Regular content line - add to current section
+        const cleanLine = line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '');
+        if (cleanLine) {
+          currentDetailedContent.push(cleanLine);
+        }
+        continue;
+      }
     }
 
     // Default: if no intro yet and not a header, use as intro
@@ -242,6 +289,7 @@ function parseSummaryContent(content: string): ParsedSummary {
   }
 
   // Parse detailed blob content (for inline **bold** marker format)
+  // This handles legacy format where sections use **Bold Title** instead of ### Headers
   if (detailedBlobContent.length > 0) {
     const blobText = detailedBlobContent.join(' ');
     const parsedSections = parseDetailedContent(blobText);
@@ -349,6 +397,9 @@ function cleanSectionContent(content: string): string {
   return content
     // Remove trailing standalone hyphens/dashes (but preserve bullet points)
     .replace(/\s+[-–—]\s*$/, '')
+    // Remove standalone # characters (markdown artifacts)
+    .replace(/\s*#\s*$/g, '')
+    .replace(/\s+#\s+/g, ' ')
     // Normalize spaces around bullet points to ensure consistent parsing
     // Convert "text - item" to "text - item" (preserve the dash as bullet)
     .replace(/\s{2,}/g, ' ')

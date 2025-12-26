@@ -364,8 +364,6 @@
     "copyToClipboard": "Copier dans le presse-papiers",
     "copyTranscript": "Copier la transcription",
     "copySummary": "Copier le résumé",
-    "fixTranscript": "Corriger la transcription",
-    "fixTranscriptTooltip": "Corriger les fautes de frappe et autres erreurs avec l'IA",
     "shareTranscription": "Partager la transcription",
     "failedToLoad": "Échec du chargement des transcriptions",
     "failedToDelete": "Échec de la suppression de la transcription",

@@ -412,6 +412,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     status: conversation.status,
     speakers: conversation.source.transcript.speakers,
     context: conversation.context,
+    isLegacy: !conversation.source.summary.summaryV2,
   };
 
   return (

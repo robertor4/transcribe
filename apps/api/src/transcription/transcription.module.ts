@@ -6,7 +6,6 @@ import { TranscriptionService } from './transcription.service';
 import { TranscriptionProcessor } from './transcription.processor';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
-import { TranscriptCorrectionRouterService } from './transcript-correction-router.service';
 import { CleanupService } from './cleanup.service';
 import { ImagePromptService } from './image-prompt.service';
 import { FirebaseModule } from '../firebase/firebase.module';
@@ -46,7 +45,6 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     TranscriptionProcessor,
     AnalysisTemplateService,
     OnDemandAnalysisService,
-    TranscriptCorrectionRouterService,
     CleanupService,
     ImagePromptService,
     SubscriptionGuard,

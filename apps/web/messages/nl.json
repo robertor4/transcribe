@@ -364,8 +364,6 @@
     "copyToClipboard": "Kopiëren naar klembord",
     "copyTranscript": "Transcript kopiëren",
     "copySummary": "Samenvatting kopiëren",
-    "fixTranscript": "Transcript corrigeren",
-    "fixTranscriptTooltip": "Corrigeer typefouten en andere fouten met AI",
     "shareTranscription": "Transcriptie delen",
     "failedToLoad": "Laden van transcripties mislukt",
     "failedToDelete": "Verwijderen van transcriptie mislukt",

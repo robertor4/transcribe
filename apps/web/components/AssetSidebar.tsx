@@ -11,6 +11,7 @@ import {
   Users as UsersIcon,
   Loader2,
   MessageSquareText,
+  FileText,
 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
@@ -25,6 +26,7 @@ interface ConversationMetadata {
   status: 'pending' | 'processing' | 'ready' | 'failed';
   speakers?: number;
   context?: string;
+  isLegacy?: boolean;
 }
 
 interface AssetSidebarProps {
@@ -151,7 +153,8 @@ export function AssetSidebar({
           onClick={() => setIsMetadataExpanded(!isMetadataExpanded)}
           className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
         >
-          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide flex items-center gap-1.5">
+            <FileText className="w-3.5 h-3.5" />
             {t('sidebar.metadata')}
           </span>
           {isMetadataExpanded ? (
@@ -212,6 +215,18 @@ export function AssetSidebar({
                 </span>
                 <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                   {metadata.speakers}
+                </span>
+              </div>
+            )}
+
+            {/* Legacy Badge */}
+            {metadata.isLegacy && (
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  Format
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400">
+                  Legacy (V1)
                 </span>
               </div>
             )}
