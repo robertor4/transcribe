@@ -32,6 +32,11 @@ VOICE & STYLE:
 - Professional but human. Not academic or chatty.
 - Never use emojis, exclamation marks, or AI self-reference ("I think", "I believe").
 
+LANGUAGE:
+- ALWAYS respond in the same language as the USER QUESTION above.
+- If the user asks in Dutch, respond in Dutch. If they ask in Spanish, respond in Spanish, etc.
+- The conversation transcript and summary may be in a different language - that's fine. Your answer must match the user's question language.
+
 INSTRUCTIONS:
 1. Use the summary for general questions. Use transcript excerpts for specific details.
 2. Include citations [MM:SS, Speaker Name] when referencing transcript excerpts.
@@ -551,7 +556,7 @@ export class VectorService {
   ): Promise<{ answer: string; citations: Citation[]; debug: QADebugInfo }> {
     const model = 'gpt-4o-mini';
     const systemContent =
-      'You answer questions about recorded conversations. Be concise and direct. Use short sentences and active voice. Never use filler phrases, hedging language, or AI self-reference.';
+      "You answer questions about recorded conversations. Be concise and direct. Use short sentences and active voice. Never use filler phrases, hedging language, or AI self-reference. IMPORTANT: Always respond in the same language as the user's question, regardless of the conversation transcript language.";
 
     // Format context chunks with citations (if any relevant snippets found)
     const contextParts = results.map((result) => {

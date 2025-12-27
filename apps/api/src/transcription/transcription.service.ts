@@ -1356,11 +1356,19 @@ ${fullCustomPrompt}`;
       throw new Error('Transcription not found or access denied');
     }
 
-    // Update the title
-    const updates = {
+    // Update the title - sync both transcription.title and summaryV2.title
+    const updates: Record<string, unknown> = {
       title,
       updatedAt: new Date(),
     };
+
+    // Also update summaryV2.title if summaryV2 exists to keep them in sync
+    if (transcription.summaryV2) {
+      updates.summaryV2 = {
+        ...transcription.summaryV2,
+        title,
+      };
+    }
 
     await this.transcriptionRepository.updateTranscription(
       transcriptionId,

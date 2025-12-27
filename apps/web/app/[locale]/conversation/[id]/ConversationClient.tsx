@@ -42,7 +42,7 @@ import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
-import { useHighlightOptions } from '@/components/TextHighlighter';
+import { TextHighlighter, useHighlightOptions } from '@/components/TextHighlighter';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -476,8 +476,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onClick={handleStartEditTitle}
                   className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
                   title="Click to rename"
+                  id="conversation-title"
                 >
-                  {conversation.title}
+                  <TextHighlighter text={conversation.title} highlight={highlightOptions} />
                 </h1>
               )}
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
@@ -763,21 +764,33 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           // Otherwise, scroll to the first match (index 0) when search text changes
           const targetIndex = matchIndex ?? 0;
           setTimeout(() => {
-            const matchElement = document.querySelector(`[data-match-index="${targetIndex}"]`);
+            // Query within the scoped section based on active tab
+            // This ensures navigation respects the filterContext scope
+            const currentTab = activeTabRef.current;
+            const summarySection = document.getElementById('summary');
+
+            let matchElement: Element | null = null;
+
+            if (currentTab === 'summary') {
+              // Find the nth match within the summary section AND title
+              const titleElement = document.getElementById('conversation-title');
+              const titleMatches = titleElement?.querySelectorAll('[data-match-index]') || [];
+              const summaryMatches = summarySection?.querySelectorAll('[data-match-index]') || [];
+              // Combine title matches (first) + summary matches
+              const allSummaryMatches = [...Array.from(titleMatches), ...Array.from(summaryMatches)];
+              matchElement = allSummaryMatches[targetIndex] || null;
+            } else {
+              // Find the nth match within the transcript section (outside summary and title)
+              const allMatches = document.querySelectorAll('[data-match-index]');
+              const titleElement = document.getElementById('conversation-title');
+              const transcriptMatches = Array.from(allMatches).filter(
+                match => !summarySection?.contains(match) && !titleElement?.contains(match)
+              );
+              matchElement = transcriptMatches[targetIndex] || null;
+            }
+
             if (matchElement) {
-              // Check if the match is in the summary or transcript section and switch tabs if needed
-              const summarySection = document.getElementById('summary');
-              const isInSummary = summarySection?.contains(matchElement);
-
-              // Use ref to get current tab value (avoids stale closure)
-              const currentTab = activeTabRef.current;
-              if (isInSummary && currentTab !== 'summary') {
-                setActiveTab('summary');
-              } else if (!isInSummary && currentTab !== 'transcript') {
-                setActiveTab('transcript');
-              }
-
-              // Small additional delay for tab switch animation
+              // Small additional delay for any pending renders
               setTimeout(() => {
                 matchElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }, 50);

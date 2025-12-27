@@ -2,13 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { AssemblyAIService } from './assembly-ai.service';
 
+// Mock AssemblyAI client functions
+const mockTranscriptsCreate = jest.fn();
+const mockTranscriptsGet = jest.fn();
+const mockFilesUpload = jest.fn();
+
 // Mock the AssemblyAI client
 jest.mock('assemblyai', () => {
   return {
     AssemblyAI: jest.fn().mockImplementation(() => ({
       transcripts: {
-        transcribe: jest.fn(),
-        get: jest.fn(),
+        create: mockTranscriptsCreate,
+        get: mockTranscriptsGet,
+      },
+      files: {
+        upload: mockFilesUpload,
       },
     })),
   };
@@ -312,6 +320,189 @@ describe('AssemblyAIService', () => {
         mockTranscript,
       );
       expect(result.language).toBe('ja');
+    });
+  });
+
+  describe('transcribeWithDiarization', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should transcribe audio URL and return result', async () => {
+      const mockCreateResult = {
+        id: 'transcript-123',
+        status: 'completed',
+      };
+      mockTranscriptsCreate.mockResolvedValue(mockCreateResult);
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+        text: 'Hello world',
+        language_code: 'en',
+        audio_duration: 10,
+        utterances: [
+          {
+            speaker: 'A',
+            text: 'Hello world',
+            start: 0,
+            end: 2000,
+            confidence: 0.95,
+          },
+        ],
+      });
+
+      const result = await service.transcribeWithDiarization(
+        'https://example.com/audio.mp3',
+        'Meeting notes',
+      );
+
+      expect(result.text).toBe('Hello world');
+      expect(result.durationSeconds).toBe(10);
+      expect(mockTranscriptsCreate).toHaveBeenCalled();
+    });
+
+    it('should handle transcription error status', async () => {
+      mockTranscriptsCreate.mockResolvedValue({
+        id: 'transcript-123',
+      });
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'error',
+        error: 'Audio file could not be processed',
+      });
+
+      await expect(
+        service.transcribeWithDiarization('https://example.com/audio.mp3'),
+      ).rejects.toThrow('Audio file could not be processed');
+    });
+
+    it('should send progress updates', async () => {
+      mockTranscriptsCreate.mockResolvedValue({
+        id: 'transcript-123',
+      });
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+        text: 'Test',
+        audio_duration: 5,
+        utterances: [],
+      });
+
+      const progressCallback = jest.fn();
+      await service.transcribeWithDiarization(
+        'https://example.com/audio.mp3',
+        undefined,
+        progressCallback,
+      );
+
+      expect(progressCallback).toHaveBeenCalledWith(
+        15,
+        'Audio uploaded, transcription in progress...',
+      );
+    });
+
+    it('should extract transcription ID from URL', async () => {
+      mockTranscriptsCreate.mockResolvedValue({
+        id: 'transcript-123',
+      });
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+        text: 'Test',
+        audio_duration: 5,
+        utterances: [],
+      });
+
+      await service.transcribeWithDiarization(
+        'https://storage.googleapis.com/bucket/transcriptions%2Fabc123/audio.mp3',
+      );
+
+      expect(mockTranscriptsCreate).toHaveBeenCalled();
+    });
+
+    it('should apply word boost from context', async () => {
+      mockTranscriptsCreate.mockResolvedValue({
+        id: 'transcript-123',
+      });
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+        text: 'Test',
+        audio_duration: 5,
+        utterances: [],
+      });
+
+      await service.transcribeWithDiarization(
+        'https://example.com/audio.mp3',
+        'Important meeting about project Alpha and Beta',
+      );
+
+      expect(mockTranscriptsCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          word_boost: expect.any(Array),
+          boost_param: 'high',
+        }),
+      );
+    });
+  });
+
+  describe('transcribeFile', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should upload file and transcribe', async () => {
+      mockFilesUpload.mockResolvedValue('https://assemblyai.com/upload/abc123');
+      mockTranscriptsCreate.mockResolvedValue({
+        id: 'transcript-123',
+      });
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+        text: 'Hello',
+        audio_duration: 5,
+        utterances: [],
+      });
+
+      const buffer = Buffer.from('audio data');
+      const result = await service.transcribeFile(
+        buffer,
+        'user123_1234567890.mp3',
+      );
+
+      expect(mockFilesUpload).toHaveBeenCalledWith(buffer);
+      expect(result.text).toBe('Hello');
+    });
+
+    it('should handle upload errors', async () => {
+      mockFilesUpload.mockRejectedValue(new Error('Upload failed'));
+
+      const buffer = Buffer.from('audio data');
+      await expect(service.transcribeFile(buffer, 'test.mp3')).rejects.toThrow(
+        'Upload failed',
+      );
+    });
+  });
+
+  describe('getTranscriptionStatus', () => {
+    it('should return transcription status', async () => {
+      mockTranscriptsGet.mockResolvedValue({
+        id: 'transcript-123',
+        status: 'completed',
+      });
+
+      const status = await service.getTranscriptionStatus('transcript-123');
+
+      expect(status).toBe('completed');
+      expect(mockTranscriptsGet).toHaveBeenCalledWith('transcript-123');
+    });
+
+    it('should return error on exception', async () => {
+      mockTranscriptsGet.mockRejectedValue(new Error('Network error'));
+
+      const status = await service.getTranscriptionStatus('transcript-123');
+
+      expect(status).toBe('error');
     });
   });
 });

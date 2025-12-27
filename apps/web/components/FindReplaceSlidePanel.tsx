@@ -339,6 +339,7 @@ export function FindReplaceSlidePanel({
   const [visibleMatchCount, setVisibleMatchCount] = useState(0);
 
   // Update visible match count when search text changes
+  // Respects filterContext to only count matches in the scoped area
   useEffect(() => {
     if (!findText || findText.length < 2) {
       setVisibleMatchCount(0);
@@ -347,12 +348,39 @@ export function FindReplaceSlidePanel({
 
     // Small delay to let DOM update with highlighted matches
     const timer = setTimeout(() => {
-      const matches = document.querySelectorAll('[data-match-index]');
+      let matches: NodeListOf<Element>;
+
+      // Scope the match counting based on filterContext
+      if (filterContext === 'summary') {
+        // Count matches within the summary section AND the conversation title
+        const summarySection = document.getElementById('summary');
+        const titleElement = document.getElementById('conversation-title');
+        const summaryMatches = summarySection?.querySelectorAll('[data-match-index]') || [];
+        const titleMatches = titleElement?.querySelectorAll('[data-match-index]') || [];
+        setVisibleMatchCount(summaryMatches.length + titleMatches.length);
+        return;
+      } else if (filterContext === 'transcript') {
+        // Only count matches within the transcript section (which is outside #summary)
+        // The transcript is rendered in a sibling div to #summary
+        const allMatches = document.querySelectorAll('[data-match-index]');
+        const summarySection = document.getElementById('summary');
+        // Filter to only matches NOT within summary
+        const transcriptMatches = Array.from(allMatches).filter(match => !summarySection?.contains(match));
+        setVisibleMatchCount(transcriptMatches.length);
+        return;
+      } else if (filterContext && typeof filterContext === 'object' && filterContext.type === 'aiAsset') {
+        // For AI assets, we'd need a specific container ID - for now count all
+        matches = document.querySelectorAll('[data-match-index]');
+      } else {
+        // No filter - count all matches
+        matches = document.querySelectorAll('[data-match-index]');
+      }
+
       setVisibleMatchCount(matches.length);
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [findText, caseSensitive, wholeWord]);
+  }, [findText, caseSensitive, wholeWord, filterContext]);
 
   // Navigation handlers - use filtered results count for scoped navigation
   const navigationCount = filteredResults?.totalMatches || visibleMatchCount;

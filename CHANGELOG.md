@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.1] - 2025-12-27
+### Find & Replace Polish
+
+### Changed
+- **Q&A Language Matching**: The Ask Questions feature now responds in the same language as the user's question
+  - If user asks in Dutch, response is in Dutch; if in Spanish, response is in Spanish, etc.
+  - Works regardless of the conversation transcript's original language
+  - Updated prompts in [vector.service.ts](apps/api/src/vector/vector.service.ts)
+
+### Fixed
+- **Find & Replace Scoped Navigation**: Match counting and arrow navigation now respect the active tab filter
+  - When on Summary tab, only counts/navigates matches within summary section and title
+  - When on Transcript tab, only counts/navigates matches within transcript section
+  - Fixed match navigation jumping between tabs unexpectedly
+  - Files: [FindReplaceSlidePanel.tsx](apps/web/components/FindReplaceSlidePanel.tsx), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **Find & Replace Title Sync**: Replacing text in summary title now also updates the conversation title field
+  - Ensures transcription.title stays in sync with summaryV2.title after replacements
+  - Files: [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+- **Find & Replace Reliability**: Added `charOffset` to all match location objects for deterministic replacement ordering
+  - Fixes edge case where multiple replacements in same field could corrupt text
+  - Avoids Firestore rejecting undefined values in summaryV2 updates
+  - File: [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts)
+- **Title Search Highlighting**: Conversation title now highlights find/replace matches
+  - Added TextHighlighter wrapper to title element with proper ID for scoped queries
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **AssemblyAI Service Tests**: Expanded test coverage for transcription methods
+  - Added tests for `transcribeWithDiarization`, `transcribeFile`, `getTranscriptionStatus`
+  - Fixed mock setup to use proper AssemblyAI client method names
+  - File: [assembly-ai.service.spec.ts](apps/api/src/assembly-ai/assembly-ai.service.spec.ts)
+- **Transcription Duration Tests**: Fixed missing mock providers causing test failures
+  - Added mocks for StorageService, UserRepository, AnalysisRepository, CommentRepository, TranscriptionRepository
+  - File: [transcription-duration.spec.ts](apps/api/src/transcription/transcription-duration.spec.ts)
+
 ### Added
 - **Recording Recovery Dialog**: Recover unsaved audio recordings from browser crashes or accidental tab closures
   - Shows recovery dialog when opening "Create Conversation" modal if recoverable recordings exist

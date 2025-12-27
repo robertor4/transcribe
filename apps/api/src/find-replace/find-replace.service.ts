@@ -240,7 +240,11 @@ export class FindReplaceService {
           id: this.generateMatchId('summary', 'title', m.charOffset),
           matchedText: m.matchedText,
           context: m.context,
-          location: { type: 'summary', summaryField: 'title' },
+          location: {
+            type: 'summary',
+            summaryField: 'title',
+            charOffset: m.charOffset,
+          },
         });
       });
 
@@ -250,7 +254,11 @@ export class FindReplaceService {
           id: this.generateMatchId('summary', 'intro', m.charOffset),
           matchedText: m.matchedText,
           context: m.context,
-          location: { type: 'summary', summaryField: 'intro' },
+          location: {
+            type: 'summary',
+            summaryField: 'intro',
+            charOffset: m.charOffset,
+          },
         });
       });
 
@@ -271,6 +279,7 @@ export class FindReplaceService {
               summaryField: 'keyPoint',
               arrayIndex: index,
               subField: 'topic',
+              charOffset: m.charOffset,
             },
           });
         });
@@ -290,6 +299,7 @@ export class FindReplaceService {
                 summaryField: 'keyPoint',
                 arrayIndex: index,
                 subField: 'description',
+                charOffset: m.charOffset,
               },
             });
           },
@@ -313,6 +323,7 @@ export class FindReplaceService {
               summaryField: 'detailedSection',
               arrayIndex: index,
               subField: 'topic',
+              charOffset: m.charOffset,
             },
           });
         });
@@ -331,6 +342,7 @@ export class FindReplaceService {
               summaryField: 'detailedSection',
               arrayIndex: index,
               subField: 'content',
+              charOffset: m.charOffset,
             },
           });
         });
@@ -352,6 +364,7 @@ export class FindReplaceService {
               type: 'summary',
               summaryField: 'decision',
               arrayIndex: index,
+              charOffset: m.charOffset,
             },
           });
         });
@@ -373,6 +386,7 @@ export class FindReplaceService {
               type: 'summary',
               summaryField: 'nextStep',
               arrayIndex: index,
+              charOffset: m.charOffset,
             },
           });
         });
@@ -500,6 +514,7 @@ export class FindReplaceService {
               type: 'aiAsset',
               analysisId: analysis.id,
               contentPath: 'content',
+              charOffset: match.index,
             },
             matchedText: match[0],
             context: this.getMatchContext(
@@ -563,6 +578,7 @@ export class FindReplaceService {
             type: 'aiAsset',
             analysisId,
             contentPath,
+            charOffset: match.index,
           },
           matchedText: match[0],
           context: this.getMatchContext(obj, match.index, match[0].length),
@@ -635,9 +651,25 @@ export class FindReplaceService {
         summaryMatches,
         replaceText,
       );
-      await this.transcriptionRepository.updateTranscription(transcriptionId, {
+
+      // Check if any title matches were replaced - if so, also update transcription.title
+      const hasTitleMatch = summaryMatches.some(
+        (m) => m.location.summaryField === 'title',
+      );
+
+      const updateData: { summaryV2: typeof updatedSummary; title?: string } = {
         summaryV2: updatedSummary,
-      });
+      };
+
+      // Sync transcription.title with summaryV2.title if title was modified
+      if (hasTitleMatch && updatedSummary.title) {
+        updateData.title = updatedSummary.title;
+      }
+
+      await this.transcriptionRepository.updateTranscription(
+        transcriptionId,
+        updateData,
+      );
       result.summary = summaryMatches.length;
     }
 
@@ -712,13 +744,15 @@ export class FindReplaceService {
     matches: FindReplaceMatch[],
     replaceText: string,
   ): SummaryV2 {
-    // Create a mutable copy
+    // Create a mutable copy - only include optional fields if they exist
+    // to avoid Firestore rejecting undefined values
     const result: SummaryV2 = {
       ...summary,
-      keyPoints: summary.keyPoints?.map((p) => ({ ...p })),
-      detailedSections: summary.detailedSections?.map((s) => ({ ...s })),
-      decisions: summary.decisions ? [...summary.decisions] : undefined,
-      nextSteps: summary.nextSteps ? [...summary.nextSteps] : undefined,
+      keyPoints: summary.keyPoints?.map((p) => ({ ...p })) ?? [],
+      detailedSections: summary.detailedSections?.map((s) => ({ ...s })) ?? [],
+      // Only spread decisions/nextSteps if they exist to avoid undefined
+      ...(summary.decisions && { decisions: [...summary.decisions] }),
+      ...(summary.nextSteps && { nextSteps: [...summary.nextSteps] }),
     };
 
     // Group matches by field and sort by offset descending (replace from end to preserve offsets)
@@ -851,13 +885,18 @@ export class FindReplaceService {
   }
 
   /**
-   * Get character offset from a match's ID (deterministic ID format: type-field-offset-...)
+   * Get character offset from a match's location object
    */
   private getCharOffsetFromMatch(match: FindReplaceMatch): number {
-    // ID format: type-field-charOffset[-arrayIndex][-analysisId]
-    const parts = match.id.split('-');
-    // charOffset is always the 3rd part (index 2)
-    return parseInt(parts[2], 10);
+    // Use charOffset from location (set during findInSummary)
+    if (match.location.charOffset !== undefined) {
+      return match.location.charOffset;
+    }
+    // Fallback: should not be needed once all matches include charOffset in location
+    this.logger.warn(
+      `Match ${match.id} missing charOffset in location, replacement may fail`,
+    );
+    return 0;
   }
 
   /**

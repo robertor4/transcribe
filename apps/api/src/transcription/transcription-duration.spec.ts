@@ -11,6 +11,11 @@ import { ConfigService } from '@nestjs/config';
 import { getQueueToken } from '@nestjs/bull';
 import { TranscriptionService } from './transcription.service';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
+import { CommentRepository } from '../firebase/repositories/comment.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
 import { EmailService } from '../email/email.service';
@@ -48,6 +53,32 @@ describe('TranscriptionService - Duration Extraction', () => {
 
   const mockQueue = {
     add: jest.fn(),
+  };
+
+  const mockStorageService = {
+    uploadFile: jest.fn(),
+    downloadFile: jest.fn(),
+    deleteFileByPath: jest.fn(),
+    getPublicUrl: jest.fn().mockResolvedValue('https://public.url/audio.mp3'),
+  };
+
+  const mockUserRepository = {
+    getUser: jest.fn(),
+    getUserById: jest.fn(),
+  };
+
+  const mockAnalysisRepository = {
+    getGeneratedAnalyses: jest.fn(),
+  };
+
+  const mockCommentRepository = {
+    getComments: jest.fn(),
+  };
+
+  const mockTranscriptionRepository = {
+    getTranscription: jest.fn(),
+    updateTranscription: jest.fn(),
+    getTranscriptionByShareToken: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -93,6 +124,14 @@ describe('TranscriptionService - Duration Extraction', () => {
           useValue: mockQueue,
         },
         { provide: getQueueToken(QUEUE_NAMES.SUMMARY), useValue: mockQueue },
+        { provide: StorageService, useValue: mockStorageService },
+        { provide: UserRepository, useValue: mockUserRepository },
+        { provide: AnalysisRepository, useValue: mockAnalysisRepository },
+        { provide: CommentRepository, useValue: mockCommentRepository },
+        {
+          provide: TranscriptionRepository,
+          useValue: mockTranscriptionRepository,
+        },
       ],
     }).compile();
 
