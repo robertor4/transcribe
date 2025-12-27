@@ -70,7 +70,7 @@ export const SummaryV1Renderer: React.FC<SummaryV1RendererProps> = ({ content })
   const parsed = useMemo(() => parseSummaryContent(content), [content]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-12">
       {/* Intro Paragraph */}
       {parsed.intro && (
         <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">
