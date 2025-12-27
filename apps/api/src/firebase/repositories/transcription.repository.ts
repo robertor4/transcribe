@@ -22,6 +22,33 @@ export class TranscriptionRepository {
   }
 
   /**
+   * Convert Firestore Timestamp to Date, or return the value as-is
+   */
+  private toDateOrValue(field: any): Date | undefined {
+    return field?.toDate ? field.toDate() : field;
+  }
+
+  /**
+   * Extract searchable text from a SummaryV2 object
+   */
+  private extractSummaryV2SearchFields(summaryV2: any): string[] {
+    const fields: string[] = [];
+    if (!summaryV2) return fields;
+
+    if (summaryV2.headline) fields.push(summaryV2.headline);
+    if (summaryV2.keyPoints && Array.isArray(summaryV2.keyPoints)) {
+      for (const kp of summaryV2.keyPoints) {
+        if (kp.topic) fields.push(kp.topic);
+        if (kp.description) fields.push(kp.description);
+      }
+    }
+    if (summaryV2.themes && Array.isArray(summaryV2.themes)) {
+      fields.push(...summaryV2.themes);
+    }
+    return fields;
+  }
+
+  /**
    * Create a new transcription
    */
   async createTranscription(
@@ -162,38 +189,10 @@ export class TranscriptionRepository {
       const searchableFields: string[] = [
         data.title || '',
         data.fileName || '',
+        // Add V2 summary fields (current and legacy locations)
+        ...this.extractSummaryV2SearchFields(data.summaryV2),
+        ...this.extractSummaryV2SearchFields(data.coreAnalyses?.summaryV2),
       ];
-
-      // Add V2 summary fields if available
-      if (data.summaryV2) {
-        if (data.summaryV2.headline) {
-          searchableFields.push(data.summaryV2.headline);
-        }
-        if (
-          data.summaryV2.keyPoints &&
-          Array.isArray(data.summaryV2.keyPoints)
-        ) {
-          for (const kp of data.summaryV2.keyPoints) {
-            if (kp.topic) searchableFields.push(kp.topic);
-            if (kp.description) searchableFields.push(kp.description);
-          }
-        }
-        if (data.summaryV2.themes && Array.isArray(data.summaryV2.themes)) {
-          searchableFields.push(...data.summaryV2.themes);
-        }
-      }
-
-      // Check legacy summary fields
-      if (data.coreAnalyses?.summaryV2) {
-        const v2 = data.coreAnalyses.summaryV2;
-        if (v2.headline) searchableFields.push(v2.headline);
-        if (v2.keyPoints && Array.isArray(v2.keyPoints)) {
-          for (const kp of v2.keyPoints) {
-            if (kp.topic) searchableFields.push(kp.topic);
-            if (kp.description) searchableFields.push(kp.description);
-          }
-        }
-      }
 
       const searchableText = searchableFields.join(' ').toLowerCase();
       return searchableText.includes(normalizedQuery);
@@ -211,12 +210,8 @@ export class TranscriptionRepository {
           fileName: data.fileName,
           status: data.status,
           folderId: data.folderId || null,
-          createdAt: data.createdAt?.toDate
-            ? data.createdAt.toDate()
-            : data.createdAt,
-          updatedAt: data.updatedAt?.toDate
-            ? data.updatedAt.toDate()
-            : data.updatedAt,
+          createdAt: this.toDateOrValue(data.createdAt),
+          updatedAt: this.toDateOrValue(data.updatedAt),
         };
       }),
       total,
@@ -269,26 +264,14 @@ export class TranscriptionRepository {
       return {
         id: doc.id,
         ...data,
-        createdAt: data.createdAt?.toDate
-          ? data.createdAt.toDate()
-          : data.createdAt,
-        updatedAt: data.updatedAt?.toDate
-          ? data.updatedAt.toDate()
-          : data.updatedAt,
-        completedAt: data.completedAt?.toDate
-          ? data.completedAt.toDate()
-          : data.completedAt,
-        lastAccessedAt: data.lastAccessedAt?.toDate
-          ? data.lastAccessedAt.toDate()
-          : data.lastAccessedAt,
-        sharedAt: data.sharedAt?.toDate
-          ? data.sharedAt.toDate()
-          : data.sharedAt,
+        createdAt: this.toDateOrValue(data.createdAt),
+        updatedAt: this.toDateOrValue(data.updatedAt),
+        completedAt: this.toDateOrValue(data.completedAt),
+        lastAccessedAt: this.toDateOrValue(data.lastAccessedAt),
+        sharedAt: this.toDateOrValue(data.sharedAt),
         sharedWith: data.sharedWith?.map((record: any) => ({
           email: record.email,
-          sentAt: record.sentAt?.toDate
-            ? record.sentAt.toDate()
-            : record.sentAt,
+          sentAt: this.toDateOrValue(record.sentAt),
         })),
       } as Transcription;
     });
@@ -445,19 +428,13 @@ export class TranscriptionRepository {
     return {
       ...data,
       id,
-      createdAt: data.createdAt?.toDate
-        ? data.createdAt.toDate()
-        : data.createdAt,
-      updatedAt: data.updatedAt?.toDate
-        ? data.updatedAt.toDate()
-        : data.updatedAt,
-      completedAt: data.completedAt?.toDate
-        ? data.completedAt.toDate()
-        : data.completedAt,
-      sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+      createdAt: this.toDateOrValue(data.createdAt),
+      updatedAt: this.toDateOrValue(data.updatedAt),
+      completedAt: this.toDateOrValue(data.completedAt),
+      sharedAt: this.toDateOrValue(data.sharedAt),
       sharedWith: data.sharedWith?.map((record: any) => ({
         email: record.email,
-        sentAt: record.sentAt?.toDate ? record.sentAt.toDate() : record.sentAt,
+        sentAt: this.toDateOrValue(record.sentAt),
       })),
     } as Transcription;
   }
