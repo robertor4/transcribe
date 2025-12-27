@@ -29,7 +29,11 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
-  const [isFoldersExpanded, setIsFoldersExpanded] = useState(false);
+  const [isFoldersPinned, setIsFoldersPinned] = useState(false);
+  const [isFoldersHovered, setIsFoldersHovered] = useState(false);
+  const isFoldersExpanded = isFoldersPinned || isFoldersHovered;
+  // Delayed state for staggered folder item animations
+  const [foldersAnimateIn, setFoldersAnimateIn] = useState(false);
   const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
   const [isClearing, setIsClearing] = useState(false);
 
@@ -44,6 +48,17 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
       return () => clearTimeout(timer);
     }
   }, [focusSearch, onSearchFocused]);
+
+  // Trigger staggered animation after folders expand
+  useEffect(() => {
+    if (isFoldersExpanded) {
+      // Wait for container height animation to complete before showing items
+      const timer = setTimeout(() => setFoldersAnimateIn(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setFoldersAnimateIn(false);
+    }
+  }, [isFoldersExpanded]);
 
   // Search state
   const {
@@ -226,14 +241,18 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
         {/* Divider */}
         <div className="mx-4 border-t border-black/20" />
 
-        {/* Folders Section */}
-        <div className="py-4 px-4">
+        {/* Folders Section - Hover to expand, click to pin */}
+        <div
+          className="py-4 px-4"
+          onMouseEnter={() => setIsFoldersHovered(true)}
+          onMouseLeave={() => setIsFoldersHovered(false)}
+        >
           <div className={`flex items-center justify-between ${isFoldersExpanded ? 'mb-3' : ''}`}>
             <button
-              onClick={() => setIsFoldersExpanded(!isFoldersExpanded)}
+              onClick={() => setIsFoldersPinned(!isFoldersPinned)}
               className="flex items-center gap-1.5 text-white/50 hover:text-white/70 transition-colors"
               aria-expanded={isFoldersExpanded}
-              aria-label={isFoldersExpanded ? 'Collapse folders' : 'Expand folders'}
+              aria-label={isFoldersPinned ? 'Unpin folders' : 'Pin folders open'}
             >
               <ChevronRight
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${isFoldersExpanded ? 'rotate-90' : ''}`}
@@ -247,12 +266,14 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             </button>
           </div>
 
-          {/* Collapsible folder content */}
+          {/* Collapsible folder content - uses grid for smooth height animation */}
           <div
-            className={`overflow-hidden transition-all duration-200 ${
-              isFoldersExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-            }`}
+            className="grid transition-[grid-template-rows] duration-300 ease-out"
+            style={{
+              gridTemplateRows: isFoldersExpanded ? '1fr' : '0fr',
+            }}
           >
+            <div className="overflow-hidden">
             {foldersLoading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="w-4 h-4 animate-spin text-white/50" />
@@ -261,11 +282,18 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               <p className="text-xs text-white/50 px-3 py-2">No folders yet</p>
             ) : (
               <div className="space-y-1">
-                {folders.map((folder) => (
+                {folders.map((folder, index) => (
                   <Link
                     key={folder.id}
                     href={`/${locale}/folder/${folder.id}`}
-                    className="group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                    className={`group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 ${
+                      foldersAnimateIn
+                        ? 'animate-[fadeSlideIn_200ms_ease-out_both]'
+                        : 'opacity-0'
+                    }`}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                    }}
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <Folder
@@ -283,6 +311,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                 ))}
               </div>
             )}
+            </div>
           </div>
         </div>
 

@@ -10,7 +10,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { getQueueToken } from '@nestjs/bull';
 import { TranscriptionService } from './transcription.service';
-import { TranscriptCorrectionRouterService } from './transcript-correction-router.service';
 import { FirebaseService } from '../firebase/firebase.service';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
@@ -45,11 +44,6 @@ describe('TranscriptionService - Duration Extraction', () => {
 
   const mockAssemblyAIService = {
     transcribeWithDiarization: jest.fn(),
-  };
-
-  const mockCorrectionRouterService = {
-    createRoutingPlan: jest.fn(),
-    executeRoutingPlan: jest.fn(),
   };
 
   const mockQueue = {
@@ -93,10 +87,6 @@ describe('TranscriptionService - Duration Extraction', () => {
               return null;
             }),
           },
-        },
-        {
-          provide: TranscriptCorrectionRouterService,
-          useValue: mockCorrectionRouterService,
         },
         {
           provide: getQueueToken(QUEUE_NAMES.TRANSCRIPTION),

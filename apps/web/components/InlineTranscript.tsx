@@ -3,16 +3,18 @@
 import TranscriptTimeline from '@/components/TranscriptTimeline';
 import type { Conversation } from '@/lib/types/conversation';
 import { formatDuration } from '@/lib/formatters';
+import { TextHighlighter, type HighlightOptions } from './TextHighlighter';
 
-interface InlineTranscriptProps {
+export interface InlineTranscriptProps {
   conversation: Conversation;
+  highlightOptions?: HighlightOptions;
 }
 
 /**
  * Inline transcript component for the tabbed conversation view.
  * Renders the transcript with speaker timeline directly in the tab.
  */
-export function InlineTranscript({ conversation }: InlineTranscriptProps) {
+export function InlineTranscript({ conversation, highlightOptions }: InlineTranscriptProps) {
   const transcript = conversation.source.transcript;
 
   return (
@@ -29,6 +31,7 @@ export function InlineTranscript({ conversation }: InlineTranscriptProps) {
         <div>
           <TranscriptTimeline
             segments={transcript.speakerSegments}
+            highlightOptions={highlightOptions}
           />
         </div>
       ) : (
@@ -43,7 +46,7 @@ export function InlineTranscript({ conversation }: InlineTranscriptProps) {
           {transcript.text && (
             <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg text-left">
               <p className="font-medium text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                {transcript.text}
+                <TextHighlighter text={transcript.text} highlight={highlightOptions} />
               </p>
             </div>
           )}

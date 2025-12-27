@@ -319,6 +319,20 @@
       "micUnavailable": "Microphone non disponible - enregistrement audio de l'onglet uniquement. Votre voix ne sera pas incluse."
     }
   },
+  "recovery": {
+    "title": "Récupérer les enregistrements non sauvegardés",
+    "description": "Nous avons trouvé {count, plural, one {1 enregistrement} other {# enregistrements}} qui {count, plural, one {n'a} other {n'ont}} pas été téléchargé{count, plural, one {} other {s}}.",
+    "preview": "Aperçu",
+    "recover": "Récupérer",
+    "processImmediately": "Traiter immédiatement",
+    "continueRecording": "Continuer l'enregistrement",
+    "discard": "Supprimer",
+    "close": "Fermer",
+    "footerNote": "Les enregistrements sont automatiquement sauvegardés sur votre appareil et supprimés après 7 jours.",
+    "confirmDiscard": "Supprimer ?",
+    "microphoneRecording": "Enregistrement microphone",
+    "tabAudioRecording": "Enregistrement audio d'onglet"
+  },
   "transcription": {
     "title": "Transcription",
     "summary": "Résumé",
@@ -413,7 +427,13 @@
       "delete": "Supprimer",
       "confirmDelete": "Supprimer cet asset ?",
       "viewFull": "Voir page complète"
-    }
+    },
+    "findReplace": "Rechercher et remplacer",
+    "delete": "Supprimer",
+    "deleteConfirmTitle": "Supprimer l'AI Asset ?",
+    "deleteConfirmMessage": "Cette action ne peut pas être annulée. Cet AI Asset sera définitivement supprimé.",
+    "deleteConfirmYes": "Oui, supprimer",
+    "deleteConfirmNo": "Annuler"
   },
   "conversation": {
     "tabs": {
@@ -426,8 +446,17 @@
       "copied": "Copié !",
       "share": "Partager",
       "delete": "Supprimer",
+      "deleteConfirm": "Supprimer cette conversation ?",
+      "deleteYes": "Oui, supprimer",
+      "deleteNo": "Annuler",
+      "deleteConfirmTitle": "Supprimer la conversation ?",
+      "deleteConfirmMessage": "Cette action ne peut pas être annulée. Cette conversation et tous ses AI Assets seront définitivement supprimés.",
+      "deleteConfirmYes": "Oui, supprimer",
+      "deleteConfirmNo": "Annuler",
       "exportPDF": "Exporter en PDF",
-      "generatingPDF": "Génération du PDF..."
+      "generatingPDF": "Génération du PDF...",
+      "findReplace": "Rechercher et remplacer",
+      "findReplaceDisabledLegacy": "Rechercher et remplacer n'est pas disponible pour les anciennes conversations"
     },
     "translation": {
       "original": "Original",
@@ -2166,5 +2195,60 @@
     "jumpToTimestamp": "Aller au moment",
     "copy": "Copier la réponse",
     "copied": "Copié !"
+  },
+  "findReplace": {
+    "title": "Rechercher et remplacer",
+    "findPlaceholder": "Rechercher du texte...",
+    "replacePlaceholder": "Remplacer par...",
+    "caseSensitive": "Sensible à la casse",
+    "wholeWord": "Mot entier",
+    "find": "Rechercher",
+    "searching": "Recherche en cours...",
+    "categories": {
+      "summary": "Résumé",
+      "transcript": "Transcription",
+      "aiAssets": "Actifs IA"
+    },
+    "patternCategories": {
+      "person_name": "Nom de personne",
+      "company_name": "Nom d'entreprise",
+      "place": "Lieu",
+      "technical_term": "Terme technique",
+      "custom": "Personnalisé"
+    },
+    "savePattern": "Enregistrer pour les futures conversations",
+    "replaceSelected": "Remplacer la sélection",
+    "replaceAll": "Tout remplacer",
+    "replacing": "Remplacement en cours...",
+    "noMatches": "Aucune correspondance trouvée",
+    "matchCount": "{count} correspondances",
+    "matchCountSingular": "1 correspondance",
+    "replacedCount": "{count} occurrences remplacées",
+    "selectAll": "Tout sélectionner",
+    "deselectAll": "Tout désélectionner",
+    "selected": "{count} sélectionnés",
+    "inCategory": "dans {category}",
+    "error": "Erreur lors de l'opération. Veuillez réessayer.",
+    "patternSaved": "Patron enregistré pour les futures conversations",
+    "suggestions": {
+      "title": "Remplacements suggérés",
+      "description": "Basé sur vos patrons enregistrés",
+      "apply": "Appliquer",
+      "dismiss": "Ignorer",
+      "matchesFound": "{count} correspondances trouvées"
+    },
+    "close": "Fermer",
+    "emptyState": "Entrez du texte pour rechercher et remplacer dans cette conversation",
+    "previousMatch": "Correspondance précédente",
+    "nextMatch": "Correspondance suivante",
+    "selected": "{count} sélectionnés",
+    "refreshing": "Actualisation du contenu...",
+    "searching": "Recherche en cours...",
+    "pressEnterToSearch": "Appuyez sur Entrée pour rechercher",
+    "matchCountSingular": "1 correspondance trouvée",
+    "error": "Une erreur s'est produite",
+    "enterReplaceText": "Entrez le texte de remplacement ci-dessus",
+    "clearSelection": "Effacer",
+    "replace": "Remplacer"
   }
 }

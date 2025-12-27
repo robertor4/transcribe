@@ -319,6 +319,20 @@
       "micUnavailable": "Microphone unavailable - recording tab audio only. Your voice won't be included."
     }
   },
+  "recovery": {
+    "title": "Recover unsaved recordings",
+    "description": "We found {count, plural, one {1 recording} other {# recordings}} that {count, plural, one {was} other {were}} not uploaded.",
+    "preview": "Preview",
+    "recover": "Recover",
+    "processImmediately": "Process immediately",
+    "continueRecording": "Continue recording",
+    "discard": "Discard",
+    "close": "Close",
+    "footerNote": "Recordings are auto-saved to your device and deleted after 7 days.",
+    "confirmDiscard": "Discard?",
+    "microphoneRecording": "Microphone recording",
+    "tabAudioRecording": "Tab audio recording"
+  },
   "transcription": {
     "title": "Transcription",
     "summary": "Summary",
@@ -413,7 +427,13 @@
       "delete": "Delete",
       "confirmDelete": "Delete this asset?",
       "viewFull": "View Full Page"
-    }
+    },
+    "findReplace": "Find & Replace",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete AI Asset?",
+    "deleteConfirmMessage": "This action cannot be undone. This AI asset will be permanently deleted.",
+    "deleteConfirmYes": "Yes, delete",
+    "deleteConfirmNo": "Cancel"
   },
   "conversation": {
     "tabs": {
@@ -426,8 +446,17 @@
       "copied": "Copied!",
       "share": "Share",
       "delete": "Delete",
+      "deleteConfirm": "Delete this conversation?",
+      "deleteYes": "Yes, delete",
+      "deleteNo": "Cancel",
+      "deleteConfirmTitle": "Delete Conversation?",
+      "deleteConfirmMessage": "This action cannot be undone. This conversation and all its AI assets will be permanently deleted.",
+      "deleteConfirmYes": "Yes, delete",
+      "deleteConfirmNo": "Cancel",
       "exportPDF": "Export as PDF",
-      "generatingPDF": "Generating PDF..."
+      "generatingPDF": "Generating PDF...",
+      "findReplace": "Find & Replace",
+      "findReplaceDisabledLegacy": "Find & Replace is not available for legacy conversations"
     },
     "translation": {
       "original": "Original",
@@ -2166,5 +2195,61 @@
     "jumpToTimestamp": "Jump to timestamp",
     "copy": "Copy answer",
     "copied": "Copied!"
+  },
+  "findReplace": {
+    "title": "Find & Replace",
+    "findLabel": "Find",
+    "replaceLabel": "Replace with",
+    "findPlaceholder": "Enter text to find...",
+    "replacePlaceholder": "Enter replacement text...",
+    "caseSensitive": "Case sensitive",
+    "wholeWord": "Whole word",
+    "search": "Search",
+    "find": "Find",
+    "categories": {
+      "summary": "Summary",
+      "transcript": "Transcript",
+      "aiAssets": "AI Assets"
+    },
+    "patternCategories": {
+      "person_name": "Person name",
+      "company_name": "Company name",
+      "place": "Place",
+      "technical_term": "Technical term",
+      "custom": "Custom"
+    },
+    "savePattern": "Save for future conversations",
+    "replaceSelected": "Replace Selected",
+    "replaceAll": "Replace All",
+    "cancel": "Cancel",
+    "noMatches": "No matches found",
+    "matchCount": "{count} matches found",
+    "replacedCount": "Replaced {count} occurrences",
+    "selectedCount": "{selected} of {total} selected",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "errors": {
+      "emptySearch": "Please enter text to search for",
+      "searchFailed": "Search failed. Please try again.",
+      "replaceFailed": "Replace failed. Please try again."
+    },
+    "suggestions": {
+      "title": "Suggested replacements",
+      "apply": "Apply",
+      "dismiss": "Dismiss"
+    },
+    "close": "Close",
+    "emptyState": "Enter text to find and replace in this conversation",
+    "previousMatch": "Previous match",
+    "nextMatch": "Next match",
+    "selected": "{count} selected",
+    "refreshing": "Refreshing content...",
+    "searching": "Searching...",
+    "pressEnterToSearch": "Press Enter to search",
+    "matchCountSingular": "1 match found",
+    "error": "An error occurred",
+    "enterReplaceText": "Enter replacement text above",
+    "clearSelection": "Clear",
+    "replace": "Replace"
   }
 }

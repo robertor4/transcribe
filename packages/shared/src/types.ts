@@ -1203,3 +1203,133 @@ export interface ScoredChunk {
   score: number;
   payload: TranscriptChunkPayload;
 }
+
+// ============================================================
+// FIND/REPLACE TYPES
+// ============================================================
+
+/**
+ * Category of a saved find/replace pattern for smart suggestions
+ */
+export type FindReplacePatternCategory =
+  | 'person_name'
+  | 'company_name'
+  | 'place'
+  | 'technical_term'
+  | 'custom';
+
+/**
+ * A saved find/replace pattern for reuse across conversations
+ */
+export interface SavedFindReplacePattern {
+  id: string;
+  userId: string;
+  findText: string;
+  replaceText: string;
+  category: FindReplacePatternCategory;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+  useCount: number;
+  createdAt: Date;
+  lastUsedAt: Date;
+}
+
+/**
+ * Location where a match was found in conversation content
+ */
+export interface MatchLocation {
+  type: 'transcript' | 'summary' | 'aiAsset';
+
+  // For transcript matches
+  segmentIndex?: number;
+  charOffset?: number;
+
+  // For summaryV2 matches
+  summaryField?: 'title' | 'intro' | 'keyPoint' | 'detailedSection' | 'decision' | 'nextStep';
+  arrayIndex?: number;
+  subField?: 'topic' | 'description' | 'content';
+
+  // For AI asset matches
+  analysisId?: string;
+  contentPath?: string; // JSON path for structured content (e.g., "sections[0].heading")
+}
+
+/**
+ * A single match found in content
+ */
+export interface FindReplaceMatch {
+  id: string;
+  location: MatchLocation;
+  matchedText: string; // The actual text that matched (preserves case)
+  context: string; // ~50 chars before/after for preview
+}
+
+/**
+ * Grouped matches by content category
+ */
+export interface FindReplaceResults {
+  transcriptionId: string;
+  findText: string;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+  summary: FindReplaceMatch[];
+  transcript: FindReplaceMatch[];
+  aiAssets: {
+    analysisId: string;
+    templateName: string;
+    matches: FindReplaceMatch[];
+  }[];
+  totalMatches: number;
+}
+
+/**
+ * Request to find matches in a conversation
+ */
+export interface FindRequest {
+  findText: string;
+  caseSensitive?: boolean;
+  wholeWord?: boolean;
+}
+
+/**
+ * Request to replace matches in a conversation
+ */
+export interface ReplaceRequest {
+  findText: string;
+  replaceText: string;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+
+  // Selection options (exactly one should be specified)
+  replaceAll?: boolean;
+  replaceCategories?: ('summary' | 'transcript' | 'aiAssets')[];
+  matchIds?: string[];
+
+  // Optional: save as pattern for future use
+  saveAsPattern?: {
+    category: FindReplacePatternCategory;
+  };
+}
+
+/**
+ * Response from replace operation
+ */
+export interface ReplaceResponse {
+  transcriptionId: string;
+  replacedCount: number;
+  replacedLocations: {
+    summary: number;
+    transcript: number;
+    aiAssets: { analysisId: string; count: number }[];
+  };
+  patternSaved?: string; // Pattern ID if saved
+}
+
+/**
+ * A pattern suggestion for a conversation
+ */
+export interface PatternSuggestion {
+  pattern: SavedFindReplacePattern;
+  matchCount: number;
+  relevanceScore: number; // Based on use count and recency
+}

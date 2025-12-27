@@ -319,6 +319,20 @@
       "micUnavailable": "Microfoon niet beschikbaar - alleen tabgeluid wordt opgenomen. Je stem wordt niet meegenomen."
     }
   },
+  "recovery": {
+    "title": "Herstel niet-opgeslagen opnames",
+    "description": "We hebben {count, plural, one {1 opname} other {# opnames}} gevonden die niet {count, plural, one {was} other {waren}} geüpload.",
+    "preview": "Voorbeeld",
+    "recover": "Herstel",
+    "processImmediately": "Direct verwerken",
+    "continueRecording": "Opname voortzetten",
+    "discard": "Verwijderen",
+    "close": "Sluiten",
+    "footerNote": "Opnames worden automatisch op je apparaat opgeslagen en na 7 dagen verwijderd.",
+    "confirmDiscard": "Verwijderen?",
+    "microphoneRecording": "Microfoonopname",
+    "tabAudioRecording": "Tabgeluidsopname"
+  },
   "transcription": {
     "title": "Transcriptie",
     "summary": "Samenvatting",
@@ -413,7 +427,13 @@
       "delete": "Verwijderen",
       "confirmDelete": "Deze asset verwijderen?",
       "viewFull": "Bekijk volledige pagina"
-    }
+    },
+    "findReplace": "Zoeken en vervangen",
+    "delete": "Verwijderen",
+    "deleteConfirmTitle": "AI Asset verwijderen?",
+    "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit AI Asset wordt permanent verwijderd.",
+    "deleteConfirmYes": "Ja, verwijderen",
+    "deleteConfirmNo": "Annuleren"
   },
   "conversation": {
     "tabs": {
@@ -426,8 +446,17 @@
       "copied": "Gekopieerd!",
       "share": "Delen",
       "delete": "Verwijderen",
+      "deleteConfirm": "Dit gesprek verwijderen?",
+      "deleteYes": "Ja, verwijderen",
+      "deleteNo": "Annuleren",
+      "deleteConfirmTitle": "Gesprek verwijderen?",
+      "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit gesprek en alle bijbehorende AI Assets worden permanent verwijderd.",
+      "deleteConfirmYes": "Ja, verwijderen",
+      "deleteConfirmNo": "Annuleren",
       "exportPDF": "Exporteren als PDF",
-      "generatingPDF": "PDF wordt gegenereerd..."
+      "generatingPDF": "PDF wordt gegenereerd...",
+      "findReplace": "Zoeken en vervangen",
+      "findReplaceDisabledLegacy": "Zoeken en vervangen is niet beschikbaar voor oudere gesprekken"
     },
     "translation": {
       "original": "Origineel",
@@ -2166,5 +2195,60 @@
     "jumpToTimestamp": "Ga naar tijdstip",
     "copy": "Kopieer antwoord",
     "copied": "Gekopieerd!"
+  },
+  "findReplace": {
+    "title": "Zoeken en vervangen",
+    "findPlaceholder": "Zoek tekst...",
+    "replacePlaceholder": "Vervangen door...",
+    "caseSensitive": "Hoofdlettergevoelig",
+    "wholeWord": "Heel woord",
+    "find": "Zoeken",
+    "searching": "Bezig met zoeken...",
+    "categories": {
+      "summary": "Samenvatting",
+      "transcript": "Transcript",
+      "aiAssets": "AI-assets"
+    },
+    "patternCategories": {
+      "person_name": "Persoonsnaam",
+      "company_name": "Bedrijfsnaam",
+      "place": "Plaats",
+      "technical_term": "Technische term",
+      "custom": "Aangepast"
+    },
+    "savePattern": "Opslaan voor toekomstige gesprekken",
+    "replaceSelected": "Selectie vervangen",
+    "replaceAll": "Alles vervangen",
+    "replacing": "Bezig met vervangen...",
+    "noMatches": "Geen overeenkomsten gevonden",
+    "matchCount": "{count} overeenkomsten",
+    "matchCountSingular": "1 overeenkomst",
+    "replacedCount": "{count} voorkomens vervangen",
+    "selectAll": "Alles selecteren",
+    "deselectAll": "Alles deselecteren",
+    "selected": "{count} geselecteerd",
+    "inCategory": "in {category}",
+    "error": "Fout tijdens bewerking. Probeer het opnieuw.",
+    "patternSaved": "Patroon opgeslagen voor toekomstige gesprekken",
+    "suggestions": {
+      "title": "Voorgestelde vervangingen",
+      "description": "Gebaseerd op je opgeslagen patronen",
+      "apply": "Toepassen",
+      "dismiss": "Negeren",
+      "matchesFound": "{count} overeenkomsten gevonden"
+    },
+    "close": "Sluiten",
+    "emptyState": "Voer tekst in om te zoeken en vervangen in dit gesprek",
+    "previousMatch": "Vorige overeenkomst",
+    "nextMatch": "Volgende overeenkomst",
+    "selected": "{count} geselecteerd",
+    "refreshing": "Inhoud vernieuwen...",
+    "searching": "Zoeken...",
+    "pressEnterToSearch": "Druk op Enter om te zoeken",
+    "matchCountSingular": "1 overeenkomst gevonden",
+    "error": "Er is een fout opgetreden",
+    "enterReplaceText": "Voer hierboven de vervangende tekst in",
+    "clearSelection": "Wissen",
+    "replace": "Vervangen"
   }
 }

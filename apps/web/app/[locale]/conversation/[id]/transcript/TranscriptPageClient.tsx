@@ -70,7 +70,6 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
 
   return (
     <DetailPageLayout
-      conversationId={conversationId}
       rightPanel={
         <DetailMetadataPanel
           conversation={{

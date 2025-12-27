@@ -437,6 +437,6 @@ function renderBoldText(text: string): React.ReactNode {
         </strong>
       );
     }
-    return part;
+    return <React.Fragment key={idx}>{part}</React.Fragment>;
   });
 }

@@ -12,6 +12,8 @@ import {
   AskResponse,
   QAHistoryItem,
   FindResponse,
+  FindReplaceResults,
+  ReplaceResponse,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -359,6 +361,41 @@ export const folderApi = {
   // Q&A API methods
   askQuestion: async (id: string, question: string, maxResults = 15, history?: QAHistoryItem[]): Promise<ApiResponse<AskResponse>> => {
     return api.post(`/folders/${id}/ask`, { question, maxResults, history });
+  },
+};
+
+// Find/Replace API
+export const findReplaceApi = {
+  /**
+   * Find matches in a conversation
+   */
+  findMatches: async (
+    transcriptionId: string,
+    findText: string,
+    options?: { caseSensitive?: boolean; wholeWord?: boolean }
+  ): Promise<ApiResponse<FindReplaceResults>> => {
+    return api.post(`/transcriptions/${transcriptionId}/find`, {
+      findText,
+      ...options,
+    });
+  },
+
+  /**
+   * Replace matches in a conversation
+   */
+  replaceMatches: async (
+    transcriptionId: string,
+    request: {
+      findText: string;
+      replaceText: string;
+      caseSensitive: boolean;
+      wholeWord: boolean;
+      replaceAll?: boolean;
+      replaceCategories?: ('summary' | 'transcript' | 'aiAssets')[];
+      matchIds?: string[];
+    }
+  ): Promise<ApiResponse<ReplaceResponse>> => {
+    return api.post(`/transcriptions/${transcriptionId}/replace`, request);
   },
 };
 

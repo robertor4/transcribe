@@ -13,6 +13,8 @@ interface DropdownMenuItemStandard extends DropdownMenuItemBase {
   icon: LucideIcon;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
 interface DropdownMenuItemDivider {
@@ -135,6 +137,33 @@ export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
               // Standard item (default)
               const Icon = item.icon;
               const isDanger = item.variant === 'danger';
+              const isDisabled = item.disabled;
+
+              const buttonContent = (
+                <>
+                  <Icon className={`w-4 h-4 ${
+                    isDisabled
+                      ? 'text-gray-300 dark:text-gray-600'
+                      : isDanger
+                        ? 'text-red-500 dark:text-red-400'
+                        : 'text-gray-500 dark:text-gray-400'
+                  }`} />
+                  <span>{item.label}</span>
+                </>
+              );
+
+              if (isDisabled) {
+                return (
+                  <div
+                    key={idx}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    title={item.disabledReason}
+                  >
+                    {buttonContent}
+                  </div>
+                );
+              }
+
               return (
                 <button
                   key={idx}
@@ -145,8 +174,7 @@ export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isDanger ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                  <span>{item.label}</span>
+                  {buttonContent}
                 </button>
               );
             })}

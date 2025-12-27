@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -17,6 +17,8 @@ import {
   StickyNote,
   ImagePlus,
   Sparkles,
+  Replace,
+  MoreVertical,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput } from '@transcribe/shared';
@@ -26,6 +28,9 @@ import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
 import { DetailMetadataPanel } from '@/components/detail-pages/DetailMetadataPanel';
 import { RightPanelSection } from '@/components/detail-pages/RightPanelSection';
 import { Button } from '@/components/Button';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
 import { useConversation } from '@/hooks/useConversation';
 import { formatRelativeTime } from '@/lib/formatters';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
@@ -50,10 +55,10 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [copied, setCopied] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [showFindReplace, setShowFindReplace] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
@@ -124,14 +129,11 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
 
   // Delete output
   const handleDelete = async () => {
-    setIsDeleting(true);
     try {
       await transcriptionApi.deleteAnalysis(conversationId, outputId);
       router.push(`/${locale}/conversation/${conversationId}`);
     } catch (err) {
       console.error('Failed to delete output:', err);
-      setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
 
@@ -172,6 +174,19 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
 
   // Check if user has premium access (not free tier, or is admin)
   const isPremiumUser = isAdmin || (usageStats?.tier && usageStats.tier !== 'free');
+
+  // Refresh output after Find & Replace
+  const handleReplaceComplete = useCallback(async () => {
+    try {
+      const response = await transcriptionApi.getAnalysis(conversationId, outputId);
+      if (response.success && response.data) {
+        setOutput(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to refresh output:', err);
+    }
+    setShowFindReplace(false);
+  }, [conversationId, outputId]);
 
   // Loading state
   if (isLoading) {
@@ -257,7 +272,6 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
 
   return (
     <DetailPageLayout
-      conversationId={conversationId}
       rightPanel={
         <DetailMetadataPanel
           conversation={{
@@ -278,76 +292,63 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         title={output.templateName}
         subtitle={`Generated ${formatRelativeTime(new Date(output.generatedAt))}`}
         actions={
-          <>
-            {/* Generate Image button - for blog posts, premium users can generate or regenerate */}
-            {isBlogPost && isPremiumUser && (
-              <Button
-                variant="ghost"
-                size="md"
-                icon={isGeneratingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                onClick={handleGenerateImage}
-                disabled={isGeneratingImage}
-              >
-                {isGeneratingImage ? 'Generating...' : hasHeroImage ? 'Regenerate Image' : 'Generate Image'}
-              </Button>
-            )}
-
-            {/* Show upgrade hint for free users on blog posts without images */}
-            {isBlogPost && !hasHeroImage && !isPremiumUser && (
-              <Link href={`/${locale}/pricing`}>
-                <Button
-                  variant="ghost"
-                  size="md"
-                  icon={<ImagePlus className="w-4 h-4" />}
-                >
-                  <span className="flex items-center gap-1">
-                    Generate Image
-                    <span className="text-xs bg-[#8D6AFA]/10 text-[#8D6AFA] px-1.5 py-0.5 rounded-full">Pro</span>
-                  </span>
-                </Button>
-              </Link>
-            )}
-
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
-              size="md"
+              size="sm"
               icon={<Copy className="w-4 h-4" />}
               onClick={handleCopy}
             >
               {copied ? 'Copied!' : 'Copy'}
             </Button>
 
-            {!showDeleteConfirm ? (
-              <Button
-                variant="ghost"
-                size="md"
-                icon={<Trash2 className="w-4 h-4" />}
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                Delete
-              </Button>
-            ) : (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                <span className="text-sm text-red-700 dark:text-red-300">Delete?</span>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? '...' : 'Yes'}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowDeleteConfirm(false)}
-                  disabled={isDeleting}
-                >
-                  No
-                </Button>
-              </div>
-            )}
-          </>
+            <DropdownMenu
+              trigger={
+                <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <MoreVertical className="w-5 h-5" />
+                </button>
+              }
+              items={[
+                // Generate Image - for blog posts with premium
+                ...(isBlogPost && isPremiumUser
+                  ? [
+                      {
+                        icon: isGeneratingImage ? Loader2 : Sparkles,
+                        label: isGeneratingImage
+                          ? 'Generating...'
+                          : hasHeroImage
+                            ? 'Regenerate Image'
+                            : 'Generate Image',
+                        onClick: handleGenerateImage,
+                        disabled: isGeneratingImage,
+                      },
+                    ]
+                  : []),
+                // Generate Image upgrade hint - for blog posts without premium
+                ...(isBlogPost && !hasHeroImage && !isPremiumUser
+                  ? [
+                      {
+                        icon: ImagePlus,
+                        label: 'Generate Image (Pro)',
+                        onClick: () => router.push(`/${locale}/pricing`),
+                      },
+                    ]
+                  : []),
+                {
+                  icon: Replace,
+                  label: t('findReplace'),
+                  onClick: () => setShowFindReplace(true),
+                },
+                { type: 'divider' as const },
+                {
+                  icon: Trash2,
+                  label: t('delete'),
+                  onClick: () => setShowDeleteConfirm(true),
+                  variant: 'danger' as const,
+                },
+              ]}
+            />
+          </div>
         }
       />
 
@@ -379,6 +380,28 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           />
         </div>
       </div>
+
+      {/* Find & Replace Panel - scoped to this AI Asset */}
+      <FindReplaceSlidePanel
+        isOpen={showFindReplace}
+        onClose={() => setShowFindReplace(false)}
+        conversationId={conversationId}
+        conversationTitle={output.templateName}
+        onReplaceComplete={handleReplaceComplete}
+        filterContext={{ type: 'aiAsset', analysisId: outputId, templateName: output.templateName }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title={t('deleteConfirmTitle')}
+        message={t('deleteConfirmMessage')}
+        confirmLabel={t('deleteConfirmYes')}
+        cancelLabel={t('deleteConfirmNo')}
+        variant="danger"
+      />
     </DetailPageLayout>
   );
 }

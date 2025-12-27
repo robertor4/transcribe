@@ -12,6 +12,7 @@ import {
   Zap,
   MoreVertical,
   Trash2,
+  Replace,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
@@ -25,6 +26,8 @@ import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { InlineTranscript } from '@/components/InlineTranscript';
 import { ShareModal } from '@/components/ShareModal';
+import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { TranslationMenuItems } from '@/components/TranslationMenuItems';
 import { ExportPDFMenuItem } from '@/components/ExportPDFMenuItem';
@@ -39,6 +42,7 @@ import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
+import { useHighlightOptions } from '@/components/TextHighlighter';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -56,8 +60,18 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
   const [activeTab, setActiveTab] = useState<ContentTab>('summary');
+  const activeTabRef = useRef<ContentTab>('summary');
   const [mobileAssetSheetOpen, setMobileAssetSheetOpen] = useState(false);
   const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
+  const [isFindReplaceOpen, setIsFindReplaceOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Find & Replace highlight state
+  const [searchText, setSearchText] = useState('');
+  const [searchCaseSensitive, setSearchCaseSensitive] = useState(false);
+  const [searchWholeWord, setSearchWholeWord] = useState(false);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState<number | undefined>(undefined);
+  const highlightOptions = useHighlightOptions(searchText, searchCaseSensitive, searchWholeWord, currentMatchIndex);
 
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -96,6 +110,11 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const folder = conversation?.folderId
     ? folders.find((f) => f.id === conversation.folderId)
     : null;
+
+  // Keep activeTab ref in sync with state for use in callbacks
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
 
   // Title editing handlers
   const handleStartEditTitle = () => {
@@ -194,9 +213,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   // Delete conversation handler
   const handleDeleteConversation = async () => {
-    if (!window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
-      return;
-    }
     try {
       await deleteConversation(conversationId);
       router.push(`/${locale}/dashboard`);
@@ -405,6 +421,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     );
   }
 
+  // V1 legacy conversation detection (no structured summaryV2)
+  const isLegacyConversation = !conversation.source.summary.summaryV2;
+
   // Metadata for the asset sidebar
   const sidebarMetadata = {
     duration: conversation.source.audioDuration,
@@ -412,7 +431,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     status: conversation.status,
     speakers: conversation.source.transcript.speakers,
     context: conversation.context,
-    isLegacy: !conversation.source.summary.summaryV2,
+    isLegacy: isLegacyConversation,
   };
 
   return (
@@ -531,6 +550,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                             },
                           ]
                         : []),
+                      {
+                        icon: Replace,
+                        label: tConversation('actions.findReplace'),
+                        onClick: () => setIsFindReplaceOpen(true),
+                        disabled: isLegacyConversation,
+                        disabledReason: isLegacyConversation ? tConversation('actions.findReplaceDisabledLegacy') : undefined,
+                      },
                       { type: 'divider' },
                       {
                         icon: Share2,
@@ -540,8 +566,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       {
                         icon: Trash2,
                         label: tConversation('actions.delete'),
-                        onClick: () => handleDeleteConversation(),
-                        variant: 'danger',
+                        onClick: () => setShowDeleteConfirm(true),
+                        variant: 'danger' as const,
                       },
                     ]}
                   />
@@ -575,8 +601,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               </div>
             </nav>
 
-            {/* Tab Content */}
-            {activeTab === 'summary' && (
+            {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
+            <div className={activeTab === 'summary' ? '' : 'hidden'}>
               <section id="summary" className="scroll-mt-16">
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
                   (() => {
@@ -601,6 +627,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                             nextSteps: translated.nextSteps,
                             generatedAt: summaryTranslation.translatedAt,
                           }}
+                          highlightOptions={highlightOptions}
                         />
                       );
                     } else if (summaryTranslation && summaryTranslation.content.type === 'summaryV1') {
@@ -608,6 +635,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       return (
                         <SummaryRenderer
                           content={summaryTranslation.content.text}
+                          highlightOptions={highlightOptions}
                         />
                       );
                     }
@@ -617,6 +645,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       <SummaryRenderer
                         content={conversation.source.summary.text}
                         summaryV2={conversation.source.summary.summaryV2}
+                        highlightOptions={highlightOptions}
                       />
                     );
                   })()
@@ -626,14 +655,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </div>
                 )}
               </section>
-            )}
+            </div>
 
-            {activeTab === 'transcript' && (
+            <div className={activeTab === 'transcript' ? '' : 'hidden'}>
               <InlineTranscript
                 conversation={conversation}
-                onRefresh={refresh}
+                highlightOptions={highlightOptions}
               />
-            )}
+            </div>
           </div>
         }
       />
@@ -710,6 +739,63 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         scope="conversation"
         transcriptionId={conversationId}
         title={conversation.title}
+      />
+
+      {/* Find & Replace Panel - scoped to active tab */}
+      <FindReplaceSlidePanel
+        isOpen={isFindReplaceOpen}
+        onClose={() => setIsFindReplaceOpen(false)}
+        conversationId={conversationId}
+        conversationTitle={conversation.title}
+        onReplaceComplete={() => {
+          refresh();
+          fetchOutputs();
+        }}
+        filterContext={activeTab === 'summary' ? 'summary' : 'transcript'}
+        onSearchTextChange={(text, caseSensitive, wholeWord, matchIndex) => {
+          setSearchText(text);
+          setSearchCaseSensitive(caseSensitive);
+          setSearchWholeWord(wholeWord);
+          setCurrentMatchIndex(matchIndex);
+
+          // Scroll to the current match after a brief delay for DOM update
+          // If matchIndex is provided, scroll to that specific match
+          // Otherwise, scroll to the first match (index 0) when search text changes
+          const targetIndex = matchIndex ?? 0;
+          setTimeout(() => {
+            const matchElement = document.querySelector(`[data-match-index="${targetIndex}"]`);
+            if (matchElement) {
+              // Check if the match is in the summary or transcript section and switch tabs if needed
+              const summarySection = document.getElementById('summary');
+              const isInSummary = summarySection?.contains(matchElement);
+
+              // Use ref to get current tab value (avoids stale closure)
+              const currentTab = activeTabRef.current;
+              if (isInSummary && currentTab !== 'summary') {
+                setActiveTab('summary');
+              } else if (!isInSummary && currentTab !== 'transcript') {
+                setActiveTab('transcript');
+              }
+
+              // Small additional delay for tab switch animation
+              setTimeout(() => {
+                matchElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 50);
+            }
+          }, 100);
+        }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConversation}
+        title={tConversation('actions.deleteConfirmTitle')}
+        message={tConversation('actions.deleteConfirmMessage')}
+        confirmLabel={tConversation('actions.deleteConfirmYes')}
+        cancelLabel={tConversation('actions.deleteConfirmNo')}
+        variant="danger"
       />
     </div>
   );

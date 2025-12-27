@@ -19,6 +19,7 @@ import {
 } from '@/utils/audio';
 import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordingStorage';
 import { mixAudioStreams } from '@/utils/audioMixer';
+import { mergeRecoveredWithNew } from '@/utils/audioMerge';
 
 // Duration limits
 const MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
@@ -56,6 +57,7 @@ export interface UseMediaRecorderReturn {
   reset: () => void;
   markAsUploaded: () => Promise<void>; // Mark recording as uploaded, removes beforeunload warning and cleans IndexedDB
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
+  prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => void; // Prepare to continue from a recovered recording
   clearWarning: () => void; // Clear the warning message
 
   // Audio stream (for visualization via useAudioVisualization)
@@ -111,6 +113,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Duration warning ref (to avoid showing warning multiple times)
   const durationWarningShownRef = useRef<boolean>(false);
+
+  // Continue recording refs (for recovery flow)
+  const recoveredChunksRef = useRef<Blob[]>([]);
+  const recoveredDurationRef = useRef<number>(0);
+  const isContinueModeRef = useRef<boolean>(false);
+  const recoveredRecordingIdRef = useRef<string | null>(null);
+  // Track if current recording session is a continuation (set when recording starts, used in onstop)
+  const wasInContinueModeRef = useRef<boolean>(false);
+  // Store a copy of recovered chunks for merging in onstop (separate from chunksRef which gets new chunks appended)
+  const recoveredChunksCopyRef = useRef<Blob[]>([]);
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -323,16 +335,36 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         setError(null);
         setWarning(null);
         setAudioBlob(null);
-        chunksRef.current = [];
         hasUploadedRef.current = false;
+
+        // Check if we're in continue mode (recovering from previous recording)
+        if (isContinueModeRef.current) {
+          // Continue mode: store recovered chunks separately for proper merging in onstop
+          // We DON'T add recovered chunks to chunksRef - instead we'll merge them later
+          // This avoids the WebM header concatenation problem
+          wasInContinueModeRef.current = true;
+          recoveredChunksCopyRef.current = [...recoveredChunksRef.current];
+          chunksRef.current = []; // Start fresh - new chunks only
+          setDuration(recoveredDurationRef.current);
+          durationRef.current = recoveredDurationRef.current;
+          // Use the original recording ID for IndexedDB updates
+          recordingIdRef.current = recoveredRecordingIdRef.current;
+          console.log(
+            `[useMediaRecorder] Continue mode: will merge ${recoveredChunksCopyRef.current.length} recovered chunks with new recording`
+          );
+        } else {
+          // Fresh recording: reset everything
+          chunksRef.current = [];
+          setDuration(0);
+          durationRef.current = 0;
+          // Generate unique recording ID for auto-save
+          recordingIdRef.current = `recording-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        }
 
         // Reset audio visualization state
         chunkCountRef.current = 0;
         setChunkCount(0);
         setRecordingSource(source);
-
-        // Generate unique recording ID for auto-save
-        recordingIdRef.current = `recording-${Date.now()}-${Math.random().toString(36).substring(7)}`;
         recordingSourceRef.current = source;
 
         // Check support
@@ -364,27 +396,67 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         // Handle recording stop
         mediaRecorder.onstop = async () => {
-          const rawBlob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
-
-          // Fix WebM duration metadata bug
-          // MediaRecorder creates WebM files without duration metadata because the header
-          // is written before recording ends. This causes audio to stop early during playback.
-          // See: https://bugs.chromium.org/p/chromium/issues/detail?id=642012
-          // Using webm-duration-fix which auto-calculates duration from blob content
           let blob: Blob;
-          try {
-            const fixedBlob = await fixWebmDuration(rawBlob);
 
-            // Ensure the fixed blob has the correct MIME type
-            // webm-duration-fix may return a blob without proper type
-            if (!fixedBlob.type || fixedBlob.type !== audioFormat.mimeType) {
-              blob = new Blob([fixedBlob], { type: audioFormat.mimeType });
-            } else {
-              blob = fixedBlob;
+          // Check if this was a continued recording (has recovered chunks to merge)
+          if (wasInContinueModeRef.current && recoveredChunksCopyRef.current.length > 0) {
+            // Merge recovered chunks with new chunks using proper audio decoding/encoding
+            // This creates a properly-formatted audio file that Web Audio API can decode fully
+            console.log(
+              `[useMediaRecorder] Merging ${recoveredChunksCopyRef.current.length} recovered chunks with ${chunksRef.current.length} new chunks`
+            );
+
+            try {
+              const { blob: mergedBlob } = await mergeRecoveredWithNew(
+                recoveredChunksCopyRef.current,
+                chunksRef.current,
+                audioFormat.mimeType
+              );
+              blob = mergedBlob;
+              console.log('[useMediaRecorder] Audio merge successful');
+            } catch (err) {
+              console.error('[useMediaRecorder] Audio merge failed, falling back to concatenation:', err);
+              // Fallback: concatenate chunks (waveform may not work, but audio should play)
+              const rawBlob = new Blob(
+                [...recoveredChunksCopyRef.current, ...chunksRef.current],
+                { type: audioFormat.mimeType }
+              );
+              try {
+                const fixedBlob = await fixWebmDuration(rawBlob);
+                blob = fixedBlob.type === audioFormat.mimeType
+                  ? fixedBlob
+                  : new Blob([fixedBlob], { type: audioFormat.mimeType });
+              } catch {
+                blob = rawBlob;
+              }
             }
-          } catch (err) {
-            console.warn('[useMediaRecorder] Failed to fix WebM duration, using raw blob:', err);
-            blob = rawBlob;
+
+            // Clear continue mode state
+            wasInContinueModeRef.current = false;
+            recoveredChunksCopyRef.current = [];
+          } else {
+            // Normal recording (not continued) - use standard WebM duration fix
+            const rawBlob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+
+            // Fix WebM duration metadata bug
+            // MediaRecorder creates WebM files without duration metadata because the header
+            // is written before recording ends. This causes audio to stop early during playback.
+            // See: https://bugs.chromium.org/p/chromium/issues/detail?id=642012
+            // Using webm-duration-fix which auto-calculates duration from blob content
+            try {
+              const fixedBlob = await fixWebmDuration(rawBlob);
+
+              // Ensure the fixed blob has the correct MIME type
+              // webm-duration-fix may return a blob without proper type
+              if (!fixedBlob.type || fixedBlob.type !== audioFormat.mimeType) {
+                blob = new Blob([fixedBlob], { type: audioFormat.mimeType });
+              } else {
+                blob = fixedBlob;
+              }
+            } catch (err) {
+              console.warn('[useMediaRecorder] Failed to fix WebM duration, using raw blob:', err);
+              blob = rawBlob;
+            }
           }
 
           setAudioBlob(blob);
@@ -425,7 +497,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         // Worst case data loss on crash: ~10 seconds (acceptable for meeting recordings)
         mediaRecorder.start(10000);
         updateState('recording');
-        startTimer();
+        // Don't reset timer in continue mode - duration was already set from recovered recording
+        startTimer(!isContinueModeRef.current);
+        // Clear continue mode after starting (it's a one-time setup)
+        isContinueModeRef.current = false;
+        recoveredChunksRef.current = [];
+        recoveredDurationRef.current = 0;
+        recoveredRecordingIdRef.current = null;
 
         // Request wake lock (prevent screen sleep on mobile)
         wakeLockRef.current = await requestWakeLock();
@@ -526,6 +604,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     setChunkCount(0);
     setRecordingSource(null);
 
+    // Reset continue mode state
+    recoveredChunksRef.current = [];
+    recoveredDurationRef.current = 0;
+    isContinueModeRef.current = false;
+    recoveredRecordingIdRef.current = null;
+    wasInContinueModeRef.current = false;
+    recoveredChunksCopyRef.current = [];
+
     // Stop all tracks
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -562,6 +648,22 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       );
     },
     [updateState]
+  );
+
+  // Prepare for continue recording (from recovery flow)
+  // Must be called BEFORE startRecording when continuing from a recovered recording
+  const prepareForContinue = useCallback(
+    (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => {
+      recoveredChunksRef.current = chunks;
+      recoveredDurationRef.current = previousDuration;
+      isContinueModeRef.current = true;
+      recoveredRecordingIdRef.current = recordingId;
+      setRecordingSource(source);
+      console.log(
+        `[useMediaRecorder] Prepared for continue mode: ${previousDuration}s, ${chunks.length} chunks, recordingId: ${recordingId}`
+      );
+    },
+    []
   );
 
   // Auto-save recording chunks to IndexedDB
@@ -734,6 +836,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     reset,
     markAsUploaded,
     loadRecoveredRecording,
+    prepareForContinue,
     clearWarning,
 
     // Audio stream (for visualization via useAudioVisualization)

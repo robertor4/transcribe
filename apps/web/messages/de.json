@@ -319,6 +319,20 @@
       "micUnavailable": "Mikrofon nicht verfügbar - nur Tab-Audio wird aufgenommen. Ihre Stimme wird nicht aufgezeichnet."
     }
   },
+  "recovery": {
+    "title": "Nicht gespeicherte Aufnahmen wiederherstellen",
+    "description": "Wir haben {count, plural, one {1 Aufnahme} other {# Aufnahmen}} gefunden, die nicht hochgeladen {count, plural, one {wurde} other {wurden}}.",
+    "preview": "Vorschau",
+    "recover": "Wiederherstellen",
+    "processImmediately": "Sofort verarbeiten",
+    "continueRecording": "Aufnahme fortsetzen",
+    "discard": "Verwerfen",
+    "close": "Schließen",
+    "footerNote": "Aufnahmen werden automatisch auf Ihrem Gerät gespeichert und nach 7 Tagen gelöscht.",
+    "confirmDiscard": "Verwerfen?",
+    "microphoneRecording": "Mikrofonaufnahme",
+    "tabAudioRecording": "Tab-Audioaufnahme"
+  },
   "transcription": {
     "title": "Transkription",
     "summary": "Zusammenfassung",
@@ -413,7 +427,13 @@
       "delete": "Löschen",
       "confirmDelete": "Dieses Asset löschen?",
       "viewFull": "Vollständige Seite anzeigen"
-    }
+    },
+    "findReplace": "Suchen & Ersetzen",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "AI-Asset löschen?",
+    "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Dieses AI-Asset wird dauerhaft gelöscht.",
+    "deleteConfirmYes": "Ja, löschen",
+    "deleteConfirmNo": "Abbrechen"
   },
   "conversation": {
     "tabs": {
@@ -426,8 +446,17 @@
       "copied": "Kopiert!",
       "share": "Teilen",
       "delete": "Löschen",
+      "deleteConfirm": "Dieses Gespräch löschen?",
+      "deleteYes": "Ja, löschen",
+      "deleteNo": "Abbrechen",
+      "deleteConfirmTitle": "Gespräch löschen?",
+      "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Dieses Gespräch und alle zugehörigen AI-Assets werden dauerhaft gelöscht.",
+      "deleteConfirmYes": "Ja, löschen",
+      "deleteConfirmNo": "Abbrechen",
       "exportPDF": "Als PDF exportieren",
-      "generatingPDF": "PDF wird erstellt..."
+      "generatingPDF": "PDF wird erstellt...",
+      "findReplace": "Suchen & Ersetzen",
+      "findReplaceDisabledLegacy": "Suchen & Ersetzen ist für ältere Gespräche nicht verfügbar"
     },
     "translation": {
       "original": "Original",
@@ -2166,5 +2195,61 @@
     "jumpToTimestamp": "Zum Zeitstempel springen",
     "copy": "Antwort kopieren",
     "copied": "Kopiert!"
+  },
+  "findReplace": {
+    "title": "Suchen & Ersetzen",
+    "findLabel": "Suchen",
+    "replaceLabel": "Ersetzen durch",
+    "findPlaceholder": "Text zum Suchen eingeben...",
+    "replacePlaceholder": "Ersatztext eingeben...",
+    "caseSensitive": "Groß-/Kleinschreibung",
+    "wholeWord": "Ganzes Wort",
+    "search": "Suchen",
+    "find": "Suchen",
+    "categories": {
+      "summary": "Zusammenfassung",
+      "transcript": "Transkript",
+      "aiAssets": "KI-Inhalte"
+    },
+    "patternCategories": {
+      "person_name": "Personenname",
+      "company_name": "Firmenname",
+      "place": "Ort",
+      "technical_term": "Fachbegriff",
+      "custom": "Benutzerdefiniert"
+    },
+    "savePattern": "Für zukünftige Gespräche speichern",
+    "replaceSelected": "Ausgewählte ersetzen",
+    "replaceAll": "Alle ersetzen",
+    "cancel": "Abbrechen",
+    "noMatches": "Keine Treffer gefunden",
+    "matchCount": "{count} Treffer gefunden",
+    "replacedCount": "{count} Vorkommen ersetzt",
+    "selectedCount": "{selected} von {total} ausgewählt",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Alle abwählen",
+    "errors": {
+      "emptySearch": "Bitte Suchtext eingeben",
+      "searchFailed": "Suche fehlgeschlagen. Bitte erneut versuchen.",
+      "replaceFailed": "Ersetzen fehlgeschlagen. Bitte erneut versuchen."
+    },
+    "suggestions": {
+      "title": "Vorgeschlagene Ersetzungen",
+      "apply": "Anwenden",
+      "dismiss": "Verwerfen"
+    },
+    "close": "Schließen",
+    "emptyState": "Text eingeben, um in dieser Unterhaltung zu suchen und zu ersetzen",
+    "previousMatch": "Vorheriger Treffer",
+    "nextMatch": "Nächster Treffer",
+    "selected": "{count} ausgewählt",
+    "refreshing": "Inhalt wird aktualisiert...",
+    "searching": "Suche läuft...",
+    "pressEnterToSearch": "Enter drücken zum Suchen",
+    "matchCountSingular": "1 Treffer gefunden",
+    "error": "Ein Fehler ist aufgetreten",
+    "enterReplaceText": "Ersetzungstext oben eingeben",
+    "clearSelection": "Leeren",
+    "replace": "Ersetzen"
   }
 }

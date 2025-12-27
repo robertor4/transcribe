@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { SimpleAudioRecorder } from './SimpleAudioRecorder';
 import type { RecordingSource } from '@/hooks/useMediaRecorder';
+import type { ContinueRecordingData } from './ConversationCreateModal';
 
 interface UploadInterfaceProps {
   onFileUpload: (files: File[], processingMode: 'individual' | 'merged') => void;
@@ -18,6 +19,7 @@ interface UploadInterfaceProps {
   onBack: () => void;
   initialMethod?: 'file' | 'record' | 'record-microphone' | 'record-tab-audio' | null;
   onRecordingStateChange?: (isRecording: boolean) => void; // Notify parent of recording status
+  continueRecordingData?: ContinueRecordingData | null; // Data for continuing a recovered recording
 }
 
 type InputMethod = 'upload' | 'record-microphone' | 'record-tab-audio';
@@ -33,6 +35,7 @@ export function UploadInterface({
   onBack,
   initialMethod,
   onRecordingStateChange,
+  continueRecordingData,
 }: UploadInterfaceProps) {
   // Initialize selectedMethod based on initialMethod prop
   const [selectedMethod, setSelectedMethod] = useState<InputMethod | null>(() => {
@@ -226,6 +229,7 @@ export function UploadInterface({
         onCancel={handleRecordingCancel}
         onRecordingStateChange={onRecordingStateChange}
         initialSource={initialRecordingSource}
+        continueRecordingData={continueRecordingData}
       />
     );
   }

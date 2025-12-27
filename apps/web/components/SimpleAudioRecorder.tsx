@@ -11,6 +11,7 @@ import { Button } from './Button';
 import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X } from 'lucide-react';
 import { estimateFileSize, formatFileSize } from '@/utils/audio';
 import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
+import type { ContinueRecordingData } from './ConversationCreateModal';
 
 interface AudioDevice {
   deviceId: string;
@@ -29,6 +30,8 @@ interface SimpleAudioRecorderProps {
   onRecordingStateChange?: (isRecording: boolean) => void;
   /** When set, skips source selection and starts with this source */
   initialSource?: RecordingSource | null;
+  /** Data for continuing a recovered recording */
+  continueRecordingData?: ContinueRecordingData | null;
 }
 
 /**
@@ -53,13 +56,20 @@ export function SimpleAudioRecorder({
   onCancel,
   onRecordingStateChange,
   initialSource,
+  continueRecordingData,
 }: SimpleAudioRecorderProps) {
   const t = useTranslations('recording');
   const { trackEvent } = useAnalytics();
 
   // Recording source state (declared early for analytics callbacks)
   // If initialSource is provided, use it and skip source selection
-  const [selectedSource, setSelectedSource] = useState<RecordingSource>(initialSource || 'microphone');
+  // If continueRecordingData is provided, use its source
+  const [selectedSource, setSelectedSource] = useState<RecordingSource>(
+    continueRecordingData?.source || initialSource || 'microphone'
+  );
+
+  // Track if we've already prepared continue mode
+  const continueModePreparedRef = useRef(false);
 
   const {
     state,
@@ -75,6 +85,7 @@ export function SimpleAudioRecorder({
     resumeRecording,
     reset,
     markAsUploaded,
+    prepareForContinue,
     clearWarning,
     audioStream,
   } = useMediaRecorder({
@@ -160,6 +171,22 @@ export function SimpleAudioRecorder({
     const isActivelyRecording = state === 'recording' || state === 'paused';
     onRecordingStateChange?.(isActivelyRecording);
   }, [state, onRecordingStateChange]);
+
+  // Prepare for continue mode when continueRecordingData is provided
+  useEffect(() => {
+    if (continueRecordingData && !continueModePreparedRef.current) {
+      prepareForContinue(
+        continueRecordingData.chunks,
+        continueRecordingData.duration,
+        continueRecordingData.source,
+        continueRecordingData.recordingId
+      );
+      continueModePreparedRef.current = true;
+      console.log(
+        `[SimpleAudioRecorder] Prepared continue mode: ${continueRecordingData.duration}s, ${continueRecordingData.chunks.length} chunks`
+      );
+    }
+  }, [continueRecordingData, prepareForContinue]);
 
   // Fetch available audio input devices (only when not recording)
   useEffect(() => {

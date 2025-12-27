@@ -7,6 +7,7 @@ import { TranscriptionProcessor } from './transcription.processor';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { CleanupService } from './cleanup.service';
+import { QueueRecoveryService } from './queue-recovery.service';
 import { ImagePromptService } from './image-prompt.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { WebSocketModule } from '../websocket/websocket.module';
@@ -46,6 +47,7 @@ import { QUEUE_NAMES } from '@transcribe/shared';
     AnalysisTemplateService,
     OnDemandAnalysisService,
     CleanupService,
+    QueueRecoveryService,
     ImagePromptService,
     SubscriptionGuard,
   ],

@@ -3,6 +3,7 @@
 import React from 'react';
 import type { SummaryV2 } from '@transcribe/shared';
 import { SummaryV1Renderer } from './SummaryV1Renderer';
+import { TextHighlighter, type HighlightOptions } from './TextHighlighter';
 
 /**
  * SummaryRenderer - V2 Design with Version Detection
@@ -20,15 +21,17 @@ interface SummaryRendererProps {
   content: string;
   /** V2 structured summary (preferred, if available) */
   summaryV2?: SummaryV2;
+  /** Highlight options for Find & Replace feature */
+  highlightOptions?: HighlightOptions;
 }
 
-export const SummaryRenderer: React.FC<SummaryRendererProps> = ({ content, summaryV2 }) => {
+export const SummaryRenderer: React.FC<SummaryRendererProps> = ({ content, summaryV2, highlightOptions }) => {
   // If V2 structured data is available, render it directly
   if (summaryV2) {
-    return <SummaryV2Renderer summary={summaryV2} />;
+    return <SummaryV2Renderer summary={summaryV2} highlightOptions={highlightOptions} />;
   }
 
-  // LEGACY V1: Fall back to parsing markdown content
+  // LEGACY V1: Fall back to parsing markdown content (no highlighting support)
   return <SummaryV1Renderer content={content} />;
 };
 
@@ -40,15 +43,16 @@ export const SummaryRenderer: React.FC<SummaryRendererProps> = ({ content, summa
  */
 interface SummaryV2RendererProps {
   summary: SummaryV2;
+  highlightOptions?: HighlightOptions;
 }
 
-const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
+const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highlightOptions }) => {
   return (
     <div className="space-y-8">
       {/* Intro Paragraph */}
       {summary.intro && (
         <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">
-          {summary.intro}
+          <TextHighlighter text={summary.intro} highlight={highlightOptions} />
         </p>
       )}
 
@@ -62,9 +66,9 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
             {summary.keyPoints.map((point, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed py-4 first:pt-0 last:pb-0">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  {point.topic}:
+                  <TextHighlighter text={point.topic} highlight={highlightOptions} />:
                 </span>{' '}
-                {point.description}
+                <TextHighlighter text={point.description} highlight={highlightOptions} />
               </li>
             ))}
           </ol>
@@ -77,10 +81,10 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
           {summary.detailedSections.map((section, idx) => (
             <div key={idx} className="pl-6 border-l-2 border-gray-200 dark:border-gray-700">
               <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {section.topic}
+                <TextHighlighter text={section.topic} highlight={highlightOptions} />
               </h4>
               <p className="text-base text-gray-700 dark:text-gray-300 leading-loose">
-                {section.content}
+                <TextHighlighter text={section.content} highlight={highlightOptions} />
               </p>
             </div>
           ))}
@@ -96,7 +100,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
           <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.decisions.map((decision, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                {decision}
+                <TextHighlighter text={decision} highlight={highlightOptions} />
               </li>
             ))}
           </ol>
@@ -112,7 +116,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary }) => {
           <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.nextSteps.map((step, idx) => (
               <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                {step}
+                <TextHighlighter text={step} highlight={highlightOptions} />
               </li>
             ))}
           </ol>

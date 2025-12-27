@@ -296,7 +296,7 @@ function clientProposalToMarkdown(data: ClientProposalOutput): string {
   }
 
   sections.push('**Next Steps:**');
-  sections.push(data.nextStepsToEngage);
+  data.nextStepsToEngage.forEach(step => sections.push(`- ${step}`));
   sections.push('');
 
   sections.push(data.closing);
@@ -615,7 +615,7 @@ function clientProposalToHtml(data: ClientProposalOutput): string {
   }
 
   parts.push(`<p><strong>Next Steps:</strong></p>`);
-  parts.push(`<p>${escapeHtml(data.nextStepsToEngage)}</p>`);
+  parts.push(`<ul>${data.nextStepsToEngage.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ul>`);
 
   parts.push(`<p>${escapeHtml(data.closing)}</p>`);
 

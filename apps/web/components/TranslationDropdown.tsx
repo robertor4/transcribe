@@ -79,7 +79,7 @@ export function TranslationDropdown({
     } else if (localeStatus?.hasSummaryTranslation) {
       // Already translated - just switch
       onSelectLocale(code);
-    } else if (!readOnly) {
+    } else if (!readOnly && onTranslate) {
       // Need to translate first (only if not read-only)
       onTranslate(code);
     }

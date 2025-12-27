@@ -160,6 +160,20 @@ export class RecordingStorage {
   }
 
   /**
+   * Reconstruct a Blob from stored recording chunks
+   * Used for preview playback in recovery dialog
+   * @param id Recording ID
+   * @returns Blob or null if not found/empty
+   */
+  async reconstructBlob(id: string): Promise<Blob | null> {
+    const recording = await this.getRecording(id);
+    if (!recording || recording.chunks.length === 0) {
+      return null;
+    }
+    return new Blob(recording.chunks, { type: recording.mimeType });
+  }
+
+  /**
    * Get total storage used by all recordings
    * @returns Size in bytes
    */

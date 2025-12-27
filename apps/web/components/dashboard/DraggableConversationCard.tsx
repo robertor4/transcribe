@@ -94,6 +94,22 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
         </div>
       </div>
 
+      {/* Status Badges - before delete and arrow */}
+      {conversation.status === 'processing' && (
+        <div className="flex-shrink-0 mr-2">
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+            Processing
+          </span>
+        </div>
+      )}
+      {conversation.status === 'failed' && (
+        <div className="flex-shrink-0 mr-2">
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
+            Failed
+          </span>
+        </div>
+      )}
+
       {/* Delete Button - appears on hover */}
       {onDelete && (
         <div
@@ -134,22 +150,6 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
       <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200">
         →
       </div>
-
-      {/* Status Badges */}
-      {conversation.status === 'processing' && (
-        <div className="ml-4 flex-shrink-0">
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
-            Processing
-          </span>
-        </div>
-      )}
-      {conversation.status === 'failed' && (
-        <div className="ml-4 flex-shrink-0">
-          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
-            Failed
-          </span>
-        </div>
-      )}
     </div>
   );
 });

@@ -8,6 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Recording Recovery Dialog**: Recover unsaved audio recordings from browser crashes or accidental tab closures
+  - Shows recovery dialog when opening "Create Conversation" modal if recoverable recordings exist
+  - Displays relative time (e.g., "10 minutes ago") using date-fns with locale support
+  - Preview recovered recordings with inline audio player and waveform visualization
+  - Recovery options: "Process immediately" (upload directly) or "Continue recording" (append new audio)
+  - Discard recordings with confirmation prompt
+  - Proper audio merging: Uses Web Audio API to decode, concatenate PCM data, and re-encode to compressed WebM
+  - Fixes waveform display issue when continuing recordings (avoids WebM header concatenation problem)
+  - Files: [RecordingRecoveryDialog.tsx](apps/web/components/RecordingRecoveryDialog.tsx), [audioMerge.ts](apps/web/utils/audioMerge.ts), [useMediaRecorder.ts](apps/web/hooks/useMediaRecorder.ts), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+  - Added `date-fns` dependency for relative time formatting
+  - Translation keys added for all 5 locales (EN, DE, ES, FR, NL)
+- **Find & Replace Feature**: Search and replace text across conversations with pattern memory
+  - Slide-out panel (like Q&A) allows viewing content while searching
+  - **Real-time highlighting**: Matches are highlighted in yellow in the summary and transcript as you type
+  - Find matches across summary, transcript, and AI assets with categorized preview
+  - Case-sensitive and whole-word search options
+  - Selective replacement: replace all, by category, or individual matches
+  - Save patterns (person names, company names, places, technical terms) for future use
+  - Pattern suggestions banner shows saved patterns with match counts on new conversations
+  - Access via three-dot menu in conversation header
+  - Full i18n support (EN, DE, ES, FR, NL translations)
+  - Backend: [find-replace.module.ts](apps/api/src/find-replace/find-replace.module.ts), [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts), [find-replace.controller.ts](apps/api/src/find-replace/find-replace.controller.ts)
+  - Frontend: [FindReplaceSlidePanel.tsx](apps/web/components/FindReplaceSlidePanel.tsx), [TextHighlighter.tsx](apps/web/components/TextHighlighter.tsx), [PatternSuggestionBanner.tsx](apps/web/components/PatternSuggestionBanner.tsx)
 - **PDF Export for Summaries**: Export conversation summaries to professionally formatted PDFs
   - New `ExportPDFMenuItem` component for dropdown menu integration
   - `SummaryPDFDocument` React-PDF component with full branding (logo, colors, typography)
@@ -32,6 +55,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New `QADebugInfo` shared type with token counts, history/chunk counts, estimated cost
   - Returned in `AskResponse.debug` field when in development mode
   - File: [types.ts](packages/shared/src/types.ts)
+- **Queue Recovery Service**: Automatic recovery of stuck transcription jobs after server restart
+  - Stalled job detection: Bull now detects jobs that stall mid-processing (30s check interval, 5min lock duration)
+  - Automatic retry: Stalled jobs are retried up to 2 times before failing
+  - Startup recovery: On server start, finds PROCESSING transcriptions not in queue and re-queues them
+  - Grace period: 5-minute grace period to avoid re-queuing jobs that just started
+  - Event logging: Logs stalled, failed, and completed job events for debugging
+  - Files: [queue-recovery.service.ts](apps/api/src/transcription/queue-recovery.service.ts), [app.module.ts](apps/api/src/app.module.ts)
 
 ### Changed
 - **Vector Indexing Enhanced**: Metadata chunks for better semantic search

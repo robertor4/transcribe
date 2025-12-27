@@ -18,6 +18,7 @@ import { QueueModule } from './queue/queue.module';
 import { FolderModule } from './folder/folder.module';
 import { TranslationModule } from './translation/translation.module';
 import { VectorModule } from './vector/vector.module';
+import { FindReplaceModule } from './find-replace/find-replace.module';
 
 @Module({
   imports: [
@@ -51,6 +52,12 @@ import { VectorModule } from './vector/vector.module';
         port: parseInt(process.env.REDIS_PORT || '6379'),
         password: process.env.REDIS_PASSWORD,
       },
+      // Stalled job recovery: detect and retry jobs that were interrupted by server restart/crash
+      settings: {
+        stalledInterval: 30000, // Check for stalled jobs every 30 seconds
+        maxStalledCount: 2, // Retry stalled jobs up to 2 times before marking as failed
+        lockDuration: 300000, // 5 minutes - jobs processing longer than this are considered stalled
+      },
       defaultJobOptions: {
         removeOnComplete: {
           age: parseInt(process.env.QUEUE_COMPLETED_JOB_AGE || '86400'), // 24 hours default
@@ -59,6 +66,11 @@ import { VectorModule } from './vector/vector.module';
         removeOnFail: {
           age: parseInt(process.env.QUEUE_FAILED_JOB_AGE || '604800'), // 7 days default
           count: parseInt(process.env.QUEUE_FAILED_JOB_COUNT || '5000'), // 5000 jobs default
+        },
+        attempts: 3, // Retry failed jobs up to 3 times
+        backoff: {
+          type: 'exponential',
+          delay: 60000, // Start with 1 minute, then 2 min, 4 min
         },
       },
     }),
@@ -74,6 +86,7 @@ import { VectorModule } from './vector/vector.module';
     FolderModule,
     TranslationModule,
     VectorModule,
+    FindReplaceModule,
   ],
   controllers: [AppController],
   providers: [

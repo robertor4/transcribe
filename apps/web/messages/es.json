@@ -319,6 +319,20 @@
       "micUnavailable": "Micrófono no disponible - grabando solo audio de la pestaña. Su voz no se incluirá."
     }
   },
+  "recovery": {
+    "title": "Recuperar grabaciones no guardadas",
+    "description": "Encontramos {count, plural, one {1 grabación} other {# grabaciones}} que no {count, plural, one {fue} other {fueron}} subida{count, plural, one {} other {s}}.",
+    "preview": "Vista previa",
+    "recover": "Recuperar",
+    "processImmediately": "Procesar inmediatamente",
+    "continueRecording": "Continuar grabación",
+    "discard": "Descartar",
+    "close": "Cerrar",
+    "footerNote": "Las grabaciones se guardan automáticamente en su dispositivo y se eliminan después de 7 días.",
+    "confirmDiscard": "¿Descartar?",
+    "microphoneRecording": "Grabación de micrófono",
+    "tabAudioRecording": "Grabación de audio de pestaña"
+  },
   "transcription": {
     "title": "Transcripción",
     "summary": "Resumen",
@@ -413,7 +427,13 @@
       "delete": "Eliminar",
       "confirmDelete": "¿Eliminar este asset?",
       "viewFull": "Ver página completa"
-    }
+    },
+    "findReplace": "Buscar y reemplazar",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar AI Asset?",
+    "deleteConfirmMessage": "Esta acción no se puede deshacer. Este AI Asset se eliminará permanentemente.",
+    "deleteConfirmYes": "Sí, eliminar",
+    "deleteConfirmNo": "Cancelar"
   },
   "conversation": {
     "tabs": {
@@ -426,8 +446,17 @@
       "copied": "¡Copiado!",
       "share": "Compartir",
       "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta conversación?",
+      "deleteYes": "Sí, eliminar",
+      "deleteNo": "Cancelar",
+      "deleteConfirmTitle": "¿Eliminar conversación?",
+      "deleteConfirmMessage": "Esta acción no se puede deshacer. Esta conversación y todos sus AI Assets se eliminarán permanentemente.",
+      "deleteConfirmYes": "Sí, eliminar",
+      "deleteConfirmNo": "Cancelar",
       "exportPDF": "Exportar como PDF",
-      "generatingPDF": "Generando PDF..."
+      "generatingPDF": "Generando PDF...",
+      "findReplace": "Buscar y reemplazar",
+      "findReplaceDisabledLegacy": "Buscar y reemplazar no está disponible para conversaciones antiguas"
     },
     "translation": {
       "original": "Original",
@@ -2166,5 +2195,60 @@
     "jumpToTimestamp": "Ir al momento",
     "copy": "Copiar respuesta",
     "copied": "¡Copiado!"
+  },
+  "findReplace": {
+    "title": "Buscar y reemplazar",
+    "findPlaceholder": "Buscar texto...",
+    "replacePlaceholder": "Reemplazar con...",
+    "caseSensitive": "Sensible a mayúsculas",
+    "wholeWord": "Palabra completa",
+    "find": "Buscar",
+    "searching": "Buscando...",
+    "categories": {
+      "summary": "Resumen",
+      "transcript": "Transcripción",
+      "aiAssets": "Activos IA"
+    },
+    "patternCategories": {
+      "person_name": "Nombre de persona",
+      "company_name": "Nombre de empresa",
+      "place": "Lugar",
+      "technical_term": "Término técnico",
+      "custom": "Personalizado"
+    },
+    "savePattern": "Guardar para futuras conversaciones",
+    "replaceSelected": "Reemplazar seleccionados",
+    "replaceAll": "Reemplazar todo",
+    "replacing": "Reemplazando...",
+    "noMatches": "No se encontraron coincidencias",
+    "matchCount": "{count} coincidencias",
+    "matchCountSingular": "1 coincidencia",
+    "replacedCount": "Se reemplazaron {count} ocurrencias",
+    "selectAll": "Seleccionar todo",
+    "deselectAll": "Deseleccionar todo",
+    "selected": "{count} seleccionados",
+    "inCategory": "en {category}",
+    "error": "Error durante la operación. Por favor, inténtalo de nuevo.",
+    "patternSaved": "Patrón guardado para futuras conversaciones",
+    "suggestions": {
+      "title": "Reemplazos sugeridos",
+      "description": "Basado en tus patrones guardados",
+      "apply": "Aplicar",
+      "dismiss": "Descartar",
+      "matchesFound": "{count} coincidencias encontradas"
+    },
+    "close": "Cerrar",
+    "emptyState": "Ingresa texto para buscar y reemplazar en esta conversación",
+    "previousMatch": "Coincidencia anterior",
+    "nextMatch": "Siguiente coincidencia",
+    "selected": "{count} seleccionados",
+    "refreshing": "Actualizando contenido...",
+    "searching": "Buscando...",
+    "pressEnterToSearch": "Presiona Enter para buscar",
+    "matchCountSingular": "1 coincidencia encontrada",
+    "error": "Ocurrió un error",
+    "enterReplaceText": "Ingresa el texto de reemplazo arriba",
+    "clearSelection": "Limpiar",
+    "replace": "Reemplazar"
   }
 }

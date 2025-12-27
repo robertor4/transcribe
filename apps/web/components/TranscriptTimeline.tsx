@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { type HighlightOptions } from './TextHighlighter';
 
 interface SpeakerSegment {
   speakerTag: string;
@@ -11,12 +12,13 @@ interface SpeakerSegment {
   confidence?: number;
 }
 
-interface TranscriptTimelineProps {
+export interface TranscriptTimelineProps {
   segments: SpeakerSegment[];
   className?: string;
+  highlightOptions?: HighlightOptions;
 }
 
-export default function TranscriptTimeline({ segments, className = '' }: TranscriptTimelineProps) {
+export default function TranscriptTimeline({ segments, className = '', highlightOptions }: TranscriptTimelineProps) {
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,15 +108,49 @@ export default function TranscriptTimeline({ segments, className = '' }: Transcr
     setExpandedSegments(newExpanded);
   };
 
-  const highlightText = (text: string, query: string) => {
-    if (!query) return text;
+  // Track global match index for scroll-to-match navigation
+  // This ref is reset at the start of each render cycle
+  const matchIndexRef = useRef(0);
+  // Reset at the start of each render
+  matchIndexRef.current = 0;
 
-    const regex = new RegExp(`(${query})`, 'gi');
+  const highlightText = (text: string, query: string) => {
+    // Combine local search query with external highlightOptions
+    const searchTerms: string[] = [];
+    if (query) searchTerms.push(query);
+    if (highlightOptions?.searchText && highlightOptions.searchText.length >= 2) {
+      searchTerms.push(highlightOptions.searchText);
+    }
+
+    if (searchTerms.length === 0) return text;
+
+    // Build regex pattern for all search terms
+    const escapedTerms = searchTerms.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const pattern = escapedTerms.join('|');
+    const flags = highlightOptions?.caseSensitive ? 'g' : 'gi';
+    const regex = new RegExp(`(${pattern})`, flags);
     const parts = text.split(regex);
 
+    const currentMatchIndex = highlightOptions?.currentMatchIndex;
+
     return parts.map((part, index) => {
-      if (part.toLowerCase() === query.toLowerCase()) {
-        return <mark key={index} className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-gray-100 px-1 rounded">{part}</mark>;
+      const isMatch = searchTerms.some(term =>
+        highlightOptions?.caseSensitive
+          ? part === term
+          : part.toLowerCase() === term.toLowerCase()
+      );
+      if (isMatch) {
+        const globalIndex = matchIndexRef.current++;
+        const isActive = currentMatchIndex === globalIndex;
+        return (
+          <mark
+            key={index}
+            data-match-index={globalIndex}
+            className={`bg-yellow-200 dark:bg-yellow-500/40 text-gray-900 dark:text-gray-100 px-0.5 rounded ${isActive ? 'ring-2 ring-purple-500 ring-offset-1' : ''}`}
+          >
+            {part}
+          </mark>
+        );
       }
       return <span key={index} className="text-gray-700 dark:text-gray-300">{part}</span>;
     });
