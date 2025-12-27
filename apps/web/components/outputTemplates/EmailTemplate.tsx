@@ -205,6 +205,7 @@ function EmailClosing({
         {userName && (
           <div className="flex items-center gap-3">
             {userPhoto ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={userPhoto}
                 alt={userName}

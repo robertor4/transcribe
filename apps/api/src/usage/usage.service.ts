@@ -551,6 +551,7 @@ export class UsageService {
   /**
    * Get incomplete reset job (for resuming after crash)
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getIncompleteResetJob(): Promise<any | null> {
     const db = this.firebaseService['db'];
 
@@ -576,6 +577,7 @@ export class UsageService {
   /**
    * Get reset job status by ID
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getResetJobStatus(jobId: string): Promise<any | null> {
     const db = this.firebaseService['db'];
 

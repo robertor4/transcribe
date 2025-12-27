@@ -335,8 +335,8 @@ export class StripeController {
    * Get supported currencies for multi-currency pricing
    */
   @Get('currencies')
-  async getSupportedCurrencies() {
-    const currencies = await this.stripeService.getSupportedCurrencies();
+  getSupportedCurrencies() {
+    const currencies = this.stripeService.getSupportedCurrencies();
     return {
       success: true,
       currencies,
@@ -365,7 +365,7 @@ export class StripeController {
 
     try {
       // Verify webhook signature and construct event
-      const event = await this.stripeService.constructWebhookEvent(
+      const event = this.stripeService.constructWebhookEvent(
         req.rawBody,
         signature,
       );

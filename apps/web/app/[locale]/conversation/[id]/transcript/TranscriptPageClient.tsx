@@ -14,7 +14,7 @@ interface TranscriptPageClientProps {
 }
 
 export function TranscriptPageClient({ conversationId }: TranscriptPageClientProps) {
-  const { conversation, isLoading, error, refresh } = useConversation(conversationId);
+  const { conversation, isLoading, error } = useConversation(conversationId);
 
   const handleCopyTranscript = () => {
     if (conversation?.source.transcript.speakerSegments) {

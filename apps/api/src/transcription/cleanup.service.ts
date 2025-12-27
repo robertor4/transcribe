@@ -31,7 +31,7 @@ export class CleanupService {
 
     try {
       await this.cleanupZombieTranscriptions();
-      await this.cleanupOrphanedFiles();
+      this.cleanupOrphanedFiles();
       this.logger.log('[Cleanup] Cleanup job completed successfully');
     } catch (error) {
       this.logger.error('[Cleanup] Cleanup job failed:', error);
@@ -129,7 +129,7 @@ export class CleanupService {
    * Note: This is a simplified version that only checks recent files
    * to avoid scanning the entire storage bucket (expensive)
    */
-  private async cleanupOrphanedFiles() {
+  private cleanupOrphanedFiles(): void {
     this.logger.log('[Cleanup] Checking for orphaned files...');
 
     try {

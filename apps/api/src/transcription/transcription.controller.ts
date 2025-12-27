@@ -315,10 +315,10 @@ export class TranscriptionController {
   @Get('analysis-templates')
   async getAnalysisTemplates(): Promise<ApiResponse<AnalysisTemplate[]>> {
     const templates = this.templateService.getTemplates();
-    return {
+    return Promise.resolve({
       success: true,
       data: templates,
-    };
+    });
   }
 
   /**
@@ -334,10 +334,10 @@ export class TranscriptionController {
       throw new BadRequestException(`Template not found: ${templateId}`);
     }
 
-    return {
+    return Promise.resolve({
       success: true,
       data: template,
-    };
+    });
   }
 
   /**

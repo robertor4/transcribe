@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { FirebaseAuthGuard } from '../src/auth/firebase-auth.guard';
 import * as admin from 'firebase-admin';
 
 /**
@@ -28,9 +29,7 @@ describe('Security Features (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideGuard(
-        require('../src/auth/firebase-auth.guard').FirebaseAuthGuard,
-      )
+      .overrideGuard(FirebaseAuthGuard)
       .useValue({
         canActivate: (context: any) => {
           const request = context.switchToHttp().getRequest();

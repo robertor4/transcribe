@@ -66,6 +66,7 @@ export class AnalysisRepository {
   /**
    * Get a single generated analysis by ID
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getGeneratedAnalysisById(analysisId: string): Promise<any | null> {
     const doc = await this.db
       .collection('generatedAnalyses')

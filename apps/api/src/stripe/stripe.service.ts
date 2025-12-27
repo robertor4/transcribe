@@ -346,10 +346,7 @@ export class StripeService {
   /**
    * Construct webhook event from raw body and signature
    */
-  async constructWebhookEvent(
-    payload: Buffer,
-    signature: string,
-  ): Promise<Stripe.Event> {
+  constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
     const webhookSecret = this.configService.get<string>(
       'STRIPE_WEBHOOK_SECRET',
     );
@@ -600,9 +597,11 @@ export class StripeService {
    * Get supported currencies with their conversion rates
    * Used for displaying pricing in multiple currencies
    */
-  async getSupportedCurrencies(): Promise<
-    Array<{ code: string; name: string; symbol: string }>
-  > {
+  getSupportedCurrencies(): Array<{
+    code: string;
+    name: string;
+    symbol: string;
+  }> {
     return [
       { code: 'USD', name: 'US Dollar', symbol: '$' },
       { code: 'EUR', name: 'Euro', symbol: '€' },
