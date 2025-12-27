@@ -19,9 +19,59 @@ import {
   Copy,
   Check,
   Sparkles,
+  ChevronDown,
+  Mail,
+  CheckSquare,
+  Edit3,
+  Share2,
+  MessageSquareQuote,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { StructuredOutput } from '@transcribe/shared';
+import { getStructuredOutputPreview } from '@/components/outputTemplates';
+import { formatRelativeTime } from '@/lib/formatters';
 import { TranslationDropdown } from '@/components/TranslationDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
+
+// Icon mapping for output types (matching AssetSidebarCard)
+function getOutputIcon(type: string): LucideIcon {
+  switch (type) {
+    case 'email':
+    case 'followUpEmail':
+    case 'salesEmail':
+    case 'internalUpdate':
+    case 'clientProposal':
+      return Mail;
+    case 'actionItems':
+      return CheckSquare;
+    case 'blogPost':
+      return Edit3;
+    case 'linkedin':
+      return Share2;
+    case 'communicationAnalysis':
+      return MessageSquareQuote;
+    default:
+      return Sparkles;
+  }
+}
+
+// Get content preview from asset
+function getContentPreview(content: unknown, contentType: string): string {
+  if (contentType === 'structured' && typeof content === 'object') {
+    return getStructuredOutputPreview(content as StructuredOutput);
+  }
+
+  const contentStr = typeof content === 'string'
+    ? content
+    : JSON.stringify(content);
+
+  return contentStr
+    .replace(/^#+ /gm, '') // Remove markdown headers
+    .replace(/\*\*/g, '') // Remove bold markers
+    .replace(/\n+/g, ' ') // Replace newlines with spaces
+    .slice(0, 100)
+    .trim() + (contentStr.length > 100 ? '...' : '');
+}
 
 export default function SharedTranscriptionPage() {
   const params = useParams();
@@ -51,6 +101,7 @@ export default function SharedTranscriptionPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [activeTab, setActiveTab] = useState<'summary' | 'transcript' | 'ai-assets'>('summary');
+  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
 
   // Translation state for shared view (read-only)
   const {
@@ -156,7 +207,7 @@ export default function SharedTranscriptionPage() {
   };
 
 
-  // Copy summary to clipboard
+  // Copy summary to clipboard as rich text HTML with plain text fallback
   const handleCopySummary = async () => {
     if (!transcription) return;
 
@@ -189,35 +240,83 @@ export default function SharedTranscriptionPage() {
       }
     }
 
-    let textToCopy = '';
+    let html = '';
+    let plainText = '';
 
     if (summaryV2) {
-      // Build text from structured summary
+      // Build HTML for rich text copying
+      const htmlParts: string[] = [];
+      const textParts: string[] = [];
+
       if (summaryV2.intro) {
-        textToCopy += summaryV2.intro + '\n\n';
+        htmlParts.push(`<p>${summaryV2.intro}</p>`);
+        textParts.push(summaryV2.intro);
       }
-      if (summaryV2.keyPoints?.length) {
-        textToCopy += 'Key Points:\n';
+
+      if (summaryV2.keyPoints && summaryV2.keyPoints.length > 0) {
+        htmlParts.push('<h2>Key Points</h2><ul>');
+        textParts.push('\nKey Points\n');
         summaryV2.keyPoints.forEach((point) => {
-          textToCopy += `• ${point.topic}: ${point.description}\n`;
+          htmlParts.push(`<li><strong>${point.topic}:</strong> ${point.description}</li>`);
+          textParts.push(`• ${point.topic}: ${point.description}`);
         });
-        textToCopy += '\n';
+        htmlParts.push('</ul>');
       }
-      if (summaryV2.detailedSections?.length) {
+
+      if (summaryV2.detailedSections && summaryV2.detailedSections.length > 0) {
         summaryV2.detailedSections.forEach((section) => {
-          textToCopy += `${section.topic}\n${section.content}\n\n`;
+          htmlParts.push(`<h3>${section.topic}</h3><p>${section.content}</p>`);
+          textParts.push(`\n${section.topic}\n${section.content}`);
         });
       }
-    } else {
-      textToCopy = summaryText;
+
+      if (summaryV2.decisions && summaryV2.decisions.length > 0) {
+        htmlParts.push('<h2>Decisions Made</h2><ul>');
+        textParts.push('\nDecisions Made\n');
+        summaryV2.decisions.forEach((decision) => {
+          htmlParts.push(`<li>${decision}</li>`);
+          textParts.push(`• ${decision}`);
+        });
+        htmlParts.push('</ul>');
+      }
+
+      if (summaryV2.nextSteps && summaryV2.nextSteps.length > 0) {
+        htmlParts.push('<h2>Next Steps</h2><ul>');
+        textParts.push('\nNext Steps\n');
+        summaryV2.nextSteps.forEach((step) => {
+          htmlParts.push(`<li>${step}</li>`);
+          textParts.push(`• ${step}`);
+        });
+        htmlParts.push('</ul>');
+      }
+
+      html = htmlParts.join('');
+      plainText = textParts.join('\n');
+    } else if (summaryText) {
+      html = `<p>${summaryText.replace(/\n/g, '</p><p>')}</p>`;
+      plainText = summaryText;
     }
 
-    try {
-      await navigator.clipboard.writeText(textToCopy.trim());
-      setCopiedSummary(true);
-      setTimeout(() => setCopiedSummary(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy summary:', err);
+    if (html && plainText) {
+      try {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([plainText], { type: 'text/plain' }),
+          }),
+        ]);
+        setCopiedSummary(true);
+        setTimeout(() => setCopiedSummary(false), 2000);
+      } catch {
+        // Fallback to plain text if rich text fails
+        try {
+          await navigator.clipboard.writeText(plainText);
+          setCopiedSummary(true);
+          setTimeout(() => setCopiedSummary(false), 2000);
+        } catch (fallbackErr) {
+          console.error('Failed to copy summary:', fallbackErr);
+        }
+      }
     }
   };
 
@@ -319,12 +418,14 @@ export default function SharedTranscriptionPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Logo/Branding - Logo only, no text */}
           <div className="flex items-center justify-between mb-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/logos/neural-summary-logo.svg"
-              alt="Neural Summary"
-              className="h-8 w-auto"
-            />
+            <a href="https://neuralsummary.com" target="_blank" rel="noopener noreferrer">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/logos/neural-summary-logo.svg"
+                alt="Neural Summary"
+                className="h-8 w-auto"
+              />
+            </a>
             <div className="flex items-center gap-3">
               {/* Translation dropdown (read-only for shared view) */}
               {translationStatus && translationStatus.availableLocales.length > 0 && (
@@ -345,7 +446,7 @@ export default function SharedTranscriptionPage() {
 
           {/* Title and Metadata */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 break-words uppercase tracking-wide">
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-3 break-words">
               {transcription.title || transcription.fileName}
             </h1>
             <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
@@ -365,9 +466,9 @@ export default function SharedTranscriptionPage() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div>
           {/* Tab Navigation */}
-          <nav className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6">
+          <nav className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200">
             <div className="flex items-center gap-1 py-1">
               {hasSummary && (
                 <button
@@ -417,7 +518,7 @@ export default function SharedTranscriptionPage() {
             </div>
           </nav>
 
-          <div className="p-6">
+          <div className="pt-6">
             {/* Summary Tab Content */}
             {hasSummary && (
               <div className={activeTab === 'summary' ? 'block' : 'hidden'}>
@@ -481,9 +582,10 @@ export default function SharedTranscriptionPage() {
                 {transcription.speakerSegments && transcription.speakerSegments.length > 0 ? (
                   <TranscriptTimeline
                     segments={transcription.speakerSegments}
+                    className="!bg-transparent"
                   />
                 ) : (
-                  <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono bg-gray-50 p-4 rounded-lg">
+                  <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
                     {transcription.transcriptText}
                   </p>
                 )}
@@ -493,18 +595,86 @@ export default function SharedTranscriptionPage() {
             {/* AI Assets Tab Content */}
             {hasAIAssets && (
               <div className={activeTab === 'ai-assets' ? 'block' : 'hidden'}>
-                <div className="space-y-6">
-                  {transcription.generatedAnalyses?.map((analysis) => (
-                    <div key={analysis.id} className="p-6 bg-gray-50 rounded-lg">
-                      <h3 className="font-semibold text-gray-900 mb-4 text-lg">
-                        {analysis.templateName}
-                      </h3>
-                      <AnalysisContentRenderer
-                        content={analysis.content}
-                        contentType={analysis.contentType}
-                      />
-                    </div>
-                  ))}
+                <div className="flex flex-col gap-3">
+                  {transcription.generatedAnalyses?.map((analysis) => {
+                    const isExpanded = expandedAssetId === analysis.id;
+                    const OutputIcon = getOutputIcon(analysis.templateId);
+                    const preview = getContentPreview(analysis.content, analysis.contentType);
+                    const relativeTime = formatRelativeTime(new Date(analysis.generatedAt));
+
+                    return (
+                      <div
+                        key={analysis.id}
+                        className={`rounded-lg overflow-hidden transition-all duration-200 ${
+                          isExpanded
+                            ? 'bg-white border border-[#8D6AFA] shadow-sm'
+                            : 'bg-white border border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <button
+                          onClick={() => setExpandedAssetId(isExpanded ? null : analysis.id)}
+                          className="w-full p-3 text-left transition-colors group"
+                        >
+                          <div className="flex gap-3">
+                            {/* Icon */}
+                            <div className={`
+                              w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200
+                              ${isExpanded
+                                ? 'bg-[#8D6AFA] text-white'
+                                : 'bg-purple-50 group-hover:bg-[#8D6AFA]'
+                              }
+                            `}>
+                              <OutputIcon className={`
+                                w-4 h-4 transition-colors duration-200
+                                ${isExpanded
+                                  ? 'text-white'
+                                  : 'text-[#8D6AFA] group-hover:text-white'
+                                }
+                              `} />
+                            </div>
+
+                            {/* Content */}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-2 mb-0.5">
+                                <p className={`
+                                  text-sm font-semibold truncate transition-colors duration-200
+                                  ${isExpanded
+                                    ? 'text-[#8D6AFA]'
+                                    : 'text-gray-900 group-hover:text-[#8D6AFA]'
+                                  }
+                                `}>
+                                  {analysis.templateName}
+                                </p>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <span className="text-xs text-gray-500">
+                                    {relativeTime}
+                                  </span>
+                                  <ChevronDown
+                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                                      isExpanded ? 'rotate-180' : ''
+                                    }`}
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {preview}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                        {isExpanded && (
+                          <div className="px-4 pb-4 border-t border-gray-100">
+                            <div className="pt-4">
+                              <AnalysisContentRenderer
+                                content={analysis.content}
+                                contentType={analysis.contentType}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -524,7 +694,17 @@ export default function SharedTranscriptionPage() {
       <div className="mt-16 border-t border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-sm text-gray-600">
-            <p>{t('footer.poweredBy')}</p>
+            <p>
+              {t('footer.poweredBy')}{' '}
+              <a
+                href="https://neuralsummary.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#8D6AFA] hover:underline font-medium"
+              >
+                Neural Summary
+              </a>
+            </p>
             <p className="mt-2">{t('footer.copyright', { year: new Date().getFullYear() })}</p>
           </div>
         </div>

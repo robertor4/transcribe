@@ -1695,7 +1695,7 @@
     "analysis": "Análisis",
     "transcript": "Transcripción completa",
     "footer": {
-      "poweredBy": "Powered by Neural Summary",
+      "poweredBy": "Desarrollado por",
       "copyright": "© {year} Neural Summary. Todos los derechos reservados."
     }
   },
