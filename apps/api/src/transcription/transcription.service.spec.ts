@@ -43,6 +43,16 @@ jest.mock('nanoid', () => ({
   nanoid: jest.fn(() => 'test-nanoid-123'),
 }));
 
+// Mock bcrypt
+jest.mock('bcrypt', () => ({
+  compare: jest.fn((password: string, hash: string) => {
+    // Mock: password matches if it equals the stored hash value
+    // (in tests, we store plaintext 'correct-password' as the hash for simplicity)
+    return Promise.resolve(password === hash);
+  }),
+  hash: jest.fn((password: string) => Promise.resolve(`hashed-${password}`)),
+}));
+
 describe('TranscriptionService', () => {
   let service: TranscriptionService;
   let mockTranscriptionRepository: ReturnType<

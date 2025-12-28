@@ -227,7 +227,7 @@ export function TwoColumnDashboardLayout({
                     }}
                     placeholder="Folder name..."
                     autoFocus
-                    className="flex-1 px-2 py-1 text-sm border-0 bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0"
+                    className="flex-1 px-2 py-1 text-base sm:text-sm border-0 bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0"
                   />
                   <button
                     onClick={handleCreateFolder}
@@ -281,9 +281,9 @@ export function TwoColumnDashboardLayout({
             </div>
           )}
 
-          {/* Drag hint */}
+          {/* Drag hint - hidden on mobile since we use action menu instead */}
           {folders.length > 0 && ungroupedConversations.length > 0 && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
+            <p className="hidden lg:block text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
               Drag conversations here to organize them
             </p>
           )}

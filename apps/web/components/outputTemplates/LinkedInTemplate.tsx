@@ -211,22 +211,22 @@ export function LinkedInTemplate({ data }: LinkedInTemplateProps) {
         </div>
 
         {/* Post Actions - LinkedIn Style */}
-        <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-around text-sm text-gray-600 dark:text-gray-400">
-          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+        <div className="px-2 sm:px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-around text-sm text-gray-600 dark:text-gray-400">
+          <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <ThumbsUp className="w-5 h-5" />
-            <span className="font-medium">Like</span>
+            <span className="font-medium hidden sm:inline">Like</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <MessageCircle className="w-5 h-5" />
-            <span className="font-medium">Comment</span>
+            <span className="font-medium hidden sm:inline">Comment</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <Repeat2 className="w-5 h-5" />
-            <span className="font-medium">Repost</span>
+            <span className="font-medium hidden sm:inline">Repost</span>
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+          <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
             <Send className="w-5 h-5" />
-            <span className="font-medium">Send</span>
+            <span className="font-medium hidden sm:inline">Send</span>
           </button>
         </div>
 

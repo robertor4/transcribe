@@ -31,9 +31,8 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const { count: importedCount } = useImportedConversations();
-  const [isFoldersPinned, setIsFoldersPinned] = useState(false);
-  const [isFoldersHovered, setIsFoldersHovered] = useState(false);
-  const isFoldersExpanded = isFoldersPinned || isFoldersHovered;
+  // Simplified toggle state - works on both touch and pointer devices
+  const [isFoldersExpanded, setIsFoldersExpanded] = useState(false);
   // Delayed state for staggered folder item animations
   const [foldersAnimateIn, setFoldersAnimateIn] = useState(false);
   const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
@@ -243,18 +242,14 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
         {/* Divider */}
         <div className="mx-4 border-t border-black/20" />
 
-        {/* Folders Section - Hover to expand, click to pin */}
-        <div
-          className="py-4 px-4"
-          onMouseEnter={() => setIsFoldersHovered(true)}
-          onMouseLeave={() => setIsFoldersHovered(false)}
-        >
+        {/* Folders Section - Tap to expand/collapse (touch-friendly) */}
+        <div className="py-4 px-4">
           <div className={`flex items-center justify-between ${isFoldersExpanded ? 'mb-3' : ''}`}>
             <button
-              onClick={() => setIsFoldersPinned(!isFoldersPinned)}
-              className="flex items-center gap-1.5 text-white/50 hover:text-white/70 transition-colors"
+              onClick={() => setIsFoldersExpanded(!isFoldersExpanded)}
+              className="flex items-center gap-1.5 text-white/50 hover:text-white/70 transition-colors w-full"
               aria-expanded={isFoldersExpanded}
-              aria-label={isFoldersPinned ? 'Unpin folders' : 'Pin folders open'}
+              aria-label={isFoldersExpanded ? 'Collapse folders' : 'Expand folders'}
             >
               <ChevronRight
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${isFoldersExpanded ? 'rotate-90' : ''}`}
@@ -262,9 +257,9 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               <h3 className="text-[11px] font-medium uppercase tracking-wider">
                 Folders
               </h3>
-              {!isFoldersExpanded && (folders.length > 0 || importedCount > 0) && (
-                <span className="text-[10px] text-white/40">({folders.length + (importedCount > 0 ? 1 : 0)})</span>
-              )}
+              <span className="text-[10px] text-white/40">
+                ({folders.length + (importedCount > 0 ? 1 : 0)})
+              </span>
             </button>
           </div>
 

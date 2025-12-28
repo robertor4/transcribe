@@ -28,7 +28,7 @@ export function useConversation(
   options: UseConversationOptions = {}
 ): UseConversationResult {
   const { autoRefresh = false, refreshInterval = 30000 } = options;
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +36,11 @@ export function useConversation(
 
   // Fetch conversation
   const fetchConversation = useCallback(async () => {
+    // Wait for auth to complete before deciding there's no user
+    if (authLoading) {
+      return;
+    }
+
     if (!user || !id) {
       setConversation(null);
       setIsLoading(false);
@@ -52,7 +57,7 @@ export function useConversation(
     } finally {
       setIsLoading(false);
     }
-  }, [user, id]);
+  }, [user, id, authLoading]);
 
   // Initial fetch
   useEffect(() => {

@@ -35,7 +35,7 @@ export interface UseFoldersResult {
 }
 
 export function useFolders(): UseFoldersResult {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [folders, setFolders] = useState<Folder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,6 +68,11 @@ export function useFolders(): UseFoldersResult {
 
   // Initial fetch - only when user ID changes
   useEffect(() => {
+    // Wait for auth to complete before deciding there's no user
+    if (authLoading) {
+      return;
+    }
+
     const userId = user?.uid || null;
 
     // Reset fetch flag if user changed
@@ -83,7 +88,7 @@ export function useFolders(): UseFoldersResult {
       setFolders([]);
       setIsLoading(false);
     }
-  }, [user, fetchFolders]);
+  }, [user, authLoading, fetchFolders]);
 
   // Create folder
   const createFolder = useCallback(

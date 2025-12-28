@@ -195,6 +195,13 @@ export function SimpleAudioRecorder({
       return;
     }
 
+    // Check if mediaDevices API is available (requires HTTPS or localhost)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.warn('[SimpleAudioRecorder] mediaDevices API not available. Recording requires HTTPS.');
+      setIsLoadingDevices(false);
+      return;
+    }
+
     const getAudioDevices = async () => {
       setIsLoadingDevices(true);
       try {
@@ -313,6 +320,12 @@ export function SimpleAudioRecorder({
 
   // Start microphone preview test
   const startMicPreview = useCallback(async () => {
+    // Check if mediaDevices API is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error('Failed to start mic preview: mediaDevices API not available');
+      return;
+    }
+
     try {
       setIsTestingMic(true);
       // Use simple constraints (no exact deviceId) to match production recording behavior

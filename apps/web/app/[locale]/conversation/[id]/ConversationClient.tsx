@@ -451,12 +451,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           </div>
         }
         mainContent={
-          <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-6 lg:mb-8">
               <Link
                 href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-6"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {folder ? folder.name : 'Dashboard'}
@@ -469,12 +469,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onChange={(e) => setEditedTitle(e.target.value)}
                   onBlur={handleSaveTitle}
                   onKeyDown={handleTitleKeyDown}
-                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3 font-[Montserrat]"
+                  className="text-2xl lg:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3 font-[Montserrat]"
                 />
               ) : (
                 <h1
                   onClick={handleStartEditTitle}
-                  className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+                  className="text-2xl lg:text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
                   title="Click to rename"
                   id="conversation-title"
                 >
@@ -484,8 +484,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
                 <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                   <span>{formatDuration(conversation.source.audioDuration)}</span>
-                  <span>·</span>
-                  <span>
+                  <span className="hidden sm:inline">·</span>
+                  <span className="hidden sm:inline">
                     Created{' '}
                     {conversation.createdAt.toLocaleDateString('en-US', {
                       month: 'short',
@@ -495,22 +495,25 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<AnimatedAiIcon size={14} />}
-                    onClick={() => setIsQAPanelOpen(true)}
-                  >
-                    {tConversation('actions.askQuestions')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<Copy className="w-4 h-4" />}
-                    onClick={handleCopy}
-                  >
-                    {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
-                  </Button>
+                  {/* Desktop: Show Ask Questions and Copy buttons */}
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<AnimatedAiIcon size={14} />}
+                      onClick={() => setIsQAPanelOpen(true)}
+                    >
+                      {tConversation('actions.askQuestions')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<Copy className="w-4 h-4" />}
+                      onClick={handleCopy}
+                    >
+                      {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
+                    </Button>
+                  </div>
                   <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -518,6 +521,18 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       </button>
                     }
                     items={[
+                      // Ask Questions and Copy available in menu for all devices
+                      {
+                        icon: Zap,
+                        label: tConversation('actions.askQuestions'),
+                        onClick: () => setIsQAPanelOpen(true),
+                      },
+                      {
+                        icon: Copy,
+                        label: copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy'),
+                        onClick: handleCopy,
+                      },
+                      { type: 'divider' },
                       {
                         type: 'custom',
                         content: (
@@ -577,7 +592,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
 
             {/* Tab Navigation */}
-            <nav className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-6 px-6">
+            <nav className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
               <div className="flex items-center gap-1 py-1">
                 <button
                   onClick={() => setActiveTab('summary')}

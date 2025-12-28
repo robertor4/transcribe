@@ -27,7 +27,7 @@ export interface UseFolderConversationsResult {
 export function useFolderConversations(
   folderId: string | null | undefined
 ): UseFolderConversationsResult {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [folder, setFolder] = useState<Folder | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -36,6 +36,11 @@ export function useFolderConversations(
 
   // Fetch folder and conversations
   const fetchFolderData = useCallback(async () => {
+    // Wait for auth to complete before deciding there's no user
+    if (authLoading) {
+      return;
+    }
+
     if (!user || !folderId) {
       setFolder(null);
       setConversations([]);
@@ -61,7 +66,7 @@ export function useFolderConversations(
     } finally {
       setIsLoading(false);
     }
-  }, [user, folderId]);
+  }, [user, folderId, authLoading]);
 
   // Initial fetch
   useEffect(() => {

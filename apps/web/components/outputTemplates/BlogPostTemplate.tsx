@@ -8,15 +8,15 @@ interface BlogPostTemplateProps {
 
 export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
   return (
-    <article className="prose prose-gray dark:prose-invert max-w-none">
+    <article className="prose prose-gray dark:prose-invert max-w-none overflow-x-hidden">
         {/* Headline */}
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-2 break-words">
           {data.headline}
         </h1>
 
         {/* Subheading */}
         {data.subheading && (
-          <p className="text-xl text-gray-600 dark:text-gray-400 italic mb-6">
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 italic mb-6">
             {data.subheading}
           </p>
         )}

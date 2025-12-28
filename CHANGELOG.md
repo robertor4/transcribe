@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Mobile Navigation Drawer**: Full-featured slide-out navigation for mobile viewports (< 1024px)
+  - Hamburger menu button in top-left corner of all app pages
+  - Contains: Logo, search, navigation links, folders list, recent conversations, user profile
+  - Smooth slide animation with backdrop overlay
+  - Body scroll lock when open, escape key to close
+  - Touch-optimized tap targets (44px+ hit areas)
+  - Files: [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx), [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+- **Mobile Detection Hook**: `useIsMobile()` hook using `matchMedia` for performant viewport detection
+  - Also includes `useIsTouchDevice()` for touch capability detection
+  - File: [useIsMobile.ts](apps/web/hooks/useIsMobile.ts)
+- **Folder Picker Modal**: Mobile-friendly modal for moving conversations between folders
+  - Select from existing folders or create new folder inline
+  - Shows current folder with visual indicator
+  - Touch-optimized list items with 44px minimum height
+  - File: [FolderPickerModal.tsx](apps/web/components/FolderPickerModal.tsx)
+- **Mobile Testing Documentation**: Guide for testing on mobile devices over local network
+  - Instructions for configuring environment variables, CORS, and NestJS binding
+  - File: [2025-12-28_MOBILE_TESTING_SETUP.md](docs/2025-12-28_MOBILE_TESTING_SETUP.md)
+
 ### Changed
 - **Translation Performance**: Batch multiple texts into single API calls for 5-10x faster translation
   - Summary translation now uses 1 API call instead of 9+ individual calls
@@ -15,6 +35,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added validation to detect truncated/malformed batch responses
   - Automatic fallback to individual translations if batch parsing fails
   - File: [translation.service.ts](apps/api/src/translation/translation.service.ts)
+- **Responsive Conversation Cards**: Cards adapt to mobile viewports
+  - Drag handles hidden on mobile (drag-to-folder disabled)
+  - 3-dot menu with "Move to folder" action on mobile
+  - Title allows 2-line wrap on mobile instead of truncation
+  - Asset count badge hidden on small screens
+  - File: [DraggableConversationCard.tsx](apps/web/components/dashboard/DraggableConversationCard.tsx)
+- **Three-Pane Layout Mobile Support**: Layout adapts for mobile viewports
+  - Left sidebar hidden on mobile (replaced by drawer)
+  - Right panel hidden on mobile
+  - Top padding added for hamburger button clearance
+  - Uses `h-screen-safe` for proper mobile viewport height
+  - File: [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+- **Dashboard Mobile Adaptations**: Dashboard page optimized for mobile
+  - Passes `onNewConversation` callback to mobile drawer
+  - File: [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx)
+- **Folder Page Mobile Adaptations**: Folder view optimized for mobile
+  - Custom menu items for "Remove from folder" action
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
+- **CSS Mobile Viewport Utilities**: New utility classes for mobile-safe layouts
+  - `h-screen-safe`, `min-h-screen-safe` using `100dvh` for dynamic viewport
+  - iOS safe area padding utilities (`safe-area-bottom`, `safe-area-top`, etc.)
+  - Drawer slide animations (`animate-slideInFromLeft`, `animate-slideOutToLeft`)
+  - File: [globals.css](apps/web/app/globals.css)
+- **Left Navigation Mobile Hiding**: Navigation sidebar hidden on mobile (< lg breakpoint)
+  - File: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **API Network Binding**: NestJS now binds to `0.0.0.0` for mobile testing on local network
+  - File: [main.ts](apps/api/src/main.ts)
+
+### Security
+- **Share Link Password Verification**: Fixed critical bug where bcrypt-hashed passwords were compared using string equality instead of `bcrypt.compare()`, causing all password-protected share links to reject valid passwords
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [imported-conversation.service.ts](apps/api/src/imported-conversation/imported-conversation.service.ts)
+- **Path Traversal Prevention**: Added `path.basename()` sanitization to uploaded filenames to prevent directory traversal attacks via malicious filenames like `../../../etc/passwd.wav`
+  - File: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+- **Temp File Unpredictability**: Replaced predictable `Date.now()` with `crypto.randomBytes(16)` for merged audio temp filenames to prevent race condition attacks
+  - File: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
 
 ### Fixed
 - **Translation Menu**: Original language no longer appears in "Translate To" list

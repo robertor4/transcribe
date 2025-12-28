@@ -57,7 +57,7 @@ function EmailHeader({
 
   return (
     <div className="pb-5 mb-6 border-b border-gray-200 dark:border-gray-700">
-      <div className="flex gap-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
         {/* Left column - Email fields */}
         <div className="flex-1 min-w-0 space-y-2">
           {/* From field */}

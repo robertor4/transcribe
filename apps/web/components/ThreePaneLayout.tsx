@@ -1,9 +1,12 @@
 'use client';
 
 import { ReactNode, cloneElement, isValidElement, useState, useCallback } from 'react';
+import { Menu } from 'lucide-react';
 import { CollapsibleSidebar } from './CollapsibleSidebar';
 import { LeftNavigationCollapsed } from './LeftNavigationCollapsed';
+import { MobileAppDrawer } from './MobileAppDrawer';
 import { useCollapsibleSidebar } from '@/hooks/useCollapsibleSidebar';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface ThreePaneLayoutProps {
   leftSidebar: ReactNode;
@@ -12,6 +15,8 @@ interface ThreePaneLayoutProps {
   showRightPanel?: boolean;
   leftSidebarWidth?: number;
   rightPanelWidth?: number;
+  /** Callback for "New Conversation" action from mobile drawer */
+  onNewConversation?: () => void;
 }
 
 /**
@@ -30,7 +35,11 @@ export function ThreePaneLayout({
   showRightPanel = true,
   leftSidebarWidth = 260,
   rightPanelWidth = 360,
+  onNewConversation,
 }: ThreePaneLayoutProps) {
+  const isMobile = useIsMobile(1024); // lg breakpoint
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+
   const leftSidebarState = useCollapsibleSidebar({
     storageKey: 'neural-summary:left-sidebar-collapsed',
     defaultCollapsed: false,
@@ -65,35 +74,58 @@ export function ThreePaneLayout({
     : leftSidebar;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-gray-900">
-      {/* Left Sidebar */}
-      <CollapsibleSidebar
-        side="left"
-        isCollapsed={leftSidebarState.isCollapsed}
-        onToggle={leftSidebarState.toggle}
-        width={leftSidebarWidth}
-        collapsedWidth={48}
-        collapsedContent={<LeftNavigationCollapsed onToggle={leftSidebarState.toggle} onSearch={handleSearchFromCollapsed} />}
+    <div className="flex h-screen-safe w-full overflow-hidden bg-white dark:bg-gray-900">
+      {/* Mobile hamburger button - only visible on mobile */}
+      <button
+        onClick={() => setIsMobileDrawerOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 w-11 h-11 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#1f1f3d] text-white shadow-lg hover:bg-[#4a42b5] transition-colors safe-area-top"
+        aria-label="Open navigation menu"
       >
-        {leftSidebarWithToggle}
-      </CollapsibleSidebar>
+        <Menu className="w-5 h-5" />
+      </button>
+
+      {/* Mobile Navigation Drawer */}
+      <MobileAppDrawer
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        onNewConversation={onNewConversation}
+      />
+
+      {/* Left Sidebar - hidden on mobile */}
+      <div className="hidden lg:block">
+        <CollapsibleSidebar
+          side="left"
+          isCollapsed={leftSidebarState.isCollapsed}
+          onToggle={leftSidebarState.toggle}
+          width={leftSidebarWidth}
+          collapsedWidth={48}
+          collapsedContent={<LeftNavigationCollapsed onToggle={leftSidebarState.toggle} onSearch={handleSearchFromCollapsed} />}
+        >
+          {leftSidebarWithToggle}
+        </CollapsibleSidebar>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 scrollbar-subtle">
-        {mainContent}
+        {/* Add top padding on mobile to account for the hamburger button */}
+        <div className="lg:pt-0 pt-14">
+          {mainContent}
+        </div>
       </main>
 
-      {/* Right Panel (optional) */}
-      {showRightPanel && rightPanel && (
-        <CollapsibleSidebar
-          side="right"
-          isCollapsed={rightPanelState.isCollapsed}
-          onToggle={rightPanelState.toggle}
-          width={rightPanelWidth}
-          collapsedWidth={48}
-        >
-          {rightPanel}
-        </CollapsibleSidebar>
+      {/* Right Panel (optional) - hidden on mobile, uses AssetMobileSheet instead */}
+      {showRightPanel && rightPanel && !isMobile && (
+        <div className="hidden lg:block">
+          <CollapsibleSidebar
+            side="right"
+            isCollapsed={rightPanelState.isCollapsed}
+            onToggle={rightPanelState.toggle}
+            width={rightPanelWidth}
+            collapsedWidth={48}
+          >
+            {rightPanel}
+          </CollapsibleSidebar>
+        </div>
       )}
     </div>
   );

@@ -292,14 +292,14 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         title={output.templateName}
         subtitle={`Generated ${formatRelativeTime(new Date(output.generatedAt))}`}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
               icon={<Copy className="w-4 h-4" />}
               onClick={handleCopy}
             >
-              {copied ? 'Copied!' : 'Copy'}
+              <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
             </Button>
 
             <DropdownMenu
@@ -352,7 +352,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         }
       />
 
-      <div className="max-w-4xl mx-auto px-6 pb-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
         {/* Image generation error */}
         {imageError && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -371,7 +371,16 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         )}
 
         {/* Output Content */}
-        <div className="bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-xl p-6 md:p-8">
+        {/* Email and LinkedIn templates get a framed container since they simulate another UI */}
+        <div
+          className={
+            output.templateId === 'email' || output.templateId === 'linkedin'
+              ? 'bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-6 md:p-8'
+              : output.templateId === 'actionItems'
+                ? 'bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-6 md:p-8'
+                : ''
+          }
+        >
           <OutputRenderer
             content={output.content}
             contentType={output.contentType}

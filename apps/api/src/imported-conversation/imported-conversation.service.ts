@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import {
   ImportedConversation,
   ImportedConversationStatus,
@@ -90,9 +91,15 @@ export class ImportedConversationService {
       );
     }
 
-    // Check password if required
-    if (settings.password && settings.password !== password) {
-      throw new UnauthorizedException('Invalid password');
+    // Check password if required (passwords are bcrypt hashed)
+    if (settings.password) {
+      const isValidPassword = await bcrypt.compare(
+        password || '',
+        settings.password,
+      );
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Invalid password');
+      }
     }
 
     // Get sharer's info

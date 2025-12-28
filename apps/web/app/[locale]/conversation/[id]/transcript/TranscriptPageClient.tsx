@@ -98,15 +98,15 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
             icon={<Copy className="w-4 h-4" />}
             onClick={handleCopyTranscript}
           >
-            Copy
+            <span className="hidden sm:inline">Copy</span>
           </Button>
         }
       />
 
-      <div className="max-w-6xl mx-auto px-6 pb-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-8">
         {/* Transcript Timeline Component */}
         {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
-          <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-8">
+          <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4 sm:p-8">
             <TranscriptTimeline
               segments={transcript.speakerSegments}
             />

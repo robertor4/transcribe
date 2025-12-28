@@ -13,6 +13,7 @@ import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import {
   Transcription,
@@ -142,17 +143,20 @@ export class TranscriptionService {
       `Creating transcription for user ${userId}, file: ${file.originalname}`,
     );
 
+    // Sanitize filename to prevent path traversal attacks
+    const safeFilename = path.basename(file.originalname);
+
     // Upload file to Firebase Storage
     const uploadResult = await this.storageService.uploadFile(
       file.buffer,
-      `audio/${userId}/${Date.now()}_${file.originalname}`,
+      `audio/${userId}/${Date.now()}_${safeFilename}`,
       file.mimetype,
     );
 
     // Create transcription document
     const transcription: Omit<Transcription, 'id'> = {
       userId,
-      fileName: file.originalname,
+      fileName: safeFilename,
       fileUrl: uploadResult.url,
       storagePath: uploadResult.path,
       fileSize: file.size,
@@ -232,13 +236,15 @@ export class TranscriptionService {
         const tempFilePaths: string[] = [];
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const tempPath = path.join(tempDir, `${i}_${file.originalname}`);
+          // Sanitize filename to prevent path traversal attacks
+          const safeFilename = path.basename(file.originalname);
+          const tempPath = path.join(tempDir, `${i}_${safeFilename}`);
           await fs.promises.writeFile(tempPath, file.buffer);
           tempFilePaths.push(tempPath);
         }
 
-        // Merge files
-        const mergedFileName = `merged_${Date.now()}.mp3`;
+        // Merge files (use cryptographic random for unpredictable filename)
+        const mergedFileName = `merged_${crypto.randomBytes(16).toString('hex')}.mp3`;
         const mergedFilePath = path.join(tempDir, mergedFileName);
         await this.audioSplitter.mergeAudioFiles(tempFilePaths, mergedFilePath);
 
@@ -262,7 +268,9 @@ export class TranscriptionService {
         );
 
         // Create transcription document
-        const fileNames = files.map((f) => f.originalname).join(', ');
+        const fileNames = files
+          .map((f) => path.basename(f.originalname))
+          .join(', ');
         const transcription: Omit<Transcription, 'id'> = {
           userId,
           fileName: `Merged: ${fileNames}`,
@@ -357,7 +365,7 @@ export class TranscriptionService {
           contextId,
         );
         transcriptionIds.push(transcription.id);
-        fileNames.push(file.originalname);
+        fileNames.push(path.basename(file.originalname));
       }
 
       return {
@@ -1827,9 +1835,15 @@ ${fullCustomPrompt}`;
       return null;
     }
 
-    // Check password if required
-    if (settings.password && settings.password !== password) {
-      throw new UnauthorizedException('Invalid password');
+    // Check password if required (passwords are bcrypt hashed)
+    if (settings.password) {
+      const isValidPassword = await bcrypt.compare(
+        password || '',
+        settings.password,
+      );
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Invalid password');
+      }
     }
 
     // Only increment view count if requested (to avoid multiple increments)

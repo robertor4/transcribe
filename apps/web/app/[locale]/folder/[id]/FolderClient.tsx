@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Folder,
-  MessageSquare,
   Loader2,
   AlertCircle,
   ArrowLeft,
@@ -31,7 +30,7 @@ import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
-import { AssetsCountBadge } from '@/components/dashboard/AssetsCountBadge';
+import { DraggableConversationCard } from '@/components/dashboard/DraggableConversationCard';
 import { AiIcon } from '@/components/icons/AiIcon';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 
@@ -184,7 +183,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
           leftSidebar={<LeftNavigation />}
           showRightPanel={false}
           mainContent={
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
               <div className="text-center">
                 <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400">Loading folder...</p>
@@ -204,7 +203,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
           leftSidebar={<LeftNavigation />}
           showRightPanel={false}
           mainContent={
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
               <div className="text-center max-w-md">
                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide">
@@ -226,7 +225,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
 
 
   return (
-    <div className="h-screen flex flex-col">
+    <>
       <ThreePaneLayout
         leftSidebar={<LeftNavigation />}
         showRightPanel={true}
@@ -298,15 +297,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
               )}
             </div>
 
-            {/* Q&A Slide Panel */}
-            <QASlidePanel
-              isOpen={isQAPanelOpen}
-              onClose={() => setIsQAPanelOpen(false)}
-              scope="folder"
-              folderId={folderId}
-              title={folder.name}
-            />
-
             {/* Collapsible Folder Stats */}
             <div className="border-t border-gray-200 dark:border-gray-700">
               <button
@@ -336,107 +326,142 @@ export function FolderClient({ folderId }: FolderClientProps) {
           </div>
         }
         mainContent={
-          <div className="px-12 py-8">
+          <div className="px-4 sm:px-6 lg:px-12 pt-8 sm:pt-6 lg:pt-8 pb-6 lg:pb-8">
             {/* Back Button */}
             <Link
               href={`/${locale}/dashboard`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] transition-colors mb-6"
+              className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </Link>
 
             {/* Folder Header */}
-            <div className="mb-12">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+            <div className="mb-6 sm:mb-8 lg:mb-12">
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-3">
+                <div
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-gray-100 dark:bg-gray-800 flex-shrink-0"
+                  style={folder.color ? {
+                    backgroundColor: `${folder.color}20`,
+                  } : undefined}
+                >
+                  <Folder
+                    className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500 dark:text-gray-400"
                     style={folder.color ? {
-                      backgroundColor: `${folder.color}20`,
+                      color: folder.color,
                     } : undefined}
-                  >
-                    <Folder
-                      className="w-8 h-8 text-gray-500 dark:text-gray-400"
-                      style={folder.color ? {
-                        color: folder.color,
-                      } : undefined}
-                    />
-                  </div>
-                  <div>
-                    {isEditingName ? (
-                      <input
-                        ref={nameInputRef}
-                        type="text"
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        onBlur={handleSaveName}
-                        onKeyDown={handleNameKeyDown}
-                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full font-[Montserrat]"
-                      />
-                    ) : (
-                      <h1
-                        onClick={handleStartEditName}
-                        className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
-                        title="Click to rename"
-                      >
-                        {folder.name}
-                      </h1>
-                    )}
-                  </div>
+                  />
                 </div>
-                {!showDeleteConfirm ? (
-                  <Button
-                    variant="ghost"
-                    size="md"
-                    icon={<Trash2 className="w-4 h-4" />}
-                    onClick={handleDeleteClick}
-                  >
-                    Delete
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <span className="text-sm text-red-700 dark:text-red-300">Delete?</span>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDeleteFolder(false)}
-                      disabled={isDeleting}
+                <div className="flex-1 min-w-0">
+                  {isEditingName ? (
+                    <input
+                      ref={nameInputRef}
+                      type="text"
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                      onBlur={handleSaveName}
+                      onKeyDown={handleNameKeyDown}
+                      className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full font-[Montserrat]"
+                    />
+                  ) : (
+                    <h1
+                      onClick={handleStartEditName}
+                      className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all break-words"
+                      title="Click to rename"
                     >
-                      {isDeleting ? '...' : 'Yes'}
-                    </Button>
+                      {folder.name}
+                    </h1>
+                  )}
+                </div>
+                {/* Desktop: Delete button */}
+                <div className="hidden sm:block flex-shrink-0">
+                  {!showDeleteConfirm ? (
                     <Button
                       variant="ghost"
-                      size="sm"
-                      onClick={() => setShowDeleteConfirm(false)}
-                      disabled={isDeleting}
+                      size="md"
+                      icon={<Trash2 className="w-4 h-4" />}
+                      onClick={handleDeleteClick}
                     >
-                      No
+                      Delete
                     </Button>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                      <span className="text-sm text-red-700 dark:text-red-300">Delete?</span>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteFolder(false)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? '...' : 'Yes'}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowDeleteConfirm(false)}
+                        disabled={isDeleting}
+                      >
+                        No
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                {/* Mobile: Three-dot menu */}
+                <div className="sm:hidden flex-shrink-0">
+                  <DropdownMenu
+                    trigger={
+                      <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    }
+                    items={[
+                      {
+                        icon: Trash2,
+                        label: 'Delete folder',
+                        onClick: handleDeleteClick,
+                        variant: 'danger' as const,
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
 
             {/* Conversations in Folder */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider flex-shrink-0">
                   Conversations ({conversations.length})
                 </h2>
                 {conversations.length > 0 && (
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="md"
-                      icon={<AnimatedAiIcon size={16} />}
-                      onClick={() => setIsQAPanelOpen(true)}
-                    >
-                      Ask Questions
-                    </Button>
-                    <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
-                      + New Conversation
-                    </Button>
+                    {/* Desktop: Full buttons */}
+                    <div className="hidden sm:flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="md"
+                        icon={<AnimatedAiIcon size={16} />}
+                        onClick={() => setIsQAPanelOpen(true)}
+                      >
+                        Ask Questions
+                      </Button>
+                      <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
+                        + New Conversation
+                      </Button>
+                    </div>
+                    {/* Mobile: Compact button + icon */}
+                    <div className="flex sm:hidden items-center gap-1">
+                      <button
+                        onClick={() => setIsQAPanelOpen(true)}
+                        className="p-2 rounded-lg text-gray-500 hover:text-[#8D6AFA] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        aria-label="Ask Questions"
+                      >
+                        <AnimatedAiIcon size={18} />
+                      </button>
+                      <Button variant="brand" size="sm" onClick={() => setIsCreateModalOpen(true)}>
+                        + New
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -459,81 +484,35 @@ export function FolderClient({ folderId }: FolderClientProps) {
               ) : (
                 <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {conversations.map((conversation) => (
-                    <div
+                    <DraggableConversationCard
                       key={conversation.id}
-                      className="group relative flex items-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors duration-200"
-                    >
-                      <Link
-                        href={`/${locale}/conversation/${conversation.id}`}
-                        className="flex items-center justify-between py-3 px-4 flex-1 min-w-0"
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex-shrink-0">
-                            <MessageSquare className="w-5 h-5 text-gray-500 group-hover:text-[#8D6AFA] group-hover:scale-110 transition-all duration-200" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200 truncate">
-                                {conversation.title}
-                              </span>
-                              <AssetsCountBadge count={conversation.assetsCount} />
-                            </div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500">
-                              <span>{formatRelativeTime(conversation.createdAt)}</span>
-                            </div>
-                          </div>
-                        </div>
-                        {conversation.status === 'processing' && (
-                          <div className="ml-4 flex-shrink-0">
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
-                              Processing
-                            </span>
-                          </div>
-                        )}
-                        {conversation.status === 'failed' && (
-                          <div className="ml-4 flex-shrink-0">
-                            <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
-                              Failed
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex-shrink-0 text-sm font-medium text-gray-400 group-hover:text-[#8D6AFA] group-hover:translate-x-1 transition-all duration-200 ml-2">
-                          →
-                        </div>
-                      </Link>
-                      {/* Context menu for folder actions */}
-                      <div
-                        className="flex-shrink-0 pr-2"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <DropdownMenu
-                          trigger={
-                            <button className="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                              <MoreVertical className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            </button>
-                          }
-                          items={[
-                            {
-                              icon: FolderMinus,
-                              label: 'Remove from folder',
-                              onClick: () => handleRemoveFromFolder(conversation.id),
-                            },
-                            {
-                              icon: Trash2,
-                              label: 'Delete',
-                              onClick: () => handleDeleteConversation(conversation.id),
-                              variant: 'danger',
-                            },
-                          ]}
-                        />
-                      </div>
-                    </div>
+                      conversation={conversation}
+                      locale={locale}
+                      onDelete={handleDeleteConversation}
+                      showDragHandle={false}
+                      customMenuItems={[
+                        {
+                          icon: FolderMinus,
+                          label: 'Remove from folder',
+                          onClick: () => handleRemoveFromFolder(conversation.id),
+                        },
+                      ]}
+                    />
                   ))}
                 </div>
               )}
             </div>
           </div>
         }
+      />
+
+      {/* Q&A Slide Panel */}
+      <QASlidePanel
+        isOpen={isQAPanelOpen}
+        onClose={() => setIsQAPanelOpen(false)}
+        scope="folder"
+        folderId={folderId}
+        title={folder.name}
       />
 
       {/* AI Asset Slide Panel */}
@@ -567,6 +546,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDeleteFolder}
       />
-    </div>
+    </>
   );
 }

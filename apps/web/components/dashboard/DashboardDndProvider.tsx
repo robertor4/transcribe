@@ -7,7 +7,6 @@ import {
   DragOverlay,
   DragStartEvent,
   MouseSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   pointerWithin,
@@ -15,6 +14,7 @@ import {
 import { MessageSquare, GripVertical } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/formatters';
 import { AssetsCountBadge } from './AssetsCountBadge';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import type { Conversation } from '@/lib/types/conversation';
 
 interface DashboardDndProviderProps {
@@ -28,22 +28,18 @@ export function DashboardDndProvider({
 }: DashboardDndProviderProps) {
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
   const [isMoving, setIsMoving] = useState(false);
+  const isMobile = useIsMobile(1024); // lg breakpoint
 
-  // Configure sensors with activation constraints to prevent accidental drags
+  // Configure mouse sensor with activation constraint
+  // On mobile, we disable drag-and-drop entirely (users use "Move to folder" menu instead)
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
-      distance: 10, // 10px movement before drag starts
+      distance: isMobile ? 99999 : 10, // Effectively disable on mobile
     },
   });
 
-  const touchSensor = useSensor(TouchSensor, {
-    activationConstraint: {
-      delay: 250, // 250ms delay before drag starts on touch
-      tolerance: 5,
-    },
-  });
-
-  const sensors = useSensors(mouseSensor, touchSensor);
+  // Only use mouse sensor - touch interactions on mobile use the action menu instead
+  const sensors = useSensors(mouseSensor);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const { active } = event;

@@ -173,7 +173,7 @@ export function AssetMobileSheet({
         </div>
 
         {/* Asset List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-subtle">
+        <div className="flex-1 overflow-y-auto p-4 safe-area-bottom space-y-2 scrollbar-subtle">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-[#8D6AFA]" />

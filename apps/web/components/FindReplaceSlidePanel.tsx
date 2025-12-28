@@ -477,7 +477,7 @@ export function FindReplaceSlidePanel({
               onChange={(e) => setFindText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder={t('findPlaceholder')}
-              className="w-full pl-10 pr-20 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+              className="w-full pl-10 pr-20 py-2.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
             />
             {/* Inline toggle buttons with tooltips */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
@@ -526,7 +526,7 @@ export function FindReplaceSlidePanel({
               value={replaceText}
               onChange={(e) => setReplaceText(e.target.value)}
               placeholder={t('replacePlaceholder')}
-              className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
             />
           </div>
 

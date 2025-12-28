@@ -308,7 +308,7 @@ export function QASlidePanel({
               maxLength={500}
               disabled={isSubmitting}
               className="
-                flex-1 px-4 py-2.5 text-sm
+                flex-1 px-4 py-2.5 text-base sm:text-sm
                 bg-white dark:bg-gray-900
                 border border-gray-200 dark:border-gray-700
                 rounded-full

@@ -184,32 +184,74 @@ export function DashboardClient() {
           leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
           showRightPanel={false}
           mainContent={
-          <div className="px-12 pt-[38px] pb-12">
+          <div className="px-4 sm:px-6 lg:px-12 pt-8 sm:pt-4 lg:pt-[38px] pb-12">
             {/* Personalized Greeting - aligned with logo bottom */}
-            <div className="mb-8">
+            <div className="mb-4">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#7A5AE0] via-[#8D6AFA] to-[#ff66cc] bg-clip-text text-transparent">
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
 
             {/* Quick Create Buttons */}
-            <section className="mb-10">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl">
+            <section className="mb-8 sm:mb-10">
+              {/* Mobile: Primary action + secondary row */}
+              <div className="sm:hidden space-y-2">
+                {/* Primary: Record the room */}
+                <button
+                  onClick={handleRecordMicrophone}
+                  aria-label={`${t('recordRoom')}: ${t('recordRoomDesc')}`}
+                  className="group relative w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+                    <Mic className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
+                      {t('recordRoom')}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {t('recordRoomDesc')}
+                    </div>
+                  </div>
+                </button>
+
+                {/* Secondary: Browser tab & Upload */}
+                <div className="flex items-center justify-center gap-6">
+                  <button
+                    onClick={handleRecordTabAudio}
+                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors"
+                  >
+                    <Monitor className="w-4 h-4" />
+                    <span>{t('recordTab')}</span>
+                  </button>
+                  <span className="text-gray-300 dark:text-gray-600">•</span>
+                  <button
+                    onClick={handleUploadFile}
+                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span>{t('uploadFileLabel')}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Desktop: 3-column grid */}
+              <div className="hidden sm:grid sm:grid-cols-3 gap-4 max-w-4xl">
                 {QUICK_CREATE_BUTTONS.map((type) => (
                   <button
                     key={type.action}
                     onClick={getButtonHandler(type.action)}
                     aria-label={`Create ${t(type.labelKey)}: ${t(type.descKey)}`}
-                    className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+                    className="group relative flex items-center gap-4 p-5 min-h-[88px] bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
-                      <type.Icon className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+                      <type.Icon className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
                         {t(type.labelKey)}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 h-10 line-clamp-2">
                         {t(type.descKey)}
                       </div>
                     </div>

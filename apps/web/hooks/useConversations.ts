@@ -39,7 +39,7 @@ export function useConversations(
   options: UseConversationsOptions = {}
 ): UseConversationsResult {
   const { pageSize = 20, autoRefresh = false, refreshInterval = 30000 } = options;
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -90,13 +90,18 @@ export function useConversations(
 
   // Initial fetch
   useEffect(() => {
+    // Wait for auth to complete before deciding there's no user
+    if (authLoading) {
+      return;
+    }
+
     if (user) {
       fetchConversations(1);
     } else {
       setConversations([]);
       setIsLoading(false);
     }
-  }, [user, fetchConversations]);
+  }, [user, authLoading, fetchConversations]);
 
   // Auto-refresh
   useEffect(() => {

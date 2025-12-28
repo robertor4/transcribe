@@ -206,7 +206,20 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   // Get media stream based on source
   const getMediaStream = useCallback(
     async (source: RecordingSource, deviceId?: string): Promise<MediaStream> => {
+      // Check if mediaDevices API is available (requires HTTPS or localhost)
+      if (!navigator.mediaDevices) {
+        throw new Error(
+          'Recording is not available. Please ensure you are using HTTPS or localhost.'
+        );
+      }
+
       if (source === 'microphone') {
+        if (!navigator.mediaDevices.getUserMedia) {
+          throw new Error(
+            'Microphone recording is not supported in your browser.'
+          );
+        }
+
         // Request microphone access with optional device selection
         // Note: We use simple deviceId (not { exact: deviceId }) to avoid
         // complex stream handling that could cause issues in Chrome

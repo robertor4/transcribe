@@ -220,7 +220,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
   }
 
   return (
-    <div className={`bg-white dark:bg-transparent rounded-lg ${className}`}>
+    <div className={`bg-white dark:bg-transparent rounded-lg overflow-x-hidden ${className}`}>
       {/* Header with Search */}
       <div className="mb-6">
         <div className="relative">
@@ -275,8 +275,8 @@ export default function TranscriptTimeline({ segments, className = '', highlight
         </div>
       </div>
 
-      {/* Interactive Timeline Bar */}
-      <div className="mb-8">
+      {/* Interactive Timeline Bar - hidden on mobile for space */}
+      <div className="hidden sm:block mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Timeline Overview</span>
           <span className="text-sm text-gray-500 dark:text-gray-400">{formatTime(totalDuration)}</span>
@@ -291,7 +291,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
             const leftPercent = (group.startTime / totalDuration) * 100;
             const widthPercent = ((group.endTime - group.startTime) / totalDuration) * 100;
             const colors = getSpeakerColor(group.speakerTag);
-            
+
             return (
               <div
                 key={index}
@@ -304,7 +304,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
               />
             );
           })}
-          
+
           {/* Time markers */}
           {timeMarkers.map((time) => (
             <div
@@ -317,7 +317,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
               </span>
             </div>
           ))}
-          
+
           {/* Selected time indicator */}
           {selectedTime !== null && (
             <div
@@ -342,19 +342,19 @@ export default function TranscriptTimeline({ segments, className = '', highlight
               id={`segment-${group.segments[0].index}`}
               className="relative transition-all mb-6"
             >
-              {/* Timeline connector */}
-              <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
+              {/* Timeline connector - hidden on mobile for space */}
+              <div className="hidden sm:block absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
 
-              {/* Time marker */}
-              <div className="absolute left-0 top-4 flex items-center">
+              {/* Time marker - simplified on mobile */}
+              <div className="hidden sm:flex absolute left-0 top-4 items-center">
                 <div className={`w-4 h-4 rounded-full ${colors.avatar} ring-4 ring-white dark:ring-gray-800`} />
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                   {formatTime(group.startTime)}
                 </span>
               </div>
-              
-              {/* Content card */}
-              <div className={`ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
+
+              {/* Content card - full width on mobile, indented on desktop */}
+              <div className={`sm:ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${colors.avatar} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}>
@@ -365,6 +365,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
                         {group.speakerTag}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="sm:hidden">{formatTime(group.startTime)} · </span>
                         {formatDuration(group.startTime, group.endTime)}
                       </div>
                     </div>

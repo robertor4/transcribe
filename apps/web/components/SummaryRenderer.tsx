@@ -79,7 +79,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
       {summary.detailedSections.length > 0 && (
         <div className="space-y-6 mt-2">
           {summary.detailedSections.map((section, idx) => (
-            <div key={idx} className="pl-6 border-l-2 border-gray-200 dark:border-gray-700">
+            <div key={idx}>
               <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 <TextHighlighter text={section.topic} highlight={highlightOptions} />
               </h4>
