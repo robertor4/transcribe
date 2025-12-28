@@ -35,7 +35,7 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading transcript...</p>
@@ -47,7 +47,7 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
   // Error state
   if (error || !conversation) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">😕</div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Conversation Not Found</h2>

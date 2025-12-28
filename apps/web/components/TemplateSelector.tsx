@@ -60,7 +60,7 @@ export function TemplateSelector({
         disabled={isMultiSelect && isBase}
         className={`group relative p-6 rounded-xl border-2 transition-all duration-200 text-left ${
           isBase && isMultiSelect
-            ? 'border-[#8D6AFA] bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/10 dark:to-gray-800 shadow-lg cursor-default'
+            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/10 shadow-lg cursor-default'
             : isSelected
             ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/10 shadow-lg scale-105'
             : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md'

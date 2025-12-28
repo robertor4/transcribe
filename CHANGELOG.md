@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File: [2025-12-28_MOBILE_TESTING_SETUP.md](docs/2025-12-28_MOBILE_TESTING_SETUP.md)
 
 ### Changed
+- **Brand Color Simplification**: Removed all gradients (65+ instances across 36 files) and replaced with solid brand colors
+  - Purple gradients → solid `#8D6AFA` with `#7A5AE0` hover states
+  - Gray gradients → solid `bg-gray-100 dark:bg-gray-800`
+  - Page backgrounds → clean `bg-white` or `bg-gray-50`
+  - Shimmer animation → solid white with opacity pulse (simpler, cleaner)
+  - Dashboard greeting text → solid `text-[#8D6AFA]` instead of gradient text
+  - Files: 36 files including DashboardClient, landing pages, templates, modals, and globals.css
 - **Translation Performance**: Batch multiple texts into single API calls for 5-10x faster translation
   - Summary translation now uses 1 API call instead of 9+ individual calls
   - Multiple AI Assets are translated together in a single batch

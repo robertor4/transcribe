@@ -191,7 +191,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
@@ -203,7 +203,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   // Error state
   if (error || !output) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">

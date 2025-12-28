@@ -187,7 +187,7 @@ export function DashboardClient() {
           <div className="px-4 sm:px-6 lg:px-12 pt-8 sm:pt-4 lg:pt-[38px] pb-12">
             {/* Personalized Greeting - aligned with logo bottom */}
             <div className="mb-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#7A5AE0] via-[#8D6AFA] to-[#ff66cc] bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-[#8D6AFA]">
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
@@ -202,7 +202,7 @@ export function DashboardClient() {
                   aria-label={`${t('recordRoom')}: ${t('recordRoomDesc')}`}
                   className="group relative w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
                     <Mic className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -244,7 +244,7 @@ export function DashboardClient() {
                     aria-label={`Create ${t(type.labelKey)}: ${t(type.descKey)}`}
                     className="group relative flex items-center gap-4 p-5 min-h-[88px] bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+                    <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
                       <type.Icon className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
                     </div>
                     <div className="flex-1 min-w-0">

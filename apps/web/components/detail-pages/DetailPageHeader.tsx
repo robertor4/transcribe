@@ -47,7 +47,7 @@ export function DetailPageHeader({
         <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4">
           {/* Title Section */}
           <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0">
               <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-300" />
             </div>
             <div className="min-w-0">

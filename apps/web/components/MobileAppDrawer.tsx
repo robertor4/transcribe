@@ -127,7 +127,10 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
         aria-label="Navigation menu"
       >
         {/* Header with logo and close button */}
-        <div className="flex items-center justify-between p-4 pt-5 safe-area-top">
+        <div
+          className="flex items-center justify-between px-4 pb-4"
+          style={{ paddingTop: 'calc(2rem + env(safe-area-inset-top, 0px))' }}
+        >
           <Link href={`/${locale}/dashboard`} onClick={onClose} className="hover:opacity-80 transition-opacity">
             <Image
               src="/assets/logos/neural-summary-logo-altBlue.svg"

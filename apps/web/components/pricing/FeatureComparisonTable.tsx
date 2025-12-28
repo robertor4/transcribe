@@ -89,14 +89,14 @@ export function FeatureComparisonTable() {
     <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
+          <tr className="bg-gray-50 dark:bg-gray-800">
             <th className="text-left py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-2/5">
               {t('feature')}
             </th>
             <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.free')}
             </th>
-            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-gradient-to-br from-[#8D6AFA]/10 via-purple-50/50 to-[#8D6AFA]/10 dark:from-[#8D6AFA]/20 dark:via-purple-900/20 dark:to-[#8D6AFA]/20 w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 w-1/5">
               <div className="flex items-center justify-center gap-2">
                 <span className="text-[#8D6AFA] dark:text-[#ff66cc] font-bold text-sm sm:text-base md:text-lg">
                   {t('tiers.professional')}
@@ -114,7 +114,7 @@ export function FeatureComparisonTable() {
               <tr>
                 <td
                   colSpan={4}
-                  className="py-3 px-2 sm:py-4 sm:px-6 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 font-bold text-gray-900 dark:text-white text-xs sm:text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
+                  className="py-3 px-2 sm:py-4 sm:px-6 bg-gray-100 dark:bg-gray-800 font-bold text-gray-900 dark:text-white text-xs sm:text-sm uppercase tracking-wider border-t-2 border-gray-200 dark:border-gray-600"
                 >
                   {category.category}
                 </td>
@@ -130,7 +130,7 @@ export function FeatureComparisonTable() {
                   <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">
                     {renderCell(item.free, false)}
                   </td>
-                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-gradient-to-br from-[#8D6AFA]/5 via-purple-50/30 to-[#8D6AFA]/5 dark:from-[#8D6AFA]/10 dark:via-purple-900/10 dark:to-[#8D6AFA]/10 border-b border-[#8D6AFA]/10 dark:border-[#8D6AFA]/20">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 border-b border-[#8D6AFA]/10 dark:border-[#8D6AFA]/20">
                     {renderCell(item.pro, true)}
                   </td>
                   <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100 dark:border-gray-800">

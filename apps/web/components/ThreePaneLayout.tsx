@@ -78,7 +78,7 @@ export function ThreePaneLayout({
       {/* Mobile hamburger button - only visible on mobile */}
       <button
         onClick={() => setIsMobileDrawerOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-11 h-11 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#1f1f3d] text-white shadow-lg hover:bg-[#4a42b5] transition-colors safe-area-top"
+        className="lg:hidden fixed top-4 left-4 z-50 w-11 h-11 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#0f1320] text-white shadow-lg hover:bg-[#4a42b5] dark:hover:bg-[#1a1a3a] transition-colors safe-area-top"
         aria-label="Open navigation menu"
       >
         <Menu className="w-5 h-5" />

@@ -39,7 +39,7 @@ export function BeforeAfterAnimation() {
       >
         <div className="relative inline-block">
           <motion.div
-            className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-lg"
+            className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center shadow-lg"
             animate={isInView ? {
               y: [0, -10, 0],
             } : {}}
@@ -138,7 +138,7 @@ export function BeforeAfterAnimation() {
         transition={{ duration: 0.8, delay: 1.6 }}
       >
         <motion.div
-          className="w-32 h-32 mx-auto rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-xl relative overflow-hidden"
+          className="w-32 h-32 mx-auto rounded-2xl bg-gray-100 flex items-center justify-center shadow-xl relative overflow-hidden"
           initial={{ scale: 0.8 }}
           animate={isInView ? { scale: 1 } : { scale: 0.8 }}
           transition={{ delay: 1.8, duration: 0.5, type: "spring" }}

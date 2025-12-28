@@ -60,10 +60,10 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} showFeaturesLink={true} />
 
-      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      <div className="min-h-screen bg-white">
 
         {/* Hero Section - Minimal Apple-like Design */}
-        <section className="relative h-screen flex flex-col items-center justify-between overflow-hidden bg-gradient-to-br from-gray-100/40 via-stone-50/30 to-gray-50/50" aria-label="Hero section">
+        <section className="relative h-screen flex flex-col items-center justify-between overflow-hidden bg-gray-50" aria-label="Hero section">
           {/* Content - Positioned at top, clean spacing */}
           <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-[16vh]">
             <div className="max-w-6xl mx-auto text-center">
@@ -157,7 +157,7 @@ export default async function LandingPage({
         </section>
 
         {/* From Thinking to Done - Light Section (WOW) */}
-        <section id="video-demo" className="py-32 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="video-demo-heading">
+        <section id="video-demo" className="py-32 bg-white" aria-labelledby="video-demo-heading">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <div className="px-6 sm:px-8 lg:px-12">
@@ -237,7 +237,7 @@ export default async function LandingPage({
         </section>
 
         {/* Features - Light Section */}
-        <section id="features" className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-white to-gray-50" aria-labelledby="features-heading">
+        <section id="features" className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="features-heading">
           <div className="max-w-5xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <h2 id="features-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-16">
@@ -336,7 +336,7 @@ export default async function LandingPage({
         </section>
 
         {/* CTA Section - Light */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-label="Get started">
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-label="Get started">
           <div className="max-w-4xl mx-auto text-center">
             <ScrollAnimation delay={200}>
               <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">

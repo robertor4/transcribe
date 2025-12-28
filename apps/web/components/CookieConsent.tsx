@@ -39,7 +39,7 @@ export function CookieConsent() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-br from-[#8D6AFA] to-[#9933cc] rounded-lg">
+              <div className="p-2 bg-[#8D6AFA] rounded-lg">
                 <Cookie className="h-6 w-6 text-white" />
               </div>
               <div>
@@ -111,7 +111,7 @@ export function CookieConsent() {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handleAccept}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-[#8D6AFA] to-[#9933cc] text-white font-medium rounded-lg hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                className="flex-1 px-6 py-3 bg-[#8D6AFA] text-white font-medium rounded-lg hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               >
                 Accept Analytics
               </button>

@@ -245,7 +245,7 @@ export function UploadInterface({
               onClick={() => setSelectedMethod('record-microphone')}
               className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
                 <Mic className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
               </div>
               <div className="flex-1">
@@ -263,7 +263,7 @@ export function UploadInterface({
               onClick={() => setSelectedMethod('record-tab-audio')}
               className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
                 <Monitor className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
               </div>
               <div className="flex-1">
@@ -281,7 +281,7 @@ export function UploadInterface({
               onClick={() => setSelectedMethod('upload')}
               className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center flex-shrink-0 group-hover:from-[#8D6AFA] group-hover:to-[#7A5AE0] dark:group-hover:from-[#8D6AFA] dark:group-hover:to-[#7A5AE0] group-hover:scale-105 transition-all duration-200">
+              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
                 <Upload className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
               </div>
               <div className="flex-1">

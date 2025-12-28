@@ -121,7 +121,7 @@ export function AssetMobileSheet({
         <div className="px-4 pb-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[#8D6AFA] flex items-center justify-center">
                 <Zap className="w-4 h-4 text-white" />
               </div>
               <div>

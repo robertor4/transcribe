@@ -46,7 +46,7 @@ function TemplateCard({
           className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
             isSelected
               ? 'bg-[#8D6AFA] text-white'
-              : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 text-gray-600 dark:text-gray-300'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
           }`}
         >
           <Icon className="w-5 h-5" />

@@ -109,7 +109,7 @@ export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTem
   return (
     <div className="space-y-6">
       {/* Overall Score Card */}
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/50 rounded-2xl p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <ScoreRing score={data.overallScore} size="lg" />
           <div className="flex-1 text-center md:text-left">

@@ -242,7 +242,7 @@ export function QASlidePanel({
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-[#8D6AFA] flex items-center justify-center flex-shrink-0">
               <MessageSquareText className="w-4 h-4 text-white" />
             </div>
             <div className="min-w-0">

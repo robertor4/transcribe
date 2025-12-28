@@ -35,7 +35,7 @@ export function GeneratingLoader({ className = '', size = 'sm' }: GeneratingLoad
       {bars.map((i) => (
         <div
           key={i}
-          className={`${barWidth} rounded-full bg-gradient-to-t from-[#7A5AE0] to-[#8D6AFA]`}
+          className={`${barWidth} rounded-full bg-[#8D6AFA]`}
           style={{
             height: barHeight,
             animation: 'pulseBar 1.2s ease-in-out infinite',

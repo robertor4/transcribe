@@ -22,17 +22,15 @@ export function QASidebarEntry({
       onClick={onClick}
       className="
         w-full text-left p-3 rounded-xl
-        bg-gradient-to-br from-[#8D6AFA]/5 to-[#8D6AFA]/10
-        dark:from-[#8D6AFA]/10 dark:to-[#8D6AFA]/20
+        bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10
         border border-[#8D6AFA]/20 dark:border-[#8D6AFA]/30
-        hover:from-[#8D6AFA]/10 hover:to-[#8D6AFA]/15
-        dark:hover:from-[#8D6AFA]/15 dark:hover:to-[#8D6AFA]/25
+        hover:bg-[#8D6AFA]/10 dark:hover:bg-[#8D6AFA]/15
         hover:border-[#8D6AFA]/30 dark:hover:border-[#8D6AFA]/40
         transition-all duration-200 group
       "
     >
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-lg bg-[#8D6AFA] flex items-center justify-center flex-shrink-0">
           <MessageSquareText className="w-4.5 h-4.5 text-white" />
         </div>
         <div className="flex-1 min-w-0">

@@ -167,7 +167,7 @@ export default function PricingPage() {
     <>
       <PublicHeader locale={locale} showFeaturesLink={true} />
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
         <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center space-y-8">
@@ -249,7 +249,7 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
+      <section id="faq" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-4xl mx-auto space-y-12">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 text-center tracking-tight">
             {t('faq.title')}

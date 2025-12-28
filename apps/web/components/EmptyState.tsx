@@ -26,7 +26,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="text-center py-24">
-      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-6">
+      <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
         {icon}
       </div>
       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">

@@ -24,7 +24,7 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
       title: useCaseStrings.oneOnOnes.title,
       description: useCaseStrings.oneOnOnes.description,
       icon: UserCheck,
-      bgGradient: 'from-purple-50 to-purple-50',
+      bgColor: 'bg-purple-50',
       iconBg: 'bg-[#8D6AFA]',
       iconColor: 'text-white',
     },
@@ -32,7 +32,7 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
       title: useCaseStrings.teamStandups.title,
       description: useCaseStrings.teamStandups.description,
       icon: Target,
-      bgGradient: 'from-blue-50 to-cyan-50',
+      bgColor: 'bg-blue-50',
       iconBg: 'bg-blue-600',
       iconColor: 'text-white',
     },
@@ -40,7 +40,7 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
       title: useCaseStrings.clientCalls.title,
       description: useCaseStrings.clientCalls.description,
       icon: Briefcase,
-      bgGradient: 'from-green-50 to-emerald-50',
+      bgColor: 'bg-green-50',
       iconBg: 'bg-green-600',
       iconColor: 'text-white',
     },
@@ -48,7 +48,7 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
       title: useCaseStrings.allHands.title,
       description: useCaseStrings.allHands.description,
       icon: Building2,
-      bgGradient: 'from-orange-50 to-amber-50',
+      bgColor: 'bg-orange-50',
       iconBg: 'bg-orange-600',
       iconColor: 'text-white',
     },
@@ -78,7 +78,7 @@ export function MeetingUseCases({ title, subtitle, useCases: useCaseStrings }: M
                 animation={index % 2 === 0 ? 'slideLeft' : 'slideRight'}
                 delay={index * 100}
               >
-                <div className={`bg-gradient-to-br ${useCase.bgGradient} rounded-2xl p-8 h-full border border-gray-200 hover:shadow-xl transition-all hover-lift`}>
+                <div className={`${useCase.bgColor} rounded-2xl p-8 h-full border border-gray-200 hover:shadow-xl transition-all hover-lift`}>
                   <div className="flex items-start">
                     <div className={`w-14 h-14 ${useCase.iconBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
                       <Icon className={`h-7 w-7 ${useCase.iconColor}`} aria-hidden="true" />

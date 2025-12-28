@@ -145,7 +145,7 @@ export default function WorkflowCarousel() {
                     priority
                   />
                   {/* Gradient overlay - stronger at bottom for text */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
+                  <div className="absolute inset-0 bg-black/50" />
                 </div>
 
                 {/* Content overlay - Bottom left alignment */}

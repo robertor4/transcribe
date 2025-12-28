@@ -55,7 +55,7 @@ export function AssetSidebar({
       {/* Header */}
       <div className={`p-4 ${assets.length > 0 ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}>
         <div className={`flex items-center gap-2 ${assets.length > 0 ? 'mb-3' : ''}`}>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-[#8D6AFA] flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -184,7 +184,15 @@ export function AssetSidebar({
                 Created
               </span>
               <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                {metadata.createdAt.toLocaleDateString()}
+                {metadata.createdAt.toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}{' '}
+                {metadata.createdAt.toLocaleTimeString(undefined, {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                })}
               </span>
             </div>
 

@@ -84,7 +84,7 @@ export default async function TermsPage({
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             {/* Title Section */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#8D6AFA] to-[#9933cc] rounded-full mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#8D6AFA] rounded-full mb-3">
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('title')}</h1>

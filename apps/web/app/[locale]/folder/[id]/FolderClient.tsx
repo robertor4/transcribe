@@ -234,7 +234,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
             {/* Header */}
             <div className={`p-4 ${assets.length > 0 ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D6AFA] to-[#7A5AE0] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#8D6AFA] flex items-center justify-center">
                   <Zap className="w-4 h-4 text-white" />
                 </div>
                 <div>
@@ -468,7 +468,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
 
               {conversations.length === 0 ? (
                 <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
                     <Folder className="w-10 h-10 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">

@@ -21,7 +21,7 @@ export function UpgradePrompt({
 
   if (variant === 'banner') {
     return (
-      <div className="bg-gradient-to-r from-[#8D6AFA] to-purple-600 rounded-lg p-4 mb-6">
+      <div className="bg-[#8D6AFA] rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {showIcon && <Sparkles className="h-5 w-5 text-white mr-3" />}
@@ -61,7 +61,7 @@ export function UpgradePrompt({
 
   // Default: card variant
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-50 dark:from-purple-900/20 dark:to-purple-900/20 rounded-xl p-6 border-2 border-dashed border-[#8D6AFA]/30 mb-6">
+    <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-6 border-2 border-dashed border-[#8D6AFA]/30 mb-6">
       <div className="flex items-start">
         {showIcon && (
           <div className="flex-shrink-0">

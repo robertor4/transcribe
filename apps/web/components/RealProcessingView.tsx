@@ -310,7 +310,7 @@ export function RealProcessingView({
             className={`h-full transition-all duration-500 ease-out ${
               stage === 'error'
                 ? 'bg-red-500'
-                : 'bg-gradient-to-r from-[#8D6AFA] to-[#ff66cc]'
+                : 'bg-[#8D6AFA]'
             }`}
             style={{ width: `${progress}%` }}
           />
