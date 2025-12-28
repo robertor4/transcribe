@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useParams, useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { SharedTranscriptionView } from '@transcribe/shared';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import TranscriptTimeline from '@/components/TranscriptTimeline';
 import { AnalysisContentRenderer } from '@/components/AnalysisContentRenderer';
 import { Button } from '@/components/Button';
+import { useAuth } from '@/contexts/AuthContext';
+import { importedConversationApi } from '@/lib/api';
+import { setPendingImport } from '@/lib/pendingImport';
 import {
   Lock,
   Loader2,
@@ -25,12 +28,15 @@ import {
   Edit3,
   Share2,
   MessageSquareQuote,
+  Download,
+  UserPlus,
+  Globe,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { StructuredOutput } from '@transcribe/shared';
 import { getStructuredOutputPreview } from '@/components/outputTemplates';
 import { formatRelativeTime } from '@/lib/formatters';
-import { TranslationDropdown } from '@/components/TranslationDropdown';
+import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 
 // Icon mapping for output types (matching AssetSidebarCard)
@@ -75,7 +81,10 @@ function getContentPreview(content: unknown, contentType: string): string {
 
 export default function SharedTranscriptionPage() {
   const params = useParams();
+  const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('shared');
+  const { user } = useAuth();
   const shareToken = params.shareToken as string;
 
   // Force light mode on shared pages (they don't have theme controls)
@@ -102,11 +111,56 @@ export default function SharedTranscriptionPage() {
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [activeTab, setActiveTab] = useState<'summary' | 'transcript' | 'ai-assets'>('summary');
   const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+
+  // Import state
+  const [isImporting, setIsImporting] = useState(false);
+  const [isImported, setIsImported] = useState(false);
+
+  // Check import status when user is authenticated
+  useEffect(() => {
+    if (user && shareToken) {
+      importedConversationApi.checkStatus(shareToken).then((response) => {
+        if (response.success && response.data?.imported) {
+          setIsImported(true);
+        }
+      }).catch(() => {
+        // Ignore errors - user just hasn't imported yet
+      });
+    }
+  }, [user, shareToken]);
+
+  // Handle import for authenticated users
+  const handleImport = async () => {
+    if (!user) {
+      // Redirect to sign up with pending import
+      setPendingImport(shareToken);
+      router.push(`/${locale}/signup?redirect=/shared/${shareToken}`);
+      return;
+    }
+
+    setIsImporting(true);
+    try {
+      const response = await importedConversationApi.import(shareToken, password || undefined);
+      if (response.success && response.data) {
+        setIsImported(true);
+      }
+    } catch (err) {
+      console.error('Failed to import:', err);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  // Handle sign up redirect for unauthenticated users
+  const handleSignUpToImport = () => {
+    setPendingImport(shareToken);
+    router.push(`/${locale}/signup?redirect=/shared/${shareToken}`);
+  };
 
   // Translation state for shared view (read-only)
   const {
     status: translationStatus,
-    isTranslating,
     currentLocale,
     setLocale,
     getTranslatedContent,
@@ -426,22 +480,8 @@ export default function SharedTranscriptionPage() {
                 className="h-8 w-auto"
               />
             </a>
-            <div className="flex items-center gap-3">
-              {/* Translation dropdown (read-only for shared view) */}
-              {translationStatus && translationStatus.availableLocales.length > 0 && (
-                <TranslationDropdown
-                  status={translationStatus}
-                  currentLocale={currentLocale}
-                  isTranslating={isTranslating}
-                  onSelectLocale={setLocale}
-                  readOnly
-                />
-              )}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 border border-purple-200 rounded-full text-xs font-medium text-[#8D6AFA]">
-                <Lock className="w-3.5 h-3.5" />
-                {t('readOnly')}
-              </div>
-            </div>
+            {/* User avatar when logged in */}
+            {user && <UserAvatarDropdown compact />}
           </div>
 
           {/* Title and Metadata */}
@@ -461,77 +501,185 @@ export default function SharedTranscriptionPage() {
               )}
             </div>
           </div>
+
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div>
-          {/* Tab Navigation */}
+          {/* Tab Navigation + Action Buttons on same row */}
           <nav className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center gap-1 py-1">
-              {hasSummary && (
-                <button
-                  onClick={() => setActiveTab('summary')}
-                  className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
-                    activeTab === 'summary'
-                      ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4" />
-                    Summary
-                  </span>
-                </button>
-              )}
-              {hasTranscript && (
-                <button
-                  onClick={() => setActiveTab('transcript')}
-                  className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
-                    activeTab === 'transcript'
-                      ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    Transcript
-                  </span>
-                </button>
-              )}
-              {hasAIAssets && (
-                <button
-                  onClick={() => setActiveTab('ai-assets')}
-                  className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
-                    activeTab === 'ai-assets'
-                      ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    AI Assets
-                  </span>
-                </button>
-              )}
-            </div>
-          </nav>
+            <div className="flex items-center justify-between py-1">
+              {/* Tabs */}
+              <div className="flex items-center gap-1">
+                {hasSummary && (
+                  <button
+                    onClick={() => setActiveTab('summary')}
+                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                      activeTab === 'summary'
+                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4" />
+                      Summary
+                    </span>
+                  </button>
+                )}
+                {hasTranscript && (
+                  <button
+                    onClick={() => setActiveTab('transcript')}
+                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                      activeTab === 'transcript'
+                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Transcript
+                    </span>
+                  </button>
+                )}
+                {hasAIAssets && (
+                  <button
+                    onClick={() => setActiveTab('ai-assets')}
+                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                      activeTab === 'ai-assets'
+                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      AI Assets
+                    </span>
+                  </button>
+                )}
+              </div>
 
-          <div className="pt-6">
-            {/* Summary Tab Content */}
-            {hasSummary && (
-              <div className={activeTab === 'summary' ? 'block' : 'hidden'}>
-                <div className="flex items-center justify-end mb-4">
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1">
+                {/* Import button */}
+                {user ? (
+                  isImported ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={<Check className="w-4 h-4 text-green-600" />}
+                      disabled
+                    >
+                      {t('importCta.imported')}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      icon={isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                      onClick={handleImport}
+                      disabled={isImporting}
+                    >
+                      {isImporting ? t('importCta.importing') : t('importCta.importButton')}
+                    </Button>
+                  )
+                ) : (
                   <Button
                     variant="ghost"
                     size="sm"
-                    icon={copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    onClick={handleCopySummary}
+                    icon={<UserPlus className="w-4 h-4" />}
+                    onClick={handleSignUpToImport}
                   >
-                    {copiedSummary ? 'Copied!' : 'Copy'}
+                    {t('importCta.signUp')}
                   </Button>
-                </div>
+                )}
+                {/* Copy button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  onClick={handleCopySummary}
+                >
+                  {copiedSummary ? t('copied') : t('copy')}
+                </Button>
+                {/* Language switcher dropdown */}
+                {translationStatus && translationStatus.availableLocales.length > 0 && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowMoreMenu(!showMoreMenu)}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                      aria-label="Change language"
+                    >
+                      <Globe className="w-4 h-4" />
+                      <span className="hidden sm:inline text-xs">
+                        {currentLocale === 'original'
+                          ? (translationStatus.originalLocale?.toUpperCase() || 'Original')
+                          : currentLocale.toUpperCase()}
+                      </span>
+                    </button>
+                    {showMoreMenu && (
+                      <>
+                        {/* Backdrop to close menu */}
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setShowMoreMenu(false)}
+                        />
+                        {/* Dropdown menu */}
+                        <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px]">
+                          {/* Original language option */}
+                          <button
+                            onClick={() => {
+                              setLocale('original');
+                              setShowMoreMenu(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors ${
+                              currentLocale === 'original'
+                                ? 'bg-purple-50 text-[#8D6AFA] font-medium'
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <span>
+                              {translationStatus.originalLocale
+                                ? `${translationStatus.availableLocales.find(l => l.code.toLowerCase() === translationStatus.originalLocale?.toLowerCase())?.nativeName || translationStatus.originalLocale} (Original)`
+                                : 'Original'}
+                            </span>
+                            {currentLocale === 'original' && <Check className="w-4 h-4" />}
+                          </button>
+
+                          {/* Available translations */}
+                          {translationStatus.availableLocales.filter(l =>
+                            l.code.toLowerCase() !== translationStatus.originalLocale?.toLowerCase()
+                          ).map((locale) => (
+                            <button
+                              key={locale.code}
+                              onClick={() => {
+                                setLocale(locale.code);
+                                setShowMoreMenu(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors ${
+                                currentLocale === locale.code
+                                  ? 'bg-purple-50 text-[#8D6AFA] font-medium'
+                                  : 'text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              <span>{locale.nativeName}</span>
+                              {currentLocale === locale.code && <Check className="w-4 h-4" />}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </nav>
+
+          <div className="pt-4">
+            {/* Summary Tab Content */}
+            {hasSummary && (
+              <div className={activeTab === 'summary' ? 'block' : 'hidden'}>
                 {(() => {
                   // Check if viewing a translation
                   const summaryTranslation = currentLocale !== 'original'

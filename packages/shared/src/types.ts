@@ -617,6 +617,70 @@ export interface SharedTranscriptionView {
   preferredTranslationLanguage?: string; // Sender's preferred language (e.g., 'es', 'fr', or 'original')
 }
 
+// ============================================================================
+// Imported Conversations (V2 - Shared with you folder)
+// ============================================================================
+
+/**
+ * Represents a linked reference to a shared conversation.
+ * The import points to the original share; if the share is revoked or expires,
+ * the imported reference becomes inaccessible.
+ */
+export interface ImportedConversation {
+  id: string;
+  userId: string; // Who imported it
+  shareToken: string; // Reference to original share
+  originalTranscriptionId: string; // For tracking/analytics
+
+  // Cached metadata (snapshot at import time for display)
+  title: string;
+  sharedByName?: string;
+  sharedByEmail?: string;
+  expiresAt?: Date; // Copied from share settings
+
+  // Timestamps
+  importedAt: Date;
+  lastAccessedAt?: Date;
+  deletedAt?: Date; // Soft delete
+}
+
+/**
+ * Status of an imported conversation based on the underlying share's state.
+ */
+export type ImportedConversationStatus =
+  | 'active' // Share is valid and accessible
+  | 'expired' // Share has passed its expiration date
+  | 'revoked' // Owner has revoked the share
+  | 'unavailable'; // Share not found or other error
+
+/**
+ * Response when fetching an imported conversation with its live content.
+ */
+export interface ImportedConversationWithContent {
+  importedConversation: ImportedConversation;
+  sharedContent: SharedTranscriptionView | null; // null if unavailable
+  status: ImportedConversationStatus;
+}
+
+/**
+ * Response when importing a shared conversation.
+ */
+export interface ImportConversationResponse {
+  importedConversation: ImportedConversation;
+  alreadyImported: boolean; // True if user had already imported this
+}
+
+/**
+ * Extended shared transcription view with import status.
+ * Used when an authenticated user views a shared link.
+ */
+export interface SharedTranscriptionViewWithImportStatus
+  extends SharedTranscriptionView {
+  canImport: boolean; // Always true for valid shares
+  alreadyImported: boolean; // Whether current user has imported this
+  importedAt?: Date; // When user imported (if they did)
+}
+
 export interface TranslateRequest {
   targetLanguage: string; // Language code (e.g., 'es', 'fr', 'de')
 }
@@ -862,6 +926,7 @@ export interface TranslateConversationRequest {
   translateSummary?: boolean;    // Default: true
   translateAssets?: boolean;     // Default: true (all existing assets)
   assetIds?: string[];           // Optional: specific asset IDs to translate
+  forceRetranslate?: boolean;    // Default: false - if true, deletes existing and re-translates
 }
 
 /**

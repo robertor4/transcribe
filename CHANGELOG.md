@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Translation Performance**: Batch multiple texts into single API calls for 5-10x faster translation
+  - Summary translation now uses 1 API call instead of 9+ individual calls
+  - Multiple AI Assets are translated together in a single batch
+  - Reduces translation time from ~7 seconds to ~1.5 seconds for typical summaries
+  - Added validation to detect truncated/malformed batch responses
+  - Automatic fallback to individual translations if batch parsing fails
+  - File: [translation.service.ts](apps/api/src/translation/translation.service.ts)
+
+### Fixed
+- **Translation Menu**: Original language no longer appears in "Translate To" list
+  - A Dutch conversation won't show "Nederlands" as a translation option
+  - Matches by language code, name, and native name to handle various formats
+  - Fixed in both conversation page (3-dot menu) and shared view page (dropdown)
+  - Files: [TranslationMenuItems.tsx](apps/web/components/TranslationMenuItems.tsx), [TranslationDropdown.tsx](apps/web/components/TranslationDropdown.tsx)
+
 ## [2.3.1] - 2025-12-27
 ### Find & Replace Polish
 

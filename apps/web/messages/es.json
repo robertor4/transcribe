@@ -1676,6 +1676,7 @@
     "confirmRevoke": "¿Está seguro de que desea revocar este enlace para compartir? Las personas con el enlace ya no podrán acceder a esta transcripción."
   },
   "shared": {
+    "translate": "Traducir",
     "loading": "Cargando transcripción...",
     "passwordRequired": "Contraseña requerida",
     "passwordDescription": "Esta transcripción está protegida con contraseña. Ingrese la contraseña para verla.",
@@ -1694,9 +1695,61 @@
     "readOnly": "Solo lectura",
     "analysis": "Análisis",
     "transcript": "Transcripción completa",
+    "summary": "Resumen",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "noSummary": "No hay resumen disponible",
+    "noTranscript": "No hay transcripción disponible",
     "footer": {
       "poweredBy": "Desarrollado por",
       "copyright": "© {year} Neural Summary. Todos los derechos reservados."
+    },
+    "importCta": {
+      "title": "Guardar en tu biblioteca",
+      "description": "Importa esta conversación para acceder a ella en cualquier momento desde tu panel de control.",
+      "signUp": "Regístrate gratis",
+      "logIn": "Iniciar sesión",
+      "signUpTitle": "Guardar en tu biblioteca",
+      "signUpDescription": "Regístrate para importar esta conversación y acceder a ella en cualquier momento.",
+      "importButton": "Importar",
+      "importing": "Importando...",
+      "imported": "Importado"
+    },
+    "userMenu": {
+      "dashboard": "Ir al panel",
+      "signOut": "Cerrar sesión"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Compartido contigo",
+    "backToList": "Volver a compartidos",
+    "sharedBy": "Compartido por {name}",
+    "empty": {
+      "title": "Sin conversaciones compartidas",
+      "description": "Cuando alguien comparta una conversación contigo y la importes, aparecerá aquí."
+    },
+    "importButton": "Importar a biblioteca",
+    "importing": "Importando...",
+    "imported": "Importado",
+    "importedOn": "Importado el {date}",
+    "expiresIn": "{days} días restantes",
+    "expiresToday": "Expira hoy",
+    "expired": "Expirado",
+    "expiredTitle": "Esta conversación ha expirado",
+    "expiredDescription": "El enlace para compartir de esta conversación ha expirado y el contenido ya no está disponible.",
+    "unavailable": "Ya no disponible",
+    "unavailableTitle": "Conversación no disponible",
+    "unavailableDescription": "Esta conversación ya no está disponible. El propietario puede haber revocado el acceso o eliminado el original.",
+    "expirationWarning": "Esta conversación expira en {days} días",
+    "removeConfirm": "¿Eliminar de tu biblioteca?",
+    "removeDescription": "Esto no afectará la conversación original.",
+    "remove": "Eliminar",
+    "yes": "Sí",
+    "no": "No",
+    "error": {
+      "loadFailed": "Error al cargar las conversaciones compartidas",
+      "importFailed": "Error al importar la conversación",
+      "removeFailed": "Error al eliminar la conversación"
     }
   },
   "pricing": {

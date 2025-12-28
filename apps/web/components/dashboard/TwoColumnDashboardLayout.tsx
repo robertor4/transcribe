@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Folder as FolderIcon, MessageSquare, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01, Mic } from 'lucide-react';
+import Link from 'next/link';
+import { Folder as FolderIcon, MessageSquare, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01, Mic, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { DraggableConversationCard } from './DraggableConversationCard';
 import { DroppableFolderCard } from './DroppableFolderCard';
+import { useImportedConversations } from '@/contexts/ImportedConversationsContext';
 import type { Conversation } from '@/lib/types/conversation';
 import type { Folder } from '@/lib/services/folderService';
 
@@ -38,6 +40,7 @@ export function TwoColumnDashboardLayout({
   onNewConversation,
   onDeleteConversation,
 }: TwoColumnDashboardLayoutProps) {
+  const { count: importedCount } = useImportedConversations();
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [sortMode, setSortMode] = useState<FolderSortMode>('name-asc');
@@ -194,7 +197,7 @@ export function TwoColumnDashboardLayout({
             </div>
           </div>
 
-          {folders.length === 0 && !isCreatingFolder ? (
+          {folders.length === 0 && importedCount === 0 && !isCreatingFolder ? (
             <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
               <FolderIcon className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -244,7 +247,7 @@ export function TwoColumnDashboardLayout({
                 </div>
               )}
 
-              {sortedFolders.length > 0 && (
+              {(sortedFolders.length > 0 || importedCount > 0) && (
                 <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
                   {sortedFolders.map((folder) => (
                     <DroppableFolderCard
@@ -253,6 +256,26 @@ export function TwoColumnDashboardLayout({
                       locale={locale}
                     />
                   ))}
+                  {/* Shared with you - System folder, rendered like a regular folder */}
+                  {importedCount > 0 && (
+                    <Link
+                      href={`/${locale}/shared-with-me`}
+                      className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Users className="w-5 h-5 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Shared with you
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {importedCount}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </div>
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

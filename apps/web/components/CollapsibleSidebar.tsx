@@ -35,7 +35,7 @@ export function CollapsibleSidebar({
     <aside
       className={`
         relative flex-shrink-0 h-full
-        ${isLeft ? 'bg-[#3F38A0]' : 'bg-gray-50/50 dark:bg-gray-900/30'}
+        ${isLeft ? 'bg-[#3F38A0] dark:bg-[#0f1320]' : 'bg-gray-50/50 dark:bg-[#131620]'}
         ${isLeft ? 'border-white/10' : 'border-gray-200/60 dark:border-gray-700/60'}
         transition-all duration-300 ease-in-out
         ${isLeft ? 'border-r' : 'border-l'}

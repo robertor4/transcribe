@@ -53,6 +53,7 @@ export class TranslationController {
         translateSummary: body.translateSummary ?? true,
         translateAssets: body.translateAssets ?? true,
         assetIds: body.assetIds,
+        forceRetranslate: body.forceRetranslate ?? false,
       },
     );
 

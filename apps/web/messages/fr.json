@@ -1676,6 +1676,7 @@
     "confirmRevoke": "Êtes-vous sûr de vouloir révoquer ce lien de partage? Les personnes avec le lien ne pourront plus accéder à cette transcription."
   },
   "shared": {
+    "translate": "Traduire",
     "loading": "Chargement de la transcription...",
     "passwordRequired": "Mot de passe requis",
     "passwordDescription": "Cette transcription est protégée par mot de passe. Veuillez entrer le mot de passe pour la voir.",
@@ -1694,9 +1695,61 @@
     "readOnly": "Lecture seule",
     "analysis": "Analyse",
     "transcript": "Transcription complète",
+    "summary": "Résumé",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "noSummary": "Aucun résumé disponible",
+    "noTranscript": "Aucune transcription disponible",
     "footer": {
       "poweredBy": "Propulsé par",
       "copyright": "© {year} Neural Summary. Tous droits réservés."
+    },
+    "importCta": {
+      "title": "Enregistrer dans votre bibliothèque",
+      "description": "Importez cette conversation pour y accéder à tout moment depuis votre tableau de bord.",
+      "signUp": "S'inscrire gratuitement",
+      "logIn": "Se connecter",
+      "signUpTitle": "Enregistrer dans votre bibliothèque",
+      "signUpDescription": "Inscrivez-vous pour importer cette conversation et y accéder à tout moment.",
+      "importButton": "Importer",
+      "importing": "Importation...",
+      "imported": "Importé"
+    },
+    "userMenu": {
+      "dashboard": "Aller au tableau de bord",
+      "signOut": "Se déconnecter"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Partagé avec vous",
+    "backToList": "Retour aux partages",
+    "sharedBy": "Partagé par {name}",
+    "empty": {
+      "title": "Aucune conversation partagée",
+      "description": "Lorsque quelqu'un partage une conversation avec vous et que vous l'importez, elle apparaîtra ici."
+    },
+    "importButton": "Importer dans la bibliothèque",
+    "importing": "Importation...",
+    "imported": "Importé",
+    "importedOn": "Importé le {date}",
+    "expiresIn": "{days} jours restants",
+    "expiresToday": "Expire aujourd'hui",
+    "expired": "Expiré",
+    "expiredTitle": "Cette conversation a expiré",
+    "expiredDescription": "Le lien de partage de cette conversation a expiré et le contenu n'est plus disponible.",
+    "unavailable": "Plus disponible",
+    "unavailableTitle": "Conversation indisponible",
+    "unavailableDescription": "Cette conversation n'est plus disponible. Le propriétaire a peut-être révoqué l'accès ou supprimé l'original.",
+    "expirationWarning": "Cette conversation expire dans {days} jours",
+    "removeConfirm": "Supprimer de votre bibliothèque ?",
+    "removeDescription": "Cela n'affectera pas la conversation originale.",
+    "remove": "Supprimer",
+    "yes": "Oui",
+    "no": "Non",
+    "error": {
+      "loadFailed": "Échec du chargement des conversations partagées",
+      "importFailed": "Échec de l'importation de la conversation",
+      "removeFailed": "Échec de la suppression de la conversation"
     }
   },
   "cookieConsent": {

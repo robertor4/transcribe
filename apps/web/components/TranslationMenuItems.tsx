@@ -4,8 +4,12 @@
  * TranslationMenuItems - Inline translation options for dropdown menus
  *
  * Renders translation options as menu items instead of a separate dropdown.
- * Used within DropdownMenu for the conversation overflow menu.
+ * Used within DropdownMenu for the conversation overflow menu (3-dot menu).
  * Starts collapsed and expands when user clicks on the header.
+ *
+ * NOTE: There's also TranslationDropdown.tsx for shared view pages which
+ * renders as a standalone dropdown button. Both components share similar
+ * logic for filtering untranslated locales.
  */
 
 import { useState } from 'react';
@@ -37,6 +41,30 @@ export function TranslationMenuItems({
   const t = useTranslations('conversation.translation');
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Get original language label (e.g., "Nederlands (original)")
+  const getOriginalLabel = () => {
+    const originalLang = status?.originalLocale?.toLowerCase() || '';
+    if (!originalLang) {
+      return t('viewOriginal');
+    }
+    // Find matching locale to get native name
+    const matchingLocale = SUPPORTED_LOCALES.find((l) => {
+      const codePrefix = l.code.split('-')[0].toLowerCase();
+      return (
+        originalLang === codePrefix ||
+        originalLang === l.language.toLowerCase() ||
+        originalLang === l.nativeName.toLowerCase() ||
+        originalLang.startsWith(codePrefix + '-') ||
+        l.code.toLowerCase() === originalLang
+      );
+    });
+    if (matchingLocale) {
+      return `${matchingLocale.nativeName} (${t('original')})`;
+    }
+    // Fallback: capitalize the detected language code
+    return `${originalLang.charAt(0).toUpperCase() + originalLang.slice(1)} (${t('original')})`;
+  };
+
   // Check if a locale has translations
   const getLocaleStatus = (code: string): LocaleTranslationStatus | undefined => {
     return status?.availableLocales.find((l) => l.code === code);
@@ -57,10 +85,34 @@ export function TranslationMenuItems({
     }
   };
 
-  // Get locales that don't have translations yet
+  // Get locales that don't have translations yet (excluding original language)
   const getUntranslatedLocales = () => {
     const translatedCodes = new Set(status?.availableLocales.map((l) => l.code) || []);
-    return SUPPORTED_LOCALES.filter((l) => !translatedCodes.has(l.code));
+
+    // Also exclude the original language - don't offer to translate Dutch to Dutch
+    const originalLang = status?.originalLocale?.toLowerCase() || '';
+
+    return SUPPORTED_LOCALES.filter((l) => {
+      // Skip if already translated
+      if (translatedCodes.has(l.code)) return false;
+
+      // Skip if this is the original language
+      // Match by: code prefix (e.g., 'nl' matches 'nl-NL'),
+      // language name (e.g., 'Dutch' matches 'Dutch'),
+      // or native name (e.g., 'Nederlands' matches 'Nederlands')
+      const codePrefix = l.code.split('-')[0].toLowerCase();
+      if (
+        originalLang === codePrefix ||
+        originalLang === l.language.toLowerCase() ||
+        originalLang === l.nativeName.toLowerCase() ||
+        originalLang.startsWith(codePrefix + '-') ||
+        l.code.toLowerCase() === originalLang
+      ) {
+        return false;
+      }
+
+      return true;
+    });
   };
 
   return (
@@ -96,7 +148,7 @@ export function TranslationMenuItems({
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >
-            <span>{t('viewOriginal')}</span>
+            <span>{getOriginalLabel()}</span>
             {currentLocale === 'original' && <Check className="w-4 h-4" />}
           </button>
 

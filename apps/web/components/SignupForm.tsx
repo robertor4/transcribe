@@ -9,6 +9,8 @@ import { Mail, Lock, User, AlertCircle, Loader2, Check, X, Eye, EyeOff } from 'l
 import { useTranslations } from 'next-intl';
 import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
+import { importedConversationApi } from '@/lib/api';
 
 export default function SignupForm() {
   const [email, setEmail] = useState('');
@@ -136,6 +138,23 @@ export default function SignupForm() {
       trackEvent('signup_completed', {
         method: 'google'
       });
+
+      // Check for pending import and auto-import
+      const pendingImport = getPendingImport();
+      if (pendingImport) {
+        try {
+          await importedConversationApi.import(pendingImport.shareToken);
+          clearPendingImport();
+          // Redirect to shared-with-me to show the imported conversation
+          router.push('/shared-with-me');
+          return;
+        } catch (importError) {
+          console.error('Failed to auto-import:', importError);
+          clearPendingImport();
+          // Still redirect to dashboard even if import fails
+        }
+      }
+
       router.push('/dashboard');
     } catch (error) {
       const errorObj = error as { message?: string };

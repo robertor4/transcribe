@@ -82,12 +82,14 @@ export const SummaryV1Renderer: React.FC<SummaryV1RendererProps> = ({ content })
       {parsed.keyPoints.length > 0 && (
         <div className="px-6 py-6 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
           <h3 className="text-lg font-bold text-[#8D6AFA] mb-5 uppercase tracking-wide">
-            {parsed.keyPointsTitle || 'Key Points'}
+            {parsed.keyPointsTitle && parsed.keyPointsTitle.length < 50
+              ? parsed.keyPointsTitle
+              : 'Key Points'}
           </h3>
-          <ol className="space-y-5 mx-4 list-decimal list-inside">
+          <ol className="mx-4 list-decimal list-inside divide-y divide-gray-200 dark:divide-gray-700">
             {parsed.keyPoints.map((point, idx) => (
-              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                {renderBoldText(point)}
+              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed py-4 first:pt-0 last:pb-0">
+                {renderKeyPoint(point)}
               </li>
             ))}
           </ol>
@@ -152,8 +154,9 @@ function parseSummaryContent(content: string): ParsedSummary {
       continue;
     }
 
-    // Check for key points section header
-    if (isKeyPointsHeader(line)) {
+    // Check for key points section header (must be a header line, not content)
+    // Header lines start with # or are short (< 100 chars)
+    if (isKeyPointsHeader(line) && (line.startsWith('#') || line.length < 100)) {
       result.keyPointsTitle = line.replace(/^#+\s*/, '').replace(/[*_]/g, '');
       currentSection = 'keypoints';
       continue;
@@ -425,18 +428,47 @@ function extractDetailedHeader(line: string): string | null {
 }
 
 /**
- * LEGACY V1: Render text with **bold** markdown converted to <strong>
+ * LEGACY V1: Render a key point with topic:description format
+ *
+ * Handles multiple formats:
+ * - "TOPIC: description" (uppercase topic with colon)
+ * - "**Topic:** description" (markdown bold with colon)
+ * - "Topic: description" (plain text with colon)
+ * - "Just a plain point" (no colon - render as-is)
  */
-function renderBoldText(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*)/);
-  return parts.map((part, idx) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return (
-        <strong key={idx} className="font-semibold text-gray-900 dark:text-gray-100">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    return <React.Fragment key={idx}>{part}</React.Fragment>;
-  });
+function renderKeyPoint(point: string): React.ReactNode {
+  // First, try to extract **bold** topic format: **Topic:** description
+  const boldMatch = point.match(/^\*\*([^*]+)\*\*:?\s*(.*)/);
+  if (boldMatch) {
+    // Remove trailing colon from topic if present (since we add one in rendering)
+    const topic = boldMatch[1].trim().replace(/:$/, '');
+    const description = boldMatch[2]?.trim();
+    return (
+      <>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">
+          {topic}:
+        </span>{' '}
+        {description}
+      </>
+    );
+  }
+
+  // Try to extract "Topic: description" format (colon-separated)
+  // Match everything up to the first colon as topic, rest as description
+  const colonMatch = point.match(/^([^:]+):\s*(.+)/);
+  if (colonMatch) {
+    const topic = colonMatch[1].trim();
+    const description = colonMatch[2].trim();
+    return (
+      <>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">
+          {topic}:
+        </span>{' '}
+        {description}
+      </>
+    );
+  }
+
+  // No recognizable format - render as plain text
+  return point;
 }

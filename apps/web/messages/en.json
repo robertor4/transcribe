@@ -1345,6 +1345,7 @@
     "confirmRevoke": "Are you sure you want to revoke this share link? Anyone with the link will no longer be able to access this transcript."
   },
   "shared": {
+    "translate": "Translate",
     "loading": "Loading transcript...",
     "passwordRequired": "Password Required",
     "passwordDescription": "This transcript is password protected. Please enter the password to view it.",
@@ -1363,9 +1364,61 @@
     "readOnly": "Read-Only",
     "analysis": "Analysis",
     "transcript": "Full Transcript",
+    "summary": "Summary",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "noSummary": "No summary available",
+    "noTranscript": "No transcript available",
     "footer": {
       "poweredBy": "Powered by",
       "copyright": "© {year} Neural Summary. All rights reserved."
+    },
+    "importCta": {
+      "title": "Save to your library",
+      "description": "Import this conversation to access it anytime from your dashboard.",
+      "signUp": "Sign up free",
+      "logIn": "Log in",
+      "signUpTitle": "Save to your library",
+      "signUpDescription": "Sign up to import this conversation and access it anytime.",
+      "importButton": "Import",
+      "importing": "Importing...",
+      "imported": "Imported"
+    },
+    "userMenu": {
+      "dashboard": "Go to Dashboard",
+      "signOut": "Sign Out"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Shared with you",
+    "backToList": "Back to shared",
+    "sharedBy": "Shared by {name}",
+    "empty": {
+      "title": "No shared conversations",
+      "description": "When someone shares a conversation with you and you import it, it will appear here."
+    },
+    "importButton": "Import to Library",
+    "importing": "Importing...",
+    "imported": "Imported",
+    "importedOn": "Imported on {date}",
+    "expiresIn": "{days} days left",
+    "expiresToday": "Expires today",
+    "expired": "Expired",
+    "expiredTitle": "This conversation has expired",
+    "expiredDescription": "The share link for this conversation has expired and the content is no longer available.",
+    "unavailable": "No longer available",
+    "unavailableTitle": "Conversation unavailable",
+    "unavailableDescription": "This conversation is no longer available. The owner may have revoked access or deleted the original.",
+    "expirationWarning": "This conversation will expire in {days} days",
+    "removeConfirm": "Remove from your library?",
+    "removeDescription": "This won't affect the original conversation.",
+    "remove": "Remove",
+    "yes": "Yes",
+    "no": "No",
+    "error": {
+      "loadFailed": "Failed to load shared conversations",
+      "importFailed": "Failed to import conversation",
+      "removeFailed": "Failed to remove conversation"
     }
   },
   "terms": {

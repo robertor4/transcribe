@@ -3,10 +3,17 @@
 /**
  * TranslationDropdown - Language Selector for Conversation Translations
  *
+ * Standalone dropdown button for translation options.
+ * Used in shared view pages where there's no overflow menu.
+ *
  * Displays a dropdown to:
  * - View original content
  * - Switch between available translations
  * - Trigger new translations (if not in read-only mode)
+ *
+ * NOTE: There's also TranslationMenuItems.tsx for the conversation page
+ * which renders as menu items inside the 3-dot overflow menu. Both
+ * components share similar logic for filtering untranslated locales.
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -58,11 +65,34 @@ export function TranslationDropdown({
   // Get current locale display name
   const getCurrentLabel = () => {
     if (currentLocale === 'original') {
-      const detected = status?.originalLocale;
-      return detected ? `Original (${detected})` : t('original');
+      return getOriginalLabel();
     }
     const locale = SUPPORTED_LOCALES.find((l) => l.code === currentLocale);
     return locale?.nativeName || locale?.language || currentLocale;
+  };
+
+  // Get original language label (e.g., "Nederlands (original)")
+  const getOriginalLabel = () => {
+    const originalLang = status?.originalLocale?.toLowerCase() || '';
+    if (!originalLang) {
+      return t('viewOriginal');
+    }
+    // Find matching locale to get native name
+    const matchingLocale = SUPPORTED_LOCALES.find((l) => {
+      const codePrefix = l.code.split('-')[0].toLowerCase();
+      return (
+        originalLang === codePrefix ||
+        originalLang === l.language.toLowerCase() ||
+        originalLang === l.nativeName.toLowerCase() ||
+        originalLang.startsWith(codePrefix + '-') ||
+        l.code.toLowerCase() === originalLang
+      );
+    });
+    if (matchingLocale) {
+      return `${matchingLocale.nativeName} (${t('original')})`;
+    }
+    // Fallback: capitalize the detected language code
+    return `${originalLang.charAt(0).toUpperCase() + originalLang.slice(1)} (${t('original')})`;
   };
 
   // Check if a locale has translations
@@ -87,10 +117,34 @@ export function TranslationDropdown({
     setIsOpen(false);
   };
 
-  // Get locales that don't have translations yet
+  // Get locales that don't have translations yet (excluding original language)
   const getUntranslatedLocales = () => {
     const translatedCodes = new Set(status?.availableLocales.map((l) => l.code) || []);
-    return SUPPORTED_LOCALES.filter((l) => !translatedCodes.has(l.code));
+
+    // Also exclude the original language - don't offer to translate Dutch to Dutch
+    const originalLang = status?.originalLocale?.toLowerCase() || '';
+
+    return SUPPORTED_LOCALES.filter((l) => {
+      // Skip if already translated
+      if (translatedCodes.has(l.code)) return false;
+
+      // Skip if this is the original language
+      // Match by: code prefix (e.g., 'nl' matches 'nl-NL'),
+      // language name (e.g., 'Dutch' matches 'Dutch'),
+      // or native name (e.g., 'Nederlands' matches 'Nederlands')
+      const codePrefix = l.code.split('-')[0].toLowerCase();
+      if (
+        originalLang === codePrefix ||
+        originalLang === l.language.toLowerCase() ||
+        originalLang === l.nativeName.toLowerCase() ||
+        originalLang.startsWith(codePrefix + '-') ||
+        l.code.toLowerCase() === originalLang
+      ) {
+        return false;
+      }
+
+      return true;
+    });
   };
 
   return (
@@ -123,7 +177,7 @@ export function TranslationDropdown({
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
-            <span>{t('viewOriginal')}</span>
+            <span>{getOriginalLabel()}</span>
             {currentLocale === 'original' && <Check className="w-4 h-4" />}
           </button>
 

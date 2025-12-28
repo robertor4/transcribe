@@ -1676,6 +1676,7 @@
     "confirmRevoke": "Sind Sie sicher, dass Sie diesen Freigabelink widerrufen möchten? Personen mit dem Link können nicht mehr auf dieses Transkript zugreifen."
   },
   "shared": {
+    "translate": "Übersetzen",
     "loading": "Transkript laden...",
     "passwordRequired": "Passwort erforderlich",
     "passwordDescription": "Dieses Transkript ist passwortgeschützt. Geben Sie das Passwort ein, um es anzuzeigen.",
@@ -1694,9 +1695,61 @@
     "readOnly": "Nur Lesen",
     "analysis": "Analyse",
     "transcript": "Vollständiges Transkript",
+    "summary": "Zusammenfassung",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "noSummary": "Keine Zusammenfassung verfügbar",
+    "noTranscript": "Kein Transkript verfügbar",
     "footer": {
       "poweredBy": "Unterstützt von",
       "copyright": "© {year} Neural Summary. Alle Rechte vorbehalten."
+    },
+    "importCta": {
+      "title": "In Ihrer Bibliothek speichern",
+      "description": "Importieren Sie diese Konversation, um sie jederzeit über Ihr Dashboard aufrufen zu können.",
+      "signUp": "Kostenlos registrieren",
+      "logIn": "Anmelden",
+      "signUpTitle": "In Ihrer Bibliothek speichern",
+      "signUpDescription": "Registrieren Sie sich, um diese Konversation zu importieren und jederzeit darauf zugreifen zu können.",
+      "importButton": "Importieren",
+      "importing": "Wird importiert...",
+      "imported": "Importiert"
+    },
+    "userMenu": {
+      "dashboard": "Zum Dashboard",
+      "signOut": "Abmelden"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Mit Ihnen geteilt",
+    "backToList": "Zurück zu geteilt",
+    "sharedBy": "Geteilt von {name}",
+    "empty": {
+      "title": "Keine geteilten Konversationen",
+      "description": "Wenn jemand eine Konversation mit Ihnen teilt und Sie diese importieren, erscheint sie hier."
+    },
+    "importButton": "In Bibliothek importieren",
+    "importing": "Wird importiert...",
+    "imported": "Importiert",
+    "importedOn": "Importiert am {date}",
+    "expiresIn": "Noch {days} Tage",
+    "expiresToday": "Läuft heute ab",
+    "expired": "Abgelaufen",
+    "expiredTitle": "Diese Konversation ist abgelaufen",
+    "expiredDescription": "Der Freigabelink für diese Konversation ist abgelaufen und der Inhalt ist nicht mehr verfügbar.",
+    "unavailable": "Nicht mehr verfügbar",
+    "unavailableTitle": "Konversation nicht verfügbar",
+    "unavailableDescription": "Diese Konversation ist nicht mehr verfügbar. Der Eigentümer hat möglicherweise den Zugriff widerrufen oder das Original gelöscht.",
+    "expirationWarning": "Diese Konversation läuft in {days} Tagen ab",
+    "removeConfirm": "Aus Ihrer Bibliothek entfernen?",
+    "removeDescription": "Dies hat keine Auswirkungen auf die ursprüngliche Konversation.",
+    "remove": "Entfernen",
+    "yes": "Ja",
+    "no": "Nein",
+    "error": {
+      "loadFailed": "Laden der geteilten Konversationen fehlgeschlagen",
+      "importFailed": "Import der Konversation fehlgeschlagen",
+      "removeFailed": "Entfernen der Konversation fehlgeschlagen"
     }
   },
   "pricing": {

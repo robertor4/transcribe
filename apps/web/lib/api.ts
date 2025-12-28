@@ -14,6 +14,9 @@ import {
   FindResponse,
   FindReplaceResults,
   ReplaceResponse,
+  ImportedConversation,
+  ImportConversationResponse,
+  ImportedConversationWithContent,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -463,6 +466,58 @@ export const translationApi = {
     transcriptionId: string
   ): Promise<ApiResponse<Translation[]>> => {
     return api.get(`/translations/shared/${shareToken}/${localeCode}?transcriptionId=${transcriptionId}`);
+  },
+};
+
+// Imported Conversations API (V2 - Shared with you folder)
+export const importedConversationApi = {
+  /**
+   * Import a shared conversation by its share token.
+   * Creates a linked reference to the original share.
+   */
+  import: async (
+    shareToken: string,
+    password?: string
+  ): Promise<ApiResponse<ImportConversationResponse>> => {
+    return api.post(`/imported-conversations/${shareToken}`, { password });
+  },
+
+  /**
+   * Get all imported conversations for the current user.
+   */
+  list: async (): Promise<ApiResponse<ImportedConversation[]>> => {
+    return api.get('/imported-conversations');
+  },
+
+  /**
+   * Get the count of imported conversations.
+   */
+  getCount: async (): Promise<ApiResponse<{ count: number }>> => {
+    return api.get('/imported-conversations/count');
+  },
+
+  /**
+   * Get an imported conversation with its live content.
+   * Validates the share is still accessible.
+   */
+  get: async (importId: string): Promise<ApiResponse<ImportedConversationWithContent>> => {
+    return api.get(`/imported-conversations/${importId}`);
+  },
+
+  /**
+   * Remove an imported conversation (soft delete).
+   */
+  remove: async (importId: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.delete(`/imported-conversations/${importId}`);
+  },
+
+  /**
+   * Check if the current user has imported a specific share.
+   */
+  checkStatus: async (
+    shareToken: string
+  ): Promise<ApiResponse<{ imported: boolean; importedAt?: Date }>> => {
+    return api.get(`/imported-conversations/check/${shareToken}`);
   },
 };
 

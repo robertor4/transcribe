@@ -8,6 +8,8 @@ import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { auth } from '@/lib/firebase';
 import { Mail, Lock, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
+import { importedConversationApi } from '@/lib/api';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -47,6 +49,19 @@ export default function LoginForm() {
         if (refreshedUser.emailVerified === false) {
           router.push('/verify-email');
         } else {
+          // Check for pending import
+          const pendingImport = getPendingImport();
+          if (pendingImport) {
+            try {
+              await importedConversationApi.import(pendingImport.shareToken);
+              clearPendingImport();
+              router.push('/shared-with-me');
+              return;
+            } catch (importError) {
+              console.error('Failed to auto-import conversation:', importError);
+              clearPendingImport();
+            }
+          }
           router.push('/dashboard');
         }
       } else {
@@ -115,6 +130,20 @@ export default function LoginForm() {
       });
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Check for pending import
+      const pendingImport = getPendingImport();
+      if (pendingImport) {
+        try {
+          await importedConversationApi.import(pendingImport.shareToken);
+          clearPendingImport();
+          router.push('/shared-with-me');
+          return;
+        } catch (importError) {
+          console.error('Failed to auto-import conversation:', importError);
+          clearPendingImport();
+        }
+      }
       router.push('/dashboard');
     } catch (error) {
       const errorObj = error as { message?: string };

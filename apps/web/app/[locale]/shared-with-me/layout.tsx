@@ -4,7 +4,7 @@ import { FoldersProvider } from '@/contexts/FoldersContext';
 import { ImportedConversationsProvider } from '@/contexts/ImportedConversationsContext';
 import { ReactNode } from 'react';
 
-export default function FolderLayout({ children }: { children: ReactNode }) {
+export default function SharedWithMeLayout({ children }: { children: ReactNode }) {
   return (
     <UsageProvider>
       <FoldersProvider>

@@ -1345,6 +1345,7 @@
     "confirmRevoke": "Weet je zeker dat je deze deel link wilt intrekken? Iedereen met de link kan dit transcript niet meer bekijken."
   },
   "shared": {
+    "translate": "Vertalen",
     "loading": "Transcript laden...",
     "passwordRequired": "Wachtwoord vereist",
     "passwordDescription": "Dit transcript is beveiligd met een wachtwoord. Voer het wachtwoord in om het te bekijken.",
@@ -1363,9 +1364,61 @@
     "readOnly": "Alleen-lezen",
     "analysis": "Analyse",
     "transcript": "Volledig transcript",
+    "summary": "Samenvatting",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "noSummary": "Geen samenvatting beschikbaar",
+    "noTranscript": "Geen transcript beschikbaar",
     "footer": {
       "poweredBy": "Mogelijk gemaakt door",
       "copyright": "© {year} Neural Summary. Alle rechten voorbehouden."
+    },
+    "importCta": {
+      "title": "Opslaan in je bibliotheek",
+      "description": "Importeer dit gesprek om het altijd vanuit je dashboard te kunnen openen.",
+      "signUp": "Gratis aanmelden",
+      "logIn": "Inloggen",
+      "signUpTitle": "Opslaan in je bibliotheek",
+      "signUpDescription": "Meld je aan om dit gesprek te importeren en altijd toegang te hebben.",
+      "importButton": "Importeren",
+      "importing": "Importeren...",
+      "imported": "Geïmporteerd"
+    },
+    "userMenu": {
+      "dashboard": "Naar dashboard",
+      "signOut": "Uitloggen"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Gedeeld met jou",
+    "backToList": "Terug naar gedeeld",
+    "sharedBy": "Gedeeld door {name}",
+    "empty": {
+      "title": "Geen gedeelde gesprekken",
+      "description": "Wanneer iemand een gesprek met je deelt en je het importeert, verschijnt het hier."
+    },
+    "importButton": "Importeren naar bibliotheek",
+    "importing": "Importeren...",
+    "imported": "Geïmporteerd",
+    "importedOn": "Geïmporteerd op {date}",
+    "expiresIn": "Nog {days} dagen",
+    "expiresToday": "Verloopt vandaag",
+    "expired": "Verlopen",
+    "expiredTitle": "Dit gesprek is verlopen",
+    "expiredDescription": "De deellink voor dit gesprek is verlopen en de inhoud is niet meer beschikbaar.",
+    "unavailable": "Niet meer beschikbaar",
+    "unavailableTitle": "Gesprek niet beschikbaar",
+    "unavailableDescription": "Dit gesprek is niet meer beschikbaar. De eigenaar heeft mogelijk de toegang ingetrokken of het origineel verwijderd.",
+    "expirationWarning": "Dit gesprek verloopt over {days} dagen",
+    "removeConfirm": "Verwijderen uit je bibliotheek?",
+    "removeDescription": "Dit heeft geen invloed op het originele gesprek.",
+    "remove": "Verwijderen",
+    "yes": "Ja",
+    "no": "Nee",
+    "error": {
+      "loadFailed": "Laden van gedeelde gesprekken mislukt",
+      "importFailed": "Importeren van gesprek mislukt",
+      "removeFailed": "Verwijderen van gesprek mislukt"
     }
   },
   "terms": {

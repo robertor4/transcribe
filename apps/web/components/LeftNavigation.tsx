@@ -4,9 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2 } from 'lucide-react';
+import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2, Users } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
+import { useImportedConversations } from '@/contexts/ImportedConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { useSearch } from '@/hooks/useSearch';
 
@@ -29,6 +30,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
+  const { count: importedCount } = useImportedConversations();
   const [isFoldersPinned, setIsFoldersPinned] = useState(false);
   const [isFoldersHovered, setIsFoldersHovered] = useState(false);
   const isFoldersExpanded = isFoldersPinned || isFoldersHovered;
@@ -260,8 +262,8 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               <h3 className="text-[11px] font-medium uppercase tracking-wider">
                 Folders
               </h3>
-              {!isFoldersExpanded && folders.length > 0 && (
-                <span className="text-[10px] text-white/40">({folders.length})</span>
+              {!isFoldersExpanded && (folders.length > 0 || importedCount > 0) && (
+                <span className="text-[10px] text-white/40">({folders.length + (importedCount > 0 ? 1 : 0)})</span>
               )}
             </button>
           </div>
@@ -278,7 +280,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="w-4 h-4 animate-spin text-white/50" />
               </div>
-            ) : folders.length === 0 ? (
+            ) : folders.length === 0 && importedCount === 0 ? (
               <p className="text-xs text-white/50 px-3 py-2">No folders yet</p>
             ) : (
               <div className="space-y-1">
@@ -309,6 +311,30 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                     </span>
                   </Link>
                 ))}
+                {/* Shared with you - System folder, rendered like a regular folder */}
+                {importedCount > 0 && (
+                  <Link
+                    href={`/${locale}/shared-with-me`}
+                    className={`group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 ${
+                      foldersAnimateIn
+                        ? 'animate-[fadeSlideIn_200ms_ease-out_both]'
+                        : 'opacity-0'
+                    }`}
+                    style={{
+                      animationDelay: `${folders.length * 100}ms`,
+                    }}
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <Users className="w-4 h-4 text-white/50 flex-shrink-0 group-hover:text-white/70 transition-colors" />
+                      <span className="text-sm font-normal text-white/70 group-hover:text-white/90 truncate">
+                        Shared with you
+                      </span>
+                    </div>
+                    <span className="text-xs text-white/50 flex-shrink-0">
+                      {importedCount}
+                    </span>
+                  </Link>
+                )}
               </div>
             )}
             </div>

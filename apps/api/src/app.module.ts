@@ -19,6 +19,7 @@ import { FolderModule } from './folder/folder.module';
 import { TranslationModule } from './translation/translation.module';
 import { VectorModule } from './vector/vector.module';
 import { FindReplaceModule } from './find-replace/find-replace.module';
+import { ImportedConversationModule } from './imported-conversation/imported-conversation.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { FindReplaceModule } from './find-replace/find-replace.module';
     TranslationModule,
     VectorModule,
     FindReplaceModule,
+    ImportedConversationModule,
   ],
   controllers: [AppController],
   providers: [
