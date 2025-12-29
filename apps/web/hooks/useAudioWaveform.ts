@@ -8,6 +8,38 @@ interface UseAudioWaveformResult {
   error: string | null;
 }
 
+// Shared AudioContext instance - created once and reused
+let sharedAudioContext: AudioContext | null = null;
+
+/**
+ * Pre-warm the AudioContext on user gesture.
+ * Call this directly in a click/tap handler before triggering async operations.
+ * This ensures the AudioContext can be resumed on mobile browsers.
+ */
+export async function ensureAudioContextReady(): Promise<void> {
+  if (!sharedAudioContext) {
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (AudioContextClass) {
+      try {
+        sharedAudioContext = new AudioContextClass();
+      } catch {
+        // Creation failed - will fall back to fake waveform
+        return;
+      }
+    }
+  }
+
+  if (sharedAudioContext?.state === 'suspended') {
+    try {
+      await sharedAudioContext.resume();
+    } catch {
+      // Resume failed - will fall back to fake waveform
+    }
+  }
+}
+
 /**
  * Hook to generate a real waveform visualization from an audio Blob
  *
@@ -40,20 +72,44 @@ export function useAudioWaveform(
       setError(null);
 
       try {
-        // Create AudioContext (reuse if exists)
+        // Use the shared AudioContext if available (pre-warmed by ensureAudioContextReady)
+        // Otherwise create a new one (may fail on mobile without user gesture)
         if (!audioContextRef.current) {
-          const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-          if (!AudioContextClass) {
-            throw new Error('Web Audio API not supported');
+          if (sharedAudioContext) {
+            audioContextRef.current = sharedAudioContext;
+          } else {
+            const AudioContextClass =
+              window.AudioContext ||
+              (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+            if (!AudioContextClass) {
+              throw new Error('Web Audio API not supported');
+            }
+            try {
+              audioContextRef.current = new AudioContextClass();
+            } catch (contextError) {
+              // On iOS/mobile, AudioContext creation can fail without user gesture
+              // Fall back to fake waveform
+              console.warn('AudioContext creation failed (likely mobile without user gesture):', contextError);
+              throw new Error('AudioContext not available');
+            }
           }
-          audioContextRef.current = new AudioContextClass();
         }
 
         const audioContext = audioContextRef.current;
 
+        // Check if AudioContext is properly initialized
+        if (!audioContext.destination) {
+          throw new Error('AudioDestinationNode not initialized');
+        }
+
         // Resume if suspended (browser autoplay policy)
         if (audioContext.state === 'suspended') {
-          await audioContext.resume();
+          try {
+            await audioContext.resume();
+          } catch (resumeError) {
+            console.warn('AudioContext resume failed:', resumeError);
+            throw new Error('AudioContext could not be resumed');
+          }
         }
 
         // Decode the audio blob
@@ -131,10 +187,10 @@ export function useAudioWaveform(
     };
   }, [audioBlob, barCount]);
 
-  // Cleanup AudioContext on unmount
+  // Cleanup AudioContext on unmount (but don't close the shared one)
   useEffect(() => {
     return () => {
-      if (audioContextRef.current) {
+      if (audioContextRef.current && audioContextRef.current !== sharedAudioContext) {
         audioContextRef.current.close().catch(() => {
           // Ignore close errors
         });

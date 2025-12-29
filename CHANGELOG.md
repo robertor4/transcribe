@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Mobile Processing Step Responsiveness**: Improved mobile layout for processing step in Create Conversation modal
+  - Stage indicators now use 2x2 grid on mobile (<640px), expanding to 4-column on desktop
+  - Reduced padding and icon sizes on mobile for better space utilization
+  - File name badge now truncates long names and prevents overflow
+  - Modal header uses smaller text and tighter padding on mobile
+  - Files: [RealProcessingView.tsx](apps/web/components/RealProcessingView.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+- **Mobile AudioContext Resume**: Fixed "AudioContext could not be resumed" error on mobile devices
+  - Added `ensureAudioContextReady()` function to pre-warm AudioContext on user gesture
+  - Recovery dialog preview button now initializes AudioContext before async operations
+  - Stop recording button now pre-warms AudioContext for preview waveform visualization
+  - Uses shared AudioContext instance to avoid multiple context creation
+  - Files: [useAudioWaveform.ts](apps/web/hooks/useAudioWaveform.ts), [RecordingRecoveryDialog.tsx](apps/web/components/RecordingRecoveryDialog.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx)
+
 ### Added
 - **Mobile Navigation Drawer**: Full-featured slide-out navigation for mobile viewports (< 1024px)
   - Hamburger menu button in top-left corner of all app pages

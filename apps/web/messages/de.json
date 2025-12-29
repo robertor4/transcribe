@@ -350,6 +350,9 @@
     "close": "Schließen",
     "footerNote": "Aufnahmen werden automatisch auf Ihrem Gerät gespeichert und nach 7 Tagen gelöscht.",
     "confirmDiscard": "Verwerfen?",
+    "discardTitle": "Aufnahme verwerfen",
+    "discardMessage": "Diese Aufnahme wird dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
     "microphoneRecording": "Mikrofonaufnahme",
     "tabAudioRecording": "Tab-Audioaufnahme"
   },

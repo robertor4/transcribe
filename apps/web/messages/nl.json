@@ -350,6 +350,9 @@
     "close": "Sluiten",
     "footerNote": "Opnames worden automatisch op je apparaat opgeslagen en na 7 dagen verwijderd.",
     "confirmDiscard": "Verwijderen?",
+    "discardTitle": "Opname verwijderen",
+    "discardMessage": "Deze opname wordt permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "cancel": "Annuleren",
     "microphoneRecording": "Microfoonopname",
     "tabAudioRecording": "Tabgeluidsopname"
   },

@@ -350,6 +350,9 @@
     "close": "Fermer",
     "footerNote": "Les enregistrements sont automatiquement sauvegardés sur votre appareil et supprimés après 7 jours.",
     "confirmDiscard": "Supprimer ?",
+    "discardTitle": "Supprimer l'enregistrement",
+    "discardMessage": "Cet enregistrement sera définitivement supprimé. Cette action est irréversible.",
+    "cancel": "Annuler",
     "microphoneRecording": "Enregistrement microphone",
     "tabAudioRecording": "Enregistrement audio d'onglet"
   },

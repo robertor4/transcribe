@@ -8,6 +8,7 @@ import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { RecordingPreview } from './RecordingPreview';
 import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
+import { ensureAudioContextReady } from '@/hooks/useAudioWaveform';
 import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X } from 'lucide-react';
 import { estimateFileSize, formatFileSize } from '@/utils/audio';
 import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
@@ -444,6 +445,14 @@ export function SimpleAudioRecorder({
     }
   }, [reset, initialSource]);
 
+  // Wrap stopRecording to pre-warm AudioContext for the preview waveform
+  // This ensures the AudioContext can be resumed on mobile browsers
+  const handleStopRecording = useCallback(async () => {
+    // Pre-warm AudioContext on user gesture (before stopRecording async operations)
+    await ensureAudioContextReady();
+    stopRecording();
+  }, [stopRecording]);
+
   const handleCancelPreview = useCallback(() => {
     reset();
     onCancel();
@@ -854,7 +863,7 @@ export function SimpleAudioRecorder({
               </Button>
               <Button
                 variant="brand"
-                onClick={stopRecording}
+                onClick={handleStopRecording}
                 fullWidth
                 icon={<Square className="w-5 h-5" />}
               >
@@ -888,7 +897,7 @@ export function SimpleAudioRecorder({
               </Button>
               <Button
                 variant="secondary"
-                onClick={stopRecording}
+                onClick={handleStopRecording}
                 fullWidth
                 icon={<Square className="w-5 h-5" />}
               >

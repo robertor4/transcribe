@@ -350,6 +350,9 @@
     "close": "Cerrar",
     "footerNote": "Las grabaciones se guardan automáticamente en su dispositivo y se eliminan después de 7 días.",
     "confirmDiscard": "¿Descartar?",
+    "discardTitle": "Descartar grabación",
+    "discardMessage": "Esta grabación se eliminará permanentemente. Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
     "microphoneRecording": "Grabación de micrófono",
     "tabAudioRecording": "Grabación de audio de pestaña"
   },

@@ -350,6 +350,9 @@
     "close": "Close",
     "footerNote": "Recordings are auto-saved to your device and deleted after 7 days.",
     "confirmDiscard": "Discard?",
+    "discardTitle": "Discard recording",
+    "discardMessage": "This recording will be permanently deleted. This action cannot be undone.",
+    "cancel": "Cancel",
     "microphoneRecording": "Microphone recording",
     "tabAudioRecording": "Tab audio recording"
   },

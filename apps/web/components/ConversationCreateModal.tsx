@@ -59,6 +59,8 @@ export function ConversationCreateModal({
   const [markAsUploadedCallback, setMarkAsUploadedCallback] = useState<(() => Promise<void>) | null>(null);
   // Store processing error for display
   const [, setProcessingError] = useState<string | null>(null);
+  // Store recovered recording ID to delete after successful processing
+  const [pendingRecoveryDeletionId, setPendingRecoveryDeletionId] = useState<string | null>(null);
 
   // Recovery state
   const [recoverableRecordings, setRecoverableRecordings] = useState<RecoverableRecording[]>([]);
@@ -103,6 +105,7 @@ export function ConversationCreateModal({
     setShowRecoveryDialog(false);
     setContinueRecordingData(null);
     setRecoveryUploadMethod(null);
+    setPendingRecoveryDeletionId(null);
     onClose();
   }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose]);
 
@@ -146,6 +149,7 @@ export function ConversationCreateModal({
       setProcessingError(null);
       setContinueRecordingData(null);
       setRecoveryUploadMethod(null);
+      setPendingRecoveryDeletionId(null);
       // Don't reset recoverableRecordings or showRecoveryDialog here - they're set by checkForRecovery
     }
   }, [isOpen, uploadMethod]);
@@ -196,6 +200,16 @@ export function ConversationCreateModal({
       }
     }
 
+    // Clean up recovered recording from IndexedDB now that processing succeeded
+    if (pendingRecoveryDeletionId) {
+      try {
+        const storage = await getRecordingStorage();
+        await storage.deleteRecording(pendingRecoveryDeletionId);
+      } catch (err) {
+        console.error('[ConversationCreateModal] Failed to clean up recovered recording:', err);
+      }
+    }
+
     // Reset state without confirmation (successful completion, not cancellation)
     setCurrentStep('capture');
     setOverallContext('');
@@ -209,6 +223,7 @@ export function ConversationCreateModal({
     setShowRecoveryDialog(false);
     setContinueRecordingData(null);
     setRecoveryUploadMethod(null);
+    setPendingRecoveryDeletionId(null);
     onClose();
 
     // Navigate to conversation detail with real transcription ID
@@ -223,13 +238,9 @@ export function ConversationCreateModal({
 
   // Recovery handlers
   const handleProcessImmediately = async (recording: RecoverableRecording, blob: Blob) => {
-    // Clean up the recovery data from IndexedDB
-    try {
-      const storage = await getRecordingStorage();
-      await storage.deleteRecording(recording.id);
-    } catch (err) {
-      console.error('[ConversationCreateModal] Failed to delete recovered recording:', err);
-    }
+    // Store the recording ID for deletion after successful processing
+    // Don't delete now - only delete after processing completes successfully
+    setPendingRecoveryDeletionId(recording.id);
 
     // Convert blob to file
     const file = new File([blob], 'recovered-recording.webm', {
@@ -309,14 +320,14 @@ export function ConversationCreateModal({
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-gray-700">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+          <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="min-w-0 flex-1 mr-4">
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide truncate">
                 {currentStep === 'capture' && 'Create a conversation'}
                 {currentStep === 'context' && 'Add context'}
                 {currentStep === 'processing' && 'Processing...'}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {currentStep === 'capture' && 'Choose how to add your audio'}
                 {currentStep === 'context' && 'Provide context to improve transcription accuracy (optional)'}
                 {currentStep === 'processing' && 'Transcribing and analyzing your conversation'}
@@ -386,7 +397,7 @@ export function ConversationCreateModal({
 
             {/* Step 3: Processing */}
             {currentStep === 'processing' && uploadedFiles.length > 0 && (
-              <div className="flex-1 overflow-y-auto p-8">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-8">
                 <RealProcessingView
                   file={uploadedFiles[0]}
                   context={overallContext || undefined}

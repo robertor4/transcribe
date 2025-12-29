@@ -295,9 +295,9 @@ export function RealProcessingView({
     <div className="max-w-2xl mx-auto space-y-8">
       {/* File Info */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
-          <FileAudio className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 mb-4 max-w-full">
+          <FileAudio className="w-4 h-4 flex-shrink-0 text-gray-600 dark:text-gray-400" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
             {file.name}
           </span>
         </div>
@@ -324,7 +324,7 @@ export function RealProcessingView({
 
       {/* Stage Indicators */}
       {stage !== 'error' && (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
           {stages.map((stageName) => {
             const Icon = getStageIcon(stageName);
             const currentStageOrder = stageOrder[stage];
@@ -336,7 +336,7 @@ export function RealProcessingView({
             return (
               <div
                 key={stageName}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all duration-300 ${
+                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-4 rounded-xl transition-all duration-300 ${
                   isActive
                     ? 'bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 scale-105'
                     : isPast
@@ -345,7 +345,7 @@ export function RealProcessingView({
                 }`}
               >
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
                     isComplete
                       ? 'bg-[#14D0DC] text-white'
                       : isActive
@@ -356,9 +356,9 @@ export function RealProcessingView({
                   }`}
                 >
                   {isActive && stage !== 'complete' ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
                   ) : (
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   )}
                 </div>
                 <span
