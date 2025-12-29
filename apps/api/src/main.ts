@@ -62,6 +62,9 @@ async function bootstrap() {
   // Regex to match Cloudflare quick tunnels (used for mobile testing)
   const cloudflareQuickTunnelRegex = /^https:\/\/[a-z-]+\.trycloudflare\.com$/;
 
+  // Regex to match custom Cloudflare tunnel domains (uneti.ai subdomains)
+  const customTunnelRegex = /^https:\/\/[a-z-]+\.uneti\.ai$/;
+
   // Validate FRONTEND_URL against whitelist
   const frontendUrl =
     process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL;
@@ -88,7 +91,8 @@ async function bootstrap() {
       if (process.env.NODE_ENV !== 'production') {
         if (
           localNetworkRegex.test(origin) ||
-          cloudflareQuickTunnelRegex.test(origin)
+          cloudflareQuickTunnelRegex.test(origin) ||
+          customTunnelRegex.test(origin)
         ) {
           callback(null, true);
           return;
