@@ -4,11 +4,12 @@ import { useState, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { MessageSquare, GripVertical, Trash2, Loader2, MoreVertical, FolderInput, LucideIcon } from 'lucide-react';
+import { MessageSquare, GripVertical, Trash2, MoreVertical, FolderInput, LucideIcon } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/formatters';
 import { AssetsCountBadge } from './AssetsCountBadge';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { FolderPickerModal } from '@/components/FolderPickerModal';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import type { Conversation } from '@/lib/types/conversation';
 
@@ -63,6 +64,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
     setIsDeleting(true);
     try {
       await onDelete(conversation.id);
+      setShowDeleteConfirm(false);
     } catch (error) {
       console.error('Failed to delete conversation:', error);
       setIsDeleting(false);
@@ -71,8 +73,9 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Don't navigate if dragging or clicking on interactive elements
+    // Don't navigate if dragging, modal is open, or clicking on interactive elements
     if (isDragging) return;
+    if (showDeleteConfirm) return;
     if ((e.target as HTMLElement).closest('[data-no-navigate]')) return;
 
     router.push(`/${locale}/conversation/${conversation.id}`);
@@ -150,57 +153,37 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
         data-no-navigate
         onClick={(e) => e.stopPropagation()}
       >
-        {showDeleteConfirm ? (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-            <span className="text-xs text-red-700 dark:text-red-300">Delete?</span>
+        <DropdownMenu
+          trigger={
             <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="px-2 py-0.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded transition-colors disabled:opacity-50"
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg lg:opacity-0 lg:group-hover:opacity-100 transition-all"
+              aria-label="Actions"
             >
-              {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Yes'}
+              <MoreVertical className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              disabled={isDeleting}
-              className="px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-            >
-              No
-            </button>
-          </div>
-        ) : (
-          <DropdownMenu
-            trigger={
-              <button
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg lg:opacity-0 lg:group-hover:opacity-100 transition-all"
-                aria-label="Actions"
-              >
-                <MoreVertical className="w-4 h-4" />
-              </button>
-            }
-            items={[
-              // Use custom menu items if provided, otherwise show default "Move to folder"
-              ...(customMenuItems || [
-                {
-                  icon: FolderInput,
-                  label: 'Move to folder',
-                  onClick: () => setShowFolderPicker(true),
-                },
-              ]),
-              ...(onDelete
-                ? [
-                    { type: 'divider' as const },
-                    {
-                      icon: Trash2,
-                      label: 'Delete',
-                      onClick: () => setShowDeleteConfirm(true),
-                      variant: 'danger' as const,
-                    },
-                  ]
-                : []),
-            ]}
-          />
-        )}
+          }
+          items={[
+            // Use custom menu items if provided, otherwise show default "Move to folder"
+            ...(customMenuItems || [
+              {
+                icon: FolderInput,
+                label: 'Move to folder',
+                onClick: () => setShowFolderPicker(true),
+              },
+            ]),
+            ...(onDelete
+              ? [
+                  { type: 'divider' as const },
+                  {
+                    icon: Trash2,
+                    label: 'Delete',
+                    onClick: () => setShowDeleteConfirm(true),
+                    variant: 'danger' as const,
+                  },
+                ]
+              : []),
+          ]}
+        />
       </div>
 
       {/* Folder Picker Modal */}
@@ -213,6 +196,19 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
         onMoveComplete={(newFolderId) => {
           onMoveToFolder?.(conversation.id, newFolderId);
         }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete conversation?"
+        message="This action cannot be undone. The conversation and all its AI assets will be permanently deleted."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

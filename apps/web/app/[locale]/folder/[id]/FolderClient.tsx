@@ -21,6 +21,7 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { FolderAssetCard } from '@/components/FolderAssetCard';
 import { QASlidePanel } from '@/components/QASlidePanel';
@@ -46,6 +47,8 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [removeFromFolderConversation, setRemoveFromFolderConversation] = useState<{ id: string; title: string } | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const { folder, conversations, isLoading, error, updateFolderLocally, refresh } = useFolderConversations(folderId);
   const { deleteFolder, updateFolder, moveToFolder } = useFolders();
@@ -131,12 +134,17 @@ export function FolderClient({ folderId }: FolderClientProps) {
   };
 
   // Handle removing a conversation from this folder
-  const handleRemoveFromFolder = async (conversationId: string) => {
+  const handleRemoveFromFolder = async () => {
+    if (!removeFromFolderConversation) return;
+    setIsRemoving(true);
     try {
-      await moveToFolder(conversationId, null);
+      await moveToFolder(removeFromFolderConversation.id, null);
       await refresh();
+      setRemoveFromFolderConversation(null);
     } catch (err) {
       console.error('Failed to remove conversation from folder:', err);
+    } finally {
+      setIsRemoving(false);
     }
   };
 
@@ -494,7 +502,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                         {
                           icon: FolderMinus,
                           label: 'Remove from folder',
-                          onClick: () => handleRemoveFromFolder(conversation.id),
+                          onClick: () => setRemoveFromFolderConversation({ id: conversation.id, title: conversation.title }),
                         },
                       ]}
                     />
@@ -545,6 +553,19 @@ export function FolderClient({ folderId }: FolderClientProps) {
         conversationCount={conversations.length}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDeleteFolder}
+      />
+
+      {/* Remove from Folder Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!removeFromFolderConversation}
+        onClose={() => setRemoveFromFolderConversation(null)}
+        onConfirm={handleRemoveFromFolder}
+        title="Remove from folder?"
+        message={`"${removeFromFolderConversation?.title}" will be moved back to All Conversations.`}
+        confirmLabel="Remove"
+        cancelLabel="Cancel"
+        variant="warning"
+        isLoading={isRemoving}
       />
     </>
   );
