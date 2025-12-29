@@ -222,11 +222,12 @@ export function RecordingPreview({
     onReRecord();
   };
 
-  // Generate real waveform from audio data (more bars for full-width display)
-  const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 100);
+  // Generate real waveform from audio data
+  // Using 50 bars to ensure visibility on mobile (100 bars + 2px gaps = 198px gaps alone)
+  const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 50);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Audio element (hidden) */}
       <audio
         ref={audioRef}
@@ -236,90 +237,88 @@ export function RecordingPreview({
         onEnded={handleEnded}
       />
 
-      {/* Preview Card */}
-      <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          {t('preview.yourRecording')}
-        </h3>
+      {/* Header */}
+      <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 text-center">
+        {t('preview.yourRecording')}
+      </h3>
 
-        {/* Playback controls - SoundCloud style */}
-        <div className="flex items-center gap-4">
-          {/* Play/Pause button */}
-          <button
-            onClick={handlePlayPause}
-            className="flex-shrink-0 p-3 rounded-full bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-colors"
-            aria-label={isPlaying ? 'Pause' : 'Play'}
+      {/* Waveform player - full width, no box */}
+      <div className="flex items-start gap-3">
+        {/* Play/Pause button - explicit size for perfect circle */}
+        <button
+          onClick={handlePlayPause}
+          className="flex-shrink-0 mt-1 w-11 h-11 flex items-center justify-center rounded-full bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-colors"
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? (
+            <Pause className="w-5 h-5" fill="currentColor" />
+          ) : (
+            <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
+          )}
+        </button>
+
+        {/* Waveform seekbar - takes remaining space */}
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          {/* Waveform with playhead */}
+          <div
+            ref={waveformRef}
+            onClick={handleWaveformClick}
+            className="relative h-14 cursor-pointer"
           >
-            {isPlaying ? (
-              <Pause className="w-5 h-5" fill="currentColor" />
-            ) : (
-              <Play className="w-5 h-5 ml-0.5" fill="currentColor" />
-            )}
-          </button>
+            {/* Waveform bars */}
+            <div className="absolute inset-0 flex items-center gap-[2px]">
+              {isAnalyzing || waveformBars.length === 0 ? (
+                // Loading placeholder - matches bar count above
+                Array.from({ length: 50 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-sm bg-gray-300 dark:bg-gray-600 animate-pulse"
+                    style={{
+                      height: `${20 + Math.sin(i * 0.3) * 10}%`,
+                      animationDelay: `${i * 10}ms`,
+                    }}
+                  />
+                ))
+              ) : (
+                waveformBars.map((height, i) => {
+                  const progress = duration > 0 ? currentTime / duration : 0;
+                  const barProgress = i / waveformBars.length;
+                  const isPast = barProgress <= progress;
 
-          {/* Waveform seekbar */}
-          <div className="flex-1 flex flex-col gap-1">
-            {/* Waveform with playhead */}
-            <div
-              ref={waveformRef}
-              onClick={handleWaveformClick}
-              className="relative h-12 cursor-pointer"
-            >
-              {/* Waveform bars */}
-              <div className="absolute inset-0 flex items-center gap-[2px]">
-                {isAnalyzing || waveformBars.length === 0 ? (
-                  // Loading placeholder
-                  Array.from({ length: 100 }).map((_, i) => (
+                  return (
                     <div
                       key={i}
-                      className="flex-1 rounded-sm bg-gray-300 dark:bg-gray-600 animate-pulse"
+                      className="flex-1 rounded-sm transition-colors duration-100"
                       style={{
-                        height: `${20 + Math.sin(i * 0.3) * 10}%`,
-                        animationDelay: `${i * 10}ms`,
+                        height: `${height}%`,
+                        backgroundColor: isPast ? '#8D6AFA' : '#d1d5db',
+                        opacity: isPast ? 1 : 0.5,
                       }}
                     />
-                  ))
-                ) : (
-                  waveformBars.map((height, i) => {
-                    const progress = duration > 0 ? currentTime / duration : 0;
-                    const barProgress = i / waveformBars.length;
-                    const isPast = barProgress <= progress;
-
-                    return (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-sm transition-colors duration-100"
-                        style={{
-                          height: `${height}%`,
-                          backgroundColor: isPast ? '#8D6AFA' : '#d1d5db',
-                          opacity: isPast ? 1 : 0.5,
-                        }}
-                      />
-                    );
-                  })
-                )}
-              </div>
-
-              {/* Playhead line */}
-              <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[#8D6AFA] pointer-events-none"
-                style={{
-                  left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
-                }}
-              />
+                  );
+                })
+              )}
             </div>
 
-            {/* Time display - current left, total right */}
-            <div className="flex justify-between text-xs font-mono text-gray-600 dark:text-gray-400">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
+            {/* Playhead line */}
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-[#8D6AFA] pointer-events-none"
+              style={{
+                left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
+              }}
+            />
+          </div>
+
+          {/* Time display - current left, total right */}
+          <div className="flex justify-between text-xs font-mono text-gray-500 dark:text-gray-400">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
           </div>
         </div>
       </div>
 
       {/* Actions - mobile-friendly stacked layout */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-2">
         <div className="flex flex-col sm:flex-row gap-3">
           <Button variant="secondary" onClick={handleCancelWithConfirmation} fullWidth>
             {t('controls.cancel')}
