@@ -146,7 +146,7 @@ export function TwoColumnDashboardLayout({
               </Button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700/50">
               {visibleConversations.map((conversation) => (
                 <DraggableConversationCard
                   key={conversation.id}
@@ -158,7 +158,7 @@ export function TwoColumnDashboardLayout({
               {hasMore && (
                 <button
                   onClick={() => setDisplayCount(prev => prev + ITEMS_PER_PAGE)}
-                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors"
+                  className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] transition-colors border-t border-gray-200 dark:border-gray-700/50"
                 >
                   Show More ({remainingCount} remaining)
                 </button>
@@ -248,7 +248,7 @@ export function TwoColumnDashboardLayout({
               )}
 
               {(sortedFolders.length > 0 || importedCount > 0) && (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700/50">
                   {sortedFolders.map((folder) => (
                     <DroppableFolderCard
                       key={folder.id}

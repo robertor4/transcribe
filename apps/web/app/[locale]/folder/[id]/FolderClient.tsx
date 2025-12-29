@@ -490,7 +490,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   </Button>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700/50 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white dark:bg-gray-800/40">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700/50">
                   {conversations.map((conversation) => (
                     <DraggableConversationCard
                       key={conversation.id}

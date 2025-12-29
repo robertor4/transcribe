@@ -484,8 +484,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
                 <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                   <span>{formatDuration(conversation.source.audioDuration)}</span>
-                  <span className="hidden sm:inline">·</span>
-                  <span className="hidden sm:inline">
+                  <span>·</span>
+                  <span>
                     Created{' '}
                     {conversation.createdAt.toLocaleDateString('en-US', {
                       month: 'short',

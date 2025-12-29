@@ -95,7 +95,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
       {/* Drag Handle - visual indicator (hidden on mobile) */}
       {showDragHandle && (
         <div
-          className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 p-2 opacity-30 group-hover:opacity-60 transition-opacity duration-200"
+          className="hidden lg:flex absolute left-0 top-0 bottom-0 w-8 items-center justify-center opacity-30 group-hover:opacity-60 transition-opacity duration-200"
           aria-hidden="true"
         >
           <GripVertical className="w-4 h-4 text-gray-400" />
@@ -156,7 +156,7 @@ export const DraggableConversationCard = memo(function DraggableConversationCard
         <DropdownMenu
           trigger={
             <button
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg lg:opacity-0 lg:group-hover:opacity-100 transition-all"
+              className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg lg:opacity-0 lg:group-hover:opacity-100 transition-all"
               aria-label="Actions"
             >
               <MoreVertical className="w-4 h-4" />
