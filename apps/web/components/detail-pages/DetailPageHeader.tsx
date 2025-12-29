@@ -32,13 +32,13 @@ export function DetailPageHeader({
   const locale = params?.locale || 'en';
 
   return (
-    <div className={`${maxWidth} mx-auto px-4 sm:px-6 py-6 sm:py-8`}>
+    <div className={`${maxWidth} mx-auto px-4 sm:px-6 py-6 sm:py-8 overflow-hidden`}>
       {/* Breadcrumb Navigation */}
       <Link
         href={`/${locale}/conversation/${conversationId}`}
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-6"
+        className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-6 max-w-full"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 flex-shrink-0" />
         <span className="truncate">Back to {conversationTitle}</span>
       </Link>
 

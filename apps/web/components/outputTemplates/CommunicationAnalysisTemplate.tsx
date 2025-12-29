@@ -59,11 +59,11 @@ function ScoreRing({ score, size = 'lg' }: { score: number; size?: 'sm' | 'lg' }
 
 function DimensionCard({ dimension }: { dimension: CommunicationDimension }) {
   return (
-    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-4">
+    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-4 overflow-hidden">
       <div className="flex items-center gap-4 mb-4">
         <ScoreRing score={dimension.score} size="sm" />
-        <div>
-          <h4 className="font-bold text-gray-900 dark:text-gray-100">{dimension.name}</h4>
+        <div className="min-w-0">
+          <h4 className="font-bold text-gray-900 dark:text-gray-100 break-words">{dimension.name}</h4>
           <p className="text-sm text-gray-500 dark:text-gray-500">
             {dimension.score >= 80 ? 'Excellent' : dimension.score >= 60 ? 'Good' : 'Needs improvement'}
           </p>
@@ -107,7 +107,7 @@ function DimensionCard({ dimension }: { dimension: CommunicationDimension }) {
 
 export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTemplateProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Overall Score Card */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
@@ -116,7 +116,7 @@ export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTem
             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
               Overall Communication Score
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed break-words">
               {data.overallAssessment}
             </p>
           </div>
@@ -129,7 +129,7 @@ export function CommunicationAnalysisTemplate({ data }: CommunicationAnalysisTem
           <Target className="w-5 h-5 text-[#8D6AFA] flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Key takeaway</h4>
-            <p className="text-gray-700 dark:text-gray-300">{data.keyTakeaway}</p>
+            <p className="text-gray-700 dark:text-gray-300 break-words">{data.keyTakeaway}</p>
           </div>
         </div>
       </div>
