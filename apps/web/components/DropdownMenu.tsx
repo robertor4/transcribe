@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode, useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { ReactNode } from 'react';
+import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { LucideIcon } from 'lucide-react';
 
 interface DropdownMenuItemBase {
@@ -32,156 +32,71 @@ interface DropdownMenuProps {
   trigger: ReactNode;
   items: DropdownMenuItem[];
   /** Alignment of dropdown relative to trigger */
-  align?: 'left' | 'right';
+  align?: 'start' | 'center' | 'end';
 }
 
-export function DropdownMenu({ trigger, items }: DropdownMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // Calculate position when opening
-  useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      const menuWidth = 224; // w-56 = 14rem = 224px
-
-      // Position to the left of the trigger, below it
-      setPosition({
-        top: rect.bottom + 8,
-        left: rect.right - menuWidth,
-      });
-    }
-  }, [isOpen]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (
-        triggerRef.current &&
-        !triggerRef.current.contains(target) &&
-        menuRef.current &&
-        !menuRef.current.contains(target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
-  // Close on escape key
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen]);
-
-  const handleItemClick = (onClick: () => void) => {
-    onClick();
-    setIsOpen(false);
-  };
-
+export function DropdownMenu({ trigger, items, align = 'end' }: DropdownMenuProps) {
   return (
-    <div className="relative" ref={triggerRef}>
-      {/* Trigger Button */}
-      <div onClick={() => setIsOpen(!isOpen)}>
+    <DropdownMenuPrimitive.Root>
+      <DropdownMenuPrimitive.Trigger asChild>
         {trigger}
-      </div>
+      </DropdownMenuPrimitive.Trigger>
 
-      {/* Dropdown Menu - rendered via portal to escape overflow:hidden containers */}
-      {isOpen && typeof document !== 'undefined' && createPortal(
-        <div
-          ref={menuRef}
-          className="fixed w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[9999]"
-          style={{
-            top: position.top,
-            left: position.left,
-          }}
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.Content
+          align={align}
+          sideOffset={8}
+          className="w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[9999] py-1 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2"
         >
-          <div className="py-1">
-            {items.map((item, idx) => {
-              // Divider
-              if (item.type === 'divider') {
-                return (
-                  <div
-                    key={idx}
-                    className="my-1 border-t border-gray-200 dark:border-gray-700"
-                  />
-                );
-              }
-
-              // Custom content
-              if (item.type === 'custom') {
-                return <div key={idx}>{item.content}</div>;
-              }
-
-              // Standard item (default)
-              const Icon = item.icon;
-              const isDanger = item.variant === 'danger';
-              const isDisabled = item.disabled;
-
-              const buttonContent = (
-                <>
-                  <Icon className={`w-4 h-4 ${
-                    isDisabled
-                      ? 'text-gray-300 dark:text-gray-600'
-                      : isDanger
-                        ? 'text-red-500 dark:text-red-400'
-                        : 'text-gray-500 dark:text-gray-400'
-                  }`} />
-                  <span>{item.label}</span>
-                </>
-              );
-
-              if (isDisabled) {
-                return (
-                  <div
-                    key={idx}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                    title={item.disabledReason}
-                  >
-                    {buttonContent}
-                  </div>
-                );
-              }
-
+          {items.map((item, idx) => {
+            // Divider
+            if (item.type === 'divider') {
               return (
-                <button
+                <DropdownMenuPrimitive.Separator
                   key={idx}
-                  onClick={() => handleItemClick(item.onClick)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors text-left ${
-                    isDanger
-                      ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {buttonContent}
-                </button>
+                  className="my-1 border-t border-gray-200 dark:border-gray-700"
+                />
               );
-            })}
-          </div>
-        </div>,
-        document.body
-      )}
-    </div>
+            }
+
+            // Custom content
+            if (item.type === 'custom') {
+              return <div key={idx}>{item.content}</div>;
+            }
+
+            // Standard item (default)
+            const Icon = item.icon;
+            const isDanger = item.variant === 'danger';
+
+            return (
+              <DropdownMenuPrimitive.Item
+                key={idx}
+                disabled={item.disabled}
+                onSelect={item.onClick}
+                title={item.disabled ? item.disabledReason : undefined}
+                className={`
+                  w-full flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors text-left outline-none cursor-pointer
+                  ${item.disabled
+                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                    : isDanger
+                      ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:bg-red-50 dark:focus:bg-red-900/20'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700'
+                  }
+                `}
+              >
+                <Icon className={`w-4 h-4 ${
+                  item.disabled
+                    ? 'text-gray-300 dark:text-gray-600'
+                    : isDanger
+                      ? 'text-red-500 dark:text-red-400'
+                      : 'text-gray-500 dark:text-gray-400'
+                }`} />
+                <span>{item.label}</span>
+              </DropdownMenuPrimitive.Item>
+            );
+          })}
+        </DropdownMenuPrimitive.Content>
+      </DropdownMenuPrimitive.Portal>
+    </DropdownMenuPrimitive.Root>
   );
 }

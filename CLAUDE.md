@@ -97,6 +97,10 @@ The brand feels like a highly capable professional assistant.
     - "No" button with `variant="ghost"` and `size="sm"`
   - Example: See `FolderClient.tsx` delete confirmation pattern
 
+### Radix UI Component Library
+
+**CRITICAL**: Before creating custom UI components, always check [Radix UI Primitives](https://www.radix-ui.com/primitives) for an existing solution. Radix provides accessible, unstyled primitives that work with Tailwind CSS and handle edge cases (click-outside, escape key, focus management, ARIA) automatically.
+
 ## Messaging Framework: The Five W's
 
 Neural Summary's landing page follows a strategic narrative arc using the **Five W's** copywriting framework to guide visitors from problem → solution → transformation → vision.

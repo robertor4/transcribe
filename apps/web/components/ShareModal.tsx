@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import * as Dialog from '@radix-ui/react-dialog';
 import { transcriptionApi } from '@/lib/api';
 import { Transcription, ShareContentOptions } from '@transcribe/shared';
 import {
@@ -106,17 +107,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       return 'Date unavailable';
     }
   };
-
-  // Handle Escape key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
 
   useEffect(() => {
     // Sync local share token with prop
@@ -445,30 +435,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     return selected.join(', ');
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-300 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#8D6AFA]" />
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                {t('title')}
-              </h2>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+          {/* Header */}
+          <div className="p-4 sm:p-6 border-b border-gray-300 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#8D6AFA]" />
+                <Dialog.Title className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+                  {t('title')}
+                </Dialog.Title>
+              </div>
+              <Dialog.Close asChild>
+                <button className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
+                  <X className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" />
+                </button>
+              </Dialog.Close>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" />
-            </button>
           </div>
-        </div>
 
-        <div className="p-4 sm:p-6">
+          <div className="p-4 sm:p-6">
           {!localShareToken ? (
             <>
               {/* Content Selection - Simplified V2 */}
@@ -992,8 +981,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               </div>
             </>
           )}
-        </div>
-      </div>
-    </div>
+          </div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 };

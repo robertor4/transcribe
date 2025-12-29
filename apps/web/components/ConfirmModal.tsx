@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import * as Dialog from '@radix-ui/react-dialog';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/Button';
 
@@ -33,40 +32,6 @@ export function ConfirmModal({
   variant = 'danger',
   isLoading = false,
 }: ConfirmModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isLoading) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
-  }, [isOpen, isLoading, onClose]);
-
-  // Focus trap
-  useEffect(() => {
-    if (isOpen && modalRef.current) {
-      const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      firstElement?.focus();
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
   const variantStyles = {
     danger: {
       icon: <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />,
@@ -87,75 +52,60 @@ export function ConfirmModal({
 
   const styles = variantStyles[variant];
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-modal-title"
-    >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={isLoading ? undefined : onClose}
-      />
-
-      {/* Modal */}
-      <div
-        ref={modalRef}
-        className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full animate-in zoom-in-95 fade-in duration-200"
-      >
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          disabled={isLoading}
-          className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="p-6">
-          {/* Icon */}
-          <div className={`w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center mb-4`}>
-            {styles.icon}
-          </div>
-
-          {/* Title */}
-          <h2
-            id="confirm-modal-title"
-            className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2"
-          >
-            {title}
-          </h2>
-
-          {/* Message */}
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            {message}
-          </p>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={onClose}
+  return (
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+          {/* Close button */}
+          <Dialog.Close asChild>
+            <button
               disabled={isLoading}
+              className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              aria-label="Close"
             >
-              {cancelLabel}
-            </Button>
-            <Button
-              variant={styles.buttonVariant}
-              fullWidth
-              onClick={onConfirm}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Deleting...' : confirmLabel}
-            </Button>
+              <X className="w-5 h-5" />
+            </button>
+          </Dialog.Close>
+
+          <div className="p-6">
+            {/* Icon */}
+            <div className={`w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center mb-4`}>
+              {styles.icon}
+            </div>
+
+            {/* Title */}
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              {title}
+            </Dialog.Title>
+
+            {/* Message */}
+            <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              {message}
+            </Dialog.Description>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                {cancelLabel}
+              </Button>
+              <Button
+                variant={styles.buttonVariant}
+                fullWidth
+                onClick={onConfirm}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Deleting...' : confirmLabel}
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>,
-    document.body
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

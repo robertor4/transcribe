@@ -16,8 +16,8 @@
  * components share similar logic for filtering untranslated locales.
  */
 
-import { useState, useRef, useEffect } from 'react';
 import { Globe, Check, Loader2, ChevronDown, Plus } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SUPPORTED_LOCALES } from '@transcribe/shared';
 import type { ConversationTranslations, LocaleTranslationStatus } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
@@ -46,21 +46,6 @@ export function TranslationDropdown({
   onTranslate,
 }: TranslationDropdownProps) {
   const t = useTranslations('conversation.translation');
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
 
   // Get current locale display name
   const getCurrentLabel = () => {
@@ -113,8 +98,6 @@ export function TranslationDropdown({
       // Need to translate first (only if not read-only)
       onTranslate(code);
     }
-
-    setIsOpen(false);
   };
 
   // Get locales that don't have translations yet (excluding original language)
@@ -129,9 +112,6 @@ export function TranslationDropdown({
       if (translatedCodes.has(l.code)) return false;
 
       // Skip if this is the original language
-      // Match by: code prefix (e.g., 'nl' matches 'nl-NL'),
-      // language name (e.g., 'Dutch' matches 'Dutch'),
-      // or native name (e.g., 'Nederlands' matches 'Nederlands')
       const codePrefix = l.code.split('-')[0].toLowerCase();
       if (
         originalLang === codePrefix ||
@@ -148,54 +128,57 @@ export function TranslationDropdown({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        disabled={isTranslating}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
-        title={t('changeLanguage')}
-      >
-        {isTranslating ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          <Globe className="w-4 h-4" />
-        )}
-        <span className="hidden sm:inline">{getCurrentLabel()}</span>
-        <ChevronDown className="w-3 h-3" />
-      </button>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button
+          disabled={isTranslating}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+          title={t('changeLanguage')}
+        >
+          {isTranslating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Globe className="w-4 h-4" />
+          )}
+          <span className="hidden sm:inline">{getCurrentLabel()}</span>
+          <ChevronDown className="w-3 h-3" />
+        </button>
+      </DropdownMenu.Trigger>
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95"
+        >
           {/* Original Language Option */}
-          <button
-            onClick={() => handleSelect('original')}
-            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors ${
+          <DropdownMenu.Item
+            onSelect={() => handleSelect('original')}
+            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors outline-none cursor-pointer ${
               currentLocale === 'original'
                 ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700'
             }`}
           >
             <span>{getOriginalLabel()}</span>
             {currentLocale === 'original' && <Check className="w-4 h-4" />}
-          </button>
+          </DropdownMenu.Item>
 
           {/* Available Translations (if any) */}
           {status?.availableLocales && status.availableLocales.length > 0 && (
             <>
-              <div className="border-t border-gray-200 dark:border-gray-700" />
-              <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              <DropdownMenu.Separator className="border-t border-gray-200 dark:border-gray-700" />
+              <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                 {t('availableTranslations')}
-              </div>
+              </DropdownMenu.Label>
               {status.availableLocales.map((locale) => (
-                <button
+                <DropdownMenu.Item
                   key={locale.code}
-                  onClick={() => handleSelect(locale.code)}
-                  className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors ${
+                  onSelect={() => handleSelect(locale.code)}
+                  className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors outline-none cursor-pointer ${
                     currentLocale === locale.code
                       ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700'
                   }`}
                 >
                   <div className="flex flex-col items-start">
@@ -207,7 +190,7 @@ export function TranslationDropdown({
                     )}
                   </div>
                   {currentLocale === locale.code && <Check className="w-4 h-4" />}
-                </button>
+                </DropdownMenu.Item>
               ))}
             </>
           )}
@@ -215,21 +198,21 @@ export function TranslationDropdown({
           {/* Translate To Section (only if not read-only and there are untranslated locales) */}
           {!readOnly && getUntranslatedLocales().length > 0 && (
             <>
-              <div className="border-t border-gray-200 dark:border-gray-700" />
-              <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              <DropdownMenu.Separator className="border-t border-gray-200 dark:border-gray-700" />
+              <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                 {t('translateTo')}
-              </div>
+              </DropdownMenu.Label>
               <div className="max-h-48 overflow-y-auto">
                 {getUntranslatedLocales().map((locale) => (
-                  <button
+                  <DropdownMenu.Item
                     key={locale.code}
-                    onClick={() => handleSelect(locale.code)}
+                    onSelect={() => handleSelect(locale.code)}
                     disabled={isTranslating}
-                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors outline-none cursor-pointer disabled:opacity-50"
                   >
                     <span>{locale.nativeName}</span>
                     <Plus className="w-4 h-4 text-gray-400" />
-                  </button>
+                  </DropdownMenu.Item>
                 ))}
               </div>
             </>
@@ -241,8 +224,8 @@ export function TranslationDropdown({
               {t('noTranslationsAvailable')}
             </div>
           )}
-        </div>
-      )}
-    </div>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

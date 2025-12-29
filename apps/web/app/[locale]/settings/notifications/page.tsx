@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { getUserProfile, updateEmailNotifications } from '@/lib/user-preferences';
 import notificationService from '@/lib/notifications';
+import { Toggle } from '@/components/Toggle';
 
 export default function NotificationSettingsPage() {
   const { user: authUser } = useAuth();
@@ -142,25 +143,12 @@ export default function NotificationSettingsPage() {
               </p>
             </div>
             <div className="sm:w-2/3">
-              <button
-                type="button"
-                onClick={handleEmailToggle}
+              <Toggle
+                checked={emailEnabled}
+                onCheckedChange={handleEmailToggle}
                 disabled={saving}
-                className={`
-                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2
-                  ${emailEnabled ? 'bg-[#8D6AFA]' : 'bg-gray-200 dark:bg-gray-600'}
-                  ${saving ? 'opacity-50 cursor-wait' : ''}
-                `}
-              >
-                <span
-                  className={`
-                    pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
-                    transition duration-200 ease-in-out
-                    ${emailEnabled ? 'translate-x-5' : 'translate-x-0'}
-                  `}
-                />
-              </button>
+                aria-label={t('emailNotifications')}
+              />
             </div>
           </div>
 
@@ -180,25 +168,12 @@ export default function NotificationSettingsPage() {
               )}
             </div>
             <div className="sm:w-2/3">
-              <button
-                type="button"
-                onClick={handleBrowserToggle}
+              <Toggle
+                checked={browserEnabled}
+                onCheckedChange={handleBrowserToggle}
                 disabled={permission === 'denied'}
-                className={`
-                  relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                  transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2
-                  ${browserEnabled ? 'bg-[#8D6AFA]' : 'bg-gray-200 dark:bg-gray-600'}
-                  ${permission === 'denied' ? 'opacity-50 cursor-not-allowed' : ''}
-                `}
-              >
-                <span
-                  className={`
-                    pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
-                    transition duration-200 ease-in-out
-                    ${browserEnabled ? 'translate-x-5' : 'translate-x-0'}
-                  `}
-                />
-              </button>
+                aria-label={t('browserNotifications')}
+              />
             </div>
           </div>
         </div>

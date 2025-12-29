@@ -75,7 +75,7 @@ export default function SettingsLayout({
     <UsageProvider>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm">
+        <header className="bg-white dark:bg-gray-800 shadow-sm relative z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div>
@@ -142,13 +142,14 @@ export default function SettingsLayout({
 
             {/* Mobile Navigation Menu */}
             {isMobileMenuOpen && (
-              <div className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-25 dark:bg-opacity-50"
+              <div
+                className="md:hidden fixed inset-0 z-30 bg-black/25"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
             )}
             <div className={`
-              md:hidden fixed top-16 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-b dark:border-gray-700 shadow-lg transform transition-transform
-              ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'}
+              md:hidden fixed top-[88px] left-0 right-0 z-40 bg-white dark:bg-gray-800 border-b dark:border-gray-700 shadow-lg transform transition-transform
+              ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full pointer-events-none'}
             `}>
               <nav className="px-4 py-2 space-y-1">
                 {navigation.map((item) => {

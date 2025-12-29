@@ -144,7 +144,7 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
         {/* User Name/Email and Chevron - hidden when collapsed */}
         {!collapsed && (
           <>
-            <span className="hidden md:block text-sm font-medium text-white truncate ml-2 flex-1 text-left">
+            <span className="text-sm font-medium text-white dark:text-gray-100 truncate ml-2 flex-1 text-left">
               {user.displayName || user.email}
             </span>
             <ChevronDown

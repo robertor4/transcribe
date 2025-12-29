@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, ChevronDown, Home } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 interface UserAvatarDropdownProps {
   /** Compact mode shows only avatar without dropdown arrow */
@@ -20,43 +20,13 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('shared');
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Close on escape
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [isOpen]);
 
   const handleLogout = async () => {
-    setIsOpen(false);
     await logout();
     router.push(`/${locale}/login`);
   };
 
   const handleGoToDashboard = () => {
-    setIsOpen(false);
     router.push(`/${locale}/dashboard`);
   };
 
@@ -79,42 +49,41 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Avatar Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 transition-colors focus:outline-none rounded-full ${
-          compact
-            ? 'p-0.5 hover:ring-2 hover:ring-gray-200'
-            : 'px-2 py-1.5 hover:bg-gray-100 rounded-lg'
-        }`}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        aria-label="User menu"
-      >
-        {user.photoURL ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={user.photoURL}
-            alt={user.displayName || user.email || 'User'}
-            className="h-8 w-8 rounded-full object-cover border border-gray-200"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className="h-8 w-8 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-sm font-semibold">
-            {getInitials()}
-          </div>
-        )}
-        {!compact && (
-          <ChevronDown
-            className={`h-4 w-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          />
-        )}
-      </button>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button
+          className={`flex items-center gap-2 transition-colors focus:outline-none rounded-full ${
+            compact
+              ? 'p-0.5 hover:ring-2 hover:ring-gray-200'
+              : 'px-2 py-1.5 hover:bg-gray-100 rounded-lg'
+          }`}
+          aria-label="User menu"
+        >
+          {user.photoURL ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={user.photoURL}
+              alt={user.displayName || user.email || 'User'}
+              className="h-8 w-8 rounded-full object-cover border border-gray-200"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-sm font-semibold">
+              {getInitials()}
+            </div>
+          )}
+          {!compact && (
+            <ChevronDown className="h-4 w-4 text-gray-500 transition-transform data-[state=open]:rotate-180" />
+          )}
+        </button>
+      </DropdownMenu.Trigger>
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 animate-in fade-in-0 zoom-in-95"
+        >
           {/* User Info */}
           <div className="px-4 py-3 border-b border-gray-200">
             <div className="flex items-center gap-3">
@@ -146,23 +115,23 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
 
           {/* Menu Items */}
           <div className="py-2">
-            <button
-              onClick={handleGoToDashboard}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 hover:bg-gray-50 transition-colors"
+            <DropdownMenu.Item
+              onSelect={handleGoToDashboard}
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 hover:bg-gray-50 focus:bg-gray-50 transition-colors outline-none cursor-pointer"
             >
               <Home className="h-4 w-4 text-gray-500" />
               <span>{t('userMenu.dashboard')}</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 hover:bg-gray-50 transition-colors"
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              onSelect={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-800 hover:bg-gray-50 focus:bg-gray-50 transition-colors outline-none cursor-pointer"
             >
               <LogOut className="h-4 w-4 text-gray-500" />
               <span>{t('userMenu.signOut')}</span>
-            </button>
+            </DropdownMenu.Item>
           </div>
-        </div>
-      )}
-    </div>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
