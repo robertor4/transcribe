@@ -269,12 +269,25 @@
       "label": "Source d'enregistrement",
       "microphone": "Microphone",
       "microphoneDescription": "Enregistrer depuis le microphone de votre appareil",
-      "tabAudio": "Audio de l'onglet de réunion",
-      "tabAudioDescription": "Capturer l'audio de la réunion + votre microphone (Google Meet, Zoom)",
-      "tabAudioNotSupported": "La capture audio d'onglet n'est prise en charge que dans les navigateurs Chrome et Edge. Veuillez utiliser l'enregistrement par microphone ou basculer vers un navigateur pris en charge.",
+      "tabAudio": "Audio de l'onglet",
+      "tabAudioDescription": "Enregistrer l'audio d'un onglet de navigateur",
+      "tabAudioNotSupported": "Non pris en charge dans ce navigateur",
       "tabAudioInstructions": "Autorisez d'abord l'accès au microphone (pour capturer votre voix), puis sélectionnez l'onglet avec votre réunion et cochez 'Partager l'audio de l'onglet'.",
       "changeSource": "Changer de source",
-      "recordingFrom": "Enregistrement depuis :"
+      "changeMethod": "Changer de méthode",
+      "recordingFrom": "Enregistrement depuis :",
+      "chooseSource": "Choisir la source d'enregistrement",
+      "chooseSourceDescription": "Sélectionnez d'où vous voulez enregistrer",
+      "selectMicrophone": "Sélectionner le microphone",
+      "loadingMicrophones": "Chargement des microphones...",
+      "inputLevel": "Niveau d'entrée",
+      "initializing": "Initialisation...",
+      "noAudioDetected": "Aucun audio détecté. Vérifiez que votre microphone fonctionne et n'est pas en sourdine.",
+      "useThisMicrophone": "Utiliser ce microphone",
+      "recordTabAudio": "Enregistrer audio de l'onglet",
+      "includeMicrophone": "Inclure mon microphone",
+      "recommendedForCalls": "Recommandé pour les appels vidéo",
+      "usingMicrophone": "Utilise :"
     },
     "status": {
       "ready": "Prêt à enregistrer",
@@ -285,7 +298,7 @@
     },
     "controls": {
       "start": "Démarrer l'enregistrement",
-      "stop": "Arrêter l'enregistrement",
+      "stop": "Terminer",
       "pause": "Pause",
       "resume": "Reprendre",
       "reset": "Réenregistrer",
@@ -295,18 +308,25 @@
       "dismissWarning": "Fermer l'avertissement"
     },
     "preview": {
-      "title": "Aperçu de l'enregistrement"
+      "title": "Aperçu de l'enregistrement",
+      "yourRecording": "Votre enregistrement",
+      "proceed": "Continuer",
+      "reRecord": "Réenregistrer"
     },
     "fileSize": "Taille estimée : {size}",
     "errors": {
       "title": "Erreur d'enregistrement",
-      "notSupported": "L'enregistrement audio n'est pas pris en charge dans votre navigateur.",
+      "notSupported": "L'enregistrement n'est pas pris en charge dans votre navigateur. Essayez Chrome, Firefox ou Edge.",
       "notSupportedDetails": "Veuillez utiliser un navigateur moderne comme Chrome, Firefox, Safari ou Edge pour enregistrer de l'audio.",
       "permissionDenied": "Accès au microphone refusé. Veuillez autoriser l'accès au microphone dans les paramètres de votre navigateur.",
       "noMicrophoneFound": "Aucun microphone trouvé. Veuillez connecter un microphone et réessayer.",
       "microphoneInUse": "Le microphone est déjà utilisé par une autre application. Veuillez fermer les autres applications et réessayer.",
       "recordingFailed": "Échec de l'enregistrement. Veuillez réessayer.",
       "uploadFailed": "Échec du téléchargement. Veuillez réessayer."
+    },
+    "confirm": {
+      "cancelRecording": "Êtes-vous sûr de vouloir annuler ? Votre enregistrement sera perdu.",
+      "goBack": "Retour"
     },
     "warnings": {
       "title": "Attention",

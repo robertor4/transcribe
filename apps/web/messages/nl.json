@@ -269,12 +269,25 @@
       "label": "Opnamebron",
       "microphone": "Microfoon",
       "microphoneDescription": "Opnemen via je apparaatmicrofoon",
-      "tabAudio": "Vergadertabblad audio",
-      "tabAudioDescription": "Vergadering audio + je microfoon vastleggen (Google Meet, Zoom)",
-      "tabAudioNotSupported": "Tabblad-audio-opname wordt alleen ondersteund in Chrome en Edge browsers. Gebruik microfoonopname of schakel over naar een ondersteunde browser.",
+      "tabAudio": "Tabblad audio",
+      "tabAudioDescription": "Audio opnemen van een browsertabblad",
+      "tabAudioNotSupported": "Niet ondersteund in deze browser",
       "tabAudioInstructions": "Sta eerst microfoon toegang toe (om je stem vast te leggen), selecteer dan het browsertabblad met je vergadering en vink 'Tabblad audio delen' aan.",
       "changeSource": "Bron wijzigen",
-      "recordingFrom": "Opname van:"
+      "changeMethod": "Methode wijzigen",
+      "recordingFrom": "Opname van:",
+      "chooseSource": "Kies opnamebron",
+      "chooseSourceDescription": "Selecteer waar je van wilt opnemen",
+      "selectMicrophone": "Selecteer microfoon",
+      "loadingMicrophones": "Microfoons laden...",
+      "inputLevel": "Inputniveau",
+      "initializing": "Initialiseren...",
+      "noAudioDetected": "Geen geluid gedetecteerd. Controleer of je microfoon werkt en niet op mute staat.",
+      "useThisMicrophone": "Gebruik deze microfoon",
+      "recordTabAudio": "Tabblad audio opnemen",
+      "includeMicrophone": "Mijn microfoon toevoegen",
+      "recommendedForCalls": "Aanbevolen voor videogesprekken",
+      "usingMicrophone": "Gebruikt:"
     },
     "status": {
       "ready": "Klaar om op te nemen",
@@ -285,7 +298,7 @@
     },
     "controls": {
       "start": "Start opname",
-      "stop": "Stop opname",
+      "stop": "Voltooien",
       "pause": "Pauzeer",
       "resume": "Hervat",
       "reset": "Opnieuw opnemen",
@@ -295,18 +308,25 @@
       "dismissWarning": "Waarschuwing sluiten"
     },
     "preview": {
-      "title": "Opname voorbeeld"
+      "title": "Opname voorbeeld",
+      "yourRecording": "Je opname",
+      "proceed": "Doorgaan",
+      "reRecord": "Opnieuw opnemen"
     },
     "fileSize": "Geschatte grootte: {size}",
     "errors": {
       "title": "Opnamefout",
-      "notSupported": "Audio-opname wordt niet ondersteund in je browser.",
+      "notSupported": "Opnemen wordt niet ondersteund in je browser. Probeer Chrome, Firefox of Edge.",
       "notSupportedDetails": "Gebruik een moderne browser zoals Chrome, Firefox, Safari of Edge om audio op te nemen.",
       "permissionDenied": "Microfoontoegang geweigerd. Sta microfoontoegang toe in je browserinstellingen.",
       "noMicrophoneFound": "Geen microfoon gevonden. Sluit een microfoon aan en probeer opnieuw.",
       "microphoneInUse": "Microfoon is al in gebruik door een andere applicatie. Sluit andere apps en probeer opnieuw.",
       "recordingFailed": "Opname mislukt. Probeer opnieuw.",
       "uploadFailed": "Upload mislukt. Probeer opnieuw."
+    },
+    "confirm": {
+      "cancelRecording": "Weet je zeker dat je wilt annuleren? Je opname gaat verloren.",
+      "goBack": "Ga terug"
     },
     "warnings": {
       "title": "Let op",

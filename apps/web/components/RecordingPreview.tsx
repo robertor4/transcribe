@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { Play, Pause } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { useAudioWaveform } from '@/hooks/useAudioWaveform';
 
@@ -25,6 +26,7 @@ export function RecordingPreview({
   onReRecord,
   onCancel,
 }: RecordingPreviewProps) {
+  const t = useTranslations('recording');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [actualDuration, setActualDuration] = useState(durationProp);
@@ -224,7 +226,7 @@ export function RecordingPreview({
   const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 100);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Audio element (hidden) */}
       <audio
         ref={audioRef}
@@ -235,9 +237,9 @@ export function RecordingPreview({
       />
 
       {/* Preview Card */}
-      <div className="p-8 rounded-2xl bg-gray-50 dark:bg-gray-800 border-2 border-[#8D6AFA]">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 uppercase tracking-wide">
-          Your Recording
+      <div className="p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          {t('preview.yourRecording')}
         </h3>
 
         {/* Playback controls - SoundCloud style */}
@@ -245,7 +247,7 @@ export function RecordingPreview({
           {/* Play/Pause button */}
           <button
             onClick={handlePlayPause}
-            className="flex-shrink-0 p-3 rounded-full bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="flex-shrink-0 p-3 rounded-full bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-colors"
             aria-label={isPlaying ? 'Pause' : 'Play'}
           >
             {isPlaying ? (
@@ -261,7 +263,7 @@ export function RecordingPreview({
             <div
               ref={waveformRef}
               onClick={handleWaveformClick}
-              className="relative h-16 cursor-pointer"
+              className="relative h-12 cursor-pointer"
             >
               {/* Waveform bars */}
               <div className="absolute inset-0 flex items-center gap-[2px]">
@@ -300,10 +302,9 @@ export function RecordingPreview({
 
               {/* Playhead line */}
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[#8D6AFA] shadow-sm pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-[#8D6AFA] pointer-events-none"
                 style={{
                   left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
-                  boxShadow: '0 0 4px rgba(204, 51, 153, 0.5)',
                 }}
               />
             </div>
@@ -315,22 +316,21 @@ export function RecordingPreview({
             </div>
           </div>
         </div>
-
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between gap-4">
-        <Button variant="ghost" onClick={handleReRecordWithConfirmation}>
-          ← Re-record
-        </Button>
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={handleCancelWithConfirmation}>
-            Cancel
+      {/* Actions - mobile-friendly stacked layout */}
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button variant="secondary" onClick={handleCancelWithConfirmation} fullWidth>
+            {t('controls.cancel')}
           </Button>
-          <Button variant="brand" onClick={onConfirm}>
-            Proceed with this recording →
+          <Button variant="brand" onClick={onConfirm} fullWidth>
+            {t('preview.proceed')} →
           </Button>
         </div>
+        <Button variant="ghost" onClick={handleReRecordWithConfirmation} fullWidth>
+          ← {t('preview.reRecord')}
+        </Button>
       </div>
     </div>
   );

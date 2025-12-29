@@ -269,12 +269,25 @@
       "label": "Fuente de grabación",
       "microphone": "Micrófono",
       "microphoneDescription": "Grabar desde el micrófono de tu dispositivo",
-      "tabAudio": "Audio de pestaña de reunión",
-      "tabAudioDescription": "Capturar audio de reunión + tu micrófono (Google Meet, Zoom)",
-      "tabAudioNotSupported": "La captura de audio de pestaña solo es compatible con navegadores Chrome y Edge. Utilice la grabación por micrófono o cambie a un navegador compatible.",
+      "tabAudio": "Audio de pestaña",
+      "tabAudioDescription": "Grabar audio de una pestaña del navegador",
+      "tabAudioNotSupported": "No compatible con este navegador",
       "tabAudioInstructions": "Primero permite el acceso al micrófono (para capturar tu voz), luego selecciona la pestaña con tu reunión y marca 'Compartir audio de pestaña'.",
       "changeSource": "Cambiar fuente",
-      "recordingFrom": "Grabando desde:"
+      "changeMethod": "Cambiar método",
+      "recordingFrom": "Grabando desde:",
+      "chooseSource": "Elegir fuente de grabación",
+      "chooseSourceDescription": "Selecciona desde dónde quieres grabar",
+      "selectMicrophone": "Seleccionar micrófono",
+      "loadingMicrophones": "Cargando micrófonos...",
+      "inputLevel": "Nivel de entrada",
+      "initializing": "Inicializando...",
+      "noAudioDetected": "No se detecta audio. Comprueba que tu micrófono funciona y no está silenciado.",
+      "useThisMicrophone": "Usar este micrófono",
+      "recordTabAudio": "Grabar audio de pestaña",
+      "includeMicrophone": "Incluir mi micrófono",
+      "recommendedForCalls": "Recomendado para videollamadas",
+      "usingMicrophone": "Usando:"
     },
     "status": {
       "ready": "Listo para grabar",
@@ -285,7 +298,7 @@
     },
     "controls": {
       "start": "Iniciar grabación",
-      "stop": "Detener grabación",
+      "stop": "Finalizar",
       "pause": "Pausar",
       "resume": "Reanudar",
       "reset": "Volver a grabar",
@@ -295,18 +308,25 @@
       "dismissWarning": "Cerrar advertencia"
     },
     "preview": {
-      "title": "Vista previa de grabación"
+      "title": "Vista previa de grabación",
+      "yourRecording": "Tu grabación",
+      "proceed": "Continuar",
+      "reRecord": "Volver a grabar"
     },
     "fileSize": "Tamaño estimado: {size}",
     "errors": {
       "title": "Error de grabación",
-      "notSupported": "La grabación de audio no es compatible con su navegador.",
+      "notSupported": "La grabación no es compatible con tu navegador. Prueba Chrome, Firefox o Edge.",
       "notSupportedDetails": "Utilice un navegador moderno como Chrome, Firefox, Safari o Edge para grabar audio.",
       "permissionDenied": "Acceso al micrófono denegado. Permita el acceso al micrófono en la configuración de su navegador.",
       "noMicrophoneFound": "No se encontró ningún micrófono. Conecte un micrófono e inténtelo de nuevo.",
       "microphoneInUse": "El micrófono ya está en uso por otra aplicación. Cierre otras aplicaciones e inténtelo de nuevo.",
       "recordingFailed": "Error en la grabación. Inténtelo de nuevo.",
       "uploadFailed": "Error en la carga. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "cancelRecording": "¿Estás seguro de que quieres cancelar? Tu grabación se perderá.",
+      "goBack": "Volver"
     },
     "warnings": {
       "title": "Aviso",

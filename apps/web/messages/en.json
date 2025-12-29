@@ -268,13 +268,26 @@
     "source": {
       "label": "Recording Source",
       "microphone": "Microphone",
-      "microphoneDescription": "Record from your device microphone",
+      "microphoneDescription": "Record from your device's microphone",
       "tabAudio": "Tab Audio",
-      "tabAudioDescription": "Capture meeting audio + your microphone (Google Meet, Zoom)",
-      "tabAudioNotSupported": "Tab audio capture is only supported in Chrome and Edge browsers. Please use microphone recording or switch to a supported browser.",
+      "tabAudioDescription": "Record audio from a browser tab",
+      "tabAudioNotSupported": "Not supported in this browser",
       "tabAudioInstructions": "First allow microphone access (to capture your voice), then select the browser tab with your meeting and check 'Share tab audio'.",
       "changeSource": "Change source",
-      "recordingFrom": "Recording from:"
+      "changeMethod": "Change method",
+      "recordingFrom": "Recording from:",
+      "chooseSource": "Choose recording source",
+      "chooseSourceDescription": "Select where you want to record from",
+      "selectMicrophone": "Select microphone",
+      "loadingMicrophones": "Loading microphones...",
+      "inputLevel": "Input level",
+      "initializing": "Initializing...",
+      "noAudioDetected": "No audio detected. Check your microphone is working and not muted.",
+      "useThisMicrophone": "Use this microphone",
+      "recordTabAudio": "Record tab audio",
+      "includeMicrophone": "Include my microphone",
+      "recommendedForCalls": "Recommended for video calls",
+      "usingMicrophone": "Using:"
     },
     "status": {
       "ready": "Ready to record",
@@ -285,7 +298,7 @@
     },
     "controls": {
       "start": "Start Recording",
-      "stop": "Stop Recording",
+      "stop": "Finish",
       "pause": "Pause",
       "resume": "Resume",
       "reset": "Re-record",
@@ -295,18 +308,25 @@
       "dismissWarning": "Dismiss warning"
     },
     "preview": {
-      "title": "Preview Recording"
+      "title": "Preview Recording",
+      "yourRecording": "Your recording",
+      "proceed": "Proceed",
+      "reRecord": "Re-record"
     },
     "fileSize": "Estimated size: {size}",
     "errors": {
       "title": "Recording Error",
-      "notSupported": "Audio recording is not supported in your browser.",
+      "notSupported": "Recording is not supported in your browser. Please try Chrome, Firefox, or Edge.",
       "notSupportedDetails": "Please use a modern browser like Chrome, Firefox, Safari, or Edge to record audio.",
       "permissionDenied": "Microphone access denied. Please allow microphone access in your browser settings.",
       "noMicrophoneFound": "No microphone found. Please connect a microphone and try again.",
       "microphoneInUse": "Microphone is already in use by another application. Please close other apps and try again.",
       "recordingFailed": "Recording failed. Please try again.",
       "uploadFailed": "Upload failed. Please try again."
+    },
+    "confirm": {
+      "cancelRecording": "Are you sure you want to cancel? Your recording will be lost.",
+      "goBack": "Go back"
     },
     "warnings": {
       "title": "Notice",

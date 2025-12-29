@@ -269,12 +269,25 @@
       "label": "Aufnahmequelle",
       "microphone": "Mikrofon",
       "microphoneDescription": "Von Ihrem Gerät Mikrofon aufnehmen",
-      "tabAudio": "Meeting-Tab-Audio",
-      "tabAudioDescription": "Meeting-Audio + Ihr Mikrofon aufnehmen (Google Meet, Zoom)",
-      "tabAudioNotSupported": "Tab-Audio-Aufnahme wird nur in Chrome und Edge Browsern unterstützt. Bitte verwenden Sie Mikrofon-Aufnahme oder wechseln Sie zu einem unterstützten Browser.",
+      "tabAudio": "Tab-Audio",
+      "tabAudioDescription": "Audio von einem Browser-Tab aufnehmen",
+      "tabAudioNotSupported": "In diesem Browser nicht unterstützt",
       "tabAudioInstructions": "Erlauben Sie zuerst den Mikrofon-Zugriff (um Ihre Stimme aufzunehmen), wählen Sie dann den Browser-Tab mit Ihrem Meeting und aktivieren Sie 'Tab-Audio teilen'.",
       "changeSource": "Quelle ändern",
-      "recordingFrom": "Aufnahme von:"
+      "changeMethod": "Methode ändern",
+      "recordingFrom": "Aufnahme von:",
+      "chooseSource": "Aufnahmequelle wählen",
+      "chooseSourceDescription": "Wählen Sie, woher Sie aufnehmen möchten",
+      "selectMicrophone": "Mikrofon auswählen",
+      "loadingMicrophones": "Mikrofone werden geladen...",
+      "inputLevel": "Eingangspegel",
+      "initializing": "Initialisierung...",
+      "noAudioDetected": "Kein Audio erkannt. Überprüfen Sie, ob Ihr Mikrofon funktioniert und nicht stummgeschaltet ist.",
+      "useThisMicrophone": "Dieses Mikrofon verwenden",
+      "recordTabAudio": "Tab-Audio aufnehmen",
+      "includeMicrophone": "Mein Mikrofon einbeziehen",
+      "recommendedForCalls": "Empfohlen für Videoanrufe",
+      "usingMicrophone": "Verwendet:"
     },
     "status": {
       "ready": "Bereit zur Aufnahme",
@@ -285,7 +298,7 @@
     },
     "controls": {
       "start": "Aufnahme starten",
-      "stop": "Aufnahme stoppen",
+      "stop": "Fertig",
       "pause": "Pausieren",
       "resume": "Fortsetzen",
       "reset": "Neu aufnehmen",
@@ -295,18 +308,25 @@
       "dismissWarning": "Warnung schließen"
     },
     "preview": {
-      "title": "Aufnahme-Vorschau"
+      "title": "Aufnahme-Vorschau",
+      "yourRecording": "Deine Aufnahme",
+      "proceed": "Weiter",
+      "reRecord": "Neu aufnehmen"
     },
     "fileSize": "Geschätzte Größe: {size}",
     "errors": {
       "title": "Aufnahmefehler",
-      "notSupported": "Audio-Aufnahme wird in Ihrem Browser nicht unterstützt.",
+      "notSupported": "Aufnahme wird in Ihrem Browser nicht unterstützt. Bitte versuchen Sie Chrome, Firefox oder Edge.",
       "notSupportedDetails": "Bitte verwenden Sie einen modernen Browser wie Chrome, Firefox, Safari oder Edge, um Audio aufzunehmen.",
       "permissionDenied": "Mikrofon-Zugriff verweigert. Bitte erlauben Sie Mikrofon-Zugriff in Ihren Browser-Einstellungen.",
       "noMicrophoneFound": "Kein Mikrofon gefunden. Bitte schließen Sie ein Mikrofon an und versuchen Sie es erneut.",
       "microphoneInUse": "Mikrofon wird bereits von einer anderen Anwendung verwendet. Bitte schließen Sie andere Apps und versuchen Sie es erneut.",
       "recordingFailed": "Aufnahme fehlgeschlagen. Bitte versuchen Sie es erneut.",
       "uploadFailed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "confirm": {
+      "cancelRecording": "Sind Sie sicher, dass Sie abbrechen möchten? Ihre Aufnahme geht verloren.",
+      "goBack": "Zurück"
     },
     "warnings": {
       "title": "Hinweis",
