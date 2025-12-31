@@ -6,7 +6,7 @@ import { useState } from 'react';
 interface CTAButtonProps {
   href?: string;
   locale?: string;
-  variant?: 'primary' | 'secondary' | 'brand';
+  variant?: 'primary' | 'secondary' | 'brand' | 'light';
   children: React.ReactNode;
   'aria-label'?: string;
 }
@@ -16,9 +16,13 @@ export function CTAButton({ href, locale, variant = 'primary', children, 'aria-l
 
   const baseClasses = "inline-flex items-center justify-center px-10 py-4 font-semibold text-lg rounded-full transform transition-all hover:scale-105 w-[240px]";
 
-  // Primary variant - solid dark background
+  // Primary variant - solid dark background (for light backgrounds)
   const primaryClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
   const primaryStyle = { backgroundColor: isHovered ? '#2D2360' : '#23194B' };
+
+  // Light variant - white background with dark text (for dark backgrounds)
+  const lightClasses = `${baseClasses} text-[#23194B] shadow-2xl border-2 border-transparent`;
+  const lightStyle = { backgroundColor: isHovered ? '#f3f4f6' : '#ffffff' };
 
   // Secondary variant - outlined with white background, fills on hover
   const secondaryClasses = `${baseClasses} ${isHovered ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} border-2 border-gray-900`;
@@ -33,12 +37,14 @@ export function CTAButton({ href, locale, variant = 'primary', children, 'aria-l
   const getVariantClasses = () => {
     if (variant === 'brand') return brandClasses;
     if (variant === 'secondary') return secondaryClasses;
+    if (variant === 'light') return lightClasses;
     return primaryClasses;
   };
 
   const getVariantStyle = () => {
     if (variant === 'brand') return brandStyle;
     if (variant === 'primary') return primaryStyle;
+    if (variant === 'light') return lightStyle;
     return undefined;
   };
 

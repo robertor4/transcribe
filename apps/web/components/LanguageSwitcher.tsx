@@ -11,9 +11,12 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface LanguageSwitcherProps {
   enableDarkMode?: boolean;
+  /** Use 'dark' variant for dark backgrounds (like the landing header) */
+  variant?: 'light' | 'dark';
 }
 
-export function LanguageSwitcher({ enableDarkMode = false }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ enableDarkMode = false, variant = 'light' }: LanguageSwitcherProps) {
+  const isDark = variant === 'dark';
   const t = useTranslations('common');
   const locale = useLocale();
   const pathname = usePathname();
@@ -43,11 +46,15 @@ export function LanguageSwitcher({ enableDarkMode = false }: LanguageSwitcherPro
       <DropdownMenu.Trigger asChild>
         <button
           disabled={isPending}
-          className={`flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] rounded-md transition-colors disabled:opacity-50 ${enableDarkMode ? 'dark:text-gray-300 dark:hover:text-white' : ''}`}
+          className={`flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] rounded-md transition-colors disabled:opacity-50 ${
+            isDark
+              ? 'text-gray-300 hover:text-white'
+              : `text-gray-600 hover:text-gray-900 ${enableDarkMode ? 'dark:text-gray-300 dark:hover:text-white' : ''}`
+          }`}
           aria-label={`${t('language')}: ${localeNames[locale as keyof typeof localeNames]}`}
         >
           {isPending ? (
-            <div className={`h-4 w-4 border-2 border-gray-300 border-t-[#8D6AFA] rounded-full animate-spin ${enableDarkMode ? 'dark:border-gray-600' : ''}`} />
+            <div className={`h-4 w-4 border-2 rounded-full animate-spin ${isDark ? 'border-gray-500 border-t-white' : `border-gray-300 border-t-[#8D6AFA] ${enableDarkMode ? 'dark:border-gray-600' : ''}`}`} />
           ) : (
             <Globe className="w-4 h-4" />
           )}
