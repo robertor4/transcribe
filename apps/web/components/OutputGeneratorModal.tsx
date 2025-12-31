@@ -21,8 +21,8 @@ const emailTemplates = outputTemplates.filter(t => EMAIL_IDS.includes(t.id));
 const contentTemplates = outputTemplates.filter(t => CONTENT_IDS.includes(t.id));
 const analysisTemplates = outputTemplates.filter(t => ANALYSIS_IDS.includes(t.id));
 
-// Template card component
-function TemplateCard({
+// Template list item component - compact row-based layout
+function TemplateListItem({
   template,
   isSelected,
   onSelect,
@@ -39,35 +39,48 @@ function TemplateCard({
   return (
     <button
       onClick={onSelect}
-      className={`group relative p-5 rounded-xl border-2 text-left transition-all duration-200 ${
+      className={`group w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-150 ${
         isSelected
-          ? 'border-[#8D6AFA] bg-purple-50 dark:bg-[#8D6AFA]/10 shadow-md'
-          : 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA]/50 hover:shadow-sm'
+          ? 'bg-purple-50 dark:bg-[#8D6AFA]/10'
+          : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
       }`}
     >
-      <div className="flex items-start gap-4">
-        <div
-          className={`w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
-            isSelected
-              ? 'bg-[#8D6AFA] text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
-          }`}
-        >
-          <Icon className="w-5 h-5" />
-        </div>
-        <div className="flex-1 min-w-0 pr-4">
-          <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1">
-            {name}
-          </h4>
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
-            {description}
-          </p>
-        </div>
+      {/* Radio indicator */}
+      <div
+        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+          isSelected
+            ? 'border-[#8D6AFA] bg-[#8D6AFA]'
+            : 'border-gray-300 dark:border-gray-600 group-hover:border-[#8D6AFA]/50'
+        }`}
+      >
         {isSelected && (
-          <div className="absolute top-4 right-4 w-5 h-5 rounded-full bg-[#8D6AFA] flex items-center justify-center">
-            <span className="text-white text-xs">✓</span>
-          </div>
+          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
         )}
+      </div>
+
+      {/* Icon */}
+      <div
+        className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${
+          isSelected
+            ? 'bg-[#8D6AFA] text-white'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400'
+        }`}
+      >
+        <Icon className="w-4 h-4" />
+      </div>
+
+      {/* Text content */}
+      <div className="flex-1 min-w-0">
+        <h4 className={`text-base font-semibold truncate ${
+          isSelected ? 'text-[#8D6AFA]' : 'text-gray-900 dark:text-gray-100'
+        }`}>
+          {name}
+        </h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+          {description}
+        </p>
       </div>
     </button>
   );
@@ -165,7 +178,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
       />
 
       {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-700">
           <div>
@@ -230,9 +243,9 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
         <div className="px-8 py-6 overflow-y-auto flex-1 min-h-0">
           {/* Step 1: Select Output Type */}
           {step === 1 && (
-            <div className="space-y-8">
+            <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 uppercase tracking-wide">
                   {t('whatToCreate')}
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -242,15 +255,15 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
 
               {/* Analysis Templates */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <BarChart3 className="w-4 h-4 text-green-500" />
-                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     {t('categoryAnalysis')}
                   </h4>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
                   {analysisTemplates.map((template) => (
-                    <TemplateCard
+                    <TemplateListItem
                       key={template.id}
                       template={template}
                       isSelected={selectedType === template.id}
@@ -264,15 +277,15 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
 
               {/* Content Templates */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-purple-500" />
-                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     {t('categoryContent')}
                   </h4>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
                   {contentTemplates.map((template) => (
-                    <TemplateCard
+                    <TemplateListItem
                       key={template.id}
                       template={template}
                       isSelected={selectedType === template.id}
@@ -286,15 +299,15 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
 
               {/* Email Templates */}
               <div>
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <Mail className="w-4 h-4 text-blue-500" />
-                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     {t('categoryEmails')}
                   </h4>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
                   {emailTemplates.map((template) => (
-                    <TemplateCard
+                    <TemplateListItem
                       key={template.id}
                       template={template}
                       isSelected={selectedType === template.id}
