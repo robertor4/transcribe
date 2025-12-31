@@ -20,8 +20,18 @@ export default async function LandingPage({
       <div className="min-h-screen bg-white">
 
         {/* 1. Hero Section — two-column layout */}
-        <section className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-white" aria-label="Hero section">
-          <div className="max-w-7xl mx-auto w-full">
+        <section
+          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-white relative"
+          aria-label="Hero section"
+          style={{
+            backgroundImage: 'url(/assets/images/dotted-background.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Background overlay - stronger on left for text readability, lighter on right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/70 to-white/50" aria-hidden="true"></div>
+          <div className="max-w-7xl mx-auto w-full relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Left column — headline, subtitle, CTAs */}
               <div className="text-center lg:text-left">
