@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter, useParams } from 'next/navigation';
 import { X, Zap, Plus, Loader2 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
@@ -16,8 +17,6 @@ interface AssetMobileSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onGenerateNew: () => void;
-  onAssetClick: (asset: GeneratedAnalysis) => void;
-  selectedAssetId?: string | null;
   conversationId: string;
   conversationTitle?: string;
 }
@@ -28,11 +27,13 @@ export function AssetMobileSheet({
   isOpen,
   onClose,
   onGenerateNew,
-  onAssetClick,
   conversationId,
   conversationTitle,
 }: AssetMobileSheetProps) {
   const t = useTranslations('aiAssets');
+  const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
   const [mounted, setMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
@@ -63,12 +64,12 @@ export function AssetMobileSheet({
     }, 200);
   };
 
-  // Handle asset click - close sheet and trigger callback
+  // Handle asset click - navigate directly to full page on mobile
   const handleAssetClick = (asset: GeneratedAnalysis) => {
     handleClose();
-    // Small delay to let sheet close animation start
+    // Small delay to let sheet close animation start, then navigate to full page
     setTimeout(() => {
-      onAssetClick(asset);
+      router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
     }, 100);
   };
 

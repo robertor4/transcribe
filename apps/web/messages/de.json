@@ -38,6 +38,43 @@
     "noResults": "Keine Gespräche gefunden für \"{query}\"",
     "clearSearch": "Suche löschen"
   },
+  "leftNavigation": {
+    "closeSidebar": "Seitenleiste schließen",
+    "dashboard": "Dashboard",
+    "newConversation": "Neues Gespräch",
+    "folders": "Ordner",
+    "expandFolders": "Ordner einblenden",
+    "collapseFolders": "Ordner ausblenden",
+    "noFoldersYet": "Noch keine Ordner",
+    "sharedWithYou": "Mit dir geteilt",
+    "recentlyOpened": "Kürzlich geöffnet",
+    "clearRecentlyOpened": "Kürzlich geöffnet löschen",
+    "noConversationsYet": "Noch keine Gespräche",
+    "results": "Ergebnisse"
+  },
+  "conversationCreate": {
+    "confirmCancel": "Bist du sicher, dass du abbrechen möchtest? Dein Fortschritt geht verloren.",
+    "closeModal": "Fenster schließen",
+    "steps": {
+      "capture": {
+        "title": "Gespräch erstellen",
+        "description": "Wähle, wie du dein Audio hinzufügen möchtest"
+      },
+      "context": {
+        "title": "Kontext hinzufügen",
+        "description": "Füge Kontext hinzu, um die Transkriptionsgenauigkeit zu verbessern (optional)"
+      },
+      "processing": {
+        "title": "Verarbeitung...",
+        "description": "Das kann einen Moment dauern"
+      }
+    },
+    "contextLabel": "Kontext (optional)",
+    "contextPlaceholder": "z.B. Produktmeeting, Verkaufsgespräch, Interview...",
+    "back": "Zurück",
+    "skip": "Überspringen",
+    "continue": "Weiter"
+  },
   "auth": {
     "signIn": "Anmelden",
     "signUp": "Registrieren",
@@ -156,7 +193,29 @@
     "recordTab": "Browser-Tab aufnehmen",
     "recordTabDesc": "Google Meet, Zoom (Web), YouTube-Videos",
     "uploadFileLabel": "Datei hochladen",
-    "uploadFileDesc": "Audio- oder Videodateien aus beliebiger Quelle"
+    "uploadFileDesc": "Audio- oder Videodateien aus beliebiger Quelle",
+    "conversations": "Gespräche",
+    "folders": "Ordner",
+    "itemsOfTotal": "{count} von {total}",
+    "itemsCount": "{count} Elemente",
+    "new": "Neu",
+    "add": "Hinzufügen",
+    "emptyConversationsHint": "Beginne mit der Aufnahme oder dem Hochladen deines ersten Gesprächs",
+    "startFirstConversation": "Erstes Gespräch starten",
+    "showMore": "Mehr anzeigen ({count} übrig)",
+    "emptyFoldersHint": "Erstelle Ordner, um deine Gespräche zu organisieren",
+    "createFirstFolder": "Ersten Ordner erstellen",
+    "folderNamePlaceholder": "Ordnername...",
+    "createFolder": "Ordner erstellen",
+    "cancel": "Abbrechen",
+    "sharedWithYou": "Mit dir geteilt",
+    "dragHint": "Gespräche hierher ziehen, um sie zu organisieren",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Neueste",
+      "date-asc": "Älteste"
+    }
   },
   "upload": {
     "title": "Audiodatei hochladen",
@@ -433,7 +492,63 @@
       },
       "generating": "Ihr KI-Asset wird erstellt...",
       "success": "KI-Asset erstellt!",
-      "error": "KI-Asset konnte nicht erstellt werden. Bitte versuchen Sie es erneut."
+      "error": "KI-Asset konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+      "whatToCreate": "Was möchtest du erstellen?",
+      "chooseOutputType": "Wähle den Ausgabetyp für dieses Gespräch",
+      "categoryAnalysis": "Analyse",
+      "categoryContent": "Inhalt",
+      "categoryEmails": "E-Mails",
+      "customInstructionsTitle": "Benutzerdefinierte Anweisungen hinzufügen (optional)",
+      "customInstructionsDescription": "Gib spezifische Anweisungen, um die Ausgabe an deine Bedürfnisse anzupassen",
+      "customInstructionsLabel": "Benutzerdefinierte Anweisungen",
+      "customInstructionsPlaceholder": "Beispiel: Fokussiere dich auf die technischen Aspekte, halte es unter 500 Wörtern und erwähne die besprochenen Metriken.",
+      "leaveBlankDefault": "Leer lassen für Standardeinstellungen von {name}",
+      "reviewTitle": "Überprüfen und bestätigen",
+      "reviewDescription": "Überprüfe deine Auswahl vor der Generierung",
+      "outputType": "Ausgabetyp",
+      "noCustomInstructions": "Keine benutzerdefinierten Anweisungen angegeben",
+      "sourceConversation": "Quellgespräch",
+      "generatingOutput": "{name} wird generiert...",
+      "generatingWait": "Dies kann einen Moment dauern",
+      "generationFailed": "Generierung fehlgeschlagen",
+      "tryAgain": "Erneut versuchen",
+      "generationSuccess": "Ausgabe erfolgreich generiert!",
+      "outputCreated": "Dein {name} wurde erstellt",
+      "generateOutput": "Ausgabe generieren"
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Aufgabenliste",
+        "description": "Strukturierte Aufgabenübersicht"
+      },
+      "communicationAnalysis": {
+        "name": "Kommunikationsanalyse",
+        "description": "Kommunikationseffektivität bewerten"
+      },
+      "blogPost": {
+        "name": "Blog-Beitrag",
+        "description": "Veröffentlichungsfertiger Artikel"
+      },
+      "linkedin": {
+        "name": "LinkedIn-Post",
+        "description": "Ansprechender Social-Media-Inhalt"
+      },
+      "followUpEmail": {
+        "name": "Follow-up-E-Mail",
+        "description": "Meeting-Zusammenfassung mit Entscheidungen und Aufgaben"
+      },
+      "salesEmail": {
+        "name": "Vertriebskontakt",
+        "description": "Post-Discovery-E-Mail mit Wertversprechen und CTA"
+      },
+      "internalUpdate": {
+        "name": "Internes Update",
+        "description": "Stakeholder-Briefing mit TLDR und wichtigen Entscheidungen"
+      },
+      "clientProposal": {
+        "name": "Kundenangebot",
+        "description": "Formelles Angebot mit Anforderungen und Lösung"
+      }
     },
     "sidebar": {
       "title": "KI-Assets",
@@ -2271,6 +2386,37 @@
     "jumpToTimestamp": "Zum Zeitstempel springen",
     "copy": "Antwort kopieren",
     "copied": "Kopiert!"
+  },
+  "folderPicker": {
+    "title": "In Ordner verschieben",
+    "close": "Schließen",
+    "createPlaceholder": "Neuen Ordner erstellen...",
+    "add": "Hinzufügen",
+    "noFolder": "Kein Ordner (ungruppiert)",
+    "noFoldersYet": "Noch keine Ordner. Erstelle einen oben.",
+    "cancel": "Abbrechen",
+    "move": "Verschieben",
+    "moving": "Verschieben...",
+    "moveError": "Gespräch konnte nicht verschoben werden",
+    "createError": "Ordner konnte nicht erstellt werden"
+  },
+  "templateSelector": {
+    "base": "BASIS",
+    "baseOutput": "Basisausgabe (immer enthalten)",
+    "quickActions": "Schnellaktionen",
+    "additionalOutputs": "Zusätzliche Ausgaben (optional)",
+    "outputTemplates": "Ausgabevorlagen",
+    "selectedAdditionalOutputs": "Du hast {count, plural, =1 {# zusätzliche Ausgabe} other {# zusätzliche Ausgaben}} ausgewählt",
+    "selectAdditionalHint": "Wähle zusätzliche Ausgaben oder fahre nur mit dem Transkript fort",
+    "templateSelected": "Die ausgewählte Vorlage wird die KI-Ausgabe leiten",
+    "skipHint": "Du kannst diesen Schritt überspringen und später Ausgaben erstellen",
+    "back": "Zurück",
+    "continueWithOutputs": "Mit Transkription + {count, plural, =1 {# Ausgabe} other {# Ausgaben}} fortfahren",
+    "continueTranscriptOnly": "Nur mit Transkription fortfahren",
+    "clearSelection": "Auswahl löschen",
+    "skipStep": "Schritt überspringen",
+    "continueWithTemplate": "Mit Vorlage fortfahren",
+    "continueWithoutTemplate": "Ohne Vorlage fortfahren"
   },
   "findReplace": {
     "title": "Suchen & Ersetzen",

@@ -72,13 +72,14 @@ class WebSocketService {
 
     // Handle authentication errors
     this.socket.on(WEBSOCKET_EVENTS.AUTH_ERROR, async (error: AuthError) => {
-      console.error('WebSocket auth error:', error);
-
-      // If token expired, try to refresh and reconnect
+      // If token expired, try to refresh and reconnect silently
+      // This commonly happens when mobile browsers are backgrounded
       if (error.code === ERROR_CODES.AUTH_TOKEN_EXPIRED) {
+        console.debug('[WebSocket] Token expired, refreshing...');
         await this.handleTokenExpired();
       } else {
-        // For other auth errors, show notification
+        // Only log as error for unexpected auth failures
+        console.warn('[WebSocket] Auth error:', error.code, error.message);
         this.showAuthErrorNotification(error);
       }
     });

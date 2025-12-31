@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Folder as FolderIcon, MessageSquare, Plus, X, FolderPlus, ArrowDownAZ, ArrowUpAZ, ArrowDown01, ArrowUp01, Mic, Users, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/Button';
 import { DraggableConversationCard } from './DraggableConversationCard';
 import { DroppableFolderCard } from './DroppableFolderCard';
@@ -40,6 +41,7 @@ export function TwoColumnDashboardLayout({
   onNewConversation,
   onDeleteConversation,
 }: TwoColumnDashboardLayoutProps) {
+  const t = useTranslations('dashboard');
   const { count: importedCount } = useImportedConversations();
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
@@ -112,13 +114,13 @@ export function TwoColumnDashboardLayout({
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
-              Conversations
+              {t('conversations')}
             </h2>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {hasMore
-                  ? `${displayCount} of ${ungroupedConversations.length}`
-                  : `${ungroupedConversations.length} items`}
+                  ? t('itemsOfTotal', { count: displayCount, total: ungroupedConversations.length })
+                  : t('itemsCount', { count: ungroupedConversations.length })}
               </span>
               <Button
                 variant="ghost"
@@ -126,7 +128,7 @@ export function TwoColumnDashboardLayout({
                 onClick={onNewConversation}
                 icon={<Mic className="h-4 w-4" />}
               >
-                New
+                {t('new')}
               </Button>
             </div>
           </div>
@@ -135,14 +137,14 @@ export function TwoColumnDashboardLayout({
             <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
               <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Start by recording or uploading your first conversation
+                {t('emptyConversationsHint')}
               </p>
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={onNewConversation}
               >
-                Start First Conversation
+                {t('startFirstConversation')}
               </Button>
             </div>
           ) : (
@@ -160,7 +162,7 @@ export function TwoColumnDashboardLayout({
                   onClick={() => setDisplayCount(prev => prev + ITEMS_PER_PAGE)}
                   className="w-full py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-[#8D6AFA] transition-colors border-t border-gray-200 dark:border-gray-700/50"
                 >
-                  Show More ({remainingCount} remaining)
+                  {t('showMore', { count: remainingCount })}
                 </button>
               )}
             </div>
@@ -171,7 +173,7 @@ export function TwoColumnDashboardLayout({
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
-              Folders
+              {t('folders')}
             </h2>
             <div className="flex items-center gap-1">
               {folders.length > 1 && (
@@ -181,7 +183,7 @@ export function TwoColumnDashboardLayout({
                   onClick={() => setSortMode(currentSortConfig.next)}
                   icon={<SortIcon className="h-4 w-4" />}
                 >
-                  {currentSortConfig.label}
+                  {t(`sort.${sortMode}`)}
                 </Button>
               )}
               {!isCreatingFolder && (
@@ -191,7 +193,7 @@ export function TwoColumnDashboardLayout({
                   onClick={() => setIsCreatingFolder(true)}
                   icon={<FolderPlus className="h-4 w-4" />}
                 >
-                  Add
+                  {t('add')}
                 </Button>
               )}
             </div>
@@ -201,14 +203,14 @@ export function TwoColumnDashboardLayout({
             <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
               <FolderIcon className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Create folders to organize your conversations
+                {t('emptyFoldersHint')}
               </p>
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => setIsCreatingFolder(true)}
               >
-                Create First Folder
+                {t('createFirstFolder')}
               </Button>
             </div>
           ) : (
@@ -225,7 +227,7 @@ export function TwoColumnDashboardLayout({
                       if (e.key === 'Enter') handleCreateFolder();
                       if (e.key === 'Escape') handleCancelFolderCreation();
                     }}
-                    placeholder="Folder name..."
+                    placeholder={t('folderNamePlaceholder')}
                     autoFocus
                     className="flex-1 px-2 py-1 text-base sm:text-sm border-0 bg-transparent text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-0"
                   />
@@ -233,14 +235,14 @@ export function TwoColumnDashboardLayout({
                     onClick={handleCreateFolder}
                     disabled={!newFolderName.trim()}
                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Create folder"
+                    aria-label={t('createFolder')}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                   <button
                     onClick={handleCancelFolderCreation}
                     className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
-                    aria-label="Cancel"
+                    aria-label={t('cancel')}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -265,7 +267,7 @@ export function TwoColumnDashboardLayout({
                       <div className="flex items-center gap-3">
                         <Users className="w-5 h-5 text-gray-400" />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Shared with you
+                          {t('sharedWithYou')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -284,7 +286,7 @@ export function TwoColumnDashboardLayout({
           {/* Drag hint - hidden on mobile since we use action menu instead */}
           {folders.length > 0 && ungroupedConversations.length > 0 && (
             <p className="hidden lg:block text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
-              Drag conversations here to organize them
+              {t('dragHint')}
             </p>
           )}
         </section>

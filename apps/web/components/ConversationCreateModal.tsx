@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { UploadInterface } from './UploadInterface';
 import { RealProcessingView } from './RealProcessingView';
@@ -48,6 +49,8 @@ export function ConversationCreateModal({
   // initialStep is defined in interface but not yet implemented
   uploadMethod,
 }: ConversationCreateModalProps) {
+  const t = useTranslations('conversationCreate');
+
   // State for flow
   const [currentStep, setCurrentStep] = useState<CreateStep>('capture');
   const [overallContext, setOverallContext] = useState<string>('');
@@ -83,9 +86,7 @@ export function ConversationCreateModal({
       recordedBlob !== null;
 
     if (hasProgress) {
-      const confirmed = window.confirm(
-        'Are you sure you want to cancel? Your progress will be lost.'
-      );
+      const confirmed = window.confirm(t('confirmCancel'));
 
       if (!confirmed) {
         return; // User cancelled, keep modal open
@@ -107,7 +108,7 @@ export function ConversationCreateModal({
     setRecoveryUploadMethod(null);
     setPendingRecoveryDeletionId(null);
     onClose();
-  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose]);
+  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose, t]);
 
   // Check for recoverable recordings when modal opens
   useEffect(() => {
@@ -323,20 +324,20 @@ export function ConversationCreateModal({
           <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200 dark:border-gray-700">
             <div className="min-w-0 flex-1 mr-4">
               <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide truncate">
-                {currentStep === 'capture' && 'Create a conversation'}
-                {currentStep === 'context' && 'Add context'}
-                {currentStep === 'processing' && 'Processing...'}
+                {currentStep === 'capture' && t('steps.capture.title')}
+                {currentStep === 'context' && t('steps.context.title')}
+                {currentStep === 'processing' && t('steps.processing.title')}
               </h2>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {currentStep === 'capture' && 'Choose how to add your audio'}
-                {currentStep === 'context' && 'Provide context to improve transcription accuracy (optional)'}
-                {currentStep === 'processing' && 'Transcribing and analyzing your conversation'}
+                {currentStep === 'capture' && t('steps.capture.description')}
+                {currentStep === 'context' && t('steps.context.description')}
+                {currentStep === 'processing' && t('steps.processing.description')}
               </p>
             </div>
             <button
               onClick={handleClose}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              aria-label="Close modal"
+              aria-label={t('closeModal')}
             >
               <X className="w-5 h-5 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors" />
             </button>
@@ -367,12 +368,12 @@ export function ConversationCreateModal({
                 <div className="max-w-2xl mx-auto space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Context (optional)
+                      {t('contextLabel')}
                     </label>
                     <textarea
                       value={overallContext}
                       onChange={(e) => setOverallContext(e.target.value)}
-                      placeholder="e.g., product meeting, sales call, interview..."
+                      placeholder={t('contextPlaceholder')}
                       className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
                       rows={4}
                     />
@@ -380,14 +381,14 @@ export function ConversationCreateModal({
 
                   <div className="flex justify-between gap-4 pt-6">
                     <Button variant="ghost" onClick={() => setCurrentStep('capture')}>
-                      Back
+                      {t('back')}
                     </Button>
                     <div className="flex gap-3">
                       <Button variant="brand-outline" onClick={() => setCurrentStep('processing')}>
-                        Skip
+                        {t('skip')}
                       </Button>
                       <Button variant="brand" onClick={handleContextSubmit}>
-                        Continue
+                        {t('continue')}
                       </Button>
                     </div>
                   </div>

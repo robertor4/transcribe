@@ -38,6 +38,43 @@
     "noResults": "No se encontraron conversaciones para \"{query}\"",
     "clearSearch": "Borrar búsqueda"
   },
+  "leftNavigation": {
+    "closeSidebar": "Cerrar barra lateral",
+    "dashboard": "Panel",
+    "newConversation": "Nueva conversación",
+    "folders": "Carpetas",
+    "expandFolders": "Expandir carpetas",
+    "collapseFolders": "Contraer carpetas",
+    "noFoldersYet": "Aún no hay carpetas",
+    "sharedWithYou": "Compartido contigo",
+    "recentlyOpened": "Abierto recientemente",
+    "clearRecentlyOpened": "Borrar recientes",
+    "noConversationsYet": "Aún no hay conversaciones",
+    "results": "Resultados"
+  },
+  "conversationCreate": {
+    "confirmCancel": "¿Estás seguro de que quieres cancelar? Tu progreso se perderá.",
+    "closeModal": "Cerrar ventana",
+    "steps": {
+      "capture": {
+        "title": "Crear una conversación",
+        "description": "Elige cómo añadir tu audio"
+      },
+      "context": {
+        "title": "Añadir contexto",
+        "description": "Proporciona contexto para mejorar la precisión de la transcripción (opcional)"
+      },
+      "processing": {
+        "title": "Procesando...",
+        "description": "Esto puede tardar un momento"
+      }
+    },
+    "contextLabel": "Contexto (opcional)",
+    "contextPlaceholder": "ej. reunión de producto, llamada de ventas, entrevista...",
+    "back": "Atrás",
+    "skip": "Omitir",
+    "continue": "Continuar"
+  },
   "auth": {
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
@@ -156,7 +193,29 @@
     "recordTab": "Grabar pestaña",
     "recordTabDesc": "Google Meet, Zoom (web), videos de YouTube",
     "uploadFileLabel": "Subir archivo",
-    "uploadFileDesc": "Archivos de audio o video de cualquier fuente"
+    "uploadFileDesc": "Archivos de audio o video de cualquier fuente",
+    "conversations": "Conversaciones",
+    "folders": "Carpetas",
+    "itemsOfTotal": "{count} de {total}",
+    "itemsCount": "{count} elementos",
+    "new": "Nuevo",
+    "add": "Añadir",
+    "emptyConversationsHint": "Comienza grabando o subiendo tu primera conversación",
+    "startFirstConversation": "Iniciar primera conversación",
+    "showMore": "Mostrar más ({count} restantes)",
+    "emptyFoldersHint": "Crea carpetas para organizar tus conversaciones",
+    "createFirstFolder": "Crear primera carpeta",
+    "folderNamePlaceholder": "Nombre de carpeta...",
+    "createFolder": "Crear carpeta",
+    "cancel": "Cancelar",
+    "sharedWithYou": "Compartido contigo",
+    "dragHint": "Arrastra conversaciones aquí para organizarlas",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Más reciente",
+      "date-asc": "Más antiguo"
+    }
   },
   "upload": {
     "title": "Subir archivo de audio",
@@ -433,7 +492,63 @@
       },
       "generating": "Creando tu asset de IA...",
       "success": "¡Asset de IA creado!",
-      "error": "Error al crear. Por favor, inténtalo de nuevo."
+      "error": "Error al crear. Por favor, inténtalo de nuevo.",
+      "whatToCreate": "¿Qué te gustaría crear?",
+      "chooseOutputType": "Elige el tipo de salida para esta conversación",
+      "categoryAnalysis": "Análisis",
+      "categoryContent": "Contenido",
+      "categoryEmails": "Correos",
+      "customInstructionsTitle": "Añadir instrucciones personalizadas (opcional)",
+      "customInstructionsDescription": "Proporciona instrucciones específicas para adaptar la salida a tus necesidades",
+      "customInstructionsLabel": "Instrucciones personalizadas",
+      "customInstructionsPlaceholder": "Ejemplo: Céntrate en los aspectos técnicos, mantenlo por debajo de 500 palabras e incluye las métricas discutidas.",
+      "leaveBlankDefault": "Deja en blanco para usar la configuración predeterminada de {name}",
+      "reviewTitle": "Revisar y confirmar",
+      "reviewDescription": "Comprueba tus selecciones antes de generar",
+      "outputType": "Tipo de salida",
+      "noCustomInstructions": "Sin instrucciones personalizadas",
+      "sourceConversation": "Conversación fuente",
+      "generatingOutput": "Generando tu {name}...",
+      "generatingWait": "Esto puede tardar unos momentos",
+      "generationFailed": "Error en la generación",
+      "tryAgain": "Intentar de nuevo",
+      "generationSuccess": "¡Salida generada con éxito!",
+      "outputCreated": "Tu {name} ha sido creado",
+      "generateOutput": "Generar salida"
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Elementos de acción",
+        "description": "Lista estructurada de tareas"
+      },
+      "communicationAnalysis": {
+        "name": "Análisis de comunicación",
+        "description": "Evaluar efectividad de comunicación"
+      },
+      "blogPost": {
+        "name": "Entrada de blog",
+        "description": "Artículo listo para publicar"
+      },
+      "linkedin": {
+        "name": "Publicación de LinkedIn",
+        "description": "Contenido atractivo para redes sociales"
+      },
+      "followUpEmail": {
+        "name": "Correo de seguimiento",
+        "description": "Resumen de reunión con decisiones y acciones"
+      },
+      "salesEmail": {
+        "name": "Contacto de ventas",
+        "description": "Correo post-discovery con propuesta de valor y CTA"
+      },
+      "internalUpdate": {
+        "name": "Actualización interna",
+        "description": "Briefing para stakeholders con TLDR y decisiones clave"
+      },
+      "clientProposal": {
+        "name": "Propuesta de cliente",
+        "description": "Propuesta formal con requisitos y solución"
+      }
     },
     "sidebar": {
       "title": "Assets de IA",
@@ -2271,6 +2386,37 @@
     "jumpToTimestamp": "Ir al momento",
     "copy": "Copiar respuesta",
     "copied": "¡Copiado!"
+  },
+  "folderPicker": {
+    "title": "Mover a carpeta",
+    "close": "Cerrar",
+    "createPlaceholder": "Crear nueva carpeta...",
+    "add": "Añadir",
+    "noFolder": "Sin carpeta (sin agrupar)",
+    "noFoldersYet": "Aún no hay carpetas. Crea una arriba.",
+    "cancel": "Cancelar",
+    "move": "Mover",
+    "moving": "Moviendo...",
+    "moveError": "No se pudo mover la conversación",
+    "createError": "No se pudo crear la carpeta"
+  },
+  "templateSelector": {
+    "base": "BASE",
+    "baseOutput": "Salida base (siempre incluida)",
+    "quickActions": "Acciones rápidas",
+    "additionalOutputs": "Salidas adicionales (opcional)",
+    "outputTemplates": "Plantillas de salida",
+    "selectedAdditionalOutputs": "Has seleccionado {count, plural, =1 {# salida adicional} other {# salidas adicionales}} para generar",
+    "selectAdditionalHint": "Selecciona salidas adicionales o continúa solo con la transcripción",
+    "templateSelected": "La plantilla seleccionada guiará la generación de IA",
+    "skipHint": "Puedes omitir este paso y generar salidas después",
+    "back": "Atrás",
+    "continueWithOutputs": "Continuar con transcripción + {count, plural, =1 {# salida} other {# salidas}}",
+    "continueTranscriptOnly": "Continuar solo con transcripción",
+    "clearSelection": "Limpiar selección",
+    "skipStep": "Omitir paso",
+    "continueWithTemplate": "Continuar con plantilla",
+    "continueWithoutTemplate": "Continuar sin plantilla"
   },
   "findReplace": {
     "title": "Buscar y reemplazar",

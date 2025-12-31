@@ -10,6 +10,7 @@ import {
   Loader2,
   FolderOpen,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { moveConversationToFolder } from '@/lib/services/conversationService';
 import { Button } from '@/components/Button';
@@ -35,6 +36,7 @@ export function FolderPickerModal({
   currentFolderId,
   onMoveComplete,
 }: FolderPickerModalProps) {
+  const t = useTranslations('folderPicker');
   const { folders, isLoading: foldersLoading, createFolder } = useFoldersContext();
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(currentFolderId ?? null);
   const [isMoving, setIsMoving] = useState(false);
@@ -60,7 +62,7 @@ export function FolderPickerModal({
       onMoveComplete?.(selectedFolderId);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to move conversation');
+      setError(err instanceof Error ? err.message : t('moveError'));
     } finally {
       setIsMoving(false);
     }
@@ -77,7 +79,7 @@ export function FolderPickerModal({
       setSelectedFolderId(newFolder.id);
       setNewFolderName('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create folder');
+      setError(err instanceof Error ? err.message : t('createError'));
     } finally {
       setIsCreatingFolder(false);
     }
@@ -107,7 +109,7 @@ export function FolderPickerModal({
                 id="folder-picker-title"
                 className="text-lg font-semibold text-gray-900 dark:text-gray-100"
               >
-                Move to folder
+                {t('title')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-[250px]">
                 {conversationTitle}
@@ -116,7 +118,7 @@ export function FolderPickerModal({
             <button
               onClick={onClose}
               className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Close"
+              aria-label={t('close')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -136,7 +138,7 @@ export function FolderPickerModal({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleCreateFolder();
                     }}
-                    placeholder="Create new folder..."
+                    placeholder={t('createPlaceholder')}
                     className="w-full pl-10 pr-3 py-2.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg
                              focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/50 focus:border-[#8D6AFA]
                              bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
@@ -152,7 +154,7 @@ export function FolderPickerModal({
                   {isCreatingFolder ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    'Add'
+                    t('add')
                   )}
                 </Button>
               </div>
@@ -172,7 +174,7 @@ export function FolderPickerModal({
                 <div className="flex items-center gap-3">
                   <FolderOpen className="w-5 h-5 text-gray-400" />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    No folder (ungrouped)
+                    {t('noFolder')}
                   </span>
                 </div>
                 {selectedFolderId === null && (
@@ -190,7 +192,7 @@ export function FolderPickerModal({
               {/* Folder items */}
               {!foldersLoading && folders.length === 0 && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8 px-5">
-                  No folders yet. Create one above.
+                  {t('noFoldersYet')}
                 </p>
               )}
 
@@ -235,7 +237,7 @@ export function FolderPickerModal({
           {/* Footer */}
           <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
             <Button variant="ghost" onClick={onClose} disabled={isMoving}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               variant="primary"
@@ -245,10 +247,10 @@ export function FolderPickerModal({
               {isMoving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  Moving...
+                  {t('moving')}
                 </>
               ) : (
-                'Move'
+                t('move')
               )}
             </Button>
           </div>

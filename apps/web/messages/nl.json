@@ -38,6 +38,43 @@
     "noResults": "Geen gesprekken gevonden voor \"{query}\"",
     "clearSearch": "Zoekopdracht wissen"
   },
+  "leftNavigation": {
+    "closeSidebar": "Zijbalk sluiten",
+    "dashboard": "Dashboard",
+    "newConversation": "Nieuw gesprek",
+    "folders": "Mappen",
+    "expandFolders": "Mappen uitvouwen",
+    "collapseFolders": "Mappen invouwen",
+    "noFoldersYet": "Nog geen mappen",
+    "sharedWithYou": "Gedeeld met jou",
+    "recentlyOpened": "Recent geopend",
+    "clearRecentlyOpened": "Recent geopend wissen",
+    "noConversationsYet": "Nog geen gesprekken",
+    "results": "Resultaten"
+  },
+  "conversationCreate": {
+    "confirmCancel": "Weet je zeker dat je wilt annuleren? Je voortgang gaat verloren.",
+    "closeModal": "Venster sluiten",
+    "steps": {
+      "capture": {
+        "title": "Nieuw gesprek",
+        "description": "Kies hoe je je audio wilt toevoegen"
+      },
+      "context": {
+        "title": "Context toevoegen",
+        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)"
+      },
+      "processing": {
+        "title": "Verwerken...",
+        "description": "Dit kan even duren"
+      }
+    },
+    "contextLabel": "Context (optioneel)",
+    "contextPlaceholder": "bijv. productmeeting, verkoopgesprek, interview...",
+    "back": "Terug",
+    "skip": "Overslaan",
+    "continue": "Doorgaan"
+  },
   "auth": {
     "signIn": "Inloggen",
     "signUp": "Registreren",
@@ -153,10 +190,32 @@
     "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement.",
     "recordRoom": "Neem de ruimte op",
     "recordRoomDesc": "Vergaderingen, spraaknotities, interviews",
-    "recordTab": "Neem browsertabblad op",
+    "recordTab": "Tabblad opnemen",
     "recordTabDesc": "Google Meet, Zoom (web), YouTube video's",
     "uploadFileLabel": "Bestand uploaden",
-    "uploadFileDesc": "Audio- of videobestanden van elke bron"
+    "uploadFileDesc": "Audio- of videobestanden van elke bron",
+    "conversations": "Gesprekken",
+    "folders": "Mappen",
+    "itemsOfTotal": "{count} van {total}",
+    "itemsCount": "{count} items",
+    "new": "Nieuw",
+    "add": "Toevoegen",
+    "emptyConversationsHint": "Begin met opnemen of uploaden van je eerste gesprek",
+    "startFirstConversation": "Eerste gesprek starten",
+    "showMore": "Meer tonen ({count} resterend)",
+    "emptyFoldersHint": "Maak mappen aan om je gesprekken te organiseren",
+    "createFirstFolder": "Eerste map maken",
+    "folderNamePlaceholder": "Mapnaam...",
+    "createFolder": "Map maken",
+    "cancel": "Annuleren",
+    "sharedWithYou": "Met jou gedeeld",
+    "dragHint": "Sleep gesprekken hierheen om ze te organiseren",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Nieuwste",
+      "date-asc": "Oudste"
+    }
   },
   "upload": {
     "title": "Audiobestand uploaden",
@@ -433,7 +492,63 @@
       },
       "generating": "Je AI asset wordt gemaakt...",
       "success": "AI asset gemaakt!",
-      "error": "AI asset maken mislukt. Probeer het opnieuw."
+      "error": "AI asset maken mislukt. Probeer het opnieuw.",
+      "whatToCreate": "Wat wil je maken?",
+      "chooseOutputType": "Kies het type uitvoer voor dit gesprek",
+      "categoryAnalysis": "Analyse",
+      "categoryContent": "Inhoud",
+      "categoryEmails": "E-mails",
+      "customInstructionsTitle": "Aangepaste instructies toevoegen (optioneel)",
+      "customInstructionsDescription": "Geef specifieke instructies om de uitvoer aan te passen aan je behoeften",
+      "customInstructionsLabel": "Aangepaste instructies",
+      "customInstructionsPlaceholder": "Voorbeeld: Focus op de technische aspecten, houd het onder 500 woorden en vermeld de besproken cijfers.",
+      "leaveBlankDefault": "Laat leeg voor standaardinstellingen van {name}",
+      "reviewTitle": "Controleren en bevestigen",
+      "reviewDescription": "Controleer je selecties voor het genereren",
+      "outputType": "Uitvoertype",
+      "noCustomInstructions": "Geen aangepaste instructies opgegeven",
+      "sourceConversation": "Brongesprek",
+      "generatingOutput": "{name} wordt gegenereerd...",
+      "generatingWait": "Dit kan even duren",
+      "generationFailed": "Genereren mislukt",
+      "tryAgain": "Opnieuw proberen",
+      "generationSuccess": "Uitvoer succesvol gegenereerd!",
+      "outputCreated": "Je {name} is gemaakt",
+      "generateOutput": "Uitvoer genereren"
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Actiepunten",
+        "description": "Gestructureerde takenlijst"
+      },
+      "communicationAnalysis": {
+        "name": "Communicatieanalyse",
+        "description": "Communicatie-effectiviteit beoordelen"
+      },
+      "blogPost": {
+        "name": "Blogpost",
+        "description": "Publicatieklaar artikel"
+      },
+      "linkedin": {
+        "name": "LinkedIn-bericht",
+        "description": "Aansprekende social media content"
+      },
+      "followUpEmail": {
+        "name": "Follow-up e-mail",
+        "description": "Meeting-samenvatting met beslissingen en actiepunten"
+      },
+      "salesEmail": {
+        "name": "Verkoopbenadering",
+        "description": "Post-discovery e-mail met waardepropositie en CTA"
+      },
+      "internalUpdate": {
+        "name": "Interne update",
+        "description": "Stakeholder-briefing met TLDR en belangrijke beslissingen"
+      },
+      "clientProposal": {
+        "name": "Klantvoorstel",
+        "description": "Formeel voorstel met eisen en oplossing"
+      }
     },
     "sidebar": {
       "title": "AI Assets",
@@ -2271,6 +2386,37 @@
     "jumpToTimestamp": "Ga naar tijdstip",
     "copy": "Kopieer antwoord",
     "copied": "Gekopieerd!"
+  },
+  "folderPicker": {
+    "title": "Verplaats naar map",
+    "close": "Sluiten",
+    "createPlaceholder": "Nieuwe map maken...",
+    "add": "Toevoegen",
+    "noFolder": "Geen map (ongegroepeerd)",
+    "noFoldersYet": "Nog geen mappen. Maak er een hierboven.",
+    "cancel": "Annuleren",
+    "move": "Verplaatsen",
+    "moving": "Verplaatsen...",
+    "moveError": "Gesprek kon niet worden verplaatst",
+    "createError": "Map kon niet worden gemaakt"
+  },
+  "templateSelector": {
+    "base": "BASIS",
+    "baseOutput": "Basisuitvoer (altijd inbegrepen)",
+    "quickActions": "Snelle acties",
+    "additionalOutputs": "Aanvullende uitvoer (optioneel)",
+    "outputTemplates": "Uitvoersjablonen",
+    "selectedAdditionalOutputs": "Je hebt {count, plural, =1 {# aanvullende uitvoer} other {# aanvullende uitvoeren}} geselecteerd",
+    "selectAdditionalHint": "Selecteer aanvullende uitvoer of ga door met alleen het transcript",
+    "templateSelected": "Het geselecteerde sjabloon begeleidt de AI-uitvoer",
+    "skipHint": "Je kunt deze stap overslaan en later uitvoer genereren",
+    "back": "Terug",
+    "continueWithOutputs": "Doorgaan met transcriptie + {count, plural, =1 {# uitvoer} other {# uitvoeren}}",
+    "continueTranscriptOnly": "Alleen met transcriptie doorgaan",
+    "clearSelection": "Selectie wissen",
+    "skipStep": "Stap overslaan",
+    "continueWithTemplate": "Doorgaan met sjabloon",
+    "continueWithoutTemplate": "Doorgaan zonder sjabloon"
   },
   "findReplace": {
     "title": "Zoeken en vervangen",

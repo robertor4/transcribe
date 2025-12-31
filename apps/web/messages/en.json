@@ -38,6 +38,43 @@
     "noResults": "No conversations found for \"{query}\"",
     "clearSearch": "Clear search"
   },
+  "leftNavigation": {
+    "closeSidebar": "Close sidebar",
+    "dashboard": "Dashboard",
+    "newConversation": "New Conversation",
+    "folders": "Folders",
+    "expandFolders": "Expand folders",
+    "collapseFolders": "Collapse folders",
+    "noFoldersYet": "No folders yet",
+    "sharedWithYou": "Shared with you",
+    "recentlyOpened": "Recently opened",
+    "clearRecentlyOpened": "Clear recently opened",
+    "noConversationsYet": "No conversations yet",
+    "results": "Results"
+  },
+  "conversationCreate": {
+    "confirmCancel": "Are you sure you want to cancel? Your progress will be lost.",
+    "closeModal": "Close modal",
+    "steps": {
+      "capture": {
+        "title": "Create a conversation",
+        "description": "Choose how to add your audio"
+      },
+      "context": {
+        "title": "Add context",
+        "description": "Provide context to improve transcription accuracy (optional)"
+      },
+      "processing": {
+        "title": "Processing...",
+        "description": "This may take a moment"
+      }
+    },
+    "contextLabel": "Context (optional)",
+    "contextPlaceholder": "e.g., product meeting, sales call, interview...",
+    "back": "Back",
+    "skip": "Skip",
+    "continue": "Continue"
+  },
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
@@ -156,7 +193,29 @@
     "recordTab": "Record browser tab",
     "recordTabDesc": "Google Meet, Zoom (web), YouTube videos",
     "uploadFileLabel": "Upload file",
-    "uploadFileDesc": "Audio or video files from any source"
+    "uploadFileDesc": "Audio or video files from any source",
+    "conversations": "Conversations",
+    "folders": "Folders",
+    "itemsOfTotal": "{count} of {total}",
+    "itemsCount": "{count} items",
+    "new": "New",
+    "add": "Add",
+    "emptyConversationsHint": "Start by recording or uploading your first conversation",
+    "startFirstConversation": "Start First Conversation",
+    "showMore": "Show More ({count} remaining)",
+    "emptyFoldersHint": "Create folders to organize your conversations",
+    "createFirstFolder": "Create First Folder",
+    "folderNamePlaceholder": "Folder name...",
+    "createFolder": "Create folder",
+    "cancel": "Cancel",
+    "sharedWithYou": "Shared with you",
+    "dragHint": "Drag conversations here to organize them",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Newest",
+      "date-asc": "Oldest"
+    }
   },
   "upload": {
     "title": "Upload Audio File",
@@ -433,7 +492,63 @@
       },
       "generating": "Creating your AI asset...",
       "success": "AI asset created!",
-      "error": "Failed to create AI asset. Please try again."
+      "error": "Failed to create AI asset. Please try again.",
+      "whatToCreate": "What would you like to create?",
+      "chooseOutputType": "Choose the type of output to generate from this conversation",
+      "categoryAnalysis": "Analysis",
+      "categoryContent": "Content",
+      "categoryEmails": "Emails",
+      "customInstructionsTitle": "Add custom instructions (optional)",
+      "customInstructionsDescription": "Provide specific guidance for the AI to tailor the output to your needs",
+      "customInstructionsLabel": "Custom Instructions",
+      "customInstructionsPlaceholder": "Example: Focus on the technical aspects, keep it under 500 words, and include specific metrics discussed.",
+      "leaveBlankDefault": "Leave blank to use default settings for {name}",
+      "reviewTitle": "Review and confirm",
+      "reviewDescription": "Check your selections before generating the output",
+      "outputType": "Output Type",
+      "noCustomInstructions": "No custom instructions provided",
+      "sourceConversation": "Source Conversation",
+      "generatingOutput": "Generating your {name}...",
+      "generatingWait": "This may take a few moments",
+      "generationFailed": "Generation failed",
+      "tryAgain": "Try Again",
+      "generationSuccess": "Output generated successfully!",
+      "outputCreated": "Your {name} has been created",
+      "generateOutput": "Generate Output"
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Action Items",
+        "description": "Structured task list"
+      },
+      "communicationAnalysis": {
+        "name": "Communication Analysis",
+        "description": "Score communication effectiveness"
+      },
+      "blogPost": {
+        "name": "Blog Post",
+        "description": "Publish-ready article"
+      },
+      "linkedin": {
+        "name": "LinkedIn Post",
+        "description": "Engaging social media content"
+      },
+      "followUpEmail": {
+        "name": "Follow-up Email",
+        "description": "Post-meeting recap with decisions and action items"
+      },
+      "salesEmail": {
+        "name": "Sales Outreach",
+        "description": "Post-discovery email with value proposition and CTA"
+      },
+      "internalUpdate": {
+        "name": "Internal Update",
+        "description": "Stakeholder brief with TLDR and key decisions"
+      },
+      "clientProposal": {
+        "name": "Client Proposal",
+        "description": "Formal proposal with requirements and solution"
+      }
     },
     "sidebar": {
       "title": "AI Assets",
@@ -2271,6 +2386,37 @@
     "jumpToTimestamp": "Jump to timestamp",
     "copy": "Copy answer",
     "copied": "Copied!"
+  },
+  "folderPicker": {
+    "title": "Move to folder",
+    "close": "Close",
+    "createPlaceholder": "Create new folder...",
+    "add": "Add",
+    "noFolder": "No folder (ungrouped)",
+    "noFoldersYet": "No folders yet. Create one above.",
+    "cancel": "Cancel",
+    "move": "Move",
+    "moving": "Moving...",
+    "moveError": "Failed to move conversation",
+    "createError": "Failed to create folder"
+  },
+  "templateSelector": {
+    "base": "BASE",
+    "baseOutput": "Base Output (Always Included)",
+    "quickActions": "Quick Actions",
+    "additionalOutputs": "Additional Outputs (Optional)",
+    "outputTemplates": "Output Templates",
+    "selectedAdditionalOutputs": "You've selected {count, plural, =1 {# additional output} other {# additional outputs}} to generate",
+    "selectAdditionalHint": "Select additional outputs to generate, or continue with just the transcript",
+    "templateSelected": "Selected template will guide the AI output generation",
+    "skipHint": "You can skip this step and generate outputs later",
+    "back": "Back",
+    "continueWithOutputs": "Continue with transcription + {count, plural, =1 {# output} other {# outputs}}",
+    "continueTranscriptOnly": "Continue with transcription only",
+    "clearSelection": "Clear selection",
+    "skipStep": "Skip this step",
+    "continueWithTemplate": "Continue with template",
+    "continueWithoutTemplate": "Continue without template"
   },
   "findReplace": {
     "title": "Find & Replace",

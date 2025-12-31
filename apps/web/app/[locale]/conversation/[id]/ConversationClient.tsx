@@ -719,7 +719,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         isOpen={mobileAssetSheetOpen}
         onClose={() => setMobileAssetSheetOpen(false)}
         onGenerateNew={() => setIsGeneratorOpen(true)}
-        onAssetClick={openAssetPanel}
         conversationId={conversationId}
         conversationTitle={conversation.title}
       />

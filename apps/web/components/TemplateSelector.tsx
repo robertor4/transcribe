@@ -1,6 +1,7 @@
 'use client';
 
 import { LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 
 interface Template {
@@ -35,6 +36,7 @@ export function TemplateSelector({
   onNext,
   onBack,
 }: TemplateSelectorProps) {
+  const t = useTranslations('templateSelector');
   // Determine mode based on provided props
   const isMultiSelect = selectedTemplates !== undefined && onToggle !== undefined;
   const baseTemplate = templates.find((t) => t.id === 'transcribe-only');
@@ -71,7 +73,7 @@ export function TemplateSelector({
         {isBase && isMultiSelect && (
           <div className="absolute top-4 left-4">
             <span className="px-2 py-1 text-xs font-semibold bg-[#8D6AFA] text-white rounded-full">
-              BASE
+              {t('base')}
             </span>
           </div>
         )}
@@ -162,7 +164,7 @@ export function TemplateSelector({
           {isMultiSelect && baseTemplate && (
             <div>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-                Base Output (Always Included)
+                {t('baseOutput')}
               </h3>
               <div className="grid grid-cols-1 gap-3">
                 {renderTemplateCard(baseTemplate)}
@@ -171,13 +173,13 @@ export function TemplateSelector({
           )}
 
           {/* Quick Actions Section (Single-select mode) */}
-          {!isMultiSelect && templates.filter(t => t.isQuickAction).length > 0 && (
+          {!isMultiSelect && templates.filter(tpl => tpl.isQuickAction).length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-                Quick Actions
+                {t('quickActions')}
               </h3>
               <div className="grid grid-cols-1 gap-3">
-                {templates.filter(t => t.isQuickAction).map(renderTemplateCard)}
+                {templates.filter(tpl => tpl.isQuickAction).map(renderTemplateCard)}
               </div>
             </div>
           )}
@@ -186,7 +188,7 @@ export function TemplateSelector({
           {outputTemplates.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-                {isMultiSelect ? 'Additional Outputs (Optional)' : 'Output Templates'}
+                {isMultiSelect ? t('additionalOutputs') : t('outputTemplates')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {outputTemplates.map(renderTemplateCard)}
@@ -199,11 +201,11 @@ export function TemplateSelector({
             <p className="text-sm text-gray-700 dark:text-gray-400">
               {isMultiSelect
                 ? additionalSelectedCount > 0
-                  ? `You've selected ${additionalSelectedCount} additional output${additionalSelectedCount !== 1 ? 's' : ''} to generate`
-                  : 'Select additional outputs to generate, or continue with just the transcript'
+                  ? t('selectedAdditionalOutputs', { count: additionalSelectedCount })
+                  : t('selectAdditionalHint')
                 : selectedTemplateId
-                ? 'Selected template will guide the AI output generation'
-                : 'You can skip this step and generate outputs later'}
+                ? t('templateSelected')
+                : t('skipHint')}
             </p>
           </div>
         </div>
@@ -215,21 +217,21 @@ export function TemplateSelector({
           {isMultiSelect ? (
             <>
               <Button variant="ghost" onClick={onBack}>
-                Back
+                {t('back')}
               </Button>
               <Button variant="primary" onClick={onNext}>
                 {additionalSelectedCount > 0
-                  ? `Continue with transcription + ${additionalSelectedCount} output${additionalSelectedCount !== 1 ? 's' : ''}`
-                  : 'Continue with transcription only'}
+                  ? t('continueWithOutputs', { count: additionalSelectedCount })
+                  : t('continueTranscriptOnly')}
               </Button>
             </>
           ) : (
             <>
               <Button variant="ghost" onClick={() => onSelect!(null)}>
-                {selectedTemplateId ? 'Clear selection' : 'Skip this step'}
+                {selectedTemplateId ? t('clearSelection') : t('skipStep')}
               </Button>
               <Button variant="primary" onClick={onNext}>
-                {selectedTemplateId ? 'Continue with template' : 'Continue without template'}
+                {selectedTemplateId ? t('continueWithTemplate') : t('continueWithoutTemplate')}
               </Button>
             </>
           )}

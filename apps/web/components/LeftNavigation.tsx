@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useImportedConversations } from '@/contexts/ImportedConversationsContext';
@@ -28,6 +29,8 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('leftNavigation');
+  const tSearch = useTranslations('search');
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const { count: importedCount } = useImportedConversations();
@@ -123,7 +126,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             <button
               onClick={onToggleSidebar}
               className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
-              aria-label="Close sidebar"
+              aria-label={t('closeSidebar')}
             >
               <PanelLeft className="w-5 h-5 text-white/70" />
             </button>
@@ -144,7 +147,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             onKeyDown={(e) => {
               if (e.key === 'Escape') clearSearch();
             }}
-            placeholder="Search conversations..."
+            placeholder={tSearch('placeholder')}
             className="w-full pl-10 pr-8 py-2.5 text-sm border border-white/20 rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40
                      bg-white/10 text-white
@@ -157,7 +160,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             <button
               onClick={clearSearch}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
-              aria-label="Clear search"
+              aria-label={tSearch('clearSearch')}
             >
               {isSearching ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -173,10 +176,10 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
           <div className="mt-3 pt-3 border-t border-white/10">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
-                Results
+                {t('results')}
               </h3>
               <span className="text-xs text-white/50">
-                {searchResults?.total ?? 0} found
+                {tSearch('resultsCount', { count: searchResults?.total ?? 0 })}
               </span>
             </div>
 
@@ -206,7 +209,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               </div>
             ) : (
               <p className="text-xs text-white/50 py-2">
-                No conversations found for &quot;{searchQuery}&quot;
+                {tSearch('noResults', { query: searchQuery })}
               </p>
             )}
           </div>
@@ -224,7 +227,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             >
               <Home className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors" />
               <span className="text-sm font-normal text-white/80">
-                Dashboard
+                {t('dashboard')}
               </span>
             </Link>
             <button
@@ -233,7 +236,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             >
               <MessageSquarePlus className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors" />
               <span className="text-sm font-normal text-white/80">
-                New Conversation
+                {t('newConversation')}
               </span>
             </button>
           </div>
@@ -249,13 +252,13 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               onClick={() => setIsFoldersExpanded(!isFoldersExpanded)}
               className="flex items-center gap-1.5 text-white/50 hover:text-white/70 transition-colors w-full"
               aria-expanded={isFoldersExpanded}
-              aria-label={isFoldersExpanded ? 'Collapse folders' : 'Expand folders'}
+              aria-label={isFoldersExpanded ? t('collapseFolders') : t('expandFolders')}
             >
               <ChevronRight
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${isFoldersExpanded ? 'rotate-90' : ''}`}
               />
               <h3 className="text-[11px] font-medium uppercase tracking-wider">
-                Folders
+                {t('folders')}
               </h3>
               <span className="text-[10px] text-white/40">
                 ({folders.length + (importedCount > 0 ? 1 : 0)})
@@ -276,7 +279,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                 <Loader2 className="w-4 h-4 animate-spin text-white/50" />
               </div>
             ) : folders.length === 0 && importedCount === 0 ? (
-              <p className="text-xs text-white/50 px-3 py-2">No folders yet</p>
+              <p className="text-xs text-white/50 px-3 py-2">{t('noFoldersYet')}</p>
             ) : (
               <div className="space-y-1">
                 {folders.map((folder, index) => (
@@ -322,7 +325,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <Users className="w-4 h-4 text-white/50 flex-shrink-0 group-hover:text-white/70 transition-colors" />
                       <span className="text-sm font-normal text-white/70 group-hover:text-white/90 truncate">
-                        Shared with you
+                        {t('sharedWithYou')}
                       </span>
                     </div>
                     <span className="text-xs text-white/50 flex-shrink-0">
@@ -343,15 +346,15 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
         <div className="py-4 px-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
-                Recently opened
+                {t('recentlyOpened')}
               </h3>
               {recentConversations.length > 0 && (
                 <button
                   onClick={handleClearRecentlyOpened}
                   disabled={isClearing}
                   className="p-1 rounded text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors disabled:opacity-50"
-                  aria-label="Clear recently opened"
-                  title="Clear recently opened"
+                  aria-label={t('clearRecentlyOpened')}
+                  title={t('clearRecentlyOpened')}
                 >
                   {isClearing ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
@@ -367,7 +370,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                 <Loader2 className="w-4 h-4 animate-spin text-white/50" />
               </div>
             ) : recentConversations.length === 0 ? (
-              <p className="text-xs text-white/50 px-3 py-2">No conversations yet</p>
+              <p className="text-xs text-white/50 px-3 py-2">{t('noConversationsYet')}</p>
             ) : (
               <div className="space-y-1">
                 {recentConversations.map((conversation) => (

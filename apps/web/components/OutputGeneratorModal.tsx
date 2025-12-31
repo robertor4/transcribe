@@ -26,10 +26,14 @@ function TemplateCard({
   template,
   isSelected,
   onSelect,
+  name,
+  description,
 }: {
   template: OutputTemplate;
   isSelected: boolean;
   onSelect: () => void;
+  name: string;
+  description: string;
 }) {
   const Icon = template.icon;
   return (
@@ -53,10 +57,10 @@ function TemplateCard({
         </div>
         <div className="flex-1 min-w-0 pr-4">
           <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-1">
-            {template.name}
+            {name}
           </h4>
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 leading-relaxed">
-            {template.description}
+            {description}
           </p>
         </div>
         {isSelected && (
@@ -79,6 +83,12 @@ interface OutputGeneratorModalProps {
 
 export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated }: OutputGeneratorModalProps) {
   const t = useTranslations('aiAssets.modal');
+  const tTemplates = useTranslations('aiAssets.templates');
+  const tCommon = useTranslations('common');
+
+  // Helper to get translated template name and description
+  const getTemplateName = (templateId: string) => tTemplates(`${templateId}.name` as Parameters<typeof tTemplates>[0]);
+  const getTemplateDescription = (templateId: string) => tTemplates(`${templateId}.description` as Parameters<typeof tTemplates>[0]);
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<TemplateId | null>(null);
   const [customInstructions, setCustomInstructions] = useState('');
@@ -223,10 +233,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             <div className="space-y-8">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-                  What would you like to create?
+                  {t('whatToCreate')}
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Choose the type of output to generate from this conversation
+                  {t('chooseOutputType')}
                 </p>
               </div>
 
@@ -235,7 +245,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <div className="flex items-center gap-2 mb-3">
                   <BarChart3 className="w-4 h-4 text-green-500" />
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Analysis
+                    {t('categoryAnalysis')}
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,6 +255,8 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                       template={template}
                       isSelected={selectedType === template.id}
                       onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
                     />
                   ))}
                 </div>
@@ -255,7 +267,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <div className="flex items-center gap-2 mb-3">
                   <FileText className="w-4 h-4 text-purple-500" />
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Content
+                    {t('categoryContent')}
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -265,6 +277,8 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                       template={template}
                       isSelected={selectedType === template.id}
                       onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
                     />
                   ))}
                 </div>
@@ -275,7 +289,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <div className="flex items-center gap-2 mb-3">
                   <Mail className="w-4 h-4 text-blue-500" />
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Emails
+                    {t('categoryEmails')}
                   </h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -285,6 +299,8 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                       template={template}
                       isSelected={selectedType === template.id}
                       onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
                     />
                   ))}
                 </div>
@@ -297,25 +313,25 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-                  Add custom instructions (optional)
+                  {t('customInstructionsTitle')}
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Provide specific guidance for the AI to tailor the output to your needs
+                  {t('customInstructionsDescription')}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  Custom Instructions
+                  {t('customInstructionsLabel')}
                 </label>
                 <textarea
                   value={customInstructions}
                   onChange={(e) => setCustomInstructions(e.target.value)}
-                  placeholder={`Example: Focus on the technical aspects, keep it under 500 words, and include specific metrics discussed.`}
+                  placeholder={t('customInstructionsPlaceholder')}
                   className="w-full h-40 px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 outline-none transition-colors resize-none text-sm font-medium"
                 />
                 <p className="mt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                  Leave blank to use default settings for {selectedOption?.name}
+                  {t('leaveBlankDefault', { name: selectedType ? getTemplateName(selectedType) : '' })}
                 </p>
               </div>
             </div>
@@ -326,10 +342,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-                  Review and confirm
+                  {t('reviewTitle')}
                 </h3>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Check your selections before generating the output
+                  {t('reviewDescription')}
                 </p>
               </div>
 
@@ -344,24 +360,24 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                            Output Type
+                            {t('outputType')}
                           </p>
                           <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                            {selectedOption.name}
+                            {getTemplateName(selectedOption.id)}
                           </p>
                         </div>
                       </>
                     )}
                   </div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {selectedOption?.description}
+                    {selectedOption ? getTemplateDescription(selectedOption.id) : ''}
                   </p>
                 </div>
 
                 {/* Custom Instructions */}
                 <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
                   <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-                    Custom Instructions
+                    {t('customInstructionsLabel')}
                   </p>
                   {customInstructions ? (
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
@@ -369,7 +385,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                     </p>
                   ) : (
                     <p className="text-sm font-medium text-gray-500 dark:text-gray-500 italic">
-                      No custom instructions provided
+                      {t('noCustomInstructions')}
                     </p>
                   )}
                 </div>
@@ -377,7 +393,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 {/* Conversation */}
                 <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
                   <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-                    Source Conversation
+                    {t('sourceConversation')}
                   </p>
                   <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                     {conversationTitle}
@@ -394,10 +410,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <>
                   <GeneratingLoader className="mb-8" size="lg" />
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                    Generating your {selectedOption?.name}...
+                    {t('generatingOutput', { name: selectedType ? getTemplateName(selectedType) : '' })}
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    This may take a few moments
+                    {t('generatingWait')}
                   </p>
                 </>
               ) : error ? (
@@ -406,13 +422,13 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                     <AlertCircle className="w-10 h-10 text-red-500" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
-                    Generation failed
+                    {t('generationFailed')}
                   </h3>
                   <p className="text-sm font-medium text-red-600 dark:text-red-400 mb-6">
                     {error}
                   </p>
                   <Button variant="brand" size="md" onClick={() => { setStep(3); setError(null); }}>
-                    Try Again
+                    {t('tryAgain')}
                   </Button>
                 </>
               ) : (
@@ -421,10 +437,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                     <span className="text-4xl text-white">✓</span>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                    Output generated successfully!
+                    {t('generationSuccess')}
                   </h3>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    Your {selectedOption?.name} has been created
+                    {t('outputCreated', { name: selectedType ? getTemplateName(selectedType) : '' })}
                   </p>
                 </>
               )}
@@ -443,13 +459,13 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   icon={<ArrowLeft className="w-4 h-4" />}
                   onClick={() => setStep((step - 1) as 1 | 2 | 3 | 4)}
                 >
-                  Back
+                  {tCommon('back')}
                 </Button>
               )}
             </div>
             <div className="flex items-center gap-3">
               <Button variant="ghost" size="md" onClick={handleClose}>
-                Cancel
+                {tCommon('cancel')}
               </Button>
               {step < 3 && (
                 <Button
@@ -459,7 +475,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   onClick={() => setStep((step + 1) as 1 | 2 | 3 | 4)}
                   disabled={step === 1 && !canProceedFromStep1}
                 >
-                  Next
+                  {tCommon('next')}
                 </Button>
               )}
               {step === 3 && (
@@ -469,7 +485,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                   icon={<Sparkles className="w-4 h-4" />}
                   onClick={handleGenerate}
                 >
-                  Generate Output
+                  {t('generateOutput')}
                 </Button>
               )}
             </div>
