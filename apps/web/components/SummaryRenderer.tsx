@@ -48,7 +48,7 @@ interface SummaryV2RendererProps {
 
 const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highlightOptions }) => {
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8">
       {/* Intro Paragraph */}
       {summary.intro && (
         <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">

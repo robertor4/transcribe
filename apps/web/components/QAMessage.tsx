@@ -220,7 +220,7 @@ export function QAMessage({
                       <button
                         type="button"
                         onClick={() => setIsSourcesExpanded(!isSourcesExpanded)}
-                        className={`p-1.5 rounded-md transition-colors ${
+                        className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${
                           isSourcesExpanded
                             ? 'text-[#8D6AFA] bg-[#8D6AFA]/10'
                             : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -235,7 +235,7 @@ export function QAMessage({
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className={`p-1.5 rounded-md transition-colors ${
+                      className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${
                         isCopied
                           ? 'text-green-500 bg-green-50 dark:bg-green-900/20'
                           : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -254,7 +254,7 @@ export function QAMessage({
                       <button
                         type="button"
                         onClick={() => setIsDebugExpanded(!isDebugExpanded)}
-                        className={`p-1.5 rounded-md transition-colors ${
+                        className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${
                           isDebugExpanded
                             ? 'text-[#14D0DC] bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20'
                             : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
