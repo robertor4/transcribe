@@ -29,8 +29,8 @@ export default async function LandingPage({
             backgroundPosition: 'center',
           }}
         >
-          {/* Background overlay - stronger on left for text readability, lighter on right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/70 to-white/50" aria-hidden="true"></div>
+          {/* Background overlay - very subtle dotted pattern, stronger white coverage on left for text */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/90 to-white/80" aria-hidden="true"></div>
           <div className="max-w-7xl mx-auto w-full relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Left column — headline, subtitle, CTAs */}
