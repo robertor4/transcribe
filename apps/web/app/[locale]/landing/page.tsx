@@ -3,14 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import ScrollAnimation from '@/components/ScrollAnimation';
-import { MeetingFAQ } from '@/components/landing/MeetingFAQ';
 import { CTAButton } from '@/components/landing/CTAButton';
-import WorkflowCarousel from '@/components/landing/WorkflowCarousel';
-import {
-  Shield,
-  Lock,
-  Star,
-} from 'lucide-react';
 
 export default async function LandingPage({
   params
@@ -20,544 +13,403 @@ export default async function LandingPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'landing' });
 
-  // Pre-translate strings for meeting FAQ component
-  const meetingFaqStrings = {
-    title: t('meetingFaq.title'),
-    subtitle: t('meetingFaq.subtitle'),
-    questions: [
-      {
-        question: t('meetingFaq.question1.question'),
-        answer: t('meetingFaq.question1.answer'),
-      },
-      {
-        question: t('meetingFaq.question2.question'),
-        answer: t('meetingFaq.question2.answer'),
-      },
-      {
-        question: t('meetingFaq.question3.question'),
-        answer: t('meetingFaq.question3.answer'),
-      },
-      {
-        question: t('meetingFaq.question4.question'),
-        answer: t('meetingFaq.question4.answer'),
-      },
-      {
-        question: t('meetingFaq.question5.question'),
-        answer: t('meetingFaq.question5.answer'),
-      },
-      {
-        question: t('meetingFaq.question6.question'),
-        answer: t('meetingFaq.question6.answer'),
-      },
-      {
-        question: t('meetingFaq.question7.question'),
-        answer: t('meetingFaq.question7.answer'),
-      },
-    ],
-  };
-
   return (
     <>
-      <PublicHeader locale={locale} showFeaturesLink={true} />
+      <PublicHeader locale={locale} showFeaturesLink={false} />
 
       <div className="min-h-screen bg-white">
 
-        {/* Hero Section - Minimal Apple-like Design */}
-        <section className="relative h-screen flex flex-col items-center justify-between overflow-hidden bg-gray-50" aria-label="Hero section">
-          {/* Content - Positioned at top, clean spacing */}
-          <div className="relative z-10 px-6 sm:px-8 lg:px-12 w-full pt-24 sm:pt-32 md:pt-40 lg:pt-[16vh]">
-            <div className="max-w-6xl mx-auto text-center">
-              <div className="space-y-6">
-
-                {/* Main Headline - Large and Bold, responsive wrapping */}
-                <ScrollAnimation delay={200}>
-                  <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 leading-none tracking-tight">
+        {/* 1. Hero Section — two-column layout */}
+        <section className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-white" aria-label="Hero section">
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              {/* Left column — headline, subtitle, CTAs */}
+              <div className="text-center lg:text-left">
+                <ScrollAnimation delay={100}>
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-none tracking-tight mb-8">
                     {t('hero.headline')}
                   </h1>
                 </ScrollAnimation>
 
-                {/* Subtitle - Compact and Clean */}
-                <ScrollAnimation delay={400}>
-                  <p className="text-lg sm:text-xl md:text-2xl text-gray-700 font-normal max-w-3xl mx-auto leading-relaxed">
+                <ScrollAnimation delay={200}>
+                  <p className="text-xl sm:text-2xl text-gray-700 font-normal max-w-xl mx-auto lg:mx-0 mb-10">
                     {t('hero.subtitle')}
                   </p>
                 </ScrollAnimation>
 
-                {/* Dual CTAs */}
-                <ScrollAnimation delay={600}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-                    {/* Primary CTA */}
-                    <CTAButton href="/signup" locale={locale} variant="primary">
+                <ScrollAnimation delay={300}>
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
+                    <CTAButton href="#how-it-works" variant="primary">
                       {t('hero.ctaPrimary')}
                     </CTAButton>
-
-                    {/* Secondary CTA - Watch Demo */}
-                    <CTAButton href="#video-demo" variant="secondary">
+                    <Link
+                      href={`/${locale}/examples`}
+                      className="text-gray-700 hover:text-gray-900 font-medium transition-colors underline underline-offset-4 py-4"
+                    >
                       {t('hero.ctaSecondary')}
-                    </CTAButton>
+                    </Link>
                   </div>
                 </ScrollAnimation>
-
               </div>
-            </div>
-          </div>
 
-          {/* Hero Image - Full width, aligned to bottom, scales up on mobile for better visibility */}
-          <div className="absolute inset-0 flex items-end justify-center overflow-hidden" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/images/hero-bg-02.webp"
-              alt=""
-              className="min-w-[200%] sm:min-w-[150%] md:min-w-full w-full h-auto object-contain object-bottom"
-            />
-          </div>
-        </section>
+              {/* Right column — document output visual */}
+              <ScrollAnimation delay={400}>
+                <div className="flex justify-center lg:justify-end">
+                  {/*
+                    IMAGE PLACEHOLDER: Cropped document output
 
-        {/* The Cost of Translation - Dark Section (WHY) */}
-        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#23194B' }} aria-labelledby="cost-heading">
-          <div className="max-w-4xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <h2 id="cost-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
-                {t('why.headline')}
-              </h2>
-            </ScrollAnimation>
-
-            <ScrollAnimation delay={400}>
-              <p className="text-lg sm:text-xl text-gray-300">
-                {t('why.paragraph1')}
-              </p>
-            </ScrollAnimation>
-
-            {/* Visual separator - thinking to invoice illustration */}
-            <ScrollAnimation delay={600}>
-              <div className="flex justify-center py-8 my-8">
-                <div className="max-w-2xl mx-auto">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/images/landing-thinkinvoice.webp"
-                    alt="From thinking in conversations to working in documents"
-                    width="800"
-                    height="240"
-                  />
+                    Specifications:
+                    - Clean white document with subtle shadow
+                    - Title at top: "Q4 Product Strategy" or similar professional heading
+                    - 4-5 structured bullet points with clear hierarchy
+                    - A "Decisions" or "Next Steps" section at bottom with 2-3 items
+                    - No buttons, no UI chrome, no toolbar
+                    - Cropped at edges to feel like a real document
+                    - Subtle rounded corners (8px)
+                    - Light gray border or shadow for depth
+                    - Typography: Clean sans-serif, clear hierarchy
+                    - Aspect ratio: approximately 3:4 (portrait document feel)
+                    - Max width: 420px
+                  */}
+                  <div className="w-full max-w-md bg-white rounded-lg shadow-2xl border border-gray-100 p-8 text-left transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
+                    <div className="text-xs text-gray-400 mb-4 uppercase tracking-wider">Generated by Neural Summary</div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6">Q4 Product Strategy</h3>
+                    <ul className="space-y-3 text-gray-700 text-sm mb-8">
+                      <li className="flex items-start">
+                        <span className="text-gray-400 mr-3">•</span>
+                        <span>Focus on enterprise onboarding flow redesign</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-gray-400 mr-3">•</span>
+                        <span>Defer mobile app to Q1 based on resource constraints</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-gray-400 mr-3">•</span>
+                        <span>API v2 launch targeting November release</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-gray-400 mr-3">•</span>
+                        <span>Hire two senior engineers for platform team</span>
+                      </li>
+                    </ul>
+                    <div className="border-t border-gray-100 pt-6">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3">Decisions</h4>
+                      <ul className="space-y-2 text-gray-600 text-sm">
+                        <li>→ Proceed with Stripe integration over PayPal</li>
+                        <li>→ Delay internationalization until Q2</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </ScrollAnimation>
-
-            <ScrollAnimation delay={800}>
-              <div className="space-y-8 text-lg sm:text-xl text-gray-300">
-                <p>
-                  {t('why.paragraph2')}
-                </p>
-                <p className="text-2xl sm:text-3xl text-white font-semibold mt-12">
-                  {t('why.paragraph3')}
-                </p>
-              </div>
-            </ScrollAnimation>
-          </div>
-        </section>
-
-        {/* From Thinking to Done - Light Section (WOW) */}
-        <section id="video-demo" className="py-32 bg-white" aria-labelledby="video-demo-heading">
-          <div className="max-w-4xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <div className="px-6 sm:px-8 lg:px-12">
-                <h2 id="video-demo-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-                  {t('wow.headline')}
-                </h2>
-                <p className="text-lg sm:text-xl text-gray-700 mb-12 max-w-2xl mx-auto">
-                  {t('wow.subtitle')}
-                </p>
-              </div>
-            </ScrollAnimation>
-
-            <ScrollAnimation delay={400}>
-              <div className="relative w-full aspect-video sm:rounded-2xl overflow-hidden sm:shadow-2xl bg-gray-100 mb-12 sm:mx-6 lg:mx-12">
-                {/* YouTube embed - Neural Summary Demo with captions enabled by default */}
-                <iframe
-                  className="absolute inset-0 w-full h-full"
-                  src="https://www.youtube.com/embed/KEpOTCByFUs?cc_load_policy=1"
-                  title="Neural Summary Demo Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-
-              <div className="px-6 sm:px-8 lg:px-12">
-                <p className="text-lg text-gray-700">
-                  {t('wow.tagline')}
-                </p>
-              </div>
-            </ScrollAnimation>
-          </div>
-        </section>
-
-        {/* Built for Creators - Full viewport section (WHO) */}
-        <section className="relative overflow-hidden" aria-labelledby="creators-heading">
-          <ScrollAnimation delay={300}>
-            <div className="relative">
-              {/* Title positioned absolutely on top of carousel */}
-              <div className="absolute top-8 md:top-12 left-0 right-0 z-20 px-6 sm:px-8 lg:px-12">
-                <h2 id="creators-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white text-center drop-shadow-lg">
-                  {t('who.headline')}
-                </h2>
-              </div>
-
-              {/* Carousel fills viewport */}
-              <WorkflowCarousel />
-            </div>
-          </ScrollAnimation>
-        </section>
-
-        {/* The Future of Work - Dark Section (WARP) */}
-        <section className="relative py-32 px-6 sm:px-8 lg:px-12 overflow-hidden" style={{ backgroundColor: '#23194B' }} aria-labelledby="future-heading">
-          <div className="max-w-4xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <h2 id="future-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-12">
-                {t('warp.headline')}
-              </h2>
-            </ScrollAnimation>
-
-            <ScrollAnimation delay={400}>
-              <div className="space-y-8 text-xl sm:text-2xl text-gray-300">
-                <p>
-                  {t('warp.subtitle')}
-                </p>
-                <div className="space-y-4 mt-12">
-                  <p className="text-white">{t('warp.line1')}</p>
-                  <p className="text-white">{t('warp.line2')}</p>
-                  <p className="text-white">{t('warp.line3')}</p>
-                </div>
-                <p className="text-2xl sm:text-3xl text-white font-semibold mt-16">
-                  {t('warp.tagline')}
-                </p>
-              </div>
-            </ScrollAnimation>
-          </div>
-        </section>
-
-        {/* Features - Light Section */}
-        <section id="features" className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="features-heading">
-          <div className="max-w-5xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <h2 id="features-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-16">
-                {t('featuresSection.headline')}
-              </h2>
-            </ScrollAnimation>
-
-            <div className="space-y-32">
-              {/* Feature 1 - 99.5% accuracy */}
-              <div className="grid md:grid-cols-2 gap-16 items-center">
-                <ScrollAnimation animation="slideLeft">
-                  <div className="rounded-2xl aspect-[4/3] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/assets/images/features/feature-accuracy.webp"
-                      alt="99.5% transcription accuracy with speaker labels"
-                      className="w-full h-full object-cover"
-                      width={1200}
-                      height={900}
-                      loading="lazy"
-                    />
-                  </div>
-                </ScrollAnimation>
-                <ScrollAnimation animation="slideRight" delay={200}>
-                  <div className="text-left">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4">{t('featuresSection.accuracy.title')}</h3>
-                    <p className="text-lg text-gray-700">{t('featuresSection.accuracy.description')}</p>
-                  </div>
-                </ScrollAnimation>
-              </div>
-
-              {/* Feature 2 - Files up to 5GB */}
-              <div className="grid md:grid-cols-2 gap-16 items-center">
-                <ScrollAnimation animation="slideLeft" className="md:order-2">
-                  <div className="rounded-2xl aspect-[4/3] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/assets/images/features/feature-large-files.webp"
-                      alt="Handle large audio files up to 5GB"
-                      className="w-full h-full object-cover"
-                      width={1200}
-                      height={900}
-                      loading="lazy"
-                    />
-                  </div>
-                </ScrollAnimation>
-                <ScrollAnimation animation="slideRight" delay={200} className="md:order-1">
-                  <div className="text-left md:text-right">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4">{t('featuresSection.largeFiles.title')}</h3>
-                    <p className="text-lg text-gray-700">{t('featuresSection.largeFiles.description')}</p>
-                  </div>
-                </ScrollAnimation>
-              </div>
-
-              {/* Feature 3 - 99 languages */}
-              <div className="grid md:grid-cols-2 gap-16 items-center">
-                <ScrollAnimation animation="slideLeft">
-                  <div className="rounded-2xl aspect-[4/3] overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/assets/images/features/feature-languages.webp"
-                      alt="Support for 99 languages with automatic detection"
-                      className="w-full h-full object-cover"
-                      width={1200}
-                      height={900}
-                      loading="lazy"
-                    />
-                  </div>
-                </ScrollAnimation>
-                <ScrollAnimation animation="slideRight" delay={200}>
-                  <div className="text-left">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4">{t('featuresSection.languages.title')}</h3>
-                    <p className="text-lg text-gray-700">{t('featuresSection.languages.description')}</p>
-                  </div>
-                </ScrollAnimation>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Security - Dark Section */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12" style={{ backgroundColor: '#23194B' }} aria-labelledby="security-heading">
-          <div className="max-w-5xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <div className="flex justify-center mb-6">
-                <Lock className="h-12 w-12 text-white" aria-hidden="true" />
-              </div>
-              <h2 id="security-heading" className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8">
-                {t('securitySection.headline')}
-              </h2>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                {t('securitySection.description')}
-              </p>
-            </ScrollAnimation>
-          </div>
-        </section>
-
-        {/* CTA Section - Light */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-label="Get started">
-          <div className="max-w-4xl mx-auto text-center">
-            <ScrollAnimation delay={200}>
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-                {t('finalCta.headline')}
-              </h2>
-              <CTAButton href="/signup" locale={locale}>
-                {t('hero.ctaPrimary')}
-              </CTAButton>
-            </ScrollAnimation>
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="testimonials-heading">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 id="testimonials-heading" className="text-3xl font-bold text-gray-900 mb-4">
-                {t('testimonials.title')}
-              </h2>
-              <div className="flex justify-center items-center space-x-1 mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-6 w-6 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                ))}
-              </div>
-              <p className="text-gray-700">{t('testimonials.rating')}</p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <ScrollAnimation animation="slideLeft">
-                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-4 italic">
-                  &ldquo;{t('testimonials.testimonial1.quote')}&rdquo;
-                </p>
-                <footer className="flex items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/images/avatars/avatar-sarah-martinez.webp"
-                    alt="Sarah Martinez"
-                    className="w-10 h-10 rounded-full mr-3 object-cover"
-                    width={40}
-                    height={40}
-                  />
-                  <div>
-                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('testimonials.testimonial1.author')}</cite>
-                    <p className="text-xs text-gray-500">{t('testimonials.testimonial1.role')}</p>
-                  </div>
-                </footer>
-                </blockquote>
-              </ScrollAnimation>
-
-              <ScrollAnimation delay={200}>
-                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-4 italic">
-                  &ldquo;{t('testimonials.testimonial2.quote')}&rdquo;
-                </p>
-                <footer className="flex items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/images/avatars/avatar-james-liu.webp"
-                    alt="Dr. James Liu"
-                    className="w-10 h-10 rounded-full mr-3 object-cover"
-                    width={40}
-                    height={40}
-                  />
-                  <div>
-                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('testimonials.testimonial2.author')}</cite>
-                    <p className="text-xs text-gray-500">{t('testimonials.testimonial2.role')}</p>
-                  </div>
-                </footer>
-                </blockquote>
-              </ScrollAnimation>
-
-              <ScrollAnimation animation="slideRight" delay={400}>
-                <blockquote className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover-lift">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" aria-hidden="true" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-4 italic">
-                  &ldquo;{t('testimonials.testimonial3.quote')}&rdquo;
-                </p>
-                <footer className="flex items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/images/avatars/avatar-emily-chen.webp"
-                    alt="Emily Chen"
-                    className="w-10 h-10 rounded-full mr-3 object-cover"
-                    width={40}
-                    height={40}
-                  />
-                  <div>
-                    <cite className="font-semibold text-gray-900 text-sm not-italic">{t('testimonials.testimonial3.author')}</cite>
-                    <p className="text-xs text-gray-500">{t('testimonials.testimonial3.role')}</p>
-                  </div>
-                </footer>
-                </blockquote>
               </ScrollAnimation>
             </div>
           </div>
         </section>
 
-        {/* Meeting FAQ Section */}
-        <MeetingFAQ {...meetingFaqStrings} />
-
-        {/* Final CTA Section */}
-        <section
-          className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
-          aria-labelledby="cta-heading"
-          style={{
-            backgroundImage: 'url(/images/cta-hero.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          {/* Dark overlay for text contrast */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(to bottom, rgba(44, 44, 44, 0.6), rgba(44, 44, 44, 0.7), rgba(44, 44, 44, 0.8))'
-            }}
-          />
-
-          <div className="relative max-w-4xl mx-auto text-center">
+        {/* 2. Proof by Transformation */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="transformation-heading">
+          <div className="max-w-4xl mx-auto">
             <ScrollAnimation>
-              <h2 id="cta-heading" className="text-5xl md:text-6xl font-bold text-white mb-4">
-                {t('finalCta.headline')}
-              </h2>
+              {/* Conversation block — loose, grey, unstructured */}
+              <div className="mb-16">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-6">{t('transformation.conversationLabel')}</p>
+                <div className="space-y-4 text-gray-500 text-lg leading-relaxed">
+                  <p className="opacity-70">&ldquo;...so I think we should probably focus on the enterprise stuff first, you know, the onboarding is really the bottleneck...&rdquo;</p>
+                  <p className="opacity-60">&ldquo;...yeah and the mobile thing, I mean we could do it but honestly with the team size...&rdquo;</p>
+                  <p className="opacity-50">&ldquo;...right, and then there&apos;s the API, we promised that for November so...&rdquo;</p>
+                </div>
+              </div>
             </ScrollAnimation>
+
+            {/* Arrow or visual separator */}
             <ScrollAnimation delay={200}>
-              <p className="text-lg text-white/80 mb-10">
-                {t('finalCta.subtext')}
-              </p>
+              <div className="flex justify-center my-12">
+                <div className="w-px h-16 bg-gray-300"></div>
+              </div>
             </ScrollAnimation>
-            <ScrollAnimation className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8" delay={400}>
-              <CTAButton
-                href="/login"
-                locale={locale}
-                variant="brand"
-                aria-label={t('finalCta.button')}
-              >
-                {t('finalCta.button')}
-              </CTAButton>
+
+            {/* Document block — clean, structured, professional */}
+            <ScrollAnimation delay={400}>
+              <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-8">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-6">{t('transformation.documentLabel')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Q4 Priorities</h3>
+                <ul className="space-y-2 text-gray-700 mb-6">
+                  <li><strong>1.</strong> Enterprise onboarding redesign</li>
+                  <li><strong>2.</strong> API v2 — November launch</li>
+                  <li><strong>3.</strong> Defer mobile to Q1</li>
+                </ul>
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">Decision:</span> Prioritize enterprise over mobile based on current resources.
+                </div>
+              </div>
             </ScrollAnimation>
-            <ScrollAnimation className="flex justify-center items-center space-x-6 text-sm text-white/70" delay={600}>
-              <span>✓ {t('finalCta.benefits.free')}</span>
-              <span>✓ {t('finalCta.benefits.noCard')}</span>
+
+            <ScrollAnimation delay={600}>
+              <p className="text-center text-sm text-gray-400 mt-8">{t('transformation.generatedBy')}</p>
             </ScrollAnimation>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="text-gray-400 py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#1a1a1a' }} aria-label="Footer">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <h3 className="text-white font-semibold mb-4">{t('footer.product.title')}</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href={`/${locale}/features`} className="hover:text-white transition-colors">{t('footer.product.features')}</Link></li>
-                  <li><Link href={`/${locale}/pricing`} className="hover:text-white transition-colors">{t('footer.product.pricing')}</Link></li>
-                  <li><Link href={`/${locale}/api`} className="hover:text-white transition-colors">{t('footer.product.api')}</Link></li>
-                </ul>
+        {/* 3. Category Clarification — dark accent background */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#23194B]" aria-labelledby="category-heading">
+          <div className="max-w-3xl mx-auto text-center">
+            <ScrollAnimation>
+              <h2 id="category-heading" className="text-4xl sm:text-5xl font-bold text-white mb-8">
+                {t('category.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={200}>
+              <p className="text-xl text-gray-300 mb-4">
+                {t('category.line1')}
+              </p>
+              <p className="text-xl text-white font-medium mb-12">
+                {t('category.line2')}
+              </p>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={400}>
+              <div className="flex flex-col sm:flex-row justify-center gap-8 text-lg text-gray-300">
+                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet1')}</span>
+                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet2')}</span>
+                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet3')}</span>
               </div>
-              <div>
-                <h3 className="text-white font-semibold mb-4">{t('footer.company.title')}</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href={`/${locale}/about`} className="hover:text-white transition-colors">{t('footer.company.about')}</Link></li>
-                  <li><Link href={`/${locale}/blog`} className="hover:text-white transition-colors">{t('footer.company.blog')}</Link></li>
-                  <li><Link href={`/${locale}/careers`} className="hover:text-white transition-colors">{t('footer.company.careers')}</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-4">{t('footer.support.title')}</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href={`/${locale}/help`} className="hover:text-white transition-colors">{t('footer.support.help')}</Link></li>
-                  <li><Link href={`/${locale}/contact`} className="hover:text-white transition-colors">{t('footer.support.contact')}</Link></li>
-                  <li><Link href={`/${locale}/status`} className="hover:text-white transition-colors">{t('footer.support.status')}</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-4">{t('footer.legal.title')}</h3>
-                <ul className="space-y-2 text-sm">
-                  <li><Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">{t('footer.legal.privacy')}</Link></li>
-                  <li><Link href={`/${locale}/terms`} className="hover:text-white transition-colors">{t('footer.legal.terms')}</Link></li>
-                  <li><Link href={`/${locale}/security`} className="hover:text-white transition-colors">{t('footer.legal.security')}</Link></li>
-                </ul>
-              </div>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* 4. Who It's For */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="audience-heading">
+          <div className="max-w-3xl mx-auto text-center">
+            <ScrollAnimation>
+              <h2 id="audience-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
+                {t('audience.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={200}>
+              <p className="text-xl text-gray-700 mb-12">
+                {t('audience.description')}
+              </p>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={400}>
+              <ul className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-lg text-gray-700">
+                <li>{t('audience.role1')}</li>
+                <li className="text-gray-300">•</li>
+                <li>{t('audience.role2')}</li>
+                <li className="text-gray-300">•</li>
+                <li>{t('audience.role3')}</li>
+                <li className="text-gray-300">•</li>
+                <li>{t('audience.role4')}</li>
+              </ul>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* 5. How It Works — with brand-colored icons */}
+        <section id="how-it-works" className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="how-heading">
+          <div className="max-w-4xl mx-auto">
+            <ScrollAnimation>
+              <h2 id="how-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 text-center mb-16">
+                {t('how.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <div className="grid md:grid-cols-3 gap-12">
+              <ScrollAnimation delay={200}>
+                <div className="text-center">
+                  {/* Waveform icon — brand purple */}
+                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center gap-1 bg-[#8D6AFA]/10 rounded-2xl p-3">
+                    <div className="w-1.5 h-4 bg-[#8D6AFA] rounded-full"></div>
+                    <div className="w-1.5 h-8 bg-[#8D6AFA] rounded-full"></div>
+                    <div className="w-1.5 h-6 bg-[#8D6AFA] rounded-full"></div>
+                    <div className="w-1.5 h-10 bg-[#8D6AFA] rounded-full"></div>
+                    <div className="w-1.5 h-5 bg-[#8D6AFA] rounded-full"></div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step1.title')}</h3>
+                  <p className="text-gray-600">{t('how.step1.description')}</p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation delay={400}>
+                <div className="text-center">
+                  {/* Grid icon — deep purple */}
+                  <div className="w-16 h-16 mx-auto mb-6 bg-[#3F38A0]/10 rounded-2xl p-3 flex items-center justify-center">
+                    <div className="grid grid-cols-3 gap-1">
+                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step2.title')}</h3>
+                  <p className="text-gray-600">{t('how.step2.description')}</p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation delay={600}>
+                <div className="text-center">
+                  {/* Document icon — cyan accent */}
+                  <div className="w-16 h-16 mx-auto mb-6 bg-[#14D0DC]/10 rounded-2xl p-3 flex items-center justify-center">
+                    <div className="w-10 h-10 border-2 border-[#14D0DC] rounded p-2 flex flex-col justify-center gap-1">
+                      <div className="w-full h-0.5 bg-[#14D0DC]"></div>
+                      <div className="w-3/4 h-0.5 bg-[#14D0DC]/50"></div>
+                      <div className="w-full h-0.5 bg-[#14D0DC]"></div>
+                      <div className="w-1/2 h-0.5 bg-[#14D0DC]/50"></div>
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step3.title')}</h3>
+                  <p className="text-gray-600">{t('how.step3.description')}</p>
+                </div>
+              </ScrollAnimation>
             </div>
-            <div className="border-t border-gray-800 pt-8">
-              <div className="text-center mb-6">
-                <p className="text-sm text-gray-400 italic max-w-2xl mx-auto">
-                  {t('footer.tagline')}
-                </p>
-              </div>
-              <div className="flex flex-col md:flex-row items-center justify-between">
-                <div className="flex items-center mb-4 md:mb-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/assets/logos/neural-summary-logo.svg"
-                    alt="Neural Summary"
-                    className="h-6 w-auto mr-2"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text-sm text-gray-400">{t('footer.copyright')}</span>
+          </div>
+        </section>
+
+        {/* 6. Output Types — cards with colored top borders */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="outputs-heading">
+          <div className="max-w-4xl mx-auto">
+            <ScrollAnimation>
+              <h2 id="outputs-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 text-center mb-16">
+                {t('outputs.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <div className="grid sm:grid-cols-2 gap-8">
+              <ScrollAnimation delay={200}>
+                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#8D6AFA] shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type1.title')}</h3>
+                  <p className="text-gray-600">{t('outputs.type1.description')}</p>
                 </div>
-                <div className="flex items-center space-x-2 text-xs text-gray-400">
-                  <Shield className="h-4 w-4" aria-hidden="true" />
-                  <span>{t('security.badges.compliance')}</span>
+              </ScrollAnimation>
+
+              <ScrollAnimation delay={300}>
+                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#3F38A0] shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type2.title')}</h3>
+                  <p className="text-gray-600">{t('outputs.type2.description')}</p>
                 </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation delay={400}>
+                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#14D0DC] shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type3.title')}</h3>
+                  <p className="text-gray-600">{t('outputs.type3.description')}</p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation delay={500}>
+                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#8D6AFA] shadow-sm hover:shadow-md transition-shadow">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type4.title')}</h3>
+                  <p className="text-gray-600">{t('outputs.type4.description')}</p>
+                </div>
+              </ScrollAnimation>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. Trust & Credibility — subtle gradient */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-white to-[#8D6AFA]/5" aria-labelledby="trust-heading">
+          <div className="max-w-3xl mx-auto text-center">
+            <ScrollAnimation>
+              <h2 id="trust-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 mb-12">
+                {t('trust.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={200}>
+              <ul className="space-y-4 text-lg text-gray-700 mb-12">
+                <li className="flex items-center justify-center gap-3">
+                  <span className="w-2 h-2 bg-[#8D6AFA] rounded-full flex-shrink-0"></span>
+                  {t('trust.statement1')}
+                </li>
+                <li className="flex items-center justify-center gap-3">
+                  <span className="w-2 h-2 bg-[#3F38A0] rounded-full flex-shrink-0"></span>
+                  {t('trust.statement2')}
+                </li>
+                <li className="flex items-center justify-center gap-3">
+                  <span className="w-2 h-2 bg-[#14D0DC] rounded-full flex-shrink-0"></span>
+                  {t('trust.statement3')}
+                </li>
+              </ul>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={400}>
+              <p className="text-sm text-gray-500">
+                {t('trust.privacy')}
+              </p>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* 8. Closing CTA — bold brand section */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#3F38A0]" aria-label="Get started">
+          <div className="max-w-3xl mx-auto text-center">
+            <ScrollAnimation>
+              <h2 className="text-4xl sm:text-5xl font-bold text-white mb-12">
+                {t('closingCta.headline')}
+              </h2>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={200}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <Link
+                  href={`/${locale}/login`}
+                  className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-base rounded-full bg-white text-[#3F38A0] hover:bg-gray-100 transition-all shadow-lg"
+                >
+                  {t('closingCta.ctaPrimary')}
+                </Link>
+                <Link
+                  href={`/${locale}/examples`}
+                  className="text-white/80 hover:text-white font-medium transition-colors underline underline-offset-4"
+                >
+                  {t('closingCta.ctaSecondary')}
+                </Link>
               </div>
+            </ScrollAnimation>
+          </div>
+        </section>
+
+        {/* 9. Footer — dark brand footer */}
+        <footer className="py-16 px-6 sm:px-8 lg:px-12 bg-[#23194B]" aria-label="Footer">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 mb-12">
+              {/* White logo for dark background */}
+              <Link href={`/${locale}/landing`} className="flex items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/assets/logos/neural-summary-logo-white.svg"
+                  alt="Neural Summary"
+                  className="h-10 w-auto"
+                  width={200}
+                  height={40}
+                />
+              </Link>
+
+              {/* Navigation */}
+              <nav className="flex flex-wrap gap-8 text-sm text-gray-400">
+                <Link href={`/${locale}/features`} className="hover:text-white transition-colors">
+                  {t('footer.product')}
+                </Link>
+                <Link href={`/${locale}/examples`} className="hover:text-white transition-colors">
+                  {t('footer.examples')}
+                </Link>
+                <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">
+                  {t('footer.security')}
+                </Link>
+                <Link href={`/${locale}/contact`} className="hover:text-white transition-colors">
+                  {t('footer.contact')}
+                </Link>
+              </nav>
+            </div>
+
+            <div className="text-sm text-gray-500">
+              {t('footer.copyright')}
             </div>
           </div>
         </footer>
@@ -578,107 +430,31 @@ export default async function LandingPage({
                     '@type': 'ImageObject',
                     url: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
                   },
-                  description: 'Voice-to-output creation platform that transforms conversations into work-ready documents',
-                  sameAs: [
-                    'https://twitter.com/neuralsummary',
-                    'https://linkedin.com/company/neuralsummary',
-                  ],
+                  description: 'AI workspace that turns spoken thinking into structured, professional output.',
                 },
                 {
                   '@type': 'SoftwareApplication',
                   '@id': 'https://neuralsummary.com/#software',
-                  name: 'Neural Summary - Voice-to-Output Creation Platform',
+                  name: 'Neural Summary',
                   applicationCategory: 'BusinessApplication',
-                  applicationSubCategory: 'AI Document Creation & Transcription Software',
-                  operatingSystem: 'Web, iOS, Android, Windows, macOS',
+                  applicationSubCategory: 'Speech-to-Structure Workspace',
+                  operatingSystem: 'Web',
                   offers: {
                     '@type': 'Offer',
                     price: '0',
                     priceCurrency: 'USD',
-                    description: 'Free plan available',
-                  },
-                  aggregateRating: {
-                    '@type': 'AggregateRating',
-                    ratingValue: '4.8',
-                    ratingCount: '1250',
-                    bestRating: '5',
-                    worstRating: '1',
+                    description: 'Free tier available',
                   },
                   featureList: [
-                    'Voice-to-document creation',
-                    'AI interview assistant',
-                    'Conversation to product specs',
-                    'Audio to articles and strategies',
+                    'Speech-to-structure transformation',
+                    'Decision summaries',
+                    'Feature specifications',
+                    'Structured notes',
+                    'Client-ready reports',
                     'Speaker identification',
-                    'Action items extraction',
                     '50+ languages supported',
-                    '99.5% transcription accuracy',
-                    'GDPR compliant',
                   ],
-                  keywords: 'voice to document, AI document creation, conversation to spec, voice-to-output platform, AI interview assistant, audio to article, speech to document, voice-powered creation',
-                  description: 'Turn conversations into work-ready documents. Neural Summary interviews you with AI, extracts ideas, and generates product specs, articles, emails, and strategies from your voice.',
-                },
-                {
-                  '@type': 'FAQPage',
-                  '@id': 'https://neuralsummary.com/#faq',
-                  mainEntity: [
-                    {
-                      '@type': 'Question',
-                      name: 'How does Neural Summary work?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Upload any audio or video recording, or speak directly into the platform. Our AI processes your conversation, identifies key insights, and generates structured documents—summaries, action items, and detailed analysis. It works with meetings, brainstorms, interviews, or voice memos. From upload to finished document takes just 3-5 minutes.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'What types of documents can I create?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'From a single recording, create meeting summaries with action items and decisions, content analysis, strategic insights, and communication breakdowns. Each document type is optimized for different needs—whether you need executive summaries, detailed transcripts, or team action plans.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'Does it work with Zoom, Teams, and Google Meet?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Yes! Record your meeting on any platform, download the file, and upload it to Neural Summary. We support all major video and audio formats including MP3, M4A, WAV, MP4, MOV, and more. No bots, no plugins—just upload and create.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'Can Neural Summary identify different speakers?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Yes! Our speaker diarization technology automatically detects and labels multiple speakers throughout your conversation. Each speaker\'s contributions are clearly attributed, maintaining the natural flow of dialogue. You can rename speakers after processing for even greater clarity in your documents.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'How accurate are the results?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'We deliver 99.5% transcription accuracy with speaker identification in over 50 languages. But Neural Summary goes beyond transcription—our AI extracts decisions, action items, themes, and insights that manual note-taking often misses. You get both precise word-for-word capture and intelligent analysis.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'Is my data private and secure?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Absolutely. Your audio is retained for only 30 days for support and recovery purposes, then automatically and permanently deleted. We retain only the text transcripts and analysis results. Enterprise-grade encryption protects your data at rest and in transit—ideal for confidential business, legal, or medical discussions.',
-                      },
-                    },
-                    {
-                      '@type': 'Question',
-                      name: 'Can I share and export documents?',
-                      acceptedAnswer: {
-                        '@type': 'Answer',
-                        text: 'Yes! Share your documents via secure password-protected links, send via email, or export to PDF and Word formats. Professional plans include unlimited sharing and collaboration features for teams.',
-                      },
-                    },
-                  ],
+                  description: 'Neural Summary turns spoken thinking into structured, professional output. Speak once. Get something you can use.',
                 },
               ],
             }),

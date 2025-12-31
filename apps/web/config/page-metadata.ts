@@ -18,7 +18,7 @@
 // ============================================================================
 
 export const SEO_BASE_URL = 'https://neuralsummary.com';
-export const DEFAULT_OG_IMAGE = '/assets/logos/neural-summary-logo.svg';
+export const DEFAULT_OG_IMAGE = '/assets/socials/neural-summary-og.png';
 export const SITE_NAME = 'Neural Summary';
 
 const OG_LOCALE_MAP: Record<string, string> = {
@@ -61,12 +61,12 @@ export type PageType = 'landing' | 'pricing' | 'terms' | 'privacy';
  */
 const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
   en: {
-    title: 'Neural Summary | Turn Conversations into Work-Ready Documents',
+    title: 'Neural Summary – You Speak. It Creates.',
     description:
-      'Voice-to-output creation platform. Turn conversations into product specs, articles, strategies, and emails instantly. AI interviews you, extracts ideas, generates deliverables. Speaking becomes creating.',
+      'Turn spoken thinking into structured, professional documents. Upload conversations or let AI interview you to generate product specs, articles, strategies, and emails. No writing. No formatting. Just think out loud.',
     keywords: [
       'voice to document',
-      'conversation to document',
+      'speech to structure',
       'AI document creation',
       'voice-to-output platform',
       'AI interview assistant',
@@ -75,7 +75,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'voice-powered creation',
       'AI document generator',
       'conversation to spec',
-      'voice-activated writing',
+      'transcription to deliverables',
       'AI transcription and analysis',
       'audio to article',
       'speech to document creation',
@@ -83,12 +83,12 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   nl: {
-    title: 'Neural Summary | Transformeer Gesprekken in Werkklare Documenten',
+    title: 'Neural Summary – Jij Spreekt. Het Creëert.',
     description:
-      'Van spraak naar document platform. Transformeer gesprekken direct in productspecificaties, artikelen, strategieën en e-mails. AI interviewt je, haalt ideeën eruit, genereert deliverables. Spreken wordt creëren.',
+      'Transformeer gesproken gedachten in gestructureerde, professionele documenten. Upload gesprekken of laat AI je interviewen om productspecificaties, artikelen, strategieën en e-mails te genereren. Geen schrijven. Geen formatteren. Gewoon hardop denken.',
     keywords: [
       'spraak naar document',
-      'gesprek naar document',
+      'spraak naar structuur',
       'AI documentcreatie',
       'spraak-naar-output platform',
       'AI interview assistent',
@@ -97,7 +97,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'spraakgestuurde creatie',
       'AI documentgenerator',
       'gesprek naar specificatie',
-      'spraakgeactiveerd schrijven',
+      'transcriptie naar deliverables',
       'AI transcriptie en analyse',
       'audio naar artikel',
       'spraak naar documentcreatie',
@@ -105,12 +105,12 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   de: {
-    title: 'Neural Summary | Verwandeln Sie Gespräche in Arbeitsbereite Dokumente',
+    title: 'Neural Summary – Du Sprichst. Es Kreiert.',
     description:
-      'Sprache-zu-Dokument Plattform. Verwandeln Sie Gespräche sofort in Produktspezifikationen, Artikel, Strategien und E-Mails. KI interviewt Sie, extrahiert Ideen, generiert Ergebnisse. Sprechen wird Erschaffen.',
+      'Verwandeln Sie gesprochene Gedanken in strukturierte, professionelle Dokumente. Laden Sie Gespräche hoch oder lassen Sie sich von KI interviewen, um Produktspezifikationen, Artikel, Strategien und E-Mails zu generieren. Kein Schreiben. Keine Formatierung. Einfach laut denken.',
     keywords: [
       'Sprache zu Dokument',
-      'Gespräch zu Dokument',
+      'Sprache zu Struktur',
       'KI Dokumenterstellung',
       'Sprache-zu-Output Plattform',
       'KI Interview Assistent',
@@ -119,7 +119,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'sprachgesteuerte Erstellung',
       'KI Dokumentgenerator',
       'Gespräch zu Spezifikation',
-      'sprachaktiviertes Schreiben',
+      'Transkription zu Lieferobjekten',
       'KI Transkription und Analyse',
       'Audio zu Artikel',
       'Sprache zu Dokumenterstellung',
@@ -127,12 +127,12 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   fr: {
-    title: 'Neural Summary | Transformez les Conversations en Documents Prêts à l\'Emploi',
+    title: 'Neural Summary – Vous Parlez. Ça Crée.',
     description:
-      'Plateforme de création voix-vers-document. Transformez instantanément les conversations en spécifications produit, articles, stratégies et e-mails. L\'IA vous interviewe, extrait les idées, génère les livrables. Parler devient créer.',
+      'Transformez vos pensées parlées en documents structurés et professionnels. Téléchargez des conversations ou laissez l\'IA vous interviewer pour générer des spécifications produit, articles, stratégies et e-mails. Sans écriture. Sans mise en forme. Pensez simplement à voix haute.',
     keywords: [
       'voix vers document',
-      'conversation vers document',
+      'parole vers structure',
       'création de documents IA',
       'plateforme voix-vers-sortie',
       'assistant d\'interview IA',
@@ -141,7 +141,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'création vocale',
       'générateur de documents IA',
       'conversation vers spécification',
-      'écriture activée par la voix',
+      'transcription vers livrables',
       'transcription et analyse IA',
       'audio vers article',
       'création de documents par la parole',
@@ -149,12 +149,12 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
     ],
   },
   es: {
-    title: 'Neural Summary | Convierte Conversaciones en Documentos Listos para Trabajar',
+    title: 'Neural Summary – Tú Hablas. Crea.',
     description:
-      'Plataforma de creación de voz a documento. Convierte conversaciones al instante en especificaciones de producto, artículos, estrategias y correos electrónicos. La IA te entrevista, extrae ideas, genera entregables. Hablar se convierte en crear.',
+      'Transforma el pensamiento hablado en documentos estructurados y profesionales. Sube conversaciones o deja que la IA te entreviste para generar especificaciones de producto, artículos, estrategias y correos electrónicos. Sin escribir. Sin formatear. Solo piensa en voz alta.',
     keywords: [
       'voz a documento',
-      'conversación a documento',
+      'habla a estructura',
       'creación de documentos IA',
       'plataforma de voz a salida',
       'asistente de entrevista IA',
@@ -163,7 +163,7 @@ const LANDING_PAGE_METADATA: Record<string, PageMetadataContent> = {
       'creación por voz',
       'generador de documentos IA',
       'conversación a especificación',
-      'escritura activada por voz',
+      'transcripción a entregables',
       'transcripción y análisis IA',
       'audio a artículo',
       'creación de documentos por habla',

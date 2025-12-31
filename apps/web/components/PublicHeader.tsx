@@ -12,7 +12,6 @@ interface PublicHeaderProps {
 }
 
 export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderProps) {
-  const tCommon = useTranslations('common');
   const tLanding = useTranslations('landing');
   const { user } = useAuth();
 
@@ -23,18 +22,12 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
           <Link href={`/${locale}/landing`} className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/logos/neural-summary-logo.svg"
-              alt="Neural Summary"
-              className="h-8 w-auto mr-2 sm:mr-3"
-              width={32}
-              height={32}
+              src="/assets/logos/neural-summary-logo-wTagLine.png"
+              alt="Neural Summary - You speak. It creates."
+              className="h-10 sm:h-12 w-auto"
+              width={180}
+              height={48}
             />
-            <div>
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                {tCommon('appName')}
-              </h1>
-              <p className="text-xs text-gray-500 hidden sm:block">{tLanding('hero.byline')}</p>
-            </div>
           </Link>
 
           {/* Desktop Navigation */}
