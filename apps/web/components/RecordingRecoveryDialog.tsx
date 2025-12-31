@@ -20,6 +20,8 @@ import {
   Trash2,
   Upload,
   Plus,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { formatDistanceToNow, type Locale } from 'date-fns';
 import { enUS, nl, de, fr, es } from 'date-fns/locale';
@@ -86,9 +88,17 @@ function InlineAudioPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [actualDuration, setActualDuration] = useState(durationProp);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const waveformRef = useRef<HTMLDivElement>(null);
   const audioUrlRef = useRef<string | null>(null);
+
+  // Web Audio API refs for iOS volume control
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const isAudioRoutedRef = useRef(false);
 
   const duration = actualDuration;
 
@@ -108,6 +118,65 @@ function InlineAudioPreview({
       }
     };
   }, []);
+
+  // Set up Web Audio API routing for iOS volume control
+  const setupAudioRouting = useCallback(() => {
+    if (isAudioRoutedRef.current || !audioRef.current) return;
+
+    try {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      const audioContext = new AudioContextClass();
+      const gainNode = audioContext.createGain();
+      const sourceNode = audioContext.createMediaElementSource(audioRef.current);
+
+      sourceNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      gainNode.gain.value = isMuted ? 0 : volume;
+
+      audioContextRef.current = audioContext;
+      gainNodeRef.current = gainNode;
+      sourceNodeRef.current = sourceNode;
+      isAudioRoutedRef.current = true;
+    } catch (err) {
+      console.warn('Failed to set up Web Audio routing for volume control:', err);
+    }
+  }, [volume, isMuted]);
+
+  // Update gain when volume or mute changes
+  useEffect(() => {
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  // Cleanup audio context on unmount
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  // Handle volume change from slider
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (newVolume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  };
+
+  // Toggle mute
+  const handleMuteToggle = () => {
+    setIsMuted(!isMuted);
+  };
 
   // Get waveform data - using 50 bars to match RecordingPreview
   const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 50);
@@ -138,6 +207,14 @@ function InlineAudioPreview({
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
+      // Set up Web Audio routing on first play (requires user interaction for iOS)
+      setupAudioRouting();
+
+      // Resume AudioContext if suspended (iOS requirement)
+      if (audioContextRef.current?.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+
       if (audioRef.current.ended || currentTime >= duration - 0.1) {
         audioRef.current.currentTime = 0;
         setCurrentTime(0);
@@ -259,6 +336,31 @@ function InlineAudioPreview({
         >
           <X className="w-5 h-5" />
         </button>
+      </div>
+
+      {/* Volume control */}
+      <div className="flex items-center gap-3 mt-3 px-1">
+        <button
+          onClick={handleMuteToggle}
+          className="flex-shrink-0 p-1.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+        >
+          {isMuted || volume === 0 ? (
+            <VolumeX className="w-5 h-5" />
+          ) : (
+            <Volume2 className="w-5 h-5" />
+          )}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={isMuted ? 0 : volume}
+          onChange={handleVolumeChange}
+          className="flex-1 h-2 bg-gray-200 dark:bg-gray-600 rounded-full appearance-none cursor-pointer accent-[#8D6AFA] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#8D6AFA] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#8D6AFA] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+          aria-label="Volume"
+        />
       </div>
     </div>
   );

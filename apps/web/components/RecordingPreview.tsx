@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { useAudioWaveform } from '@/hooks/useAudioWaveform';
@@ -30,7 +30,15 @@ export function RecordingPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [actualDuration, setActualDuration] = useState(durationProp);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Web Audio API refs for iOS volume control
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const isAudioRoutedRef = useRef(false);
 
   // Use actual audio duration once loaded, fallback to prop
   const duration = actualDuration;
@@ -55,6 +63,68 @@ export function RecordingPreview({
     };
   }, []);
 
+  // Set up Web Audio API routing for iOS volume control
+  // This must be called on user interaction (play button) to satisfy iOS autoplay policy
+  const setupAudioRouting = useCallback(() => {
+    if (isAudioRoutedRef.current || !audioRef.current) return;
+
+    try {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      const audioContext = new AudioContextClass();
+      const gainNode = audioContext.createGain();
+      const sourceNode = audioContext.createMediaElementSource(audioRef.current);
+
+      // Connect: source -> gain -> destination
+      sourceNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      // Set initial volume
+      gainNode.gain.value = isMuted ? 0 : volume;
+
+      audioContextRef.current = audioContext;
+      gainNodeRef.current = gainNode;
+      sourceNodeRef.current = sourceNode;
+      isAudioRoutedRef.current = true;
+    } catch (err) {
+      console.warn('Failed to set up Web Audio routing for volume control:', err);
+    }
+  }, [volume, isMuted]);
+
+  // Update gain when volume or mute changes
+  useEffect(() => {
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  // Cleanup audio context on unmount
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  // Handle volume change from slider
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (newVolume > 0 && isMuted) {
+      setIsMuted(false);
+    }
+  };
+
+  // Toggle mute
+  const handleMuteToggle = () => {
+    setIsMuted(!isMuted);
+  };
+
   // Get actual duration from audio element when metadata loads
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLAudioElement>) => {
     const audioDuration = e.currentTarget.duration;
@@ -77,6 +147,14 @@ export function RecordingPreview({
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
+      // Set up Web Audio routing on first play (requires user interaction for iOS)
+      setupAudioRouting();
+
+      // Resume AudioContext if suspended (iOS requirement)
+      if (audioContextRef.current?.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+
       // Always reset to beginning if at or near the end, or if audio has ended
       if (audioRef.current.ended || audioRef.current.currentTime >= duration - 0.1 || currentTime >= duration - 0.1) {
         audioRef.current.currentTime = 0;
@@ -315,6 +393,31 @@ export function RecordingPreview({
             <span>{formatTime(duration)}</span>
           </div>
         </div>
+      </div>
+
+      {/* Volume control */}
+      <div className="flex items-center gap-3 px-1">
+        <button
+          onClick={handleMuteToggle}
+          className="flex-shrink-0 p-1.5 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+        >
+          {isMuted || volume === 0 ? (
+            <VolumeX className="w-5 h-5" />
+          ) : (
+            <Volume2 className="w-5 h-5" />
+          )}
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={isMuted ? 0 : volume}
+          onChange={handleVolumeChange}
+          className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-[#8D6AFA] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#8D6AFA] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#8D6AFA] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+          aria-label="Volume"
+        />
       </div>
 
       {/* Actions - mobile-friendly stacked layout */}

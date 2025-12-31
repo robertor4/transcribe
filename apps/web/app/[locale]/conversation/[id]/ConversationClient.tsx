@@ -592,7 +592,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
 
             {/* Tab Navigation */}
-            <nav className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
+            <nav className="lg:sticky lg:top-0 lg:z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
               <div className="flex items-center gap-1 py-1">
                 <button
                   onClick={() => setActiveTab('summary')}
