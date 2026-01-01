@@ -266,17 +266,14 @@ export function SimpleAudioRecorder({
           const defaultLabelChanged = previousDefaultLabelRef.current && newDefaultLabel && newDefaultLabel !== previousDefaultLabelRef.current;
 
           if (defaultLabelChanged) {
-            console.log(`[SimpleAudioRecorder] 🔄 AUTO-SWAP: Default device changed: "${previousDefaultLabelRef.current}" → "${newDefaultLabel}"`);
-
             if (autoSwapDebounceRef.current) {
               clearTimeout(autoSwapDebounceRef.current);
             }
             autoSwapDebounceRef.current = setTimeout(() => {
               swapMicrophone(resolveRealDeviceId('default')).then(() => {
                 setSelectedDeviceId('default');
-                console.log('[SimpleAudioRecorder] ✅ Auto-swapped to new default device');
-              }).catch(err => {
-                console.error('[SimpleAudioRecorder] ❌ Failed to auto-swap to default:', err);
+              }).catch(() => {
+                // Swap failed - user can manually select device from dropdown
               });
             }, 500);
           }
@@ -299,17 +296,14 @@ export function SimpleAudioRecorder({
 
               const deviceToSwitch = bluetoothDevice || newlyConnectedDevices[0];
 
-              console.log(`[SimpleAudioRecorder] 🔄 AUTO-SWAP: New device connected: "${deviceToSwitch.label}"`);
-
               if (autoSwapDebounceRef.current) {
                 clearTimeout(autoSwapDebounceRef.current);
               }
               autoSwapDebounceRef.current = setTimeout(() => {
                 swapMicrophone(deviceToSwitch.deviceId).then(() => {
                   setSelectedDeviceId(deviceToSwitch.deviceId);
-                  console.log(`[SimpleAudioRecorder] ✅ Auto-swapped to newly connected: "${deviceToSwitch.label}"`);
-                }).catch(err => {
-                  console.error('[SimpleAudioRecorder] ❌ Failed to auto-swap to new device:', err);
+                }).catch(() => {
+                  // Swap failed - user can manually select device from dropdown
                 });
               }, 500);
             }
@@ -323,17 +317,14 @@ export function SimpleAudioRecorder({
             );
 
             if (!currentDeviceStillExists) {
-              console.log('[SimpleAudioRecorder] Current device disconnected, switching to default');
-
               if (autoSwapDebounceRef.current) {
                 clearTimeout(autoSwapDebounceRef.current);
               }
               autoSwapDebounceRef.current = setTimeout(() => {
                 swapMicrophone(resolveRealDeviceId('default')).then(() => {
                   setSelectedDeviceId('default');
-                  console.log('[SimpleAudioRecorder] Auto-swapped to default after device disconnect');
-                }).catch(err => {
-                  console.error('[SimpleAudioRecorder] Failed to auto-swap after disconnect:', err);
+                }).catch(() => {
+                  // Swap failed - user can manually select device from dropdown
                 });
               }, 500);
             }
@@ -352,7 +343,6 @@ export function SimpleAudioRecorder({
           const defaultPseudoDevice = audioInputs.find(d => d.deviceId === 'default');
           const deviceToSelect = defaultPseudoDevice || audioInputs[0];
           setSelectedDeviceId(deviceToSelect.deviceId);
-          console.log(`[SimpleAudioRecorder] Pre-selected device: "${deviceToSelect.label}"`);
         }
       } catch (err) {
         console.error('Failed to enumerate audio devices:', err);
@@ -405,14 +395,12 @@ export function SimpleAudioRecorder({
     );
 
     if (matchingRealDevice) {
-      console.log(`[SimpleAudioRecorder] Resolved 'default' to real device: "${matchingRealDevice.label}" (${matchingRealDevice.deviceId.slice(0, 20)}...)`);
       return matchingRealDevice.deviceId;
     }
 
     // Fallback: return first non-default device
     const firstReal = audioDevices.find(d => d.deviceId !== 'default');
     if (firstReal) {
-      console.log(`[SimpleAudioRecorder] Fallback: using first real device: "${firstReal.label}"`);
       return firstReal.deviceId;
     }
 
@@ -440,7 +428,6 @@ export function SimpleAudioRecorder({
       ? undefined  // No mic - tab audio only
       : realDeviceId;
 
-    console.log(`[SimpleAudioRecorder] handleStart - source: ${selectedSource}, includeMic: ${includeMicWithTabAudio}, deviceId: ${deviceIdToUse}`);
     await startRecording(selectedSource, deviceIdToUse);
   }, [startRecording, selectedSource, selectedDeviceId, includeMicWithTabAudio, resolveRealDeviceId]);
 
@@ -448,7 +435,6 @@ export function SimpleAudioRecorder({
   const startMicPreview = useCallback(async (deviceId?: string) => {
     // Guard against concurrent preview starts (race condition prevention)
     if (isStartingPreviewRef.current) {
-      console.log('[SimpleAudioRecorder] Preview start already in progress, skipping');
       return;
     }
 

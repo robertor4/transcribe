@@ -62,14 +62,11 @@ export function useAudioVisualization(
 
       // Calculate time domain amplitude (deviation from 128 which is silence)
       // Time domain data is centered at 128 for silence
-      let timeDomainSum = 0;
       let timeDomainMax = 0;
       for (let i = 0; i < bufferLength; i++) {
         const deviation = Math.abs(timeDomainData[i] - 128);
-        timeDomainSum += deviation;
         timeDomainMax = Math.max(timeDomainMax, deviation);
       }
-      const timeDomainAvg = timeDomainSum / bufferLength;
 
       // Focus on voice frequency range (human voice is typically 300-3400 Hz)
       const voiceStartBin = Math.floor(bufferLength * 0.02);
@@ -148,7 +145,6 @@ export function useAudioVisualization(
       // This hook is now only used for mic preview (not during recording).
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
-      console.log('[useAudioVisualization] Created preview AudioContext, state:', audioContext.state);
       const analyzer = audioContext.createAnalyser();
 
       analyzer.fftSize = fftSize;
@@ -215,7 +211,6 @@ export function useAudioVisualization(
       }
 
       if (audioContextRef.current) {
-        console.log('[useAudioVisualization] Closing preview AudioContext');
         audioContextRef.current.close();
         audioContextRef.current = null;
       }

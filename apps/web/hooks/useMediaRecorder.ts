@@ -908,17 +908,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       const currentSource = recordingSourceRef.current;
 
       if (!hotSwapRecorderRef.current) {
-        console.warn('[useMediaRecorder] Cannot swap: not using HotSwapRecorder');
         return;
       }
 
       if (currentState !== 'recording' && currentState !== 'paused') {
-        console.warn('[useMediaRecorder] Cannot swap: not recording or paused (state:', currentState, ')');
         return;
       }
 
       if (currentSource !== 'microphone') {
-        console.warn('[useMediaRecorder] Cannot swap: only works for microphone source (source:', currentSource, ')');
         return;
       }
 
@@ -936,8 +933,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         setCurrentDeviceId(deviceId);
         onDeviceSwapped?.(deviceId);
-
-        console.log(`[useMediaRecorder] Swapped to device: ${deviceId}`);
       } catch (err) {
         const error = err as Error;
         console.error('[useMediaRecorder] Failed to swap microphone:', error);
