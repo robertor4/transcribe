@@ -22,14 +22,19 @@ export default async function LandingPage({
 
         {/* 1. Hero Section — deep purple background with subtle dot pattern */}
         <section
-          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative"
+          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden"
           aria-label="Hero section"
-          style={{
-            backgroundImage: 'url(/assets/images/dotted-background-light.webp)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
         >
+          {/* Animated drifting dot pattern background - double width for seamless loop */}
+          <div
+            className="absolute inset-0 w-[200%] animate-drift-left"
+            style={{
+              backgroundImage: 'url(/assets/images/dotted-background-light.webp)',
+              backgroundRepeat: 'repeat',
+              backgroundSize: 'auto',
+            }}
+            aria-hidden="true"
+          />
           {/* Subtle overlay to tone down the dots pattern */}
           <div className="absolute inset-0 bg-[#23194B]/85" aria-hidden="true"></div>
           <div className="max-w-7xl mx-auto w-full relative z-10">

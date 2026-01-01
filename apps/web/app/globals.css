@@ -853,17 +853,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ===== Hero Background Drift Animation ===== */
 
-@keyframes driftRight {
+@keyframes driftLeft {
   from {
-    background-position: 0% 50%;
+    transform: translateX(0);
   }
   to {
-    background-position: 100% 50%;
+    transform: translateX(-50%);
   }
 }
 
-.animate-drift-right {
-  animation: driftRight 60s linear infinite;
-  background-size: 200% 100%;
-  will-change: background-position;
+.animate-drift-left {
+  animation: driftLeft 60s linear infinite;
+  will-change: transform;
 }
