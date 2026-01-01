@@ -56,11 +56,11 @@ export default async function LandingPage({
 
                 <ScrollAnimation delay={300}>
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
-                    <CTAButton href="#how-it-works" variant="light">
+                    <CTAButton href={`/${locale}/examples`} variant="light">
                       {t('hero.ctaPrimary')}
                     </CTAButton>
                     <Link
-                      href={`/${locale}/examples`}
+                      href="#how-it-works"
                       className="text-gray-300/80 hover:text-white font-normal transition-colors hover:underline decoration-white/50 underline-offset-4 py-4"
                     >
                       {t('hero.ctaSecondary')}
@@ -160,6 +160,37 @@ export default async function LandingPage({
         {/* 2. Proof by Transformation — animated recording → document */}
         <TransformationSection />
 
+        {/* 2.5. Recognition Moment — typography and whitespace only */}
+        <section className="py-24 sm:py-32 px-6 sm:px-8 lg:px-12 bg-white relative overflow-hidden" aria-labelledby="recognition-heading">
+          {/* Subtle dot pattern clipped to corner */}
+          <div
+            className="absolute -bottom-16 -right-16 w-[300px] h-[200px] pointer-events-none"
+            style={{
+              backgroundImage: 'url(/assets/images/dotted-background-inverted.webp)',
+              backgroundSize: 'cover',
+              opacity: 0.08,
+              transform: 'rotate(-8deg)',
+            }}
+            aria-hidden="true"
+          />
+          <div className="max-w-2xl mx-auto text-center relative z-10">
+            <h2 id="recognition-heading" className="sr-only">The problem we solve</h2>
+            <ScrollAnimation>
+              <div className="space-y-3 text-xl sm:text-2xl text-gray-500 leading-relaxed mb-12">
+                <p>{t('recognition.line1')}</p>
+                <p>{t('recognition.line2')}</p>
+                <p>{t('recognition.line3')}</p>
+                <p>{t('recognition.line4')}</p>
+              </div>
+            </ScrollAnimation>
+            <ScrollAnimation delay={400}>
+              <p className="text-2xl sm:text-3xl font-semibold text-gray-900">
+                {t('recognition.conclusion')}
+              </p>
+            </ScrollAnimation>
+          </div>
+        </section>
+
         {/* 3. Category Clarification — dark accent background */}
         <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden" aria-labelledby="category-heading">
           {/* Dot pattern — bottom right, rotated */}
@@ -251,64 +282,82 @@ export default async function LandingPage({
             </ScrollAnimation>
 
             <div className="grid md:grid-cols-3 gap-12">
+              {/* Step 1 — reduced visual weight */}
               <ScrollAnimation delay={200}>
-                <div className="text-center">
-                  {/* Waveform icon — brand purple */}
-                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center gap-1 bg-[#8D6AFA]/10 rounded-2xl p-3">
-                    <div className="w-1.5 h-4 bg-[#8D6AFA] rounded-full"></div>
-                    <div className="w-1.5 h-8 bg-[#8D6AFA] rounded-full"></div>
-                    <div className="w-1.5 h-6 bg-[#8D6AFA] rounded-full"></div>
-                    <div className="w-1.5 h-10 bg-[#8D6AFA] rounded-full"></div>
-                    <div className="w-1.5 h-5 bg-[#8D6AFA] rounded-full"></div>
+                <div className="text-center opacity-80">
+                  {/* Waveform icon — muted */}
+                  <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center gap-1 bg-gray-100 rounded-2xl p-3">
+                    <div className="w-1 h-3 bg-gray-400 rounded-full"></div>
+                    <div className="w-1 h-6 bg-gray-400 rounded-full"></div>
+                    <div className="w-1 h-4 bg-gray-400 rounded-full"></div>
+                    <div className="w-1 h-7 bg-gray-400 rounded-full"></div>
+                    <div className="w-1 h-4 bg-gray-400 rounded-full"></div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step1.title')}</h3>
-                  <p className="text-gray-600">{t('how.step1.description')}</p>
+                  <h3 className="text-base font-medium text-gray-700 mb-2">{t('how.step1.title')}</h3>
+                  <p className="text-sm text-gray-500">{t('how.step1.description')}</p>
                 </div>
               </ScrollAnimation>
 
+              {/* Step 2 — emphasized as the hero */}
               <ScrollAnimation delay={400}>
-                <div className="text-center">
-                  {/* Grid icon — deep purple */}
-                  <div className="w-16 h-16 mx-auto mb-6 bg-[#3F38A0]/10 rounded-2xl p-3 flex items-center justify-center">
-                    <div className="grid grid-cols-3 gap-1">
-                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0]/50 rounded-sm"></div>
-                      <div className="w-3 h-3 bg-[#3F38A0] rounded-sm"></div>
+                <div className="text-center relative">
+                  {/* Subtle background highlight */}
+                  <div className="absolute inset-0 -mx-4 -my-2 bg-[#8D6AFA]/5 rounded-2xl" aria-hidden="true"></div>
+                  <div className="relative">
+                    {/* Grid icon — brand purple, larger */}
+                    <div className="w-20 h-20 mx-auto mb-6 bg-[#8D6AFA]/15 rounded-2xl p-4 flex items-center justify-center">
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
+                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
+                      </div>
                     </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('how.step2.title')}</h3>
+                    <p className="text-gray-600">{t('how.step2.description')}</p>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step2.title')}</h3>
-                  <p className="text-gray-600">{t('how.step2.description')}</p>
                 </div>
               </ScrollAnimation>
 
+              {/* Step 3 — reduced visual weight */}
               <ScrollAnimation delay={600}>
-                <div className="text-center">
-                  {/* Document icon — cyan accent */}
-                  <div className="w-16 h-16 mx-auto mb-6 bg-[#14D0DC]/10 rounded-2xl p-3 flex items-center justify-center">
-                    <div className="w-10 h-10 border-2 border-[#14D0DC] rounded p-2 flex flex-col justify-center gap-1">
-                      <div className="w-full h-0.5 bg-[#14D0DC]"></div>
-                      <div className="w-3/4 h-0.5 bg-[#14D0DC]/50"></div>
-                      <div className="w-full h-0.5 bg-[#14D0DC]"></div>
-                      <div className="w-1/2 h-0.5 bg-[#14D0DC]/50"></div>
+                <div className="text-center opacity-80">
+                  {/* Document icon — muted */}
+                  <div className="w-14 h-14 mx-auto mb-6 bg-gray-100 rounded-2xl p-3 flex items-center justify-center">
+                    <div className="w-8 h-8 border-2 border-gray-400 rounded p-1.5 flex flex-col justify-center gap-0.5">
+                      <div className="w-full h-0.5 bg-gray-400"></div>
+                      <div className="w-3/4 h-0.5 bg-gray-300"></div>
+                      <div className="w-full h-0.5 bg-gray-400"></div>
+                      <div className="w-1/2 h-0.5 bg-gray-300"></div>
                     </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('how.step3.title')}</h3>
-                  <p className="text-gray-600">{t('how.step3.description')}</p>
+                  <h3 className="text-base font-medium text-gray-700 mb-2">{t('how.step3.title')}</h3>
+                  <p className="text-sm text-gray-500">{t('how.step3.description')}</p>
                 </div>
               </ScrollAnimation>
             </div>
           </div>
         </section>
 
-        {/* 6. Professional Standards — merged outputs and trust */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="trust-heading">
-          <div className="max-w-3xl mx-auto text-center">
+        {/* 6. Professional Standards — conviction section */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden" aria-labelledby="trust-heading">
+          {/* Subtle dot pattern clipped to left side */}
+          <div
+            className="absolute -top-8 -left-16 w-[250px] h-[180px] pointer-events-none"
+            style={{
+              backgroundImage: 'url(/assets/images/dotted-background-inverted.webp)',
+              backgroundSize: 'cover',
+              opacity: 0.06,
+              transform: 'rotate(12deg)',
+            }}
+            aria-hidden="true"
+          />
+          <div className="max-w-3xl mx-auto text-center relative z-10">
             <ScrollAnimation>
               <h2 id="trust-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
                 {t('trust.headline')}
@@ -316,19 +365,19 @@ export default async function LandingPage({
             </ScrollAnimation>
 
             <ScrollAnimation delay={200}>
-              <p className="text-xl text-gray-700 mb-6">
+              <p className="text-xl text-gray-700 mb-4">
                 {t('trust.description')}
               </p>
             </ScrollAnimation>
 
             <ScrollAnimation delay={400}>
-              <p className="text-lg text-gray-600 mb-12">
+              <p className="text-xl text-gray-900 font-medium mb-12">
                 {t('trust.reinforcement')}
               </p>
             </ScrollAnimation>
 
             <ScrollAnimation delay={600}>
-              <p className="text-sm font-medium text-[#8D6AFA] tracking-wide uppercase">
+              <p className="text-sm text-gray-500">
                 {t('trust.proof')}
               </p>
             </ScrollAnimation>
@@ -347,13 +396,13 @@ export default async function LandingPage({
             <ScrollAnimation delay={200}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link
-                  href={`/${locale}/login`}
+                  href={`/${locale}/examples`}
                   className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-base rounded-full bg-white text-[#3F38A0] hover:bg-gray-100 transition-all shadow-lg"
                 >
                   {t('closingCta.ctaPrimary')}
                 </Link>
                 <Link
-                  href={`/${locale}/examples`}
+                  href={`/${locale}/login`}
                   className="text-white/80 hover:text-white font-medium transition-colors underline underline-offset-4"
                 >
                   {t('closingCta.ctaSecondary')}
