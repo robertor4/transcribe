@@ -86,13 +86,13 @@
 /* Smooth scroll behavior for anchor links */
 html {
   scroll-behavior: smooth;
-  scrollbar-gutter: stable; /* Prevent layout shift when scrollbar appears/disappears */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from dropdown portals */
 }
 
 /* Dual-font system: Montserrat for headings, Geist for body text */

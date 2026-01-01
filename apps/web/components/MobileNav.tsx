@@ -63,11 +63,11 @@ export function MobileNav({ locale }: MobileNavProps) {
             {/* Navigation Links - Primary Focus */}
             <div className="space-y-3">
               <Link
-                href={`/${locale}/landing#features`}
+                href={`/${locale}/examples`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
               >
-                {t('nav.features')}
+                {t('nav.examples')}
               </Link>
               <Link
                 href={`/${locale}/landing#how-it-works`}
@@ -82,13 +82,6 @@ export function MobileNav({ locale }: MobileNavProps) {
                 className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 {t('nav.pricing')}
-              </Link>
-              <Link
-                href={`/${locale}/landing#faq`}
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                {t('nav.faq')}
               </Link>
             </div>
 
@@ -113,7 +106,7 @@ export function MobileNav({ locale }: MobileNavProps) {
                   </Link>
 
                   <Link
-                    href={`/${locale}/login`}
+                    href={`/${locale}/signup`}
                     onClick={() => setIsOpen(false)}
                     className="block px-4 py-3 text-base font-medium text-center text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] rounded-full transition-colors"
                   >

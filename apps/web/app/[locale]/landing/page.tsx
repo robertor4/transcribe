@@ -23,7 +23,7 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white overflow-x-hidden">
 
         {/* 1. Hero Section — deep purple background with animated dot pattern */}
         <section
@@ -209,13 +209,13 @@ export default async function LandingPage({
             <ScrollAnimation delay={200}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link
-                  href={`/${locale}/examples`}
+                  href={`/${locale}/signup`}
                   className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-base rounded-full bg-white text-[#3F38A0] hover:bg-gray-100 transition-all shadow-lg"
                 >
                   {t('closingCta.ctaPrimary')}
                 </Link>
                 <Link
-                  href={`/${locale}/login`}
+                  href={`/${locale}/examples`}
                   className="text-white/80 hover:text-white font-medium transition-colors underline underline-offset-4"
                 >
                   {t('closingCta.ctaSecondary')}

@@ -1029,20 +1029,19 @@
       }
     },
     "closingCta": {
-      "headline": "Vom Gespräch zum Dokument.",
-      "ctaPrimary": "Beispielausgabe ansehen",
-      "ctaSecondary": "Neural Summary in Aktion sehen"
+      "headline": "Bereit es auszuprobieren?",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "Erst Beispiele ansehen"
     },
     "nav": {
       "login": "Anmelden",
-      "getStarted": "Loslegen",
+      "getStarted": "Kostenlos starten",
       "dashboard": "Zum Dashboard",
       "menu": "Menü",
       "language": "Sprache",
-      "features": "Funktionen",
+      "examples": "Beispiele",
       "howItWorks": "So funktioniert es",
-      "pricing": "Preise",
-      "faq": "FAQ"
+      "pricing": "Preise"
     },
     "footer": {
       "product": "Produkt",

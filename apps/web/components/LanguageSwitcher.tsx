@@ -67,7 +67,9 @@ export function LanguageSwitcher({ enableDarkMode = false, variant = 'light' }: 
         <DropdownMenu.Content
           align="end"
           sideOffset={8}
-          className={`w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-1 animate-in fade-in-0 zoom-in-95 ${enableDarkMode ? 'dark:bg-gray-800 dark:ring-gray-700' : ''}`}
+          collisionPadding={{ right: 16 }}
+          sticky="always"
+          className={`w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-1 ${enableDarkMode ? 'dark:bg-gray-800 dark:ring-gray-700' : ''}`}
         >
           {locales.map((loc) => {
             const isActive = loc === locale;

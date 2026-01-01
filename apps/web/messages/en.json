@@ -1051,20 +1051,19 @@
       }
     },
     "closingCta": {
-      "headline": "From conversation to document.",
-      "ctaPrimary": "View example output",
-      "ctaSecondary": "See Neural Summary in action"
+      "headline": "Ready to try it?",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "View examples first"
     },
     "nav": {
       "login": "Log in",
-      "getStarted": "Get Started",
+      "getStarted": "Start free",
       "dashboard": "Go to Dashboard",
       "menu": "Menu",
       "language": "Language",
-      "features": "Features",
+      "examples": "Examples",
       "howItWorks": "How it works",
-      "pricing": "Pricing",
-      "faq": "FAQ"
+      "pricing": "Pricing"
     },
     "footer": {
       "product": "Product",
