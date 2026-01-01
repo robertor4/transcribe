@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PublicFooter } from '@/components/PublicFooter';
 import {
   ArrowLeft,
   Shield,
@@ -243,11 +244,11 @@ export default async function PrivacyPage({
                 
                 <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">{t('sections.dataSharing.serviceProviders.title')}</h3>
                 <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 ml-4">
-                  <li>{t('sections.dataSharing.serviceProviders.hosting')}: Firebase (Google Cloud Platform)</li>
-                  <li>{t('sections.dataSharing.serviceProviders.transcription')}: AssemblyAI, OpenAI Whisper</li>
-                  <li>{t('sections.dataSharing.serviceProviders.analysis')}: OpenAI GPT-4</li>
-                  <li>{t('sections.dataSharing.serviceProviders.email')}: Gmail SMTP</li>
-                  <li>{t('sections.dataSharing.serviceProviders.analytics')}: Firebase Analytics</li>
+                  <li>{t('sections.dataSharing.serviceProviders.hosting')}</li>
+                  <li>{t('sections.dataSharing.serviceProviders.transcription')}</li>
+                  <li>{t('sections.dataSharing.serviceProviders.analysis')}</li>
+                  <li>{t('sections.dataSharing.serviceProviders.email')}</li>
+                  <li>{t('sections.dataSharing.serviceProviders.analytics')}</li>
                 </ul>
 
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 mt-4">
@@ -445,23 +446,7 @@ export default async function PrivacyPage({
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-300 py-8 mt-20">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <p className="text-sm">
-                © {new Date().getFullYear()} Neural Summary. {tCommon('allRightsReserved')}
-              </p>
-              <div className="mt-4 space-x-6 text-sm">
-                <Link href={`/${locale}/terms`} className="hover:text-white transition-colors">
-                  {t('links.terms')}
-                </Link>
-                <Link href={`/${locale}/landing`} className="hover:text-white transition-colors">
-                  {t('links.home')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter locale={locale} />
       </div>
     </>
   );

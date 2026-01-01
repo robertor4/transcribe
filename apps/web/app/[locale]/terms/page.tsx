@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PublicFooter } from '@/components/PublicFooter';
 import { ArrowLeft, FileText, Shield, Scale, Globe, AlertCircle, Mail, DollarSign, TrendingUp } from 'lucide-react';
 
 export default async function TermsPage({
@@ -290,23 +291,7 @@ export default async function TermsPage({
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-300 py-8 mt-20">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <p className="text-sm">
-                © {new Date().getFullYear()} Neural Summary. {tCommon('allRightsReserved')}
-              </p>
-              <div className="mt-4 space-x-6 text-sm">
-                <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">
-                  {t('links.privacy')}
-                </Link>
-                <Link href={`/${locale}/landing`} className="hover:text-white transition-colors">
-                  {t('links.home')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter locale={locale} />
       </div>
     </>
   );

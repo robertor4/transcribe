@@ -12,7 +12,6 @@ import {
 import {
   createTestUser,
   createProfessionalUser,
-  createPaygUser,
   createAdminUser,
   createUserWithUsage,
   createOverQuotaProfessionalUser,
@@ -166,41 +165,6 @@ describe('UsageService', () => {
       });
     });
 
-    describe('payg tier', () => {
-      it('should pass if sufficient credits available', async () => {
-        const user = createPaygUser(10); // 10 hours of credits
-        mockUserRepository.getUser.mockResolvedValue(user);
-
-        await expect(
-          service.checkQuota(user.uid, 1024 * 1024, 60), // 1 hour needed
-        ).resolves.not.toThrow();
-      });
-
-      it('should throw PaymentRequiredException if insufficient credits', async () => {
-        const user = createPaygUser(0.5); // 0.5 hours of credits
-        mockUserRepository.getUser.mockResolvedValue(user);
-
-        await expect(
-          service.checkQuota(user.uid, 1024 * 1024, 60), // 1 hour needed
-        ).rejects.toThrow(PaymentRequiredException);
-      });
-
-      it('should include PAYG credits code in error', async () => {
-        const user = createPaygUser(0.5);
-        mockUserRepository.getUser.mockResolvedValue(user);
-
-        try {
-          await service.checkQuota(user.uid, 1024 * 1024, 60);
-          fail('Should have thrown');
-        } catch (error) {
-          expect(error).toBeInstanceOf(PaymentRequiredException);
-          expect((error as PaymentRequiredException).errorCode).toBe(
-            'QUOTA_EXCEEDED_PAYG_CREDITS',
-          );
-        }
-      });
-    });
-
     describe('admin bypass', () => {
       it('should skip all checks for admin users', async () => {
         const adminUser = createAdminUser();
@@ -308,47 +272,6 @@ describe('UsageService', () => {
             onDemandAnalyses: 0,
             lastResetAt: expect.any(Date),
           },
-        }),
-      );
-    });
-
-    it('should deduct PAYG credits for payg tier', async () => {
-      const user = createPaygUser(10); // 10 hours of credits
-      user.usageThisMonth = {
-        hours: 0,
-        transcriptions: 0,
-        onDemandAnalyses: 0,
-        lastResetAt: new Date(),
-      };
-      mockUserRepository.getUser.mockResolvedValue(user);
-
-      await service.trackTranscription(user.uid, 'trans-123', 7200); // 2 hours
-
-      expect(mockUserRepository.updateUser).toHaveBeenCalledWith(
-        user.uid,
-        expect.objectContaining({
-          paygCredits: 8, // 10 - 2
-        }),
-      );
-    });
-
-    it('should not go negative on credit deduction', async () => {
-      const user = createPaygUser(1); // 1 hour of credits
-      user.usageThisMonth = {
-        hours: 0,
-        transcriptions: 0,
-        onDemandAnalyses: 0,
-        lastResetAt: new Date(),
-      };
-      mockUserRepository.getUser.mockResolvedValue(user);
-
-      // Deducting 2 hours when only 1 available
-      await service.trackTranscription(user.uid, 'trans-123', 7200);
-
-      expect(mockUserRepository.updateUser).toHaveBeenCalledWith(
-        user.uid,
-        expect.objectContaining({
-          paygCredits: 0, // Should not go negative
         }),
       );
     });
@@ -526,17 +449,6 @@ describe('UsageService', () => {
       const result = await service.getUsageStats(user.uid);
 
       expect(result.warnings.some((w) => w.includes('overage'))).toBe(true);
-    });
-
-    it('should generate warning for low PAYG credits', async () => {
-      const user = createPaygUser(3); // 3 hours left
-      mockUserRepository.getUser.mockResolvedValue(user);
-
-      const result = await service.getUsageStats(user.uid);
-
-      expect(result.warnings.some((w) => w.includes('Low PAYG credits'))).toBe(
-        true,
-      );
     });
 
     it('should throw NotFoundException if user not found', async () => {

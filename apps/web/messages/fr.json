@@ -514,7 +514,14 @@
       "tryAgain": "Réessayer",
       "generationSuccess": "Sortie générée avec succès !",
       "outputCreated": "Votre {name} a été créé",
-      "generateOutput": "Générer la sortie"
+      "generateOutput": "Générer la sortie",
+      "quota": {
+        "remaining": "{count} sortie IA restante ce mois",
+        "remainingPlural": "{count} sorties IA restantes ce mois",
+        "exceeded": "Limite mensuelle atteinte",
+        "exceededDescription": "Tu as utilisé toutes les {limit} sorties IA gratuites ce mois. Passe à Pro pour des sorties illimitées.",
+        "upgradeButton": "Passer à Pro"
+      }
     },
     "templates": {
       "actionItems": {
@@ -625,7 +632,10 @@
       "translationFailed": "Échec de la traduction",
       "noTranslationsAvailable": "Aucune traduction disponible",
       "assetsTranslated": "éléments traduits",
-      "changeLanguage": "Changer de langue"
+      "changeLanguage": "Changer de langue",
+      "proFeature": "Fonction Pro",
+      "upgradeToTranslate": "Passe à Pro pour traduire tes conversations dans plus de 50 langues.",
+      "upgradeToPro": "Passer à Pro"
     }
   },
   "howItWorks": {
@@ -1007,11 +1017,45 @@
   "landing": {
     "hero": {
       "headline": "Vous parlez. Ça crée.",
-      "subtitlePart1": "Neural Summary transforme la pensée parlée en résultats structurés et professionnels — ",
-      "subtitlePart2": "pour que les décisions tiennent et que le travail avance.",
-      "ctaPrimary": "Voir un exemple",
+      "subtitlePart1": "Neural Summary transforme la pensée parlée en résultats structurés et professionnels. ",
+      "subtitlePart2": "Pour que les décisions tiennent et que le travail avance.",
+      "ctaPrimary": "Voir des exemples",
       "ctaSecondary": "Comment ça marche",
-      "byline": "Vous parlez. Ça crée."
+      "byline": "Vous parlez. Ça crée.",
+      "document": {
+        "backTitle": "E-mail de suivi client",
+        "backGreeting": "Bonjour Sarah,",
+        "backIntro": "Suite à notre appel concernant le calendrier Q4...",
+        "backPointsIntro": "Points clés discutés :",
+        "backPoint1": "Priorité onboarding entreprise confirmée",
+        "backPoint2": "Application mobile reportée à Q1",
+        "backPoint3": "API v2 en bonne voie pour novembre",
+        "frontTitle": "Stratégie produit Q4",
+        "frontBullet1": "Focus sur refonte du flux onboarding entreprise",
+        "frontBullet2": "Reporter l'app mobile à Q1 selon les ressources",
+        "frontBullet3": "Lancement API v2 ciblé pour novembre",
+        "frontBullet4": "Recruter deux ingénieurs seniors pour l'équipe plateforme",
+        "decisionsTitle": "Décisions",
+        "decision1": "Poursuivre l'intégration Stripe plutôt que PayPal",
+        "decision2": "Reporter l'internationalisation à Q2"
+      }
+    },
+    "transformation": {
+      "recording": "Enregistrement...",
+      "quote1": "\"...oui, la démo s'est super bien passée, ils étaient emballés par le tableau de bord analytics...\"",
+      "quote2": "\"...exact, et Sarah a dit que l'intégration Salesforce est indispensable...\"",
+      "quote3": "\"...côté budget, elle a dit qu'ils visent Q1, environ 50 licences pour commencer...\"",
+      "quote4": "\"...ah oui, et ils veulent d'abord un pilote, deux semaines environ...\"",
+      "quote5": "\"...je devrais leur envoyer l'étude de cas d'Acme...\"",
+      "quote6": "\"...attends, elle a aussi parlé de SSO ? Je crois que oui...\"",
+      "documentTitle": "E-mail de suivi",
+      "greeting": "Bonjour Sarah,",
+      "intro": "C'était un plaisir de discuter du tableau de bord analytics aujourd'hui. Les points clés :",
+      "point1": "Intégration Salesforce: confirmée comme indispensable",
+      "point2": "50 licences, lancement Q1",
+      "point3": "Programme pilote de 2 semaines pour commencer",
+      "nextStepLabel": "Prochaine étape :",
+      "nextStepText": "Envoi de l'étude de cas d'ici vendredi soir."
     },
     "how": {
       "headline": "Comment ça marche",
@@ -1021,7 +1065,7 @@
       },
       "step2": {
         "title": "On extrait l'essentiel",
-        "description": "Décisions, priorités et prochaines étapes — structurées automatiquement."
+        "description": "Décisions, priorités et prochaines étapes. Structurées automatiquement."
       },
       "step3": {
         "title": "Vous avancez",
@@ -1044,11 +1088,24 @@
       "pricing": "Tarifs"
     },
     "footer": {
-      "product": "Produit",
-      "examples": "Exemples",
-      "security": "Sécurité",
-      "contact": "Contact",
-      "copyright": "© 2025 Neural Summary. Tous droits réservés."
+      "sections": {
+        "product": "Produit",
+        "company": "Entreprise",
+        "legal": "Mentions légales"
+      },
+      "links": {
+        "features": "Fonctionnalités",
+        "examples": "Exemples",
+        "pricing": "Tarifs",
+        "about": "À propos",
+        "security": "Sécurité",
+        "help": "Aide",
+        "privacy": "Confidentialité",
+        "terms": "CGU",
+        "contact": "Contact"
+      },
+      "tagline": "Vous parlez. Ça crée.",
+      "copyright": "© 2026 Neural Summary. Tous droits réservés."
     },
     "faq": {
       "title": "Questions fréquentes",
@@ -1073,7 +1130,7 @@
   "terms": {
     "meta": {
       "title": "Conditions d'utilisation - Neural Summary",
-      "description": "Conditions d'utilisation pour le service de transcription et d'analyse alimenté par l'IA de Neural Summary. Conditions générales conformes au RGPD."
+      "description": "Conditions d'utilisation pour le service de traitement de conversations et de génération d'AI Assets de Neural Summary. Conditions générales conformes au RGPD."
     },
     "title": "Conditions d'utilisation",
     "effectiveDate": "Date d'entrée en vigueur",
@@ -1090,12 +1147,12 @@
       },
       "serviceDescription": {
         "title": "Description du service",
-        "content": "Neural Summary fournit des services de transcription audio alimentés par l'IA et d'analyse intelligente. Notre plateforme comprend :",
+        "content": "Neural Summary fournit des services de traitement de conversations et de génération d'AI Assets intelligents. Notre plateforme comprend :",
         "features": {
-          "transcription": "Transcription automatique de fichiers audio utilisant une technologie IA avancée",
-          "analysis": "Résumé intelligent et analyse du contenu transcrit",
-          "storage": "Stockage cloud sécurisé de vos transcriptions. Les fichiers audio sont conservés 30 jours pour le support, puis automatiquement supprimés",
-          "sharing": "Capacité de partager les transcriptions avec un accès contrôlé"
+          "transcription": "Traitement automatique de fichiers audio en conversations utilisant une technologie IA avancée",
+          "analysis": "Génération intelligente d'AI Assets à partir de vos conversations",
+          "storage": "Stockage cloud sécurisé de vos conversations. Les fichiers audio sont conservés 30 jours pour le support, puis automatiquement supprimés",
+          "sharing": "Capacité de partager les conversations avec un accès contrôlé"
         }
       },
       "pricing": {
@@ -1147,7 +1204,7 @@
         },
         "userContent": {
           "title": "Votre contenu",
-          "content": "Vous conservez tous les droits sur le contenu que vous téléchargez vers le Service. En téléchargeant du contenu, vous nous accordez une licence limitée pour traiter, stocker et afficher votre contenu uniquement dans le but de vous fournir le Service."
+          "content": "Vous conservez tous les droits sur les conversations et AI Assets que vous créez avec le Service. En téléchargeant du contenu, vous nous accordez une licence limitée pour traiter, stocker et afficher votre contenu uniquement dans le but de vous fournir le Service."
         },
         "license": {
           "title": "Octroi de licence",
@@ -1212,7 +1269,7 @@
   "privacy": {
     "meta": {
       "title": "Politique de confidentialité - Neural Summary",
-      "description": "Politique de confidentialité pour Neural Summary. Découvrez comment nous collectons, utilisons et protégeons vos données personnelles en conformité avec le RGPD."
+      "description": "Politique de confidentialité pour Neural Summary. Découvrez comment nous collectons, utilisons et protégeons vos conversations et AI Assets en conformité avec le RGPD."
     },
     "title": "Politique de confidentialité",
     "effectiveDate": "Dernière mise à jour",
@@ -1245,9 +1302,9 @@
         },
         "usage": {
           "title": "Données d'utilisation",
-          "audioFiles": "Fichiers audio que vous téléchargez pour transcription",
-          "transcriptions": "Transcriptions et résultats d'analyse",
-          "analysisResults": "Résumés et insights générés par l'IA",
+          "audioFiles": "Fichiers audio que vous téléchargez pour traitement",
+          "transcriptions": "Conversations et leurs transcriptions",
+          "analysisResults": "AI Assets et insights générés",
           "preferences": "Préférences et paramètres utilisateur"
         },
         "technical": {
@@ -1263,7 +1320,7 @@
         "content": "Nous traitons vos données personnelles sur la base des fondements juridiques suivants :",
         "contract": {
           "title": "Exécution du contrat",
-          "content": "Traitement nécessaire pour vous fournir nos services de transcription et d'analyse."
+          "content": "Traitement nécessaire pour vous fournir nos services de traitement de conversations et de génération d'AI Assets."
         },
         "consent": {
           "title": "Consentement",
@@ -1282,7 +1339,7 @@
         "title": "Comment nous utilisons vos données",
         "content": "Nous utilisons les données collectées à diverses fins :",
         "purposes": {
-          "service": "Pour fournir et maintenir nos services de transcription et d'analyse",
+          "service": "Pour fournir et maintenir nos services de traitement de conversations et de génération d'AI Assets",
           "communication": "Pour communiquer avec vous au sujet de votre compte et des mises à jour du service",
           "improvement": "Pour améliorer et personnaliser votre expérience",
           "security": "Pour détecter, prévenir et résoudre les problèmes techniques et les menaces de sécurité",
@@ -1295,11 +1352,11 @@
         "content": "Nous pouvons partager vos données avec des fournisseurs de services tiers de confiance qui nous aident à exploiter notre Service :",
         "serviceProviders": {
           "title": "Fournisseurs de services",
-          "hosting": "Infrastructure cloud",
-          "transcription": "Services de transcription",
-          "analysis": "Analyse IA",
-          "email": "Service de messagerie",
-          "analytics": "Analyses"
+          "hosting": "Infrastructure cloud de niveau entreprise pour le stockage et le traitement sécurisés des données",
+          "transcription": "Services de transcription de pointe pour une transcription précise",
+          "analysis": "Modèles IA de niveau entreprise pour l'analyse intelligente du contenu",
+          "email": "Services de livraison d'e-mails sécurisés pour les communications transactionnelles",
+          "analytics": "Analyses axées sur la confidentialité pour l'amélioration du service"
         },
         "notice": "Nous ne vendons jamais vos données personnelles à des tiers. Tous les fournisseurs de services sont liés par des accords de confidentialité stricts et ne peuvent utiliser vos données que pour nous fournir des services."
       },
@@ -1309,7 +1366,7 @@
         "periods": {
           "title": "Périodes de conservation",
           "account": "Données de compte",
-          "transcriptions": "Transcriptions",
+          "transcriptions": "Conversations",
           "audioFiles": "Fichiers audio",
           "logs": "Journaux système",
           "analytics": "Données d'analyse"
@@ -1567,11 +1624,12 @@
   "pricing": {
     "metadata": {
       "title": "Tarifs - Neural Summary",
-      "description": "Choisissez le plan parfait pour vos besoins de transcription. Du gratuit à l'entreprise, nous avons un plan qui correspond à votre flux de travail."
+      "description": "Tarifs premium simples. Essayez Pro gratuitement pendant 14 jours. Transformez vos conversations en documents professionnels."
     },
     "hero": {
-      "title": "Tarifs simples et transparents",
-      "subtitle": "Choisissez le plan qui correspond à vos besoins. Commencez gratuitement, passez à la version supérieure à tout moment.",
+      "title": "Des tarifs pour un travail qui compte",
+      "subtitle": "Commencez gratuitement. Passez à Pro quand votre travail compte.",
+      "trialMessage": "Essayez Pro gratuitement pendant 14 jours. Aucune carte de crédit requise.",
       "currencyNotice": "Prix affichés en USD. Automatiquement convertis dans votre devise locale lors du paiement.",
       "annual": "Annuel",
       "monthly": "Mensuel",
@@ -1586,17 +1644,17 @@
         "name": "Gratuit",
         "title": "Gratuit",
         "price": "Gratuit",
-        "description": "Parfait pour essayer Neural Summary",
+        "description": "Découvrez les possibilités. Essayez quelques conversations, sans engagement.",
         "cta": "Commencer",
         "features": {
-          "transcriptions": "3 transcriptions/mois",
-          "duration": "30 minutes max par fichier",
+          "transcriptions": "5 conversations/mois",
+          "duration": "60 minutes max par fichier",
           "fileSize": "100MB taille de fichier max",
           "analyses": "Résumé basique uniquement",
-          "coreAnalyses": "4 analyses de base incluses",
-          "onDemand": "2 analyses à la demande/mois",
-          "translation": "Fonctionnalités de traduction",
-          "sharing": "Partager les transcriptions",
+          "coreAnalyses": "4 sorties IA incluses",
+          "onDemand": "2 sorties IA à la demande/mois",
+          "translation": "Traduction (Pro uniquement)",
+          "sharing": "Partager les conversations",
           "batch": "Traitement par lots",
           "storage": "90 jours de stockage",
           "support": "Support communautaire"
@@ -1604,25 +1662,26 @@
         "period": "/mois"
       },
       "professional": {
-        "name": "Professionnel",
-        "title": "Professionnel",
+        "name": "Pro",
+        "title": "Pro",
         "period": "/mois",
-        "description": "Pour les professionnels qui transcrivent régulièrement",
-        "cta": "Commencer",
+        "description": "Pour les professionnels qui ont besoin de documents soignés, régulièrement.",
+        "cta": "Commencer l'essai gratuit",
         "badge": "Le plus populaire",
         "recommended": "RECOMMANDÉ",
         "guarantee": "Garantie satisfait ou remboursé 30 jours",
+        "trialBadge": "Essai gratuit de 14 jours",
         "features": {
-          "transcriptions": "Transcriptions illimitées",
+          "transcriptions": "Conversations illimitées",
           "hours": "60 heures/mois incluses",
-          "unlimited": "Transcriptions illimitées",
+          "unlimited": "Conversations illimitées",
           "duration": "60 heures/mois incluses",
           "overageRate": "{overageRate} par heure supplémentaire",
           "overage": "Dépassement : {overageRate}/heure",
           "fileSize": "5GB taille de fichier max",
-          "analyses": "Tous les types d'analyse",
-          "allAnalyses": "Tous les types d'analyse",
-          "onDemandAnalyses": "Analyses à la demande illimitées",
+          "analyses": "Tous les types de sorties IA",
+          "allAnalyses": "Tous les types de sorties IA",
+          "onDemandAnalyses": "Sorties IA à la demande illimitées",
           "storage": "Stockage illimité",
           "sharing": "Fonctionnalités de partage avancées",
           "advancedSharing": "Partage et collaboration avancés",
@@ -1632,39 +1691,40 @@
           "support": "Support e-mail prioritaire"
         }
       },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "title": "Pay-As-You-Go",
-        "priceUnit": "/heure",
-        "description": "Parfait pour une utilisation occasionnelle",
-        "cta": "Acheter des crédits",
+      "enterprise": {
+        "name": "Enterprise",
+        "title": "Enterprise",
+        "customPrice": "Contacter les ventes",
+        "description": "Pour les équipes qui ont besoin de contrôle, cohérence et conformité.",
+        "cta": "Contacter les ventes",
         "features": {
-          "transcriptions": "Transcriptions illimitées",
-          "credits": "Les crédits n'expirent jamais",
-          "noSubscription": "Aucun abonnement requis",
-          "allFeatures": "Toutes les fonctionnalités incluses",
-          "noExpiry": "Les crédits n'expirent jamais",
-          "minimum": "Achat minimum",
-          "rate": "Tarif horaire flexible",
-          "fileSize": "5GB taille de fichier max",
-          "analyses": "Tous les types d'analyse",
-          "onDemandAnalyses": "Crédits par analyse",
-          "storage": "180 jours de stockage",
-          "support": "Support e-mail"
+          "unlimited": "Conversations illimitées",
+          "unlimitedHours": "Heures de traitement illimitées",
+          "largeFiles": "10GB taille de fichier max",
+          "allAnalyses": "Tous les types de sorties IA",
+          "customIntegrations": "Intégrations personnalisées",
+          "sso": "Authentification unique (SSO)",
+          "adminDashboard": "Tableau de bord admin équipe",
+          "auditLogs": "Journaux d'audit & conformité",
+          "dedicatedManager": "Responsable de compte dédié",
+          "customContracts": "Contrats personnalisés & SLA",
+          "teamManagement": "Gestion d'équipe",
+          "dedicatedSupport": "Support dédié"
         }
       }
     },
     "finalCta": {
-      "title": "Commencez à transcrire intelligemment",
-      "subtitle": "Aucune carte de crédit requise pour le plan gratuit",
-      "button": "Commencer gratuitement"
+      "title": "Commencez à créer plus intelligemment",
+      "subtitle": "Transformez vos conversations en documents professionnels",
+      "button": "Commencer l'essai gratuit",
+      "noCreditCard": "Aucune carte de crédit requise"
     },
     "comparison": {
       "feature": "Fonctionnalité",
       "tiers": {
         "free": "Gratuit",
-        "professional": "Professionnel",
-        "payg": "Pay-As-You-Go"
+        "professional": "Pro",
+        "enterprise": "Enterprise"
       },
       "categories": {
         "basics": "Basiques",
@@ -1672,16 +1732,17 @@
         "features": "Fonctionnalités supplémentaires"
       },
       "features": {
-        "transcriptions": "Transcriptions par mois",
+        "transcriptions": "Conversations par mois",
         "duration": "Durée max par fichier",
         "fileSize": "Taille de fichier max",
         "hours": "Heures mensuelles incluses",
-        "coreAnalyses": "Analyses de base",
-        "onDemand": "Analyses à la demande",
+        "coreAnalyses": "Sorties IA de base",
+        "onDemand": "Sorties IA à la demande",
         "translation": "Traduction",
         "sharing": "Fonctionnalités de partage",
         "batch": "Traitement par lots",
         "priority": "Traitement prioritaire",
+        "sso": "Single Sign-On (SSO)",
         "api": "Accès API"
       },
       "title": "Comparer les plans",
@@ -1695,37 +1756,35 @@
         "email": "E-mail",
         "priorityEmail": "E-mail prioritaire",
         "hoursIncluded": "60 heures/mois",
-        "payPerUse": "Paiement à l'utilisation",
-        "creditBased": "Basé sur les crédits",
         "comingSoon": "Prochainement"
       }
     },
     "faq": {
       "title": "Questions fréquemment posées",
       "questions": {
+        "trial": {
+          "question": "Comment fonctionne l'essai gratuit de 14 jours ?",
+          "answer": "Commencez votre essai avec un accès complet à toutes les fonctionnalités Pro. Aucune carte de crédit requise. À la fin des 14 jours, choisissez de vous abonner ou de continuer avec notre plan gratuit."
+        },
         "cost": {
-          "question": "Combien coûte la transformation de conversations en documents ?",
-          "answer": "Le plan Professionnel inclut 60 heures/mois de traitement audio pour {professionalPrice}. Les heures supplémentaires coûtent {overageRate} chacune. Pay-As-You-Go est à {paygPrice}/heure avec des crédits qui n'expirent jamais. Le plan Gratuit inclut 3 fichiers audio/mois (30 min max chacun)."
+          "question": "Combien coûte Neural Summary ?",
+          "answer": "Le plan Pro est à {professionalPrice}/mois ou {annualPrice}/an (économisez 25%). Les heures supplémentaires au-delà de 60/mois coûtent {overageRate} chacune. Le plan Gratuit inclut 5 conversations/mois."
         },
         "overage": {
           "question": "Que se passe-t-il si je dépasse ma limite mensuelle ?",
-          "answer": "Les utilisateurs Professionnels sont automatiquement facturés {overageRate} par heure supplémentaire de traitement audio. Les utilisateurs Gratuits doivent passer à la version supérieure pour continuer à créer des documents. Les utilisateurs Pay-As-You-Go achètent simplement plus de crédits selon leurs besoins."
+          "answer": "Les utilisateurs Pro sont automatiquement facturés {overageRate} par heure supplémentaire de traitement audio. Les utilisateurs Gratuits peuvent passer à Pro ou attendre le mois suivant."
         },
         "cancel": {
           "question": "Puis-je annuler mon abonnement à tout moment ?",
           "answer": "Oui ! Vous pouvez annuler à tout moment. Votre abonnement reste actif jusqu'à la fin de votre période de facturation, et vous ne serez plus facturé."
         },
-        "currency": {
-          "question": "Quelles devises supportez-vous ?",
-          "answer": "Nous supportons plus de 15 devises dont USD, EUR, GBP, CAD, AUD, JPY, et plus. Les prix sont automatiquement convertis dans votre devise locale."
-        },
         "upgrade": {
-          "question": "Puis-je changer de plan ?",
-          "answer": "Oui ! Les mises à niveau prennent effet immédiatement avec des frais au prorata. Les rétrogradations prennent effet à la fin de votre période de facturation actuelle, vous pouvez donc utiliser votre plan actuel jusque-là."
+          "question": "Puis-je mettre à niveau ou rétrograder mon plan ?",
+          "answer": "Oui ! Les mises à niveau prennent effet immédiatement avec des frais au prorata. Les rétrogradations prennent effet à la fin de votre période de facturation actuelle."
         },
-        "payg": {
-          "question": "Comment fonctionnent les crédits Pay-As-You-Go ?",
-          "answer": "Les crédits coûtent {paygPrice} par heure d'audio et peuvent être utilisés pour créer tout type de document. Ils n'expirent jamais et peuvent être utilisés à tout moment. Parfait pour les besoins occasionnels de création de documents."
+        "enterprise": {
+          "question": "Qu'est-ce qui est inclus dans le plan Enterprise ?",
+          "answer": "Enterprise inclut un traitement illimité, SSO (prochainement), des intégrations personnalisées, un support dédié et des contrats personnalisés. Contactez notre équipe commerciale pour les tarifs."
         }
       }
     },
@@ -1735,8 +1794,8 @@
       "button": "Commencer l'essai gratuit"
     },
     "featureCategories": {
-      "transcription": "Transcription",
-      "analysis": "Analyse",
+      "transcription": "Bases",
+      "analysis": "Sorties IA",
       "collaboration": "Collaboration",
       "support": "Support"
     }
@@ -1820,7 +1879,7 @@
       "title": "Plan actuel",
       "free": "Plan Gratuit",
       "professional": "Plan Professionnel",
-      "payg": "Pay-As-You-Go",
+      "enterprise": "Plan Enterprise",
       "status": {
         "active": "Actif",
         "cancelled": "Annulé",
@@ -1840,8 +1899,6 @@
       "hours": "Heures",
       "onDemandAnalyses": "Analyses à la demande",
       "resetDate": "Réinitialise le",
-      "paygCredits": "Crédits disponibles",
-      "buyMore": "Acheter plus de crédits",
       "overage": {
         "title": "Frais de dépassement",
         "description": "Vous avez utilisé {hours} heures au-delà de votre limite de 60 heures ce mois",
@@ -1902,7 +1959,6 @@
     "usageThisMonth": "Utilisation ce mois",
     "hoursUsed": "Heures utilisées",
     "transcriptionsUsed": "Transcriptions",
-    "buyMoreCredits": "Acheter plus de crédits",
     "noBillingHistory": "Aucun historique de facturation pour le moment",
     "downloadInvoice": "Télécharger la facture",
     "overageWarning": "Utilisation de dépassement",
@@ -1927,10 +1983,6 @@
         "title": "Fichier trop volumineux",
         "description": "Ce fichier dépasse la limite de taille de votre plan. Passez à la version supérieure pour traiter des fichiers plus volumineux."
       },
-      "paygCredits": {
-        "title": "Crédits insuffisants",
-        "description": "Vous n'avez pas assez de crédits pour cette transcription. Achetez plus de crédits pour continuer."
-      },
       "onDemandAnalyses": {
         "title": "Limite d'analyse atteinte",
         "description": "Vous avez utilisé toutes vos analyses à la demande ce mois. Passez à la version supérieure pour obtenir plus d'analyses ou attendez le mois prochain."
@@ -1939,7 +1991,6 @@
       "limit": "Votre limite",
       "required": "Requis",
       "upgradeButton": "Mettre à niveau le plan",
-      "buyCreditsButton": "Acheter des crédits",
       "cancelButton": "Annuler"
     },
     "usageIndicator": {
@@ -1973,10 +2024,10 @@
     "yourUsage": "Votre Utilisation",
     "resetsOn": "Réinitialisé le",
     "upgradePlan": "Mettre à niveau",
-    "transcriptions": "Transcriptions",
+    "transcriptions": "Conversations",
     "hours": "Heures",
     "remaining": "restant",
-    "onDemandAnalyses": "Analyses à la demande"
+    "onDemandAnalyses": "AI Assets"
   },
   "admin": {
     "title": "Panneau d'administration",
@@ -2136,5 +2187,166 @@
     "enterReplaceText": "Entrez le texte de remplacement ci-dessus",
     "clearSelection": "Effacer",
     "replace": "Remplacer"
+  },
+  "examples": {
+    "meta": {
+      "title": "Exemples | Neural Summary",
+      "description": "Une conversation devient quatre documents prêts à l'emploi. Voyez la transformation."
+    },
+    "hero": {
+      "headline": "Une conversation. Des possibilités infinies.",
+      "subtitle": "Voyez ce que Neural Summary crée à partir d'une réunion.",
+      "scenarioLabel": "Génération en direct"
+    },
+    "scenarios": {
+      "productLaunch": "Lancement produit",
+      "clientDiscovery": "Découverte client"
+    },
+    "cards": {
+      "actionItems": {
+        "title": "Actions"
+      },
+      "email": {
+        "title": "Email de suivi"
+      },
+      "blogPost": {
+        "title": "Article de blog"
+      },
+      "linkedin": {
+        "title": "Post LinkedIn"
+      },
+      "communicationAnalysis": {
+        "title": "Analyse de communication"
+      }
+    },
+    "cta": {
+      "headline": "À vous.",
+      "primaryButton": "Essayer gratuitement",
+      "secondaryLink": "Voir les tarifs"
+    },
+    "content": {
+      "productLaunch": {
+        "actionItems": {
+          "items": [
+            { "task": "Finaliser le calendrier Q1 et partager avec les parties prenantes", "owner": "Sarah", "deadline": "8 jan" },
+            { "task": "Examiner les retours beta et prioriser les corrections", "owner": "Dev Team", "deadline": "10 jan" },
+            { "task": "Préparer le communiqué de presse et le kit média", "owner": "Marketing", "deadline": "20 jan" },
+            { "task": "Planifier le webinaire client pour la semaine de lancement", "owner": "CS Team", "deadline": "25 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Planification du lancement - Prochaines étapes",
+          "greeting": "Bonjour l'équipe,",
+          "intro": "Voici le récapitulatif de notre réunion d'aujourd'hui sur le lancement produit Q1.",
+          "decisionsLabel": "Décisions confirmées",
+          "decisions": [
+            "Date de lancement confirmée pour le 28 janvier",
+            "Programme beta prolongé d'une semaine pour tests supplémentaires",
+            "Budget marketing approuvé pour la campagne influenceurs"
+          ],
+          "closing": "Merci à tous.",
+          "signature": { "name": "Sarah Mitchell", "title": "Chef de produit", "initials": "SM" }
+        },
+        "blogPost": {
+          "headline": "Ce que nous avons appris en lançant en janvier",
+          "subheading": "Les leçons de notre équipe sur la création d'élan avant le jour J",
+          "hook": "L'ancien manuel dit d'attendre la perfection. Nous avons essayé autre chose.",
+          "body": "Nos beta testeurs ne trouvaient pas que des bugs. Ils façonnaient la direction du produit. Leurs retours nous ont amenés à revoir entièrement notre flux d'onboarding. Le résultat : 40% d'amélioration des taux d'activation avant même le lancement.",
+          "quote": { "text": "Le produit semblait construit pour nous, pas simplement vendu.", "attribution": "Utilisateur Beta" },
+          "imageAlt": "Formes géométriques abstraites représentant l'innovation"
+        },
+        "linkedin": {
+          "hook": "Nous avons failli retarder notre lancement de 3 mois.",
+          "bullets": [
+            "Retours beta > hypothèses internes",
+            "L'élan bat la perfection",
+            "Vos premiers utilisateurs définissent votre produit"
+          ],
+          "result": "2 000 inscriptions la première semaine. Pas parce que nous étions parfaits. Parce que nous étions présents.",
+          "callToAction": "Quelle est la plus grande leçon de votre dernier lancement ?",
+          "author": { "name": "Sarah Mitchell", "title": "Chef de produit chez TechFlow", "initials": "SM" }
+        }
+      },
+      "clientDiscovery": {
+        "actionItems": {
+          "items": [
+            { "task": "Envoyer la proposition avec trois options de forfait", "owner": "Marcus", "deadline": "15 jan" },
+            { "task": "Planifier une session technique avec leur CTO", "owner": "Marcus", "deadline": "12 jan" },
+            { "task": "Préparer une étude de cas d'un projet fintech similaire", "owner": "Team", "deadline": "14 jan" },
+            { "task": "Rédiger le calendrier pour l'implémentation Q2", "owner": "Marcus", "deadline": "18 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Ravi d'avoir échangé - Prochaines étapes",
+          "greeting": "Bonjour David,",
+          "intro": "Merci d'avoir pris le temps de me présenter vos défis aujourd'hui. La situation de votre équipe correspond exactement au type de problème dans lequel nous sommes spécialisés.",
+          "decisionsLabel": "Points clés abordés",
+          "decisions": [
+            "Approche mobile-first alignée sur votre démographie utilisateur",
+            "Déploiement par phases commençant par les fonctionnalités de paiement",
+            "Intégration avec votre instance Salesforce existante"
+          ],
+          "closing": "J'espère avoir l'opportunité de travailler ensemble.",
+          "signature": { "name": "Marcus Chen", "title": "Consultant Senior", "initials": "MC" }
+        },
+        "blogPost": {
+          "headline": "L'appel découverte qui a changé ma façon de vendre",
+          "subheading": "Pourquoi écouter bat toujours présenter",
+          "hook": "Avant, j'entrais en appel découverte avec un deck. Maintenant, j'entre avec des questions.",
+          "body": "Le client a mentionné son vrai problème au bout de 47 minutes. Si j'avais été en train de présenter, je l'aurais complètement manqué. Son équipe ne luttait pas avec la technologie. Elle se noyait dans des processus manuels que personne n'avait le temps de corriger.",
+          "quote": { "text": "Vous avez compris notre problème avant qu'on ait fini de l'expliquer.", "attribution": "Retour client" },
+          "imageAlt": "Formes abstraites représentant conversation et connexion"
+        },
+        "communicationAnalysis": {
+          "overallAssessment": "Solides compétences de découverte avec une marge pour approfondir la compréhension client. Vous posez de bonnes questions mais pourriez laisser les réponses respirer davantage.",
+          "dimensions": {
+            "clarity": { "name": "Clarté", "strength": "Les questions étaient spécifiques et actionnables", "improvement": "Résumer les points clés avant de passer à la suite" },
+            "activeListening": { "name": "Écoute active", "strength": "A naturellement construit sur les réponses du client", "improvement": "Faire des pauses plus longues après les réponses complexes" }
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact | Neural Summary",
+      "description": "Contactez l'équipe Neural Summary"
+    },
+    "title": "Contactez-nous",
+    "description": "Vous avez une question ou un commentaire ? Nous serions ravis de vous entendre.",
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Votre nom",
+      "email": "E-mail",
+      "emailPlaceholder": "vous@exemple.com",
+      "subject": "Sujet",
+      "subjectPlaceholder": "Sélectionnez un sujet",
+      "message": "Message",
+      "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+      "submit": "Envoyer le message",
+      "submitting": "Envoi en cours...",
+      "subjects": {
+        "general": "Demande générale",
+        "support": "Support technique",
+        "sales": "Ventes",
+        "partnership": "Partenariat"
+      }
+    },
+    "success": {
+      "title": "Message envoyé",
+      "description": "Merci de nous avoir contactés. Nous vous répondrons sous 24 heures."
+    },
+    "error": {
+      "title": "Une erreur s'est produite",
+      "description": "Veuillez réessayer ou nous écrire directement à hello@neuralsummary.com."
+    },
+    "validation": {
+      "nameRequired": "Le nom est requis",
+      "emailRequired": "L'e-mail est requis",
+      "emailInvalid": "Veuillez entrer un e-mail valide",
+      "subjectRequired": "Veuillez sélectionner un sujet",
+      "messageRequired": "Le message est requis",
+      "messageMinLength": "Le message doit contenir au moins 10 caractères"
+    }
   }
 }

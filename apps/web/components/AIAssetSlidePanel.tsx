@@ -13,8 +13,8 @@ import {
   Copy,
   Trash2,
   ExternalLink,
-  Sparkles,
 } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import type { GeneratedAnalysis, StructuredOutput, Translation } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { Button } from '@/components/Button';
@@ -36,7 +36,7 @@ interface AIAssetSlidePanelProps {
   getTranslatedContent?: (sourceType: 'summary' | 'analysis', sourceId: string) => Translation | undefined;
 }
 
-// Icon mapping for output types
+// Icon mapping for output types - returns component or null for default (AiIcon)
 function getOutputIcon(type: string) {
   switch (type) {
     case 'email':
@@ -54,7 +54,7 @@ function getOutputIcon(type: string) {
     case 'communicationAnalysis':
       return MessageSquareQuote;
     default:
-      return Sparkles;
+      return null; // Use AiIcon for default
   }
 }
 
@@ -153,7 +153,7 @@ export function AIAssetSlidePanel({
   // Don't render on server or when no asset
   if (!mounted || !asset) return null;
 
-  const OutputIcon = getOutputIcon(asset.templateId);
+  const OutputIconComponent = getOutputIcon(asset.templateId);
   const shouldShow = isOpen || isClosing;
 
   if (!shouldShow) return null;
@@ -185,7 +185,11 @@ export function AIAssetSlidePanel({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-lg bg-[#8D6AFA] flex items-center justify-center flex-shrink-0">
-              <OutputIcon className="w-5 h-5 text-white" />
+              {OutputIconComponent ? (
+                <OutputIconComponent className="w-5 h-5 text-white" />
+              ) : (
+                <AiIcon size={20} className="text-white" />
+              )}
             </div>
             <div className="min-w-0">
               <h2

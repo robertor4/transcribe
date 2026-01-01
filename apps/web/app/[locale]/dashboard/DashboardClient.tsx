@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   Mic,
@@ -63,7 +63,7 @@ export function DashboardClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) || 'en';
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const t = useTranslations('dashboard');
 
   const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversationsContext();
@@ -80,6 +80,29 @@ export function DashboardClient() {
   });
   const [showMilestone, setShowMilestone] = useState(false);
   const [milestoneMessage, setMilestoneMessage] = useState('');
+
+  // Refresh user on mount to get latest email verification status
+  // This handles the case where user returns from email verification link
+  const { refreshUser } = useAuth();
+  const hasRefreshedRef = useRef(false);
+
+  useEffect(() => {
+    const checkVerification = async () => {
+      if (!authLoading && user && !user.emailVerified && !hasRefreshedRef.current) {
+        hasRefreshedRef.current = true;
+        // Refresh to get latest verification status from Firebase
+        await refreshUser();
+      }
+    };
+    checkVerification();
+  }, [authLoading, user, refreshUser]);
+
+  // Redirect unverified users to verify-email page (after refresh attempt)
+  useEffect(() => {
+    if (!authLoading && user && !user.emailVerified && hasRefreshedRef.current) {
+      router.replace(`/${locale}/verify-email`);
+    }
+  }, [authLoading, user, router, locale]);
 
   // Check for newConversation query param to auto-open modal
   useEffect(() => {
@@ -104,9 +127,9 @@ export function DashboardClient() {
     }
   }, [conversationsLoading, total]);
 
-  const handleCreateComplete = (conversationId: string) => {
+  const handleCreateComplete = useCallback((conversationId: string) => {
     router.push(`/${locale}/conversation/${conversationId}`);
-  };
+  }, [router, locale]);
 
   // Handle moving conversation to folder with refresh
   const handleMoveToFolder = useCallback(
@@ -176,6 +199,18 @@ export function DashboardClient() {
   }, [handleRecordMicrophone, handleRecordTabAudio, handleUploadFile]);
 
   const isLoading = conversationsLoading || foldersLoading;
+
+  // Show loading state while checking auth, or if user is unverified (redirect in progress)
+  if (authLoading || (user && !user.emailVerified)) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto" />
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <DashboardDndProvider onMoveToFolder={handleMoveToFolder}>

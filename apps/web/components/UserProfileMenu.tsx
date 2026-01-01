@@ -201,7 +201,7 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
               {/* Primary metric based on tier */}
               {usageStats.tier === 'free' && (
                 <>
-                  {/* Transcriptions */}
+                  {/* Conversations */}
                   <UsageIndicator
                     current={usageStats.usage.transcriptions}
                     limit={usageStats.limits.transcriptions}
@@ -209,9 +209,10 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
                     label={tUsage('transcriptions')}
                     percentUsed={usageStats.percentUsed}
                     showWarning={false}
+                    showDecimals={false}
                   />
 
-                  {/* On-Demand Analyses */}
+                  {/* AI Assets */}
                   <UsageIndicator
                     current={usageStats.usage.onDemandAnalyses}
                     limit={usageStats.limits.onDemandAnalyses}
@@ -223,6 +224,7 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
                       100
                     }
                     showWarning={false}
+                    showDecimals={false}
                   />
                 </>
               )}
@@ -236,15 +238,6 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
                   percentUsed={usageStats.percentUsed}
                   showWarning={false}
                 />
-              )}
-
-              {usageStats.tier === 'payg' && (
-                <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {usageStats.paygCredits?.toFixed(1) || '0.0'} {tUsage('hours')}
-                  </span>{' '}
-                  {tUsage('remaining')}
-                </div>
               )}
 
               {/* Reset date */}

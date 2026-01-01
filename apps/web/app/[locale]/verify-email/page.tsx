@@ -14,7 +14,7 @@ export default function VerifyEmailPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [checkingVerification, setCheckingVerification] = useState(false);
 
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
   const tAuth = useTranslations('auth');
 
@@ -41,6 +41,8 @@ export default function VerifyEmailPage() {
       if (auth.currentUser) {
         await reload(auth.currentUser);
         if (auth.currentUser.emailVerified) {
+          // Update the AuthContext state so dashboard sees verified status
+          await refreshUser();
           setSuccess(true);
           setTimeout(() => {
             router.push('/dashboard');
@@ -51,7 +53,7 @@ export default function VerifyEmailPage() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [user, loading, router]);
+  }, [user, loading, router, refreshUser]);
 
   // Handle cooldown timer
   useEffect(() => {
@@ -112,12 +114,12 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/logos/neural-summary-logo.svg"
-              alt="Neural Summary"
-              className="h-24 w-auto"
+              src="/assets/logos/neural-summary-logo-wTagLine.png"
+              alt="Neural Summary - You speak. It creates."
+              className="h-16 w-auto"
             />
           </div>
           

@@ -9,10 +9,12 @@ import {
   Req,
   UseGuards,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { TranslationService } from './translation.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import type {
   Translation,
   ConversationTranslations,
@@ -29,7 +31,10 @@ interface ApiResponse<T = unknown> {
 
 @Controller('translations')
 export class TranslationController {
-  constructor(private readonly translationService: TranslationService) {}
+  constructor(
+    private readonly translationService: TranslationService,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   // ============================================================
   // AUTHENTICATED ENDPOINTS
@@ -37,6 +42,7 @@ export class TranslationController {
 
   /**
    * Translate conversation content to target locale
+   * Requires Pro or Enterprise subscription
    */
   @Post(':transcriptionId')
   @UseGuards(FirebaseAuthGuard)
@@ -45,6 +51,15 @@ export class TranslationController {
     @Body() body: TranslateConversationRequest,
     @Req() req: Request & { user: { uid: string } },
   ): Promise<ApiResponse<TranslateConversationResponse>> {
+    // Check subscription tier - translation requires Pro or Enterprise
+    const user = await this.userRepository.getUser(req.user.uid);
+    const tier = user?.subscriptionTier || 'free';
+    if (tier === 'free') {
+      throw new ForbiddenException(
+        'Translation requires a Pro subscription. Please upgrade to access this feature.',
+      );
+    }
+
     const result = await this.translationService.translateConversation(
       transcriptionId,
       req.user.uid,

@@ -151,64 +151,6 @@ export class StripeService {
   }
 
   /**
-   * Create Stripe Checkout session for PAYG credits (one-time payment)
-   */
-  async createPaygCheckoutSession(
-    userId: string,
-    email: string,
-    amount: number, // Amount in USD cents
-    hours: number,
-    successUrl: string,
-    cancelUrl: string,
-    locale?: string,
-    currency?: string,
-    userName?: string,
-  ): Promise<Stripe.Checkout.Session> {
-    this.logger.log(
-      `Creating PAYG checkout for user ${userId}, amount: $${amount / 100}, hours: ${hours}, currency: ${currency || 'auto'}`,
-    );
-
-    // Get or create customer
-    const customerId = await this.getOrCreateCustomer(userId, email, userName);
-
-    // Create checkout session for one-time payment
-    const session = await this.stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: currency || 'usd',
-            product_data: {
-              name: 'Neural Summary Credits',
-              description: `${hours} hours of transcription credit`,
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
-      automatic_tax: {
-        enabled: true,
-      },
-      customer_update: {
-        address: 'auto', // Save address entered in checkout to customer
-      },
-      metadata: {
-        userId,
-        type: 'payg',
-        hours: hours.toString(),
-      },
-    });
-
-    this.logger.log(`Created PAYG checkout session: ${session.id}`);
-    return session;
-  }
-
-  /**
    * Cancel subscription (at period end or immediately)
    */
   async cancelSubscription(
@@ -382,83 +324,56 @@ export class StripeService {
 
     this.logger.log(`Processing checkout completion for user ${userId}`);
 
-    // Check if it's a subscription or PAYG
-    if (session.mode === 'subscription') {
-      const subscriptionId = session.subscription as string;
-      const tier = session.metadata?.tier as 'professional' | 'business';
-      const billing = session.metadata?.billing || 'monthly';
-
-      // Get actual amount paid (after discounts/coupons/taxes)
-      const amount = session.amount_total || 0;
-      const currency = session.currency || 'usd';
-
-      // Optional: Fetch subscription to log discount information
-      const subscription =
-        await this.stripe.subscriptions.retrieve(subscriptionId);
-      const originalAmount =
-        subscription.items.data[0]?.price?.unit_amount || 0;
-      const discountApplied = originalAmount - amount;
-
-      if (discountApplied > 0) {
-        this.logger.log(
-          `Discount applied: $${discountApplied / 100} (Original: $${originalAmount / 100}, Paid: $${amount / 100})`,
-        );
-      }
-
-      // Update user with subscription info and reset usage
-      await this.userRepository.updateUser(userId, {
-        subscriptionTier: tier,
-        stripeSubscriptionId: subscriptionId,
-        subscriptionStatus: 'active',
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        updatedAt: new Date(),
-      });
-
-      // Track purchase in GA4 (server-side)
-      await this.analyticsService.trackPurchase(
-        userId,
-        session.id,
-        amount / 100, // Convert cents to dollars
-        currency.toUpperCase(),
-        tier,
-        billing,
-      );
-
-      this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
-    } else if (
-      session.mode === 'payment' &&
-      session.metadata?.type === 'payg'
-    ) {
-      // Add PAYG credits
-      const hours = parseInt(session.metadata.hours || '0', 10);
-      const user = await this.userRepository.getUserById(userId);
-      const currentCredits = user?.paygCredits || 0;
-      const amount = session.amount_total || 0;
-      const currency = session.currency || 'usd';
-
-      await this.userRepository.updateUser(userId, {
-        subscriptionTier: 'payg',
-        paygCredits: currentCredits + hours,
-        updatedAt: new Date(),
-      });
-
-      // Track PAYG purchase in GA4
-      await this.analyticsService.trackPurchase(
-        userId,
-        session.id,
-        amount / 100,
-        currency.toUpperCase(),
-        'payg',
-        'one-time',
-      );
-
-      this.logger.log(`Added ${hours} PAYG credits to user ${userId}`);
+    if (session.mode !== 'subscription') {
+      this.logger.warn(`Unexpected session mode: ${session.mode}`);
+      return;
     }
+
+    const subscriptionId = session.subscription as string;
+    const tier = session.metadata?.tier as 'professional' | 'enterprise';
+    const billing = session.metadata?.billing || 'monthly';
+
+    // Get actual amount paid (after discounts/coupons/taxes)
+    const amount = session.amount_total || 0;
+    const currency = session.currency || 'usd';
+
+    // Optional: Fetch subscription to log discount information
+    const subscription =
+      await this.stripe.subscriptions.retrieve(subscriptionId);
+    const originalAmount = subscription.items.data[0]?.price?.unit_amount || 0;
+    const discountApplied = originalAmount - amount;
+
+    if (discountApplied > 0) {
+      this.logger.log(
+        `Discount applied: $${discountApplied / 100} (Original: $${originalAmount / 100}, Paid: $${amount / 100})`,
+      );
+    }
+
+    // Update user with subscription info and reset usage
+    await this.userRepository.updateUser(userId, {
+      subscriptionTier: tier,
+      stripeSubscriptionId: subscriptionId,
+      subscriptionStatus: 'active',
+      usageThisMonth: {
+        hours: 0,
+        transcriptions: 0,
+        onDemandAnalyses: 0,
+        lastResetAt: new Date(),
+      },
+      updatedAt: new Date(),
+    });
+
+    // Track purchase in GA4 (server-side)
+    await this.analyticsService.trackPurchase(
+      userId,
+      session.id,
+      amount / 100, // Convert cents to dollars
+      currency.toUpperCase(),
+      tier,
+      billing,
+    );
+
+    this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
   }
 
   /**

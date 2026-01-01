@@ -20,6 +20,7 @@ import { TranslationModule } from './translation/translation.module';
 import { VectorModule } from './vector/vector.module';
 import { FindReplaceModule } from './find-replace/find-replace.module';
 import { ImportedConversationModule } from './imported-conversation/imported-conversation.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { ImportedConversationModule } from './imported-conversation/imported-con
     VectorModule,
     FindReplaceModule,
     ImportedConversationModule,
+    ContactModule,
   ],
   controllers: [AppController],
   providers: [

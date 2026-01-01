@@ -15,20 +15,20 @@ export default async function LoginPage({
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="flex justify-center mb-12">
+          <Link href="/landing" className="flex justify-center mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-wTagLine.png"
               alt="Neural Summary - You speak. It creates."
-              className="w-full max-w-[280px] dark:hidden"
+              className="h-16 w-auto dark:hidden"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-white-wTagLine.svg"
               alt="Neural Summary - You speak. It creates."
-              className="w-full max-w-[280px] hidden dark:block"
+              className="h-16 w-auto hidden dark:block"
             />
-          </div>
+          </Link>
           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
             {tAuth('signInToContinue')}
           </p>

@@ -10,6 +10,7 @@ interface UsageIndicatorProps {
   percentUsed: number;
   label?: string;
   showWarning?: boolean;
+  showDecimals?: boolean; // Whether to show decimal places (default: true for hours, false for counts)
 }
 
 export function UsageIndicator({
@@ -19,6 +20,7 @@ export function UsageIndicator({
   percentUsed,
   label,
   showWarning = true,
+  showDecimals = true,
 }: UsageIndicatorProps) {
   const t = useTranslations('paywall.usageIndicator');
 
@@ -38,7 +40,7 @@ export function UsageIndicator({
           isWarning ? 'text-orange-600 dark:text-orange-400' :
           'text-gray-700 dark:text-gray-300'
         }`}>
-          {current.toFixed(1)} {!isUnlimited && `/ ${limit}`} {unit}
+          {showDecimals ? current.toFixed(1) : Math.round(current)} {!isUnlimited && `/ ${limit}`} {unit}
           {!isUnlimited && ` (${percentUsed.toFixed(0)}%)`}
         </span>
       </div>

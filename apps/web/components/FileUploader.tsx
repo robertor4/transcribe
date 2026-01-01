@@ -45,7 +45,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [quotaModal, setQuotaModal] = useState<{
     isOpen: boolean;
-    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits';
+    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize';
     details?: { current?: number; limit?: number; required?: number };
   }>({ isOpen: false, quotaType: 'transcriptions' });
 
@@ -237,7 +237,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         const errorDetails = error.response?.data?.details;
 
         // Map error code to quota type
-        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' = 'transcriptions';
+        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' = 'transcriptions';
 
         if (errorCode === 'QUOTA_EXCEEDED_TRANSCRIPTIONS') {
           quotaType = 'transcriptions';
@@ -245,8 +245,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           quotaType = 'duration';
         } else if (errorCode === 'QUOTA_EXCEEDED_FILESIZE') {
           quotaType = 'filesize';
-        } else if (errorCode === 'QUOTA_EXCEEDED_PAYG_CREDITS') {
-          quotaType = 'payg_credits';
         } else if (errorCode === 'QUOTA_EXCEEDED_ON_DEMAND_ANALYSES') {
           quotaType = 'on_demand_analyses';
         }
@@ -640,7 +638,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         isOpen={quotaModal.isOpen}
         onClose={() => setQuotaModal({ ...quotaModal, isOpen: false })}
         quotaType={quotaModal.quotaType}
-        currentTier={(usageStats?.tier as 'free' | 'professional' | 'payg') || 'free'}
+        currentTier={(usageStats?.tier as 'free' | 'professional') || 'free'}
         details={quotaModal.details}
       />
     </div>

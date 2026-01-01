@@ -13,10 +13,11 @@
  */
 
 import { useState } from 'react';
-import { Globe, Check, Loader2, Plus, ChevronRight, ChevronDown } from 'lucide-react';
+import { Globe, Check, Loader2, Plus, ChevronRight, ChevronDown, Lock } from 'lucide-react';
 import { SUPPORTED_LOCALES } from '@transcribe/shared';
 import type { ConversationTranslations, LocaleTranslationStatus } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface TranslationMenuItemsProps {
   /** Translation status with available locales */
@@ -25,6 +26,8 @@ interface TranslationMenuItemsProps {
   currentLocale: string;
   /** Whether a translation is in progress */
   isTranslating: boolean;
+  /** User's subscription tier - translation requires Pro or higher */
+  userTier?: string;
   /** Callback when user selects an existing locale */
   onSelectLocale: (localeCode: string) => void;
   /** Callback when user wants to translate to a new locale */
@@ -35,11 +38,15 @@ export function TranslationMenuItems({
   status,
   currentLocale,
   isTranslating,
+  userTier = 'free',
   onSelectLocale,
   onTranslate,
 }: TranslationMenuItemsProps) {
   const t = useTranslations('conversation.translation');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Translation requires Pro or higher
+  const canTranslate = userTier !== 'free';
 
   // Get original language label (e.g., "Nederlands (original)")
   const getOriginalLabel = () => {
@@ -177,22 +184,44 @@ export function TranslationMenuItems({
           {getUntranslatedLocales().length > 0 && (
             <>
               <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
-              <div className="px-4 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                {t('translateTo')}
-              </div>
-              <div className="max-h-32 overflow-y-auto">
-                {getUntranslatedLocales().map((locale) => (
-                  <button
-                    key={locale.code}
-                    onClick={() => handleSelect(locale.code)}
-                    disabled={isTranslating}
-                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+              {canTranslate ? (
+                <>
+                  <div className="px-4 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    {t('translateTo')}
+                  </div>
+                  <div className="max-h-32 overflow-y-auto">
+                    {getUntranslatedLocales().map((locale) => (
+                      <button
+                        key={locale.code}
+                        onClick={() => handleSelect(locale.code)}
+                        disabled={isTranslating}
+                        className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                      >
+                        <span>{locale.nativeName}</span>
+                        <Plus className="w-4 h-4 text-gray-400" />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="px-4 py-3">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                    <Lock className="w-4 h-4" />
+                    <span className="text-xs font-semibold uppercase tracking-wide">
+                      {t('proFeature')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {t('upgradeToTranslate')}
+                  </p>
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
                   >
-                    <span>{locale.nativeName}</span>
-                    <Plus className="w-4 h-4 text-gray-400" />
-                  </button>
-                ))}
-              </div>
+                    {t('upgradeToPro')}
+                  </Link>
+                </div>
+              )}
             </>
           )}
         </>

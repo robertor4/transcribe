@@ -23,7 +23,6 @@ interface UsageStats {
   };
   percentUsed: number;
   warnings: string[];
-  paygCredits?: number;
   resetDate: string;
 }
 
@@ -153,7 +152,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Initial fetch - only when user ID changes, not on every user object change
+  // Initial fetch - only when user ID changes and email is verified
   useEffect(() => {
     const userId = user?.uid || null;
 
@@ -163,7 +162,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
       hasFetchedRef.current = false;
     }
 
-    if (user && !hasFetchedRef.current) {
+    if (user && user.emailVerified && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       // Fetch in parallel with proper error handling
       Promise.all([fetchUserProfile(), fetchUsage()]).catch((err) => {
@@ -173,6 +172,9 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     } else if (!user) {
       setUserRole(null);
       setUsageStats(null);
+      setLoading(false);
+    } else if (user && !user.emailVerified) {
+      // User exists but email not verified - don't fetch, just stop loading
       setLoading(false);
     }
   }, [user]);

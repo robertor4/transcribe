@@ -9,7 +9,6 @@
 export {
   createTestUser,
   createProfessionalUser,
-  createPaygUser,
   createAdminUser,
   createUserWithUsage,
   createOverQuotaProfessionalUser,

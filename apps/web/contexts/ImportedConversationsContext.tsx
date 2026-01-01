@@ -73,7 +73,7 @@ export function ImportedConversationsProvider({
     }
   }, []);
 
-  // Initial fetch - only when user ID changes
+  // Initial fetch - only when user ID changes and email is verified
   useEffect(() => {
     const userId = user?.uid || null;
 
@@ -83,11 +83,14 @@ export function ImportedConversationsProvider({
       hasFetchedRef.current = false;
     }
 
-    if (user && !hasFetchedRef.current) {
+    if (user && user.emailVerified && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       fetchImports();
     } else if (!user) {
       setImports([]);
+      setIsLoading(false);
+    } else if (user && !user.emailVerified) {
+      // User exists but email not verified - don't fetch
       setIsLoading(false);
     }
   }, [user, fetchImports]);

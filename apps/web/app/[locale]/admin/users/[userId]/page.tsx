@@ -11,13 +11,13 @@ import {
   Clock,
   Calendar,
   Activity,
-  Sparkles,
   User as UserIcon,
   Shield,
   TrendingUp,
   AlertCircle,
   RotateCcw,
 } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 
 export default function UserActivityPage() {
   const { user, loading: authLoading } = useAuth();
@@ -311,7 +311,7 @@ export default function UserActivityPage() {
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-              <Sparkles className="w-4 h-4" />
+              <AiIcon size={16} />
               Analyses Generated
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">

@@ -8,8 +8,8 @@ import Link from 'next/link';
 interface QuotaExceededModalProps {
   isOpen: boolean;
   onClose: () => void;
-  quotaType: 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' | 'on_demand_analyses';
-  currentTier: 'free' | 'professional' | 'payg';
+  quotaType: 'transcriptions' | 'duration' | 'filesize' | 'on_demand_analyses';
+  currentTier: 'free' | 'professional';
   details?: {
     current?: number;
     limit?: number;
@@ -57,12 +57,6 @@ export function QuotaExceededModal({
       description: t('filesize.description'),
       upgradeLink: '/pricing',
       upgradeText: t('upgradeButton'),
-    },
-    payg_credits: {
-      title: t('paygCredits.title'),
-      description: t('paygCredits.description'),
-      upgradeLink: '/checkout/payg',
-      upgradeText: t('buyCreditsButton'),
     },
     on_demand_analyses: {
       title: t('onDemandAnalyses.title'),

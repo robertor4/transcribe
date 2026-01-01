@@ -311,7 +311,7 @@
     "error": {
       "fileSize": "Bestandsgrootte overschrijdt limiet van 5GB",
       "fileTooLarge": "Bestand te groot (max 100MB)",
-      "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege OpenAI Whisper API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
+      "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
       "fileType": "Niet-ondersteund bestandstype",
       "unsupportedFormat": "Niet-ondersteund formaat (type: {type})",
       "invalidFileType": "Ongeldig bestandstype. Ondersteunde formaten: {formats}",
@@ -514,7 +514,14 @@
       "tryAgain": "Opnieuw proberen",
       "generationSuccess": "Uitvoer succesvol gegenereerd!",
       "outputCreated": "Je {name} is gemaakt",
-      "generateOutput": "Uitvoer genereren"
+      "generateOutput": "Uitvoer genereren",
+      "quota": {
+        "remaining": "{count} AI-uitvoer resterend deze maand",
+        "remainingPlural": "{count} AI-uitvoeren resterend deze maand",
+        "exceeded": "Maandlimiet bereikt",
+        "exceededDescription": "Je hebt alle {limit} gratis AI-uitvoeren deze maand gebruikt. Upgrade naar Pro voor onbeperkte uitvoeren.",
+        "upgradeButton": "Upgraden naar Pro"
+      }
     },
     "templates": {
       "actionItems": {
@@ -625,7 +632,10 @@
       "translationFailed": "Vertaling mislukt",
       "noTranslationsAvailable": "Geen vertalingen beschikbaar",
       "assetsTranslated": "items vertaald",
-      "changeLanguage": "Taal wijzigen"
+      "changeLanguage": "Taal wijzigen",
+      "proFeature": "Pro-functie",
+      "upgradeToTranslate": "Upgrade naar Pro om je gesprekken in meer dan 50 talen te vertalen.",
+      "upgradeToPro": "Upgraden naar Pro"
     }
   },
   "howItWorks": {
@@ -1029,11 +1039,45 @@
   "landing": {
     "hero": {
       "headline": "Jij spreekt. Het creëert.",
-      "subtitlePart1": "Neural Summary zet gesproken gedachten om in gestructureerde, professionele output — ",
-      "subtitlePart2": "zodat beslissingen beklijven en werk vooruit gaat.",
-      "ctaPrimary": "Bekijk voorbeeldoutput",
+      "subtitlePart1": "Neural Summary zet gesproken gedachten om in gestructureerde, professionele output. ",
+      "subtitlePart2": "Zodat beslissingen vastliggen en werk vooruit gaat.",
+      "ctaPrimary": "Bekijk voorbeelden",
       "ctaSecondary": "Zie hoe het werkt",
-      "byline": "Jij spreekt. Het creëert."
+      "byline": "Jij spreekt. Het creëert.",
+      "document": {
+        "backTitle": "Klant opvolg-e-mail",
+        "backGreeting": "Hoi Sarah,",
+        "backIntro": "Even terugkomen op ons gesprek over de Q4 planning...",
+        "backPointsIntro": "Belangrijkste punten die we bespraken:",
+        "backPoint1": "Enterprise onboarding prioriteit bevestigd",
+        "backPoint2": "Mobiele app uitgesteld naar Q1",
+        "backPoint3": "API v2 op schema voor november",
+        "frontTitle": "Q4 Productstrategie",
+        "frontBullet1": "Focus op enterprise onboarding flow herontwerp",
+        "frontBullet2": "Mobiele app uitstellen naar Q1 vanwege capaciteit",
+        "frontBullet3": "API v2 lancering gericht op november release",
+        "frontBullet4": "Twee senior engineers aannemen voor platform team",
+        "decisionsTitle": "Beslissingen",
+        "decision1": "Doorgaan met Stripe integratie in plaats van PayPal",
+        "decision2": "Internationalisering uitstellen tot Q2"
+      }
+    },
+    "transformation": {
+      "recording": "Opnemen...",
+      "quote1": "\"...ja, de demo ging echt goed, ze waren enthousiast over het analytics dashboard...\"",
+      "quote2": "\"...klopt, en Sarah zei dat Salesforce-integratie echt nodig is, dat is een must...\"",
+      "quote3": "\"...qua budget zei ze dat ze mikken op Q1, zo'n 50 licenties om te beginnen...\"",
+      "quote4": "\"...oh en ze willen eerst een proefperiode, twee weken ofzo...\"",
+      "quote5": "\"...ik moet ze die case study van Acme nog sturen...\"",
+      "quote6": "\"...wacht, had ze het ook over SSO? Ik dacht dat ze dat noemde...\"",
+      "documentTitle": "Opvolg-e-mail",
+      "greeting": "Hoi Sarah,",
+      "intro": "Fijn dat we vandaag konden praten over het analytics dashboard. De belangrijkste punten:",
+      "point1": "Salesforce-integratie: bevestigd als must-have",
+      "point2": "50 licenties, starten in Q1",
+      "point3": "Proefperiode van 2 weken om te beginnen",
+      "nextStepLabel": "Volgende stap:",
+      "nextStepText": "Case study sturen voor vrijdag einde dag."
     },
     "how": {
       "headline": "Hoe het werkt",
@@ -1042,8 +1086,8 @@
         "description": "Neem een gesprek, vergadering of spraakmemo op."
       },
       "step2": {
-        "title": "Wij extraheren wat belangrijk is",
-        "description": "Beslissingen, prioriteiten en vervolgstappen — automatisch gestructureerd."
+        "title": "Wij halen eruit wat belangrijk is",
+        "description": "Beslissingen, prioriteiten en vervolgstappen. Automatisch gestructureerd."
       },
       "step3": {
         "title": "Jij gaat verder",
@@ -1066,11 +1110,24 @@
       "pricing": "Prijzen"
     },
     "footer": {
-      "product": "Product",
-      "examples": "Voorbeelden",
-      "security": "Beveiliging",
-      "contact": "Contact",
-      "copyright": "© 2025 Neural Summary. Alle rechten voorbehouden."
+      "sections": {
+        "product": "Product",
+        "company": "Bedrijf",
+        "legal": "Juridisch"
+      },
+      "links": {
+        "features": "Functies",
+        "examples": "Voorbeelden",
+        "pricing": "Prijzen",
+        "about": "Over ons",
+        "security": "Beveiliging",
+        "help": "Hulp",
+        "privacy": "Privacy",
+        "terms": "Voorwaarden",
+        "contact": "Contact"
+      },
+      "tagline": "Jij spreekt. Het creëert.",
+      "copyright": "© 2026 Neural Summary. Alle rechten voorbehouden."
     },
     "faq": {
       "title": "Veelgestelde vragen",
@@ -1230,7 +1287,7 @@
   "terms": {
     "meta": {
       "title": "Servicevoorwaarden - Neural Summary",
-      "description": "Servicevoorwaarden voor Neural Summary's AI-aangedreven transcriptie- en analyseservice. AVG-conforme algemene voorwaarden."
+      "description": "Servicevoorwaarden voor Neural Summary's AI-aangedreven gesprekverwerking en AI Asset generatieservice. AVG-conforme algemene voorwaarden."
     },
     "title": "Servicevoorwaarden",
     "effectiveDate": "Ingangsdatum",
@@ -1247,12 +1304,12 @@
       },
       "serviceDescription": {
         "title": "Servicebeschrijving",
-        "content": "Neural Summary biedt AI-aangedreven audiotranscriptie en intelligente analyseservices. Ons platform omvat:",
+        "content": "Neural Summary biedt AI-aangedreven gesprekverwerking en intelligente AI Asset generatieservices. Ons platform omvat:",
         "features": {
-          "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
-          "analysis": "Intelligente samenvatting en analyse van de inhoud",
-          "storage": "Veilige cloudopslag van uw transcripties. Audiobestanden worden 30 dagen bewaard voor support, daarna automatisch verwijderd",
-          "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
+          "transcription": "Automatische verwerking van audiobestanden naar gesprekken met behulp van geavanceerde AI-technologie",
+          "analysis": "Intelligente AI Asset generatie uit uw gesprekinhoud",
+          "storage": "Veilige cloudopslag van uw gesprekken. Audiobestanden worden 30 dagen bewaard voor support, daarna automatisch verwijderd",
+          "sharing": "Mogelijkheid om gesprekken te delen met gecontroleerde toegang"
         }
       },
       "pricing": {
@@ -1304,7 +1361,7 @@
         },
         "userContent": {
           "title": "Uw Inhoud",
-          "content": "U behoudt alle rechten op de inhoud die u uploadt naar de Service. Door inhoud te uploaden, verleent u ons een beperkte licentie om uw inhoud te verwerken, op te slaan en weer te geven uitsluitend voor het doel van het verlenen van de Service aan u."
+          "content": "U behoudt alle rechten op de gesprekken en AI Assets die u maakt met de Service. Door inhoud te uploaden, verleent u ons een beperkte licentie om uw inhoud te verwerken, op te slaan en weer te geven uitsluitend voor het doel van het verlenen van de Service aan u."
         },
         "license": {
           "title": "Licentieverlening",
@@ -1369,7 +1426,7 @@
   "privacy": {
     "meta": {
       "title": "Privacybeleid - Neural Summary",
-      "description": "Privacybeleid voor Neural Summary. Leer hoe wij uw persoonsgegevens verzamelen, gebruiken en beschermen in overeenstemming met de AVG."
+      "description": "Privacybeleid voor Neural Summary. Leer hoe wij uw gesprekken en AI Assets verzamelen, gebruiken en beschermen in overeenstemming met de AVG."
     },
     "title": "Privacybeleid",
     "effectiveDate": "Laatst bijgewerkt",
@@ -1402,9 +1459,9 @@
         },
         "usage": {
           "title": "Gebruiksgegevens",
-          "audioFiles": "Audiobestanden die u uploadt voor transcriptie",
-          "transcriptions": "Transcripties en analyseresultaten",
-          "analysisResults": "AI-gegenereerde samenvattingen en inzichten",
+          "audioFiles": "Audiobestanden die u uploadt voor verwerking",
+          "transcriptions": "Gesprekken en hun transcripties",
+          "analysisResults": "AI Assets en gegenereerde inzichten",
           "preferences": "Gebruikersvoorkeuren en instellingen"
         },
         "technical": {
@@ -1420,7 +1477,7 @@
         "content": "Wij verwerken uw persoonsgegevens op basis van de volgende rechtsgronden:",
         "contract": {
           "title": "Contractuitvoering",
-          "content": "Verwerking die noodzakelijk is om u onze transcriptie- en analyseservices te bieden."
+          "content": "Verwerking die noodzakelijk is om u onze gesprekverwerking en AI Asset generatieservices te bieden."
         },
         "consent": {
           "title": "Toestemming",
@@ -1439,7 +1496,7 @@
         "title": "Hoe Wij Uw Gegevens Gebruiken",
         "content": "Wij gebruiken de verzamelde gegevens voor verschillende doeleinden:",
         "purposes": {
-          "service": "Om onze transcriptie- en analyseservices te leveren en te onderhouden",
+          "service": "Om onze gesprekverwerking en AI Asset generatieservices te leveren en te onderhouden",
           "communication": "Om met u te communiceren over uw account en service-updates",
           "improvement": "Om uw ervaring te verbeteren en te personaliseren",
           "security": "Om technische problemen en beveiligingsdreigingen te detecteren, voorkomen en aan te pakken",
@@ -1452,11 +1509,11 @@
         "content": "Wij kunnen uw gegevens delen met vertrouwde externe serviceproviders die ons helpen bij het beheren van onze Service:",
         "serviceProviders": {
           "title": "Serviceproviders",
-          "hosting": "Cloudinfrastructuur",
-          "transcription": "Transcriptieservices",
-          "analysis": "AI-analyse",
-          "email": "E-mailservice",
-          "analytics": "Analytics"
+          "hosting": "Enterprise-grade cloudinfrastructuur voor veilige gegevensopslag en -verwerking",
+          "transcription": "Toonaangevende spraak-naar-tekst services voor nauwkeurige transcriptie",
+          "analysis": "Enterprise-grade AI-modellen voor intelligente inhoudsanalyse",
+          "email": "Beveiligde e-mailbezorgservices voor transactionele communicatie",
+          "analytics": "Privacy-gerichte analytics voor serviceverbetering"
         },
         "notice": "Wij verkopen nooit uw persoonsgegevens aan externe partijen. Alle serviceproviders zijn gebonden aan strikte vertrouwelijkheidsovereenkomsten en kunnen uw gegevens alleen gebruiken om diensten aan ons te verlenen."
       },
@@ -1466,7 +1523,7 @@
         "periods": {
           "title": "Bewaringsperioden",
           "account": "Accountgegevens",
-          "transcriptions": "Transcripties",
+          "transcriptions": "Gesprekken",
           "audioFiles": "Audiobestanden",
           "logs": "Systeemlogboeken",
           "analytics": "Analytische gegevens"
@@ -1584,25 +1641,26 @@
     "yourUsage": "Uw Verbruik",
     "resetsOn": "Wordt gereset op",
     "upgradePlan": "Upgrade Abonnement",
-    "transcriptions": "Transcripties",
+    "transcriptions": "Gesprekken",
     "hours": "Uren",
     "remaining": "resterend",
-    "onDemandAnalyses": "On-Demand Analyses"
+    "onDemandAnalyses": "AI Assets"
   },
   "pricing": {
     "metadata": {
       "title": "Prijzen - Neural Summary",
-      "description": "Kies het perfecte abonnement voor je transcriptiebehoeften. Van gratis tot enterprise, we hebben een abonnement dat past bij je workflow."
+      "description": "Eenvoudige premium prijzen. Probeer Pro 14 dagen gratis. Transformeer je gesprekken naar professionele documenten."
     },
     "hero": {
-      "title": "Eenvoudige, transparante prijzen",
-      "subtitle": "Kies het abonnement dat bij je past. Begin gratis, upgrade wanneer je wilt.",
-      "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij het afrekenen.",
+      "title": "Prijzen voor werk dat telt",
+      "subtitle": "Start gratis. Upgrade wanneer je output ertoe doet.",
+      "trialMessage": "Probeer Pro 14 dagen gratis. Geen creditcard vereist.",
+      "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij afrekenen.",
       "annual": "Jaarlijks",
       "monthly": "Maandelijks",
       "save25": "Bespaar 25%",
       "noCreditCard": "Geen creditcard vereist",
-      "freeTrial": "14 dagen gratis proef",
+      "freeTrial": "14 dagen gratis proefperiode",
       "viewComparison": "Bekijk gedetailleerde vergelijking",
       "billedAnnually": "Jaarlijks gefactureerd ({amount}/jaar)"
     },
@@ -1611,17 +1669,17 @@
         "name": "Gratis",
         "title": "Gratis",
         "price": "Gratis",
-        "description": "Perfect om Neural Summary uit te proberen",
+        "description": "Ontdek de mogelijkheden. Probeer een paar gesprekken, vrijblijvend.",
         "cta": "Aan de slag",
         "features": {
-          "transcriptions": "3 transcripties/maand",
-          "duration": "Max 30 minuten per bestand",
-          "fileSize": "Max 100MB bestandsgrootte",
+          "transcriptions": "5 gesprekken/maand",
+          "duration": "60 minuten max per bestand",
+          "fileSize": "100MB max bestandsgrootte",
           "analyses": "Alleen basissamenvatting",
-          "coreAnalyses": "4 kernanalyses inbegrepen",
-          "onDemand": "2 on-demand analyses/maand",
-          "translation": "Vertaalfuncties",
-          "sharing": "Transcripten delen",
+          "coreAnalyses": "4 AI-outputs inbegrepen",
+          "onDemand": "2 on-demand AI-outputs/maand",
+          "translation": "Vertaling (alleen Pro)",
+          "sharing": "Gesprekken delen",
           "batch": "Batchverwerking",
           "storage": "90 dagen opslag",
           "support": "Community ondersteuning"
@@ -1629,25 +1687,26 @@
         "period": "/maand"
       },
       "professional": {
-        "name": "Professioneel",
-        "title": "Professioneel",
+        "name": "Pro",
+        "title": "Pro",
         "period": "/maand",
-        "description": "Voor professionals die regelmatig notities maken",
-        "cta": "Aan de slag",
+        "description": "Voor professionals die regelmatig professionele documenten nodig hebben.",
+        "cta": "Start gratis proefperiode",
         "badge": "Meest populair",
         "recommended": "AANBEVOLEN",
         "guarantee": "30 dagen geld-terug-garantie",
+        "trialBadge": "14 dagen gratis proefperiode",
         "features": {
-          "transcriptions": "Onbeperkte transcripties",
+          "transcriptions": "Onbeperkte gesprekken",
           "hours": "60 uur/maand inbegrepen",
-          "unlimited": "Onbeperkte transcripties",
+          "unlimited": "Onbeperkte gesprekken",
           "duration": "60 uur/maand inbegrepen",
           "overageRate": "{overageRate} per extra uur",
           "overage": "Overschrijding: {overageRate}/uur",
-          "fileSize": "Max 5GB bestandsgrootte",
-          "analyses": "Alle analysetypes",
-          "allAnalyses": "Alle analysetypes",
-          "onDemandAnalyses": "Onbeperkte on-demand analyses",
+          "fileSize": "5GB max bestandsgrootte",
+          "analyses": "Alle AI-outputtypes",
+          "allAnalyses": "Alle AI-outputtypes",
+          "onDemandAnalyses": "Onbeperkte on-demand AI-outputs",
           "storage": "Onbeperkte opslag",
           "sharing": "Geavanceerde deelfuncties",
           "advancedSharing": "Geavanceerd delen & samenwerken",
@@ -1657,39 +1716,40 @@
           "support": "Prioriteit e-mail ondersteuning"
         }
       },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "title": "Pay-As-You-Go",
-        "priceUnit": "/uur",
-        "description": "Perfect voor incidenteel gebruik",
-        "cta": "Koop tegoed",
+      "enterprise": {
+        "name": "Enterprise",
+        "title": "Enterprise",
+        "customPrice": "Neem contact op",
+        "description": "Voor teams die controle, consistentie en compliance nodig hebben.",
+        "cta": "Neem contact op",
         "features": {
-          "transcriptions": "Onbeperkte transcripties",
-          "credits": "Tegoed vervalt nooit",
-          "noSubscription": "Geen abonnement vereist",
-          "allFeatures": "Alle functies inbegrepen",
-          "noExpiry": "Tegoed vervalt nooit",
-          "minimum": "Minimale aankoop",
-          "rate": "Flexibel uurtarief",
-          "fileSize": "Max 5GB bestandsgrootte",
-          "analyses": "Alle analysetypes",
-          "onDemandAnalyses": "Tegoed per analyse",
-          "storage": "180 dagen opslag",
-          "support": "E-mail ondersteuning"
+          "unlimited": "Onbeperkte gesprekken",
+          "unlimitedHours": "Onbeperkte verwerkingsuren",
+          "largeFiles": "10GB max bestandsgrootte",
+          "allAnalyses": "Alle AI-outputtypes",
+          "customIntegrations": "Aangepaste integraties",
+          "sso": "Single sign-on (SSO)",
+          "adminDashboard": "Team admin dashboard",
+          "auditLogs": "Audit logs & compliance",
+          "dedicatedManager": "Toegewijde accountmanager",
+          "customContracts": "Aangepaste contracten & SLA's",
+          "teamManagement": "Teambeheer",
+          "dedicatedSupport": "Toegewijde ondersteuning"
         }
       }
     },
     "finalCta": {
-      "title": "Begin slimmer te notuleren",
-      "subtitle": "Geen creditcard vereist voor gratis abonnement",
-      "button": "Start gratis"
+      "title": "Begin slimmer te creëren",
+      "subtitle": "Transformeer je gesprekken naar professionele documenten",
+      "button": "Start gratis proefperiode",
+      "noCreditCard": "Geen creditcard vereist"
     },
     "comparison": {
       "feature": "Functie",
       "tiers": {
         "free": "Gratis",
-        "professional": "Professioneel",
-        "payg": "Pay-As-You-Go"
+        "professional": "Pro",
+        "enterprise": "Enterprise"
       },
       "categories": {
         "basics": "Basis",
@@ -1697,16 +1757,17 @@
         "features": "Extra functies"
       },
       "features": {
-        "transcriptions": "Transcripties per maand",
+        "transcriptions": "Gesprekken per maand",
         "duration": "Max duur per bestand",
         "fileSize": "Max bestandsgrootte",
         "hours": "Maandelijkse uren inbegrepen",
-        "coreAnalyses": "Kernanalyses",
-        "onDemand": "On-demand analyses",
+        "coreAnalyses": "Kern-AI-outputs",
+        "onDemand": "On-demand AI-outputs",
         "translation": "Vertaling",
         "sharing": "Deelfuncties",
         "batch": "Batchverwerking",
         "priority": "Prioriteitsverwerking",
+        "sso": "Single Sign-On (SSO)",
         "api": "API-toegang"
       },
       "title": "Vergelijk abonnementen",
@@ -1720,48 +1781,46 @@
         "email": "E-mail",
         "priorityEmail": "Prioriteit e-mail",
         "hoursIncluded": "60 uur/maand",
-        "payPerUse": "Betaal per gebruik",
-        "creditBased": "Op basis van tegoed",
-        "comingSoon": "Binnenkort beschikbaar"
+        "comingSoon": "Binnenkort"
       }
     },
     "faq": {
       "title": "Veelgestelde vragen",
       "questions": {
+        "trial": {
+          "question": "Hoe werkt de 14-daagse gratis proefperiode?",
+          "answer": "Start je proefperiode met volledige toegang tot alle Pro-functies. Geen creditcard vereist. Na 14 dagen kun je kiezen voor een abonnement of doorgaan met ons gratis abonnement."
+        },
         "cost": {
-          "question": "Wat kost het om gesprekken om te zetten in documenten?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand audio-verwerking voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 audiobestanden/maand (max 30 min elk)."
+          "question": "Wat kost Neural Summary?",
+          "answer": "Pro-abonnement is {professionalPrice}/maand of {annualPrice}/jaar (bespaar 25%). Extra uren boven 60/maand kosten {overageRate} per stuk. Het gratis abonnement bevat 5 gesprekken/maand."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
-          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur audio-verwerking in rekening gebracht. Gratis gebruikers moeten upgraden om documenten te blijven maken. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed naar behoefte."
+          "answer": "Pro-gebruikers worden automatisch {overageRate} per extra uur audio-verwerking in rekening gebracht. Gratis gebruikers kunnen upgraden naar Pro of wachten tot de volgende maand."
         },
         "cancel": {
-          "question": "Kan ik mijn abonnement altijd opzeggen?",
-          "answer": "Ja! Je kunt altijd opzeggen. Je abonnement blijft actief tot het einde van je factureringsperiode en je wordt niet opnieuw in rekening gebracht."
-        },
-        "currency": {
-          "question": "Welke valuta's ondersteunen jullie?",
-          "answer": "We ondersteunen 15+ valuta's waaronder USD, EUR, GBP, CAD, AUD, JPY en meer. Prijzen worden automatisch omgerekend naar je lokale valuta."
+          "question": "Kan ik mijn abonnement op elk moment opzeggen?",
+          "answer": "Ja! Je kunt op elk moment opzeggen. Je abonnement blijft actief tot het einde van je factureringsperiode en je wordt niet opnieuw in rekening gebracht."
         },
         "upgrade": {
           "question": "Kan ik mijn abonnement upgraden of downgraden?",
-          "answer": "Ja! Upgrades gaan direct in met evenredige kosten. Downgrades gaan in aan het einde van je huidige factureringsperiode, zodat je tot dan je huidige abonnement kunt gebruiken."
+          "answer": "Ja! Upgrades gaan direct in met evenredige kosten. Downgrades gaan in aan het einde van je huidige factureringsperiode."
         },
-        "payg": {
-          "question": "Hoe werkt Pay-As-You-Go tegoed?",
-          "answer": "Tegoed kost {paygPrice} per uur audio en kan worden gebruikt om elk type document te maken. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele document-creatie behoeften."
+        "enterprise": {
+          "question": "Wat is inbegrepen bij het Enterprise-abonnement?",
+          "answer": "Enterprise bevat onbeperkte verwerking, SSO (binnenkort), aangepaste integraties, toegewijde ondersteuning en aangepaste contracten. Neem contact op met ons verkoopteam voor prijzen."
         }
       }
     },
     "cta": {
       "title": "Klaar om te beginnen?",
       "subtitle": "Sluit je aan bij duizenden professionals die Neural Summary gebruiken om tijd te besparen en hun werk te verbeteren.",
-      "button": "Start gratis proef"
+      "button": "Start gratis proefperiode"
     },
     "featureCategories": {
-      "transcription": "Transcriptie",
-      "analysis": "Analyse",
+      "transcription": "Basis",
+      "analysis": "AI-outputs",
       "collaboration": "Samenwerking",
       "support": "Ondersteuning"
     }
@@ -1845,7 +1904,7 @@
       "title": "Huidig abonnement",
       "free": "Gratis abonnement",
       "professional": "Professioneel abonnement",
-      "payg": "Pay-As-You-Go",
+      "enterprise": "Enterprise abonnement",
       "status": {
         "active": "Actief",
         "cancelled": "Geannuleerd",
@@ -1865,8 +1924,6 @@
       "hours": "Uren",
       "onDemandAnalyses": "On-Demand analyses",
       "resetDate": "Wordt gereset op",
-      "paygCredits": "Beschikbaar tegoed",
-      "buyMore": "Meer tegoed kopen",
       "overage": {
         "title": "Overschrijdingskosten",
         "description": "Je hebt {hours} uur boven je 60-uur limiet deze maand gebruikt",
@@ -1927,7 +1984,6 @@
     "usageThisMonth": "Gebruik deze maand",
     "hoursUsed": "Gebruikte uren",
     "transcriptionsUsed": "Transcripties",
-    "buyMoreCredits": "Meer tegoed kopen",
     "noBillingHistory": "Nog geen factureringsgeschiedenis",
     "downloadInvoice": "Factuur downloaden",
     "overageWarning": "Overschrijdingsgebruik",
@@ -1952,10 +2008,6 @@
         "title": "Bestand te groot",
         "description": "Dit bestand overschrijdt de bestandsgroottelimiet van je abonnement. Upgrade om grotere bestanden te verwerken."
       },
-      "paygCredits": {
-        "title": "Onvoldoende tegoed",
-        "description": "Je hebt niet genoeg tegoed voor deze transcriptie. Koop meer tegoed om door te gaan."
-      },
       "onDemandAnalyses": {
         "title": "Analyselimiet bereikt",
         "description": "Je hebt al je on-demand analyses deze maand gebruikt. Upgrade voor meer analyses of wacht tot volgende maand."
@@ -1964,7 +2016,6 @@
       "limit": "Je limiet",
       "required": "Vereist",
       "upgradeButton": "Upgrade abonnement",
-      "buyCreditsButton": "Koop tegoed",
       "cancelButton": "Annuleren"
     },
     "usageIndicator": {
@@ -2136,5 +2187,166 @@
     "enterReplaceText": "Voer hierboven de vervangende tekst in",
     "clearSelection": "Wissen",
     "replace": "Vervangen"
+  },
+  "examples": {
+    "meta": {
+      "title": "Voorbeelden | Neural Summary",
+      "description": "Eén gesprek wordt vier werkklare documenten. Zie de transformatie."
+    },
+    "hero": {
+      "headline": "Eén gesprek. Eindeloze mogelijkheden.",
+      "subtitle": "Zie wat Neural Summary maakt van een meeting.",
+      "scenarioLabel": "Live generatie"
+    },
+    "scenarios": {
+      "productLaunch": "Productlancering",
+      "clientDiscovery": "Klantgesprek"
+    },
+    "cards": {
+      "actionItems": {
+        "title": "Actiepunten"
+      },
+      "email": {
+        "title": "Follow-up e-mail"
+      },
+      "blogPost": {
+        "title": "Blogartikel"
+      },
+      "linkedin": {
+        "title": "LinkedIn bericht"
+      },
+      "communicationAnalysis": {
+        "title": "Communicatieanalyse"
+      }
+    },
+    "cta": {
+      "headline": "Jouw beurt.",
+      "primaryButton": "Gratis proberen",
+      "secondaryLink": "Bekijk prijzen"
+    },
+    "content": {
+      "productLaunch": {
+        "actionItems": {
+          "items": [
+            { "task": "Q1-tijdlijn afronden en delen met stakeholders", "owner": "Sarah", "deadline": "8 jan" },
+            { "task": "Beta feedback bekijken en bugfixes prioriteren", "owner": "Dev Team", "deadline": "10 jan" },
+            { "task": "Persbericht en mediakit voorbereiden", "owner": "Marketing", "deadline": "20 jan" },
+            { "task": "Klantwebinar plannen voor lanceringweek", "owner": "CS Team", "deadline": "25 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Productlancering planning - Vervolgstappen",
+          "greeting": "Hoi team,",
+          "intro": "Hier de samenvatting van onze meeting vandaag over de Q1-productlancering.",
+          "decisionsLabel": "Bevestigde beslissingen",
+          "decisions": [
+            "Lanceerdatum bevestigd voor 28 januari",
+            "Beta programma met een week verlengd voor extra testen",
+            "Marketing budget goedgekeurd voor influencer campagne"
+          ],
+          "closing": "Bedankt allemaal.",
+          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+        },
+        "blogPost": {
+          "headline": "Wat we leerden bij de lancering in januari",
+          "subheading": "Lessen van ons team over momentum opbouwen vóór dag één",
+          "hook": "Het oude draaiboek zegt: wacht tot het perfect is. Wij probeerden iets anders.",
+          "body": "Onze beta testers vonden niet alleen bugs. Ze vormden de productrichting. Hun feedback leidde tot een complete herziening van onze onboarding flow. Het resultaat: 40% betere activatiecijfers nog vóór de lancering.",
+          "quote": { "text": "Het product voelde alsof het voor ons gebouwd was, niet alleen aan ons verkocht.", "attribution": "Beta Gebruiker" },
+          "imageAlt": "Abstracte geometrische vormen voor innovatie"
+        },
+        "linkedin": {
+          "hook": "We hadden onze lancering bijna 3 maanden uitgesteld.",
+          "bullets": [
+            "Beta feedback > interne aannames",
+            "Momentum verslaat perfectie",
+            "Je eerste gebruikers definiëren je product"
+          ],
+          "result": "2.000 aanmeldingen in de eerste week. Niet omdat we perfect waren. Omdat we aanwezig waren.",
+          "callToAction": "Wat is de grootste les van je laatste lancering?",
+          "author": { "name": "Sarah Mitchell", "title": "Product Manager bij TechFlow", "initials": "SM" }
+        }
+      },
+      "clientDiscovery": {
+        "actionItems": {
+          "items": [
+            { "task": "Voorstel sturen met drie pakketopties", "owner": "Marcus", "deadline": "15 jan" },
+            { "task": "Technische deep-dive plannen met hun CTO", "owner": "Marcus", "deadline": "12 jan" },
+            { "task": "Case study voorbereiden van vergelijkbaar fintech project", "owner": "Team", "deadline": "14 jan" },
+            { "task": "Tijdlijn opstellen voor Q2 implementatie", "owner": "Marcus", "deadline": "18 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Fijn om gesproken te hebben - Vervolgstappen",
+          "greeting": "Hoi David,",
+          "intro": "Bedankt dat je de tijd hebt genomen om je uitdagingen met me te delen. De situatie van je team is precies het type probleem waarin wij gespecialiseerd zijn.",
+          "decisionsLabel": "Besproken kernpunten",
+          "decisions": [
+            "Mobile-first aanpak afgestemd op jullie gebruikersdemografie",
+            "Gefaseerde uitrol beginnend met kernbetalingsfuncties",
+            "Integratie met jullie bestaande Salesforce instantie"
+          ],
+          "closing": "Ik kijk uit naar de mogelijkheid om samen te werken.",
+          "signature": { "name": "Marcus Chen", "title": "Senior Consultant", "initials": "MC" }
+        },
+        "blogPost": {
+          "headline": "Het kennismakingsgesprek dat mijn manier van verkopen veranderde",
+          "subheading": "Waarom luisteren altijd beter is dan presenteren",
+          "hook": "Vroeger ging ik kennismakingsgesprekken in met een deck. Nu ga ik binnen met vragen.",
+          "body": "De klant noemde zijn echte probleem na 47 minuten. Als ik had gepresenteerd, had ik het helemaal gemist. Zijn team worstelde niet met technologie. Ze verdronken in handmatige processen waar niemand tijd voor had.",
+          "quote": { "text": "Je begreep ons probleem voordat we klaar waren met uitleggen.", "attribution": "Klantfeedback" },
+          "imageAlt": "Abstracte vormen voor gesprek en verbinding"
+        },
+        "communicationAnalysis": {
+          "overallAssessment": "Sterke discovery-vaardigheden met ruimte om het klantbegrip te verdiepen. Je stelt goede vragen maar zou antwoorden meer kunnen laten ademen.",
+          "dimensions": {
+            "clarity": { "name": "Helderheid", "strength": "Vragen waren specifiek en uitvoerbaar", "improvement": "Kernpunten samenvatten voordat je verdergaat" },
+            "activeListening": { "name": "Actief luisteren", "strength": "Bouwde natuurlijk voort op klantantwoorden", "improvement": "Langer pauzeren na complexe antwoorden" }
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact | Neural Summary",
+      "description": "Neem contact op met het Neural Summary team"
+    },
+    "title": "Neem contact op",
+    "description": "Heb je een vraag of feedback? We horen graag van je.",
+    "form": {
+      "name": "Naam",
+      "namePlaceholder": "Je naam",
+      "email": "E-mail",
+      "emailPlaceholder": "jij@voorbeeld.nl",
+      "subject": "Onderwerp",
+      "subjectPlaceholder": "Selecteer een onderwerp",
+      "message": "Bericht",
+      "messagePlaceholder": "Hoe kunnen we helpen?",
+      "submit": "Verstuur bericht",
+      "submitting": "Versturen...",
+      "subjects": {
+        "general": "Algemene vraag",
+        "support": "Technische ondersteuning",
+        "sales": "Verkoop",
+        "partnership": "Samenwerking"
+      }
+    },
+    "success": {
+      "title": "Bericht verzonden",
+      "description": "Bedankt voor je bericht. We reageren binnen 24 uur."
+    },
+    "error": {
+      "title": "Er ging iets mis",
+      "description": "Probeer het opnieuw of mail ons direct via hello@neuralsummary.com."
+    },
+    "validation": {
+      "nameRequired": "Naam is verplicht",
+      "emailRequired": "E-mail is verplicht",
+      "emailInvalid": "Voer een geldig e-mailadres in",
+      "subjectRequired": "Selecteer een onderwerp",
+      "messageRequired": "Bericht is verplicht",
+      "messageMinLength": "Bericht moet minimaal 10 tekens bevatten"
+    }
   }
 }

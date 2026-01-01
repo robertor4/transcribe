@@ -1184,4 +1184,103 @@ export class EmailService {
 
     return text;
   }
+
+  /**
+   * Send a contact form email to the support team
+   */
+  async sendContactEmail(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    locale?: string;
+  }): Promise<boolean> {
+    if (!this.transporter) {
+      this.logger.warn('Email service not configured, skipping contact email');
+      return false;
+    }
+
+    const subjectLabels: Record<string, string> = {
+      general: 'General Inquiry',
+      support: 'Technical Support',
+      sales: 'Sales',
+      partnership: 'Partnership',
+    };
+
+    const subjectLabel = subjectLabels[data.subject] || data.subject;
+    const emailSubject = `[Contact Form] ${subjectLabel} from ${data.name}`;
+
+    try {
+      const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #23194B; padding: 20px; border-radius: 8px 8px 0 0; }
+    .header h1 { color: white; margin: 0; font-size: 20px; }
+    .content { background-color: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; }
+    .field { margin-bottom: 15px; }
+    .label { font-weight: 600; color: #374151; font-size: 14px; }
+    .value { color: #6b7280; margin-top: 4px; }
+    .message { background-color: white; padding: 15px; border-radius: 8px; border-left: 3px solid #8D6AFA; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>New Contact Form Submission</h1>
+    </div>
+    <div class="content">
+      <div class="field">
+        <div class="label">From</div>
+        <div class="value">${data.name} &lt;${data.email}&gt;</div>
+      </div>
+      <div class="field">
+        <div class="label">Subject</div>
+        <div class="value">${subjectLabel}</div>
+      </div>
+      <div class="field">
+        <div class="label">Locale</div>
+        <div class="value">${data.locale || 'en'}</div>
+      </div>
+      <div class="field">
+        <div class="label">Message</div>
+        <div class="message">${data.message.replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+
+      const textContent = `
+New Contact Form Submission
+===========================
+
+From: ${data.name} <${data.email}>
+Subject: ${subjectLabel}
+Locale: ${data.locale || 'en'}
+
+Message:
+${data.message}
+      `;
+
+      const info = await this.transporter.sendMail({
+        from: `"Neural Summary Contact" <${this.fromEmail}>`,
+        to: 'hello@neuralsummary.com',
+        replyTo: data.email,
+        subject: emailSubject,
+        html: htmlContent,
+        text: textContent,
+      });
+
+      this.logger.log(`Contact email sent: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      this.logger.error('Failed to send contact email:', error);
+      return false;
+    }
+  }
 }

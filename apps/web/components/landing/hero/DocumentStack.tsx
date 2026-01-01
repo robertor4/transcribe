@@ -3,6 +3,28 @@
 import { motion, useReducedMotion, useMotionValue, useTransform, animate, useInView, type Variants } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 
+export interface DocumentStackTranslations {
+  backTitle: string;
+  backGreeting: string;
+  backIntro: string;
+  backPointsIntro: string;
+  backPoint1: string;
+  backPoint2: string;
+  backPoint3: string;
+  frontTitle: string;
+  frontBullet1: string;
+  frontBullet2: string;
+  frontBullet3: string;
+  frontBullet4: string;
+  decisionsTitle: string;
+  decision1: string;
+  decision2: string;
+}
+
+interface DocumentStackProps {
+  translations: DocumentStackTranslations;
+}
+
 /**
  * DocumentStack
  *
@@ -12,7 +34,7 @@ import { useEffect, useRef } from 'react';
  *
  * If the breathing motion is consciously noticeable, it's too much.
  */
-export function DocumentStack() {
+export function DocumentStack({ translations: t }: DocumentStackProps) {
   const shouldReduceMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
@@ -81,15 +103,21 @@ export function DocumentStack() {
 
   // Data for bullets and decisions
   const bulletItems = [
-    { label: 'A', opacity: 100, text: 'Focus on enterprise onboarding flow redesign' },
-    { label: 'B', opacity: 80, text: 'Defer mobile app to Q1 based on resource constraints' },
-    { label: 'C', opacity: 60, text: 'API v2 launch targeting November release' },
-    { label: 'D', opacity: 40, text: 'Hire two senior engineers for platform team' },
+    { label: 'A', opacity: 100, text: t.frontBullet1 },
+    { label: 'B', opacity: 80, text: t.frontBullet2 },
+    { label: 'C', opacity: 60, text: t.frontBullet3 },
+    { label: 'D', opacity: 40, text: t.frontBullet4 },
   ];
 
   const decisionItems = [
-    'Proceed with Stripe integration over PayPal',
-    'Delay internationalization until Q2',
+    t.decision1,
+    t.decision2,
+  ];
+
+  const backPoints = [
+    t.backPoint1,
+    t.backPoint2,
+    t.backPoint3,
   ];
 
   return (
@@ -106,7 +134,7 @@ export function DocumentStack() {
         >
           {/* Document header with title and logotype */}
           <div className="flex items-start justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-400">Client Follow-up Email</h3>
+            <h3 className="text-xl font-semibold text-gray-400">{t.backTitle}</h3>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logotype.svg"
@@ -116,13 +144,13 @@ export function DocumentStack() {
             />
           </div>
           <div className="space-y-3 text-gray-300 text-sm mb-6">
-            <p>Hi Sarah,</p>
-            <p>Following up on our call regarding the Q4 timeline...</p>
-            <p>Key points we discussed:</p>
+            <p>{t.backGreeting}</p>
+            <p>{t.backIntro}</p>
+            <p>{t.backPointsIntro}</p>
             <ul className="space-y-2 ml-4 opacity-80">
-              <li>• Enterprise onboarding priority confirmed</li>
-              <li>• Mobile app postponed to Q1</li>
-              <li>• API v2 on track for November</li>
+              {backPoints.map((point, i) => (
+                <li key={i}>• {point}</li>
+              ))}
             </ul>
           </div>
         </motion.div>
@@ -142,7 +170,7 @@ export function DocumentStack() {
           >
             {/* Title - first to appear */}
             <motion.div variants={itemVariants} className="mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Q4 Product Strategy</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t.frontTitle}</h3>
             </motion.div>
 
             {/* Bullet points - staggered */}
@@ -162,7 +190,7 @@ export function DocumentStack() {
 
             {/* Decisions section - after bullets */}
             <motion.div variants={itemVariants} className="border-t border-gray-100 pt-6">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">Decisions</h4>
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.decisionsTitle}</h4>
               <ul className="space-y-3 text-gray-600 text-sm">
                 {decisionItems.map((item, i) => (
                   <motion.li key={i} variants={checkmarkVariants} className="flex items-center">

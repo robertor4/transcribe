@@ -59,7 +59,7 @@ export function FoldersProvider({ children }: FoldersProviderProps) {
     }
   }, []);
 
-  // Initial fetch - only when user ID changes
+  // Initial fetch - only when user ID changes and email is verified
   useEffect(() => {
     const userId = user?.uid || null;
 
@@ -69,11 +69,14 @@ export function FoldersProvider({ children }: FoldersProviderProps) {
       hasFetchedRef.current = false;
     }
 
-    if (user && !hasFetchedRef.current) {
+    if (user && user.emailVerified && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       fetchFolders();
     } else if (!user) {
       setFolders([]);
+      setIsLoading(false);
+    } else if (user && !user.emailVerified) {
+      // User exists but email not verified - don't fetch, just stop loading
       setIsLoading(false);
     }
   }, [user, fetchFolders]);

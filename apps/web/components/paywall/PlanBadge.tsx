@@ -1,9 +1,9 @@
 'use client';
 
-import { Award, Crown, Zap } from 'lucide-react';
+import { Award, Crown } from 'lucide-react';
 
 interface PlanBadgeProps {
-  tier: 'free' | 'professional' | 'business' | 'enterprise' | 'payg';
+  tier: 'free' | 'professional' | 'enterprise';
   size?: 'sm' | 'md' | 'lg';
   showIcon?: boolean;
 }
@@ -20,20 +20,10 @@ export function PlanBadge({ tier, size = 'md', showIcon = true }: PlanBadgeProps
       icon: Crown,
       className: 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300',
     },
-    business: {
-      label: 'Business',
-      icon: Crown,
-      className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-    },
     enterprise: {
       label: 'Enterprise',
       icon: Crown,
       className: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300',
-    },
-    payg: {
-      label: 'Pay-As-You-Go',
-      icon: Zap,
-      className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
     },
   };
 

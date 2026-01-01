@@ -6,9 +6,9 @@ import {
   Edit3,
   Share2,
   MessageSquareQuote,
-  Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import type { GeneratedAnalysis, StructuredOutput } from '@transcribe/shared';
 import { getStructuredOutputPreview } from '@/components/outputTemplates';
 import { formatRelativeTime } from '@/lib/formatters';
@@ -19,8 +19,8 @@ interface AssetSidebarCardProps {
   isActive?: boolean;
 }
 
-// Icon mapping for output types
-function getOutputIcon(type: string): LucideIcon {
+// Icon mapping for output types - returns LucideIcon or null for default (AiIcon)
+function getOutputIcon(type: string): LucideIcon | null {
   switch (type) {
     case 'email':
     case 'followUpEmail':
@@ -37,7 +37,7 @@ function getOutputIcon(type: string): LucideIcon {
     case 'communicationAnalysis':
       return MessageSquareQuote;
     default:
-      return Sparkles;
+      return null; // Use AiIcon for default
   }
 }
 
@@ -84,13 +84,23 @@ export function AssetSidebarCard({ asset, onClick, isActive = false }: AssetSide
             : 'bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA]'
           }
         `}>
-          <OutputIcon className={`
-            w-4 h-4 transition-colors duration-200
-            ${isActive
-              ? 'text-white'
-              : 'text-[#8D6AFA] group-hover:text-white'
-            }
-          `} />
+          {OutputIcon ? (
+            <OutputIcon className={`
+              w-4 h-4 transition-colors duration-200
+              ${isActive
+                ? 'text-white'
+                : 'text-[#8D6AFA] group-hover:text-white'
+              }
+            `} />
+          ) : (
+            <AiIcon size={16} className={`
+              transition-colors duration-200
+              ${isActive
+                ? 'text-white'
+                : 'text-[#8D6AFA] group-hover:text-white'
+              }
+            `} />
+          )}
         </div>
 
         {/* Content */}

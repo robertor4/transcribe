@@ -1,7 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import { CTAButton } from '@/components/landing/CTAButton';
 import { TransformationSection } from '@/components/landing/TransformationSection';
@@ -60,13 +60,45 @@ export default async function LandingPage({
               </div>
 
               {/* Right column — document stack with breathing motion + progressive reveal */}
-              <DocumentStack />
+              <DocumentStack translations={{
+                backTitle: t('hero.document.backTitle'),
+                backGreeting: t('hero.document.backGreeting'),
+                backIntro: t('hero.document.backIntro'),
+                backPointsIntro: t('hero.document.backPointsIntro'),
+                backPoint1: t('hero.document.backPoint1'),
+                backPoint2: t('hero.document.backPoint2'),
+                backPoint3: t('hero.document.backPoint3'),
+                frontTitle: t('hero.document.frontTitle'),
+                frontBullet1: t('hero.document.frontBullet1'),
+                frontBullet2: t('hero.document.frontBullet2'),
+                frontBullet3: t('hero.document.frontBullet3'),
+                frontBullet4: t('hero.document.frontBullet4'),
+                decisionsTitle: t('hero.document.decisionsTitle'),
+                decision1: t('hero.document.decision1'),
+                decision2: t('hero.document.decision2'),
+              }} />
             </div>
           </div>
         </section>
 
         {/* 2. Proof by Transformation — animated recording → document */}
-        <TransformationSection />
+        <TransformationSection translations={{
+          recording: t('transformation.recording'),
+          quote1: t('transformation.quote1'),
+          quote2: t('transformation.quote2'),
+          quote3: t('transformation.quote3'),
+          quote4: t('transformation.quote4'),
+          quote5: t('transformation.quote5'),
+          quote6: t('transformation.quote6'),
+          documentTitle: t('transformation.documentTitle'),
+          greeting: t('transformation.greeting'),
+          intro: t('transformation.intro'),
+          point1: t('transformation.point1'),
+          point2: t('transformation.point2'),
+          point3: t('transformation.point3'),
+          nextStepLabel: t('transformation.nextStepLabel'),
+          nextStepText: t('transformation.nextStepText'),
+        }} />
 
         {/* 3. How It Works — with brand-colored icons */}
         <section id="how-it-works" className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="how-heading">
@@ -208,61 +240,19 @@ export default async function LandingPage({
 
             <ScrollAnimation delay={200}>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <Link
-                  href={`/${locale}/signup`}
-                  className="inline-flex items-center justify-center px-8 py-3.5 font-semibold text-base rounded-full bg-white text-[#3F38A0] hover:bg-gray-100 transition-all shadow-lg"
-                >
+                <CTAButton href={`/${locale}/signup`} variant="light">
                   {t('closingCta.ctaPrimary')}
-                </Link>
-                <Link
-                  href={`/${locale}/examples`}
-                  className="text-white/80 hover:text-white font-medium transition-colors underline underline-offset-4"
-                >
+                </CTAButton>
+                <SecondaryLink href={`/${locale}/examples`}>
                   {t('closingCta.ctaSecondary')}
-                </Link>
+                </SecondaryLink>
               </div>
             </ScrollAnimation>
           </div>
         </section>
 
         {/* 6. Footer — dark brand footer */}
-        <footer className="py-16 px-6 sm:px-8 lg:px-12 bg-[#23194B]" aria-label="Footer">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 mb-12">
-              {/* White logo for dark background */}
-              <Link href={`/${locale}/landing`} className="flex items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/assets/logos/neural-summary-logo-white.svg"
-                  alt="Neural Summary"
-                  className="h-10 w-auto"
-                  width={200}
-                  height={40}
-                />
-              </Link>
-
-              {/* Navigation */}
-              <nav className="flex flex-wrap gap-8 text-sm text-gray-400">
-                <Link href={`/${locale}/features`} className="hover:text-white transition-colors">
-                  {t('footer.product')}
-                </Link>
-                <Link href={`/${locale}/examples`} className="hover:text-white transition-colors">
-                  {t('footer.examples')}
-                </Link>
-                <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">
-                  {t('footer.security')}
-                </Link>
-                <Link href={`/${locale}/contact`} className="hover:text-white transition-colors">
-                  {t('footer.contact')}
-                </Link>
-              </nav>
-            </div>
-
-            <div className="text-sm text-gray-500">
-              {t('footer.copyright')}
-            </div>
-          </div>
-        </footer>
+        <PublicFooter locale={locale} />
 
         {/* JSON-LD Structured Data for SEO */}
         <script

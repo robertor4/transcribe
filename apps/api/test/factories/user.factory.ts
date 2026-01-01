@@ -52,21 +52,6 @@ export function createProfessionalUser(overrides: Partial<User> = {}): User {
 }
 
 /**
- * Creates a PAYG (Pay As You Go) user with credits
- */
-export function createPaygUser(
-  credits = 10,
-  overrides: Partial<User> = {},
-): User {
-  return createTestUser({
-    subscriptionTier: 'payg',
-    stripeCustomerId: 'cus_payg123',
-    paygCredits: credits,
-    ...overrides,
-  });
-}
-
-/**
  * Creates an admin user
  */
 export function createAdminUser(overrides: Partial<User> = {}): User {

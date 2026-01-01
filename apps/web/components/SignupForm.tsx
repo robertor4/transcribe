@@ -183,8 +183,8 @@ export default function SignupForm() {
               {tAuth('displayName')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <User className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="displayName"
@@ -194,8 +194,7 @@ export default function SignupForm() {
                 required
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
-                placeholder={tAuth('enterYourName')}
+                className="appearance-none block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               />
             </div>
           </div>
@@ -206,8 +205,8 @@ export default function SignupForm() {
               {tAuth('email')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <Mail className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="email"
@@ -217,8 +216,7 @@ export default function SignupForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
-                placeholder={tAuth('enterYourEmail')}
+                className="appearance-none block w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               />
             </div>
           </div>
@@ -229,8 +227,8 @@ export default function SignupForm() {
               {tAuth('password')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="password"
@@ -240,19 +238,18 @@ export default function SignupForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
-                placeholder={tAuth('createPassword')}
+                className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center z-10"
                 aria-label={showPassword ? tAuth('hidePassword') : tAuth('showPassword')}
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                 )}
               </button>
             </div>
@@ -282,8 +279,8 @@ export default function SignupForm() {
               {tAuth('confirmPassword')}
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <Lock className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 id="confirmPassword"
@@ -293,19 +290,18 @@ export default function SignupForm() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="appearance-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
-                placeholder={tAuth('confirmYourPassword')}
+                className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center z-10"
                 aria-label={showConfirmPassword ? tAuth('hidePassword') : tAuth('showPassword')}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                 ) : (
-                  <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
+                  <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
                 )}
               </button>
             </div>

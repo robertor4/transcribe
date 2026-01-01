@@ -15,10 +15,10 @@ import {
   ChevronRight,
   FileText,
   MessageSquare,
-  Sparkles,
   CaseSensitive,
   WholeWord,
 } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import { Button } from '@/components/Button';
 import { findReplaceApi } from '@/lib/api';
 import type {
@@ -647,7 +647,7 @@ export function FindReplaceSlidePanel({
                   <MatchCategory
                     key={asset.analysisId}
                     title={`${t('categories.aiAssets')}: ${asset.templateName}`}
-                    icon={<Sparkles className="w-4 h-4" />}
+                    icon={<AiIcon size={16} />}
                     matches={asset.matches}
                     selectedIds={selectedMatchIds}
                     expanded={expandedCategories.has(asset.analysisId)}

@@ -20,11 +20,11 @@ import {
   Shield,
   FileText,
   MessageSquare,
-  Sparkles,
   Eye,
   EyeOff,
   Plus,
 } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import QRCode from 'qrcode';
 import { Button } from '@/components/Button';
 
@@ -497,7 +497,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       onChange={() => setIncludeAIAssets(!includeAIAssets)}
                       className="w-5 h-5 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
                     />
-                    <Sparkles className="w-5 h-5 text-[#8D6AFA]" />
+                    <AiIcon size={20} className="text-[#8D6AFA]" />
                     <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('includeAIAssets')}</span>
                   </label>
                 </div>

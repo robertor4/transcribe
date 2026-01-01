@@ -108,21 +108,24 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     }
   }, [user]);
 
-  // Initial fetch - only once when user is available
+  // Initial fetch - only once when user is available and email is verified
   useEffect(() => {
-    if (user && !hasFetchedRef.current) {
+    if (user && user.emailVerified && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
       fetchConversations(1);
     } else if (!user) {
       hasFetchedRef.current = false;
       setConversations([]);
       setIsLoading(false);
+    } else if (user && !user.emailVerified) {
+      // User exists but email not verified - don't fetch, just stop loading
+      setIsLoading(false);
     }
   }, [user, fetchConversations]);
 
-  // Initial fetch of recently opened - only once when user is available
+  // Initial fetch of recently opened - only once when user is available and verified
   useEffect(() => {
-    if (user && !hasFetchedRecentlyOpenedRef.current) {
+    if (user && user.emailVerified && !hasFetchedRecentlyOpenedRef.current) {
       hasFetchedRecentlyOpenedRef.current = true;
       fetchRecentlyOpened();
     } else if (!user) {

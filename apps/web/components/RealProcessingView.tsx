@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { FileAudio, MessageSquare, Sparkles, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { FileAudio, MessageSquare, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { transcriptionApi } from '@/lib/api';
 import { websocketService } from '@/lib/websocket';
@@ -265,7 +266,7 @@ export function RealProcessingView({
       case 'processing':
         return MessageSquare;
       case 'summarizing':
-        return Sparkles;
+        return null; // Use AiIcon
       case 'complete':
         return CheckCircle2;
       case 'error':
@@ -357,8 +358,10 @@ export function RealProcessingView({
                 >
                   {isActive && stage !== 'complete' ? (
                     <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                  ) : (
+                  ) : Icon ? (
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  ) : (
+                    <AiIcon size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
                   )}
                 </div>
                 <span

@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { getMinimumPaygPackage, getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
+import { getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
 import { formatBeginCheckoutParams, parsePricingTier, parseBillingCycle } from '@/utils/analytics-helpers';
 
 export default function CheckoutPage() {
@@ -48,8 +48,6 @@ export default function CheckoutPage() {
       let price = 0;
       if (tier === 'professional') {
         price = cycle === 'annual' ? pricing.professional.annualMonthly : pricing.professional.monthly;
-      } else if (tier === 'payg') {
-        price = getMinimumPaygPackage(currency).price;
       }
 
       // Track begin_checkout event
@@ -61,24 +59,13 @@ export default function CheckoutPage() {
       });
 
       // Determine endpoint and payload based on tier
-      let endpoint = '/stripe/create-checkout-session';
-      let payload: Record<string, string | number> = {
+      const endpoint = '/stripe/create-checkout-session';
+      const payload: Record<string, string | number> = {
         tier,
         billing: cycle, // Use cycle from URL param
         successUrl,
         cancelUrl,
       };
-
-      if (tier === 'payg') {
-        endpoint = '/stripe/create-payg-session';
-        const minimumPackage = getMinimumPaygPackage('USD'); // Backend always uses USD for Stripe
-        payload = {
-          amount: minimumPackage.price,
-          hours: minimumPackage.hours,
-          successUrl,
-          cancelUrl,
-        };
-      }
 
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',

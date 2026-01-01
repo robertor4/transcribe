@@ -163,7 +163,6 @@ export default function SubscriptionPage() {
   const tier = subscription?.tier || usageStats?.tier || 'free';
   const isFree = tier === 'free';
   const isProfessional = tier === 'professional';
-  const isPayg = tier === 'payg';
 
   return (
     <div className="space-y-8">
@@ -250,22 +249,6 @@ export default function SubscriptionPage() {
           </div>
         )}
 
-        {isPayg && usageStats && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">{t('paygCredits')}:</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                {usageStats.usage.hours.toFixed(1)} {t('hours')}
-              </span>
-            </div>
-            <Link
-              href="/checkout/payg"
-              className="mt-3 block text-center px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors text-sm font-medium"
-            >
-              {t('buyMoreCredits')}
-            </Link>
-          </div>
-        )}
         </div>
       </div>
 

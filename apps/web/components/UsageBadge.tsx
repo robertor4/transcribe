@@ -25,7 +25,7 @@ export function UsageBadge() {
     return null;
   }
 
-  const { tier, usage, limits, percentUsed, paygCredits } = usageStats;
+  const { tier, usage, limits, percentUsed } = usageStats;
 
   // Determine what to display based on tier
   let displayText = '';
@@ -34,12 +34,9 @@ export function UsageBadge() {
   if (tier === 'free') {
     displayText = `${usage.transcriptions}/${limits.transcriptions}`;
     tooltipText = `${usage.transcriptions} of ${limits.transcriptions} transcriptions used`;
-  } else if (tier === 'professional' || tier === 'business') {
+  } else if (tier === 'professional' || tier === 'enterprise') {
     displayText = `${usage.hours.toFixed(1)}/${limits.hours}h`;
     tooltipText = `${usage.hours.toFixed(1)} of ${limits.hours} hours used`;
-  } else if (tier === 'payg') {
-    displayText = `${paygCredits?.toFixed(1) || 0}h`;
-    tooltipText = `${paygCredits?.toFixed(1) || 0} hours remaining`;
   }
 
   // Color based on percentage

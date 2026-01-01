@@ -41,8 +41,8 @@ export interface User {
   // NEW: Last login tracking
   lastLogin?: Date; // When user last authenticated
 
-  // NEW: Subscription fields
-  subscriptionTier: 'free' | 'professional' | 'payg';
+  // Subscription fields
+  subscriptionTier: 'free' | 'professional' | 'enterprise';
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
@@ -50,16 +50,13 @@ export interface User {
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
 
-  // NEW: Usage tracking
+  // Usage tracking
   usageThisMonth: {
     hours: number;
     transcriptions: number;
     onDemandAnalyses: number;
     lastResetAt: Date;
   };
-
-  // NEW: Pay-As-You-Go credits
-  paygCredits?: number; // Remaining hours for PAYG users
 
   // DEPRECATED: Old subscription format (kept for backward compatibility)
   subscription?: {
@@ -981,7 +978,7 @@ export interface TranslateConversationResponse {
 // NEW: Subscription and pricing types
 
 export interface SubscriptionTier {
-  id: 'free' | 'payg' | 'professional' | 'business' | 'enterprise';
+  id: 'free' | 'professional' | 'enterprise';
   name: string;
   price: {
     monthly?: number;
@@ -1012,8 +1009,8 @@ export interface UsageRecord {
   durationSeconds: number;
   durationHours: number;
   type: 'transcription' | 'analysis' | 'translation';
-  tier: 'free' | 'professional' | 'payg';
-  cost?: number; // For PAYG or overages (in cents)
+  tier: 'free' | 'professional' | 'enterprise';
+  cost?: number; // For overages (in cents)
   createdAt: Date;
 }
 
@@ -1035,9 +1032,9 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     name: 'Free',
     price: {},
     limits: {
-      transcriptionsPerMonth: 3,
+      transcriptionsPerMonth: 5, // Updated from 3 - more generous free tier
       hoursPerMonth: undefined,
-      maxFileDuration: 30, // minutes
+      maxFileDuration: 60, // Updated from 30 minutes - more generous
       maxFileSize: 100 * 1024 * 1024, // 100MB
       onDemandAnalysesPerMonth: 2,
     },
@@ -1051,31 +1048,10 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       apiAccess: false,
     },
   },
-  payg: {
-    id: 'payg',
-    name: 'Pay As You Go',
-    price: {}, // PAYG pricing available in BASE_PRICING.usd.payg
-    limits: {
-      transcriptionsPerMonth: undefined, // unlimited
-      hoursPerMonth: undefined, // based on purchased credits
-      maxFileDuration: undefined, // unlimited
-      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
-      onDemandAnalysesPerMonth: undefined, // unlimited
-    },
-    features: {
-      coreAnalyses: true,
-      onDemandAnalyses: true,
-      translation: true,
-      advancedSharing: true,
-      batchUpload: true,
-      priorityProcessing: false,
-      apiAccess: false,
-    },
-  },
   professional: {
     id: 'professional',
-    name: 'Professional',
-    price: BASE_PRICING.usd.professional, // Reference centralized pricing
+    name: 'Pro',
+    price: BASE_PRICING.usd.professional, // Reference centralized pricing ($25/month)
     limits: {
       transcriptionsPerMonth: undefined, // unlimited
       hoursPerMonth: 60,
@@ -1090,40 +1066,16 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       advancedSharing: true,
       batchUpload: true,
       priorityProcessing: true,
-      apiAccess: false, // Add-on
-    },
-  },
-  business: {
-    id: 'business',
-    name: 'Business',
-    price: {
-      monthly: 79,
-      annual: 790, // 17% discount
-    },
-    limits: {
-      transcriptionsPerMonth: undefined,
-      hoursPerMonth: 200,
-      maxFileDuration: undefined,
-      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
-      onDemandAnalysesPerMonth: undefined,
-    },
-    features: {
-      coreAnalyses: true,
-      onDemandAnalyses: true,
-      translation: true,
-      advancedSharing: true,
-      batchUpload: true,
-      priorityProcessing: true,
-      apiAccess: true,
+      apiAccess: false, // Future add-on
     },
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterprise',
-    price: {}, // Custom pricing
+    price: {}, // Custom pricing - Contact Sales
     limits: {
       transcriptionsPerMonth: undefined,
-      hoursPerMonth: undefined,
+      hoursPerMonth: undefined, // Unlimited
       maxFileDuration: undefined,
       maxFileSize: 10 * 1024 * 1024 * 1024, // 10GB
       onDemandAnalysesPerMonth: undefined,

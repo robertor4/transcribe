@@ -38,6 +38,7 @@ import { updateConversationTitle, deleteConversation } from '@/lib/services/conv
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { QASlidePanel } from '@/components/QASlidePanel';
@@ -79,10 +80,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
+  const { usageStats } = useUsage();
   const { conversation, isLoading, error, updateConversationLocally, refresh } = useConversation(conversationId);
   const { folders } = useFoldersContext();
   const { refreshRecentlyOpened } = useConversationsContext();
   const tConversation = useTranslations('conversation');
+  const userTier = usageStats?.tier || 'free';
 
   // Translation state
   const {
@@ -540,6 +543,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                             status={translationStatus}
                             currentLocale={currentLocale}
                             isTranslating={isTranslating}
+                            userTier={userTier}
                             onSelectLocale={setLocale}
                             onTranslate={translate}
                           />

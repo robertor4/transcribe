@@ -12,11 +12,7 @@ import {
   createMockStripeInvoice,
   createMockStripeCustomer,
 } from '../../test/mocks';
-import {
-  createTestUser,
-  createProfessionalUser,
-  createPaygUser,
-} from '../../test/factories';
+import { createTestUser, createProfessionalUser } from '../../test/factories';
 import Stripe from 'stripe';
 
 describe('StripeService', () => {
@@ -219,79 +215,6 @@ describe('StripeService', () => {
           line_items: [
             {
               price: 'price_pro_annual',
-              quantity: 1,
-            },
-          ],
-        }),
-      );
-    });
-  });
-
-  describe('createPaygCheckoutSession', () => {
-    it('should create PAYG checkout session with correct metadata', async () => {
-      const user = createTestUser();
-      mockUserRepository.getUserById.mockResolvedValue(user);
-      mockStripe.customers.create.mockResolvedValue(
-        createMockStripeCustomer({ id: 'cus_test' }),
-      );
-      mockStripe.checkout.sessions.create.mockResolvedValue(
-        createMockStripeCheckoutSession({ mode: 'payment' as any }),
-      );
-
-      await service.createPaygCheckoutSession(
-        user.uid,
-        user.email,
-        1500, // $15 in cents
-        10, // 10 hours
-        'https://example.com/success',
-        'https://example.com/cancel',
-      );
-
-      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          mode: 'payment',
-          metadata: {
-            userId: user.uid,
-            type: 'payg',
-            hours: '10',
-          },
-        }),
-      );
-    });
-
-    it('should create session with correct price data', async () => {
-      const user = createTestUser();
-      mockUserRepository.getUserById.mockResolvedValue(user);
-      mockStripe.customers.create.mockResolvedValue(
-        createMockStripeCustomer({ id: 'cus_test' }),
-      );
-      mockStripe.checkout.sessions.create.mockResolvedValue(
-        createMockStripeCheckoutSession({ mode: 'payment' as any }),
-      );
-
-      await service.createPaygCheckoutSession(
-        user.uid,
-        user.email,
-        2500, // $25 in cents
-        20, // 20 hours
-        'https://example.com/success',
-        'https://example.com/cancel',
-        undefined,
-        'eur',
-      );
-
-      expect(mockStripe.checkout.sessions.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          line_items: [
-            {
-              price_data: {
-                currency: 'eur',
-                product_data: {
-                  name: 'Neural Summary Credits',
-                  description: '20 hours of transcription credit',
-                },
-                unit_amount: 2500,
-              },
               quantity: 1,
             },
           ],
@@ -515,31 +438,6 @@ describe('StripeService', () => {
         'USD',
         'professional',
         'monthly',
-      );
-    });
-
-    it('should add PAYG credits on one-time payment', async () => {
-      const user = createPaygUser(5);
-      mockUserRepository.getUserById.mockResolvedValue(user);
-
-      const session = createMockStripeCheckoutSession({
-        mode: 'payment' as any,
-        amount_total: 1500,
-        metadata: {
-          userId: user.uid,
-          type: 'payg',
-          hours: '10',
-        },
-      });
-
-      await service.handleCheckoutSessionCompleted(session);
-
-      expect(mockUserRepository.updateUser).toHaveBeenCalledWith(
-        user.uid,
-        expect.objectContaining({
-          subscriptionTier: 'payg',
-          paygCredits: 15, // 5 existing + 10 new
-        }),
       );
     });
 

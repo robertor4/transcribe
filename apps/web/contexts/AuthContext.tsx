@@ -127,7 +127,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const currentUser = auth.currentUser;
     if (currentUser) {
       await currentUser.reload();
-      // After reload, get the refreshed user and update state
+      // Force a new ID token to be generated with updated claims (like email_verified)
+      // This is crucial because the backend validates email_verified from the token
+      await currentUser.getIdToken(true);
+      // After reload and token refresh, get the refreshed user and update state
       setUser(auth.currentUser);
     }
   }, []);

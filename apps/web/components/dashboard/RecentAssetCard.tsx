@@ -7,9 +7,9 @@ import {
   Edit3,
   Share2,
   MessageSquareQuote,
-  Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import type { RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
 
@@ -18,8 +18,8 @@ interface RecentAssetCardProps {
   locale: string;
 }
 
-// Icon mapping for output types
-function getOutputIcon(type: string): LucideIcon {
+// Icon mapping for output types - returns LucideIcon or null for default (AiIcon)
+function getOutputIcon(type: string): LucideIcon | null {
   switch (type) {
     case 'email':
       return Mail;
@@ -32,7 +32,7 @@ function getOutputIcon(type: string): LucideIcon {
     case 'communicationAnalysis':
       return MessageSquareQuote;
     default:
-      return Sparkles;
+      return null; // Use AiIcon for default
   }
 }
 
@@ -48,7 +48,11 @@ export function RecentAssetCard({ asset, locale }: RecentAssetCardProps) {
       {/* Header: Icon + Title/Meta */}
       <div className="flex gap-3 mb-3">
         <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 group-hover:bg-[#8D6AFA] flex items-center justify-center flex-shrink-0 transition-colors duration-200">
-          <OutputIcon className="w-5 h-5 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+          {OutputIcon ? (
+            <OutputIcon className="w-5 h-5 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+          ) : (
+            <AiIcon size={20} className="text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-base font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug">

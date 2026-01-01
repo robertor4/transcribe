@@ -16,11 +16,12 @@
  * components share similar logic for filtering untranslated locales.
  */
 
-import { Globe, Check, Loader2, ChevronDown, Plus } from 'lucide-react';
+import { Globe, Check, Loader2, ChevronDown, Plus, Lock } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SUPPORTED_LOCALES } from '@transcribe/shared';
 import type { ConversationTranslations, LocaleTranslationStatus } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface TranslationDropdownProps {
   /** Translation status with available locales */
@@ -31,6 +32,8 @@ interface TranslationDropdownProps {
   isTranslating: boolean;
   /** Whether the dropdown is in read-only mode (for shared views) */
   readOnly?: boolean;
+  /** User's subscription tier - translation requires Pro or higher */
+  userTier?: string;
   /** Callback when user selects an existing locale */
   onSelectLocale: (localeCode: string) => void;
   /** Callback when user wants to translate to a new locale (not required in readOnly mode) */
@@ -42,10 +45,14 @@ export function TranslationDropdown({
   currentLocale,
   isTranslating,
   readOnly = false,
+  userTier = 'free',
   onSelectLocale,
   onTranslate,
 }: TranslationDropdownProps) {
   const t = useTranslations('conversation.translation');
+
+  // Translation requires Pro or higher
+  const canTranslate = userTier !== 'free';
 
   // Get current locale display name
   const getCurrentLabel = () => {
@@ -199,22 +206,44 @@ export function TranslationDropdown({
           {!readOnly && getUntranslatedLocales().length > 0 && (
             <>
               <DropdownMenu.Separator className="border-t border-gray-200 dark:border-gray-700" />
-              <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                {t('translateTo')}
-              </DropdownMenu.Label>
-              <div className="max-h-48 overflow-y-auto">
-                {getUntranslatedLocales().map((locale) => (
-                  <DropdownMenu.Item
-                    key={locale.code}
-                    onSelect={() => handleSelect(locale.code)}
-                    disabled={isTranslating}
-                    className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors outline-none cursor-pointer disabled:opacity-50"
+              {canTranslate ? (
+                <>
+                  <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    {t('translateTo')}
+                  </DropdownMenu.Label>
+                  <div className="max-h-48 overflow-y-auto">
+                    {getUntranslatedLocales().map((locale) => (
+                      <DropdownMenu.Item
+                        key={locale.code}
+                        onSelect={() => handleSelect(locale.code)}
+                        disabled={isTranslating}
+                        className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors outline-none cursor-pointer disabled:opacity-50"
+                      >
+                        <span>{locale.nativeName}</span>
+                        <Plus className="w-4 h-4 text-gray-400" />
+                      </DropdownMenu.Item>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="px-4 py-3">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                    <Lock className="w-4 h-4" />
+                    <span className="text-xs font-semibold uppercase tracking-wide">
+                      {t('proFeature')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {t('upgradeToTranslate')}
+                  </p>
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
                   >
-                    <span>{locale.nativeName}</span>
-                    <Plus className="w-4 h-4 text-gray-400" />
-                  </DropdownMenu.Item>
-                ))}
-              </div>
+                    {t('upgradeToPro')}
+                  </Link>
+                </div>
+              )}
             </>
           )}
 

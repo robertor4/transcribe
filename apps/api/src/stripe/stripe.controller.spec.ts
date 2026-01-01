@@ -45,11 +45,6 @@ describe('StripeController', () => {
       createCheckoutSession: jest
         .fn()
         .mockResolvedValue(createMockStripeCheckoutSession()),
-      createPaygCheckoutSession: jest
-        .fn()
-        .mockResolvedValue(
-          createMockStripeCheckoutSession({ mode: 'payment' as any }),
-        ),
       cancelSubscription: jest
         .fn()
         .mockResolvedValue(createMockStripeSubscription()),
@@ -164,53 +159,6 @@ describe('StripeController', () => {
         controller.createCheckoutSession(
           { user: { uid: user.uid, email: user.email } },
           { tier: 'professional' },
-        ),
-      ).rejects.toThrow(BadRequestException);
-    });
-  });
-
-  describe('POST /stripe/create-payg-session', () => {
-    it('should create PAYG session with valid amount and hours', async () => {
-      const user = createTestUser();
-      mockFirebaseService.getUser.mockResolvedValue(user);
-
-      const result = await controller.createPaygSession(
-        { user: { uid: user.uid, email: user.email } },
-        { amount: 15, hours: 10 },
-      );
-
-      expect(result.success).toBe(true);
-      expect(mockStripeService.createPaygCheckoutSession).toHaveBeenCalledWith(
-        user.uid,
-        user.email,
-        1500, // $15 in cents
-        10,
-        expect.any(String),
-        expect.any(String),
-        undefined,
-        undefined,
-        user.displayName,
-      );
-    });
-
-    it('should reject amount below $15 minimum', async () => {
-      const user = createTestUser();
-
-      await expect(
-        controller.createPaygSession(
-          { user: { uid: user.uid, email: user.email } },
-          { amount: 10, hours: 10 },
-        ),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should reject hours below 10 minimum', async () => {
-      const user = createTestUser();
-
-      await expect(
-        controller.createPaygSession(
-          { user: { uid: user.uid, email: user.email } },
-          { amount: 15, hours: 5 },
         ),
       ).rejects.toThrow(BadRequestException);
     });

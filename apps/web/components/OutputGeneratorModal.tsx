@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X, ArrowLeft, ArrowRight, Sparkles, AlertCircle, Mail, FileText, BarChart3 } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, AlertCircle, Mail, FileText, BarChart3, Lock } from 'lucide-react';
+import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { GeneratingLoader } from './GeneratingLoader';
 import { allTemplates, TemplateId, OutputTemplate } from '@/lib/outputTemplates';
 import { transcriptionApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
+import { useUsage } from '@/contexts/UsageContext';
+import { Link } from '@/i18n/navigation';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 
 // Filter out transcribe-only since we're already in a conversation with transcription
@@ -98,6 +101,14 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
   const t = useTranslations('aiAssets.modal');
   const tTemplates = useTranslations('aiAssets.templates');
   const tCommon = useTranslations('common');
+  const { usageStats, refreshUsage } = useUsage();
+
+  // Calculate quota status for free users
+  const isFreeUser = usageStats?.tier === 'free';
+  const usedCount = usageStats?.usage?.onDemandAnalyses ?? 0;
+  const limitCount = usageStats?.limits?.onDemandAnalyses ?? 2;
+  const remainingCount = Math.max(0, limitCount - usedCount);
+  const quotaExceeded = isFreeUser && remainingCount <= 0;
 
   // Helper to get translated template name and description
   const getTemplateName = (templateId: string) => tTemplates(`${templateId}.name` as Parameters<typeof tTemplates>[0]);
@@ -151,6 +162,8 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
 
       if (response.success && response.data) {
         setIsGenerating(false);
+        // Refresh usage stats to update quota count
+        refreshUsage();
         // Notify parent with the generated asset
         onOutputGenerated?.(response.data);
         // Close modal after showing success
@@ -167,7 +180,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
     }
   };
 
-  const canProceedFromStep1 = selectedType !== null;
+  const canProceedFromStep1 = selectedType !== null && !quotaExceeded;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -244,6 +257,40 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
           {/* Step 1: Select Output Type */}
           {step === 1 && (
             <div className="space-y-5">
+              {/* Quota Banner for Free Users */}
+              {isFreeUser && (
+                <div className={`rounded-lg p-4 ${quotaExceeded ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
+                  {quotaExceeded ? (
+                    <div className="flex items-start gap-3">
+                      <Lock className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+                          {t('quota.exceeded')}
+                        </p>
+                        <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                          {t('quota.exceededDescription', { limit: limitCount })}
+                        </p>
+                        <Link
+                          href="/pricing"
+                          className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-full transition-colors"
+                        >
+                          {t('quota.upgradeButton')}
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                        {remainingCount === 1
+                          ? t('quota.remaining', { count: remainingCount })
+                          : t('quota.remainingPlural', { count: remainingCount })}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 uppercase tracking-wide">
                   {t('whatToCreate')}
@@ -495,7 +542,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 <Button
                   variant="brand"
                   size="md"
-                  icon={<Sparkles className="w-4 h-4" />}
+                  icon={<AiIcon size={16} />}
                   onClick={handleGenerate}
                 >
                   {t('generateOutput')}

@@ -203,7 +203,6 @@ export class UserController {
       success: true,
       data: {
         ...stats,
-        paygCredits: user?.paygCredits,
         resetDate: nextReset,
       },
     };

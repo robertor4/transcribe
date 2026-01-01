@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Examples Page**: New `/examples` page showcasing AI Asset outputs with typewriter animations
+  - Demonstrates 4 AI Asset types: Action Items, Follow-Up Email, Blog Post, LinkedIn Post
+  - Uses "Product Launch Meeting" scenario with realistic sample outputs
+  - Typewriter text animation reveals content character-by-character
+  - Respects `prefers-reduced-motion` for accessibility
+  - Translations for all 5 locales (en, de, es, fr, nl)
+  - On-brand copy following Neural Summary voice guidelines
+  - Authentic template styling: Email signatures, magazine-style blog images, LinkedIn post UI
+  - AI-generated abstract image for blog post example (via Replicate flux-dev)
+  - Files: [page.tsx](apps/web/app/[locale]/examples/page.tsx), [ExamplesPageClient.tsx](apps/web/components/examples/ExamplesPageClient.tsx), [TypewriterText.tsx](apps/web/components/examples/TypewriterText.tsx), [ExampleCard.tsx](apps/web/components/examples/ExampleCard.tsx), [exampleData.ts](apps/web/components/examples/exampleData.ts)
 - **Agile Backlog AI Asset Template**: New structured template for extracting product features into Agile epics and user stories
   - Supports epics with nested user stories and standalone stories for isolated features
   - Standard user story format: "As a [role], I want [feature], so that [benefit]"

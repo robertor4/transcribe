@@ -13,19 +13,41 @@ const DOC_CONTENT_DELAY_S = 0.3;  // Delay after card appears before content sta
 const DOC_ITEM_STAGGER_S = 0.12;  // Stagger between document content items (120ms)
 const HOLD_TIME_MS = 20000;       // Time document is shown before replay (20s)
 
-export function TransformationSection() {
+export interface TransformationTranslations {
+  recording: string;
+  quote1: string;
+  quote2: string;
+  quote3: string;
+  quote4: string;
+  quote5: string;
+  quote6: string;
+  documentTitle: string;
+  greeting: string;
+  intro: string;
+  point1: string;
+  point2: string;
+  point3: string;
+  nextStepLabel: string;
+  nextStepText: string;
+}
+
+interface TransformationSectionProps {
+  translations: TransformationTranslations;
+}
+
+export function TransformationSection({ translations: t }: TransformationSectionProps) {
   const shouldReduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
   const [animationKey, setAnimationKey] = useState(0);
 
   const quotes = [
-    { text: '"...so yeah, the demo went really well, they seemed excited about the analytics dashboard..."', opacityTarget: 0.9 },
-    { text: '"...right, and Sarah mentioned they need it integrated with Salesforce, that\'s a must-have..."', opacityTarget: 0.75, indent: 'ml-1 sm:ml-3' },
-    { text: '"...budget-wise she said they\'re looking at Q1, probably around 50 seats to start..."', opacityTarget: 0.6 },
-    { text: '"...oh and they want a pilot program first, maybe two weeks..."', opacityTarget: 0.5, indent: 'ml-2 sm:ml-4' },
-    { text: '"...I should probably send them the case study we did with Acme..."', opacityTarget: 0.45, indent: 'ml-1 sm:ml-2', hideOnMobile: true },
-    { text: '"...wait, did she say they also need SSO? I think she mentioned that..."', opacityTarget: 0.35, hideOnMobile: true },
+    { text: t.quote1, opacityTarget: 1 },
+    { text: t.quote2, opacityTarget: 0.9, indent: 'ml-1 sm:ml-3' },
+    { text: t.quote3, opacityTarget: 0.8 },
+    { text: t.quote4, opacityTarget: 0.7, indent: 'ml-2 sm:ml-4' },
+    { text: t.quote5, opacityTarget: 0.65, indent: 'ml-1 sm:ml-2', hideOnMobile: true },
+    { text: t.quote6, opacityTarget: 0.55, hideOnMobile: true },
   ];
 
   const quotesCount = quotes.length;
@@ -154,14 +176,17 @@ export function TransformationSection() {
               initial="hidden"
               animate={isInView ? 'visible' : 'hidden'}
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">Recording...</span>
+              <span className="relative flex items-center justify-center w-4 h-4">
+                <span className="absolute w-4 h-4 rounded-full border border-gray-300" />
+                <span className="w-2 h-2 rounded-full bg-[#14D0DC] animate-pulse" />
+              </span>
+              <span className="text-xs sm:text-sm text-gray-500 font-medium tracking-wide">{t.recording}</span>
             </motion.div>
 
             {/* Conversation quotes appearing one by one */}
             <motion.div
               key={`quotes-${animationKey}`}
-              className="space-y-3 sm:space-y-4 text-gray-400 text-sm sm:text-base leading-relaxed min-h-[180px] sm:min-h-[220px]"
+              className="space-y-3 sm:space-y-4 text-gray-600 text-sm sm:text-base leading-relaxed min-h-[180px] sm:min-h-[220px]"
               variants={quotesContainerVariants}
               initial="hidden"
               animate={isInView ? 'visible' : 'hidden'}
@@ -216,7 +241,7 @@ export function TransformationSection() {
               >
                 {/* Document header with thin rule and icon */}
                 <motion.div variants={docItemVariants} className="flex items-start justify-between mb-1">
-                  <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">Follow-up Email</h3>
+                  <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">{t.documentTitle}</h3>
                   <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                   </svg>
@@ -225,20 +250,20 @@ export function TransformationSection() {
 
                 {/* Email content */}
                 <div className="space-y-3 sm:space-y-4 text-gray-700 text-xs sm:text-sm lg:text-[15px]">
-                  <motion.p variants={docItemVariants} className="text-gray-600">Hi Sarah,</motion.p>
-                  <motion.p variants={docItemVariants}>Great speaking with you today about the analytics dashboard. A few key points from our call:</motion.p>
+                  <motion.p variants={docItemVariants} className="text-gray-600">{t.greeting}</motion.p>
+                  <motion.p variants={docItemVariants}>{t.intro}</motion.p>
                   <motion.ul variants={docItemVariants} className="space-y-1.5 sm:space-y-2 pl-4">
                     <li className="flex items-start">
                       <span className="text-[#8D6AFA] mr-2">•</span>
-                      <span>Salesforce integration — confirmed as must-have</span>
+                      <span>{t.point1}</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-[#8D6AFA] mr-2">•</span>
-                      <span>50 seats, targeting Q1 rollout</span>
+                      <span>{t.point2}</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-[#8D6AFA] mr-2">•</span>
-                      <span>2-week pilot program to start</span>
+                      <span>{t.point3}</span>
                     </li>
                   </motion.ul>
                 </div>
@@ -246,8 +271,8 @@ export function TransformationSection() {
                 {/* Next steps section */}
                 <motion.div variants={docItemVariants} className="border-t border-gray-100 pt-3 sm:pt-4 mt-4">
                   <p className="text-xs sm:text-sm text-gray-600">
-                    <span className="font-semibold text-gray-800">Next step:</span>{' '}
-                    Sending case study by EOD Friday.
+                    <span className="font-semibold text-gray-800">{t.nextStepLabel}</span>{' '}
+                    {t.nextStepText}
                   </p>
                 </motion.div>
               </motion.div>

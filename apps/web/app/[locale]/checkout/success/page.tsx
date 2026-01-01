@@ -55,9 +55,6 @@ export default function CheckoutSuccessPage({
           if (tier === 'professional') {
             // Assume monthly for now - Stripe webhooks will have more accurate data
             price = pricing.professional.monthly;
-          } else if (tier === 'payg') {
-            // PAYG pricing varies - use a default or fetch from session
-            price = 15; // Minimum PAYG package
           }
 
           // Track purchase event

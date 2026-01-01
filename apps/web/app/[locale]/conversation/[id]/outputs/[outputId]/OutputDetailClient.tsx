@@ -16,7 +16,6 @@ import {
   Trash2,
   StickyNote,
   ImagePlus,
-  Sparkles,
   Replace,
   MoreVertical,
 } from 'lucide-react';
@@ -313,7 +312,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
                 ...(isBlogPost && isPremiumUser
                   ? [
                       {
-                        icon: isGeneratingImage ? Loader2 : Sparkles,
+                        icon: isGeneratingImage ? Loader2 : ImagePlus,
                         label: isGeneratingImage
                           ? 'Generating...'
                           : hasHeroImage

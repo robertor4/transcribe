@@ -21,7 +21,6 @@ import {
   BarChart3,
   Copy,
   Check,
-  Sparkles,
   ChevronDown,
   Mail,
   CheckSquare,
@@ -33,14 +32,15 @@ import {
   Globe,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import type { StructuredOutput } from '@transcribe/shared';
 import { getStructuredOutputPreview } from '@/components/outputTemplates';
 import { formatRelativeTime } from '@/lib/formatters';
 import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 
-// Icon mapping for output types (matching AssetSidebarCard)
-function getOutputIcon(type: string): LucideIcon {
+// Icon mapping for output types (matching AssetSidebarCard) - returns LucideIcon or null for default (AiIcon)
+function getOutputIcon(type: string): LucideIcon | null {
   switch (type) {
     case 'email':
     case 'followUpEmail':
@@ -57,7 +57,7 @@ function getOutputIcon(type: string): LucideIcon {
     case 'communicationAnalysis':
       return MessageSquareQuote;
     default:
-      return Sparkles;
+      return null; // Use AiIcon for default
   }
 }
 
@@ -553,7 +553,7 @@ export default function SharedTranscriptionPage() {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
+                      <AiIcon size={16} />
                       AI Assets
                     </span>
                   </button>
@@ -772,13 +772,23 @@ export default function SharedTranscriptionPage() {
                                 : 'bg-purple-50 group-hover:bg-[#8D6AFA]'
                               }
                             `}>
-                              <OutputIcon className={`
-                                w-4 h-4 transition-colors duration-200
-                                ${isExpanded
-                                  ? 'text-white'
-                                  : 'text-[#8D6AFA] group-hover:text-white'
-                                }
-                              `} />
+                              {OutputIcon ? (
+                                <OutputIcon className={`
+                                  w-4 h-4 transition-colors duration-200
+                                  ${isExpanded
+                                    ? 'text-white'
+                                    : 'text-[#8D6AFA] group-hover:text-white'
+                                  }
+                                `} />
+                              ) : (
+                                <AiIcon size={16} className={`
+                                  transition-colors duration-200
+                                  ${isExpanded
+                                    ? 'text-white'
+                                    : 'text-[#8D6AFA] group-hover:text-white'
+                                  }
+                                `} />
+                              )}
                             </div>
 
                             {/* Content */}

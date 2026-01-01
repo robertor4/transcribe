@@ -169,34 +169,6 @@ export class UsageService {
       }
     }
 
-    // Check PAYG credits
-    if (tier === 'payg') {
-      const estimatedHours = estimatedDurationMinutes / 60;
-      const requiredCredits = estimatedHours; // 1 credit = 1 hour
-      const availableCredits = user.paygCredits || 0;
-
-      if (availableCredits < requiredCredits) {
-        throw new PaymentRequiredException(
-          `Insufficient PAYG credits. Required: ${requiredCredits.toFixed(2)} hours, Available: ${availableCredits.toFixed(2)} hours. Purchase more credits to continue.`,
-          'QUOTA_EXCEEDED_PAYG_CREDITS',
-        );
-      }
-
-      // Check file size limit (5GB for PAYG)
-      if (
-        tierLimits.limits.maxFileSize &&
-        fileSizeBytes > tierLimits.limits.maxFileSize
-      ) {
-        const maxSizeGB = Math.floor(
-          tierLimits.limits.maxFileSize / (1024 * 1024 * 1024),
-        );
-        throw new PaymentRequiredException(
-          `File size exceeds PAYG tier limit (${maxSizeGB}GB). Contact support for Enterprise tier.`,
-          'QUOTA_EXCEEDED_FILESIZE',
-        );
-      }
-    }
-
     this.logger.log(`Quota check passed for user ${userId} (${tier})`);
   }
 
@@ -277,24 +249,9 @@ export class UsageService {
       `Tracking transcription for user ${userId}: +${durationHours.toFixed(2)} hours, total: ${usage.hours.toFixed(2)} hours`,
     );
 
-    // Deduct PAYG credits if applicable
-    if (tier === 'payg') {
-      const currentCredits = user.paygCredits || 0;
-      const newCredits = Math.max(0, currentCredits - durationHours);
-
-      await this.userRepository.updateUser(userId, {
-        paygCredits: newCredits,
-        usageThisMonth: usage,
-      });
-
-      this.logger.log(
-        `Deducted ${durationHours.toFixed(2)} PAYG credits from user ${userId}. Remaining: ${newCredits.toFixed(2)}`,
-      );
-    } else {
-      await this.userRepository.updateUser(userId, {
-        usageThisMonth: usage,
-      });
-    }
+    await this.userRepository.updateUser(userId, {
+      usageThisMonth: usage,
+    });
 
     // Create usage record for analytics
     try {
@@ -305,7 +262,6 @@ export class UsageService {
         durationHours,
         type: 'transcription',
         tier,
-        cost: tier === 'payg' ? Math.ceil(durationHours * 150) : undefined, // $1.50/hour in cents
       });
     } catch (error) {
       this.logger.error(`Failed to create usage record: ${error.message}`);
@@ -473,12 +429,6 @@ export class UsageService {
         `You have ${overage.hours.toFixed(2)} hours of overage charges ($${(overage.amount / 100).toFixed(2)})`,
       );
     }
-    if (tier === 'payg' && user.paygCredits && user.paygCredits < 5) {
-      warnings.push(
-        `Low PAYG credits: ${user.paygCredits.toFixed(2)} hours remaining`,
-      );
-    }
-
     return {
       tier,
       usage,

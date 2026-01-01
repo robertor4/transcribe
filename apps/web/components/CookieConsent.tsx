@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Cookie, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from './Button';
 
 export function CookieConsent() {
   const { setAnalyticsConsent } = useAnalytics();
@@ -35,18 +36,18 @@ export function CookieConsent() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 sm:p-8">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-[#8D6AFA] rounded-lg">
-                <Cookie className="h-6 w-6 text-white" />
+              <div className="p-2 bg-[#8D6AFA] rounded-full">
+                <Cookie className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                   We use cookies to improve your experience
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                   Help us make Neural Summary better by allowing analytics
                 </p>
               </div>
@@ -109,18 +110,22 @@ export function CookieConsent() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
+              <Button
                 onClick={handleAccept}
-                className="flex-1 px-6 py-3 bg-[#8D6AFA] text-white font-medium rounded-lg hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                variant="brand"
+                size="md"
+                fullWidth
               >
                 Accept Analytics
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDecline}
-                className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                variant="ghost"
+                size="md"
+                fullWidth
               >
                 Decline
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -16,14 +16,18 @@ export function PricingFAQ() {
   const pricing = getPricingForLocale(locale);
   const currency = getCurrencyForLocale(locale);
   const professionalPrice = formatPriceLocale(pricing.professional.monthly, locale, { decimals: 0 });
-  const paygPrice = formatPriceLocale(pricing.payg.hourly, locale, { decimals: 2 });
+  const annualPrice = formatPriceLocale(pricing.professional.annual, locale, { decimals: 0 });
   const overageRateConverted = convertFromUsd(OVERAGE_RATE_USD, currency.code);
   const overageRate = formatPriceLocale(overageRateConverted, locale, { decimals: 2 });
 
   const faqs = [
     {
+      question: t('questions.trial.question'),
+      answer: t('questions.trial.answer'),
+    },
+    {
       question: t('questions.cost.question'),
-      answer: t('questions.cost.answer', { professionalPrice, paygPrice, overageRate }),
+      answer: t('questions.cost.answer', { professionalPrice, annualPrice, overageRate }),
     },
     {
       question: t('questions.overage.question'),
@@ -34,16 +38,12 @@ export function PricingFAQ() {
       answer: t('questions.cancel.answer'),
     },
     {
-      question: t('questions.currency.question'),
-      answer: t('questions.currency.answer'),
-    },
-    {
       question: t('questions.upgrade.question'),
       answer: t('questions.upgrade.answer'),
     },
     {
-      question: t('questions.payg.question'),
-      answer: t('questions.payg.answer', { paygPrice }),
+      question: t('questions.enterprise.question'),
+      answer: t('questions.enterprise.answer'),
     },
   ];
 
