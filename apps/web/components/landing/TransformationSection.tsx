@@ -12,8 +12,9 @@ export function TransformationSection() {
     { text: '"...so yeah, the demo went really well, they seemed excited about the analytics dashboard..."', opacity: 'opacity-90' },
     { text: '"...right, and Sarah mentioned they need it integrated with Salesforce, that\'s a must-have..."', opacity: 'opacity-75', indent: 'ml-1 sm:ml-3' },
     { text: '"...budget-wise she said they\'re looking at Q1, probably around 50 seats to start..."', opacity: 'opacity-60' },
-    { text: '"...oh and they want a pilot program first, maybe two weeks..."', opacity: 'opacity-50', indent: 'ml-2 sm:ml-4', hideOnMobile: true },
-    { text: '"...I should probably send them the case study we did with..."', opacity: 'opacity-40', hideOnLarge: true },
+    { text: '"...oh and they want a pilot program first, maybe two weeks..."', opacity: 'opacity-50', indent: 'ml-2 sm:ml-4' },
+    { text: '"...I should probably send them the case study we did with Acme..."', opacity: 'opacity-45', indent: 'ml-1 sm:ml-2', hideOnMobile: true },
+    { text: '"...wait, did she say they also need SSO? I think she mentioned that..."', opacity: 'opacity-35', hideOnMobile: true },
   ];
 
   const quotesCount = quotes.length;
@@ -63,10 +64,10 @@ export function TransformationSection() {
       setShowDocument(true);
     }, 800 * quotesCount + 1000);
 
-    // After 5 seconds of completion, replay the animation
+    // After 8 seconds of completion, replay the animation
     const replayTimer = setTimeout(() => {
       resetAnimation();
-    }, 800 * quotesCount + 1000 + 5000); // 5 seconds after document appears
+    }, 800 * quotesCount + 1000 + 8000); // 8 seconds after document appears
 
     return () => {
       quoteTimers.forEach(clearTimeout);
@@ -103,7 +104,6 @@ export function TransformationSection() {
                     ${quote.opacity}
                     ${quote.indent || ''}
                     ${quote.hideOnMobile ? 'hidden sm:block' : ''}
-                    ${quote.hideOnLarge ? 'hidden lg:block' : ''}
                     transition-all duration-500
                     ${index < visibleQuotes ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}
                   `}

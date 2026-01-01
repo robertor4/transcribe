@@ -1024,13 +1024,11 @@
       "headline": "This is not a meeting summary.",
       "line1": "Meeting summaries record what was said.",
       "line2": "Neural Summary produces what comes next.",
-      "bullet1": "Decisions",
-      "bullet2": "Structured notes",
-      "bullet3": "Shareable documents"
+      "tagline": "From conversation to decisions."
     },
     "audience": {
       "headline": "Built for people who ship work.",
-      "description": "Neural Summary is designed for professionals who think out loud and deliver structured output.",
+      "description": "For professionals who think out loud — and expect results.",
       "role1": "Product managers",
       "role2": "Engineering leads",
       "role3": "Consultants",
@@ -1039,43 +1037,23 @@
     "how": {
       "headline": "How it works",
       "step1": {
-        "title": "Speak naturally",
+        "title": "Speak freely",
         "description": "Record a conversation, meeting, or voice memo."
       },
       "step2": {
-        "title": "Neural Summary structures",
+        "title": "We structure",
         "description": "Content is organized and formatted automatically."
       },
       "step3": {
-        "title": "Get a usable document",
+        "title": "You move forward",
         "description": "Ready to share, send, or act on."
-      }
-    },
-    "outputs": {
-      "headline": "What you get",
-      "type1": {
-        "title": "Decision summaries",
-        "description": "Key decisions extracted and clearly stated."
-      },
-      "type2": {
-        "title": "Feature specifications",
-        "description": "Product requirements structured for development."
-      },
-      "type3": {
-        "title": "Structured notes",
-        "description": "Organized content with clear hierarchy."
-      },
-      "type4": {
-        "title": "Client-ready reports",
-        "description": "Professional documents ready to send."
       }
     },
     "trust": {
       "headline": "Designed for professional environments.",
-      "statement1": "Predictable, consistent outputs.",
-      "statement2": "Designed for clarity and structure.",
-      "statement3": "Suitable for internal and client use.",
-      "privacy": "Audio deleted after 30 days. Text retained securely."
+      "description": "Neural Summary is built for work that leaves the room. Not drafts. Not notes. Decisions, specifications, and documents people rely on.",
+      "reinforcement": "Same structure every time. Ready for internal use or client delivery.",
+      "proof": "Built for teams that ship, decide, and deliver."
     },
     "closingCta": {
       "headline": "From conversation to document.",

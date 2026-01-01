@@ -20,23 +20,24 @@ export default async function LandingPage({
 
       <div className="min-h-screen bg-white">
 
-        {/* 1. Hero Section — deep purple background with subtle dot pattern */}
+        {/* 1. Hero Section — deep purple background with white dot pattern */}
         <section
-          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden"
+          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative"
           aria-label="Hero section"
         >
-          {/* Animated drifting dot pattern background - double width for seamless loop */}
+          {/* Dot pattern with gradient fade: 0% opacity left → 50% opacity right */}
           <div
-            className="absolute inset-0 w-[200%] animate-drift-left"
+            className="absolute inset-0"
             style={{
-              backgroundImage: 'url(/assets/images/dotted-background-light.webp)',
-              backgroundRepeat: 'repeat',
-              backgroundSize: 'auto',
+              backgroundImage: 'url(/assets/images/dotted-background-inverted.webp)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              maskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
+              opacity: 0.2,
             }}
             aria-hidden="true"
           />
-          {/* Subtle overlay to tone down the dots pattern */}
-          <div className="absolute inset-0 bg-[#23194B]/85" aria-hidden="true"></div>
           <div className="max-w-7xl mx-auto w-full relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Left column — headline, subtitle, CTAs */}
@@ -160,8 +161,34 @@ export default async function LandingPage({
         <TransformationSection />
 
         {/* 3. Category Clarification — dark accent background */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#23194B]" aria-labelledby="category-heading">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden" aria-labelledby="category-heading">
+          {/* Dot pattern — bottom right, rotated */}
+          <div
+            className="absolute -bottom-32 -right-32 w-[600px] h-[400px] pointer-events-none"
+            style={{
+              backgroundImage: 'url(/assets/images/dotted-background-inverted.webp)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'top left',
+              opacity: 0.15,
+              transform: 'rotate(-12deg) scale(2)',
+            }}
+            aria-hidden="true"
+          />
+          {/* Dot pattern — top left, rotated opposite direction, gradient fade */}
+          <div
+            className="absolute -top-24 -left-32 w-[500px] h-[350px] pointer-events-none"
+            style={{
+              backgroundImage: 'url(/assets/images/dotted-background-inverted.webp)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'bottom right',
+              maskImage: 'linear-gradient(to right, black 0%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to right, black 0%, transparent 100%)',
+              opacity: 0.15,
+              transform: 'rotate(15deg) scale(2)',
+            }}
+            aria-hidden="true"
+          />
+          <div className="max-w-3xl mx-auto text-center relative z-10">
             <ScrollAnimation>
               <h2 id="category-heading" className="text-4xl sm:text-5xl font-bold text-white mb-8">
                 {t('category.headline')}
@@ -178,11 +205,9 @@ export default async function LandingPage({
             </ScrollAnimation>
 
             <ScrollAnimation delay={400}>
-              <div className="flex flex-col sm:flex-row justify-center gap-8 text-lg text-gray-300">
-                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet1')}</span>
-                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet2')}</span>
-                <span className="flex items-center gap-2"><span className="text-[#14D0DC]">•</span> {t('category.bullet3')}</span>
-              </div>
+              <p className="text-2xl font-semibold text-[#14D0DC]">
+                {t('category.tagline')}
+              </p>
             </ScrollAnimation>
           </div>
         </section>
@@ -281,82 +306,36 @@ export default async function LandingPage({
           </div>
         </section>
 
-        {/* 6. Output Types — cards with colored top borders */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gray-50" aria-labelledby="outputs-heading">
-          <div className="max-w-4xl mx-auto">
-            <ScrollAnimation>
-              <h2 id="outputs-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 text-center mb-16">
-                {t('outputs.headline')}
-              </h2>
-            </ScrollAnimation>
-
-            <div className="grid sm:grid-cols-2 gap-8">
-              <ScrollAnimation delay={200}>
-                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#8D6AFA] shadow-sm hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type1.title')}</h3>
-                  <p className="text-gray-600">{t('outputs.type1.description')}</p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation delay={300}>
-                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#3F38A0] shadow-sm hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type2.title')}</h3>
-                  <p className="text-gray-600">{t('outputs.type2.description')}</p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation delay={400}>
-                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#14D0DC] shadow-sm hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type3.title')}</h3>
-                  <p className="text-gray-600">{t('outputs.type3.description')}</p>
-                </div>
-              </ScrollAnimation>
-
-              <ScrollAnimation delay={500}>
-                <div className="bg-white p-8 rounded-lg border border-gray-100 border-t-4 border-t-[#8D6AFA] shadow-sm hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('outputs.type4.title')}</h3>
-                  <p className="text-gray-600">{t('outputs.type4.description')}</p>
-                </div>
-              </ScrollAnimation>
-            </div>
-          </div>
-        </section>
-
-        {/* 7. Trust & Credibility — subtle gradient */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-white to-[#8D6AFA]/5" aria-labelledby="trust-heading">
+        {/* 6. Professional Standards — merged outputs and trust */}
+        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="trust-heading">
           <div className="max-w-3xl mx-auto text-center">
             <ScrollAnimation>
-              <h2 id="trust-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 mb-12">
+              <h2 id="trust-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
                 {t('trust.headline')}
               </h2>
             </ScrollAnimation>
 
             <ScrollAnimation delay={200}>
-              <ul className="space-y-4 text-lg text-gray-700 mb-12">
-                <li className="flex items-center justify-center gap-3">
-                  <span className="w-2 h-2 bg-[#8D6AFA] rounded-full flex-shrink-0"></span>
-                  {t('trust.statement1')}
-                </li>
-                <li className="flex items-center justify-center gap-3">
-                  <span className="w-2 h-2 bg-[#3F38A0] rounded-full flex-shrink-0"></span>
-                  {t('trust.statement2')}
-                </li>
-                <li className="flex items-center justify-center gap-3">
-                  <span className="w-2 h-2 bg-[#14D0DC] rounded-full flex-shrink-0"></span>
-                  {t('trust.statement3')}
-                </li>
-              </ul>
+              <p className="text-xl text-gray-700 mb-6">
+                {t('trust.description')}
+              </p>
             </ScrollAnimation>
 
             <ScrollAnimation delay={400}>
-              <p className="text-sm text-gray-500">
-                {t('trust.privacy')}
+              <p className="text-lg text-gray-600 mb-12">
+                {t('trust.reinforcement')}
+              </p>
+            </ScrollAnimation>
+
+            <ScrollAnimation delay={600}>
+              <p className="text-sm font-medium text-[#8D6AFA] tracking-wide uppercase">
+                {t('trust.proof')}
               </p>
             </ScrollAnimation>
           </div>
         </section>
 
-        {/* 8. Closing CTA — bold brand section */}
+        {/* 7. Closing CTA — bold brand section */}
         <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#3F38A0]" aria-label="Get started">
           <div className="max-w-3xl mx-auto text-center">
             <ScrollAnimation>
@@ -384,7 +363,7 @@ export default async function LandingPage({
           </div>
         </section>
 
-        {/* 9. Footer — dark brand footer */}
+        {/* 8. Footer — dark brand footer */}
         <footer className="py-16 px-6 sm:px-8 lg:px-12 bg-[#23194B]" aria-label="Footer">
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8 mb-12">
