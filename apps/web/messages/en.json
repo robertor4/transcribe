@@ -1010,7 +1010,8 @@
   "landing": {
     "hero": {
       "headline": "You speak. It creates.",
-      "subtitle": "Neural Summary turns spoken thinking into structured, professional output — so decisions don't get lost and follow-ups don't fall apart.",
+      "subtitlePart1": "Neural Summary turns spoken thinking into structured, professional output — ",
+      "subtitlePart2": "so decisions stick and work moves forward.",
       "ctaPrimary": "View example output",
       "ctaSecondary": "See how it works",
       "byline": "You speak. It creates."

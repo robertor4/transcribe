@@ -50,7 +50,7 @@ export default async function LandingPage({
 
                 <ScrollAnimation delay={200}>
                   <p className="text-xl sm:text-2xl text-gray-300 font-normal max-w-xl mx-auto lg:mx-0 mb-10">
-                    {t('hero.subtitle')}
+                    {t('hero.subtitlePart1')}<span className="text-[#14D0DC]">{t('hero.subtitlePart2')}</span>
                   </p>
                 </ScrollAnimation>
 

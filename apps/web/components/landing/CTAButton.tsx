@@ -14,7 +14,7 @@ interface CTAButtonProps {
 export function CTAButton({ href, locale, variant = 'primary', children, 'aria-label': ariaLabel }: CTAButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const baseClasses = "inline-flex items-center justify-center px-10 py-4 font-semibold text-lg rounded-full transform transition-all hover:scale-105 w-[240px]";
+  const baseClasses = "inline-flex items-center justify-center px-8 py-4 font-semibold text-base rounded-full transform transition-all hover:scale-105 whitespace-nowrap";
 
   // Primary variant - solid dark background (for light backgrounds)
   const primaryClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
@@ -65,20 +65,16 @@ export function CTAButton({ href, locale, variant = 'primary', children, 'aria-l
   }
 
   // Regular route link - use Next.js Link
-  if (locale) {
-    return (
-      <Link
-        href={`/${locale}${href}`}
-        className={getVariantClasses()}
-        style={getVariantStyle()}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
-      >
-        {children}
-      </Link>
-    );
-  }
-
-  return null;
+  return (
+    <Link
+      href={locale ? `/${locale}${href}` : href}
+      className={getVariantClasses()}
+      style={getVariantStyle()}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
+    >
+      {children}
+    </Link>
+  );
 }
