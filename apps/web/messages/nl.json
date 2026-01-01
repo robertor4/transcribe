@@ -346,7 +346,8 @@
       "recordTabAudio": "Tabblad audio opnemen",
       "includeMicrophone": "Mijn microfoon toevoegen",
       "recommendedForCalls": "Aanbevolen voor videogesprekken",
-      "usingMicrophone": "Gebruikt:"
+      "usingMicrophone": "Gebruikt:",
+      "switchingMicrophone": "Microfoon wordt gewisseld..."
     },
     "status": {
       "ready": "Klaar om op te nemen",

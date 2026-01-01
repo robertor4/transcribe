@@ -90,6 +90,9 @@ export function SimpleAudioRecorder({
     markAsUploaded,
     prepareForContinue,
     clearWarning,
+    swapMicrophone,
+    currentDeviceId,
+    isSwappingDevice,
     audioStream,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
@@ -132,6 +135,12 @@ export function SimpleAudioRecorder({
   const [isTestingMic, setIsTestingMic] = useState(false);
   const previewStreamRef = useRef<MediaStream | null>(null);
   const isStartingPreviewRef = useRef(false); // Guards against concurrent preview starts
+
+  // Auto-follow default device tracking
+  const previousDefaultLabelRef = useRef<string | null>(null);
+  const autoSwapDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  // Track previous device IDs to detect newly connected devices
+  const previousDeviceIdsRef = useRef<Set<string>>(new Set());
 
   // No audio detection warning
   const [hasDetectedAudio, setHasDetectedAudio] = useState(false);
@@ -196,12 +205,19 @@ export function SimpleAudioRecorder({
   // Track if we've already pre-selected a device (prevents re-running on selectedDeviceId change)
   const hasPreselectedDeviceRef = useRef(false);
 
-  // Fetch available audio input devices (only when not recording)
+  // Refs for auto-follow logic (to access current values in devicechange callback)
+  const stateRef = useRef(state);
+  const selectedSourceRef = useRef(selectedSource);
+  const currentDeviceIdRef = useRef(currentDeviceId);
+
+  // Keep refs in sync with state
+  useEffect(() => { stateRef.current = state; }, [state]);
+  useEffect(() => { selectedSourceRef.current = selectedSource; }, [selectedSource]);
+  useEffect(() => { currentDeviceIdRef.current = currentDeviceId; }, [currentDeviceId]);
+
+  // Fetch available audio input devices
+  // Note: We now enumerate during recording too, to detect newly plugged devices for hot-swap
   useEffect(() => {
-    // Don't enumerate devices during recording - this can interfere with active streams
-    if (state === 'recording' || state === 'paused') {
-      return;
-    }
 
     // Check if mediaDevices API is available (requires HTTPS or localhost)
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -233,6 +249,101 @@ export function SimpleAudioRecorder({
 
         setAudioDevices(audioInputs);
 
+        // Get the current default device label
+        const newDefaultDevice = audioInputs.find(d => d.deviceId === 'default');
+        const newDefaultLabel = newDefaultDevice?.label || null;
+
+        // Get current device IDs (excluding 'default' pseudo-device)
+        const currentDeviceIds = new Set(audioInputs.filter(d => d.deviceId !== 'default').map(d => d.deviceId));
+
+        // Check if we're recording with microphone and should auto-follow
+        const isRecordingMic =
+          (stateRef.current === 'recording' || stateRef.current === 'paused') &&
+          selectedSourceRef.current === 'microphone';
+
+        if (isRecordingMic) {
+          // Strategy 1: Check if system default changed (rare for Bluetooth on macOS)
+          const defaultLabelChanged = previousDefaultLabelRef.current && newDefaultLabel && newDefaultLabel !== previousDefaultLabelRef.current;
+
+          if (defaultLabelChanged) {
+            console.log(`[SimpleAudioRecorder] 🔄 AUTO-SWAP: Default device changed: "${previousDefaultLabelRef.current}" → "${newDefaultLabel}"`);
+
+            if (autoSwapDebounceRef.current) {
+              clearTimeout(autoSwapDebounceRef.current);
+            }
+            autoSwapDebounceRef.current = setTimeout(() => {
+              swapMicrophone(resolveRealDeviceId('default')).then(() => {
+                setSelectedDeviceId('default');
+                console.log('[SimpleAudioRecorder] ✅ Auto-swapped to new default device');
+              }).catch(err => {
+                console.error('[SimpleAudioRecorder] ❌ Failed to auto-swap to default:', err);
+              });
+            }, 500);
+          }
+
+          // Strategy 2: Detect newly connected device and auto-switch to it
+          // This handles Bluetooth headphones that macOS doesn't set as default input
+          if (previousDeviceIdsRef.current.size > 0) {
+            const newlyConnectedDevices = audioInputs.filter(d =>
+              d.deviceId !== 'default' && !previousDeviceIdsRef.current.has(d.deviceId)
+            );
+
+            if (newlyConnectedDevices.length > 0 && !defaultLabelChanged) {
+              // Prefer Bluetooth devices (user likely just connected headphones)
+              const bluetoothDevice = newlyConnectedDevices.find(d =>
+                d.label.toLowerCase().includes('bluetooth') ||
+                d.label.toLowerCase().includes('airpods') ||
+                d.label.toLowerCase().includes('wh-') ||  // Sony WH series
+                d.label.toLowerCase().includes('wf-')     // Sony WF series
+              );
+
+              const deviceToSwitch = bluetoothDevice || newlyConnectedDevices[0];
+
+              console.log(`[SimpleAudioRecorder] 🔄 AUTO-SWAP: New device connected: "${deviceToSwitch.label}"`);
+
+              if (autoSwapDebounceRef.current) {
+                clearTimeout(autoSwapDebounceRef.current);
+              }
+              autoSwapDebounceRef.current = setTimeout(() => {
+                swapMicrophone(deviceToSwitch.deviceId).then(() => {
+                  setSelectedDeviceId(deviceToSwitch.deviceId);
+                  console.log(`[SimpleAudioRecorder] ✅ Auto-swapped to newly connected: "${deviceToSwitch.label}"`);
+                }).catch(err => {
+                  console.error('[SimpleAudioRecorder] ❌ Failed to auto-swap to new device:', err);
+                });
+              }, 500);
+            }
+          }
+
+          // Check if current device was disconnected
+          const currentId = currentDeviceIdRef.current;
+          if (currentId) {
+            const currentDeviceStillExists = audioInputs.some(d =>
+              d.deviceId === currentId || d.label.includes(currentId.slice(0, 8))
+            );
+
+            if (!currentDeviceStillExists) {
+              console.log('[SimpleAudioRecorder] Current device disconnected, switching to default');
+
+              if (autoSwapDebounceRef.current) {
+                clearTimeout(autoSwapDebounceRef.current);
+              }
+              autoSwapDebounceRef.current = setTimeout(() => {
+                swapMicrophone(resolveRealDeviceId('default')).then(() => {
+                  setSelectedDeviceId('default');
+                  console.log('[SimpleAudioRecorder] Auto-swapped to default after device disconnect');
+                }).catch(err => {
+                  console.error('[SimpleAudioRecorder] Failed to auto-swap after disconnect:', err);
+                });
+              }, 500);
+            }
+          }
+        }
+
+        // Update tracking refs for next comparison
+        previousDefaultLabelRef.current = newDefaultLabel;
+        previousDeviceIdsRef.current = currentDeviceIds;
+
         // Pre-select the "default" pseudo-device if it exists (shows "Default - ..." in dropdown)
         // This gives the user a clear indication of what the system default is
         // Only do this once to avoid race conditions with the auto-start preview effect
@@ -252,12 +363,17 @@ export function SimpleAudioRecorder({
 
     getAudioDevices();
 
-    // Listen for device changes (only when not recording)
+    // Listen for device changes (including during recording for hot-swap)
     navigator.mediaDevices.addEventListener('devicechange', getAudioDevices);
     return () => {
       navigator.mediaDevices.removeEventListener('devicechange', getAudioDevices);
+      // Clean up debounce timer
+      if (autoSwapDebounceRef.current) {
+        clearTimeout(autoSwapDebounceRef.current);
+      }
     };
-  }, [state]); // Removed selectedDeviceId - we use a ref to track pre-selection instead
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // No dependencies - run once on mount, device changes are handled by event listener
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -511,6 +627,31 @@ export function SimpleAudioRecorder({
     reset();
     onCancel();
   }, [reset, onCancel, t]);
+
+  // Handle device swap during recording (microphone source only)
+  const handleDeviceSwap = useCallback(async (newDeviceId: string) => {
+    // Resolve 'default' pseudo-device to real device ID
+    const realDeviceId = resolveRealDeviceId(newDeviceId);
+    setSelectedDeviceId(newDeviceId);
+
+    // Swap the microphone in the active recording
+    await swapMicrophone(realDeviceId);
+  }, [swapMicrophone, resolveRealDeviceId]);
+
+  // Keep selectedDeviceId in sync with currentDeviceId from the hook
+  // This handles cases where the device changes through the hook (e.g., device disconnect)
+  useEffect(() => {
+    if (currentDeviceId && (state === 'recording' || state === 'paused')) {
+      // Find the device in our list that matches the currentDeviceId
+      const matchingDevice = audioDevices.find(d =>
+        d.deviceId === currentDeviceId ||
+        resolveRealDeviceId(d.deviceId) === currentDeviceId
+      );
+      if (matchingDevice && matchingDevice.deviceId !== selectedDeviceId) {
+        setSelectedDeviceId(matchingDevice.deviceId);
+      }
+    }
+  }, [currentDeviceId, state, audioDevices, selectedDeviceId, resolveRealDeviceId]);
 
   // Browser not supported
   if (!isSupported) {
@@ -916,6 +1057,30 @@ export function SimpleAudioRecorder({
                 {t('controls.stop')}
               </Button>
             </div>
+            {/* Microphone switcher during recording */}
+            {selectedSource === 'microphone' && audioDevices.length > 1 && (
+              <div className="flex items-center gap-2">
+                <Mic className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                <div className="relative flex-1">
+                  <select
+                    value={selectedDeviceId}
+                    onChange={(e) => handleDeviceSwap(e.target.value)}
+                    disabled={isSwappingDevice}
+                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 pr-8 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                  >
+                    {audioDevices.map((device) => (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+                </div>
+                {isSwappingDevice && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#8D6AFA] border-t-transparent" />
+                )}
+              </div>
+            )}
             {/* File size estimate and source indicator */}
             <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
               <span>
@@ -950,6 +1115,30 @@ export function SimpleAudioRecorder({
                 {t('controls.stop')}
               </Button>
             </div>
+            {/* Microphone switcher during paused state */}
+            {selectedSource === 'microphone' && audioDevices.length > 1 && (
+              <div className="flex items-center gap-2">
+                <Mic className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                <div className="relative flex-1">
+                  <select
+                    value={selectedDeviceId}
+                    onChange={(e) => handleDeviceSwap(e.target.value)}
+                    disabled={isSwappingDevice}
+                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 pr-8 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                  >
+                    {audioDevices.map((device) => (
+                      <option key={device.deviceId} value={device.deviceId}>
+                        {device.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
+                </div>
+                {isSwappingDevice && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#8D6AFA] border-t-transparent" />
+                )}
+              </div>
+            )}
             {/* File size estimate and source indicator */}
             <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
               <span>

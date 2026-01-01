@@ -20,6 +20,7 @@ import {
 import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordingStorage';
 import { mixAudioStreams } from '@/utils/audioMixer';
 import { mergeRecoveredWithNew } from '@/utils/audioMerge';
+import { HotSwapRecorder } from '@/utils/hotSwapRecorder';
 
 // Duration limits
 const MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
@@ -35,6 +36,7 @@ export interface UseMediaRecorderOptions {
   onStateChange?: (state: RecordingState) => void;
   onRecoveryAvailable?: (recordings: RecoverableRecording[]) => void;
   onDurationWarning?: () => void; // Called when approaching max duration
+  onDeviceSwapped?: (deviceId: string) => void; // Called when microphone is swapped mid-recording
   enableAutoSave?: boolean; // Default: true
   userId?: string; // Firebase user ID for scoping recordings (privacy/security)
 }
@@ -49,6 +51,8 @@ export interface UseMediaRecorderReturn {
   isSupported: boolean;
   canUseTabAudio: boolean;
   audioFormat: AudioFormat;
+  currentDeviceId: string | null; // Currently active microphone device ID
+  isSwappingDevice: boolean; // True while swapping microphone
 
   // Actions
   startRecording: (source: RecordingSource, deviceId?: string) => Promise<void>;
@@ -60,6 +64,7 @@ export interface UseMediaRecorderReturn {
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
   prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => void; // Prepare to continue from a recovered recording
   clearWarning: () => void; // Clear the warning message
+  swapMicrophone: (deviceId: string) => Promise<void>; // Swap microphone mid-recording (microphone source only)
 
   // Audio stream (for visualization via useAudioVisualization)
   audioStream: MediaStream | null;
@@ -78,6 +83,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onStateChange,
     onRecoveryAvailable,
     onDurationWarning,
+    onDeviceSwapped,
     enableAutoSave = true,
     userId,
   } = options;
@@ -91,9 +97,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [recordingSource, setRecordingSource] = useState<RecordingSource | null>(null);
   const [chunkCount, setChunkCount] = useState(0);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
+  const [isSwappingDevice, setIsSwappingDevice] = useState(false);
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const hotSwapRecorderRef = useRef<HotSwapRecorder | null>(null);
+  const stateRef = useRef<RecordingState>(state); // Ref for state to avoid stale closure in swapMicrophone
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -131,10 +141,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const canUseTabAudio = isTabAudioSupported();
   const audioFormat = detectBestAudioFormat();
 
+  // Keep stateRef in sync with state
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // Update state with callback
   const updateState = useCallback(
     (newState: RecordingState) => {
       setState(newState);
+      stateRef.current = newState; // Also update ref immediately
       onStateChange?.(newState);
     },
     [onStateChange]
@@ -388,25 +404,71 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         updateState('requesting-permission');
 
-        // Get media stream (with optional device ID for microphone selection)
-        const stream = await getMediaStream(source, deviceId);
-        streamRef.current = stream;
-        setAudioStream(stream);
+        let mediaRecorder: MediaRecorder;
 
-        // Create MediaRecorder
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: audioFormat.mimeType,
-        });
+        // For microphone recordings, use HotSwapRecorder to enable mid-recording device switching
+        if (source === 'microphone') {
+          // Create and initialize HotSwapRecorder
+          const hotSwapRecorder = new HotSwapRecorder({
+            onDataAvailable: (event) => {
+              if (event.data && event.data.size > 0) {
+                chunksRef.current.push(event.data);
+                chunkCountRef.current += 1;
+              }
+            },
+            onError: (err) => {
+              setError(getPermissionErrorMessage(err));
+              onError?.(err);
+              updateState('idle');
+            },
+            onDeviceSwapped: (newDeviceId) => {
+              setCurrentDeviceId(newDeviceId);
+              onDeviceSwapped?.(newDeviceId);
+            },
+            timeslice: 10000,
+          });
 
-        mediaRecorderRef.current = mediaRecorder;
+          await hotSwapRecorder.initialize(deviceId);
+          hotSwapRecorderRef.current = hotSwapRecorder;
 
-        // Handle data available
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0) {
-            chunksRef.current.push(event.data);
-            chunkCountRef.current += 1;
+          // Use the output stream for visualization
+          const outputStream = hotSwapRecorder.outputStream;
+          if (outputStream) {
+            streamRef.current = outputStream;
+            setAudioStream(outputStream);
           }
-        };
+
+          // Track the current device
+          setCurrentDeviceId(deviceId || null);
+
+          // Get the internal MediaRecorder for event handling
+          const internalRecorder = hotSwapRecorder.recorder;
+          if (!internalRecorder) {
+            throw new Error('HotSwapRecorder internal MediaRecorder not available');
+          }
+          mediaRecorder = internalRecorder;
+          mediaRecorderRef.current = mediaRecorder;
+        } else {
+          // For tab audio, use standard MediaRecorder (hot-swap not applicable)
+          const stream = await getMediaStream(source, deviceId);
+          streamRef.current = stream;
+          setAudioStream(stream);
+
+          // Create MediaRecorder
+          mediaRecorder = new MediaRecorder(stream, {
+            mimeType: audioFormat.mimeType,
+          });
+
+          mediaRecorderRef.current = mediaRecorder;
+
+          // Handle data available for tab audio
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              chunksRef.current.push(event.data);
+              chunkCountRef.current += 1;
+            }
+          };
+        }
 
         // Handle recording stop
         mediaRecorder.onstop = async () => {
@@ -485,12 +547,21 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           releaseWakeLock(wakeLockRef.current);
           wakeLockRef.current = null;
 
+          // Clean up HotSwapRecorder if used (for microphone source)
+          if (hotSwapRecorderRef.current) {
+            hotSwapRecorderRef.current.dispose();
+            hotSwapRecorderRef.current = null;
+          }
+
           // Stop all tracks
           if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());
             streamRef.current = null;
           }
           setAudioStream(null);
+
+          // Reset device tracking
+          setCurrentDeviceId(null);
 
           // Clean up audio mixer resources (if used for tab audio + mic mixing)
           cleanupMixer();
@@ -529,11 +600,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         updateState('idle');
 
         // Clean up any partially initialized resources
+        if (hotSwapRecorderRef.current) {
+          hotSwapRecorderRef.current.dispose();
+          hotSwapRecorderRef.current = null;
+        }
         if (streamRef.current) {
           streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
         }
         setAudioStream(null);
+        setCurrentDeviceId(null);
         cleanupMixer();
       }
     },
@@ -542,6 +618,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       audioFormat,
       getMediaStream,
       onDataAvailable,
+      onDeviceSwapped,
       onError,
       startTimer,
       stopTimer,
@@ -602,6 +679,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       mediaRecorderRef.current.stop();
     }
 
+    // Clean up HotSwapRecorder if used
+    if (hotSwapRecorderRef.current) {
+      hotSwapRecorderRef.current.dispose();
+      hotSwapRecorderRef.current = null;
+    }
+
     // Clear all state
     stopTimer();
     setDuration(0);
@@ -617,6 +700,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     chunkCountRef.current = 0;
     setChunkCount(0);
     setRecordingSource(null);
+
+    // Reset device tracking state
+    setCurrentDeviceId(null);
+    setIsSwappingDevice(false);
 
     // Reset continue mode state
     recoveredChunksRef.current = [];
@@ -812,12 +899,68 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     };
   }, [state, saveRecordingToStorage]);
 
+  // Swap microphone mid-recording (microphone source only)
+  const swapMicrophone = useCallback(
+    async (deviceId: string) => {
+      // Only works for microphone source during recording or paused state
+      // Use refs to get current values (avoids stale closure from debounced calls)
+      const currentState = stateRef.current;
+      const currentSource = recordingSourceRef.current;
+
+      if (!hotSwapRecorderRef.current) {
+        console.warn('[useMediaRecorder] Cannot swap: not using HotSwapRecorder');
+        return;
+      }
+
+      if (currentState !== 'recording' && currentState !== 'paused') {
+        console.warn('[useMediaRecorder] Cannot swap: not recording or paused (state:', currentState, ')');
+        return;
+      }
+
+      if (currentSource !== 'microphone') {
+        console.warn('[useMediaRecorder] Cannot swap: only works for microphone source (source:', currentSource, ')');
+        return;
+      }
+
+      try {
+        setIsSwappingDevice(true);
+        setError(null);
+
+        await hotSwapRecorderRef.current.swapMicrophone(deviceId);
+
+        // Update the audio stream for visualization
+        const newStream = hotSwapRecorderRef.current.outputStream;
+        if (newStream) {
+          setAudioStream(newStream);
+        }
+
+        setCurrentDeviceId(deviceId);
+        onDeviceSwapped?.(deviceId);
+
+        console.log(`[useMediaRecorder] Swapped to device: ${deviceId}`);
+      } catch (err) {
+        const error = err as Error;
+        console.error('[useMediaRecorder] Failed to swap microphone:', error);
+        setError(`Failed to switch microphone: ${error.message}`);
+        onError?.(error);
+      } finally {
+        setIsSwappingDevice(false);
+      }
+    },
+    [onDeviceSwapped, onError]
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopTimer();
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      // Clean up HotSwapRecorder
+      if (hotSwapRecorderRef.current) {
+        hotSwapRecorderRef.current.dispose();
+        hotSwapRecorderRef.current = null;
       }
       releaseWakeLock(wakeLockRef.current);
       if (autoSaveIntervalRef.current) {
@@ -843,6 +986,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     isSupported,
     canUseTabAudio,
     audioFormat,
+    currentDeviceId,
+    isSwappingDevice,
 
     // Actions
     startRecording,
@@ -854,6 +999,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     loadRecoveredRecording,
     prepareForContinue,
     clearWarning,
+    swapMicrophone,
 
     // Audio stream (for visualization via useAudioVisualization)
     audioStream,

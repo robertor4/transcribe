@@ -346,7 +346,8 @@
       "recordTabAudio": "Enregistrer audio de l'onglet",
       "includeMicrophone": "Inclure mon microphone",
       "recommendedForCalls": "Recommandé pour les appels vidéo",
-      "usingMicrophone": "Utilise :"
+      "usingMicrophone": "Utilise :",
+      "switchingMicrophone": "Changement de microphone..."
     },
     "status": {
       "ready": "Prêt à enregistrer",

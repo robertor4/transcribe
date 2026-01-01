@@ -346,7 +346,8 @@
       "recordTabAudio": "Record tab audio",
       "includeMicrophone": "Include my microphone",
       "recommendedForCalls": "Recommended for video calls",
-      "usingMicrophone": "Using:"
+      "usingMicrophone": "Using:",
+      "switchingMicrophone": "Switching microphone..."
     },
     "status": {
       "ready": "Ready to record",

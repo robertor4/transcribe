@@ -346,7 +346,8 @@
       "recordTabAudio": "Grabar audio de pestaña",
       "includeMicrophone": "Incluir mi micrófono",
       "recommendedForCalls": "Recomendado para videollamadas",
-      "usingMicrophone": "Usando:"
+      "usingMicrophone": "Usando:",
+      "switchingMicrophone": "Cambiando micrófono..."
     },
     "status": {
       "ready": "Listo para grabar",

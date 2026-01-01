@@ -346,7 +346,8 @@
       "recordTabAudio": "Tab-Audio aufnehmen",
       "includeMicrophone": "Mein Mikrofon einbeziehen",
       "recommendedForCalls": "Empfohlen für Videoanrufe",
-      "usingMicrophone": "Verwendet:"
+      "usingMicrophone": "Verwendet:",
+      "switchingMicrophone": "Mikrofon wird gewechselt..."
     },
     "status": {
       "ready": "Bereit zur Aufnahme",
