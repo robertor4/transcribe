@@ -548,6 +548,25 @@
       "clientProposal": {
         "name": "Proposition client",
         "description": "Proposition formelle avec exigences et solution"
+      },
+      "agileBacklog": {
+        "name": "Backlog Agile",
+        "description": "Epics et user stories avec critères d'acceptation",
+        "asA": "En tant que",
+        "iWant": "je veux",
+        "soThat": "afin que",
+        "acceptanceCriteria": "Critères d'acceptation",
+        "technicalDetails": "Détails techniques",
+        "technicalNotes": "Notes techniques",
+        "dependencies": "Dépendances",
+        "epics": "Epics",
+        "standaloneStories": "Stories autonomes",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "user story",
+        "userStories": "user stories",
+        "noStoriesFound": "Aucune user story trouvée",
+        "noStoriesDescription": "Cette conversation ne contenait aucune fonctionnalité ou exigence produit explicite à extraire."
       }
     },
     "sidebar": {
@@ -987,385 +1006,37 @@
   },
   "landing": {
     "hero": {
-      "headline": "Créez tout avec votre voix",
-      "subtitle": "Transformez les conversations en résumés, e-mails, publications sociales et plus.",
-      "ctaPrimary": "Commencer gratuitement",
-      "ctaSecondary": "Voir la démo",
-      "byline": "Vous parlez. Ça crée.",
-      "trustIndicators": {
-        "users": "Approuvé par des professionnels",
-        "rating": "Très bien noté",
-        "certified": "Conforme au RGPD"
-      },
-      "title": "Transformez chaque réunion en",
-      "titleHighlight": "notes et actions claires.",
-      "subtitle2": "L'application de notes de réunion IA qui transforme les enregistrements Zoom, Teams et Google Meet en résumés exploitables — automatiquement, précisément et instantanément.",
-      "cta": {
-        "primary": "Commencer gratuitement",
-        "secondary": "Voir comment ça marche"
-      },
-      "guarantee": "Plan gratuit toujours disponible • Aucune carte de crédit requise • Fonctionne avec toutes les plateformes de réunion",
-      "features": {
-        "saveTime": "Économisez 10+ heures/semaine",
-        "accuracy": "99,5% de précision",
-        "languages": "50+ langues"
-      }
+      "headline": "Vous parlez. Ça crée.",
+      "subtitlePart1": "Neural Summary transforme la pensée parlée en résultats structurés et professionnels — ",
+      "subtitlePart2": "pour que les décisions tiennent et que le travail avance.",
+      "ctaPrimary": "Voir un exemple",
+      "ctaSecondary": "Comment ça marche",
+      "byline": "Vous parlez. Ça crée."
     },
-    "why": {
-      "headline": "Vos meilleures idées se perdent dans la traduction.",
-      "paragraph1": "Vous pensez en conversations. Vous travaillez en documents.",
-      "paragraph2": "Entre les deux : Des heures de frappe, de formatage, de restructuration.",
-      "paragraph3": "Et si votre voix devenait le document?"
-    },
-    "what": {
-      "headline": "Trois étapes vers la création.",
-      "steps": {
-        "speak": {
-          "title": "Parlez",
-          "description": "Enregistrez des réunions, des idées, des interviews. Ou laissez notre IA vous interviewer pour extraire votre vision."
-        },
-        "extract": {
-          "title": "Extrayez",
-          "description": "L'IA pose des questions, structure les pensées, capture chaque détail—comme un assistant personnel."
-        },
-        "create": {
-          "title": "Créez",
-          "description": "Obtenez instantanément des documents prêts à l'emploi. Spécifications, articles, e-mails, stratégies."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Parler devient créer.",
-      "subtitle": "D'une conversation de 3 minutes → Spécification produit complète",
-      "tagline": "Pas d'écriture. Pas de formatage. Pensez juste à voix haute."
-    },
-    "who": {
-      "headline": "Conçu pour votre flux de travail.",
-      "personas": {
-        "productManager": {
-          "title": "Chef de Produit",
-          "subtitle": "Brainstorming → Spécification produit en 5 minutes",
-          "description": "Discutez de votre idée de fonctionnalité. Obtenez une spécification complète prête pour votre équipe de développement."
-        },
-        "founder": {
-          "title": "Fondateur",
-          "subtitle": "Discussion de vision → Document stratégique pour votre équipe",
-          "description": "Enregistrez votre vision stratégique. Partagez instantanément un brief structuré avec votre équipe."
-        },
-        "contentCreator": {
-          "title": "Créateur de Contenu",
-          "subtitle": "Interview → Article prêt à publier",
-          "description": "Interviewez naturellement les invités. Obtenez du contenu structuré prêt à publier."
-        },
-        "salesLeader": {
-          "title": "Directeur Commercial",
-          "subtitle": "Appel client → E-mail de suivi en minutes",
-          "description": "Concentrez-vous sur la conversation. Envoyez des résumés parfaits pendant que les prospects se souviennent de vous."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Conçu pour la concentration.",
-      "accuracy": {
-        "title": "99,5% de précision",
-        "description": "Chaque mot capturé. Étiquettes de locuteur incluses."
-      },
-      "largeFiles": {
-        "title": "Fichiers jusqu'à 5GB",
-        "description": "Gérez des heures d'audio. Aucune limite."
-      },
-      "languages": {
-        "title": "99 langues",
-        "description": "Détection automatique. Traduction instantanée."
-      }
-    },
-    "securitySection": {
-      "headline": "Votre confidentialité compte.",
-      "description": "Audio auto-supprimé après 30 jours. Seul le texte reste de façon permanente. Chiffrement de niveau entreprise."
-    },
-    "warp": {
-      "headline": "L'avenir du travail n'est pas la frappe.",
-      "subtitle": "C'est penser à voix haute.",
-      "line1": "Vos idées deviennent des exigences.",
-      "line2": "Votre vision devient stratégie.",
-      "line3": "Votre voix devient production.",
-      "tagline": "C'est ainsi que le travail créatif devrait se sentir."
-    },
-    "finalCta": {
-      "headline": "Parler devient créer",
-      "subtext": "Commencez gratuitement. Aucune carte requise.",
-      "button": "Commencer gratuitement",
-      "benefits": {
-        "free": "Commencez gratuitement",
-        "noCard": "Pas de carte bancaire"
-      }
-    },
-    "valueProposition": {
-      "title": "Votre IA qui écoute, comprend et résume — pour que vous puissiez penser, diriger et décider.",
-      "subtitle": "Neural Summary améliore votre façon de communiquer et de prendre des décisions en renforçant trois domaines clés avec lesquels les professionnels luttent :",
-      "efficiency": {
-        "title": "Efficacité",
-        "description": "Automatisez la transcription et le résumé pour récupérer des heures chaque semaine."
-      },
-      "clarity": {
-        "title": "Clarté",
-        "description": "Capturez ce qui compte vraiment dans les réunions, les interviews et les discussions."
-      },
-      "impact": {
-        "title": "Impact",
-        "description": "Transformez les insights en actions avec des résumés structurés et partageables et des prochaines étapes."
-      },
-      "tagline": "Ne vous contentez pas de vous souvenir de ce qui a été dit — agissez en conséquence."
-    },
-    "whyTeams": {
-      "title": "Pourquoi les équipes choisissent Neural Summary",
-      "benefit1": "Économisez 3-5 heures par semaine sur la documentation manuelle",
-      "benefit2": "Réduisez la perte d'informations et les malentendus",
-      "benefit3": "Gardez les équipes alignées sans partage interminable de notes",
-      "benefit4": "Sécurisé, conforme et évolutif pour toute organisation",
-      "benefit5": "Sécurisé, conforme et évolutif pour toute organisation",
-      "tagline": "Arrêtez de perdre du temps en réunions — commencez à transformer les mots en action."
-    },
-    "benefits": {
-      "title": "Transformez votre méthode de travail, améliorez vos compétences",
-      "subtitle": "Découvrez comment Neural Summary vous rend plus efficace",
-      "shareCollaborate": {
-        "title": "Partagez et Collaborez Sans Effort",
-        "description": "Envoyez des résumés professionnels à votre équipe en un clic. Fini les longs comptes-rendus de réunion ou les tâches manquées."
-      },
-      "improveCommunication": {
-        "title": "Améliorez Vos Compétences de Communication",
-        "description": "Analysez vos patterns de parole, identifiez les mots de remplissage et devenez un présentateur plus efficace."
-      },
-      "saveTime": {
-        "title": "Économisez 10+ Heures Chaque Semaine",
-        "description": "Transformez des réunions d'1 heure en résumés de 5 minutes. Concentrez-vous sur l'essentiel, pas sur la prise de notes."
-      },
-      "neverMiss": {
-        "title": "Ne Manquez Jamais de Détails Importants",
-        "description": "Capturez automatiquement chaque action, décision et insight. Votre assistant IA n'oublie jamais."
-      }
-    },
-    "features": {
-      "title": "Fonctionnalités puissantes pour chaque professionnel",
-      "ai": {
-        "title": "Résumés alimentés par l'IA",
-        "description": "Obtenez des résumés exécutifs avec points clés, actions à entreprendre et insights"
-      },
-      "largeFiles": {
-        "title": "Support de fichiers volumineux",
-        "description": "Gérez des fichiers jusqu'à 500 Mo avec division intelligente automatique"
-      },
-      "security": {
-        "title": "Audio auto-supprimé après 30 jours",
-        "description": "Fichiers conservés brièvement pour le support, puis supprimés définitivement. Chiffrement de niveau entreprise garantit votre confidentialité."
-      },
-      "demo": {
-        "dragDrop": "Glissez-déposez votre fichier audio ici",
-        "record": "Ou enregistrez directement depuis n'importe quel appareil"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Fonctionne avec Toutes les Plateformes de Réunion",
-      "subtitle": "Enregistrez sur n'importe quelle plateforme, obtenez automatiquement des notes de réunion IA",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Enregistrez localement ou dans le cloud, puis téléchargez pour une transcription instantanée"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Téléchargez les enregistrements Teams et obtenez des résumés de réunion IA en minutes"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Téléchargez les enregistrements Meet pour une transcription automatique avec étiquettes de locuteur"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transformez les réunions WebEx en notes structurées et actions à entreprendre"
-      },
-      "anyPlatform": {
-        "name": "Toute Plateforme",
-        "description": "Fonctionne avec les enregistrements téléphoniques, réunions en personne, interviews et plus"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Parfait pour Tous les Types de Réunions",
-      "subtitle": "Des entretiens individuels rapides aux réunions générales, ne manquez plus jamais les détails importants",
-      "oneOnOnes": {
-        "title": "Entretiens Individuels",
-        "description": "Concentrez-vous sur la conversation, pas sur la prise de notes. Obtenez des enregistrements parfaits des retours, objectifs et engagements."
-      },
-      "teamStandups": {
-        "title": "Réunions d'Équipe & Syncs",
-        "description": "Gardez tout le monde aligné avec des comptes rendus automatiques et un suivi des actions."
-      },
-      "clientCalls": {
-        "title": "Appels Clients & Ventes",
-        "description": "Capturez chaque exigence, question et engagement. Partagez instantanément des résumés professionnels."
-      },
-      "allHands": {
-        "title": "Réunions Générales",
-        "description": "Créez des transcriptions consultables pour les membres de l'équipe qui n'ont pas pu assister. Ne vous répétez jamais."
-      }
-    },
-    "howItWorks": {
-      "title": "Comment Ça Marche",
-      "subtitle": "De l'enregistrement de réunion aux notes exploitables en 3 étapes simples",
+    "how": {
+      "headline": "Comment ça marche",
       "step1": {
-        "title": "Enregistrez votre réunion",
-        "description": "Utilisez Zoom, Teams, Google Meet, votre téléphone ou tout appareil d'enregistrement. Tous les formats audio et vidéo majeurs sont supportés."
+        "title": "Parlez librement",
+        "description": "Enregistrez une conversation, une réunion ou un mémo vocal."
       },
       "step2": {
-        "title": "L'IA transcrit avec étiquettes de locuteur",
-        "description": "Notre IA identifie les locuteurs, transcrit avec 99,5% de précision et comprend le contexte — même le jargon technique."
+        "title": "On extrait l'essentiel",
+        "description": "Décisions, priorités et prochaines étapes — structurées automatiquement."
       },
       "step3": {
-        "title": "Obtenez le résumé de réunion & actions",
-        "description": "Recevez des résumés structurés avec décisions clés, sujets de discussion et actions avec responsables et échéances."
+        "title": "Vous avancez",
+        "description": "Partagez, envoyez ou agissez sur un travail déjà clair."
       }
     },
-    "security": {
-      "title": "Approuvé par les professionnels qui valorisent la précision et la confidentialité",
-      "stats": {
-        "users": "Approuvé par des professionnels du monde entier",
-        "rating": "Très bien noté par les utilisateurs"
-      },
-      "compliance": {
-        "title": "Architecture axée sur la confidentialité",
-        "description": "Conçu avec la conformité RGPD et la protection des données au cœur"
-      },
-      "useCases": {
-        "title": "Approuvé par les professionnels",
-        "description": "Utilisé par les équipes juridiques, médicales, de recherche et de direction où chaque mot compte."
-      },
-      "technology": {
-        "title": "Propulsé par l'IA de pointe",
-        "description": "Construit avec les derniers modèles de langage affinés pour la communication professionnelle."
-      },
-      "encryption": {
-        "title": "Audio auto-supprimé après 30 jours",
-        "description": "Les fichiers audio sont conservés 30 jours pour le support, puis supprimés définitivement. Seules les transcriptions textuelles restent."
-      },
-      "retention": {
-        "title": "Infrastructure cloud sécurisée",
-        "description": "Vos données sont chiffrées au repos et en transit avec des protocoles standard de l'industrie"
-      },
-      "audit": {
-        "title": "Privacy by Design",
-        "description": "Vos données restent privées - nous ne traitons que le nécessaire. L'audio est auto-supprimé après 30 jours."
-      },
-      "badges": {
-        "soc2": "Conforme SOC 2",
-        "gdpr": "Conforme RGPD",
-        "hipaa": "Prêt HIPAA",
-        "iso": "ISO 27001",
-        "compliance": "Les modèles de reconnaissance vocale sont conformes SOC 2, RGPD, HIPAA et ISO 27001."
-      }
-    },
-    "testimonials": {
-      "title": "Apprécié par les équipes qui valorisent leur temps",
-      "rating": "Très bien noté par les professionnels des réunions",
-      "testimonial1": {
-        "quote": "Nos réunions d'équipe sont maintenant 10x plus productives. Tout le monde reçoit automatiquement le résumé et les actions — plus de 'qui prend les notes?'",
-        "author": "Michael Chen",
-        "role": "Responsable Ingénierie, Startup Tech"
-      },
-      "testimonial2": {
-        "quote": "Je peux me concentrer sur mes clients, pas sur la saisie. Les résumés de réunion sont si précis que je les partage directement avec les parties prenantes.",
-        "author": "Dr. James Liu",
-        "role": "Chercheur Clinique"
-      },
-      "testimonial3": {
-        "quote": "J'enregistre tous mes appels clients et obtiens des transcriptions parfaites avec actions. C'est comme avoir un assistant dans chaque appel. Révolutionnaire pour les ventes!",
-        "author": "Jennifer Brooks",
-        "role": "Responsable de Compte, SaaS Sales"
-      }
-    },
-    "meetingFaq": {
-      "title": "Questions Fréquemment Posées",
-      "subtitle": "Tout ce que vous devez savoir sur la transformation de la voix en documents prêts à l'emploi",
-      "question1": {
-        "question": "Comment fonctionne Neural Summary?",
-        "answer": "Téléchargez un enregistrement audio ou vidéo, ou parlez directement dans la plateforme. Notre IA traite votre conversation, identifie les informations clés et génère des documents structurés—résumés, actions et analyses détaillées. Fonctionne avec réunions, brainstormings, interviews ou mémos vocaux. De l'upload au document fini en seulement 3-5 minutes."
-      },
-      "question2": {
-        "question": "Quels types de documents puis-je créer?",
-        "answer": "À partir d'un seul enregistrement, créez des résumés de réunion avec actions et décisions, analyses de contenu, insights stratégiques et analyses de communication. Chaque type de document est optimisé pour différents besoins—résumé exécutif, transcription détaillée ou plan d'action d'équipe. Bientôt: création de documents guidée par IA pour specs et articles."
-      },
-      "question3": {
-        "question": "Fonctionne-t-il avec Zoom, Teams et Google Meet?",
-        "answer": "Oui! Enregistrez votre réunion sur n'importe quelle plateforme, téléchargez le fichier et chargez-le sur Neural Summary. Nous supportons tous les formats vidéo et audio majeurs dont MP3, M4A, WAV, MP4, MOV et plus. Pas de bots, pas de plugins—il suffit de télécharger et créer."
-      },
-      "question4": {
-        "question": "Neural Summary peut-il identifier différents locuteurs?",
-        "answer": "Oui! Notre technologie de diarisation de locuteurs détecte et étiquette automatiquement plusieurs locuteurs tout au long de votre conversation. Les contributions de chaque locuteur sont clairement attribuées, maintenant le flux naturel du dialogue. Vous pouvez renommer les locuteurs après traitement pour encore plus de clarté dans vos documents."
-      },
-      "question5": {
-        "question": "Quelle est la précision des résultats?",
-        "answer": "Nous offrons 99,5% de précision de transcription avec identification des locuteurs dans plus de 50 langues. Mais Neural Summary va au-delà de la transcription—notre IA extrait décisions, actions, thèmes et insights que la prise de notes manuelle manque souvent. Vous obtenez à la fois une capture mot-à-mot précise et une analyse intelligente."
-      },
-      "question6": {
-        "question": "Mes données sont-elles privées et sécurisées?",
-        "answer": "Absolument. Votre audio est conservé seulement 30 jours pour le support et la récupération, puis automatiquement et définitivement supprimé. Nous ne conservons que les transcriptions textuelles et les résultats d'analyse. Le chiffrement de niveau entreprise protège vos données au repos et en transit—idéal pour les discussions commerciales, juridiques ou médicales confidentielles."
-      },
-      "question7": {
-        "question": "Puis-je partager et exporter des documents?",
-        "answer": "Oui! Partagez vos documents via des liens sécurisés protégés par mot de passe, envoyez par e-mail ou exportez en formats PDF et Word. Les plans professionnels incluent le partage illimité et les fonctionnalités de collaboration pour les équipes."
-      }
-    },
-    "cta": {
-      "title": "Prêt à transformer vos réunions de pertes de temps en moteurs d'action?",
-      "subtitle": "Rejoignez des milliers d'équipes utilisant Neural Summary pour capturer automatiquement chaque décision, action et insight.",
-      "button": "Commencer gratuitement — aucune carte de crédit requise",
-      "benefits": {
-        "free": "Aucune carte de crédit",
-        "noCard": "Fonctionne avec Zoom, Teams, Meet",
-        "cancel": "Annulation à tout moment"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Tarifs simples et transparents",
-      "subtitle": "Commencez gratuitement, passez à la version supérieure quand vous êtes prêt. Pas de frais cachés, pas de surprises.",
-      "free": {
-        "name": "Gratuit",
-        "description": "Parfait pour essayer",
-        "features": {
-          "transcriptions": "3 transcriptions/mois",
-          "duration": "30 min max par fichier",
-          "summary": "Résumé basique"
-        },
-        "cta": "Commencer"
-      },
-      "professional": {
-        "name": "Professionnel",
-        "description": "Pour les utilisateurs réguliers",
-        "badge": "Le plus populaire",
-        "features": {
-          "transcriptions": "Transcriptions illimitées",
-          "hours": "60 heures/mois incluses",
-          "analyses": "Tous les 6 types d'analyse",
-          "fileSize": "3GB taille de fichier max",
-          "priority": "Traitement prioritaire"
-        },
-        "cta": "Essai gratuit"
-      },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "description": "Par heure d'audio",
-        "features": {
-          "credits": "Les crédits n'expirent jamais",
-          "analyses": "Tous les 6 types d'analyse",
-          "occasional": "Parfait pour utilisation occasionnelle"
-        },
-        "cta": "Acheter des crédits"
-      },
-      "viewFullPricing": "Voir les détails complets des tarifs"
+    "closingCta": {
+      "headline": "De la conversation au document.",
+      "ctaPrimary": "Voir un exemple",
+      "ctaSecondary": "Voir Neural Summary en action"
     },
     "nav": {
-      "login": "Se connecter",
+      "login": "Connexion",
       "getStarted": "Commencer",
-      "dashboard": "Aller au tableau de bord",
+      "dashboard": "Tableau de bord",
       "menu": "Menu",
       "language": "Langue",
       "features": "Fonctionnalités",
@@ -1374,32 +1045,30 @@
       "faq": "FAQ"
     },
     "footer": {
-      "product": {
-        "title": "Produit",
-        "features": "Fonctionnalités",
-        "pricing": "Tarifs",
-        "api": "API"
+      "product": "Produit",
+      "examples": "Exemples",
+      "security": "Sécurité",
+      "contact": "Contact",
+      "copyright": "© 2025 Neural Summary. Tous droits réservés."
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "q1": {
+        "question": "Quels types de documents puis-je créer ?",
+        "answer": "Neural Summary transforme vos conversations en documents professionnels comme des résumés de réunion, des spécifications produit, des articles de blog, des plans d'action, des brouillons d'email et plus. Choisissez parmi 15+ modèles ou créez des sorties personnalisées."
       },
-      "company": {
-        "title": "Entreprise",
-        "about": "À propos",
-        "blog": "Blog",
-        "careers": "Carrières"
+      "q2": {
+        "question": "Quelle est la précision de la transcription ?",
+        "answer": "Nous utilisons des modèles d'IA de pointe qui atteignent plus de 95% de précision. Le système identifie automatiquement les interlocuteurs et gère plusieurs langues, accents et terminologies sectorielles."
       },
-      "support": {
-        "title": "Support",
-        "help": "Centre d'aide",
-        "contact": "Contact",
-        "status": "Statut"
+      "q3": {
+        "question": "Mes données sont-elles sécurisées ?",
+        "answer": "Oui. Tous les fichiers audio sont chiffrés en transit et au repos. Nous n'utilisons jamais vos données pour entraîner des modèles d'IA. Les fichiers sont automatiquement supprimés après traitement, et vous pouvez supprimer vos données à tout moment."
       },
-      "legal": {
-        "title": "Juridique",
-        "privacy": "Confidentialité",
-        "terms": "Conditions",
-        "security": "Sécurité"
-      },
-      "copyright": "© 2024 Neural Summary. Tous droits réservés.",
-      "tagline": "Créé par des gens qui ont passé trop d'heures en réunion."
+      "q4": {
+        "question": "Puis-je l'essayer gratuitement ?",
+        "answer": "Absolument. Commencez avec notre plan gratuit qui inclut 3 fichiers audio par mois (jusqu'à 30 minutes chacun). Aucune carte de crédit requise. Passez à un plan supérieur à tout moment pour plus de capacité et de fonctionnalités."
+      }
     }
   },
   "terms": {
@@ -2444,13 +2113,13 @@
     "replacing": "Remplacement en cours...",
     "noMatches": "Aucune correspondance trouvée",
     "matchCount": "{count} correspondances",
-    "matchCountSingular": "1 correspondance",
+    "matchCountSingular": "1 correspondance trouvée",
     "replacedCount": "{count} occurrences remplacées",
     "selectAll": "Tout sélectionner",
     "deselectAll": "Tout désélectionner",
     "selected": "{count} sélectionnés",
     "inCategory": "dans {category}",
-    "error": "Erreur lors de l'opération. Veuillez réessayer.",
+    "error": "Une erreur s'est produite",
     "patternSaved": "Patron enregistré pour les futures conversations",
     "suggestions": {
       "title": "Remplacements suggérés",
@@ -2463,12 +2132,8 @@
     "emptyState": "Entrez du texte pour rechercher et remplacer dans cette conversation",
     "previousMatch": "Correspondance précédente",
     "nextMatch": "Correspondance suivante",
-    "selected": "{count} sélectionnés",
     "refreshing": "Actualisation du contenu...",
-    "searching": "Recherche en cours...",
     "pressEnterToSearch": "Appuyez sur Entrée pour rechercher",
-    "matchCountSingular": "1 correspondance trouvée",
-    "error": "Une erreur s'est produite",
     "enterReplaceText": "Entrez le texte de remplacement ci-dessus",
     "clearSelection": "Effacer",
     "replace": "Remplacer"

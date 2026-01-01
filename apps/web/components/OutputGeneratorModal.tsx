@@ -15,7 +15,7 @@ const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
 // Categorize templates
 const EMAIL_IDS = ['followUpEmail', 'salesEmail', 'internalUpdate', 'clientProposal'];
 const CONTENT_IDS = ['blogPost', 'linkedin'];
-const ANALYSIS_IDS = ['actionItems', 'communicationAnalysis'];
+const ANALYSIS_IDS = ['actionItems', 'communicationAnalysis', 'agileBacklog'];
 
 const emailTemplates = outputTemplates.filter(t => EMAIL_IDS.includes(t.id));
 const contentTemplates = outputTemplates.filter(t => CONTENT_IDS.includes(t.id));

@@ -325,9 +325,7 @@ export interface AcceptanceCriterion {
 export interface UserStory {
   id: string; // Generated: US-001, US-002, etc.
   title: string;
-  asA: string; // User role
-  iWant: string; // Feature/capability
-  soThat: string; // Benefit/value
+  statement: string; // Full formatted user story in transcript language (e.g., "Als gebruiker wil ik... zodat...")
   acceptanceCriteria: AcceptanceCriterion[];
   technicalNotes?: string[]; // Only if explicitly discussed
   priority?: 'must-have' | 'should-have' | 'could-have' | 'wont-have';

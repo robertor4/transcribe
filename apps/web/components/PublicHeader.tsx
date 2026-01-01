@@ -8,10 +8,9 @@ import { MobileNav } from '@/components/MobileNav';
 
 interface PublicHeaderProps {
   locale: string;
-  showFeaturesLink?: boolean;
 }
 
-export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderProps) {
+export function PublicHeader({ locale }: PublicHeaderProps) {
   const tLanding = useTranslations('landing');
   const { user } = useAuth();
 
@@ -32,17 +31,15 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
-            {showFeaturesLink && (
-              <Link
-                href={`/${locale}/landing#features`}
-                className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
-                aria-label="View features"
-              >
-                {tLanding('nav.features')}
-              </Link>
-            )}
             <Link
-              href={`/${locale}/landing#video-demo`}
+              href={`/${locale}/landing#features`}
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
+              aria-label="View features"
+            >
+              {tLanding('nav.features')}
+            </Link>
+            <Link
+              href={`/${locale}/landing#how-it-works`}
               className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
               aria-label="See how it works"
             >
@@ -54,6 +51,13 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
               aria-label="View pricing plans"
             >
               {tLanding('nav.pricing')}
+            </Link>
+            <Link
+              href={`/${locale}/landing#faq`}
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
+              aria-label="View frequently asked questions"
+            >
+              {tLanding('nav.faq')}
             </Link>
             <LanguageSwitcher variant="dark" />
             {user ? (

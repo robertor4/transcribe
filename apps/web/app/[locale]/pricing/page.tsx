@@ -165,7 +165,7 @@ export default function PricingPage() {
 
   return (
     <>
-      <PublicHeader locale={locale} showFeaturesLink={true} />
+      <PublicHeader locale={locale} />
 
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}

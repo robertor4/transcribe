@@ -548,6 +548,25 @@
       "clientProposal": {
         "name": "Klantvoorstel",
         "description": "Formeel voorstel met eisen en oplossing"
+      },
+      "agileBacklog": {
+        "name": "Agile Backlog",
+        "description": "Epics en user stories met acceptatiecriteria",
+        "asA": "Als",
+        "iWant": "wil ik",
+        "soThat": "zodat",
+        "acceptanceCriteria": "Acceptatiecriteria",
+        "technicalDetails": "Technische details",
+        "technicalNotes": "Technische notities",
+        "dependencies": "Afhankelijkheden",
+        "epics": "Epics",
+        "standaloneStories": "Losse stories",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "user story",
+        "userStories": "user stories",
+        "noStoriesFound": "Geen user stories gevonden",
+        "noStoriesDescription": "Dit gesprek bevatte geen expliciete productfuncties of vereisten om te extraheren."
       }
     },
     "sidebar": {
@@ -1009,380 +1028,32 @@
   },
   "landing": {
     "hero": {
-      "headline": "Creëer alles met je stem",
-      "subtitle": "Verander gesprekken in samenvattingen, e-mails, social posts en meer.",
-      "ctaPrimary": "Start gratis",
-      "ctaSecondary": "Bekijk demo",
-      "byline": "Jij spreekt. Het creëert.",
-      "trustIndicators": {
-        "users": "Vertrouwd door professionals",
-        "rating": "Hoog gewaardeerd",
-        "certified": "AVG-compliant"
-      },
-      "title": "Zet elke vergadering om in kristalheldere",
-      "titleHighlight": "notities en actiepunten.",
-      "subtitle2": "De AI vergadernotities-app die Zoom, Teams en Google Meet-opnames omzet in bruikbare samenvattingen — automatisch, nauwkeurig en direct.",
-      "cta": {
-        "primary": "Start gratis",
-        "secondary": "Zie hoe het werkt"
-      },
-      "guarantee": "Altijd gratis abonnement beschikbaar • Geen creditcard vereist • Werkt met alle vergaderplatforms",
-      "features": {
-        "saveTime": "Bespaar 10+ uur/week",
-        "accuracy": "99.5% nauwkeurigheid",
-        "languages": "50+ talen"
-      }
+      "headline": "Jij spreekt. Het creëert.",
+      "subtitlePart1": "Neural Summary zet gesproken gedachten om in gestructureerde, professionele output — ",
+      "subtitlePart2": "zodat beslissingen beklijven en werk vooruit gaat.",
+      "ctaPrimary": "Bekijk voorbeeldoutput",
+      "ctaSecondary": "Zie hoe het werkt",
+      "byline": "Jij spreekt. Het creëert."
     },
-    "why": {
-      "headline": "Je beste ideeën raken verloren in vertaling.",
-      "paragraph1": "Je denkt in gesprekken. Je werkt in documenten.",
-      "paragraph2": "Daartussen: Uren typen, formatteren, herstructureren.",
-      "paragraph3": "Wat als je stem het document werd?"
-    },
-    "what": {
-      "headline": "Drie stappen naar creatie.",
-      "steps": {
-        "speak": {
-          "title": "Spreek",
-          "description": "Neem vergaderingen, ideeën, interviews op. Of laat onze AI je interviewen om je visie te extraheren."
-        },
-        "extract": {
-          "title": "Extraheer",
-          "description": "AI stelt vragen, structureert gedachten, legt elk detail vast—zoals een persoonlijke assistent."
-        },
-        "create": {
-          "title": "Creëer",
-          "description": "Krijg direct werkklare documenten. Specificaties, artikelen, e-mails, strategieën."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Spreken wordt creëren.",
-      "subtitle": "Van een 3-minuten gesprek → Complete productspecificatie",
-      "tagline": "Niet typen. Niet formatteren. Denk gewoon hardop."
-    },
-    "who": {
-      "headline": "Gebouwd voor jouw workflow.",
-      "personas": {
-        "productManager": {
-          "title": "Productmanager",
-          "subtitle": "Brainstorm → Productspecificatie in 5 minuten",
-          "description": "Bespreek je feature-idee. Krijg een complete specificatie klaar voor je dev-team."
-        },
-        "founder": {
-          "title": "Oprichter",
-          "subtitle": "Visiegesprek → Strategiedocument voor je team",
-          "description": "Neem je strategische visie op. Deel direct een gestructureerde briefing met je team."
-        },
-        "contentCreator": {
-          "title": "Content Creator",
-          "subtitle": "Interview → Publicatieklaar artikel",
-          "description": "Interview gasten natuurlijk. Krijg gestructureerde content klaar om te publiceren."
-        },
-        "salesLeader": {
-          "title": "Salesleider",
-          "subtitle": "Klantgesprek → Opvolg-e-mail in minuten",
-          "description": "Focus op het gesprek. Verstuur perfecte samenvattingen terwijl prospects je onthouden."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Gebouwd voor focus.",
-      "accuracy": {
-        "title": "99.5% nauwkeurigheid",
-        "description": "Elk woord vastgelegd. Spreker labels inbegrepen."
-      },
-      "largeFiles": {
-        "title": "Bestanden tot 5GB",
-        "description": "Verwerk uren audio. Geen limieten."
-      },
-      "languages": {
-        "title": "99 talen",
-        "description": "Automatische detectie. Direct vertalen."
-      }
-    },
-    "securitySection": {
-      "headline": "Jouw privacy is belangrijk.",
-      "description": "Audio automatisch verwijderd na 30 dagen. Alleen tekst blijft permanent. Enterprise-grade encryptie."
-    },
-    "warp": {
-      "headline": "De toekomst van werk is niet typen.",
-      "subtitle": "Het is hardop denken.",
-      "line1": "Je ideeën worden vereisten.",
-      "line2": "Je visie wordt strategie.",
-      "line3": "Je stem wordt output.",
-      "tagline": "Zo zou creatief werk moeten aanvoelen."
-    },
-    "finalCta": {
-      "headline": "Spreken wordt creëren",
-      "subtext": "Gratis starten. Geen creditcard nodig.",
-      "button": "Gratis beginnen",
-      "benefits": {
-        "free": "Gratis starten",
-        "noCard": "Geen creditcard"
-      }
-    },
-    "valueProposition": {
-      "title": "Je AI die luistert, begrijpt en samenvat — zodat jij kunt denken, leiden en beslissen.",
-      "subtitle": "Neural Summary verbetert hoe je communiceert en beslissingen neemt door drie belangrijke gebieden te versterken waar professionals mee worstelen:",
-      "efficiency": {
-        "title": "Efficiëntie",
-        "description": "Automatiseer transcriptie en samenvatting zodat je elke week uren terugwint."
-      },
-      "clarity": {
-        "title": "Helderheid",
-        "description": "Leg vast wat echt belangrijk is uit vergaderingen, interviews en discussies."
-      },
-      "impact": {
-        "title": "Impact",
-        "description": "Zet inzichten om in actie met gestructureerde, deelbare samenvattingen en vervolgstappen."
-      },
-      "tagline": "Onthoud niet alleen wat er gezegd werd — handel ernaar."
-    },
-    "whyTeams": {
-      "title": "Waarom teams kiezen voor Neural Summary",
-      "benefit1": "Bespaar 3-5 uur per week op handmatige documentatie",
-      "benefit2": "Verminder informatieverlies en miscommunicatie",
-      "benefit3": "Houd teams op één lijn zonder eindeloos notities delen",
-      "benefit4": "Veilig, compliant en schaalbaar voor elke organisatie",
-      "benefit5": "Veilig, compliant en schaalbaar voor elke organisatie",
-      "tagline": "Stop tijd verspillen in vergaderingen — begin woorden om te zetten in actie."
-    },
-    "benefits": {
-      "title": "Transformeer je werkwijze, verbeter je vaardigheden",
-      "subtitle": "Ontdek hoe Neural Summary je effectiever maakt",
-      "shareCollaborate": {
-        "title": "Deel & Werk Moeiteloos Samen",
-        "description": "Stuur gepolijste samenvattingen naar je team met één klik. Geen lange vergadersamenvatting of gemiste actiepunten meer."
-      },
-      "improveCommunication": {
-        "title": "Verbeter Je Communicatievaardigheden",
-        "description": "Analyseer je spreekpatronen, identificeer vulwoorden en word een effectievere presentator."
-      },
-      "saveTime": {
-        "title": "Bespaar 10+ Uur Elke Week",
-        "description": "Verander 1-uur vergaderingen in 5-minuten samenvattingen. Focus op wat belangrijk is, niet op notities maken."
-      },
-      "neverMiss": {
-        "title": "Mis Nooit Belangrijke Details",
-        "description": "Leg automatisch elk actiepunt, beslissing en inzicht vast. Je AI-assistent vergeet nooit."
-      }
-    },
-    "features": {
-      "title": "Krachtige functies voor elke professional",
-      "ai": {
-        "title": "AI-gestuurde samenvattingen",
-        "description": "Krijg executive samenvattingen met kernpunten, actiepunten en inzichten"
-      },
-      "largeFiles": {
-        "title": "Ondersteuning voor grote bestanden",
-        "description": "Verwerk bestanden tot 5GB met enterprise-grade transcriptietechnologie"
-      },
-      "security": {
-        "title": "Audio automatisch verwijderd na 30 dagen",
-        "description": "Bestanden worden kort bewaard voor support, daarna permanent verwijderd. Enterprise-grade encryptie garandeert je privacy."
-      },
-      "demo": {
-        "dragDrop": "Sleep je audiobestand hier",
-        "record": "Of neem direct op vanaf elk apparaat"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Werkt met Elk Vergaderplatform",
-      "subtitle": "Neem op in elk platform, krijg automatisch AI-vergadernotities",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Neem lokaal of in de cloud op, upload voor directe transcriptie"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Download Teams-opnames en krijg binnen enkele minuten AI-vergadersamenvattingen"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Upload Meet-opnames voor automatische transcriptie met sprekerslabels"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transformeer WebEx-vergaderingen in gestructureerde notities en actiepunten"
-      },
-      "anyPlatform": {
-        "name": "Elk Platform",
-        "description": "Werkt met telefoonopnames, persoonlijke vergaderingen, interviews en meer"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Perfect voor Elk Type Vergadering",
-      "subtitle": "Van snelle 1-op-1's tot grote teamvergaderingen, mis nooit meer belangrijke details",
-      "oneOnOnes": {
-        "title": "1-op-1 Vergaderingen",
-        "description": "Focus op het gesprek, niet op notities maken. Krijg perfecte verslagen van feedback, doelen en afspraken."
-      },
-      "teamStandups": {
-        "title": "Team Stand-ups & Syncs",
-        "description": "Houd iedereen op één lijn met automatische notulen en actiepunt-tracking."
-      },
-      "clientCalls": {
-        "title": "Klantgesprekken & Verkoop",
-        "description": "Leg elke vereiste, vraag en afspraak vast. Deel direct gepolijste samenvattingen."
-      },
-      "allHands": {
-        "title": "All-Hands & Town Halls",
-        "description": "Maak doorzoekbare transcripten voor teamleden die niet aanwezig konden zijn. Herhaal jezelf nooit meer."
-      }
-    },
-    "howItWorks": {
-      "title": "Hoe het werkt",
-      "subtitle": "Van vergaderopname tot bruikbare notities in 3 eenvoudige stappen",
+    "how": {
+      "headline": "Hoe het werkt",
       "step1": {
-        "title": "Neem je vergadering op",
-        "description": "Gebruik Zoom, Teams, Google Meet, je telefoon of elk opnameapparaat. Alle grote audio- en videoformaten ondersteund."
+        "title": "Spreek vrijuit",
+        "description": "Neem een gesprek, vergadering of spraakmemo op."
       },
       "step2": {
-        "title": "AI transcribeert met sprekerslabels",
-        "description": "Onze AI identificeert sprekers, transcribeert met 99,5% nauwkeurigheid en begrijpt context — zelfs technisch jargon."
+        "title": "Wij extraheren wat belangrijk is",
+        "description": "Beslissingen, prioriteiten en vervolgstappen — automatisch gestructureerd."
       },
       "step3": {
-        "title": "Ontvang vergadersamenvatting & actiepunten",
-        "description": "Ontvang gestructureerde samenvattingen met belangrijke beslissingen, discussieonderwerpen en actiepunten met eigenaren en deadlines."
+        "title": "Jij gaat verder",
+        "description": "Deel, verstuur of handel op werk dat al duidelijk is."
       }
     },
-    "security": {
-      "title": "Vertrouwd door professionals die precisie en privacy waarderen",
-      "stats": {
-        "users": "Vertrouwd door professionals wereldwijd",
-        "rating": "Hoog gewaardeerd door gebruikers"
-      },
-      "compliance": {
-        "title": "Privacy-first architectuur",
-        "description": "Gebouwd met AVG-compliance en gegevensbescherming in de kern"
-      },
-      "useCases": {
-        "title": "Vertrouwd door professionals",
-        "description": "Gebruikt door juridische, medische, onderzoeks- en leidinggevende teams waar elk woord telt."
-      },
-      "technology": {
-        "title": "Aangedreven door geavanceerde AI",
-        "description": "Gebouwd met de nieuwste taalmodellen, verfijnd voor zakelijke communicatie."
-      },
-      "encryption": {
-        "title": "Audio automatisch verwijderd na 30 dagen",
-        "description": "Audiobestanden worden 30 dagen bewaard voor support, daarna permanent verwijderd. Alleen teksttranscripties blijven."
-      },
-      "retention": {
-        "title": "Beveiligde cloudinfrastructuur",
-        "description": "Je gegevens worden versleuteld tijdens opslag en verzending met industriestandaard protocollen"
-      },
-      "audit": {
-        "title": "Privacy by design",
-        "description": "Je gegevens blijven privé - wij verwerken alleen wat nodig is. Audio wordt na 30 dagen automatisch verwijderd."
-      },
-      "badges": {
-        "soc2": "SOC 2 Conform",
-        "gdpr": "AVG Conform",
-        "hipaa": "HIPAA Klaar",
-        "iso": "ISO 27001",
-        "compliance": "Spraak-naar-tekst modellen zijn SOC 2, AVG, HIPAA en ISO 27001 conform."
-      }
-    },
-    "testimonials": {
-      "title": "Geliefd door teams die hun tijd waarderen",
-      "rating": "Hoog gewaardeerd door vergaderprofessionals",
-      "testimonial1": {
-        "quote": "Onze teamvergaderingen zijn nu 10x productiever. Iedereen krijgt automatisch de samenvatting en actiepunten — geen 'wie maakt de notities?' meer.",
-        "author": "Michael Chen",
-        "role": "Engineering Manager, Tech Start-up"
-      },
-      "testimonial2": {
-        "quote": "Ik kan me focussen op mijn cliënten, niet op typen. De vergadersamenvattingen zijn zo nauwkeurig dat ik ze direct met stakeholders deel.",
-        "author": "Dr. James Liu",
-        "role": "Klinisch Onderzoeker"
-      },
-      "testimonial3": {
-        "quote": "Ik neem al mijn klantgesprekken op en krijg perfecte transcripties met actiepunten. Het is alsof ik een assistent in elk gesprek heb. Gamechanger voor verkoop!",
-        "author": "Jennifer Brooks",
-        "role": "Account Executive, SaaS-verkoop"
-      }
-    },
-    "meetingFaq": {
-      "title": "Veelgestelde Vragen",
-      "subtitle": "Alles wat je moet weten over het omzetten van spraak in werkklare documenten",
-      "question1": {
-        "question": "Hoe werkt Neural Summary?",
-        "answer": "Upload een audio- of video-opname, of spreek direct in het platform. Onze AI verwerkt je gesprek, identificeert belangrijke inzichten en genereert gestructureerde documenten—samenvattingen, actiepunten en gedetailleerde analyses. Werkt met vergaderingen, brainstorms, interviews of spraaknotities. Van upload tot afgerond document duurt slechts 3-5 minuten."
-      },
-      "question2": {
-        "question": "Welke soorten documenten kan ik maken?",
-        "answer": "Van één opname creëer je vergadersamenvattingen met actiepunten en beslissingen, inhoudsanalyses, strategische inzichten en communicatieanalyses. Elk documenttype is geoptimaliseerd voor verschillende behoeften—executive summary, gedetailleerd transcript of teamactieplan. Binnenkort: AI-begeleide documentcreatie voor specs en artikelen."
-      },
-      "question3": {
-        "question": "Werkt het met Zoom, Teams en Google Meet?",
-        "answer": "Ja! Neem je vergadering op elk platform op, download het bestand en upload het naar Neural Summary. We ondersteunen alle belangrijke video- en audioformaten waaronder MP3, M4A, WAV, MP4, MOV en meer. Geen bots, geen plugins—gewoon uploaden en creëren."
-      },
-      "question4": {
-        "question": "Kan Neural Summary verschillende sprekers identificeren?",
-        "answer": "Ja! Onze speaker diarization-technologie detecteert en labelt automatisch meerdere sprekers door je hele gesprek. De bijdragen van elke spreker worden duidelijk toegeschreven, waarbij de natuurlijke gespreksflow behouden blijft. Je kunt sprekers na verwerking hernoemen voor nog meer duidelijkheid in je documenten."
-      },
-      "question5": {
-        "question": "Hoe nauwkeurig zijn de resultaten?",
-        "answer": "We leveren 99,5% transcriptie-nauwkeurigheid met sprekeridentificatie in meer dan 50 talen. Maar Neural Summary gaat verder dan transcriptie—onze AI extraheert beslissingen, actiepunten, thema's en inzichten die handmatige notities vaak missen. Je krijgt zowel nauwkeurige woord-voor-woord vastlegging als intelligente analyse."
-      },
-      "question6": {
-        "question": "Zijn mijn gegevens privé en veilig?",
-        "answer": "Absoluut. Je audio wordt slechts 30 dagen bewaard voor support en hersteldoeleinden, daarna automatisch en permanent verwijderd. We bewaren alleen de teksttranscripties en analyseresultaten. Enterprise-grade encryptie beschermt je gegevens tijdens opslag en verzending—ideaal voor vertrouwelijke zakelijke, juridische of medische discussies."
-      },
-      "question7": {
-        "question": "Kan ik documenten delen en exporteren?",
-        "answer": "Ja! Deel je documenten via beveiligde wachtwoordbeveiligde links, verstuur via e-mail of exporteer naar PDF- en Word-formaten. Professionele abonnementen bevatten onbeperkt delen en samenwerkingsfuncties voor teams."
-      }
-    },
-    "cta": {
-      "title": "Klaar om je vergaderingen van tijdverspillers naar actie-drivers te transformeren?",
-      "subtitle": "Sluit je aan bij duizenden teams die Neural Summary gebruiken om automatisch elke beslissing, actiepunt en inzicht vast te leggen.",
-      "button": "Start gratis — geen creditcard vereist",
-      "benefits": {
-        "free": "Geen creditcard",
-        "noCard": "Werkt met Zoom, Teams, Meet",
-        "cancel": "Altijd opzegbaar"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Eenvoudige, transparante prijzen",
-      "subtitle": "Begin gratis, upgrade wanneer je klaar bent. Geen verborgen kosten, geen verrassingen.",
-      "free": {
-        "name": "Gratis",
-        "description": "Perfect om uit te proberen",
-        "features": {
-          "transcriptions": "3 transcripties/maand",
-          "duration": "Max 30 min per bestand",
-          "summary": "Basissamenvatting"
-        },
-        "cta": "Aan de slag"
-      },
-      "professional": {
-        "name": "Professioneel",
-        "description": "Voor regelmatige gebruikers",
-        "badge": "Meest populair",
-        "features": {
-          "transcriptions": "Onbeperkte transcripties",
-          "hours": "60 uur/maand inbegrepen",
-          "analyses": "Alle 6 analysetypes",
-          "fileSize": "Max 3GB bestandsgrootte",
-          "priority": "Prioriteitsverwerking"
-        },
-        "cta": "Start gratis proef"
-      },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "description": "Per uur audio",
-        "features": {
-          "credits": "Tegoed vervalt nooit",
-          "analyses": "Alle 6 analysetypes",
-          "occasional": "Perfect voor incidenteel gebruik"
-        },
-        "cta": "Koop tegoed"
-      },
-      "viewFullPricing": "Bekijk volledige prijsdetails"
+    "closingCta": {
+      "headline": "Van gesprek naar document.",
+      "ctaPrimary": "Bekijk voorbeeldoutput",
+      "ctaSecondary": "Zie Neural Summary in actie"
     },
     "nav": {
       "login": "Inloggen",
@@ -1396,32 +1067,30 @@
       "faq": "Veelgestelde vragen"
     },
     "footer": {
-      "product": {
-        "title": "Product",
-        "features": "Functies",
-        "pricing": "Prijzen",
-        "api": "API"
+      "product": "Product",
+      "examples": "Voorbeelden",
+      "security": "Beveiliging",
+      "contact": "Contact",
+      "copyright": "© 2025 Neural Summary. Alle rechten voorbehouden."
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "q1": {
+        "question": "Welke soorten documenten kan ik maken?",
+        "answer": "Neural Summary transformeert je gesprekken in professionele documenten zoals vergadersamenvattingen, productspecificaties, blogposts, actiepunten, e-mailconcepten en meer. Kies uit 15+ templates of maak aangepaste outputs."
       },
-      "company": {
-        "title": "Bedrijf",
-        "about": "Over ons",
-        "blog": "Blog",
-        "careers": "Carrières"
+      "q2": {
+        "question": "Hoe nauwkeurig is de transcriptie?",
+        "answer": "We gebruiken de nieuwste AI-modellen die meer dan 95% nauwkeurigheid bereiken. Het systeem identificeert automatisch sprekers en verwerkt meerdere talen, accenten en vakjargon."
       },
-      "support": {
-        "title": "Ondersteuning",
-        "help": "Helpcentrum",
-        "contact": "Contact",
-        "status": "Status"
+      "q3": {
+        "question": "Is mijn data veilig?",
+        "answer": "Ja. Alle audiobestanden worden versleuteld tijdens transport en opslag. We gebruiken je data nooit om AI-modellen te trainen. Bestanden worden automatisch verwijderd na verwerking, en je kunt je data altijd verwijderen."
       },
-      "legal": {
-        "title": "Juridisch",
-        "privacy": "Privacy",
-        "terms": "Voorwaarden",
-        "security": "Beveiliging"
-      },
-      "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden.",
-      "tagline": "Gemaakt door mensen die te veel uren in vergaderingen hebben doorgebracht."
+      "q4": {
+        "question": "Kan ik het gratis proberen?",
+        "answer": "Absoluut. Begin met ons gratis plan met 3 audiobestanden per maand (maximaal 30 minuten elk). Geen creditcard nodig. Upgrade op elk moment voor meer capaciteit en functies."
+      }
     }
   },
   "share": {

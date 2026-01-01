@@ -5,12 +5,13 @@ import {
   ChevronDown,
   ChevronRight,
   Layers,
-  FileText,
   CheckCircle2,
   AlertCircle,
   Link as LinkIcon,
   Code,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import ReactMarkdown from 'react-markdown';
 import type { AgileBacklogOutput, UserStory, Epic } from '@transcribe/shared';
 
 interface AgileBacklogTemplateProps {
@@ -42,11 +43,20 @@ const PRIORITY_STYLES: Record<string, { bg: string; text: string; label: string 
   },
 };
 
-interface UserStoryCardProps {
-  story: UserStory;
+interface TranslationStrings {
+  acceptanceCriteria: string;
+  technicalDetails: string;
+  technicalNotes: string;
+  dependencies: string;
+  stories: string;
 }
 
-function UserStoryCard({ story }: UserStoryCardProps) {
+interface UserStoryCardProps {
+  story: UserStory;
+  t: TranslationStrings;
+}
+
+function UserStoryCard({ story, t }: UserStoryCardProps) {
   const [showDetails, setShowDetails] = useState(false);
   const priorityStyle = story.priority ? PRIORITY_STYLES[story.priority] : null;
   const hasDetails =
@@ -54,18 +64,18 @@ function UserStoryCard({ story }: UserStoryCardProps) {
     (story.dependencies && story.dependencies.length > 0);
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800/50">
+    <div className="border-l-2 border-l-[#8D6AFA]/30 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-800/50">
       {/* Header with ID and title */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400">
+          <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 text-[#8D6AFA] dark:text-[#8D6AFA]">
             {story.id}
           </span>
-          <h4 className="font-medium text-gray-900 dark:text-gray-100">{story.title}</h4>
+          <h4 className="text-base font-medium text-gray-900 dark:text-gray-100">{story.title}</h4>
         </div>
         {priorityStyle && (
           <span
-            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
+            className={`inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
           >
             {priorityStyle.label}
           </span>
@@ -73,27 +83,20 @@ function UserStoryCard({ story }: UserStoryCardProps) {
       </div>
 
       {/* User story statement */}
-      <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-sm">
-        <p className="text-gray-700 dark:text-gray-300">
-          <span className="font-medium text-gray-900 dark:text-gray-100">As a</span>{' '}
-          {story.asA},{' '}
-          <span className="font-medium text-gray-900 dark:text-gray-100">I want</span>{' '}
-          {story.iWant},{' '}
-          <span className="font-medium text-gray-900 dark:text-gray-100">so that</span>{' '}
-          {story.soThat}.
-        </p>
+      <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-gray-700 dark:text-gray-300 [&_p]:m-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_strong]:dark:text-gray-100">
+        <ReactMarkdown>{story.statement}</ReactMarkdown>
       </div>
 
       {/* Acceptance criteria */}
       {story.acceptanceCriteria && story.acceptanceCriteria.length > 0 && (
-        <div className="mb-3">
-          <h5 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-            Acceptance Criteria
+        <div className="mb-4 pl-4 border-l-2 border-[#14D0DC]/30">
+          <h5 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+            {t.acceptanceCriteria}
           </h5>
-          <ul className="space-y-1.5">
+          <ul className="space-y-2">
             {story.acceptanceCriteria.map((ac, index) => (
-              <li key={index} className="flex items-start gap-2 text-sm">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+              <li key={index} className="flex items-start gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#14D0DC] flex-shrink-0 mt-0.5" />
                 <span className="text-gray-700 dark:text-gray-300">{ac.criterion}</span>
               </li>
             ))}
@@ -103,7 +106,7 @@ function UserStoryCard({ story }: UserStoryCardProps) {
 
       {/* Expandable details (technical notes, dependencies) */}
       {hasDetails && (
-        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           <button
             onClick={() => setShowDetails(!showDetails)}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
@@ -113,7 +116,7 @@ function UserStoryCard({ story }: UserStoryCardProps) {
             ) : (
               <ChevronRight className="w-3.5 h-3.5" />
             )}
-            <span>Technical details</span>
+            <span>{t.technicalDetails}</span>
           </button>
 
           {showDetails && (
@@ -123,7 +126,7 @@ function UserStoryCard({ story }: UserStoryCardProps) {
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                     <Code className="w-3.5 h-3.5" />
-                    <span>Technical Notes</span>
+                    <span>{t.technicalNotes}</span>
                   </div>
                   <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 pl-5">
                     {story.technicalNotes.map((note, index) => (
@@ -140,7 +143,7 @@ function UserStoryCard({ story }: UserStoryCardProps) {
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                     <LinkIcon className="w-3.5 h-3.5" />
-                    <span>Dependencies</span>
+                    <span>{t.dependencies}</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {story.dependencies.map((dep, index) => (
@@ -165,42 +168,43 @@ function UserStoryCard({ story }: UserStoryCardProps) {
 interface EpicSectionProps {
   epic: Epic;
   defaultExpanded?: boolean;
+  t: TranslationStrings;
 }
 
-function EpicSection({ epic, defaultExpanded = true }: EpicSectionProps) {
+function EpicSection({ epic, defaultExpanded = true, t }: EpicSectionProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className="mb-6 last:mb-0">
+    <div className="mb-8 last:mb-0">
       {/* Epic header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors text-left"
+        className="w-full flex items-center gap-3 p-4 bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 rounded-lg hover:bg-[#8D6AFA]/10 dark:hover:bg-[#8D6AFA]/20 transition-colors text-left"
       >
         {isExpanded ? (
-          <ChevronDown className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <ChevronDown className="w-5 h-5 text-[#8D6AFA]" />
         ) : (
-          <ChevronRight className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          <ChevronRight className="w-5 h-5 text-[#8D6AFA]" />
         )}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-200 dark:bg-indigo-800/50 text-indigo-700 dark:text-indigo-300">
+            <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-[#8D6AFA]/20 dark:bg-[#8D6AFA]/30 text-[#8D6AFA]">
               {epic.id}
             </span>
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{epic.title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{epic.title}</h3>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              ({epic.stories?.length || 0} stories)
+              ({epic.stories?.length || 0} {t.stories})
             </span>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{epic.description}</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{epic.description}</p>
         </div>
       </button>
 
       {/* Stories */}
       {isExpanded && epic.stories && epic.stories.length > 0 && (
-        <div className="mt-3 ml-6 space-y-3">
+        <div className="mt-4 ml-8 space-y-4">
           {epic.stories.map((story) => (
-            <UserStoryCard key={story.id} story={story} />
+            <UserStoryCard key={story.id} story={story} t={t} />
           ))}
         </div>
       )}
@@ -209,6 +213,17 @@ function EpicSection({ epic, defaultExpanded = true }: EpicSectionProps) {
 }
 
 export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
+  const tRaw = useTranslations('aiAssets.templates.agileBacklog');
+
+  // Build translation strings object for sub-components
+  const t: TranslationStrings = {
+    acceptanceCriteria: tRaw('acceptanceCriteria'),
+    technicalDetails: tRaw('technicalDetails'),
+    technicalNotes: tRaw('technicalNotes'),
+    dependencies: tRaw('dependencies'),
+    stories: tRaw('stories'),
+  };
+
   // Defensive: ensure arrays exist
   const epics = data.epics || [];
   const standaloneStories = data.standaloneStories || [];
@@ -223,11 +238,10 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
       <div className="text-center py-16">
         <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          No user stories found
+          {tRaw('noStoriesFound')}
         </h3>
         <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          This conversation didn&apos;t contain any explicit product features or requirements to
-          extract.
+          {tRaw('noStoriesDescription')}
         </p>
       </div>
     );
@@ -235,25 +249,17 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
 
   return (
     <div className="space-y-6">
-      {/* Summary */}
-      {data.summary && (
-        <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <FileText className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
-          <p className="text-gray-700 dark:text-gray-300">{data.summary}</p>
-        </div>
-      )}
-
       {/* Stats */}
       <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-1.5">
           <Layers className="w-4 h-4" />
           <span>
-            {totalEpics} epic{totalEpics !== 1 ? 's' : ''}
+            {totalEpics} {totalEpics !== 1 ? 'epics' : 'epic'}
           </span>
         </div>
         <span className="text-gray-300 dark:text-gray-600">|</span>
         <span>
-          {totalStories} user stor{totalStories !== 1 ? 'ies' : 'y'}
+          {totalStories} {totalStories !== 1 ? tRaw('userStories') : tRaw('userStory')}
         </span>
       </div>
 
@@ -261,10 +267,10 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
       {epics.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-            Epics
+            {tRaw('epics')}
           </h2>
           {epics.map((epic) => (
-            <EpicSection key={epic.id} epic={epic} />
+            <EpicSection key={epic.id} epic={epic} t={t} />
           ))}
         </div>
       )}
@@ -273,11 +279,11 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
       {standaloneStories.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-            Standalone Stories
+            {tRaw('standaloneStories')}
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {standaloneStories.map((story) => (
-              <UserStoryCard key={story.id} story={story} />
+              <UserStoryCard key={story.id} story={story} t={t} />
             ))}
           </div>
         </div>

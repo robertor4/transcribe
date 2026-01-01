@@ -197,9 +197,7 @@ export const SCHEMA_FRAGMENTS = {
     properties: {
       id: { type: 'string' },
       title: { type: 'string' },
-      asA: { type: 'string' },
-      iWant: { type: 'string' },
-      soThat: { type: 'string' },
+      statement: { type: 'string' },
       acceptanceCriteria: {
         type: 'array',
         items: {
@@ -218,7 +216,7 @@ export const SCHEMA_FRAGMENTS = {
       },
       dependencies: { type: 'array', items: { type: 'string' } },
     },
-    required: ['id', 'title', 'asA', 'iWant', 'soThat', 'acceptanceCriteria'],
+    required: ['id', 'title', 'statement', 'acceptanceCriteria'],
   },
 
   /** Epic containing user stories */

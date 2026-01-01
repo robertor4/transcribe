@@ -850,3 +850,31 @@ h1, h2, h3, h4, h5, h6 {
 .animate-slideOutToLeft {
   animation: slideOutToLeft 0.2s ease-in forwards;
 }
+
+/* ===== Hero Section Animations ===== */
+
+/* Background dots slow horizontal drift - visible but subtle */
+@keyframes heroDotsSlowDrift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+.animate-hero-dots-drift {
+  animation: heroDotsSlowDrift 15s ease-in-out infinite;
+}
+
+/* Disable hero animations when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-dots-drift {
+    animation: none !important;
+  }
+}
+
+/* Consistent easing for landing page animations - easeOutQuad */
+.ease-hero {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

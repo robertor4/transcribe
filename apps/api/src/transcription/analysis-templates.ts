@@ -754,9 +754,12 @@ CRITICAL REQUIREMENTS:
 USER STORY FORMAT:
 - id: Sequential ID (US-001, US-002, etc.)
 - title: Brief, descriptive name (e.g., "Password Reset Flow")
-- asA: The user role (e.g., "registered user", "admin", "guest")
-- iWant: The capability or action (e.g., "to reset my password via email")
-- soThat: The benefit or value (e.g., "I can regain access to my account")
+- statement: The COMPLETE user story as a single sentence IN THE SAME LANGUAGE as the transcript. Use markdown **bold** for the keywords to emphasize the pattern. Examples:
+  - English: "**As a** user, **I want** to reset my password, **so that** I can access my account"
+  - Dutch: "**Als** gebruiker **wil ik** mijn wachtwoord resetten, **zodat** ik toegang krijg"
+  - German: "**Als** Benutzer **möchte ich** mein Passwort zurücksetzen, **damit** ich Zugang bekomme"
+  - French: "**En tant que** utilisateur, **je veux** réinitialiser mon mot de passe, **afin que** je puisse accéder"
+  - Spanish: "**Como** usuario, **quiero** restablecer mi contraseña, **para que** pueda acceder"
 
 ACCEPTANCE CRITERIA:
 - Write testable, specific criteria based on what was discussed
@@ -794,9 +797,7 @@ Return JSON matching this schema:
     "stories": [{
       "id": "US-001",
       "title": "Story title",
-      "asA": "user role",
-      "iWant": "capability",
-      "soThat": "benefit",
+      "statement": "As a user, I want to do something, so that I get benefit",
       "acceptanceCriteria": [{ "criterion": "testable statement", "type": "simple" }],
       "technicalNotes": ["only if discussed"],
       "priority": "must-have",

@@ -548,6 +548,25 @@
       "clientProposal": {
         "name": "Propuesta de cliente",
         "description": "Propuesta formal con requisitos y solución"
+      },
+      "agileBacklog": {
+        "name": "Backlog Agile",
+        "description": "Epics e historias de usuario con criterios de aceptación",
+        "asA": "Como",
+        "iWant": "quiero",
+        "soThat": "para que",
+        "acceptanceCriteria": "Criterios de aceptación",
+        "technicalDetails": "Detalles técnicos",
+        "technicalNotes": "Notas técnicas",
+        "dependencies": "Dependencias",
+        "epics": "Epics",
+        "standaloneStories": "Stories independientes",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "historia de usuario",
+        "userStories": "historias de usuario",
+        "noStoriesFound": "No se encontraron historias de usuario",
+        "noStoriesDescription": "Esta conversación no contenía características o requisitos de producto explícitos para extraer."
       }
     },
     "sidebar": {
@@ -987,385 +1006,37 @@
   },
   "landing": {
     "hero": {
-      "headline": "Crea cualquier cosa con tu voz",
-      "subtitle": "Convierte conversaciones en resúmenes, correos, publicaciones y más.",
-      "ctaPrimary": "Comenzar gratis",
-      "ctaSecondary": "Ver demo",
-      "byline": "Tú hablas. Crea.",
-      "trustIndicators": {
-        "users": "Confiado por profesionales",
-        "rating": "Altamente valorado",
-        "certified": "Compatible con RGPD"
-      },
-      "title": "Convierte cada reunión en",
-      "titleHighlight": "notas y acciones claras.",
-      "subtitle2": "La app de notas de reunión con IA que transforma grabaciones de Zoom, Teams y Google Meet en resúmenes accionables — automáticamente, con precisión e instantáneamente.",
-      "cta": {
-        "primary": "Comenzar gratis",
-        "secondary": "Ver cómo funciona"
-      },
-      "guarantee": "Plan gratuito siempre disponible • Sin tarjeta de crédito • Funciona con todas las plataformas de reuniones",
-      "features": {
-        "saveTime": "Ahorra 10+ horas/semana",
-        "accuracy": "99.5% de precisión",
-        "languages": "50+ idiomas"
-      }
+      "headline": "Tú hablas. Crea.",
+      "subtitlePart1": "Neural Summary convierte el pensamiento hablado en resultados estructurados y profesionales — ",
+      "subtitlePart2": "para que las decisiones perduren y el trabajo avance.",
+      "ctaPrimary": "Ver ejemplo",
+      "ctaSecondary": "Cómo funciona",
+      "byline": "Tú hablas. Crea."
     },
-    "why": {
-      "headline": "Tus mejores ideas se pierden en la traducción.",
-      "paragraph1": "Piensas en conversaciones. Trabajas en documentos.",
-      "paragraph2": "Entre ambos: Horas escribiendo, formateando, reestructurando.",
-      "paragraph3": "¿Y si tu voz se convirtiera en el documento?"
-    },
-    "what": {
-      "headline": "Tres pasos hacia la creación.",
-      "steps": {
-        "speak": {
-          "title": "Habla",
-          "description": "Graba reuniones, ideas, entrevistas. O deja que nuestra IA te entreviste para extraer tu visión."
-        },
-        "extract": {
-          "title": "Extrae",
-          "description": "La IA hace preguntas, estructura pensamientos, captura cada detalle—como un asistente personal."
-        },
-        "create": {
-          "title": "Crea",
-          "description": "Obtén documentos listos para trabajar al instante. Especificaciones, artículos, correos, estrategias."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Hablar se convierte en crear.",
-      "subtitle": "De una conversación de 3 minutos → Especificación de producto completa",
-      "tagline": "Sin escribir. Sin formatear. Solo piensa en voz alta."
-    },
-    "who": {
-      "headline": "Diseñado para tu flujo de trabajo.",
-      "personas": {
-        "productManager": {
-          "title": "Gerente de Producto",
-          "subtitle": "Lluvia de ideas → Especificación de producto en 5 minutos",
-          "description": "Discute tu idea de funcionalidad. Obtén una especificación completa lista para tu equipo de desarrollo."
-        },
-        "founder": {
-          "title": "Fundador",
-          "subtitle": "Charla de visión → Documento estratégico para tu equipo",
-          "description": "Graba tu visión estratégica. Comparte instantáneamente un brief estructurado con tu equipo."
-        },
-        "contentCreator": {
-          "title": "Creador de Contenido",
-          "subtitle": "Entrevista → Artículo listo para publicar",
-          "description": "Entrevista invitados naturalmente. Obtén contenido estructurado listo para publicar."
-        },
-        "salesLeader": {
-          "title": "Líder de Ventas",
-          "subtitle": "Llamada con cliente → Email de seguimiento en minutos",
-          "description": "Enfócate en la conversación. Envía resúmenes perfectos mientras los prospectos te recuerdan."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Diseñado para el enfoque.",
-      "accuracy": {
-        "title": "99.5% de precisión",
-        "description": "Cada palabra capturada. Etiquetas de hablante incluidas."
-      },
-      "largeFiles": {
-        "title": "Archivos hasta 5GB",
-        "description": "Maneja horas de audio. Sin límites."
-      },
-      "languages": {
-        "title": "99 idiomas",
-        "description": "Detección automática. Traducción instantánea."
-      }
-    },
-    "securitySection": {
-      "headline": "Tu privacidad importa.",
-      "description": "Audio eliminado automáticamente después de 30 días. Solo el texto queda permanente. Encriptación de nivel empresarial."
-    },
-    "warp": {
-      "headline": "El futuro del trabajo no es escribir.",
-      "subtitle": "Es pensar en voz alta.",
-      "line1": "Tus ideas se convierten en requisitos.",
-      "line2": "Tu visión se convierte en estrategia.",
-      "line3": "Tu voz se convierte en producción.",
-      "tagline": "Así es como debería sentirse el trabajo creativo."
-    },
-    "finalCta": {
-      "headline": "Hablar se convierte en crear",
-      "subtext": "Comienza gratis. No se requiere tarjeta.",
-      "button": "Comenzar gratis",
-      "benefits": {
-        "free": "Comienza gratis",
-        "noCard": "Sin tarjeta de crédito"
-      }
-    },
-    "valueProposition": {
-      "title": "Tu IA que escucha, entiende y resume — para que puedas pensar, liderar y decidir.",
-      "subtitle": "Neural Summary mejora cómo te comunicas y tomas decisiones fortaleciendo tres áreas clave con las que luchan los profesionales:",
-      "efficiency": {
-        "title": "Eficiencia",
-        "description": "Automatiza la transcripción y el resumen para recuperar horas cada semana."
-      },
-      "clarity": {
-        "title": "Claridad",
-        "description": "Captura lo que realmente importa de reuniones, entrevistas y discusiones."
-      },
-      "impact": {
-        "title": "Impacto",
-        "description": "Convierte insights en acción con resúmenes estructurados y compartibles y próximos pasos."
-      },
-      "tagline": "No solo recuerdes lo que se dijo — actúa en consecuencia."
-    },
-    "whyTeams": {
-      "title": "Por qué los equipos eligen Neural Summary",
-      "benefit1": "Ahorra 3-5 horas por semana en documentación manual",
-      "benefit2": "Reduce la pérdida de información y los malentendidos",
-      "benefit3": "Mantén equipos alineados sin compartir notas interminablemente",
-      "benefit4": "Seguro, conforme y escalable para cualquier organización",
-      "benefit5": "Seguro, conforme y escalable para cualquier organización",
-      "tagline": "Deja de perder tiempo en reuniones — comienza a convertir palabras en acción."
-    },
-    "benefits": {
-      "title": "Transforma tu flujo de trabajo, mejora tus habilidades",
-      "subtitle": "Descubre cómo Neural Summary te hace más efectivo",
-      "shareCollaborate": {
-        "title": "Comparte y Colabora Sin Esfuerzo",
-        "description": "Envía resúmenes profesionales a tu equipo con un clic. No más largos reportes de reuniones o tareas perdidas."
-      },
-      "improveCommunication": {
-        "title": "Mejora Tus Habilidades de Comunicación",
-        "description": "Analiza tus patrones de habla, identifica muletillas y convértete en un presentador más efectivo."
-      },
-      "saveTime": {
-        "title": "Ahorra 10+ Horas Cada Semana",
-        "description": "Convierte reuniones de 1 hora en resúmenes de 5 minutos. Enfócate en lo importante, no en tomar notas."
-      },
-      "neverMiss": {
-        "title": "Nunca Te Pierdas Detalles Importantes",
-        "description": "Captura automáticamente cada acción, decisión e insight. Tu asistente de IA nunca olvida."
-      }
-    },
-    "features": {
-      "title": "Funciones poderosas para cada profesional",
-      "ai": {
-        "title": "Resúmenes impulsados por IA",
-        "description": "Obtén resúmenes ejecutivos con puntos clave, tareas pendientes e insights"
-      },
-      "largeFiles": {
-        "title": "Soporte para archivos grandes",
-        "description": "Maneja archivos de hasta 5GB con transcripción avanzada de AssemblyAI"
-      },
-      "security": {
-        "title": "Audio eliminado automáticamente después de 30 días",
-        "description": "Los archivos se conservan brevemente para soporte, luego se eliminan permanentemente. Encriptación de nivel empresarial garantiza tu privacidad."
-      },
-      "demo": {
-        "dragDrop": "Arrastra y suelta tu archivo de audio aquí",
-        "record": "O graba directamente desde cualquier dispositivo"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Funciona con Todas las Plataformas de Reuniones",
-      "subtitle": "Graba en cualquier plataforma, obtén notas de reunión con IA automáticamente",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Graba localmente o en la nube, luego sube para transcripción instantánea"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Descarga grabaciones de Teams y obtén resúmenes de reunión con IA en minutos"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Sube grabaciones de Meet para transcripción automática con etiquetas de hablante"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transforma reuniones de WebEx en notas estructuradas y tareas pendientes"
-      },
-      "anyPlatform": {
-        "name": "Cualquier Plataforma",
-        "description": "Funciona con grabaciones telefónicas, reuniones presenciales, entrevistas y más"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Perfecto para Todos los Tipos de Reuniones",
-      "subtitle": "Desde reuniones 1-a-1 rápidas hasta reuniones generales, nunca pierdas detalles importantes",
-      "oneOnOnes": {
-        "title": "Reuniones 1-a-1",
-        "description": "Concéntrate en la conversación, no en tomar notas. Obtén registros perfectos de retroalimentación, objetivos y compromisos."
-      },
-      "teamStandups": {
-        "title": "Reuniones de Equipo & Sincronizaciones",
-        "description": "Mantén a todos alineados con actas automáticas y seguimiento de tareas pendientes."
-      },
-      "clientCalls": {
-        "title": "Llamadas con Clientes & Ventas",
-        "description": "Captura cada requisito, pregunta y compromiso. Comparte resúmenes profesionales al instante."
-      },
-      "allHands": {
-        "title": "Reuniones Generales",
-        "description": "Crea transcripciones buscables para miembros del equipo que no pudieron asistir. Nunca te repitas."
-      }
-    },
-    "howItWorks": {
-      "title": "Cómo Funciona",
-      "subtitle": "De la grabación de reunión a notas accionables en 3 simples pasos",
+    "how": {
+      "headline": "Cómo funciona",
       "step1": {
-        "title": "Graba tu reunión",
-        "description": "Usa Zoom, Teams, Google Meet, tu teléfono o cualquier dispositivo de grabación. Todos los formatos principales de audio y video son compatibles."
+        "title": "Habla libremente",
+        "description": "Graba una conversación, reunión o nota de voz."
       },
       "step2": {
-        "title": "La IA transcribe con etiquetas de hablante",
-        "description": "Nuestra IA identifica hablantes, transcribe con 99.5% de precisión y entiende el contexto — incluso jerga técnica."
+        "title": "Extraemos lo importante",
+        "description": "Decisiones, prioridades y próximos pasos — estructurados automáticamente."
       },
       "step3": {
-        "title": "Obtén resumen de reunión y tareas",
-        "description": "Recibe resúmenes estructurados con decisiones clave, temas de discusión y tareas con responsables y plazos."
+        "title": "Avanzas",
+        "description": "Comparte, envía o actúa sobre trabajo que ya está claro."
       }
     },
-    "security": {
-      "title": "Confiado por profesionales que valoran la precisión y la privacidad",
-      "stats": {
-        "users": "Confiado por profesionales en todo el mundo",
-        "rating": "Altamente valorado por los usuarios"
-      },
-      "compliance": {
-        "title": "Arquitectura centrada en la privacidad",
-        "description": "Construido con cumplimiento de GDPR y protección de datos en el núcleo"
-      },
-      "useCases": {
-        "title": "Confiado por profesionales",
-        "description": "Usado por equipos legales, médicos, de investigación y ejecutivos donde cada palabra cuenta."
-      },
-      "technology": {
-        "title": "Impulsado por IA de vanguardia",
-        "description": "Construido con los últimos modelos de lenguaje ajustados para comunicación empresarial."
-      },
-      "encryption": {
-        "title": "Audio eliminado automáticamente después de 30 días",
-        "description": "Los archivos de audio se conservan 30 días para soporte, luego se eliminan permanentemente. Solo las transcripciones de texto permanecen."
-      },
-      "retention": {
-        "title": "Infraestructura en la nube segura",
-        "description": "Tus datos están cifrados en reposo y en tránsito con protocolos estándar de la industria"
-      },
-      "audit": {
-        "title": "Privacy by Design",
-        "description": "Tus datos permanecen privados - solo procesamos lo necesario. El audio se elimina automáticamente después de 30 días."
-      },
-      "badges": {
-        "soc2": "Cumple SOC 2",
-        "gdpr": "Cumple GDPR",
-        "hipaa": "Listo HIPAA",
-        "iso": "ISO 27001",
-        "compliance": "Los modelos de voz a texto cumplen con SOC 2, GDPR, HIPAA e ISO 27001."
-      }
-    },
-    "testimonials": {
-      "title": "Amado por equipos que valoran su tiempo",
-      "rating": "Altamente valorado por profesionales de reuniones",
-      "testimonial1": {
-        "quote": "Nuestras reuniones de equipo ahora son 10x más productivas. Todos reciben automáticamente el resumen y las tareas — no más '¿quién toma notas?'",
-        "author": "Michael Chen",
-        "role": "Gerente de Ingeniería, Startup Tech"
-      },
-      "testimonial2": {
-        "quote": "Puedo concentrarme en mis clientes, no en escribir. Los resúmenes de reunión son tan precisos que los comparto directamente con las partes interesadas.",
-        "author": "Dr. James Liu",
-        "role": "Investigador Clínico"
-      },
-      "testimonial3": {
-        "quote": "Grabo todas mis llamadas con clientes y obtengo transcripciones perfectas con tareas. Es como tener un asistente en cada llamada. ¡Cambio radical para ventas!",
-        "author": "Jennifer Brooks",
-        "role": "Ejecutiva de Cuentas, SaaS Sales"
-      }
-    },
-    "meetingFaq": {
-      "title": "Preguntas Frecuentes",
-      "subtitle": "Todo lo que necesitas saber sobre convertir voz en documentos listos para trabajar",
-      "question1": {
-        "question": "¿Cómo funciona Neural Summary?",
-        "answer": "Sube cualquier grabación de audio o video, o habla directamente en la plataforma. Nuestra IA procesa tu conversación, identifica información clave y genera documentos estructurados—resúmenes, tareas y análisis detallados. Funciona con reuniones, brainstormings, entrevistas o notas de voz. Del upload al documento finalizado en solo 3-5 minutos."
-      },
-      "question2": {
-        "question": "¿Qué tipos de documentos puedo crear?",
-        "answer": "Desde una sola grabación, crea resúmenes de reunión con tareas y decisiones, análisis de contenido, insights estratégicos y análisis de comunicación. Cada tipo de documento está optimizado para diferentes necesidades—resumen ejecutivo, transcripción detallada o plan de acción de equipo. Próximamente: creación de documentos guiada por IA para specs y artículos."
-      },
-      "question3": {
-        "question": "¿Funciona con Zoom, Teams y Google Meet?",
-        "answer": "¡Sí! Graba tu reunión en cualquier plataforma, descarga el archivo y súbelo a Neural Summary. Soportamos todos los formatos principales de video y audio incluyendo MP3, M4A, WAV, MP4, MOV y más. Sin bots, sin plugins—solo sube y crea."
-      },
-      "question4": {
-        "question": "¿Puede Neural Summary identificar diferentes hablantes?",
-        "answer": "¡Sí! Nuestra tecnología de diarización de hablantes detecta y etiqueta automáticamente múltiples hablantes a lo largo de tu conversación. Las contribuciones de cada hablante se atribuyen claramente, manteniendo el flujo natural del diálogo. Puedes renombrar hablantes después del procesamiento para aún más claridad en tus documentos."
-      },
-      "question5": {
-        "question": "¿Qué tan precisos son los resultados?",
-        "answer": "Ofrecemos 99.5% de precisión de transcripción con identificación de hablantes en más de 50 idiomas. Pero Neural Summary va más allá de la transcripción—nuestra IA extrae decisiones, tareas, temas e insights que la toma manual de notas suele perder. Obtienes tanto captura palabra por palabra precisa como análisis inteligente."
-      },
-      "question6": {
-        "question": "¿Mis datos son privados y seguros?",
-        "answer": "Absolutamente. Tu audio se conserva solo 30 días para soporte y recuperación, luego se elimina automática y permanentemente. Solo conservamos las transcripciones de texto y los resultados del análisis. La encriptación de nivel empresarial protege tus datos en reposo y en tránsito—ideal para discusiones comerciales, legales o médicas confidenciales."
-      },
-      "question7": {
-        "question": "¿Puedo compartir y exportar documentos?",
-        "answer": "¡Sí! Comparte tus documentos mediante enlaces seguros protegidos por contraseña, envía por correo electrónico o exporta en formatos PDF y Word. Los planes profesionales incluyen compartir ilimitado y funciones de colaboración para equipos."
-      }
-    },
-    "cta": {
-      "title": "¿Listo para transformar tus reuniones de desperdicios de tiempo en impulsores de acción?",
-      "subtitle": "Únete a miles de equipos que usan Neural Summary para capturar automáticamente cada decisión, tarea e insight.",
-      "button": "Comenzar gratis — sin tarjeta de crédito",
-      "benefits": {
-        "free": "Sin tarjeta de crédito",
-        "noCard": "Funciona con Zoom, Teams, Meet",
-        "cancel": "Cancela cuando quieras"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Precios simples y transparentes",
-      "subtitle": "Comienza gratis, mejora cuando estés listo. Sin costos ocultos, sin sorpresas.",
-      "free": {
-        "name": "Gratis",
-        "description": "Perfecto para probar",
-        "features": {
-          "transcriptions": "3 transcripciones/mes",
-          "duration": "Máx 30 min por archivo",
-          "summary": "Resumen básico"
-        },
-        "cta": "Comenzar"
-      },
-      "professional": {
-        "name": "Profesional",
-        "description": "Para usuarios regulares",
-        "badge": "Más popular",
-        "features": {
-          "transcriptions": "Transcripciones ilimitadas",
-          "hours": "60 horas/mes incluidas",
-          "analyses": "Los 6 tipos de análisis",
-          "fileSize": "Máx 3GB de tamaño de archivo",
-          "priority": "Procesamiento prioritario"
-        },
-        "cta": "Prueba gratuita"
-      },
-      "payg": {
-        "name": "Paga según uses",
-        "description": "Por hora de audio",
-        "features": {
-          "credits": "Los créditos nunca expiran",
-          "analyses": "Los 6 tipos de análisis",
-          "occasional": "Perfecto para uso ocasional"
-        },
-        "cta": "Comprar créditos"
-      },
-      "viewFullPricing": "Ver detalles completos de precios"
+    "closingCta": {
+      "headline": "De conversación a documento.",
+      "ctaPrimary": "Ver ejemplo",
+      "ctaSecondary": "Ver Neural Summary en acción"
     },
     "nav": {
       "login": "Iniciar sesión",
-      "getStarted": "Comenzar",
-      "dashboard": "Ir al Panel de Control",
+      "getStarted": "Empezar",
+      "dashboard": "Panel de control",
       "menu": "Menú",
       "language": "Idioma",
       "features": "Características",
@@ -1374,32 +1045,30 @@
       "faq": "FAQ"
     },
     "footer": {
-      "product": {
-        "title": "Producto",
-        "features": "Características",
-        "pricing": "Precios",
-        "api": "API"
+      "product": "Producto",
+      "examples": "Ejemplos",
+      "security": "Seguridad",
+      "contact": "Contacto",
+      "copyright": "© 2025 Neural Summary. Todos los derechos reservados."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "q1": {
+        "question": "¿Qué tipos de documentos puedo crear?",
+        "answer": "Neural Summary transforma tus conversaciones en documentos profesionales como resúmenes de reuniones, especificaciones de producto, artículos de blog, planes de acción, borradores de email y más. Elige entre 15+ plantillas o crea salidas personalizadas."
       },
-      "company": {
-        "title": "Empresa",
-        "about": "Acerca de",
-        "blog": "Blog",
-        "careers": "Carreras"
+      "q2": {
+        "question": "¿Qué tan precisa es la transcripción?",
+        "answer": "Utilizamos modelos de IA de última generación que alcanzan más del 95% de precisión. El sistema identifica automáticamente a los hablantes y maneja múltiples idiomas, acentos y terminología especializada."
       },
-      "support": {
-        "title": "Soporte",
-        "help": "Centro de ayuda",
-        "contact": "Contacto",
-        "status": "Estado"
+      "q3": {
+        "question": "¿Mis datos están seguros?",
+        "answer": "Sí. Todos los archivos de audio están cifrados en tránsito y en reposo. Nunca usamos tus datos para entrenar modelos de IA. Los archivos se eliminan automáticamente después del procesamiento, y puedes eliminar tus datos en cualquier momento."
       },
-      "legal": {
-        "title": "Legal",
-        "privacy": "Privacidad",
-        "terms": "Términos",
-        "security": "Seguridad"
-      },
-      "copyright": "© 2024 Neural Summary. Todos los derechos reservados.",
-      "tagline": "Creado por personas que han pasado demasiadas horas en reuniones."
+      "q4": {
+        "question": "¿Puedo probarlo gratis?",
+        "answer": "Absolutamente. Comienza con nuestro plan gratuito que incluye 3 archivos de audio al mes (hasta 30 minutos cada uno). No se requiere tarjeta de crédito. Actualiza en cualquier momento para más capacidad y funciones."
+      }
     }
   },
   "terms": {
@@ -2444,13 +2113,13 @@
     "replacing": "Reemplazando...",
     "noMatches": "No se encontraron coincidencias",
     "matchCount": "{count} coincidencias",
-    "matchCountSingular": "1 coincidencia",
+    "matchCountSingular": "1 coincidencia encontrada",
     "replacedCount": "Se reemplazaron {count} ocurrencias",
     "selectAll": "Seleccionar todo",
     "deselectAll": "Deseleccionar todo",
     "selected": "{count} seleccionados",
     "inCategory": "en {category}",
-    "error": "Error durante la operación. Por favor, inténtalo de nuevo.",
+    "error": "Ocurrió un error",
     "patternSaved": "Patrón guardado para futuras conversaciones",
     "suggestions": {
       "title": "Reemplazos sugeridos",
@@ -2463,12 +2132,8 @@
     "emptyState": "Ingresa texto para buscar y reemplazar en esta conversación",
     "previousMatch": "Coincidencia anterior",
     "nextMatch": "Siguiente coincidencia",
-    "selected": "{count} seleccionados",
     "refreshing": "Actualizando contenido...",
-    "searching": "Buscando...",
     "pressEnterToSearch": "Presiona Enter para buscar",
-    "matchCountSingular": "1 coincidencia encontrada",
-    "error": "Ocurrió un error",
     "enterReplaceText": "Ingresa el texto de reemplazo arriba",
     "clearSelection": "Limpiar",
     "replace": "Reemplazar"

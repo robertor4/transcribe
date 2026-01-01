@@ -63,13 +63,6 @@ export function MobileNav({ locale }: MobileNavProps) {
             {/* Navigation Links - Primary Focus */}
             <div className="space-y-3">
               <Link
-                href={`/${locale}/landing#video-demo`}
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                {t('nav.howItWorks')}
-              </Link>
-              <Link
                 href={`/${locale}/landing#features`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
@@ -77,11 +70,25 @@ export function MobileNav({ locale }: MobileNavProps) {
                 {t('nav.features')}
               </Link>
               <Link
+                href={`/${locale}/landing#how-it-works`}
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                {t('nav.howItWorks')}
+              </Link>
+              <Link
                 href={`/${locale}/pricing`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 {t('nav.pricing')}
+              </Link>
+              <Link
+                href={`/${locale}/landing#faq`}
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                {t('nav.faq')}
               </Link>
             </div>
 
