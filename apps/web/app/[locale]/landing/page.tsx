@@ -34,7 +34,7 @@ export default async function LandingPage({
               backgroundPosition: 'center',
               maskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 100%)',
-              opacity: 0.2,
+              opacity: 0.15,
             }}
             aria-hidden="true"
           />
@@ -103,12 +103,9 @@ export default async function LandingPage({
 
                     {/* Primary document — fully readable, dominant */}
                     <div className="relative w-full bg-white rounded-lg shadow-xl border border-gray-200 p-8 text-left transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
-                      {/* Document header with title and icon */}
-                      <div className="flex items-start justify-between mb-6">
+                      {/* Document header with title */}
+                      <div className="mb-6">
                         <h3 className="text-xl font-semibold text-gray-900">Q4 Product Strategy</h3>
-                        <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
                       </div>
                       <ul className="space-y-3 text-gray-700 text-sm mb-8">
                         <li className="flex items-center">
