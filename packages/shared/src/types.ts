@@ -311,6 +311,45 @@ export interface CommunicationAnalysisOutput {
   keyTakeaway: string;
 }
 
+// ============================================================
+// AGILE BACKLOG OUTPUT TYPES
+// ============================================================
+
+/** Acceptance criterion for a user story */
+export interface AcceptanceCriterion {
+  criterion: string;
+  type?: 'given-when-then' | 'simple';
+}
+
+/** User story in Agile format */
+export interface UserStory {
+  id: string; // Generated: US-001, US-002, etc.
+  title: string;
+  asA: string; // User role
+  iWant: string; // Feature/capability
+  soThat: string; // Benefit/value
+  acceptanceCriteria: AcceptanceCriterion[];
+  technicalNotes?: string[]; // Only if explicitly discussed
+  priority?: 'must-have' | 'should-have' | 'could-have' | 'wont-have';
+  dependencies?: string[]; // References to other story IDs
+}
+
+/** Epic containing related user stories */
+export interface Epic {
+  id: string; // Generated: EP-001, EP-002, etc.
+  title: string;
+  description: string;
+  stories: UserStory[];
+}
+
+/** Structured Agile backlog output */
+export interface AgileBacklogOutput {
+  type: 'agileBacklog';
+  summary?: string;
+  epics: Epic[];
+  standaloneStories: UserStory[];
+}
+
 /** Union type for all structured outputs */
 export type StructuredOutput =
   | ActionItemsOutput
@@ -320,7 +359,8 @@ export type StructuredOutput =
   | ClientProposalOutput
   | BlogPostOutput
   | LinkedInOutput
-  | CommunicationAnalysisOutput;
+  | CommunicationAnalysisOutput
+  | AgileBacklogOutput;
 
 /** Type guard to check if content is structured */
 export function isStructuredOutput(content: unknown): content is StructuredOutput {

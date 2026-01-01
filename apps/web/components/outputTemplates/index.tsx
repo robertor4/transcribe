@@ -11,12 +11,14 @@ import type {
   BlogPostOutput,
   LinkedInOutput,
   CommunicationAnalysisOutput,
+  AgileBacklogOutput,
 } from '@transcribe/shared';
 import { ActionItemsTemplate } from './ActionItemsTemplate';
 import { EmailTemplate } from './EmailTemplate';
 import { BlogPostTemplate } from './BlogPostTemplate';
 import { LinkedInTemplate } from './LinkedInTemplate';
 import { CommunicationAnalysisTemplate } from './CommunicationAnalysisTemplate';
+import { AgileBacklogTemplate } from './AgileBacklogTemplate';
 import { FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -26,6 +28,7 @@ export { EmailTemplate } from './EmailTemplate';
 export { BlogPostTemplate } from './BlogPostTemplate';
 export { LinkedInTemplate } from './LinkedInTemplate';
 export { CommunicationAnalysisTemplate } from './CommunicationAnalysisTemplate';
+export { AgileBacklogTemplate } from './AgileBacklogTemplate';
 
 /**
  * Template component registry - add new templates here
@@ -48,6 +51,7 @@ const TEMPLATE_COMPONENTS: Record<
     data: unknown;
     analysisId?: string;
   }>,
+  agileBacklog: AgileBacklogTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
 };
 
 interface OutputRendererProps {
@@ -167,6 +171,15 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
     case 'communicationAnalysis': {
       const data = content as CommunicationAnalysisOutput;
       return `Overall score: ${data.overallScore}/100`;
+    }
+
+    case 'agileBacklog': {
+      const data = content as AgileBacklogOutput;
+      const epicCount = data.epics?.length || 0;
+      const storyCount =
+        (data.epics?.reduce((acc, epic) => acc + (epic.stories?.length || 0), 0) || 0) +
+        (data.standaloneStories?.length || 0);
+      return `${epicCount} epic${epicCount !== 1 ? 's' : ''}, ${storyCount} user stor${storyCount !== 1 ? 'ies' : 'y'}`;
     }
 
     default:

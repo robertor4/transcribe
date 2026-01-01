@@ -723,6 +723,124 @@ Return JSON matching this exact schema:
     },
   }),
 
+  createStructuredTemplate({
+    id: 'agileBacklog',
+    name: 'Agile Backlog',
+    description: 'Extract epics and user stories with acceptance criteria',
+    category: 'professional',
+    icon: 'Layers',
+    color: 'indigo',
+    systemPrompt: `You are a senior product manager and Agile coach. Extract product features from conversations into well-structured epics and user stories. Follow these principles:
+
+1. ONLY extract features that were EXPLICITLY discussed - never invent or assume features
+2. Group related stories under epics when there's a clear theme (3+ related stories)
+3. Keep standalone stories for isolated features
+4. Write acceptance criteria that are testable and specific
+5. Include technical details ONLY when explicitly mentioned in the conversation
+6. Never estimate effort - focus purely on requirements
+
+${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Extract product requirements from this conversation into an Agile backlog.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+CRITICAL REQUIREMENTS:
+1. Only include features EXPLICITLY discussed - do not invent requirements
+2. Use standard user story format: "As a [role], I want [feature], so that [benefit]"
+3. Extract acceptance criteria only from what was discussed or clearly implied
+4. Include technical details ONLY when they were explicitly mentioned
+5. Group related stories (3+) under an epic; keep isolated features as standalone stories
+
+USER STORY FORMAT:
+- id: Sequential ID (US-001, US-002, etc.)
+- title: Brief, descriptive name (e.g., "Password Reset Flow")
+- asA: The user role (e.g., "registered user", "admin", "guest")
+- iWant: The capability or action (e.g., "to reset my password via email")
+- soThat: The benefit or value (e.g., "I can regain access to my account")
+
+ACCEPTANCE CRITERIA:
+- Write testable, specific criteria based on what was discussed
+- Use simple format: "User can see a confirmation message after reset"
+- Only use Given-When-Then format if the conversation used that language
+- Include edge cases only if they were explicitly mentioned
+
+TECHNICAL NOTES (optional):
+- Only include if technical implementation details were discussed
+- Examples: API requirements, database changes, third-party integrations
+- Do NOT infer technical details - only extract what was said
+
+PRIORITY (optional, only if discussed):
+- must-have: Critical for launch, explicitly marked as essential
+- should-have: Important but not blocking
+- could-have: Nice to have, mentioned as optional
+- wont-have: Explicitly deferred or rejected
+
+EPIC FORMAT:
+- id: Sequential ID (EP-001, EP-002, etc.)
+- title: Theme name (e.g., "User Authentication")
+- description: What this epic covers
+- stories: Array of related user stories
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this schema:
+{
+  "type": "agileBacklog",
+  "summary": "Brief 1-2 sentence overview of the backlog",
+  "epics": [{
+    "id": "EP-001",
+    "title": "Epic title",
+    "description": "What this epic covers",
+    "stories": [{
+      "id": "US-001",
+      "title": "Story title",
+      "asA": "user role",
+      "iWant": "capability",
+      "soThat": "benefit",
+      "acceptanceCriteria": [{ "criterion": "testable statement", "type": "simple" }],
+      "technicalNotes": ["only if discussed"],
+      "priority": "must-have",
+      "dependencies": ["US-002"]
+    }]
+  }],
+  "standaloneStories": [{ ...same structure as stories above }]
+}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    featured: true,
+    order: 5,
+    tags: ['agile', 'user-stories', 'epics', 'product-management', 'backlog'],
+    targetRoles: [
+      'product-manager',
+      'founder',
+      'engineering-lead',
+      'scrum-master',
+    ],
+    templateGroup: 'agile-backlog',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'agileBacklog' },
+        summary: { type: 'string' },
+        epics: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              title: { type: 'string' },
+              description: { type: 'string' },
+              stories: { type: 'array', items: SCHEMA_FRAGMENTS.userStory },
+            },
+            required: ['id', 'title', 'description', 'stories'],
+          },
+        },
+        standaloneStories: { type: 'array', items: SCHEMA_FRAGMENTS.userStory },
+      },
+      required: ['type', 'epics', 'standaloneStories'],
+    },
+  }),
+
   // ============================================================
   // PROFESSIONAL ANALYSIS TEMPLATES
   // ============================================================

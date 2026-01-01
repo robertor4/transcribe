@@ -435,7 +435,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col h-full">
       <ThreePaneLayout
         leftSidebar={<LeftNavigation />}
         rightPanel={

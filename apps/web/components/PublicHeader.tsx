@@ -18,24 +18,24 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
   return (
     <header className="fixed top-0 left-0 right-0 bg-[#23194B]/95 backdrop-blur-md z-50 border-b border-white/10">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
           <Link href={`/${locale}/landing`} className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-altBlue.svg"
               alt="Neural Summary - You speak. It creates."
-              className="h-10 sm:h-12 w-auto"
+              className="h-8 sm:h-9 w-auto"
               width={180}
               height={48}
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-5">
             {showFeaturesLink && (
               <Link
                 href={`/${locale}/landing#features`}
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
                 aria-label="View features"
               >
                 {tLanding('nav.features')}
@@ -43,14 +43,14 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             )}
             <Link
               href={`/${locale}/landing#video-demo`}
-              className="text-gray-300 hover:text-white font-medium transition-colors"
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
               aria-label="See how it works"
             >
               {tLanding('nav.howItWorks')}
             </Link>
             <Link
               href={`/${locale}/pricing`}
-              className="text-gray-300 hover:text-white font-medium transition-colors"
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
               aria-label="View pricing plans"
             >
               {tLanding('nav.pricing')}
@@ -59,7 +59,7 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
             {user ? (
               <Link
                 href={`/${locale}/dashboard`}
-                className="px-4 py-2 bg-white text-[#23194B] font-medium rounded-full hover:bg-gray-100 transition-colors"
+                className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
                 aria-label="Go to Dashboard"
               >
                 {tLanding('nav.dashboard')}
@@ -68,14 +68,14 @@ export function PublicHeader({ locale, showFeaturesLink = false }: PublicHeaderP
               <>
                 <Link
                   href={`/${locale}/login`}
-                  className="text-gray-300 hover:text-white font-medium transition-colors"
+                  className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
                   aria-label="Log in to Neural Summary"
                 >
                   {tLanding('nav.login')}
                 </Link>
                 <Link
                   href={`/${locale}/login`}
-                  className="px-4 py-2 bg-white text-[#23194B] font-medium rounded-full hover:bg-gray-100 transition-colors"
+                  className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
                   {tLanding('nav.getStarted')}

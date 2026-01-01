@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Agile Backlog AI Asset Template**: New structured template for extracting product features into Agile epics and user stories
+  - Supports epics with nested user stories and standalone stories for isolated features
+  - Standard user story format: "As a [role], I want [feature], so that [benefit]"
+  - Testable acceptance criteria extracted from what was discussed
+  - Technical notes section (only populated when explicitly mentioned in conversation)
+  - MoSCoW priority classification when discussed (must-have, should-have, could-have, won't-have)
+  - Story dependencies tracking
+  - Collapsible epic sections in UI with story count indicators
+  - Empty state handling when no features are found
+  - Files: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [template-helpers.ts](apps/api/src/transcription/template-helpers.ts), [types.ts](packages/shared/src/types.ts), [AgileBacklogTemplate.tsx](apps/web/components/outputTemplates/AgileBacklogTemplate.tsx), [agileBacklog.ts](apps/web/lib/outputTemplates/agileBacklog.ts)
+
+### Removed
+- **User Stories Template (V1)**: Replaced by the more comprehensive Agile Backlog template
+  - File removed: `apps/web/lib/outputTemplates/userStories.ts`
+
 ### Fixed
 - **Mobile Processing Step Responsiveness**: Improved mobile layout for processing step in Create Conversation modal
   - Stage indicators now use 2x2 grid on mobile (<640px), expanding to 4-column on desktop

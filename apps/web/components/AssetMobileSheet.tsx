@@ -113,8 +113,11 @@ export function AssetMobileSheet({
             role="dialog"
             aria-labelledby="mobile-sheet-title"
           >
-            {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            {/* Backdrop - click to close */}
+            <div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={handleClose}
+            />
 
             {/* Sheet */}
             <div

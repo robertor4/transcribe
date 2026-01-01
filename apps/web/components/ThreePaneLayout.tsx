@@ -108,7 +108,7 @@ export function ThreePaneLayout({
       {/* Main Content */}
       <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 scrollbar-subtle">
         {/* Add top padding on mobile to account for the hamburger button */}
-        <div className="lg:pt-0 pt-14">
+        <div className="lg:pt-0 pt-14 min-h-full">
           {mainContent}
         </div>
       </main>

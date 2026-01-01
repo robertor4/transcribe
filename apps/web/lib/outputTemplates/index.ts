@@ -20,7 +20,7 @@ export { blogPostTemplate } from './blogPost';
 export { linkedinPostTemplate } from './linkedinPost';
 export { actionItemsTemplate } from './actionItems';
 export { communicationAnalysisTemplate } from './communicationAnalysis';
-export { userStoriesTemplate } from './userStories'; // Keep for future, not in core 5
+export { agileBacklogTemplate } from './agileBacklog';
 
 // Import templates for registry
 import { transcribeOnlyTemplate } from './transcribeOnly';
@@ -32,6 +32,7 @@ import { blogPostTemplate } from './blogPost';
 import { linkedinPostTemplate } from './linkedinPost';
 import { actionItemsTemplate } from './actionItems';
 import { communicationAnalysisTemplate } from './communicationAnalysis';
+import { agileBacklogTemplate } from './agileBacklog';
 import { OutputTemplate } from './types';
 
 /**
@@ -50,6 +51,7 @@ export const allTemplates: readonly OutputTemplate[] = [
   linkedinPostTemplate,
   actionItemsTemplate,
   communicationAnalysisTemplate,
+  agileBacklogTemplate,
 ] as const;
 
 /**

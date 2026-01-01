@@ -850,3 +850,20 @@ h1, h2, h3, h4, h5, h6 {
 .animate-slideOutToLeft {
   animation: slideOutToLeft 0.2s ease-in forwards;
 }
+
+/* ===== Hero Background Drift Animation ===== */
+
+@keyframes driftRight {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-drift-right {
+  animation: driftRight 60s linear infinite;
+  background-size: 200% 100%;
+  will-change: background-position;
+}

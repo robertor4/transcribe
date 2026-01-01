@@ -180,4 +180,61 @@ export const SCHEMA_FRAGMENTS = {
     type: 'array',
     items: { type: 'string' },
   },
+
+  /** Acceptance criterion for user stories */
+  acceptanceCriterion: {
+    type: 'object',
+    properties: {
+      criterion: { type: 'string' },
+      type: { type: 'string', enum: ['given-when-then', 'simple'] },
+    },
+    required: ['criterion'],
+  },
+
+  /** User story in Agile format */
+  userStory: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      title: { type: 'string' },
+      asA: { type: 'string' },
+      iWant: { type: 'string' },
+      soThat: { type: 'string' },
+      acceptanceCriteria: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            criterion: { type: 'string' },
+            type: { type: 'string', enum: ['given-when-then', 'simple'] },
+          },
+          required: ['criterion'],
+        },
+      },
+      technicalNotes: { type: 'array', items: { type: 'string' } },
+      priority: {
+        type: 'string',
+        enum: ['must-have', 'should-have', 'could-have', 'wont-have'],
+      },
+      dependencies: { type: 'array', items: { type: 'string' } },
+    },
+    required: ['id', 'title', 'asA', 'iWant', 'soThat', 'acceptanceCriteria'],
+  },
+
+  /** Epic containing user stories */
+  epic: {
+    type: 'object',
+    properties: {
+      id: { type: 'string' },
+      title: { type: 'string' },
+      description: { type: 'string' },
+      stories: {
+        type: 'array',
+        items: {
+          $ref: '#/definitions/userStory',
+        },
+      },
+    },
+    required: ['id', 'title', 'description', 'stories'],
+  },
 };

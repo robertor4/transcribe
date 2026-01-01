@@ -20,9 +20,9 @@ export function CTAButton({ href, locale, variant = 'primary', children, 'aria-l
   const primaryClasses = `${baseClasses} text-white shadow-2xl border-2 border-transparent`;
   const primaryStyle = { backgroundColor: isHovered ? '#2D2360' : '#23194B' };
 
-  // Light variant - white background with dark text (for dark backgrounds)
-  const lightClasses = `${baseClasses} text-[#23194B] shadow-2xl border-2 border-transparent`;
-  const lightStyle = { backgroundColor: isHovered ? '#f3f4f6' : '#ffffff' };
+  // Light variant - off-white background with dark text (for dark backgrounds)
+  const lightClasses = `${baseClasses} text-[#23194B] shadow-xl border-2 border-transparent`;
+  const lightStyle = { backgroundColor: isHovered ? '#e5e5e5' : '#f5f5f5' };
 
   // Secondary variant - outlined with white background, fills on hover
   const secondaryClasses = `${baseClasses} ${isHovered ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} border-2 border-gray-900`;
