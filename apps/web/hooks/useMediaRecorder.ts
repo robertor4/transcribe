@@ -223,17 +223,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         }
 
         // Request microphone access with optional device selection
-        // Note: We use simple deviceId (not { exact: deviceId }) to avoid
-        // complex stream handling that could cause issues in Chrome
         const audioConstraints: MediaTrackConstraints = {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 44100,
         };
 
-        // Add deviceId if provided (simple constraint, not exact)
+        // Add deviceId if provided - use { exact: } to ensure the specific device is used
+        // Without exact, Chrome may fall back to a different device
         if (deviceId) {
-          audioConstraints.deviceId = deviceId;
+          audioConstraints.deviceId = { exact: deviceId };
         }
 
         return await navigator.mediaDevices.getUserMedia({
@@ -254,12 +253,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         let micStream: MediaStream | null = null;
         if (deviceId) {
           try {
-            // Use simpler constraints - avoid { exact: } which can cause issues in Chrome
+            // Use exact deviceId to ensure the specific device is used
             const micConstraints: MediaTrackConstraints = {
               echoCancellation: true,
               noiseSuppression: true,
               sampleRate: 44100,
-              deviceId: deviceId, // Use selected microphone device
+              deviceId: { exact: deviceId }, // Use selected microphone device
             };
 
             micStream = await navigator.mediaDevices.getUserMedia({
