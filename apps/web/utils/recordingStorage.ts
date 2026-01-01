@@ -15,6 +15,7 @@ interface RecordingDB extends DBSchema {
     key: string; // recordingId (UUID)
     value: {
       id: string;
+      userId: string; // Firebase user ID - recordings are scoped per user
       startTime: number; // Unix timestamp
       chunks: Blob[]; // Audio chunks from MediaRecorder
       duration: number; // Seconds
@@ -22,6 +23,7 @@ interface RecordingDB extends DBSchema {
       source: RecordingSource; // 'microphone' | 'tab-audio'
       lastSaved: number; // Unix timestamp of last save
     };
+    indexes: { 'by-user': string }; // Index for filtering by userId
   };
 }
 
@@ -32,7 +34,7 @@ interface RecordingDB extends DBSchema {
 export class RecordingStorage {
   private db: IDBPDatabase<RecordingDB> | null = null;
   private readonly DB_NAME = 'neural-summary-recordings';
-  private readonly DB_VERSION = 1;
+  private readonly DB_VERSION = 2; // Bumped from 1 to add userId index
   private readonly STORE_NAME = 'recordings';
 
   /**
@@ -44,10 +46,20 @@ export class RecordingStorage {
 
     try {
       this.db = await openDB<RecordingDB>(this.DB_NAME, this.DB_VERSION, {
-        upgrade(db) {
-          // Create object store if it doesn't exist
-          if (!db.objectStoreNames.contains('recordings')) {
-            db.createObjectStore('recordings', { keyPath: 'id' });
+        upgrade(db, oldVersion, _newVersion, transaction) {
+          // Version 1: Create object store
+          if (oldVersion < 1) {
+            if (!db.objectStoreNames.contains('recordings')) {
+              const store = db.createObjectStore('recordings', { keyPath: 'id' });
+              store.createIndex('by-user', 'userId');
+            }
+          }
+          // Version 2: Add userId index (if upgrading from v1)
+          if (oldVersion >= 1 && oldVersion < 2) {
+            const store = transaction.objectStore('recordings');
+            if (!store.indexNames.contains('by-user')) {
+              store.createIndex('by-user', 'userId');
+            }
           }
         },
       });
@@ -102,6 +114,7 @@ export class RecordingStorage {
   /**
    * Get all stored recordings
    * @returns Array of all recordings
+   * @deprecated Use getRecordingsByUser instead to ensure user data isolation
    */
   async getAllRecordings(): Promise<RecordingDB['recordings']['value'][]> {
     if (!this.db) {
@@ -112,6 +125,30 @@ export class RecordingStorage {
       return await this.db.getAll(this.STORE_NAME);
     } catch {
       return [];
+    }
+  }
+
+  /**
+   * Get all recordings for a specific user
+   * @param userId Firebase user ID
+   * @returns Array of recordings belonging to the user
+   */
+  async getRecordingsByUser(userId: string): Promise<RecordingDB['recordings']['value'][]> {
+    if (!this.db || !userId) {
+      return [];
+    }
+
+    try {
+      return await this.db.getAllFromIndex(this.STORE_NAME, 'by-user', userId);
+    } catch {
+      // Fallback: if index query fails, filter manually
+      // This handles the case where old recordings don't have userId
+      try {
+        const allRecordings = await this.db.getAll(this.STORE_NAME);
+        return allRecordings.filter(r => r.userId === userId);
+      } catch {
+        return [];
+      }
     }
   }
 

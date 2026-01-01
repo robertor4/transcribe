@@ -11,6 +11,7 @@ import {
   getRecordingStorage,
   type RecoverableRecording,
 } from '@/utils/recordingStorage';
+import { useAuth } from '@/contexts/AuthContext';
 import type { RecordingSource } from '@/hooks/useMediaRecorder';
 
 interface ConversationCreateModalProps {
@@ -50,6 +51,7 @@ export function ConversationCreateModal({
   uploadMethod,
 }: ConversationCreateModalProps) {
   const t = useTranslations('conversationCreate');
+  const { user } = useAuth();
 
   // State for flow
   const [currentStep, setCurrentStep] = useState<CreateStep>('capture');
@@ -111,17 +113,19 @@ export function ConversationCreateModal({
   }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose, t]);
 
   // Check for recoverable recordings when modal opens
+  // Only show recordings belonging to the current user (privacy/security)
   useEffect(() => {
     const checkForRecovery = async () => {
-      if (!isOpen) return;
+      if (!isOpen || !user?.uid) return;
 
       try {
         const storage = await getRecordingStorage();
-        const allRecordings = await storage.getAllRecordings();
+        // Get only recordings belonging to this user
+        const userRecordings = await storage.getRecordingsByUser(user.uid);
 
         // Filter out recent recordings (current session - less than 2 seconds old)
         const twoSecondsAgo = Date.now() - 2000;
-        const recoverable = allRecordings.filter(
+        const recoverable = userRecordings.filter(
           (r) => r.lastSaved < twoSecondsAgo && r.duration > 0
         );
 
@@ -135,7 +139,7 @@ export function ConversationCreateModal({
     };
 
     checkForRecovery();
-  }, [isOpen]);
+  }, [isOpen, user?.uid]);
 
   // Reset state when modal opens
   useEffect(() => {

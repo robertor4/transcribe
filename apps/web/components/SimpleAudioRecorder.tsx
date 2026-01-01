@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useMediaRecorder, RecordingSource } from '@/hooks/useMediaRecorder';
 import { useAudioVisualization } from '@/hooks/useAudioVisualization';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { RecordingPreview } from './RecordingPreview';
 import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
@@ -61,6 +62,7 @@ export function SimpleAudioRecorder({
 }: SimpleAudioRecorderProps) {
   const t = useTranslations('recording');
   const { trackEvent } = useAnalytics();
+  const { user } = useAuth();
 
   // Recording source state (declared early for analytics callbacks)
   // If initialSource is provided, use it and skip source selection
@@ -91,6 +93,7 @@ export function SimpleAudioRecorder({
     audioStream,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
+    userId: user?.uid, // Scope recordings to user for privacy/security
     onStateChange: (newState) => {
       if (newState === 'recording') {
         trackEvent('recording_started', {
@@ -128,6 +131,7 @@ export function SimpleAudioRecorder({
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
   const [isTestingMic, setIsTestingMic] = useState(false);
   const previewStreamRef = useRef<MediaStream | null>(null);
+  const isStartingPreviewRef = useRef(false); // Guards against concurrent preview starts
 
   // No audio detection warning
   const [hasDetectedAudio, setHasDetectedAudio] = useState(false);
@@ -189,6 +193,9 @@ export function SimpleAudioRecorder({
     }
   }, [continueRecordingData, prepareForContinue]);
 
+  // Track if we've already pre-selected a device (prevents re-running on selectedDeviceId change)
+  const hasPreselectedDeviceRef = useRef(false);
+
   // Fetch available audio input devices (only when not recording)
   useEffect(() => {
     // Don't enumerate devices during recording - this can interfere with active streams
@@ -228,7 +235,9 @@ export function SimpleAudioRecorder({
 
         // Pre-select the "default" pseudo-device if it exists (shows "Default - ..." in dropdown)
         // This gives the user a clear indication of what the system default is
-        if (audioInputs.length > 0 && !selectedDeviceId) {
+        // Only do this once to avoid race conditions with the auto-start preview effect
+        if (audioInputs.length > 0 && !hasPreselectedDeviceRef.current) {
+          hasPreselectedDeviceRef.current = true;
           const defaultPseudoDevice = audioInputs.find(d => d.deviceId === 'default');
           const deviceToSelect = defaultPseudoDevice || audioInputs[0];
           setSelectedDeviceId(deviceToSelect.deviceId);
@@ -248,7 +257,7 @@ export function SimpleAudioRecorder({
     return () => {
       navigator.mediaDevices.removeEventListener('devicechange', getAudioDevices);
     };
-  }, [selectedDeviceId, state]);
+  }, [state]); // Removed selectedDeviceId - we use a ref to track pre-selection instead
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -320,7 +329,13 @@ export function SimpleAudioRecorder({
   }, [startRecording, selectedSource, selectedDeviceId, includeMicWithTabAudio, resolveRealDeviceId]);
 
   // Start microphone preview test
-  const startMicPreview = useCallback(async () => {
+  const startMicPreview = useCallback(async (deviceId?: string) => {
+    // Guard against concurrent preview starts (race condition prevention)
+    if (isStartingPreviewRef.current) {
+      console.log('[SimpleAudioRecorder] Preview start already in progress, skipping');
+      return;
+    }
+
     // Check if mediaDevices API is available
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       console.error('Failed to start mic preview: mediaDevices API not available');
@@ -328,20 +343,30 @@ export function SimpleAudioRecorder({
     }
 
     try {
+      isStartingPreviewRef.current = true;
       setIsTestingMic(true);
-      // Use simple constraints (no exact deviceId) to match production recording behavior
+      // Build audio constraints with optional device ID
+      const audioConstraints: MediaTrackConstraints = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      };
+
+      // Add deviceId if provided (use the selected microphone)
+      if (deviceId) {
+        audioConstraints.deviceId = { exact: deviceId };
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
+        audio: audioConstraints,
       });
       previewStreamRef.current = stream;
       setPreviewStream(stream);
     } catch (err) {
       console.error('Failed to start mic preview:', err);
       setIsTestingMic(false);
+    } finally {
+      isStartingPreviewRef.current = false;
     }
   }, []);
 
@@ -358,16 +383,37 @@ export function SimpleAudioRecorder({
   // Auto-start mic preview when device is selected and we're on source selection screen
   // OR when we came directly to microphone recording (initialSource === 'microphone')
   useEffect(() => {
+    // Wait for devices to be loaded before auto-starting preview
+    // This prevents the race condition where we try to resolve 'default' before devices are enumerated
+    const hasDevices = audioDevices.length > 0;
+
     const shouldAutoStart =
       (showSourceSelector || initialSource === 'microphone') &&
       state === 'idle' &&
       selectedDeviceId &&
+      hasDevices &&  // Don't start until devices are loaded
       !isTestingMic;
 
     if (shouldAutoStart) {
-      startMicPreview();
+      // Resolve 'default' pseudo-device to real device ID (Chrome quirk)
+      // Use audioDevices directly now that we wait for them to be loaded
+      let realDeviceId = selectedDeviceId;
+      if (selectedDeviceId === 'default') {
+        const defaultPseudo = audioDevices.find(d => d.deviceId === 'default');
+        if (defaultPseudo) {
+          const defaultName = defaultPseudo.label.replace(/^Default\s*-\s*/i, '').trim();
+          const matchingReal = audioDevices.find(d => d.deviceId !== 'default' && d.label.trim() === defaultName);
+          if (matchingReal) {
+            realDeviceId = matchingReal.deviceId;
+          } else {
+            const firstReal = audioDevices.find(d => d.deviceId !== 'default');
+            if (firstReal) realDeviceId = firstReal.deviceId;
+          }
+        }
+      }
+      startMicPreview(realDeviceId);
     }
-  }, [showSourceSelector, initialSource, state, selectedDeviceId, isTestingMic, startMicPreview]);
+  }, [showSourceSelector, initialSource, state, selectedDeviceId, isTestingMic, startMicPreview, audioDevices]);
 
   // Cleanup preview stream on unmount
   useEffect(() => {

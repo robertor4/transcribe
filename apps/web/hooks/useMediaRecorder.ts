@@ -36,6 +36,7 @@ export interface UseMediaRecorderOptions {
   onRecoveryAvailable?: (recordings: RecoverableRecording[]) => void;
   onDurationWarning?: () => void; // Called when approaching max duration
   enableAutoSave?: boolean; // Default: true
+  userId?: string; // Firebase user ID for scoping recordings (privacy/security)
 }
 
 export interface UseMediaRecorderReturn {
@@ -78,6 +79,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onRecoveryAvailable,
     onDurationWarning,
     enableAutoSave = true,
+    userId,
   } = options;
 
   // State
@@ -681,7 +683,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Auto-save recording chunks to IndexedDB
   const saveRecordingToStorage = useCallback(async () => {
-    if (!enableAutoSave || !recordingIdRef.current || chunksRef.current.length === 0) {
+    // Require userId to save - ensures recordings are always scoped to a user
+    if (!enableAutoSave || !recordingIdRef.current || chunksRef.current.length === 0 || !userId) {
       return;
     }
 
@@ -690,6 +693,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       const currentDuration = durationRef.current; // Use ref for accurate duration
       await storage.saveRecording({
         id: recordingIdRef.current,
+        userId, // Scope recording to user for privacy
         startTime: Date.now() - currentDuration * 1000,
         chunks: [...chunksRef.current],
         duration: currentDuration,
@@ -702,7 +706,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       console.error('[useMediaRecorder] Failed to auto-save recording:', err);
       // Non-critical error, continue recording
     }
-  }, [enableAutoSave, audioFormat.mimeType]);
+  }, [enableAutoSave, audioFormat.mimeType, userId]);
 
   // Check for recoverable recordings on mount
   useEffect(() => {
