@@ -866,10 +866,18 @@ ${fullCustomPrompt}`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        max_completion_tokens: 8000,
+        max_completion_tokens: 16000, // Increased for long transcripts (59+ min)
       });
 
       const aiResponse = completion.choices[0].message.content || '';
+      const finishReason = completion.choices[0].finish_reason;
+
+      // Check if output was truncated due to token limit
+      if (finishReason === 'length') {
+        this.logger.warn(
+          `V2 summary output was truncated (finish_reason: length). Response length: ${aiResponse.length} chars`,
+        );
+      }
 
       // Parse and validate the JSON response
       const summaryV2 = parseSummaryV2(aiResponse);
@@ -1568,7 +1576,7 @@ ${fullCustomPrompt}`;
   async regenerateSummary(
     transcriptionId: string,
     userId: string,
-    instructions?: string,
+    _instructions?: string,
   ): Promise<any> {
     // Verify user owns this transcription
     const transcription = await this.transcriptionRepository.getTranscription(
@@ -1583,23 +1591,20 @@ ${fullCustomPrompt}`;
       throw new Error('No transcript available for this transcription');
     }
 
-    // Get existing comments for this transcription
-    const comments =
-      await this.commentRepository.getSummaryComments(transcriptionId);
+    this.logger.log(
+      `Regenerating V2 summary for transcription ${transcriptionId}`,
+    );
 
-    // Generate new summary with feedback in the same language
-    const newSummary = await this.generateSummaryWithFeedback(
+    // Generate new V2 structured summary
+    const summaryV2 = await this.generateSummaryV2(
       transcription.transcriptText,
-      transcription.analysisType,
       transcription.context,
-      comments,
-      instructions,
       transcription.detectedLanguage,
     );
 
-    // Update transcription with new summary and increment version
+    // Update transcription with new V2 summary only
     const updates = {
-      summary: newSummary,
+      summaryV2: summaryV2,
       summaryVersion: (transcription.summaryVersion || 1) + 1,
       updatedAt: new Date(),
     };
@@ -1607,6 +1612,10 @@ ${fullCustomPrompt}`;
     await this.transcriptionRepository.updateTranscription(
       transcriptionId,
       updates,
+    );
+
+    this.logger.log(
+      `V2 summary regenerated: "${summaryV2.title}", ${summaryV2.keyPoints.length} key points`,
     );
 
     return this.transcriptionRepository.getTranscription(
@@ -2561,9 +2570,17 @@ CRITICAL INSTRUCTIONS:
 
   /**
    * Get audio duration from a buffer by writing to temp file and using ffprobe
+   * Used for accurate quota checking before processing
+   * @param buffer - Audio file buffer
+   * @param mimeType - MIME type for correct file extension (defaults to audio/webm)
+   * @returns Duration in seconds
    */
-  private async getAudioDurationFromBuffer(buffer: Buffer): Promise<number> {
-    const tempPath = `/tmp/duration_check_${Date.now()}.webm`;
+  async getAudioDurationFromBuffer(
+    buffer: Buffer,
+    mimeType: string = 'audio/webm',
+  ): Promise<number> {
+    const ext = this.getExtensionFromMimeType(mimeType);
+    const tempPath = `/tmp/duration_check_${Date.now()}.${ext}`;
     try {
       await fs.promises.writeFile(tempPath, buffer);
       return await this.audioSplitter.getAudioDuration(tempPath);
@@ -2573,6 +2590,178 @@ CRITICAL INSTRUCTIONS:
       } catch {
         // Ignore cleanup errors
       }
+    }
+  }
+
+  /**
+   * Process a chunked recording from Firebase Storage
+   * Downloads chunks, merges them with FFmpeg, and creates transcription job
+   */
+  async processChunkedRecording(
+    userId: string,
+    sessionId: string,
+    analysisType: AnalysisType = AnalysisType.SUMMARY,
+    context?: string,
+    contextId?: string,
+    selectedTemplates?: string[],
+    folderId?: string,
+  ): Promise<Transcription> {
+    const basePath = `recordings/${userId}/${sessionId}`;
+
+    this.logger.log(`Processing chunked recording: ${basePath}`);
+
+    // 1. Download and parse metadata
+    let metadata: {
+      sessionId: string;
+      startTime: number;
+      source: string;
+      status: string;
+      chunkCount: number;
+      duration: number;
+      mimeType: string;
+      userId: string;
+    };
+
+    try {
+      const metadataBuffer = await this.storageService.downloadFileByPath(
+        `${basePath}/metadata.json`,
+      );
+      metadata = JSON.parse(metadataBuffer.toString());
+    } catch (error) {
+      this.logger.error(
+        `Failed to download metadata for session ${sessionId}:`,
+        error,
+      );
+      throw new BadRequestException('Session metadata not found or invalid');
+    }
+
+    if (metadata.status === 'failed') {
+      throw new BadRequestException(
+        'Recording has failed chunks and cannot be processed',
+      );
+    }
+
+    // 2. Check quota using actual duration from metadata
+    const durationMinutes = Math.ceil(metadata.duration / 60);
+    await this.usageService.checkQuota(userId, 0, durationMinutes);
+
+    // 3. List and download all chunks
+    const allFiles = await this.storageService.listFiles(basePath);
+    const chunkFiles = allFiles
+      .filter((f) => f.endsWith('.webm') && f.includes('chunk_'))
+      .sort(); // Sort to ensure correct order
+
+    if (chunkFiles.length === 0) {
+      throw new BadRequestException('No chunks found for session');
+    }
+
+    this.logger.log(`Found ${chunkFiles.length} chunks to merge`);
+
+    // 4. Create temp directory and download chunks
+    const tempDir = `/tmp/chunks_${sessionId}_${Date.now()}`;
+    await fs.promises.mkdir(tempDir, { recursive: true });
+
+    try {
+      // Download chunks in parallel (max 5 concurrent)
+      const downloadedPaths: string[] = [];
+      const batchSize = 5;
+
+      for (let i = 0; i < chunkFiles.length; i += batchSize) {
+        const batch = chunkFiles.slice(i, i + batchSize);
+        const batchPromises = batch.map(async (chunkPath, idx) => {
+          const localPath = path.join(
+            tempDir,
+            `chunk_${String(i + idx).padStart(3, '0')}.webm`,
+          );
+          const buffer =
+            await this.storageService.downloadFileByPath(chunkPath);
+          await fs.promises.writeFile(localPath, buffer);
+          return localPath;
+        });
+
+        const results = await Promise.all(batchPromises);
+        downloadedPaths.push(...results);
+      }
+
+      // 5. Merge chunks using FFmpeg
+      const mergedPath = path.join(tempDir, 'merged.webm');
+      await this.audioSplitter.mergeAudioFiles(downloadedPaths, mergedPath);
+
+      // 6. Get merged file buffer and actual duration
+      const mergedBuffer = await fs.promises.readFile(mergedPath);
+      const actualDuration =
+        await this.audioSplitter.getAudioDuration(mergedPath);
+
+      this.logger.log(
+        `Merged ${downloadedPaths.length} chunks: ${(mergedBuffer.length / 1024 / 1024).toFixed(2)}MB, ${actualDuration.toFixed(0)}s`,
+      );
+
+      // 7. Upload merged file to permanent storage
+      const fileName = `recording_${sessionId}.webm`;
+      const storagePath = `transcriptions/${userId}/${nanoid()}/${fileName}`;
+      await this.storageService.uploadFile(
+        mergedBuffer,
+        storagePath,
+        metadata.mimeType || 'audio/webm',
+      );
+
+      // 8. Create transcription record
+      const transcription = await this.createTranscription(
+        userId,
+        {
+          buffer: mergedBuffer,
+          originalname: fileName,
+          mimetype: metadata.mimeType || 'audio/webm',
+          size: mergedBuffer.length,
+        } as Express.Multer.File,
+        analysisType,
+        context,
+        contextId,
+        selectedTemplates,
+      );
+
+      // 9. If folderId provided, move to folder
+      if (folderId) {
+        try {
+          await this.moveToFolder(userId, transcription.id, folderId);
+        } catch (err) {
+          this.logger.warn(`Failed to move transcription to folder: ${err}`);
+          // Don't fail the whole operation
+        }
+      }
+
+      // 10. Delete chunked recording from Firebase Storage (cleanup)
+      await this.deleteChunkedRecording(basePath);
+
+      return transcription;
+    } finally {
+      // Cleanup temp directory
+      try {
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        this.logger.warn(
+          `Failed to cleanup temp dir ${tempDir}:`,
+          cleanupError,
+        );
+      }
+    }
+  }
+
+  /**
+   * Delete chunked recording folder from Firebase Storage
+   */
+  private async deleteChunkedRecording(basePath: string): Promise<void> {
+    try {
+      const files = await this.storageService.listFiles(basePath);
+      await Promise.all(
+        files.map((file) => this.storageService.deleteFileByPath(file)),
+      );
+      this.logger.log(`Deleted chunked recording: ${basePath}`);
+    } catch (error) {
+      this.logger.warn(
+        `Failed to delete chunked recording ${basePath}:`,
+        error,
+      );
     }
   }
 

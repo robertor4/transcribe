@@ -187,7 +187,7 @@
     "recordAudioDesc": "Neem live gesprek op",
     "recordAudioInfo": "Start een live opnamesessie. Je kunt kiezen om op te nemen via je microfoon of audio van een browsertabblad vastleggen (voor videogesprekken).",
     "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement.",
-    "recordRoom": "Neem de ruimte op",
+    "recordRoom": "Opnemen via mic",
     "recordRoomDesc": "Vergaderingen, spraaknotities, interviews",
     "recordTab": "Tabblad opnemen",
     "recordTabDesc": "Google Meet, Zoom (web), YouTube video's",
@@ -398,6 +398,10 @@
       "memoryHigh": "Opname geheugengebruik is hoog ({size}). Overweeg te stoppen om problemen te voorkomen.",
       "memoryCritical": "Opname geheugen bijna vol ({size}). Opname gestopt om gegevensverlies te voorkomen.",
       "micUnavailable": "Microfoon niet beschikbaar - alleen tabgeluid wordt opgenomen. Je stem wordt niet meegenomen."
+    },
+    "limits": {
+      "remaining": "{time} resterend",
+      "getPro": "Upgrade naar Pro →"
     }
   },
   "recovery": {
@@ -416,6 +420,17 @@
     "cancel": "Annuleren",
     "microphoneRecording": "Microfoonopname",
     "tabAudioRecording": "Tabgeluidsopname"
+  },
+  "processing": {
+    "error": {
+      "title": "Verwerking mislukt",
+      "unexpected": "Er is een onverwachte fout opgetreden",
+      "retry": "Opnieuw uploaden",
+      "retrying": "Opnieuw proberen...",
+      "saveLocally": "Opname opslaan",
+      "upgradeToPro": "Upgrade naar Pro",
+      "quotaHint": "Sla je opname lokaal op en upgrade om langere audio te verwerken"
+    }
   },
   "transcription": {
     "title": "Transcriptie",
@@ -628,6 +643,11 @@
       "upgradeToPro": "Upgraden naar Pro",
       "findReplace": "Zoeken en vervangen",
       "findReplaceDisabledLegacy": "Zoeken en vervangen is niet beschikbaar voor oudere gesprekken"
+    },
+    "summary": {
+      "notAvailable": "Samenvatting is nog niet beschikbaar.",
+      "regenerate": "Samenvatting opnieuw genereren",
+      "regenerating": "Bezig met genereren..."
     },
     "translation": {
       "original": "Origineel",

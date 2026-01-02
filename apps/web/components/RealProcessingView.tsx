@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { FileAudio, MessageSquare, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { FileAudio, MessageSquare, CheckCircle2, AlertCircle, Loader2, RotateCcw, Download, ArrowUpCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useRouter, useParams } from 'next/navigation';
 import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { transcriptionApi } from '@/lib/api';
@@ -47,17 +49,31 @@ export function RealProcessingView({
   onComplete,
   onError,
 }: RealProcessingViewProps) {
+  const t = useTranslations('processing');
+  const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string || 'en';
+
   const [stage, setStage] = useState<ProcessingStage>('uploading');
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState('Preparing upload...');
   const [transcriptionId, setTranscriptionId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Track if upload has been initiated to prevent double uploads
   const uploadInitiated = useRef(false);
   // Track cleanup functions for WebSocket listeners
   const cleanupFns = useRef<(() => void)[]>([]);
+
+  // Check if this is a quota-related error (402 status or quota/limit keywords)
+  const isQuotaError = errorMessage?.includes('402') ||
+    errorMessage?.toLowerCase().includes('quota') ||
+    errorMessage?.toLowerCase().includes('limit') ||
+    errorMessage?.toLowerCase().includes('exceeded') ||
+    errorMessage?.toLowerCase().includes('upgrade');
 
   // Cleanup WebSocket listeners on unmount
   useEffect(() => {
@@ -103,10 +119,53 @@ export function RealProcessingView({
   // Track if we've already completed to prevent double-completion
   const completedRef = useRef(false);
 
+  // Handle retry - reset state and re-initiate upload
+  const handleRetry = useCallback(() => {
+    // Clean up existing listeners
+    cleanupFns.current.forEach(fn => fn());
+    cleanupFns.current = [];
+
+    // Reset all state
+    setStage('uploading');
+    setProgress(0);
+    setStatusMessage('Preparing upload...');
+    setTranscriptionId(null);
+    setErrorMessage(null);
+    setCountdown(null);
+    setIsRetrying(true);
+    setRetryCount(prev => prev + 1);
+
+    // Reset refs
+    uploadInitiated.current = false;
+    transcriptionIdRef.current = null;
+    completedRef.current = false;
+  }, []);
+
+  // Handle save recording locally
+  const handleSaveLocally = useCallback(() => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    // Generate a descriptive filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const extension = file.name.split('.').pop() || 'webm';
+    a.download = `recording_${timestamp}.${extension}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [file]);
+
+  // Handle upgrade to Pro
+  const handleUpgrade = useCallback(() => {
+    router.push(`/${locale}/pricing`);
+  }, [router, locale]);
+
   // Upload file and setup WebSocket listeners
   useEffect(() => {
     if (uploadInitiated.current) return;
     uploadInitiated.current = true;
+    setIsRetrying(false);
 
     const upload = async () => {
       try {
@@ -256,8 +315,8 @@ export function RealProcessingView({
     };
 
     upload();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Upload runs once on mount, selectedTemplates is captured at that time
-  }, [file, context, folderId, handleCompletion, handleError]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Upload runs on mount and on retry, selectedTemplates is captured at that time
+  }, [file, context, folderId, handleCompletion, handleError, retryCount]);
 
   const getStageIcon = (stageName: ProcessingStage) => {
     switch (stageName) {
@@ -388,18 +447,65 @@ export function RealProcessingView({
 
       {/* Error State */}
       {stage === 'error' && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="w-6 h-6 text-red-500" />
-            <div>
-              <h4 className="font-medium text-red-800 dark:text-red-200">
-                Processing Failed
-              </h4>
-              <p className="text-sm text-red-600 dark:text-red-300">
-                {errorMessage || 'An unexpected error occurred'}
-              </p>
+        <div className="space-y-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-red-800 dark:text-red-200">
+                  {t('error.title')}
+                </h4>
+                <p className="text-sm text-red-600 dark:text-red-300">
+                  {errorMessage || t('error.unexpected')}
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {/* Retry button - always shown unless quota error */}
+            {!isQuotaError && (
+              <Button
+                variant="primary"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="gap-2"
+              >
+                <RotateCcw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+                {isRetrying ? t('error.retrying') : t('error.retry')}
+              </Button>
+            )}
+
+            {/* Save recording locally - always shown */}
+            <Button
+              variant="secondary"
+              onClick={handleSaveLocally}
+              className="gap-2"
+            >
+              <Download className="w-4 h-4" />
+              {t('error.saveLocally')}
+            </Button>
+
+            {/* Upgrade button - shown for quota errors */}
+            {isQuotaError && (
+              <Button
+                variant="brand"
+                onClick={handleUpgrade}
+                className="gap-2"
+              >
+                <ArrowUpCircle className="w-4 h-4" />
+                {t('error.upgradeToPro')}
+              </Button>
+            )}
+          </div>
+
+          {/* Hint text for quota errors */}
+          {isQuotaError && (
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              {t('error.quotaHint')}
+            </p>
+          )}
         </div>
       )}
 

@@ -187,7 +187,7 @@
     "recordAudioDesc": "Live-Gespräch aufnehmen",
     "recordAudioInfo": "Starte eine Live-Aufnahmesitzung. Du kannst wählen, ob du über dein Mikrofon aufnimmst oder Audio von einem Browser-Tab aufzeichnest (für Videoanrufe).",
     "importAudioInfo": "Importiere eine vorhandene Audio- oder Videodatei von deinem Gerät. Unterstützte Formate: MP3, M4A, WAV, MP4, MOV, WebM. Die maximale Dateigröße hängt von deinem Abonnement ab.",
-    "recordRoom": "Raum aufnehmen",
+    "recordRoom": "Über Mikrofon aufnehmen",
     "recordRoomDesc": "Meetings, Sprachnotizen, Interviews",
     "recordTab": "Browser-Tab aufnehmen",
     "recordTabDesc": "Google Meet, Zoom (Web), YouTube-Videos",
@@ -398,6 +398,10 @@
       "memoryHigh": "Aufnahme-Speichernutzung ist hoch ({size}). Erwägen Sie zu stoppen, um Probleme zu vermeiden.",
       "memoryCritical": "Aufnahme-Speicher fast voll ({size}). Aufnahme gestoppt um Datenverlust zu verhindern.",
       "micUnavailable": "Mikrofon nicht verfügbar - nur Tab-Audio wird aufgenommen. Ihre Stimme wird nicht aufgezeichnet."
+    },
+    "limits": {
+      "remaining": "{time} verbleibend",
+      "getPro": "Zu Pro wechseln →"
     }
   },
   "recovery": {
@@ -416,6 +420,17 @@
     "cancel": "Abbrechen",
     "microphoneRecording": "Mikrofonaufnahme",
     "tabAudioRecording": "Tab-Audioaufnahme"
+  },
+  "processing": {
+    "error": {
+      "title": "Verarbeitung fehlgeschlagen",
+      "unexpected": "Ein unerwarteter Fehler ist aufgetreten",
+      "retry": "Erneut hochladen",
+      "retrying": "Wird erneut versucht...",
+      "saveLocally": "Aufnahme speichern",
+      "upgradeToPro": "Auf Pro upgraden",
+      "quotaHint": "Speichere deine Aufnahme lokal und upgrade, um längere Audios zu verarbeiten"
+    }
   },
   "transcription": {
     "title": "Transkription",
@@ -628,6 +643,11 @@
       "upgradeToPro": "Auf Pro upgraden",
       "findReplace": "Suchen & Ersetzen",
       "findReplaceDisabledLegacy": "Suchen & Ersetzen ist für ältere Gespräche nicht verfügbar"
+    },
+    "summary": {
+      "notAvailable": "Zusammenfassung ist noch nicht verfügbar.",
+      "regenerate": "Zusammenfassung neu generieren",
+      "regenerating": "Wird generiert..."
     },
     "translation": {
       "original": "Original",

@@ -21,7 +21,7 @@ interface StoredChunk {
 
 /**
  * Database schema for stored recordings
- * Version 3: Changed chunks from Blob[] to StoredChunk[] for iOS Safari compatibility
+ * Version 4: Added cloudUploadEnabled and maxChunks for rolling buffer support
  */
 interface RecordingDB extends DBSchema {
   recordings: {
@@ -35,6 +35,8 @@ interface RecordingDB extends DBSchema {
       mimeType: string; // e.g., 'audio/webm;codecs=opus'
       source: RecordingSource; // 'microphone' | 'tab-audio'
       lastSaved: number; // Unix timestamp of last save
+      cloudUploadEnabled?: boolean; // If true, only keep last N chunks
+      cloudSessionId?: string; // Session ID for cloud upload recovery
     };
     indexes: { 'by-user': string }; // Index for filtering by userId
   };
@@ -52,7 +54,15 @@ export interface RecordingData {
   mimeType: string;
   source: RecordingSource;
   lastSaved: number;
+  cloudUploadEnabled?: boolean;
+  cloudSessionId?: string;
 }
+
+/**
+ * Maximum number of chunks to keep in IndexedDB when cloud upload is enabled
+ * This acts as a rolling buffer - older chunks are removed as new ones arrive
+ */
+const MAX_CHUNKS_ROLLING_BUFFER = 2;
 
 /**
  * RecordingStorage class
@@ -61,7 +71,7 @@ export interface RecordingData {
 export class RecordingStorage {
   private db: IDBPDatabase<RecordingDB> | null = null;
   private readonly DB_NAME = 'neural-summary-recordings';
-  private readonly DB_VERSION = 3; // Bumped to 3 for ArrayBuffer storage
+  private readonly DB_VERSION = 4; // Bumped to 4 for rolling buffer support
   private readonly STORE_NAME = 'recordings';
 
   /**
@@ -158,6 +168,11 @@ export class RecordingStorage {
   /**
    * Save a recording to IndexedDB
    * @param recording Recording data to save (with Blob chunks)
+   *
+   * When cloudUploadEnabled is true, only the last MAX_CHUNKS_ROLLING_BUFFER chunks
+   * are kept in IndexedDB. This reduces storage usage since chunks are being uploaded
+   * to Firebase Storage in real-time. The local chunks serve as a fallback buffer
+   * in case the cloud upload fails for recent data.
    */
   async saveRecording(recording: RecordingData): Promise<void> {
     if (!this.db) {
@@ -165,8 +180,18 @@ export class RecordingStorage {
     }
 
     try {
+      // Apply rolling buffer when cloud upload is enabled
+      let chunksToStore = recording.chunks;
+      if (recording.cloudUploadEnabled && chunksToStore.length > MAX_CHUNKS_ROLLING_BUFFER) {
+        // Only keep the last N chunks
+        chunksToStore = chunksToStore.slice(-MAX_CHUNKS_ROLLING_BUFFER);
+        console.log(
+          `[RecordingStorage] Rolling buffer: keeping last ${MAX_CHUNKS_ROLLING_BUFFER} chunks (discarded ${recording.chunks.length - MAX_CHUNKS_ROLLING_BUFFER})`
+        );
+      }
+
       // Convert Blobs to ArrayBuffers for storage
-      const storedChunks = await this.blobsToStoredChunks(recording.chunks);
+      const storedChunks = await this.blobsToStoredChunks(chunksToStore);
 
       await this.db.put(this.STORE_NAME, {
         id: recording.id,
@@ -177,6 +202,8 @@ export class RecordingStorage {
         mimeType: recording.mimeType,
         source: recording.source,
         lastSaved: Date.now(),
+        cloudUploadEnabled: recording.cloudUploadEnabled,
+        cloudSessionId: recording.cloudSessionId,
       });
     } catch (error) {
       // Handle quota exceeded error gracefully
@@ -232,6 +259,8 @@ export class RecordingStorage {
         mimeType: stored.mimeType,
         source: stored.source,
         lastSaved: stored.lastSaved,
+        cloudUploadEnabled: stored.cloudUploadEnabled,
+        cloudSessionId: stored.cloudSessionId,
       };
     } catch (error) {
       console.error(`[RecordingStorage] Error getting recording ${id}:`, error);
@@ -272,6 +301,8 @@ export class RecordingStorage {
           mimeType: stored.mimeType,
           source: stored.source,
           lastSaved: stored.lastSaved,
+          cloudUploadEnabled: stored.cloudUploadEnabled,
+          cloudSessionId: stored.cloudSessionId,
         });
       }
 
@@ -314,6 +345,8 @@ export class RecordingStorage {
           mimeType: stored.mimeType,
           source: stored.source,
           lastSaved: stored.lastSaved,
+          cloudUploadEnabled: stored.cloudUploadEnabled,
+          cloudSessionId: stored.cloudSessionId,
         });
       }
 

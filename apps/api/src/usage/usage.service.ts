@@ -71,10 +71,13 @@ export class UsageService {
         );
       }
 
-      // Max 30 minutes per file
+      // Max duration per file (with 5-minute buffer for live recording timing edge cases)
+      // Frontend auto-stops at 59 min, but we allow up to 65 min to be safe
+      const durationBuffer = 5;
       if (
         tierLimits.limits.maxFileDuration &&
-        estimatedDurationMinutes > tierLimits.limits.maxFileDuration
+        estimatedDurationMinutes >
+          tierLimits.limits.maxFileDuration + durationBuffer
       ) {
         throw new PaymentRequiredException(
           `File duration exceeds free tier limit (${tierLimits.limits.maxFileDuration} minutes). Upgrade to Professional for unlimited duration.`,
