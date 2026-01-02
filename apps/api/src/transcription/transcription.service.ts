@@ -2477,4 +2477,119 @@ CRITICAL INSTRUCTIONS:
       limit,
     );
   }
+
+  /**
+   * Merge multiple audio files into a single file using FFmpeg
+   * Used for combining recovered recording chunks with new recording on the frontend
+   * @param files Array of uploaded audio file buffers
+   * @returns Buffer of merged audio file
+   */
+  async mergeAudioFiles(
+    files: Express.Multer.File[],
+  ): Promise<{ buffer: Buffer; mimeType: string; duration: number }> {
+    if (!files || files.length === 0) {
+      throw new Error('No files provided for merging');
+    }
+
+    if (files.length === 1) {
+      // Single file - just return it
+      const duration = await this.getAudioDurationFromBuffer(files[0].buffer);
+      return {
+        buffer: files[0].buffer,
+        mimeType: files[0].mimetype,
+        duration,
+      };
+    }
+
+    this.logger.log(`Merging ${files.length} audio files`);
+
+    // Log file info for debugging format issues across browsers
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const first16Bytes = file.buffer.subarray(0, 16).toString('hex');
+      this.logger.log(
+        `File ${i}: ${file.originalname}, size=${file.buffer.length}, mimetype=${file.mimetype}, magic=${first16Bytes}`,
+      );
+    }
+
+    // Create temp directory for merge operation
+    const tempDir = `/tmp/merge_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    await fs.promises.mkdir(tempDir, { recursive: true });
+
+    try {
+      // Write files to temp directory
+      const inputPaths: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const ext = this.getExtensionFromMimeType(files[i].mimetype);
+        const filePath = `${tempDir}/input_${i}.${ext}`;
+        await fs.promises.writeFile(filePath, files[i].buffer);
+        inputPaths.push(filePath);
+      }
+
+      // Determine output format (use first file's format)
+      const outputExt = this.getExtensionFromMimeType(files[0].mimetype);
+      const outputPath = `${tempDir}/merged.${outputExt}`;
+
+      // Merge using AudioSplitter
+      await this.audioSplitter.mergeAudioFiles(inputPaths, outputPath);
+
+      // Read merged file
+      const mergedBuffer = await fs.promises.readFile(outputPath);
+      const duration = await this.audioSplitter.getAudioDuration(outputPath);
+
+      this.logger.log(
+        `Audio merge complete: ${mergedBuffer.length} bytes, ${duration.toFixed(2)}s`,
+      );
+
+      return {
+        buffer: mergedBuffer,
+        mimeType: files[0].mimetype,
+        duration,
+      };
+    } finally {
+      // Cleanup temp files
+      try {
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        this.logger.warn(
+          `Failed to cleanup temp dir ${tempDir}:`,
+          cleanupError,
+        );
+      }
+    }
+  }
+
+  /**
+   * Get audio duration from a buffer by writing to temp file and using ffprobe
+   */
+  private async getAudioDurationFromBuffer(buffer: Buffer): Promise<number> {
+    const tempPath = `/tmp/duration_check_${Date.now()}.webm`;
+    try {
+      await fs.promises.writeFile(tempPath, buffer);
+      return await this.audioSplitter.getAudioDuration(tempPath);
+    } finally {
+      try {
+        await fs.promises.unlink(tempPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  }
+
+  /**
+   * Get file extension from MIME type
+   */
+  private getExtensionFromMimeType(mimeType: string): string {
+    const mimeToExt: Record<string, string> = {
+      'audio/webm': 'webm',
+      'audio/webm;codecs=opus': 'webm',
+      'audio/mp4': 'm4a',
+      'audio/mpeg': 'mp3',
+      'audio/mp3': 'mp3',
+      'audio/wav': 'wav',
+      'audio/ogg': 'ogg',
+      'audio/flac': 'flac',
+    };
+    return mimeToExt[mimeType] || 'webm';
+  }
 }

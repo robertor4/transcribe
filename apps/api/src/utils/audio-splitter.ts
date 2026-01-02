@@ -350,17 +350,98 @@ export class AudioSplitter {
       `Merging ${safeInputPaths.length} audio files into: ${safeOutputPath}`,
     );
 
-    // Create a temporary file list for FFmpeg concat demuxer
-    const tempDir = path.dirname(safeOutputPath);
+    // Determine output format from extension
+    const outputExt = path.extname(safeOutputPath).toLowerCase().slice(1);
+    const isWebm = outputExt === 'webm';
+
+    // Use concat filter for WebM/Opus (requires re-encoding but works reliably)
+    // Use concat demuxer for other formats (faster, no re-encoding)
+    if (isWebm) {
+      return this.mergeWithConcatFilter(safeInputPaths, safeOutputPath);
+    } else {
+      return this.mergeWithConcatDemuxer(safeInputPaths, safeOutputPath);
+    }
+  }
+
+  /**
+   * Merge audio files using the concat filter (requires re-encoding but works for all formats)
+   * This is more reliable for WebM/Opus files from browser MediaRecorder
+   */
+  private async mergeWithConcatFilter(
+    inputPaths: string[],
+    outputPath: string,
+  ): Promise<string> {
+    this.logger.debug(
+      `Using concat filter for ${inputPaths.length} files (re-encoding)`,
+    );
+
+    return new Promise((resolve, reject) => {
+      // Build the ffmpeg command with multiple inputs
+      let command = ffmpeg();
+
+      // Add all input files
+      for (const inputPath of inputPaths) {
+        command = command.input(inputPath);
+      }
+
+      // Build the complex filter for concatenation
+      // Example: [0:a][1:a]concat=n=2:v=0:a=1[out]
+      const filterInputs = inputPaths.map((_, i) => `[${i}:a]`).join('');
+      const concatFilter = `${filterInputs}concat=n=${inputPaths.length}:v=0:a=1[out]`;
+
+      command
+        .complexFilter(concatFilter)
+        .outputOptions(['-map', '[out]'])
+        .audioCodec('libopus') // Use Opus codec for WebM
+        .audioBitrate('128k')
+        .on('start', (cmdLine) => {
+          this.logger.debug(`Merging ${inputPaths.length} chunks with filter`);
+          this.logger.debug(`FFmpeg command: ${cmdLine}`);
+        })
+        .on('progress', (progress) => {
+          if (progress.percent) {
+            this.logger.debug(`Merging progress: ${progress.percent}%`);
+          }
+        })
+        .on('end', () => {
+          this.logger.log(
+            `Successfully merged ${inputPaths.length} chunks with concat filter`,
+          );
+          resolve(outputPath);
+        })
+        .on('error', (err) => {
+          this.logger.error(
+            'Error merging audio files with concat filter:',
+            err,
+          );
+          reject(new Error(`Failed to merge audio files: ${err.message}`));
+        })
+        .save(outputPath);
+    });
+  }
+
+  /**
+   * Merge audio files using the concat demuxer (fast, no re-encoding)
+   * Works best for MP3, M4A, and other container formats
+   */
+  private async mergeWithConcatDemuxer(
+    inputPaths: string[],
+    outputPath: string,
+  ): Promise<string> {
+    const tempDir = path.dirname(outputPath);
     const fileListPath = this.sanitizePath(
       path.join(tempDir, `filelist_${Date.now()}.txt`),
+    );
+
+    this.logger.debug(
+      `Using concat demuxer for ${inputPaths.length} files (no re-encoding)`,
     );
 
     try {
       // Create file list for concat demuxer
       // Format: file '/path/to/file1.mp3'
       // Use sanitized paths and escape single quotes
-      const fileListContent = safeInputPaths
+      const fileListContent = inputPaths
         .map((filePath) => `file '${filePath.replace(/'/g, "'\\''")}'`)
         .join('\n');
 
@@ -373,10 +454,9 @@ export class AudioSplitter {
         ffmpeg()
           .input(fileListPath)
           .inputOptions(['-f', 'concat', '-safe', '0'])
-          .audioCodec('libmp3lame')
-          .audioBitrate('128k')
+          .audioCodec('copy') // Copy codec (no re-encoding)
           .on('start', () => {
-            this.logger.debug(`Merging ${safeInputPaths.length} chunks`);
+            this.logger.debug(`Merging ${inputPaths.length} chunks`);
           })
           .on('progress', (progress) => {
             if (progress.percent) {
@@ -384,14 +464,12 @@ export class AudioSplitter {
             }
           })
           .on('end', () => {
-            this.logger.log(
-              `Successfully merged ${safeInputPaths.length} chunks`,
-            );
+            this.logger.log(`Successfully merged ${inputPaths.length} chunks`);
             // Clean up file list
             void fs.promises.unlink(fileListPath).catch((error) => {
               this.logger.warn(`Failed to delete file list`, error);
             });
-            resolve(safeOutputPath);
+            resolve(outputPath);
           })
           .on('error', (err) => {
             this.logger.error('Error merging audio files:', err);
@@ -404,7 +482,7 @@ export class AudioSplitter {
             });
             reject(new Error(`Failed to merge audio files: ${err.message}`));
           })
-          .save(safeOutputPath);
+          .save(outputPath);
       });
     } catch (error) {
       // Clean up file list if it was created

@@ -1054,4 +1054,59 @@ export class TranscriptionController {
       data: status,
     };
   }
+
+  /**
+   * Merge multiple audio files into a single file
+   * Used for combining recovered recording chunks with new recording on the frontend
+   * This is much faster than client-side merging using Web Audio API
+   *
+   * Returns the merged audio as base64-encoded data along with metadata
+   */
+  @Post('merge-audio')
+  @UseGuards(FirebaseAuthGuard)
+  @UseInterceptors(
+    FilesInterceptor('files', 10, { limits: { fileSize: 500 * 1024 * 1024 } }),
+  ) // Max 10 files, 500MB each
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 merges per minute
+  async mergeAudio(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() req: Request & { user: any },
+  ): Promise<
+    ApiResponse<{
+      duration: number;
+      mimeType: string;
+      base64: string;
+      size: number;
+    }>
+  > {
+    if (!files || files.length < 2) {
+      throw new BadRequestException(
+        'At least 2 audio files are required for merging',
+      );
+    }
+
+    this.logger.log(
+      `[mergeAudio] User ${req.user.uid} merging ${files.length} audio files`,
+    );
+
+    try {
+      const result = await this.transcriptionService.mergeAudioFiles(files);
+
+      // Return the merged audio as base64
+      return {
+        success: true,
+        data: {
+          duration: result.duration,
+          mimeType: result.mimeType,
+          base64: result.buffer.toString('base64'),
+          size: result.buffer.length,
+        },
+      };
+    } catch (error) {
+      this.logger.error(`[mergeAudio] Failed to merge audio:`, error);
+      throw new BadRequestException(
+        `Failed to merge audio files: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
 }

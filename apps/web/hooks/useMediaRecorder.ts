@@ -28,6 +28,16 @@ const DURATION_WARNING_THRESHOLD = 2.5 * 60 * 60; // 2.5 hours - warn user
 
 export type RecordingSource = 'microphone' | 'tab-audio';
 
+/**
+ * Stored chunk format for iOS Safari compatibility.
+ * Blobs stored in React state/refs can become stale on iOS Safari,
+ * so we store as ArrayBuffer which is more reliable.
+ */
+interface StoredChunk {
+  buffer: ArrayBuffer;
+  type: string;
+}
+
 export type RecordingState = 'idle' | 'requesting-permission' | 'recording' | 'paused' | 'stopped';
 
 export interface UseMediaRecorderOptions {
@@ -53,6 +63,7 @@ export interface UseMediaRecorderReturn {
   audioFormat: AudioFormat;
   currentDeviceId: string | null; // Currently active microphone device ID
   isSwappingDevice: boolean; // True while swapping microphone
+  isStopping: boolean; // True while stop is in progress (prevents double-click)
 
   // Actions
   startRecording: (source: RecordingSource, deviceId?: string) => Promise<void>;
@@ -61,8 +72,9 @@ export interface UseMediaRecorderReturn {
   resumeRecording: () => void;
   reset: () => void;
   markAsUploaded: () => Promise<void>; // Mark recording as uploaded, removes beforeunload warning and cleans IndexedDB
+  createMarkAsUploaded: () => () => Promise<void>; // Factory to create a markAsUploaded callback that captures current recording ID
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
-  prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => void; // Prepare to continue from a recovered recording
+  prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => Promise<void>; // Prepare to continue from a recovered recording (async to convert Blobs to ArrayBuffer for iOS Safari)
   clearWarning: () => void; // Clear the warning message
   swapMicrophone: (deviceId: string) => Promise<void>; // Swap microphone mid-recording (microphone source only)
 
@@ -99,6 +111,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [chunkCount, setChunkCount] = useState(0);
   const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
   const [isSwappingDevice, setIsSwappingDevice] = useState(false);
+  const [isStopping, setIsStopping] = useState(false); // Prevents double-click on stop button
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -127,14 +140,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const durationWarningShownRef = useRef<boolean>(false);
 
   // Continue recording refs (for recovery flow)
-  const recoveredChunksRef = useRef<Blob[]>([]);
+  // We store as StoredChunk[] (ArrayBuffer) instead of Blob[] for iOS Safari compatibility
+  // iOS Safari's Blob references can become stale when stored in React state/refs
+  const recoveredChunksRef = useRef<StoredChunk[]>([]);
   const recoveredDurationRef = useRef<number>(0);
   const isContinueModeRef = useRef<boolean>(false);
   const recoveredRecordingIdRef = useRef<string | null>(null);
   // Track if current recording session is a continuation (set when recording starts, used in onstop)
   const wasInContinueModeRef = useRef<boolean>(false);
   // Store a copy of recovered chunks for merging in onstop (separate from chunksRef which gets new chunks appended)
-  const recoveredChunksCopyRef = useRef<Blob[]>([]);
+  const recoveredChunksCopyRef = useRef<StoredChunk[]>([]);
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -474,17 +489,30 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         mediaRecorder.onstop = async () => {
           let blob: Blob;
 
+          console.log('[useMediaRecorder] onstop fired');
+          console.log(`  - wasInContinueModeRef: ${wasInContinueModeRef.current}`);
+          console.log(`  - recoveredChunksCopyRef: ${recoveredChunksCopyRef.current.length} chunks`);
+          console.log(`  - chunksRef (new): ${chunksRef.current.length} chunks`);
+
           // Check if this was a continued recording (has recovered chunks to merge)
           if (wasInContinueModeRef.current && recoveredChunksCopyRef.current.length > 0) {
+            // Convert StoredChunks (ArrayBuffer) back to Blobs for merging
+            // We stored as ArrayBuffer to avoid iOS Safari stale Blob reference issue
+            const recoveredBlobs = recoveredChunksCopyRef.current.map(
+              (chunk) => new Blob([chunk.buffer], { type: chunk.type })
+            );
+
             // Merge recovered chunks with new chunks using proper audio decoding/encoding
             // This creates a properly-formatted audio file that Web Audio API can decode fully
+            const recoveredTotalSize = recoveredBlobs.reduce((s, c) => s + c.size, 0);
+            const newTotalSize = chunksRef.current.reduce((s, c) => s + c.size, 0);
             console.log(
-              `[useMediaRecorder] Merging ${recoveredChunksCopyRef.current.length} recovered chunks with ${chunksRef.current.length} new chunks`
+              `[useMediaRecorder] Merging ${recoveredBlobs.length} recovered chunks (${recoveredTotalSize} bytes) with ${chunksRef.current.length} new chunks (${newTotalSize} bytes)`
             );
 
             try {
               const { blob: mergedBlob } = await mergeRecoveredWithNew(
-                recoveredChunksCopyRef.current,
+                recoveredBlobs,
                 chunksRef.current,
                 audioFormat.mimeType
               );
@@ -494,7 +522,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
               console.error('[useMediaRecorder] Audio merge failed, falling back to concatenation:', err);
               // Fallback: concatenate chunks (waveform may not work, but audio should play)
               const rawBlob = new Blob(
-                [...recoveredChunksCopyRef.current, ...chunksRef.current],
+                [...recoveredBlobs, ...chunksRef.current],
                 { type: audioFormat.mimeType }
               );
               try {
@@ -566,6 +594,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           // Clean up audio mixer resources (if used for tab audio + mic mixing)
           cleanupMixer();
 
+          // Reset stopping flag now that we're done
+          setIsStopping(false);
+
           updateState('stopped');
         };
 
@@ -629,48 +660,108 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Stop recording
   const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state !== 'idle' && state !== 'stopped') {
-      // Simply call stop() - MediaRecorder will automatically fire one final
-      // ondataavailable event with any remaining data before onstop fires
-      // Note: Do NOT call requestData() before stop() - this can cause race conditions
-      // where the blob is created before the final data chunk is available
-      mediaRecorderRef.current.stop();
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+
+    // Prevent double-clicks - if we're already stopping, ignore
+    if (isStopping) {
+      console.log('[useMediaRecorder] Already stopping, ignoring duplicate stop request');
+      return;
     }
-  }, [state]);
+
+    // Check the ACTUAL MediaRecorder state, not just React state
+    // This is critical for iOS Safari where the recorder can become 'inactive'
+    // unexpectedly (e.g., due to audio session interruptions, tab backgrounding)
+    if (recorder.state === 'inactive') {
+      console.warn('[useMediaRecorder] MediaRecorder already inactive, cannot call stop()');
+      // Don't do anything here - if the recorder is inactive, onstop should have
+      // already fired and handled the blob creation. Creating a new blob here
+      // would overwrite the correctly merged audio in continue mode.
+      return;
+    }
+
+    // Also verify React state as a secondary check
+    if (state === 'idle' || state === 'stopped') {
+      return;
+    }
+
+    // Mark as stopping to prevent double-clicks
+    setIsStopping(true);
+
+    // Clear auto-save interval immediately - don't wait for state change
+    // This prevents unnecessary saves during the async merge process
+    if (autoSaveIntervalRef.current) {
+      clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    }
+
+    // Simply call stop() - MediaRecorder will automatically fire one final
+    // ondataavailable event with any remaining data before onstop fires
+    // Note: Do NOT call requestData() before stop() - this can cause race conditions
+    // where the blob is created before the final data chunk is available
+    recorder.stop();
+  }, [state, isStopping]);
 
   // Pause recording
   const pauseRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state === 'recording') {
-      mediaRecorderRef.current.pause();
-      stopTimer();
-      updateState('paused');
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || state !== 'recording') return;
+
+    // Check actual MediaRecorder state (iOS Safari can have unexpected state changes)
+    if (recorder.state !== 'recording') {
+      console.warn(`[useMediaRecorder] Cannot pause: MediaRecorder state is '${recorder.state}'`);
+      return;
     }
+
+    recorder.pause();
+    stopTimer();
+    updateState('paused');
   }, [state, stopTimer, updateState]);
 
   // Resume recording
   const resumeRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state === 'paused') {
-      mediaRecorderRef.current.resume();
-      startTimer(false); // Don't reset duration when resuming
-      updateState('recording');
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || state !== 'paused') return;
+
+    // Check actual MediaRecorder state (iOS Safari can have unexpected state changes)
+    if (recorder.state !== 'paused') {
+      console.warn(`[useMediaRecorder] Cannot resume: MediaRecorder state is '${recorder.state}'`);
+      return;
     }
+
+    recorder.resume();
+    startTimer(false); // Don't reset duration when resuming
+    updateState('recording');
   }, [state, startTimer, updateState]);
 
-  // Mark recording as uploaded (clean up IndexedDB, remove beforeunload warning)
-  const markAsUploaded = useCallback(async () => {
-    hasUploadedRef.current = true;
+  // Create a markAsUploaded callback that captures the current recording ID
+  // This is necessary because reset() clears recordingIdRef.current, but we need
+  // to delete the recording from IndexedDB after processing completes (which happens later)
+  const createMarkAsUploaded = useCallback(() => {
+    // Capture the recording ID at the time this callback is created
+    const capturedRecordingId = recordingIdRef.current;
 
-    // Clean up IndexedDB after successful upload
-    if (enableAutoSave && recordingIdRef.current) {
-      try {
-        const storage = await getRecordingStorage();
-        await storage.deleteRecording(recordingIdRef.current);
-        console.log('[useMediaRecorder] Cleaned up IndexedDB after upload');
-      } catch (err) {
-        console.error('[useMediaRecorder] Failed to clean up IndexedDB:', err);
+    return async () => {
+      hasUploadedRef.current = true;
+
+      // Clean up IndexedDB after successful upload
+      if (enableAutoSave && capturedRecordingId) {
+        try {
+          const storage = await getRecordingStorage();
+          await storage.deleteRecording(capturedRecordingId);
+          console.log('[useMediaRecorder] Cleaned up IndexedDB after upload, recordingId:', capturedRecordingId);
+        } catch (err) {
+          console.error('[useMediaRecorder] Failed to clean up IndexedDB:', err);
+        }
       }
-    }
+    };
   }, [enableAutoSave]);
+
+  // Legacy markAsUploaded for backwards compatibility (uses current ref value)
+  const markAsUploaded = useCallback(async () => {
+    const callback = createMarkAsUploaded();
+    await callback();
+  }, [createMarkAsUploaded]);
 
   // Reset to initial state
   const reset = useCallback(() => {
@@ -704,6 +795,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     // Reset device tracking state
     setCurrentDeviceId(null);
     setIsSwappingDevice(false);
+    setIsStopping(false);
 
     // Reset continue mode state
     recoveredChunksRef.current = [];
@@ -753,15 +845,31 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Prepare for continue recording (from recovery flow)
   // Must be called BEFORE startRecording when continuing from a recovered recording
+  // IMPORTANT: We immediately convert Blobs to ArrayBuffers to prevent iOS Safari stale reference issues
   const prepareForContinue = useCallback(
-    (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => {
-      recoveredChunksRef.current = chunks;
+    async (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => {
+      // Convert Blobs to StoredChunks immediately to avoid iOS Safari stale Blob issue
+      // On iOS Safari, Blobs from IndexedDB can become empty after being stored in React state
+      console.log(
+        `[useMediaRecorder] Converting ${chunks.length} chunks to ArrayBuffer for iOS Safari compatibility...`
+      );
+      const storedChunks: StoredChunk[] = [];
+      for (const chunk of chunks) {
+        const buffer = await chunk.arrayBuffer();
+        storedChunks.push({ buffer, type: chunk.type });
+      }
+      const totalSize = storedChunks.reduce((s, c) => s + c.buffer.byteLength, 0);
+      console.log(
+        `[useMediaRecorder] Converted ${storedChunks.length} chunks, total size: ${totalSize} bytes`
+      );
+
+      recoveredChunksRef.current = storedChunks;
       recoveredDurationRef.current = previousDuration;
       isContinueModeRef.current = true;
       recoveredRecordingIdRef.current = recordingId;
       setRecordingSource(source);
       console.log(
-        `[useMediaRecorder] Prepared for continue mode: ${previousDuration}s, ${chunks.length} chunks, recordingId: ${recordingId}`
+        `[useMediaRecorder] Prepared for continue mode: ${previousDuration}s, ${storedChunks.length} chunks, recordingId: ${recordingId}`
       );
     },
     []
@@ -983,6 +1091,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     audioFormat,
     currentDeviceId,
     isSwappingDevice,
+    isStopping,
 
     // Actions
     startRecording,
@@ -991,6 +1100,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     resumeRecording,
     reset,
     markAsUploaded,
+    createMarkAsUploaded,
     loadRecoveredRecording,
     prepareForContinue,
     clearWarning,

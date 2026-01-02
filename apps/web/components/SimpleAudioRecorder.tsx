@@ -87,12 +87,13 @@ export function SimpleAudioRecorder({
     pauseRecording,
     resumeRecording,
     reset,
-    markAsUploaded,
+    createMarkAsUploaded,
     prepareForContinue,
     clearWarning,
     swapMicrophone,
     currentDeviceId,
     isSwappingDevice,
+    isStopping,
     audioStream,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
@@ -145,6 +146,23 @@ export function SimpleAudioRecorder({
   // No audio detection warning
   const [hasDetectedAudio, setHasDetectedAudio] = useState(false);
   const [showNoAudioWarning, setShowNoAudioWarning] = useState(false);
+
+  // Auto-switch notification
+  const [deviceSwitchNotification, setDeviceSwitchNotification] = useState<string | null>(null);
+  const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Show device switch notification with auto-dismiss
+  const showDeviceSwitchNotification = useCallback((deviceLabel: string) => {
+    // Clear any existing timeout
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
+    setDeviceSwitchNotification(deviceLabel);
+    // Auto-dismiss after 3 seconds
+    notificationTimeoutRef.current = setTimeout(() => {
+      setDeviceSwitchNotification(null);
+    }, 3000);
+  }, []);
 
   // Audio visualization for preview (before recording starts)
   const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
@@ -272,6 +290,9 @@ export function SimpleAudioRecorder({
             autoSwapDebounceRef.current = setTimeout(() => {
               swapMicrophone(resolveRealDeviceId('default')).then(() => {
                 setSelectedDeviceId('default');
+                // Show notification with new default device name
+                const deviceName = newDefaultLabel?.replace(/^Default\s*-\s*/i, '') || 'Default';
+                showDeviceSwitchNotification(deviceName);
               }).catch(() => {
                 // Swap failed - user can manually select device from dropdown
               });
@@ -302,6 +323,7 @@ export function SimpleAudioRecorder({
               autoSwapDebounceRef.current = setTimeout(() => {
                 swapMicrophone(deviceToSwitch.deviceId).then(() => {
                   setSelectedDeviceId(deviceToSwitch.deviceId);
+                  showDeviceSwitchNotification(deviceToSwitch.label);
                 }).catch(() => {
                   // Swap failed - user can manually select device from dropdown
                 });
@@ -323,6 +345,9 @@ export function SimpleAudioRecorder({
               autoSwapDebounceRef.current = setTimeout(() => {
                 swapMicrophone(resolveRealDeviceId('default')).then(() => {
                   setSelectedDeviceId('default');
+                  // Show notification with new default device name
+                  const deviceName = newDefaultLabel?.replace(/^Default\s*-\s*/i, '') || 'Default';
+                  showDeviceSwitchNotification(deviceName);
                 }).catch(() => {
                   // Swap failed - user can manually select device from dropdown
                 });
@@ -517,11 +542,14 @@ export function SimpleAudioRecorder({
     }
   }, [showSourceSelector, initialSource, state, selectedDeviceId, isTestingMic, startMicPreview, audioDevices]);
 
-  // Cleanup preview stream on unmount
+  // Cleanup preview stream and notification timeout on unmount
   useEffect(() => {
     return () => {
       if (previewStreamRef.current) {
         previewStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current);
       }
     };
   }, []);
@@ -577,12 +605,15 @@ export function SimpleAudioRecorder({
         file_size_bytes: audioBlob.size,
         source: selectedSource,
       });
+      // Create the markAsUploaded callback BEFORE reset() clears the recording ID
+      // This captures the current recording ID in a closure
+      const markAsUploaded = createMarkAsUploaded();
       // Pass blob and markAsUploaded callback to parent
       // Parent should call markAsUploaded() after successful upload to clean up IndexedDB
       onComplete(audioBlob, markAsUploaded);
       reset();
     }
-  }, [audioBlob, onComplete, markAsUploaded, reset, trackEvent, duration, selectedSource]);
+  }, [audioBlob, onComplete, createMarkAsUploaded, reset, trackEvent, duration, selectedSource]);
 
   const handleReRecord = useCallback(() => {
     reset();
@@ -938,6 +969,16 @@ export function SimpleAudioRecorder({
         </div>
       </div>
 
+      {/* Device switch notification */}
+      {deviceSwitchNotification && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 border border-[#8D6AFA]/30 rounded-lg animate-in fade-in slide-in-from-top-2 duration-200">
+          <Mic className="w-4 h-4 text-[#8D6AFA] flex-shrink-0" />
+          <span className="text-sm text-[#8D6AFA] dark:text-[#a78bfa]">
+            {t('source.switchedToDevice', { device: deviceSwitchNotification })}
+          </span>
+        </div>
+      )}
+
       {/* Inline microphone selector (shown when coming from direct microphone action) */}
       {initialSource === 'microphone' && state === 'idle' && audioDevices.length > 1 && (
         <div>
@@ -1038,9 +1079,14 @@ export function SimpleAudioRecorder({
                 variant="brand"
                 onClick={handleStopRecording}
                 fullWidth
-                icon={<Square className="w-5 h-5" />}
+                disabled={isStopping}
+                icon={isStopping ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Square className="w-5 h-5" />
+                )}
               >
-                {t('controls.stop')}
+                {isStopping ? t('controls.finishing') : t('controls.stop')}
               </Button>
             </div>
             {/* Microphone switcher during recording */}
@@ -1096,9 +1142,14 @@ export function SimpleAudioRecorder({
                 variant="secondary"
                 onClick={handleStopRecording}
                 fullWidth
-                icon={<Square className="w-5 h-5" />}
+                disabled={isStopping}
+                icon={isStopping ? (
+                  <div className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Square className="w-5 h-5" />
+                )}
               >
-                {t('controls.stop')}
+                {isStopping ? t('controls.finishing') : t('controls.stop')}
               </Button>
             </div>
             {/* Microphone switcher during paused state */}
