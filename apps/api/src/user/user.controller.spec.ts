@@ -246,6 +246,7 @@ describe('UserController', () => {
         overage: { hours: 0, amount: 0 },
         percentUsed: 33,
         warnings: [],
+        paygCredits: 100,
       });
 
       const result = await controller.getUsageStats(mockRequest() as any);
