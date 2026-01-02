@@ -1525,6 +1525,8 @@
     "copied": "Kopiert!",
     "noSummary": "Keine Zusammenfassung verfügbar",
     "noTranscript": "Kein Transkript verfügbar",
+    "aiAssets": "KI-Inhalte",
+    "noContent": "Kein Inhalt für dieses Gespräch verfügbar.",
     "footer": {
       "poweredBy": "Unterstützt von",
       "copyright": "© {year} Neural Summary. Alle Rechte vorbehalten."
@@ -1623,7 +1625,8 @@
         "title": "Pro",
         "period": "/Monat",
         "description": "Für Profis, die regelmäßig professionelle Dokumente brauchen.",
-        "cta": "Kostenlose Testversion starten",
+        "cta": "Upgrade auf Pro",
+        "trialCta": "Kostenlose Testversion starten",
         "badge": "Am beliebtesten",
         "recommended": "EMPFOHLEN",
         "guarantee": "30 Tage Geld-zurück-Garantie",
@@ -1996,7 +1999,16 @@
     "transcriptions": "Gespräche",
     "hours": "Stunden",
     "remaining": "verbleibend",
-    "onDemandAnalyses": "AI Assets"
+    "onDemandAnalyses": "AI Assets",
+    "trial": "Testversion"
+  },
+  "trial": {
+    "active": "Pro Testversion Aktiv",
+    "endsIn": "Ihre Testversion endet in {days} Tagen",
+    "daysRemaining": "Noch {days} Tage in Ihrer Pro Testversion",
+    "upgradeNow": "Jetzt Upgraden",
+    "startTrial": "14-tägige kostenlose Testversion starten",
+    "alreadyUsed": "Sie haben Ihre kostenlose Testversion bereits genutzt"
   },
   "admin": {
     "title": "Admin-Panel",

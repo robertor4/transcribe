@@ -22,6 +22,7 @@ import {
   Copy,
   Check,
   ChevronDown,
+  ChevronUp,
   Mail,
   CheckSquare,
   Edit3,
@@ -112,6 +113,21 @@ export default function SharedTranscriptionPage() {
   const [activeTab, setActiveTab] = useState<'summary' | 'transcript' | 'ai-assets'>('summary');
   const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll-to-top visibility tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll-to-top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Import state
   const [isImporting, setIsImporting] = useState(false);
@@ -509,20 +525,23 @@ export default function SharedTranscriptionPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div>
           {/* Tab Navigation + Action Buttons on same row */}
-          <nav className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200">
-            <div className="flex items-center justify-between py-1">
-              {/* Tabs */}
-              <div className="flex items-center gap-1">
+          <nav className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200 mb-6">
+            <div className="flex items-center justify-between py-1 gap-2">
+              {/* Tabs - scrollable on mobile */}
+              <div
+                className="flex items-center gap-1 overflow-x-auto min-w-0"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
                 {hasSummary && (
                   <button
                     onClick={() => setActiveTab('summary')}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
                       activeTab === 'summary'
-                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'text-[#8D6AFA] bg-purple-50'
+                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
                     }`}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 whitespace-nowrap">
                       <BarChart3 className="w-4 h-4" />
                       Summary
                     </span>
@@ -531,13 +550,13 @@ export default function SharedTranscriptionPage() {
                 {hasTranscript && (
                   <button
                     onClick={() => setActiveTab('transcript')}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
                       activeTab === 'transcript'
-                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'text-[#8D6AFA] bg-purple-50'
+                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
                     }`}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 whitespace-nowrap">
                       <FileText className="w-4 h-4" />
                       Transcript
                     </span>
@@ -546,22 +565,22 @@ export default function SharedTranscriptionPage() {
                 {hasAIAssets && (
                   <button
                     onClick={() => setActiveTab('ai-assets')}
-                    className={`px-4 py-2.5 text-sm font-semibold rounded-t-lg transition-colors duration-200 ${
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
                       activeTab === 'ai-assets'
-                        ? 'text-[#8D6AFA] border-b-2 border-[#8D6AFA] -mb-[1px] bg-purple-50/50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'text-[#8D6AFA] bg-purple-50'
+                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
                     }`}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 whitespace-nowrap">
                       <AiIcon size={16} />
-                      AI Assets
+                      {t('aiAssets')}
                     </span>
                   </button>
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1">
+              {/* Action Buttons - icon-only on mobile */}
+              <div className="flex items-center gap-1 flex-shrink-0">
                 {/* Import button */}
                 {user ? (
                   isImported ? (
@@ -571,7 +590,7 @@ export default function SharedTranscriptionPage() {
                       icon={<Check className="w-4 h-4 text-green-600" />}
                       disabled
                     >
-                      {t('importCta.imported')}
+                      <span className="hidden sm:inline">{t('importCta.imported')}</span>
                     </Button>
                   ) : (
                     <Button
@@ -581,7 +600,7 @@ export default function SharedTranscriptionPage() {
                       onClick={handleImport}
                       disabled={isImporting}
                     >
-                      {isImporting ? t('importCta.importing') : t('importCta.importButton')}
+                      <span className="hidden sm:inline">{isImporting ? t('importCta.importing') : t('importCta.importButton')}</span>
                     </Button>
                   )
                 ) : (
@@ -591,7 +610,7 @@ export default function SharedTranscriptionPage() {
                     icon={<UserPlus className="w-4 h-4" />}
                     onClick={handleSignUpToImport}
                   >
-                    {t('importCta.signUp')}
+                    <span className="hidden sm:inline">{t('importCta.signUp')}</span>
                   </Button>
                 )}
                 {/* Copy button */}
@@ -601,7 +620,7 @@ export default function SharedTranscriptionPage() {
                   icon={copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   onClick={handleCopySummary}
                 >
-                  {copiedSummary ? t('copied') : t('copy')}
+                  <span className="hidden sm:inline">{copiedSummary ? t('copied') : t('copy')}</span>
                 </Button>
                 {/* Language switcher dropdown */}
                 {translationStatus && translationStatus.availableLocales.length > 0 && (
@@ -676,7 +695,7 @@ export default function SharedTranscriptionPage() {
             </div>
           </nav>
 
-          <div className="pt-4">
+          <div>
             {/* Summary Tab Content */}
             {hasSummary && (
               <div className={activeTab === 'summary' ? 'block' : 'hidden'}>
@@ -867,6 +886,17 @@ export default function SharedTranscriptionPage() {
           </div>
         </div>
       </div>
+
+      {/* Mobile scroll-to-top button */}
+      <button
+        onClick={scrollToTop}
+        className={`md:hidden fixed bottom-6 right-6 w-12 h-12 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+        aria-label="Scroll to top"
+      >
+        <ChevronUp className="w-6 h-6" />
+      </button>
     </div>
   );
 }

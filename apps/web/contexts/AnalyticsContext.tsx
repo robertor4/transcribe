@@ -16,6 +16,7 @@ export type AnalyticsEventName =
   | 'password_reset_completed'
   | 'subscription_started'
   | 'subscription_cancelled'
+  | 'trial_started'
 
   // Core Feature Events
   | 'audio_uploaded'

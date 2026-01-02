@@ -1194,6 +1194,8 @@
     "copied": "Gekopieerd!",
     "noSummary": "Geen samenvatting beschikbaar",
     "noTranscript": "Geen transcript beschikbaar",
+    "aiAssets": "AI-assets",
+    "noContent": "Geen inhoud beschikbaar voor dit gesprek.",
     "footer": {
       "poweredBy": "Mogelijk gemaakt door",
       "copyright": "© {year} Neural Summary. Alle rechten voorbehouden."
@@ -1606,7 +1608,16 @@
     "transcriptions": "Gesprekken",
     "hours": "Uren",
     "remaining": "resterend",
-    "onDemandAnalyses": "AI Assets"
+    "onDemandAnalyses": "AI Assets",
+    "trial": "Proefperiode"
+  },
+  "trial": {
+    "active": "Pro Proefperiode Actief",
+    "endsIn": "Je proefperiode eindigt over {days} dagen",
+    "daysRemaining": "Nog {days} dagen in je Pro proefperiode",
+    "upgradeNow": "Nu Upgraden",
+    "startTrial": "Start 14-daagse gratis proefperiode",
+    "alreadyUsed": "Je hebt je gratis proefperiode al gebruikt"
   },
   "pricing": {
     "metadata": {
@@ -1654,7 +1665,8 @@
         "title": "Pro",
         "period": "/maand",
         "description": "Voor professionals die regelmatig professionele documenten nodig hebben.",
-        "cta": "Start gratis proefperiode",
+        "cta": "Upgrade naar Pro",
+        "trialCta": "Start gratis proefperiode",
         "badge": "Meest populair",
         "recommended": "AANBEVOLEN",
         "guarantee": "30 dagen geld-terug-garantie",
@@ -1908,6 +1920,11 @@
       "reactivate": "Heractiveer abonnement",
       "manageBilling": "Beheer facturering",
       "viewInvoices": "Bekijk facturen"
+    },
+    "trial": {
+      "active": "Pro Proefperiode Actief",
+      "endsIn": "Je proefperiode eindigt over {days} dagen",
+      "upgradeNow": "Nu Upgraden"
     },
     "billingHistory": {
       "title": "Factureringsgeschiedenis",

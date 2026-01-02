@@ -7,17 +7,15 @@ import {
   Lock,
   Loader2,
   AlertCircle,
-  Copy,
-  Check,
   ChevronLeft,
+  ChevronUp,
   Clock,
 } from 'lucide-react';
 import Link from 'next/link';
 import { importedConversationApi } from '@/lib/api';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
-import { SummaryRenderer } from '@/components/SummaryRenderer';
-import TranscriptTimeline from '@/components/TranscriptTimeline';
+import { SharedContentView } from '@/components/SharedContentView';
 import { Button } from '@/components/Button';
 import { ExpirationBadge } from '@/components/ExpirationBadge';
 import type {
@@ -29,6 +27,7 @@ import type {
 /**
  * Imported Conversation Detail Page
  * Read-only view of an imported shared conversation.
+ * Uses SharedContentView for consistent content rendering with the /shared page.
  */
 export default function ImportedConversationPage() {
   const params = useParams();
@@ -44,8 +43,21 @@ export default function ImportedConversationPage() {
   const [status, setStatus] = useState<ImportedConversationStatus>('active');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'summary' | 'transcript'>('summary');
-  const [copiedSummary, setCopiedSummary] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll-to-top visibility tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll-to-top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const fetchImportedConversation = useCallback(async () => {
     setIsLoading(true);
@@ -71,22 +83,6 @@ export default function ImportedConversationPage() {
   useEffect(() => {
     fetchImportedConversation();
   }, [fetchImportedConversation]);
-
-  const handleCopySummary = async () => {
-    if (!content?.summaryV2 && !content?.analyses?.summary) return;
-
-    const textToCopy = content.summaryV2
-      ? JSON.stringify(content.summaryV2, null, 2)
-      : content.analyses?.summary || '';
-
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setCopiedSummary(true);
-      setTimeout(() => setCopiedSummary(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
 
   // Loading state
   if (isLoading) {
@@ -153,146 +149,94 @@ export default function ImportedConversationPage() {
     <ThreePaneLayout
       leftSidebar={<LeftNavigation />}
       mainContent={
-      <div className="h-full overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          {/* Breadcrumb */}
-          <div className="mb-6">
-            <Link
-              href={`/${locale}/shared-with-me`}
-              className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              {t('title')}
-            </Link>
-          </div>
-
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                  <Lock className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    {importData.title}
-                  </h1>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('sharedBy', { name: importData.sharedByName || 'Someone' })}
-                  </p>
-                </div>
-              </div>
-
-              {/* Badges */}
-              <div className="flex items-center gap-2">
-                {importData.expiresAt && (
-                  <ExpirationBadge expiresAt={importData.expiresAt} />
-                )}
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-gray-400">
-                  <Lock className="w-3 h-3" />
-                  {tShared('readOnly')}
-                </span>
-              </div>
+        <div className="h-full overflow-y-auto relative">
+          <div className="max-w-4xl mx-auto px-6 py-8">
+            {/* Breadcrumb */}
+            <div className="mb-6">
+              <Link
+                href={`/${locale}/shared-with-me`}
+                className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {t('title')}
+              </Link>
             </div>
-          </div>
 
-          {/* Expiration warning banner */}
-          {importData.expiresAt && (() => {
-            const daysLeft = Math.ceil(
-              (new Date(importData.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-            );
-            if (daysLeft <= 7 && daysLeft > 0) {
-              return (
-                <div className="mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
-                  <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
-                    <Clock className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                      {t('expirationWarning', { days: daysLeft })}
-                    </span>
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <Lock className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                      {importData.title}
+                    </h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {t('sharedBy', { name: importData.sharedByName || 'Someone' })}
+                    </p>
                   </div>
                 </div>
-              );
-            }
-            return null;
-          })()}
 
-          {/* Tabs */}
-          <div className="flex items-center gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
-            <button
-              onClick={() => setActiveTab('summary')}
-              className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'summary'
-                  ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              }`}
-            >
-              {tShared('summary')}
-            </button>
-            {content.transcriptText && (
-              <button
-                onClick={() => setActiveTab('transcript')}
-                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === 'transcript'
-                    ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                }`}
-              >
-                {tShared('transcript')}
-              </button>
-            )}
-
-            {/* Copy button */}
-            <div className="ml-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopySummary}
-                disabled={!content.summaryV2 && !content.analyses?.summary}
-              >
-                {copiedSummary ? (
-                  <>
-                    <Check className="w-4 h-4 mr-1.5 text-green-500" />
-                    {tShared('copied')}
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-1.5" />
-                    {tShared('copy')}
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="prose prose-gray dark:prose-invert max-w-none">
-            {activeTab === 'summary' ? (
-              content.summaryV2 ? (
-                <SummaryRenderer content="" summaryV2={content.summaryV2} />
-              ) : content.analyses?.summary ? (
-                <div
-                  className="whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: content.analyses.summary }}
-                />
-              ) : (
-                <p className="text-gray-500">{tShared('noSummary')}</p>
-              )
-            ) : (
-              content.speakerSegments && content.speakerSegments.length > 0 ? (
-                <TranscriptTimeline
-                  segments={content.speakerSegments}
-                />
-              ) : content.transcriptText ? (
-                <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                  {content.transcriptText}
+                {/* Badges */}
+                <div className="flex items-center gap-2">
+                  {importData.expiresAt && (
+                    <ExpirationBadge expiresAt={importData.expiresAt} />
+                  )}
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-gray-400">
+                    <Lock className="w-3 h-3" />
+                    {tShared('readOnly')}
+                  </span>
                 </div>
-              ) : (
-                <p className="text-gray-500">{tShared('noTranscript')}</p>
-              )
-            )}
+              </div>
+            </div>
+
+            {/* Expiration warning banner */}
+            {importData.expiresAt && (() => {
+              const daysLeft = Math.ceil(
+                (new Date(importData.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+              );
+              if (daysLeft <= 7 && daysLeft > 0) {
+                return (
+                  <div className="mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+                    <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                      <Clock className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        {t('expirationWarning', { days: daysLeft })}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            {/* Content - using SharedContentView for consistent rendering */}
+            <SharedContentView
+              transcription={content}
+              labels={{
+                summary: tShared('summary'),
+                transcript: tShared('transcript'),
+                aiAssets: tShared('aiAssets'),
+                copy: tShared('copy'),
+                copied: tShared('copied'),
+                noContent: tShared('noContent'),
+              }}
+            />
           </div>
+
+          {/* Mobile scroll-to-top button */}
+          <button
+            onClick={scrollToTop}
+            className={`md:hidden fixed bottom-6 right-6 w-12 h-12 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 ${
+              showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+            }`}
+            aria-label="Scroll to top"
+          >
+            <ChevronUp className="w-6 h-6" />
+          </button>
         </div>
-      </div>
       }
     />
   );
