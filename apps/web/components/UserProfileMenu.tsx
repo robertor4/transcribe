@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
 import { useTranslations } from 'next-intl';
 import { LogOut, Settings, User as UserIcon, ChevronDown, Shield } from 'lucide-react';
-import { NotificationToggle } from '@/components/NotificationToggle';
 import { UsageIndicator } from '@/components/paywall/UsageIndicator';
 
 interface UserProfileMenuProps {
@@ -293,19 +292,6 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
               <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
               <span>{tSettings('title')}</span>
             </button>
-          </div>
-
-          {/* Notifications Section */}
-          <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {tSettings('notifications')}
-            </label>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-800 dark:text-gray-200">
-                {tCommon('browserNotifications')}
-              </span>
-              <NotificationToggle />
-            </div>
           </div>
 
           {/* Logout Section */}

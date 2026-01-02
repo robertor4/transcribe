@@ -28,7 +28,6 @@
     "open": "Öffnen",
     "language": "Sprache",
     "userMenu": "Benutzermenü",
-    "browserNotifications": "Browser-Benachrichtigungen",
     "allRightsReserved": "Alle Rechte vorbehalten"
   },
   "search": {
@@ -834,25 +833,12 @@
       "description": "Die meisten Videokonferenz-Tools (Zoom, Teams, Google Meet) haben eingebaute Aufnahmefunktionen. Nehmen Sie einfach Ihr Meeting auf und laden Sie die Videodatei direkt hoch - wir extrahieren und transkribieren das Audio!"
     }
   },
-  "notifications": {
-    "title": "Benachrichtigungen",
-    "enable": "Benachrichtigungen aktivieren",
-    "disable": "Benachrichtigungen deaktivieren",
-    "browserNotifications": "Browser-Benachrichtigungen",
-    "emailNotifications": "E-Mail-Benachrichtigungen",
-    "transcriptionComplete": "Ihre Transkription für \"{fileName}\" ist abgeschlossen!",
-    "transcriptionFailed": "Transkription für \"{fileName}\" fehlgeschlagen",
-    "permissionDenied": "Benachrichtigungsberechtigung verweigert",
-    "permissionGranted": "Benachrichtigungen aktiviert",
-    "notSupported": "Benachrichtigungen werden in diesem Browser nicht unterstützt"
-  },
   "settings": {
     "title": "Einstellungen",
     "profile": "Profil",
     "preferences": "Einstellungen",
     "language": "Sprache",
     "theme": "Design",
-    "notifications": "Benachrichtigungen",
     "privacy": "Datenschutz",
     "security": "Sicherheit",
     "account": "Konto",
@@ -898,38 +884,6 @@
       "accountCreated": "Konto erstellt",
       "subscription": "Abonnement",
       "expiresOn": "Läuft ab am",
-      "saving": "Speichern...",
-      "saveChanges": "Änderungen speichern"
-    },
-    "notificationsPage": {
-      "title": "Benachrichtigungseinstellungen",
-      "description": "Konfigurieren Sie, wie Sie Benachrichtigungen über Ihre Transkriptionen erhalten.",
-      "loadError": "Laden der Einstellungen fehlgeschlagen",
-      "saveError": "Speichern der Einstellungen fehlgeschlagen",
-      "saveSuccess": "Einstellungen erfolgreich aktualisiert",
-      "emailNotifications": "E-Mail-Benachrichtigungen",
-      "enableEmailNotifications": "E-Mail-Benachrichtigungen aktivieren",
-      "enableEmailDescription": "E-Mail-Updates über Ihre Transkriptionen erhalten",
-      "transcriptionComplete": "Transkription abgeschlossen",
-      "transcriptionCompleteDescription": "Benachrichtigung erhalten, wenn Ihre Transkription fertig ist",
-      "digestFrequency": "E-Mail-Häufigkeit",
-      "digestDescription": "Wie oft E-Mail-Benachrichtigungen erhalten",
-      "digest": {
-        "immediate": "Sofort",
-        "daily": "Tägliche Zusammenfassung",
-        "weekly": "Wöchentliche Zusammenfassung"
-      },
-      "browserNotifications": "Browser-Benachrichtigungen",
-      "enableBrowserNotifications": "Browser-Benachrichtigungen aktivieren",
-      "enableBrowserDescription": "Desktop-Benachrichtigungen anzeigen, wenn dieser Tab im Hintergrund ist",
-      "browserPermissionDenied": "Browser-Benachrichtigungsberechtigung verweigert",
-      "browserPermissionBlocked": "Browser-Benachrichtigungen sind blockiert. Aktivieren Sie sie in Ihren Browsereinstellungen.",
-      "browserNotificationTypes": "Sie erhalten Benachrichtigungen für:",
-      "notificationType": {
-        "transcriptionComplete": "Transkriptionsabschluss",
-        "transcriptionFailed": "Transkriptionsfehler",
-        "transcriptionProgress": "Verarbeitungsfortschritt-Updates"
-      },
       "saving": "Speichern...",
       "saveChanges": "Änderungen speichern"
     },

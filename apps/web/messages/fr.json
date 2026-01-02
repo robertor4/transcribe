@@ -28,7 +28,6 @@
     "open": "Ouvrir",
     "language": "Langue",
     "userMenu": "Menu utilisateur",
-    "browserNotifications": "Notifications du navigateur",
     "allRightsReserved": "Tous droits réservés"
   },
   "search": {
@@ -834,25 +833,12 @@
       "description": "La plupart des outils de visioconférence (Zoom, Teams, Google Meet) ont des fonctions d'enregistrement intégrées. Enregistrez simplement votre réunion et téléversez le fichier vidéo directement - nous extrairons et transcrirons l'audio !"
     }
   },
-  "notifications": {
-    "title": "Notifications",
-    "enable": "Activer les notifications",
-    "disable": "Désactiver les notifications",
-    "browserNotifications": "Notifications du navigateur",
-    "emailNotifications": "Notifications par e-mail",
-    "transcriptionComplete": "Votre transcription pour \"{fileName}\" est terminée !",
-    "transcriptionFailed": "Échec de la transcription pour \"{fileName}\"",
-    "permissionDenied": "Permission de notification refusée",
-    "permissionGranted": "Notifications activées",
-    "notSupported": "Les notifications ne sont pas supportées dans ce navigateur"
-  },
   "settings": {
     "title": "Paramètres",
     "profile": "Profil",
     "preferences": "Préférences",
     "language": "Langue",
     "theme": "Thème",
-    "notifications": "Notifications",
     "privacy": "Confidentialité",
     "security": "Sécurité",
     "account": "Compte",
@@ -898,38 +884,6 @@
       "accountCreated": "Compte créé",
       "subscription": "Abonnement",
       "expiresOn": "Expire le",
-      "saving": "Enregistrement...",
-      "saveChanges": "Enregistrer les modifications"
-    },
-    "notificationsPage": {
-      "title": "Paramètres de notification",
-      "description": "Configurez comment vous recevez les notifications sur vos transcriptions.",
-      "loadError": "Échec du chargement des paramètres",
-      "saveError": "Échec de la sauvegarde des paramètres",
-      "saveSuccess": "Paramètres mis à jour avec succès",
-      "emailNotifications": "Notifications par e-mail",
-      "enableEmailNotifications": "Activer les notifications par e-mail",
-      "enableEmailDescription": "Recevoir des mises à jour par e-mail sur vos transcriptions",
-      "transcriptionComplete": "Transcription terminée",
-      "transcriptionCompleteDescription": "Être notifié lorsque votre transcription est prête",
-      "digestFrequency": "Fréquence des e-mails",
-      "digestDescription": "À quelle fréquence recevoir les notifications par e-mail",
-      "digest": {
-        "immediate": "Immédiat",
-        "daily": "Résumé quotidien",
-        "weekly": "Résumé hebdomadaire"
-      },
-      "browserNotifications": "Notifications du navigateur",
-      "enableBrowserNotifications": "Activer les notifications du navigateur",
-      "enableBrowserDescription": "Afficher les notifications de bureau lorsque cet onglet est en arrière-plan",
-      "browserPermissionDenied": "L'autorisation de notification du navigateur a été refusée",
-      "browserPermissionBlocked": "Les notifications du navigateur sont bloquées. Veuillez les activer dans les paramètres de votre navigateur.",
-      "browserNotificationTypes": "Vous recevrez des notifications pour :",
-      "notificationType": {
-        "transcriptionComplete": "Achèvement de la transcription",
-        "transcriptionFailed": "Échecs de transcription",
-        "transcriptionProgress": "Mises à jour de la progression du traitement"
-      },
       "saving": "Enregistrement...",
       "saveChanges": "Enregistrer les modifications"
     },

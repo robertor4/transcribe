@@ -6,7 +6,6 @@ import { useRouter, usePathname, Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import {
   User,
-  Bell,
   Settings,
   CreditCard,
   ChevronLeft,
@@ -50,12 +49,6 @@ export default function SettingsLayout({
       href: `/settings/profile`,
       icon: User,
       current: pathname?.endsWith('/settings/profile') || pathname?.endsWith('/settings'),
-    },
-    {
-      name: t('notifications'),
-      href: `/settings/notifications`,
-      icon: Bell,
-      current: pathname?.endsWith('/settings/notifications'),
     },
     {
       name: t('preferences'),
