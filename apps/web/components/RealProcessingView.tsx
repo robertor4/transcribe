@@ -470,9 +470,8 @@ export function RealProcessingView({
                 variant="primary"
                 onClick={handleRetry}
                 disabled={isRetrying}
-                className="gap-2"
+                icon={<RotateCcw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />}
               >
-                <RotateCcw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
                 {isRetrying ? t('error.retrying') : t('error.retry')}
               </Button>
             )}
@@ -481,9 +480,8 @@ export function RealProcessingView({
             <Button
               variant="secondary"
               onClick={handleSaveLocally}
-              className="gap-2"
+              icon={<Download className="w-4 h-4" />}
             >
-              <Download className="w-4 h-4" />
               {t('error.saveLocally')}
             </Button>
 
@@ -492,9 +490,8 @@ export function RealProcessingView({
               <Button
                 variant="brand"
                 onClick={handleUpgrade}
-                className="gap-2"
+                icon={<ArrowUpCircle className="w-4 h-4" />}
               >
-                <ArrowUpCircle className="w-4 h-4" />
                 {t('error.upgradeToPro')}
               </Button>
             )}
