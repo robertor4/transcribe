@@ -28,6 +28,8 @@ interface TranslationMenuItemsProps {
   isTranslating: boolean;
   /** User's subscription tier - translation requires Pro or higher */
   userTier?: string;
+  /** Whether the user is an admin (bypasses tier restrictions) */
+  isAdmin?: boolean;
   /** Callback when user selects an existing locale */
   onSelectLocale: (localeCode: string) => void;
   /** Callback when user wants to translate to a new locale */
@@ -39,14 +41,15 @@ export function TranslationMenuItems({
   currentLocale,
   isTranslating,
   userTier = 'free',
+  isAdmin = false,
   onSelectLocale,
   onTranslate,
 }: TranslationMenuItemsProps) {
   const t = useTranslations('conversation.translation');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Translation requires Pro or higher
-  const canTranslate = userTier !== 'free';
+  // Translation requires Pro or higher (admins bypass tier restrictions)
+  const canTranslate = isAdmin || userTier !== 'free';
 
   // Get original language label (e.g., "Nederlands (original)")
   const getOriginalLabel = () => {

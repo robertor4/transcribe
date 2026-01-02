@@ -101,10 +101,10 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
   const t = useTranslations('aiAssets.modal');
   const tTemplates = useTranslations('aiAssets.templates');
   const tCommon = useTranslations('common');
-  const { usageStats, refreshUsage } = useUsage();
+  const { usageStats, refreshUsage, isAdmin } = useUsage();
 
-  // Calculate quota status for free users
-  const isFreeUser = usageStats?.tier === 'free';
+  // Calculate quota status for free users (admins bypass all quota restrictions)
+  const isFreeUser = usageStats?.tier === 'free' && !isAdmin;
   const usedCount = usageStats?.usage?.onDemandAnalyses ?? 0;
   const limitCount = usageStats?.limits?.onDemandAnalyses ?? 2;
   const remainingCount = Math.max(0, limitCount - usedCount);

@@ -26,6 +26,8 @@ interface QASlidePanelProps {
   title?: string;
   /** User's subscription tier - Ask Questions requires Pro or higher */
   userTier?: string;
+  /** Whether the user is an admin (bypasses tier restrictions) */
+  isAdmin?: boolean;
 }
 
 export function QASlidePanel({
@@ -36,12 +38,13 @@ export function QASlidePanel({
   folderId,
   title,
   userTier = 'free',
+  isAdmin = false,
 }: QASlidePanelProps) {
   const t = useTranslations('qa');
   const [mounted, setMounted] = useState(false);
 
-  // Ask Questions requires Pro or higher
-  const canAskQuestions = userTier !== 'free';
+  // Ask Questions requires Pro or higher (admins bypass tier restrictions)
+  const canAskQuestions = isAdmin || userTier !== 'free';
   const [isClosing, setIsClosing] = useState(false);
   const [question, setQuestion] = useState('');
   const [exchanges, setExchanges] = useState<QAExchange[]>([]);

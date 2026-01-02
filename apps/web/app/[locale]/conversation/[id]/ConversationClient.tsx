@@ -80,7 +80,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
-  const { usageStats } = useUsage();
+  const { usageStats, isAdmin } = useUsage();
   const { conversation, isLoading, error, updateConversationLocally, refresh } = useConversation(conversationId);
   const { folders } = useFoldersContext();
   const { refreshRecentlyOpened } = useConversationsContext();
@@ -544,6 +544,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                             currentLocale={currentLocale}
                             isTranslating={isTranslating}
                             userTier={userTier}
+                            isAdmin={isAdmin}
                             onSelectLocale={setLocale}
                             onTranslate={translate}
                           />
@@ -566,6 +567,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                                   getTranslatedContent={getTranslatedContent}
                                   conversationId={conversationId}
                                   userTier={userTier}
+                                  isAdmin={isAdmin}
                                 />
                               ),
                             },
@@ -726,6 +728,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onGenerateNew={() => setIsGeneratorOpen(true)}
         conversationId={conversationId}
         conversationTitle={conversation.title}
+        userTier={userTier}
+        isAdmin={isAdmin}
       />
 
       {/* Output Generator Modal */}
@@ -760,6 +764,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         transcriptionId={conversationId}
         title={conversation.title}
         userTier={userTier}
+        isAdmin={isAdmin}
       />
 
       {/* Find & Replace Panel - scoped to active tab */}
