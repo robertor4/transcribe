@@ -21,10 +21,12 @@ import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordin
 import { mixAudioStreams } from '@/utils/audioMixer';
 import { mergeRecoveredWithNew } from '@/utils/audioMerge';
 import { HotSwapRecorder } from '@/utils/hotSwapRecorder';
+import { ChunkUploader, type UploadProgress } from '@/utils/chunkUploader';
 
-// Duration limits
-const MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
-const DURATION_WARNING_THRESHOLD = 2.5 * 60 * 60; // 2.5 hours - warn user
+// Duration limits (defaults, can be overridden via options)
+const DEFAULT_MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
+const DEFAULT_DURATION_WARNING_THRESHOLD = 2.5 * 60 * 60; // 2.5 hours - warn user
+const DURATION_WARNING_BUFFER = 4 * 60; // Warn 4 minutes before limit
 
 export type RecordingSource = 'microphone' | 'tab-audio';
 
@@ -46,15 +48,22 @@ export interface UseMediaRecorderOptions {
   onStateChange?: (state: RecordingState) => void;
   onRecoveryAvailable?: (recordings: RecoverableRecording[]) => void;
   onDurationWarning?: () => void; // Called when approaching max duration
+  onMaxDurationReached?: () => void; // Called when auto-stopped at max duration
   onDeviceSwapped?: (deviceId: string) => void; // Called when microphone is swapped mid-recording
   enableAutoSave?: boolean; // Default: true
   userId?: string; // Firebase user ID for scoping recordings (privacy/security)
+  maxDurationSeconds?: number; // Tier-specific limit (undefined = 3 hours default)
+  // Cloud upload options (Phase 4: chunked uploads to Firebase Storage)
+  enableCloudUpload?: boolean; // Upload chunks to Firebase during recording
+  onUploadProgress?: (progress: UploadProgress) => void; // Called on chunk upload progress
+  onUploadError?: (error: Error, recoverable: boolean) => void; // Called on chunk upload error
 }
 
 export interface UseMediaRecorderReturn {
   // State
   state: RecordingState;
   duration: number;
+  maxDuration: number; // Effective max duration in seconds (for countdown display)
   audioBlob: Blob | null;
   error: string | null;
   warning: string | null; // Non-blocking warning (e.g., mic unavailable for tab audio)
@@ -64,6 +73,9 @@ export interface UseMediaRecorderReturn {
   currentDeviceId: string | null; // Currently active microphone device ID
   isSwappingDevice: boolean; // True while swapping microphone
   isStopping: boolean; // True while stop is in progress (prevents double-click)
+  // Cloud upload state
+  uploadProgress: UploadProgress | null; // Current upload progress (if cloud upload enabled)
+  cloudSessionId: string | null; // Firebase session ID for backend processing
 
   // Actions
   startRecording: (source: RecordingSource, deviceId?: string) => Promise<void>;
@@ -95,10 +107,21 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onStateChange,
     onRecoveryAvailable,
     onDurationWarning,
+    onMaxDurationReached,
     onDeviceSwapped,
     enableAutoSave = true,
     userId,
+    maxDurationSeconds,
+    enableCloudUpload = false,
+    onUploadProgress,
+    onUploadError,
   } = options;
+
+  // Calculate effective limits based on options
+  const effectiveMaxDuration = maxDurationSeconds ?? DEFAULT_MAX_RECORDING_DURATION;
+  const effectiveWarningThreshold = maxDurationSeconds
+    ? maxDurationSeconds - DURATION_WARNING_BUFFER // Warn 4 mins before custom limit
+    : DEFAULT_DURATION_WARNING_THRESHOLD;
 
   // State
   const [state, setState] = useState<RecordingState>('idle');
@@ -112,10 +135,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
   const [isSwappingDevice, setIsSwappingDevice] = useState(false);
   const [isStopping, setIsStopping] = useState(false); // Prevents double-click on stop button
+  // Cloud upload state
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
+  const [cloudSessionId, setCloudSessionId] = useState<string | null>(null);
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const hotSwapRecorderRef = useRef<HotSwapRecorder | null>(null);
+  const chunkUploaderRef = useRef<ChunkUploader | null>(null);
   const stateRef = useRef<RecordingState>(state); // Ref for state to avoid stale closure in swapMicrophone
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -191,14 +218,15 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         // Sync chunkCount ref to state once per second (avoids 10x/sec updates from ondataavailable)
         setChunkCount(chunkCountRef.current);
 
-        // Check duration limits
-        if (newDuration >= MAX_RECORDING_DURATION) {
+        // Check duration limits (using effective limits based on tier)
+        if (newDuration >= effectiveMaxDuration) {
           // Auto-stop at max duration
           console.log('[useMediaRecorder] Max duration reached, auto-stopping');
           if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
             mediaRecorderRef.current.stop();
           }
-        } else if (newDuration >= DURATION_WARNING_THRESHOLD && !durationWarningShownRef.current) {
+          onMaxDurationReached?.();
+        } else if (newDuration >= effectiveWarningThreshold && !durationWarningShownRef.current) {
           // Warn user when approaching limit
           durationWarningShownRef.current = true;
           onDurationWarning?.();
@@ -207,7 +235,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         return newDuration;
       });
     }, 1000);
-  }, [onDurationWarning]);
+  }, [onDurationWarning, onMaxDurationReached, effectiveMaxDuration, effectiveWarningThreshold]);
 
   // Stop duration timer
   const stopTimer = useCallback(() => {
@@ -412,6 +440,25 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         setRecordingSource(source);
         recordingSourceRef.current = source;
 
+        // Reset cloud upload state
+        setUploadProgress(null);
+        setCloudSessionId(null);
+
+        // Initialize ChunkUploader if cloud upload is enabled
+        if (enableCloudUpload && userId) {
+          const uploader = new ChunkUploader(userId, source, 'audio/webm');
+          uploader.setOnProgress((progress) => {
+            setUploadProgress(progress);
+            onUploadProgress?.(progress);
+          });
+          uploader.setOnError((error, recoverable) => {
+            onUploadError?.(error, recoverable);
+          });
+          chunkUploaderRef.current = uploader;
+          setCloudSessionId(uploader.currentSessionId);
+          console.log(`[useMediaRecorder] ChunkUploader initialized: ${uploader.currentSessionId}`);
+        }
+
         // Check support
         if (!isSupported) {
           throw new Error('Audio recording is not supported in your browser.');
@@ -429,6 +476,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
               if (event.data && event.data.size > 0) {
                 chunksRef.current.push(event.data);
                 chunkCountRef.current += 1;
+                // Upload chunk to Firebase Storage if cloud upload is enabled
+                if (chunkUploaderRef.current) {
+                  chunkUploaderRef.current.addData(event.data);
+                }
               }
             },
             onError: (err) => {
@@ -481,6 +532,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
             if (event.data && event.data.size > 0) {
               chunksRef.current.push(event.data);
               chunkCountRef.current += 1;
+              // Upload chunk to Firebase Storage if cloud upload is enabled
+              if (chunkUploaderRef.current) {
+                chunkUploaderRef.current.addData(event.data);
+              }
             }
           };
         }
@@ -566,6 +621,19 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           setAudioBlob(blob);
           onDataAvailable?.(blob);
 
+          // Finalize cloud upload if enabled
+          if (chunkUploaderRef.current) {
+            try {
+              const sessionId = await chunkUploaderRef.current.finalize(durationRef.current);
+              setCloudSessionId(sessionId);
+              console.log(`[useMediaRecorder] Cloud upload finalized: ${sessionId}`);
+            } catch (err) {
+              console.error('[useMediaRecorder] Failed to finalize cloud upload:', err);
+              // Don't block - local blob is still available
+            }
+            chunkUploaderRef.current = null;
+          }
+
           // DO NOT clean up IndexedDB here - keep the backup until upload/transcription succeeds
           // The backup will be cleaned up by markAsUploaded() after successful upload
           // This protects against: upload failures, transcription failures, accidental tab close, etc.
@@ -601,7 +669,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         };
 
         // Handle errors
-        mediaRecorder.onerror = (event) => {
+        mediaRecorder.onerror = () => {
           const error = new Error('Recording failed');
           setError(getPermissionErrorMessage(error));
           onError?.(error);
@@ -655,6 +723,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       stopTimer,
       updateState,
       cleanupMixer,
+      enableCloudUpload,
+      userId,
+      onUploadProgress,
+      onUploadError,
     ]
   );
 
@@ -776,6 +848,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       hotSwapRecorderRef.current = null;
     }
 
+    // Clean up ChunkUploader if used
+    if (chunkUploaderRef.current) {
+      chunkUploaderRef.current.abort();
+      chunkUploaderRef.current = null;
+    }
+
     // Clear all state
     stopTimer();
     setDuration(0);
@@ -796,6 +874,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     setCurrentDeviceId(null);
     setIsSwappingDevice(false);
     setIsStopping(false);
+
+    // Reset cloud upload state
+    setUploadProgress(null);
+    setCloudSessionId(null);
 
     // Reset continue mode state
     recoveredChunksRef.current = [];
@@ -885,6 +967,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     try {
       const storage = await getRecordingStorage();
       const currentDuration = durationRef.current; // Use ref for accurate duration
+      const isCloudEnabled = !!chunkUploaderRef.current;
       await storage.saveRecording({
         id: recordingIdRef.current,
         userId, // Scope recording to user for privacy
@@ -894,8 +977,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         mimeType: audioFormat.mimeType,
         source: recordingSourceRef.current || 'microphone',
         lastSaved: Date.now(),
+        cloudUploadEnabled: isCloudEnabled,
+        cloudSessionId: isCloudEnabled ? chunkUploaderRef.current?.currentSessionId : undefined,
       });
-      console.log(`[useMediaRecorder] Auto-saved recording to IndexedDB (${currentDuration}s)`);
+      console.log(
+        `[useMediaRecorder] Auto-saved recording to IndexedDB (${currentDuration}s)${isCloudEnabled ? ' [rolling buffer]' : ''}`
+      );
     } catch (err) {
       console.error('[useMediaRecorder] Failed to auto-save recording:', err);
       // Non-critical error, continue recording
@@ -1069,6 +1156,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       if (autoSaveIntervalRef.current) {
         clearInterval(autoSaveIntervalRef.current);
       }
+      // Clean up ChunkUploader
+      if (chunkUploaderRef.current) {
+        chunkUploaderRef.current.abort();
+        chunkUploaderRef.current = null;
+      }
       // Clean up audio mixer resources
       if (mixerCleanupRef.current) {
         mixerCleanupRef.current();
@@ -1083,6 +1175,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     // State
     state,
     duration,
+    maxDuration: effectiveMaxDuration,
     audioBlob,
     error,
     warning,
@@ -1092,6 +1185,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     currentDeviceId,
     isSwappingDevice,
     isStopping,
+    // Cloud upload state
+    uploadProgress,
+    cloudSessionId,
 
     // Actions
     startRecording,

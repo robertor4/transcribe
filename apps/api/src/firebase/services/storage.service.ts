@@ -174,6 +174,52 @@ export class StorageService {
     }
   }
 
+  /**
+   * Download a file by its path (not URL)
+   * Used for chunked recording processing
+   */
+  async downloadFileByPath(path: string): Promise<Buffer> {
+    try {
+      const bucket = this.storage.bucket();
+      const file = bucket.file(path);
+      const [buffer] = await file.download();
+      return buffer;
+    } catch (error) {
+      this.logger.error(`Error downloading file by path: ${path}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * List files in a Firebase Storage path (prefix)
+   * Used for chunked recording processing to find all chunks
+   */
+  async listFiles(prefix: string): Promise<string[]> {
+    try {
+      const bucket = this.storage.bucket();
+      const [files] = await bucket.getFiles({ prefix });
+      return files.map((file) => file.name);
+    } catch (error) {
+      this.logger.error(`Error listing files with prefix: ${prefix}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a file exists at the given path
+   */
+  async fileExists(path: string): Promise<boolean> {
+    try {
+      const bucket = this.storage.bucket();
+      const file = bucket.file(path);
+      const [exists] = await file.exists();
+      return exists;
+    } catch (error) {
+      this.logger.error(`Error checking file existence: ${path}`, error);
+      return false;
+    }
+  }
+
   async deleteFileByPath(path: string): Promise<void> {
     try {
       const transcriptionId = this.extractIdFromPath(path);

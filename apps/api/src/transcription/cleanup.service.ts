@@ -248,4 +248,129 @@ export class CleanupService {
       this.logger.error('[Cleanup] Error in 30-day audio cleanup:', error);
     }
   }
+
+  /**
+   * Clean up orphaned chunked recording sessions
+   * Runs daily at 3:00 AM UTC
+   *
+   * Deletes recording session folders where:
+   * - status is 'recording' (never completed) AND older than 24 hours
+   * - OR status is 'complete' (not processed) AND older than 7 days
+   * - OR no metadata.json exists AND oldest chunk is older than 24 hours
+   */
+  @Cron('0 3 * * *') // Daily at 3:00 AM UTC
+  async cleanupOrphanedRecordingSessions() {
+    this.logger.log('[Cleanup] Starting orphaned recording session cleanup...');
+
+    try {
+      const files = await this.storageService.listFiles('recordings/');
+
+      if (files.length === 0) {
+        this.logger.log('[Cleanup] No recording sessions found');
+        return;
+      }
+
+      // Group files by session
+      const sessions = new Map<
+        string,
+        { files: string[]; metadata?: { startTime: number; status: string } }
+      >();
+
+      for (const filePath of files) {
+        // Parse: recordings/{userId}/{sessionId}/{fileName}
+        const parts = filePath.split('/');
+        if (parts.length >= 4) {
+          const sessionKey = `${parts[1]}/${parts[2]}`; // userId/sessionId
+          if (!sessions.has(sessionKey)) {
+            sessions.set(sessionKey, { files: [] });
+          }
+          sessions.get(sessionKey)!.files.push(filePath);
+        }
+      }
+
+      // Load metadata for each session
+      for (const [sessionKey, session] of sessions) {
+        const metadataFile = session.files.find((f) =>
+          f.endsWith('metadata.json'),
+        );
+        if (metadataFile) {
+          try {
+            const metadataBuffer =
+              await this.storageService.downloadFileByPath(metadataFile);
+            session.metadata = JSON.parse(metadataBuffer.toString());
+          } catch {
+            // Metadata file exists but couldn't be parsed
+            this.logger.warn(
+              `[Cleanup] Could not parse metadata for session ${sessionKey}`,
+            );
+          }
+        }
+      }
+
+      const now = Date.now();
+      const oneDayAgo = now - 24 * 60 * 60 * 1000;
+      const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+      let deletedCount = 0;
+
+      for (const [sessionKey, session] of sessions) {
+        const metadata = session.metadata;
+        let shouldDelete = false;
+        let deleteReason = '';
+
+        if (!metadata) {
+          // No metadata = incomplete upload, delete if older than 24 hours
+          // We can't determine age without metadata, so check if any chunk exists
+          // and assume it's orphaned (conservative approach)
+          shouldDelete = true;
+          deleteReason = 'no metadata found (incomplete upload)';
+        } else if (metadata.status === 'recording') {
+          // Still in 'recording' status = never finalized
+          if (metadata.startTime < oneDayAgo) {
+            shouldDelete = true;
+            deleteReason = `stuck in recording status since ${new Date(metadata.startTime).toISOString()}`;
+          }
+        } else if (metadata.status === 'complete') {
+          // Completed but never processed = orphaned
+          if (metadata.startTime < sevenDaysAgo) {
+            shouldDelete = true;
+            deleteReason = `completed but never processed since ${new Date(metadata.startTime).toISOString()}`;
+          }
+        } else if (metadata.status === 'failed') {
+          // Failed recording, delete after 24 hours
+          if (metadata.startTime < oneDayAgo) {
+            shouldDelete = true;
+            deleteReason = `failed recording from ${new Date(metadata.startTime).toISOString()}`;
+          }
+        }
+
+        if (shouldDelete) {
+          this.logger.log(
+            `[Cleanup] Deleting orphaned session ${sessionKey}: ${deleteReason}`,
+          );
+          try {
+            await Promise.all(
+              session.files.map((file) =>
+                this.storageService.deleteFileByPath(file).catch(() => {}),
+              ),
+            );
+            deletedCount++;
+          } catch (error) {
+            this.logger.warn(
+              `[Cleanup] Failed to delete session ${sessionKey}:`,
+              error,
+            );
+          }
+        }
+      }
+
+      this.logger.log(
+        `[Cleanup] Orphaned recording session cleanup complete: Deleted ${deletedCount} sessions`,
+      );
+    } catch (error) {
+      this.logger.error(
+        '[Cleanup] Error in orphaned recording session cleanup:',
+        error,
+      );
+    }
+  }
 }

@@ -187,7 +187,7 @@
     "recordAudioDesc": "Record live conversation",
     "recordAudioInfo": "Start a live recording session. You can choose to record from your microphone or capture audio from a browser tab (for video calls).",
     "importAudioInfo": "Import an existing audio or video file from your device. Supported formats: MP3, M4A, WAV, MP4, MOV, WebM. Maximum file size depends on your subscription plan.",
-    "recordRoom": "Record the room",
+    "recordRoom": "Record from mic",
     "recordRoomDesc": "In-person meetings, voice memos, interviews",
     "recordTab": "Record browser tab",
     "recordTabDesc": "Google Meet, Zoom (web), YouTube videos",
@@ -398,6 +398,10 @@
       "memoryHigh": "Recording memory usage is high ({size}). Consider stopping soon to prevent issues.",
       "memoryCritical": "Recording memory nearly full ({size}). Recording stopped to prevent data loss.",
       "micUnavailable": "Microphone unavailable - recording tab audio only. Your voice won't be included."
+    },
+    "limits": {
+      "remaining": "{time} remaining",
+      "getPro": "Get Pro →"
     }
   },
   "recovery": {
@@ -416,6 +420,17 @@
     "cancel": "Cancel",
     "microphoneRecording": "Microphone recording",
     "tabAudioRecording": "Tab audio recording"
+  },
+  "processing": {
+    "error": {
+      "title": "Processing failed",
+      "unexpected": "An unexpected error occurred",
+      "retry": "Retry upload",
+      "retrying": "Retrying...",
+      "saveLocally": "Save recording",
+      "upgradeToPro": "Upgrade to Pro",
+      "quotaHint": "Save your recording locally, then upgrade to process longer audio"
+    }
   },
   "transcription": {
     "title": "Transcription",
@@ -628,6 +643,11 @@
       "upgradeToPro": "Upgrade to Pro",
       "findReplace": "Find & Replace",
       "findReplaceDisabledLegacy": "Find & Replace is not available for legacy conversations"
+    },
+    "summary": {
+      "notAvailable": "Summary is not available yet.",
+      "regenerate": "Regenerate Summary",
+      "regenerating": "Regenerating..."
     },
     "translation": {
       "original": "Original",

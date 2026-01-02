@@ -13,6 +13,7 @@ import {
   MoreVertical,
   Trash2,
   Replace,
+  RefreshCw,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
@@ -77,6 +78,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
+  const [isRegeneratingSummary, setIsRegeneratingSummary] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
@@ -221,6 +223,22 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
       router.push(`/${locale}/dashboard`);
     } catch (error) {
       console.error('Failed to delete conversation:', error);
+    }
+  };
+
+  // Regenerate summary handler
+  const handleRegenerateSummary = async () => {
+    if (isRegeneratingSummary) return;
+
+    setIsRegeneratingSummary(true);
+    try {
+      await transcriptionApi.regenerateSummary(conversationId);
+      // Refresh the conversation to get the new summary
+      await refresh();
+    } catch (error) {
+      console.error('Failed to regenerate summary:', error);
+    } finally {
+      setIsRegeneratingSummary(false);
     }
   };
 
@@ -535,6 +553,17 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         label: copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy'),
                         onClick: handleCopy,
                       },
+                      // Regenerate summary - only for V2 conversations and Pro+ users
+                      ...(!isLegacyConversation && (isAdmin || userTier !== 'free')
+                        ? [
+                            {
+                              icon: RefreshCw,
+                              label: isRegeneratingSummary ? tConversation('summary.regenerating') : tConversation('summary.regenerate'),
+                              onClick: handleRegenerateSummary,
+                              disabled: isRegeneratingSummary,
+                            },
+                          ]
+                        : []),
                       { type: 'divider' },
                       {
                         type: 'custom',
@@ -673,8 +702,19 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     );
                   })()
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    <p>Summary is being generated...</p>
+                  <div className="text-center py-12 text-gray-500">
+                    <p className="mb-4">{tConversation('summary.notAvailable')}</p>
+                    {/* Regenerate button only for Pro+ users or admins */}
+                    {(isAdmin || userTier !== 'free') && (
+                      <Button
+                        variant="primary"
+                        onClick={handleRegenerateSummary}
+                        disabled={isRegeneratingSummary}
+                        icon={isRegeneratingSummary ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                      >
+                        {isRegeneratingSummary ? tConversation('summary.regenerating') : tConversation('summary.regenerate')}
+                      </Button>
+                    )}
                   </div>
                 )}
               </section>

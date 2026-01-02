@@ -50,11 +50,28 @@ export function parseSummaryV2(aiResponse: string): SummaryV2 {
   try {
     raw = JSON.parse(jsonString);
   } catch (parseError) {
-    logger.error('Failed to parse summary JSON:', parseError);
-    logger.debug('Raw response:', aiResponse.substring(0, 500));
-    throw new Error(
-      `Failed to parse AI summary response as JSON: ${parseError.message}`,
-    );
+    logger.warn('Initial JSON parse failed, attempting repair...');
+
+    // Try to repair truncated JSON by closing open structures
+    const repaired = attemptJsonRepair(jsonString);
+    if (repaired) {
+      try {
+        raw = JSON.parse(repaired);
+        logger.log('JSON repair successful');
+      } catch {
+        logger.error('Failed to parse summary JSON:', parseError);
+        logger.debug('Raw response:', aiResponse.substring(0, 500));
+        throw new Error(
+          `Failed to parse AI summary response as JSON: ${parseError.message}`,
+        );
+      }
+    } else {
+      logger.error('Failed to parse summary JSON:', parseError);
+      logger.debug('Raw response:', aiResponse.substring(0, 500));
+      throw new Error(
+        `Failed to parse AI summary response as JSON: ${parseError.message}`,
+      );
+    }
   }
 
   // Validate and transform to SummaryV2
@@ -258,4 +275,160 @@ export function summaryV2ToMarkdown(summary: SummaryV2): string {
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Attempt to repair truncated JSON by closing open structures.
+ * This handles cases where the AI output was cut off due to token limits.
+ *
+ * Strategy:
+ * 1. Find the last complete value (string, number, object, array)
+ * 2. Close any open strings, arrays, and objects
+ *
+ * @param jsonString The truncated JSON string
+ * @returns Repaired JSON string or null if repair failed
+ */
+function attemptJsonRepair(jsonString: string): string | null {
+  try {
+    // Track open structures
+    const stack: Array<'{' | '['> = [];
+    let inString = false;
+    let escaped = false;
+    let _lastCompleteIndex = 0;
+
+    for (let i = 0; i < jsonString.length; i++) {
+      const char = jsonString[i];
+
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+
+      if (char === '\\' && inString) {
+        escaped = true;
+        continue;
+      }
+
+      if (char === '"' && !escaped) {
+        inString = !inString;
+        if (!inString) {
+          // Just closed a string - this is a valid break point
+          _lastCompleteIndex = i + 1;
+        }
+        continue;
+      }
+
+      if (inString) continue;
+
+      if (char === '{' || char === '[') {
+        stack.push(char);
+      } else if (char === '}') {
+        if (stack.length > 0 && stack[stack.length - 1] === '{') {
+          stack.pop();
+          _lastCompleteIndex = i + 1;
+        }
+      } else if (char === ']') {
+        if (stack.length > 0 && stack[stack.length - 1] === '[') {
+          stack.pop();
+          _lastCompleteIndex = i + 1;
+        }
+      } else if (char === ',' || char === ':') {
+        // After comma or colon is a valid break point
+        _lastCompleteIndex = i + 1;
+      }
+    }
+
+    // If we're in the middle of a string, try to find and close it
+    let repaired = jsonString;
+    if (inString) {
+      // Find the last unescaped quote and truncate there, or close the string
+      repaired = jsonString + '"';
+    }
+
+    // Remove any trailing incomplete values (partial strings, numbers, etc.)
+    // Look for the last comma or colon and truncate after valid content
+    const trimmed = repaired.trimEnd();
+    let truncateAt = trimmed.length;
+
+    // If ends with incomplete content after comma/colon, remove it
+    const lastChar = trimmed[trimmed.length - 1];
+    if (
+      lastChar !== '"' &&
+      lastChar !== '}' &&
+      lastChar !== ']' &&
+      lastChar !== 'e' &&
+      lastChar !== 'l'
+    ) {
+      // Find last comma or structural character
+      for (let i = trimmed.length - 1; i >= 0; i--) {
+        const c = trimmed[i];
+        if (c === ',' || c === ':' || c === '{' || c === '[') {
+          truncateAt = i + 1;
+          break;
+        }
+        if (c === '"' || c === '}' || c === ']') {
+          truncateAt = i + 1;
+          break;
+        }
+      }
+    }
+
+    repaired = trimmed.substring(0, truncateAt);
+
+    // Remove trailing commas before closing brackets
+    repaired = repaired.replace(/,(\s*$)/g, '$1');
+
+    // Close any remaining open structures
+    // Recount after our modifications
+    stack.length = 0;
+    inString = false;
+    escaped = false;
+
+    for (let i = 0; i < repaired.length; i++) {
+      const char = repaired[i];
+
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+
+      if (char === '\\' && inString) {
+        escaped = true;
+        continue;
+      }
+
+      if (char === '"' && !escaped) {
+        inString = !inString;
+        continue;
+      }
+
+      if (inString) continue;
+
+      if (char === '{' || char === '[') {
+        stack.push(char);
+      } else if (char === '}') {
+        if (stack.length > 0 && stack[stack.length - 1] === '{') {
+          stack.pop();
+        }
+      } else if (char === ']') {
+        if (stack.length > 0 && stack[stack.length - 1] === '[') {
+          stack.pop();
+        }
+      }
+    }
+
+    // Close remaining structures
+    while (stack.length > 0) {
+      const open = stack.pop();
+      repaired += open === '{' ? '}' : ']';
+    }
+
+    logger.debug(
+      `JSON repair: original ${jsonString.length} chars, repaired ${repaired.length} chars`,
+    );
+    return repaired;
+  } catch (error) {
+    logger.error('JSON repair failed:', error);
+    return null;
+  }
 }
