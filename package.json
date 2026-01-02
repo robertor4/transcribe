@@ -24,15 +24,29 @@
     "redis:stop": "docker stop redis-transcribe 2>/dev/null || true",
     "redis:check": "redis-cli ping || docker exec redis-transcribe redis-cli ping || echo 'Redis not responding'",
     "setup": "npm install && cd apps/web && npm install && cd ../api && npm install && cd ../../packages/shared && npm install && npm run build && cd ../..",
-    "fresh": "npm run clean && npm run setup && npm run dev:all"
+    "fresh": "npm run clean && npm run setup && npm run dev:all",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "turbo": "^1.13.0",
     "typescript": "^5.9.3"
   },
   "packageManager": "npm@10.0.0",
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16"
+  },
+  "lint-staged": {
+    "apps/web/**/*.{ts,tsx}": [
+      "bash -c 'cd apps/web && npx tsc --noEmit'"
+    ],
+    "apps/api/**/*.ts": [
+      "bash -c 'cd apps/api && npx tsc --noEmit'"
+    ],
+    "packages/shared/**/*.ts": [
+      "bash -c 'cd packages/shared && npx tsc --noEmit'"
+    ]
   }
 }
