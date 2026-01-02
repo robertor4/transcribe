@@ -23,7 +23,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             <img
               src="/assets/logos/neural-summary-logo-altBlue.svg"
               alt="Neural Summary - You speak. It creates."
-              className="h-8 sm:h-9 w-auto"
+              className="h-8 sm:h-9 w-auto -mb-1"
               width={180}
               height={48}
             />

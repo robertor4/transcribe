@@ -164,10 +164,10 @@ export function TransformationSection({ translations: t }: TransformationSection
       <h2 id="transformation-heading" className="sr-only">Transformation</h2>
       <div className="max-w-5xl mx-auto">
         {/* Flexbox row layout - always horizontal */}
-        <div className="flex flex-row items-center gap-6 sm:gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-8 md:gap-12 items-center">
 
           {/* Conversation side — with recording indicator */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0">
             {/* Recording indicator - always pulsing */}
             <motion.div
               key={`recording-${animationKey}`}
@@ -209,7 +209,7 @@ export function TransformationSection({ translations: t }: TransformationSection
           </div>
 
           {/* Transformation indicator — minimal vertical line with arrow */}
-          <div className="flex-shrink-0">
+          <div className="hidden md:block">
             <div className="flex flex-col items-center py-4">
               <div className="w-px h-16 sm:h-24 bg-gray-300"></div>
               <motion.span
@@ -228,7 +228,7 @@ export function TransformationSection({ translations: t }: TransformationSection
           {/* Document side — calm, authoritative, final */}
           <motion.div
             key={`document-${animationKey}`}
-            className="flex-1 min-w-0"
+            className="min-w-0"
             variants={documentCardVariants}
             initial="hidden"
             animate={isInView ? 'visible' : 'hidden'}

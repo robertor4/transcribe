@@ -27,6 +27,7 @@ import { FolderAssetCard } from '@/components/FolderAssetCard';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
+import { useUsage } from '@/contexts/UsageContext';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
@@ -52,6 +53,8 @@ export function FolderClient({ folderId }: FolderClientProps) {
 
   const { folder, conversations, isLoading, error, updateFolderLocally, refresh } = useFolderConversations(folderId);
   const { deleteFolder, updateFolder, moveToFolder } = useFolders();
+  const { usageStats } = useUsage();
+  const userTier = usageStats?.tier || 'free';
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -521,6 +524,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
         scope="folder"
         folderId={folderId}
         title={folder.name}
+        userTier={userTier}
       />
 
       {/* AI Asset Slide Panel */}

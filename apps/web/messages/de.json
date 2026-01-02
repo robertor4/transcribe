@@ -347,7 +347,8 @@
       "includeMicrophone": "Mein Mikrofon einbeziehen",
       "recommendedForCalls": "Empfohlen für Videoanrufe",
       "usingMicrophone": "Verwendet:",
-      "switchingMicrophone": "Mikrofon wird gewechselt..."
+      "switchingMicrophone": "Mikrofon wird gewechselt...",
+      "switchedToDevice": "Gewechselt zu {device}"
     },
     "status": {
       "ready": "Bereit zur Aufnahme",
@@ -359,6 +360,7 @@
     "controls": {
       "start": "Aufnahme starten",
       "stop": "Fertig",
+      "finishing": "Wird beendet...",
       "pause": "Pausieren",
       "resume": "Fortsetzen",
       "reset": "Neu aufnehmen",
@@ -574,7 +576,9 @@
         "userStory": "User Story",
         "userStories": "User Stories",
         "noStoriesFound": "Keine User Stories gefunden",
-        "noStoriesDescription": "Dieses Gespräch enthielt keine expliziten Produktfunktionen oder Anforderungen zum Extrahieren."
+        "noStoriesDescription": "Dieses Gespräch enthielt keine expliziten Produktfunktionen oder Anforderungen zum Extrahieren.",
+        "copyStory": "Story kopieren",
+        "copied": "Kopiert!"
       }
     },
     "sidebar": {
@@ -620,6 +624,9 @@
       "deleteConfirmNo": "Abbrechen",
       "exportPDF": "Als PDF exportieren",
       "generatingPDF": "PDF wird erstellt...",
+      "proFeature": "Pro-Funktion",
+      "upgradeToExportPDF": "Upgraden Sie auf Pro, um Ihre Gespräche als schön formatierte PDF-Dokumente zu exportieren.",
+      "upgradeToPro": "Auf Pro upgraden",
       "findReplace": "Suchen & Ersetzen",
       "findReplaceDisabledLegacy": "Suchen & Ersetzen ist für ältere Gespräche nicht verfügbar"
     },
@@ -1649,6 +1656,7 @@
           "coreAnalyses": "4 KI-Ausgaben inklusive",
           "onDemand": "2 On-Demand KI-Ausgaben/Monat",
           "translation": "Übersetzung (nur Pro)",
+          "askQuestions": "Fragen stellen (nur Pro)",
           "sharing": "Gespräche teilen",
           "batch": "Batch-Verarbeitung",
           "storage": "90 Tage Speicherung",
@@ -1681,6 +1689,7 @@
           "sharing": "Erweiterte Freigabefunktionen",
           "advancedSharing": "Erweitertes Teilen & Zusammenarbeit",
           "translation": "Übersetzung in 50+ Sprachen",
+          "askQuestions": "Fragen stellen mit KI-Antworten",
           "batch": "Batch-Verarbeitung",
           "priority": "Bevorzugte Verarbeitung",
           "support": "Bevorzugter E-Mail-Support"
@@ -1731,10 +1740,13 @@
         "duration": "Max Dauer pro Datei",
         "fileSize": "Max Dateigröße",
         "hours": "Monatliche Stunden enthalten",
+        "storageDuration": "Speicherdauer",
         "coreAnalyses": "Kern-KI-Ausgaben",
         "onDemand": "On-Demand KI-Ausgaben",
         "translation": "Übersetzung",
+        "askQuestions": "Fragen stellen",
         "sharing": "Freigabefunktionen",
+        "pdfExport": "PDF-Export",
         "batch": "Batch-Verarbeitung",
         "priority": "Bevorzugte Verarbeitung",
         "sso": "Single Sign-On (SSO)",
@@ -1751,7 +1763,9 @@
         "email": "E-Mail",
         "priorityEmail": "Bevorzugte E-Mail",
         "hoursIncluded": "60 Stunden/Monat",
-        "comingSoon": "Demnächst"
+        "comingSoon": "Demnächst",
+        "storageFree": "30 Tage",
+        "storageUnlimited": "Unbegrenzt"
       }
     },
     "faq": {
@@ -2105,7 +2119,10 @@
     "showLess": "Weniger anzeigen",
     "jumpToTimestamp": "Zum Zeitstempel springen",
     "copy": "Antwort kopieren",
-    "copied": "Kopiert!"
+    "copied": "Kopiert!",
+    "proFeature": "Pro-Funktion",
+    "upgradeToAsk": "Upgrade auf Pro, um Fragen zu deinen Gesprächen zu stellen und KI-gestützte Antworten mit Quellenangaben zu erhalten.",
+    "upgradeToPro": "Auf Pro upgraden"
   },
   "folderPicker": {
     "title": "In Ordner verschieben",

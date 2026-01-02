@@ -9,10 +9,13 @@ import {
   AlertCircle,
   Link as LinkIcon,
   Code,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import type { AgileBacklogOutput, UserStory, Epic } from '@transcribe/shared';
+import { userStoryToHtml, userStoryToMarkdown } from '@/lib/outputToMarkdown';
 
 interface AgileBacklogTemplateProps {
   data: AgileBacklogOutput;
@@ -49,6 +52,8 @@ interface TranslationStrings {
   technicalNotes: string;
   dependencies: string;
   stories: string;
+  copyStory: string;
+  copied: string;
 }
 
 interface UserStoryCardProps {
@@ -58,13 +63,32 @@ interface UserStoryCardProps {
 
 function UserStoryCard({ story, t }: UserStoryCardProps) {
   const [showDetails, setShowDetails] = useState(false);
+  const [copied, setCopied] = useState(false);
   const priorityStyle = story.priority ? PRIORITY_STYLES[story.priority] : null;
   const hasDetails =
     (story.technicalNotes && story.technicalNotes.length > 0) ||
     (story.dependencies && story.dependencies.length > 0);
 
+  const handleCopyStory = async () => {
+    try {
+      const html = userStoryToHtml(story);
+      const plainText = userStoryToMarkdown(story);
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([plainText], { type: 'text/plain' }),
+        }),
+      ]);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy story:', err);
+    }
+  };
+
   return (
-    <div className="border-l-2 border-l-[#8D6AFA]/30 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-800/50">
+    <div className="border-l-2 border-l-[#8D6AFA]/30 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-800/50 group">
       {/* Header with ID and title */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
@@ -73,13 +97,26 @@ function UserStoryCard({ story, t }: UserStoryCardProps) {
           </span>
           <h4 className="text-base font-medium text-gray-900 dark:text-gray-100">{story.title}</h4>
         </div>
-        {priorityStyle && (
-          <span
-            className={`inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyStory}
+            className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            title={copied ? t.copied : t.copyStory}
           >
-            {priorityStyle.label}
-          </span>
-        )}
+            {copied ? (
+              <Check className="w-4 h-4 text-green-500" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
+          </button>
+          {priorityStyle && (
+            <span
+              className={`inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
+            >
+              {priorityStyle.label}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* User story statement */}
@@ -222,6 +259,8 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
     technicalNotes: tRaw('technicalNotes'),
     dependencies: tRaw('dependencies'),
     stories: tRaw('stories'),
+    copyStory: tRaw('copyStory'),
+    copied: tRaw('copied'),
   };
 
   // Defensive: ensure arrays exist

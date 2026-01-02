@@ -10,6 +10,9 @@ import type {
   LinkedInOutput,
   CommunicationAnalysisOutput,
   ActionItem,
+  AgileBacklogOutput,
+  UserStory,
+  Epic,
 } from '@transcribe/shared';
 
 /**
@@ -34,6 +37,8 @@ export function structuredOutputToHtml(content: StructuredOutput): string {
       return linkedInToHtml(content as LinkedInOutput);
     case 'communicationAnalysis':
       return communicationAnalysisToHtml(content as CommunicationAnalysisOutput);
+    case 'agileBacklog':
+      return agileBacklogToHtml(content as AgileBacklogOutput);
     default:
       // Fallback to pre-formatted JSON for unknown types
       return `<pre>${JSON.stringify(content, null, 2)}</pre>`;
@@ -62,6 +67,8 @@ export function structuredOutputToMarkdown(content: StructuredOutput): string {
       return linkedInToMarkdown(content as LinkedInOutput);
     case 'communicationAnalysis':
       return communicationAnalysisToMarkdown(content as CommunicationAnalysisOutput);
+    case 'agileBacklog':
+      return agileBacklogToMarkdown(content as AgileBacklogOutput);
     default:
       // Fallback to formatted JSON for unknown types
       return JSON.stringify(content, null, 2);
@@ -707,6 +714,257 @@ function communicationAnalysisToHtml(data: CommunicationAnalysisOutput): string 
 
   parts.push('<hr>');
   parts.push(`<p><strong>Key Takeaway:</strong> ${escapeHtml(data.keyTakeaway)}</p>`);
+
+  return parts.join('');
+}
+
+// ============================================================
+// AGILE BACKLOG FUNCTIONS
+// ============================================================
+
+// Priority badge styles for HTML (Word-compatible inline CSS)
+const PRIORITY_HTML_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  'must-have': { bg: '#FEE2E2', color: '#991B1B', label: 'Must Have' },
+  'should-have': { bg: '#FEF3C7', color: '#92400E', label: 'Should Have' },
+  'could-have': { bg: '#DBEAFE', color: '#1E40AF', label: 'Could Have' },
+  'wont-have': { bg: '#F3F4F6', color: '#4B5563', label: "Won't Have" },
+};
+
+const PRIORITY_LABELS: Record<string, string> = {
+  'must-have': 'Must Have',
+  'should-have': 'Should Have',
+  'could-have': 'Could Have',
+  'wont-have': "Won't Have",
+};
+
+/**
+ * Convert a single user story to markdown (exported for individual copy)
+ */
+export function userStoryToMarkdown(story: UserStory): string {
+  const lines: string[] = [];
+
+  // Title with ID and priority
+  const priorityLabel = story.priority ? ` [${PRIORITY_LABELS[story.priority]}]` : '';
+  lines.push(`**${story.id}: ${story.title}**${priorityLabel}`);
+  lines.push('');
+
+  // Statement
+  lines.push(story.statement);
+  lines.push('');
+
+  // Acceptance criteria
+  if (story.acceptanceCriteria && story.acceptanceCriteria.length > 0) {
+    lines.push('**Acceptance Criteria:**');
+    story.acceptanceCriteria.forEach(ac => {
+      lines.push(`- [ ] ${ac.criterion}`);
+    });
+    lines.push('');
+  }
+
+  // Technical notes
+  if (story.technicalNotes && story.technicalNotes.length > 0) {
+    lines.push('**Technical Notes:**');
+    story.technicalNotes.forEach(note => {
+      lines.push(`- ${note}`);
+    });
+    lines.push('');
+  }
+
+  // Dependencies
+  if (story.dependencies && story.dependencies.length > 0) {
+    lines.push(`**Dependencies:** ${story.dependencies.join(', ')}`);
+    lines.push('');
+  }
+
+  return lines.join('\n').trim();
+}
+
+/**
+ * Convert a single user story to HTML (exported for individual copy)
+ */
+export function userStoryToHtml(story: UserStory): string {
+  const parts: string[] = [];
+
+  // Title with ID and priority badge
+  parts.push('<div style="margin-bottom: 16px; padding: 16px; border: 1px solid #E5E7EB; border-left: 3px solid #8D6AFA; border-radius: 8px;">');
+
+  // Header row
+  parts.push('<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">');
+  parts.push(`<span style="background: rgba(141, 106, 250, 0.1); color: #8D6AFA; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: 500;">${escapeHtml(story.id)}</span>`);
+  parts.push(`<strong style="font-size: 16px;">${escapeHtml(story.title)}</strong>`);
+
+  if (story.priority) {
+    const style = PRIORITY_HTML_STYLES[story.priority];
+    if (style) {
+      parts.push(`<span style="background: ${style.bg}; color: ${style.color}; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; margin-left: auto;">${style.label}</span>`);
+    }
+  }
+  parts.push('</div>');
+
+  // Statement
+  parts.push(`<div style="background: #F9FAFB; padding: 12px; border-radius: 6px; margin-bottom: 12px;">`);
+  parts.push(`<p style="margin: 0;">${escapeHtml(story.statement)}</p>`);
+  parts.push('</div>');
+
+  // Acceptance criteria
+  if (story.acceptanceCriteria && story.acceptanceCriteria.length > 0) {
+    parts.push('<div style="margin-bottom: 12px; padding-left: 12px; border-left: 2px solid #14D0DC;">');
+    parts.push('<p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.05em;">Acceptance Criteria</p>');
+    parts.push('<ul style="margin: 0; padding-left: 20px;">');
+    story.acceptanceCriteria.forEach(ac => {
+      parts.push(`<li style="margin-bottom: 4px;">☐ ${escapeHtml(ac.criterion)}</li>`);
+    });
+    parts.push('</ul>');
+    parts.push('</div>');
+  }
+
+  // Technical notes
+  if (story.technicalNotes && story.technicalNotes.length > 0) {
+    parts.push('<div style="margin-bottom: 12px;">');
+    parts.push('<p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 500; color: #6B7280;">Technical Notes</p>');
+    parts.push('<ul style="margin: 0; padding-left: 20px; color: #4B5563;">');
+    story.technicalNotes.forEach(note => {
+      parts.push(`<li style="margin-bottom: 2px;">${escapeHtml(note)}</li>`);
+    });
+    parts.push('</ul>');
+    parts.push('</div>');
+  }
+
+  // Dependencies
+  if (story.dependencies && story.dependencies.length > 0) {
+    parts.push('<div>');
+    parts.push('<span style="font-size: 12px; font-weight: 500; color: #6B7280;">Dependencies: </span>');
+    parts.push(story.dependencies.map(dep =>
+      `<span style="background: #F3F4F6; color: #4B5563; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px;">${escapeHtml(dep)}</span>`
+    ).join(' '));
+    parts.push('</div>');
+  }
+
+  parts.push('</div>');
+
+  return parts.join('');
+}
+
+function epicToMarkdown(epic: Epic): string {
+  const lines: string[] = [];
+
+  lines.push(`### ${epic.id}: ${epic.title}`);
+  lines.push('');
+  lines.push(epic.description);
+  lines.push('');
+
+  if (epic.stories && epic.stories.length > 0) {
+    lines.push('#### User Stories');
+    lines.push('');
+    epic.stories.forEach(story => {
+      lines.push(userStoryToMarkdown(story));
+      lines.push('');
+      lines.push('---');
+      lines.push('');
+    });
+  }
+
+  return lines.join('\n').trim();
+}
+
+function epicToHtml(epic: Epic): string {
+  const parts: string[] = [];
+
+  parts.push('<div style="margin-bottom: 24px;">');
+
+  // Epic header
+  parts.push('<div style="background: rgba(141, 106, 250, 0.05); padding: 16px; border-radius: 8px; margin-bottom: 16px;">');
+  parts.push('<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">');
+  parts.push(`<span style="background: rgba(141, 106, 250, 0.2); color: #8D6AFA; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; font-weight: 500;">${escapeHtml(epic.id)}</span>`);
+  parts.push(`<strong style="font-size: 18px;">${escapeHtml(epic.title)}</strong>`);
+  parts.push(`<span style="color: #6B7280; font-size: 14px;">(${epic.stories?.length || 0} stories)</span>`);
+  parts.push('</div>');
+  parts.push(`<p style="margin: 0; color: #4B5563;">${escapeHtml(epic.description)}</p>`);
+  parts.push('</div>');
+
+  // Stories
+  if (epic.stories && epic.stories.length > 0) {
+    parts.push('<div style="margin-left: 24px;">');
+    epic.stories.forEach(story => {
+      parts.push(userStoryToHtml(story));
+    });
+    parts.push('</div>');
+  }
+
+  parts.push('</div>');
+
+  return parts.join('');
+}
+
+function agileBacklogToMarkdown(data: AgileBacklogOutput): string {
+  const sections: string[] = ['# Agile Backlog', ''];
+
+  // Summary if present
+  if (data.summary) {
+    sections.push(data.summary);
+    sections.push('');
+  }
+
+  // Epics
+  const epics = data.epics || [];
+  if (epics.length > 0) {
+    sections.push('## Epics');
+    sections.push('');
+    epics.forEach(epic => {
+      sections.push(epicToMarkdown(epic));
+      sections.push('');
+    });
+  }
+
+  // Standalone stories
+  const standaloneStories = data.standaloneStories || [];
+  if (standaloneStories.length > 0) {
+    sections.push('## Standalone Stories');
+    sections.push('');
+    standaloneStories.forEach(story => {
+      sections.push(userStoryToMarkdown(story));
+      sections.push('');
+      sections.push('---');
+      sections.push('');
+    });
+  }
+
+  return sections.join('\n').trim();
+}
+
+function agileBacklogToHtml(data: AgileBacklogOutput): string {
+  const parts: string[] = [];
+
+  parts.push('<h1>Agile Backlog</h1>');
+
+  // Summary if present
+  if (data.summary) {
+    parts.push(`<p>${escapeHtml(data.summary)}</p>`);
+  }
+
+  // Stats
+  const epics = data.epics || [];
+  const standaloneStories = data.standaloneStories || [];
+  const totalStoriesInEpics = epics.reduce((acc, epic) => acc + (epic.stories?.length || 0), 0);
+  const totalStories = totalStoriesInEpics + standaloneStories.length;
+
+  parts.push(`<p style="color: #6B7280; font-size: 14px;">${epics.length} epic${epics.length !== 1 ? 's' : ''} · ${totalStories} user stor${totalStories !== 1 ? 'ies' : 'y'}</p>`);
+
+  // Epics
+  if (epics.length > 0) {
+    parts.push('<h2>Epics</h2>');
+    epics.forEach(epic => {
+      parts.push(epicToHtml(epic));
+    });
+  }
+
+  // Standalone stories
+  if (standaloneStories.length > 0) {
+    parts.push('<h2>Standalone Stories</h2>');
+    standaloneStories.forEach(story => {
+      parts.push(userStoryToHtml(story));
+    });
+  }
 
   return parts.join('');
 }

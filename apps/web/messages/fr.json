@@ -347,7 +347,8 @@
       "includeMicrophone": "Inclure mon microphone",
       "recommendedForCalls": "Recommandé pour les appels vidéo",
       "usingMicrophone": "Utilise :",
-      "switchingMicrophone": "Changement de microphone..."
+      "switchingMicrophone": "Changement de microphone...",
+      "switchedToDevice": "Changé pour {device}"
     },
     "status": {
       "ready": "Prêt à enregistrer",
@@ -359,6 +360,7 @@
     "controls": {
       "start": "Démarrer l'enregistrement",
       "stop": "Terminer",
+      "finishing": "Finalisation...",
       "pause": "Pause",
       "resume": "Reprendre",
       "reset": "Réenregistrer",
@@ -574,7 +576,9 @@
         "userStory": "user story",
         "userStories": "user stories",
         "noStoriesFound": "Aucune user story trouvée",
-        "noStoriesDescription": "Cette conversation ne contenait aucune fonctionnalité ou exigence produit explicite à extraire."
+        "noStoriesDescription": "Cette conversation ne contenait aucune fonctionnalité ou exigence produit explicite à extraire.",
+        "copyStory": "Copier story",
+        "copied": "Copié !"
       }
     },
     "sidebar": {
@@ -620,6 +624,9 @@
       "deleteConfirmNo": "Annuler",
       "exportPDF": "Exporter en PDF",
       "generatingPDF": "Génération du PDF...",
+      "proFeature": "Fonction Pro",
+      "upgradeToExportPDF": "Passez à Pro pour exporter vos conversations sous forme de documents PDF magnifiquement formatés.",
+      "upgradeToPro": "Passer à Pro",
       "findReplace": "Rechercher et remplacer",
       "findReplaceDisabledLegacy": "Rechercher et remplacer n'est pas disponible pour les anciennes conversations"
     },
@@ -1655,6 +1662,7 @@
           "coreAnalyses": "4 sorties IA incluses",
           "onDemand": "2 sorties IA à la demande/mois",
           "translation": "Traduction (Pro uniquement)",
+          "askQuestions": "Poser des questions (Pro uniquement)",
           "sharing": "Partager les conversations",
           "batch": "Traitement par lots",
           "storage": "90 jours de stockage",
@@ -1687,6 +1695,7 @@
           "sharing": "Fonctionnalités de partage avancées",
           "advancedSharing": "Partage et collaboration avancés",
           "translation": "Traduction en 50+ langues",
+          "askQuestions": "Poser des questions avec réponses IA",
           "batch": "Traitement par lots",
           "priority": "Traitement prioritaire",
           "support": "Support e-mail prioritaire"
@@ -1737,10 +1746,13 @@
         "duration": "Durée max par fichier",
         "fileSize": "Taille de fichier max",
         "hours": "Heures mensuelles incluses",
+        "storageDuration": "Durée de stockage",
         "coreAnalyses": "Sorties IA de base",
         "onDemand": "Sorties IA à la demande",
         "translation": "Traduction",
+        "askQuestions": "Poser des questions",
         "sharing": "Fonctionnalités de partage",
+        "pdfExport": "Exportation PDF",
         "batch": "Traitement par lots",
         "priority": "Traitement prioritaire",
         "sso": "Single Sign-On (SSO)",
@@ -1757,7 +1769,9 @@
         "email": "E-mail",
         "priorityEmail": "E-mail prioritaire",
         "hoursIncluded": "60 heures/mois",
-        "comingSoon": "Prochainement"
+        "comingSoon": "Prochainement",
+        "storageFree": "30 jours",
+        "storageUnlimited": "Illimité"
       }
     },
     "faq": {
@@ -2105,7 +2119,10 @@
     "showLess": "Afficher moins",
     "jumpToTimestamp": "Aller au moment",
     "copy": "Copier la réponse",
-    "copied": "Copié !"
+    "copied": "Copié !",
+    "proFeature": "Fonction Pro",
+    "upgradeToAsk": "Passez à Pro pour poser des questions sur vos conversations et obtenir des réponses IA avec citations.",
+    "upgradeToPro": "Passer à Pro"
   },
   "folderPicker": {
     "title": "Déplacer vers dossier",

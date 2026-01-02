@@ -20,6 +20,7 @@ export function FeatureComparisonTable() {
         { name: t('features.duration'), free: '60 min', pro: t('values.unlimited'), enterprise: t('values.unlimited') },
         { name: t('features.fileSize'), free: '100MB', pro: '5GB', enterprise: '10GB' },
         { name: t('features.hours'), free: '-', pro: t('values.hoursIncluded'), enterprise: t('values.unlimited') },
+        { name: t('features.storageDuration'), free: t('values.storageFree'), pro: t('values.storageUnlimited'), enterprise: t('values.storageUnlimited') },
       ],
     },
     {
@@ -28,12 +29,14 @@ export function FeatureComparisonTable() {
         { name: t('features.coreAnalyses'), free: true, pro: true, enterprise: true },
         { name: t('features.onDemand'), free: '2/month', pro: t('values.unlimited'), enterprise: t('values.unlimited') },
         { name: t('features.translation'), free: false, pro: true, enterprise: true },
+        { name: t('features.askQuestions'), free: false, pro: true, enterprise: true },
       ],
     },
     {
       category: t('categories.features'),
       items: [
         { name: t('features.sharing'), free: t('values.basic'), pro: t('values.advanced'), enterprise: t('values.advanced') },
+        { name: t('features.pdfExport'), free: false, pro: true, enterprise: true },
         { name: t('features.batch'), free: false, pro: true, enterprise: true },
         { name: t('features.priority'), free: false, pro: true, enterprise: true },
         { name: t('features.sso'), free: false, pro: false, enterprise: t('values.comingSoon') },

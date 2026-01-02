@@ -347,7 +347,8 @@
       "includeMicrophone": "Mijn microfoon toevoegen",
       "recommendedForCalls": "Aanbevolen voor videogesprekken",
       "usingMicrophone": "Gebruikt:",
-      "switchingMicrophone": "Microfoon wordt gewisseld..."
+      "switchingMicrophone": "Microfoon wordt gewisseld...",
+      "switchedToDevice": "Gewisseld naar {device}"
     },
     "status": {
       "ready": "Klaar om op te nemen",
@@ -359,6 +360,7 @@
     "controls": {
       "start": "Start opname",
       "stop": "Voltooien",
+      "finishing": "Afronden...",
       "pause": "Pauzeer",
       "resume": "Hervat",
       "reset": "Opnieuw opnemen",
@@ -574,7 +576,9 @@
         "userStory": "user story",
         "userStories": "user stories",
         "noStoriesFound": "Geen user stories gevonden",
-        "noStoriesDescription": "Dit gesprek bevatte geen expliciete productfuncties of vereisten om te extraheren."
+        "noStoriesDescription": "Dit gesprek bevatte geen expliciete productfuncties of vereisten om te extraheren.",
+        "copyStory": "Story kopiëren",
+        "copied": "Gekopieerd!"
       }
     },
     "sidebar": {
@@ -620,6 +624,9 @@
       "deleteConfirmNo": "Annuleren",
       "exportPDF": "Exporteren als PDF",
       "generatingPDF": "PDF wordt gegenereerd...",
+      "proFeature": "Pro-functie",
+      "upgradeToExportPDF": "Upgrade naar Pro om je gesprekken te exporteren als prachtig opgemaakte PDF-documenten.",
+      "upgradeToPro": "Upgraden naar Pro",
       "findReplace": "Zoeken en vervangen",
       "findReplaceDisabledLegacy": "Zoeken en vervangen is niet beschikbaar voor oudere gesprekken"
     },
@@ -1680,6 +1687,7 @@
           "coreAnalyses": "4 AI-outputs inbegrepen",
           "onDemand": "2 on-demand AI-outputs/maand",
           "translation": "Vertaling (alleen Pro)",
+          "askQuestions": "Vragen stellen (alleen Pro)",
           "sharing": "Gesprekken delen",
           "batch": "Batchverwerking",
           "storage": "90 dagen opslag",
@@ -1712,6 +1720,7 @@
           "sharing": "Geavanceerde deelfuncties",
           "advancedSharing": "Geavanceerd delen & samenwerken",
           "translation": "Vertaling naar 50+ talen",
+          "askQuestions": "Vragen stellen met AI-antwoorden",
           "batch": "Batchverwerking",
           "priority": "Prioriteitsverwerking",
           "support": "Prioriteit e-mail ondersteuning"
@@ -1762,10 +1771,13 @@
         "duration": "Max duur per bestand",
         "fileSize": "Max bestandsgrootte",
         "hours": "Maandelijkse uren inbegrepen",
+        "storageDuration": "Opslagduur",
         "coreAnalyses": "Kern-AI-outputs",
         "onDemand": "On-demand AI-outputs",
         "translation": "Vertaling",
+        "askQuestions": "Vragen stellen",
         "sharing": "Deelfuncties",
+        "pdfExport": "PDF-export",
         "batch": "Batchverwerking",
         "priority": "Prioriteitsverwerking",
         "sso": "Single Sign-On (SSO)",
@@ -1782,7 +1794,9 @@
         "email": "E-mail",
         "priorityEmail": "Prioriteit e-mail",
         "hoursIncluded": "60 uur/maand",
-        "comingSoon": "Binnenkort"
+        "comingSoon": "Binnenkort",
+        "storageFree": "30 dagen",
+        "storageUnlimited": "Onbeperkt"
       }
     },
     "faq": {
@@ -2105,7 +2119,10 @@
     "showLess": "Toon minder",
     "jumpToTimestamp": "Ga naar tijdstip",
     "copy": "Kopieer antwoord",
-    "copied": "Gekopieerd!"
+    "copied": "Gekopieerd!",
+    "proFeature": "Pro-functie",
+    "upgradeToAsk": "Upgrade naar Pro om vragen te stellen over je gesprekken en AI-gestuurde antwoorden met bronvermelding te krijgen.",
+    "upgradeToPro": "Upgrade naar Pro"
   },
   "folderPicker": {
     "title": "Verplaats naar map",

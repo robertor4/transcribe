@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { FileDown, Loader2 } from 'lucide-react';
+import { FileDown, Loader2, Lock } from 'lucide-react';
 import type { SummaryV2, Translation } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export interface ExportPDFMenuItemProps {
   summary: SummaryV2;
@@ -20,6 +21,8 @@ export interface ExportPDFMenuItemProps {
   ) => Translation | undefined;
   conversationId: string;
   onClose?: () => void;
+  /** User's subscription tier - PDF export requires Pro or higher */
+  userTier?: string;
 }
 
 export function ExportPDFMenuItem({
@@ -29,11 +32,22 @@ export function ExportPDFMenuItem({
   getTranslatedContent,
   conversationId,
   onClose,
+  userTier = 'free',
 }: ExportPDFMenuItemProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const t = useTranslations('conversation');
 
+  // PDF export requires Pro or higher
+  const canExportPDF = userTier !== 'free';
+
   const handleExportPDF = async () => {
+    // Show upgrade prompt for free users when they click
+    if (!canExportPDF) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+
     setIsGenerating(true);
 
     try {
@@ -78,6 +92,29 @@ export function ExportPDFMenuItem({
       setIsGenerating(false);
     }
   };
+
+  // Show upgrade prompt after clicking (for free users)
+  if (showUpgradePrompt) {
+    return (
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+          <Lock className="w-4 h-4" />
+          <span className="text-xs font-semibold uppercase tracking-wide">
+            {t('actions.proFeature')}
+          </span>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          {t('actions.upgradeToExportPDF')}
+        </p>
+        <Link
+          href="/pricing"
+          className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
+        >
+          {t('actions.upgradeToPro')}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <button

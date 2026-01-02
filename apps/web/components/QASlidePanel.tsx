@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Send, MessageSquareText } from 'lucide-react';
+import { X, Send, MessageSquareText, Lock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AskResponse, QAHistoryItem } from '@transcribe/shared';
 import { QAMessage } from './QAMessage';
 import { Button } from './Button';
+import { Link } from '@/i18n/navigation';
 import { transcriptionApi, folderApi } from '@/lib/api';
 
 interface QAExchange {
@@ -23,6 +24,8 @@ interface QASlidePanelProps {
   transcriptionId?: string;
   folderId?: string;
   title?: string;
+  /** User's subscription tier - Ask Questions requires Pro or higher */
+  userTier?: string;
 }
 
 export function QASlidePanel({
@@ -32,9 +35,13 @@ export function QASlidePanel({
   transcriptionId,
   folderId,
   title,
+  userTier = 'free',
 }: QASlidePanelProps) {
   const t = useTranslations('qa');
   const [mounted, setMounted] = useState(false);
+
+  // Ask Questions requires Pro or higher
+  const canAskQuestions = userTier !== 'free';
   const [isClosing, setIsClosing] = useState(false);
   const [question, setQuestion] = useState('');
   const [exchanges, setExchanges] = useState<QAExchange[]>([]);
@@ -295,40 +302,60 @@ export function QASlidePanel({
           )}
         </div>
 
-        {/* Input Area */}
+        {/* Input Area / Upgrade Prompt */}
         <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-          <form onSubmit={handleSubmit} className="flex items-center gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('placeholder')}
-              maxLength={500}
-              disabled={isSubmitting}
-              className="
-                flex-1 px-4 py-2.5 text-base sm:text-sm
-                bg-white dark:bg-gray-900
-                border border-gray-200 dark:border-gray-700
-                rounded-full
-                text-gray-900 dark:text-gray-100
-                placeholder:text-gray-400 dark:placeholder:text-gray-500
-                focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/50 focus:border-[#8D6AFA]
-                disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors
-              "
-            />
-            <Button
-              type="submit"
-              variant="brand"
-              size="sm"
-              disabled={!question.trim() || isSubmitting}
-              icon={<Send className="w-4 h-4" />}
-            >
-              {t('submit')}
-            </Button>
-          </form>
+          {canAskQuestions ? (
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t('placeholder')}
+                maxLength={500}
+                disabled={isSubmitting}
+                className="
+                  flex-1 px-4 py-2.5 text-base sm:text-sm
+                  bg-white dark:bg-gray-900
+                  border border-gray-200 dark:border-gray-700
+                  rounded-full
+                  text-gray-900 dark:text-gray-100
+                  placeholder:text-gray-400 dark:placeholder:text-gray-500
+                  focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/50 focus:border-[#8D6AFA]
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-colors
+                "
+              />
+              <Button
+                type="submit"
+                variant="brand"
+                size="sm"
+                disabled={!question.trim() || isSubmitting}
+                icon={<Send className="w-4 h-4" />}
+              >
+                {t('submit')}
+              </Button>
+            </form>
+          ) : (
+            <div className="py-2">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                <Lock className="w-4 h-4" />
+                <span className="text-xs font-semibold uppercase tracking-wide">
+                  {t('proFeature')}
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                {t('upgradeToAsk')}
+              </p>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {t('upgradeToPro')}
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>,

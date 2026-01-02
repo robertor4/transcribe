@@ -69,7 +69,7 @@ export function LanguageSwitcher({ enableDarkMode = false, variant = 'light' }: 
           sideOffset={8}
           collisionPadding={{ right: 16 }}
           sticky="always"
-          className={`w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 py-1 ${enableDarkMode ? 'dark:bg-gray-800 dark:ring-gray-700' : ''}`}
+          className={`w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-[80] py-1 ${enableDarkMode ? 'dark:bg-gray-800 dark:ring-gray-700' : ''}`}
         >
           {locales.map((loc) => {
             const isActive = loc === locale;

@@ -995,6 +995,8 @@ export interface SubscriptionTier {
     coreAnalyses: boolean;
     onDemandAnalyses: boolean;
     translation: boolean;
+    askQuestions: boolean;
+    pdfExport: boolean;
     advancedSharing: boolean;
     batchUpload: boolean;
     priorityProcessing: boolean;
@@ -1042,6 +1044,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true, // Limited to 2/month
       translation: false,
+      askQuestions: false,
+      pdfExport: false,
       advancedSharing: false,
       batchUpload: false,
       priorityProcessing: false,
@@ -1063,6 +1067,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true,
       translation: true,
+      askQuestions: true,
+      pdfExport: true,
       advancedSharing: true,
       batchUpload: true,
       priorityProcessing: true,
@@ -1084,6 +1090,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true,
       translation: true,
+      askQuestions: true,
+      pdfExport: true,
       advancedSharing: true,
       batchUpload: true,
       priorityProcessing: true,

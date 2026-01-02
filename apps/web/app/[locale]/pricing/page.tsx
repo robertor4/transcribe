@@ -13,7 +13,7 @@ import { BillingToggle } from '@/components/pricing/BillingToggle';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { DottedBackgroundDrift } from '@/components/landing/hero/DottedBackgroundDrift';
-import { Globe, Clock, FileText, Share2, Headphones, Zap, Package, Building2, Users, Shield } from 'lucide-react';
+import { Globe, Clock, FileText, Share2, Headphones, Zap, Package, Building2, Users, Shield, MessageSquareText } from 'lucide-react';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
 import { formatPricingTierItem } from '@/utils/analytics-helpers';
 
@@ -127,6 +127,7 @@ export default function PricingPage() {
     { text: t('tiers.free.features.coreAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.onDemand'), included: true, note: '2/month', category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.translation'), included: false, icon: Globe, category: t('featureCategories.analysis') },
+    { text: t('tiers.free.features.askQuestions'), included: false, icon: MessageSquareText, category: t('featureCategories.analysis') },
     { text: t('tiers.free.features.sharing'), included: true, note: t('comparison.values.basic'), icon: Share2, category: t('featureCategories.collaboration') },
     { text: t('tiers.free.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
   ];
@@ -139,6 +140,7 @@ export default function PricingPage() {
     { text: t('tiers.professional.features.allAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
     { text: t('tiers.professional.features.onDemandAnalyses'), included: true, category: t('featureCategories.analysis') },
     { text: t('tiers.professional.features.translation'), included: true, icon: Globe, category: t('featureCategories.analysis') },
+    { text: t('tiers.professional.features.askQuestions'), included: true, icon: MessageSquareText, category: t('featureCategories.analysis') },
     { text: t('tiers.professional.features.advancedSharing'), included: true, icon: Share2, category: t('featureCategories.collaboration') },
     { text: t('tiers.professional.features.priority'), included: true, icon: Zap, category: t('featureCategories.collaboration') },
     { text: t('tiers.professional.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },

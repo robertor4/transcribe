@@ -565,6 +565,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                                   currentLocale={currentLocale}
                                   getTranslatedContent={getTranslatedContent}
                                   conversationId={conversationId}
+                                  userTier={userTier}
                                 />
                               ),
                             },
@@ -758,6 +759,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         scope="conversation"
         transcriptionId={conversationId}
         title={conversation.title}
+        userTier={userTier}
       />
 
       {/* Find & Replace Panel - scoped to active tab */}
