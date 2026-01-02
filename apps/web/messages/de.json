@@ -2337,5 +2337,168 @@
       "messageRequired": "Nachricht ist erforderlich",
       "messageMinLength": "Nachricht muss mindestens 10 Zeichen lang sein"
     }
+  },
+  "productOwnerLanding": {
+    "hero": {
+      "badge": "Entwickelt für Product Owner",
+      "headline": "Von Meetings zu PRDs in Minuten",
+      "subtitle": "Hören Sie auf, stundenlang Dokumentation zu schreiben. Neural Summary verwandelt Ihre Stakeholder-Gespräche, Sprint-Planung und Nutzerforschung in strukturierte Ergebnisse.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "Anwendungsfälle ansehen",
+      "visual": {
+        "before": {
+          "title": "Verstreute Notizen..."
+        },
+        "after": {
+          "title": "Sprint-Planungs-Zusammenfassung",
+          "item1": {
+            "title": "Benutzerauthentifizierung Refactoring",
+            "desc": "Priorität: Hoch • Verantwortlich: @sarah"
+          },
+          "item2": {
+            "title": "Dashboard-Performance",
+            "desc": "Priorität: Mittel • Verantwortlich: @mike"
+          },
+          "item3": {
+            "title": "API-Dokumentation aktualisieren",
+            "desc": "Priorität: Niedrig • Verantwortlich: @alex"
+          },
+          "footer": "Generiert in 30 Sekunden"
+        }
+      }
+    },
+    "painPoints": {
+      "headline": "Kommt Ihnen das bekannt vor?",
+      "subheadline": "Product Owner verbringen zu viel Zeit damit, Gespräche in Dokumentation zu übersetzen.",
+      "pain1": {
+        "title": "Stunden für Dokumentation verloren",
+        "description": "Nach jedem Meeting schreiben Sie PRDs, User Stories und Follow-up-E-Mails, anstatt sich auf die Strategie zu konzentrieren."
+      },
+      "pain2": {
+        "title": "Kontext geht verloren",
+        "description": "Wichtige Entscheidungen und Nuancen aus Stakeholder-Gesprächen gehen verloren, wenn Sie manuell Notizen machen."
+      },
+      "pain3": {
+        "title": "Über Tools verstreut",
+        "description": "Meeting-Notizen in Notion, Aktionspunkte in Slack, Entscheidungen in E-Mails. Nichts ist verbunden oder strukturiert."
+      }
+    },
+    "useCases": {
+      "headline": "Für Ihren Workflow entwickelt",
+      "subheadline": "Von der Sprint-Planung bis zu Kundengesprächen erfasst Neural Summary das Wesentliche und strukturiert es für Aktionen.",
+      "case1": {
+        "title": "Sprint-Planung",
+        "description": "Zeichnen Sie Ihre Planungssitzungen auf und erhalten Sie strukturierte Sprint-Notizen mit automatisch extrahierten Prioritäten, Verantwortlichen und Abhängigkeiten.",
+        "tag1": "User Stories",
+        "tag2": "Aktionspunkte"
+      },
+      "case2": {
+        "title": "Stakeholder-Interviews",
+        "description": "Erfassen Sie Anforderungen direkt aus Gesprächen. Generieren Sie PRDs und Feature-Spezifikationen ohne manuelle Übersetzungsarbeit.",
+        "tag1": "PRD-Generierung",
+        "tag2": "Anforderungen"
+      },
+      "case3": {
+        "title": "Nutzerforschungs-Sessions",
+        "description": "Extrahieren Sie Erkenntnisse, Schmerzpunkte und Chancen aus Nutzerinterviews. Bauen Sie automatisch Ihr Forschungs-Repository auf.",
+        "tag1": "Erkenntnisse",
+        "tag2": "Schmerzpunkte"
+      },
+      "case4": {
+        "title": "Kundengespräche",
+        "description": "Verwandeln Sie Kundengespräche in Feature-Anfragen, Bug-Reports und professionelle Follow-up-E-Mails.",
+        "tag1": "Feature-Anfragen",
+        "tag2": "Follow-ups"
+      }
+    },
+    "templates": {
+      "headline": "Vorlagen für Product Owner",
+      "subheadline": "Vorkonfigurierte KI-Vorlagen, die Produktmanagement-Workflows und Ausgabeformate verstehen.",
+      "template1": {
+        "title": "PRD-Generator",
+        "description": "Vollständige Produktanforderungen aus Gesprächen"
+      },
+      "template2": {
+        "title": "User Story Creator",
+        "description": "Als Benutzer... Format mit Akzeptanzkriterien"
+      },
+      "template3": {
+        "title": "Sprint-Notizen",
+        "description": "Prioritäten, Verantwortliche und Blocker"
+      },
+      "template4": {
+        "title": "Release Notes",
+        "description": "Kundenfertige Changelog aus Demos"
+      },
+      "template5": {
+        "title": "Entscheidungsprotokoll",
+        "description": "ADR-Format für technische Entscheidungen"
+      },
+      "template6": {
+        "title": "Stakeholder-Update",
+        "description": "Executive-Summary-E-Mails"
+      },
+      "template7": {
+        "title": "Forschungssynthese",
+        "description": "Erkenntnisse aus Nutzerinterviews"
+      },
+      "template8": {
+        "title": "Retro-Zusammenfassung",
+        "description": "Aktionen und Learnings erfasst"
+      }
+    },
+    "transformation": {
+      "headline": "Sehen Sie die Transformation",
+      "subheadline": "Ein 45-minütiges Sprint-Planungsmeeting wird in Sekunden zu einem strukturierten Dokument.",
+      "before": {
+        "label": "Sprint-Planungs-Aufnahme",
+        "quote1": "Also das Auth-Refactoring, das ist definitiv die Priorität diesen Sprint, oder? Sarah wartet schon darauf...",
+        "quote2": "Ja, und wir müssen uns um die Dashboard-Performance kümmern, Mike sagte es wird langsam mit den neuen Daten...",
+        "quote3": "Was ist mit der API-Dokumentation? Alex sagte, Kunden beschweren sich, aber ich weiß nicht ob es dringend ist...",
+        "duration": "45 Min. Meeting"
+      },
+      "after": {
+        "label": "Strukturierte Ausgabe",
+        "title": "Sprint 24 Planungs-Zusammenfassung",
+        "section1": {
+          "title": "Hohe Priorität",
+          "item1": "Benutzerauthentifizierung Refactoring (Verantwortlich: Sarah, blockiert)",
+          "item2": "Dashboard-Performance-Optimierung (Verantwortlich: Mike)"
+        },
+        "section2": {
+          "title": "Mittlere Priorität",
+          "item1": "API-Dokumentation aktualisieren (Verantwortlich: Alex)",
+          "item2": "Kundenfeedback-Review"
+        },
+        "section3": {
+          "title": "Getroffene Entscheidungen",
+          "item1": "Auth-Refactoring hat Vorrang vor neuen Features"
+        },
+        "generated": "Generiert in 30 Sekunden"
+      }
+    },
+    "roadmap": {
+      "badge": "Demnächst",
+      "headline": "Die Zukunft der Produktdokumentation",
+      "subheadline": "Wir entwickeln Integrationen und Features speziell für Produktteams.",
+      "feature1": {
+        "title": "JIRA & Linear Integration",
+        "description": "Erstellen Sie automatisch Tickets und User Stories direkt aus Ihren Meeting-Outputs. Kein Copy-Paste mehr nötig."
+      },
+      "feature2": {
+        "title": "KI-Interview-Modus",
+        "description": "Neural Summary stellt Ihnen Fragen, um Anforderungen zu extrahieren. Wie ein BA auf Abruf."
+      },
+      "feature3": {
+        "title": "Team-Workspace",
+        "description": "Gemeinsame Gesprächsbibliothek für Ihr Produktteam. Bauen Sie institutionelles Wissen aus jedem Meeting auf."
+      }
+    },
+    "closingCta": {
+      "headline": "Aufhören zu schreiben. Anfangen zu liefern.",
+      "subheadline": "Schließen Sie sich Product Owners an, die weniger Zeit mit Dokumentation und mehr Zeit mit dem Bau großartiger Produkte verbringen.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "Beispiele ansehen"
+    }
   }
 }

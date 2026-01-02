@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Product Owner Landing Page**: New `/product-owner` persona-specific landing page targeting Product Owners
+  - Tailored messaging addressing PO pain points: documentation burden, context loss, scattered tools
+  - Use cases section: Sprint Planning, Stakeholder Interviews, User Research, Customer Calls
+  - Templates showcase: PRD Generator, User Story Creator, Sprint Notes, Release Notes, Decision Record, and more
+  - Transformation demo: 45-minute meeting → structured sprint planning summary
+  - Coming soon section: JIRA/Linear Integration, AI Interview Mode, Team Workspace
+  - Full i18n support with translations for all 5 locales (en, nl, de, fr, es)
+  - SEO-optimized metadata with persona-specific keywords and descriptions
+  - Reuses existing landing page components: Hero animations, CTAButton, ScrollAnimation
+  - Files: [page.tsx](apps/web/app/[locale]/product-owner/page.tsx), [layout.tsx](apps/web/app/[locale]/product-owner/layout.tsx)
 - **Examples Page**: New `/examples` page showcasing AI Asset outputs with typewriter animations
   - Demonstrates 4 AI Asset types: Action Items, Follow-Up Email, Blog Post, LinkedIn Post
   - Uses "Product Launch Meeting" scenario with realistic sample outputs

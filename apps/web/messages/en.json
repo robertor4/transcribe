@@ -2343,5 +2343,168 @@
       "messageRequired": "Message is required",
       "messageMinLength": "Message must be at least 10 characters"
     }
+  },
+  "productOwnerLanding": {
+    "hero": {
+      "badge": "Built for Product Owners",
+      "headline": "From meetings to PRDs in minutes",
+      "subtitle": "Stop spending hours writing documentation. Neural Summary transforms your stakeholder conversations, sprint planning, and user research into structured deliverables.",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "See use cases",
+      "visual": {
+        "before": {
+          "title": "Scattered notes..."
+        },
+        "after": {
+          "title": "Sprint Planning Summary",
+          "item1": {
+            "title": "User authentication refactor",
+            "desc": "Priority: High • Owner: @sarah"
+          },
+          "item2": {
+            "title": "Dashboard performance",
+            "desc": "Priority: Medium • Owner: @mike"
+          },
+          "item3": {
+            "title": "API documentation update",
+            "desc": "Priority: Low • Owner: @alex"
+          },
+          "footer": "Generated in 30 seconds"
+        }
+      }
+    },
+    "painPoints": {
+      "headline": "Sound familiar?",
+      "subheadline": "Product Owners spend too much time translating conversations into documentation.",
+      "pain1": {
+        "title": "Hours lost to documentation",
+        "description": "After every meeting, you're stuck writing PRDs, user stories, and follow-up emails instead of focusing on strategy."
+      },
+      "pain2": {
+        "title": "Context gets lost",
+        "description": "Important decisions and nuances from stakeholder conversations slip through the cracks when you're taking notes manually."
+      },
+      "pain3": {
+        "title": "Scattered across tools",
+        "description": "Meeting notes in Notion, action items in Slack, decisions in email. Nothing is connected or structured."
+      }
+    },
+    "useCases": {
+      "headline": "Built for your workflow",
+      "subheadline": "From sprint planning to customer calls, Neural Summary captures what matters and structures it for action.",
+      "case1": {
+        "title": "Sprint Planning",
+        "description": "Record your planning sessions and get structured sprint notes with priorities, owners, and dependencies automatically extracted.",
+        "tag1": "User Stories",
+        "tag2": "Action Items"
+      },
+      "case2": {
+        "title": "Stakeholder Interviews",
+        "description": "Capture requirements directly from conversations. Generate PRDs and feature specs without the manual translation work.",
+        "tag1": "PRD Generation",
+        "tag2": "Requirements"
+      },
+      "case3": {
+        "title": "User Research Sessions",
+        "description": "Extract insights, pain points, and opportunities from user interviews. Build your research repository automatically.",
+        "tag1": "Insights",
+        "tag2": "Pain Points"
+      },
+      "case4": {
+        "title": "Customer Calls",
+        "description": "Turn customer conversations into feature requests, bug reports, and professional follow-up emails.",
+        "tag1": "Feature Requests",
+        "tag2": "Follow-ups"
+      }
+    },
+    "templates": {
+      "headline": "Templates built for Product Owners",
+      "subheadline": "Pre-configured AI templates that understand product management workflows and output formats.",
+      "template1": {
+        "title": "PRD Generator",
+        "description": "Full product requirements from conversations"
+      },
+      "template2": {
+        "title": "User Story Creator",
+        "description": "As a user... format with acceptance criteria"
+      },
+      "template3": {
+        "title": "Sprint Notes",
+        "description": "Priorities, owners, and blockers"
+      },
+      "template4": {
+        "title": "Release Notes",
+        "description": "Customer-ready changelog from demos"
+      },
+      "template5": {
+        "title": "Decision Record",
+        "description": "ADR format for technical decisions"
+      },
+      "template6": {
+        "title": "Stakeholder Update",
+        "description": "Executive summary emails"
+      },
+      "template7": {
+        "title": "Research Synthesis",
+        "description": "Insights from user interviews"
+      },
+      "template8": {
+        "title": "Retro Summary",
+        "description": "Actions and learnings captured"
+      }
+    },
+    "transformation": {
+      "headline": "See the transformation",
+      "subheadline": "A 45-minute sprint planning meeting becomes a structured document in seconds.",
+      "before": {
+        "label": "Sprint Planning Recording",
+        "quote1": "So the auth refactor, that's definitely the priority this sprint, right? Sarah's been blocked on that...",
+        "quote2": "Yeah, and we need to figure out the dashboard performance thing, Mike mentioned it's getting slow with the new data...",
+        "quote3": "What about the API docs? Alex said customers are complaining but I don't know if it's urgent...",
+        "duration": "45 min meeting"
+      },
+      "after": {
+        "label": "Structured Output",
+        "title": "Sprint 24 Planning Summary",
+        "section1": {
+          "title": "High Priority",
+          "item1": "User authentication refactor (Owner: Sarah, blocked)",
+          "item2": "Dashboard performance optimization (Owner: Mike)"
+        },
+        "section2": {
+          "title": "Medium Priority",
+          "item1": "API documentation update (Owner: Alex)",
+          "item2": "Customer feedback review"
+        },
+        "section3": {
+          "title": "Decisions Made",
+          "item1": "Auth refactor takes precedence over new features"
+        },
+        "generated": "Generated in 30 seconds"
+      }
+    },
+    "roadmap": {
+      "badge": "Coming Soon",
+      "headline": "The future of product documentation",
+      "subheadline": "We're building integrations and features specifically for product teams.",
+      "feature1": {
+        "title": "JIRA & Linear Integration",
+        "description": "Auto-create tickets and user stories directly from your meeting outputs. No copy-paste required."
+      },
+      "feature2": {
+        "title": "AI Interview Mode",
+        "description": "Neural Summary asks you questions to extract requirements. Like having a BA on demand."
+      },
+      "feature3": {
+        "title": "Team Workspace",
+        "description": "Shared conversation library for your product team. Build institutional knowledge from every meeting."
+      }
+    },
+    "closingCta": {
+      "headline": "Stop writing. Start shipping.",
+      "subheadline": "Join Product Owners who spend less time on documentation and more time building great products.",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "View examples"
+    }
   }
 }
