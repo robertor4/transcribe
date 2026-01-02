@@ -25,7 +25,7 @@
     "redis:check": "redis-cli ping || docker exec redis-transcribe redis-cli ping || echo 'Redis not responding'",
     "setup": "npm install && cd apps/web && npm install && cd ../api && npm install && cd ../../packages/shared && npm install && npm run build && cd ../..",
     "fresh": "npm run clean && npm run setup && npm run dev:all",
-    "prepare": "husky"
+    "prepare": "node -e \"try { require.resolve('husky') } catch { process.exit(0) }\" && husky || true"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
