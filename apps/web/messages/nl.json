@@ -28,7 +28,6 @@
     "import": "Importeren",
     "language": "Taal",
     "userMenu": "Gebruikersmenu",
-    "browserNotifications": "Browsermeldingen",
     "allRightsReserved": "Alle rechten voorbehouden"
   },
   "search": {
@@ -834,25 +833,12 @@
       "description": "De meeste videoconferentietools (Zoom, Teams, Google Meet) hebben ingebouwde opnamefuncties. Neem gewoon je vergadering op en upload het videobestand direct - wij transformeren de audio!"
     }
   },
-  "notifications": {
-    "title": "Meldingen",
-    "enable": "Meldingen inschakelen",
-    "disable": "Meldingen uitschakelen",
-    "browserNotifications": "Browsermeldingen",
-    "emailNotifications": "E-mailmeldingen",
-    "transcriptionComplete": "Je transcriptie voor \"{fileName}\" is voltooid!",
-    "transcriptionFailed": "Transcriptie mislukt voor \"{fileName}\"",
-    "permissionDenied": "Toestemming voor meldingen geweigerd",
-    "permissionGranted": "Meldingen ingeschakeld",
-    "notSupported": "Meldingen worden niet ondersteund in deze browser"
-  },
   "settings": {
     "title": "Instellingen",
     "profile": "Profiel",
     "preferences": "Voorkeuren",
     "language": "Taal",
     "theme": "Thema",
-    "notifications": "Meldingen",
     "privacy": "Privacy",
     "security": "Beveiliging",
     "account": "Account",
@@ -898,38 +884,6 @@
       "accountCreated": "Account aangemaakt",
       "subscription": "Abonnement",
       "expiresOn": "Verloopt op",
-      "saving": "Opslaan...",
-      "saveChanges": "Wijzigingen opslaan"
-    },
-    "notificationsPage": {
-      "title": "Meldingsinstellingen",
-      "description": "Configureer hoe je meldingen ontvangt over je transcripties.",
-      "loadError": "Laden van instellingen mislukt",
-      "saveError": "Opslaan van instellingen mislukt",
-      "saveSuccess": "Instellingen succesvol bijgewerkt",
-      "emailNotifications": "E-mailmeldingen",
-      "enableEmailNotifications": "E-mailmeldingen inschakelen",
-      "enableEmailDescription": "Ontvang e-mailupdates over je transcripties",
-      "transcriptionComplete": "Transcriptie voltooid",
-      "transcriptionCompleteDescription": "Ontvang een melding wanneer je transcriptie klaar is",
-      "digestFrequency": "E-mailfrequentie",
-      "digestDescription": "Hoe vaak e-mailmeldingen te ontvangen",
-      "digest": {
-        "immediate": "Onmiddellijk",
-        "daily": "Dagelijkse samenvatting",
-        "weekly": "Wekelijkse samenvatting"
-      },
-      "browserNotifications": "Browsermeldingen",
-      "enableBrowserNotifications": "Browsermeldingen inschakelen",
-      "enableBrowserDescription": "Toon desktopmeldingen wanneer dit tabblad op de achtergrond is",
-      "browserPermissionDenied": "Toestemming voor browsermeldingen is geweigerd",
-      "browserPermissionBlocked": "Browsermeldingen zijn geblokkeerd. Schakel ze in via je browserinstellingen.",
-      "browserNotificationTypes": "Je ontvangt meldingen voor:",
-      "notificationType": {
-        "transcriptionComplete": "Voltooiing van transcriptie",
-        "transcriptionFailed": "Mislukkingen van transcriptie",
-        "transcriptionProgress": "Updates van verwerkingsvoortgang"
-      },
       "saving": "Opslaan...",
       "saveChanges": "Wijzigingen opslaan"
     },

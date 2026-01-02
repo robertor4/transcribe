@@ -28,7 +28,6 @@
     "import": "Import",
     "language": "Language",
     "userMenu": "User menu",
-    "browserNotifications": "Browser Notifications",
     "allRightsReserved": "All rights reserved"
   },
   "search": {
@@ -834,25 +833,12 @@
       "description": "Most video conferencing tools (Zoom, Teams, Google Meet) have built-in recording features. Simply record your meeting and upload the video file directly - we'll extract and transcribe the audio!"
     }
   },
-  "notifications": {
-    "title": "Notifications",
-    "enable": "Enable Notifications",
-    "disable": "Disable Notifications",
-    "browserNotifications": "Browser Notifications",
-    "emailNotifications": "Email Notifications",
-    "transcriptionComplete": "Your transcription for \"{fileName}\" is complete!",
-    "transcriptionFailed": "Transcription failed for \"{fileName}\"",
-    "permissionDenied": "Notification permission denied",
-    "permissionGranted": "Notifications enabled",
-    "notSupported": "Notifications not supported in this browser"
-  },
   "settings": {
     "title": "Settings",
     "profile": "Profile",
     "preferences": "Preferences",
     "language": "Language",
     "theme": "Theme",
-    "notifications": "Notifications",
     "privacy": "Privacy",
     "security": "Security",
     "account": "Account",
@@ -898,38 +884,6 @@
       "accountCreated": "Account Created",
       "subscription": "Subscription",
       "expiresOn": "Expires on",
-      "saving": "Saving...",
-      "saveChanges": "Save Changes"
-    },
-    "notificationsPage": {
-      "title": "Notification Settings",
-      "description": "Configure how you receive notifications about your transcriptions.",
-      "loadError": "Failed to load settings",
-      "saveError": "Failed to save settings",
-      "saveSuccess": "Settings updated successfully",
-      "emailNotifications": "Email Notifications",
-      "enableEmailNotifications": "Enable email notifications",
-      "enableEmailDescription": "Receive email updates about your transcriptions",
-      "transcriptionComplete": "Transcription Complete",
-      "transcriptionCompleteDescription": "Get notified when your transcription is ready",
-      "digestFrequency": "Email Frequency",
-      "digestDescription": "How often to receive email notifications",
-      "digest": {
-        "immediate": "Immediate",
-        "daily": "Daily Digest",
-        "weekly": "Weekly Digest"
-      },
-      "browserNotifications": "Browser Notifications",
-      "enableBrowserNotifications": "Enable browser notifications",
-      "enableBrowserDescription": "Show desktop notifications when this tab is in the background",
-      "browserPermissionDenied": "Browser notification permission was denied",
-      "browserPermissionBlocked": "Browser notifications are blocked. Please enable them in your browser settings.",
-      "browserNotificationTypes": "You'll receive notifications for:",
-      "notificationType": {
-        "transcriptionComplete": "Transcription completion",
-        "transcriptionFailed": "Transcription failures",
-        "transcriptionProgress": "Processing progress updates"
-      },
       "saving": "Saving...",
       "saveChanges": "Save Changes"
     },

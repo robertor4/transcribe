@@ -53,7 +53,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
 
   const { folder, conversations, isLoading, error, updateFolderLocally, refresh } = useFolderConversations(folderId);
   const { deleteFolder, updateFolder, moveToFolder } = useFolders();
-  const { usageStats } = useUsage();
+  const { usageStats, isAdmin } = useUsage();
   const userTier = usageStats?.tier || 'free';
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
@@ -525,6 +525,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
         folderId={folderId}
         title={folder.name}
         userTier={userTier}
+        isAdmin={isAdmin}
       />
 
       {/* AI Asset Slide Panel */}

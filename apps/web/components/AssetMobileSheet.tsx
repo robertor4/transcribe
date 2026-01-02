@@ -19,6 +19,10 @@ interface AssetMobileSheetProps {
   onGenerateNew: () => void;
   conversationId: string;
   conversationTitle?: string;
+  /** User's subscription tier - for Q&A feature gating */
+  userTier?: string;
+  /** Whether the user is an admin (bypasses tier restrictions) */
+  isAdmin?: boolean;
 }
 
 export function AssetMobileSheet({
@@ -29,6 +33,8 @@ export function AssetMobileSheet({
   onGenerateNew,
   conversationId,
   conversationTitle,
+  userTier = 'free',
+  isAdmin = false,
 }: AssetMobileSheetProps) {
   const t = useTranslations('aiAssets');
   const router = useRouter();
@@ -102,6 +108,8 @@ export function AssetMobileSheet({
         scope="conversation"
         transcriptionId={conversationId}
         title={conversationTitle}
+        userTier={userTier}
+        isAdmin={isAdmin}
       />
 
       {shouldShow &&

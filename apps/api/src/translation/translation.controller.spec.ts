@@ -2,10 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TranslationController } from './translation.controller';
 import { TranslationService } from './translation.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { UserRepository } from '../firebase/repositories/user.repository';
 
 describe('TranslationController', () => {
   let controller: TranslationController;
   let mockTranslationService: any;
+  let mockUserRepository: any;
 
   const mockRequest = (uid: string = 'user-123') => ({
     user: { uid },
@@ -22,10 +24,15 @@ describe('TranslationController', () => {
       getSharedTranslationsForLocale: jest.fn(),
     };
 
+    mockUserRepository = {
+      getUser: jest.fn().mockResolvedValue({ uid: 'user-123', email: 'test@example.com', subscriptionTier: 'professional' }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TranslationController],
       providers: [
         { provide: TranslationService, useValue: mockTranslationService },
+        { provide: UserRepository, useValue: mockUserRepository },
       ],
     })
       .overrideGuard(FirebaseAuthGuard)
@@ -63,7 +70,7 @@ describe('TranslationController', () => {
         'trans-123',
         'user-123',
         'de-DE',
-        { translateSummary: true, translateAssets: true, assetIds: undefined },
+        { translateSummary: true, translateAssets: true, assetIds: undefined, forceRetranslate: false },
       );
     });
 
@@ -96,6 +103,7 @@ describe('TranslationController', () => {
           translateSummary: false,
           translateAssets: true,
           assetIds: ['asset-1', 'asset-2'],
+          forceRetranslate: false,
         },
       );
     });

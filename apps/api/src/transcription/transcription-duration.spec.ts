@@ -6,6 +6,12 @@ jest.mock('fs', () => ({
   unlinkSync: jest.fn(),
 }));
 
+// Mock bcrypt to avoid native module loading issues in test environments
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('$2b$12$mockhash'),
+  compare: jest.fn().mockResolvedValue(true),
+}));
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { getQueueToken } from '@nestjs/bull';

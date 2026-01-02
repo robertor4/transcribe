@@ -504,6 +504,46 @@ Note: Firestore will provide a link to auto-create indexes when queries fail. Fo
 - Supported formats: M4A, MP3, WAV, MP4, MOV, MPEG, MPGA, WebM, FLAC, OGG
 - MIME type handling: Accepts variations like `audio/x-m4a`, `audio/mp4`, `video/quicktime`, `application/octet-stream`
 
+### Admin Bypass for Gated Features
+
+**CRITICAL**: When implementing tier-gated features (Pro-only, Premium-only, etc.), always add admin bypass logic.
+
+**Pattern for frontend components:**
+```typescript
+// Get isAdmin from UsageContext
+const { usageStats, isAdmin } = useUsage();
+
+// Bypass tier restrictions for admins
+const canUseFeature = isAdmin || userTier !== 'free';
+```
+
+**Pattern for components receiving props:**
+```typescript
+interface MyComponentProps {
+  userTier?: string;
+  /** Whether the user is an admin (bypasses tier restrictions) */
+  isAdmin?: boolean;
+}
+
+// In component
+const canUseFeature = isAdmin || userTier !== 'free';
+```
+
+**Backend already handles admin bypass** in `apps/api/src/usage/usage.service.ts` - all quota checks return early for admin users.
+
+**Components with gated features that need admin bypass:**
+- `OutputGeneratorModal.tsx` - AI Asset quota limits
+- `QASlidePanel.tsx` - Ask Questions feature
+- `ExportPDFMenuItem.tsx` - PDF export
+- `TranslationMenuItems.tsx` - Translation feature
+- Any new feature with `userTier !== 'free'` checks
+
+**Checklist when adding a new gated feature:**
+1. Add `isAdmin` prop to the component (if receiving tier via props)
+2. Use `isAdmin || userTier !== 'free'` for access check
+3. Pass `isAdmin` from parent components that use `useUsage()`
+4. Test with admin account to verify bypass works
+
 ### WebSocket Event Protocol & Resilience
 The application uses Socket.io for real-time updates with **automatic polling fallback** for reliability.
 

@@ -61,8 +61,8 @@ describe('UsageService', () => {
         ).resolves.not.toThrow();
       });
 
-      it('should throw PaymentRequiredException at 3 transcriptions', async () => {
-        const user = createUserWithUsage(0, 3);
+      it('should throw PaymentRequiredException at 5 transcriptions', async () => {
+        const user = createUserWithUsage(0, 5); // Free tier limit is 5 transcriptions
         mockUserRepository.getUser.mockResolvedValue(user);
 
         await expect(
@@ -81,17 +81,17 @@ describe('UsageService', () => {
         ).rejects.toThrow(PaymentRequiredException);
       });
 
-      it('should throw on file exceeding 30 min duration', async () => {
+      it('should throw on file exceeding 60 min duration', async () => {
         const user = createTestUser();
         mockUserRepository.getUser.mockResolvedValue(user);
 
         await expect(
-          service.checkQuota(user.uid, 1024 * 1024, 35), // 35 minutes
+          service.checkQuota(user.uid, 1024 * 1024, 65), // 65 minutes, limit is 60
         ).rejects.toThrow(PaymentRequiredException);
       });
 
       it('should include quota exceeded code in error', async () => {
-        const user = createUserWithUsage(0, 3);
+        const user = createUserWithUsage(0, 5); // Free tier limit is 5 transcriptions
         mockUserRepository.getUser.mockResolvedValue(user);
 
         try {
@@ -401,13 +401,13 @@ describe('UsageService', () => {
     });
 
     it('should calculate percent used for free tier', async () => {
-      const user = createUserWithUsage(0, 2); // 2 of 3 transcriptions
+      const user = createUserWithUsage(0, 2); // 2 of 5 transcriptions (limit is 5)
       mockUserRepository.getUser.mockResolvedValue(user);
 
       const result = await service.getUsageStats(user.uid);
 
-      // 2/3 = 66.67%
-      expect(result.percentUsed).toBeCloseTo(66.67, 0);
+      // 2/5 = 40%
+      expect(result.percentUsed).toBeCloseTo(40, 0);
     });
 
     it('should calculate percent used for professional tier', async () => {

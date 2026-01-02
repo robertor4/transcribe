@@ -23,6 +23,8 @@ export interface ExportPDFMenuItemProps {
   onClose?: () => void;
   /** User's subscription tier - PDF export requires Pro or higher */
   userTier?: string;
+  /** Whether the user is an admin (bypasses tier restrictions) */
+  isAdmin?: boolean;
 }
 
 export function ExportPDFMenuItem({
@@ -33,13 +35,14 @@ export function ExportPDFMenuItem({
   conversationId,
   onClose,
   userTier = 'free',
+  isAdmin = false,
 }: ExportPDFMenuItemProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const t = useTranslations('conversation');
 
-  // PDF export requires Pro or higher
-  const canExportPDF = userTier !== 'free';
+  // PDF export requires Pro or higher (admins bypass tier restrictions)
+  const canExportPDF = isAdmin || userTier !== 'free';
 
   const handleExportPDF = async () => {
     // Show upgrade prompt for free users when they click
