@@ -194,6 +194,11 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {tUsage('yourUsage')} ({usageStats.tier})
+                  {usageStats.subscriptionStatus === 'trialing' && (
+                    <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 rounded-full">
+                      {tUsage('trial')}
+                    </span>
+                  )}
                 </span>
               </div>
 

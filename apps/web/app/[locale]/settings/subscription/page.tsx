@@ -6,6 +6,8 @@ import { useUsage } from '@/contexts/UsageContext';
 import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { TrialCountdownBanner } from '@/components/trial/TrialCountdownBanner';
 
 interface SubscriptionData {
   subscription: {
@@ -21,6 +23,8 @@ interface SubscriptionData {
 
 interface UsageStats {
   tier: string;
+  subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
+  trialEndsAt?: string;
   usage: {
     hours: number;
     transcriptions: number;
@@ -50,6 +54,8 @@ interface Invoice {
 }
 
 export default function SubscriptionPage() {
+  const params = useParams();
+  const locale = params.locale as string;
   const { user } = useAuth();
   const { isAdmin } = useUsage();
   const t = useTranslations('subscription');
@@ -163,9 +169,15 @@ export default function SubscriptionPage() {
   const tier = subscription?.tier || usageStats?.tier || 'free';
   const isFree = tier === 'free';
   const isProfessional = tier === 'professional';
+  const isTrialing = usageStats?.subscriptionStatus === 'trialing';
 
   return (
     <div className="space-y-8">
+      {/* Trial Banner */}
+      {isTrialing && usageStats?.trialEndsAt && (
+        <TrialCountdownBanner trialEndsAt={usageStats.trialEndsAt} />
+      )}
+
       {/* Current Plan */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="p-6">
@@ -188,7 +200,7 @@ export default function SubscriptionPage() {
               </div>
               {isFree && (
                 <Link
-                  href="/pricing"
+                  href={`/${locale}/pricing`}
                   className="px-6 py-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] transition-colors text-sm font-medium"
                 >
                   {t('upgrade')}

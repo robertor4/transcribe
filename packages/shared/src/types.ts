@@ -50,6 +50,12 @@ export interface User {
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
 
+  // Trial fields
+  trialStartedAt?: Date;           // When trial began
+  trialEndsAt?: Date;              // When trial expires (14 days from start)
+  hasUsedTrial?: boolean;          // Prevents multiple trials per user
+  trialReminderSent?: boolean;     // Track if 3-day warning was sent
+
   // Usage tracking
   usageThisMonth: {
     hours: number;

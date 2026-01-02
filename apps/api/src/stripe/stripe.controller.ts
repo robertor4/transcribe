@@ -291,6 +291,89 @@ export class StripeController {
   }
 
   /**
+   * Check if user is eligible for free trial
+   */
+  @Get('trial-eligibility')
+  @UseGuards(FirebaseAuthGuard)
+  async checkTrialEligibility(@Req() req: any) {
+    const user = req.user;
+
+    const userData = await this.stripeService['firebaseService'].getUser(
+      user.uid,
+    );
+
+    if (!userData) {
+      return {
+        eligible: false,
+        reason: 'User not found',
+      };
+    }
+
+    // Check eligibility conditions
+    if (userData.hasUsedTrial) {
+      return {
+        eligible: false,
+        reason: 'Trial already used',
+      };
+    }
+
+    if (userData.subscriptionTier !== 'free') {
+      return {
+        eligible: false,
+        reason: 'Already subscribed',
+      };
+    }
+
+    return {
+      eligible: true,
+    };
+  }
+
+  /**
+   * Create trial checkout session (14-day free trial, no card required)
+   */
+  @Post('create-trial-session')
+  @UseGuards(FirebaseAuthGuard)
+  async createTrialSession(@Req() req: any) {
+    const user = req.user;
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+
+    const successUrl = `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&trial=true`;
+    const cancelUrl = `${frontendUrl}/pricing`;
+
+    try {
+      // Get full user record from Firestore
+      const userData = await this.stripeService['firebaseService'].getUser(
+        user.uid,
+      );
+
+      const session = await this.stripeService.createTrialCheckoutSession(
+        user.uid,
+        user.email,
+        successUrl,
+        cancelUrl,
+        userData?.preferredLanguage,
+        userData?.displayName,
+      );
+
+      return {
+        success: true,
+        sessionId: session.id,
+        url: session.url,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to create trial session: ${error.message}`,
+        error.stack,
+      );
+      throw new BadRequestException(
+        error.message || 'Failed to create trial session',
+      );
+    }
+  }
+
+  /**
    * Stripe webhook endpoint
    * IMPORTANT: This endpoint must NOT use body parsing middleware
    * The raw body is needed for signature verification
@@ -349,6 +432,10 @@ export class StripeController {
           await this.stripeService.handleInvoicePaymentFailed(
             event.data.object as any,
           );
+          break;
+
+        case 'customer.subscription.trial_will_end':
+          await this.stripeService.handleTrialWillEnd(event.data.object as any);
           break;
 
         default:
