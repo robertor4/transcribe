@@ -1,0 +1,128 @@
+'use client';
+
+import { Clock, FileIcon, Calendar, Users as UsersIcon } from 'lucide-react';
+import { formatDuration } from '@/lib/formatters';
+
+interface ConversationDetails {
+  duration: number;
+  fileSize?: string;
+  createdAt: Date;
+  status: 'pending' | 'processing' | 'ready' | 'failed';
+  folder?: {
+    id: string;
+    name: string;
+  };
+  tags?: string[];
+  speakers?: number;
+  summaryFormat?: 'v1' | 'v2';
+}
+
+interface RightContextPanelProps {
+  conversation?: ConversationDetails;
+  onGenerateOutput?: (outputType: string) => void;
+}
+
+/**
+ * Right context panel for three-pane layout
+ * Shows conversation details matching folder view style
+ */
+export function RightContextPanel({
+  conversation,
+}: RightContextPanelProps) {
+  if (!conversation) {
+    return (
+      <div className="p-6">
+        <div className="text-center py-12">
+          <div className="text-4xl mb-3">📄</div>
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            Select a conversation to view details
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      {/* File Information */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <FileIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">File Information</h2>
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-gray-500" />
+              Duration
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {formatDuration(conversation.duration)}
+            </span>
+          </div>
+          {conversation.fileSize && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">File Size</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {conversation.fileSize}
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-gray-500" />
+              Created
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {conversation.createdAt.toLocaleDateString()}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</span>
+            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+              conversation.status === 'ready'
+                ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                : conversation.status === 'processing'
+                ? 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+            }`}>
+              {conversation.status === 'ready' ? '✓ Ready' :
+               conversation.status === 'processing' ? '⏳ Processing' :
+               'Pending'}
+            </span>
+          </div>
+          {conversation.summaryFormat && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Summary</span>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                conversation.summaryFormat === 'v2'
+                  ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+              }`}>
+                {conversation.summaryFormat === 'v2' ? 'V2' : 'Legacy'}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Speakers */}
+      {conversation.speakers && conversation.speakers > 0 && (
+        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 mb-4">
+            <UsersIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Speakers</h2>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Count</span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {conversation.speakers} speaker{conversation.speakers > 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

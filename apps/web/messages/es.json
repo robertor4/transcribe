@@ -11,6 +11,7 @@
     "close": "Cerrar",
     "back": "Atrás",
     "next": "Siguiente",
+    "previous": "Anterior",
     "submit": "Enviar",
     "search": "Buscar",
     "filter": "Filtrar",
@@ -29,6 +30,50 @@
     "userMenu": "Menú de usuario",
     "browserNotifications": "Notificaciones del navegador",
     "allRightsReserved": "Todos los derechos reservados"
+  },
+  "search": {
+    "placeholder": "Buscar conversaciones...",
+    "resultsTitle": "Resultados de búsqueda",
+    "resultsCount": "{count} encontrado(s)",
+    "noResults": "No se encontraron conversaciones para \"{query}\"",
+    "clearSearch": "Borrar búsqueda"
+  },
+  "leftNavigation": {
+    "closeSidebar": "Cerrar barra lateral",
+    "dashboard": "Panel",
+    "newConversation": "Nueva conversación",
+    "folders": "Carpetas",
+    "expandFolders": "Expandir carpetas",
+    "collapseFolders": "Contraer carpetas",
+    "noFoldersYet": "Aún no hay carpetas",
+    "sharedWithYou": "Compartido contigo",
+    "recentlyOpened": "Abierto recientemente",
+    "clearRecentlyOpened": "Borrar recientes",
+    "noConversationsYet": "Aún no hay conversaciones",
+    "results": "Resultados"
+  },
+  "conversationCreate": {
+    "confirmCancel": "¿Estás seguro de que quieres cancelar? Tu progreso se perderá.",
+    "closeModal": "Cerrar ventana",
+    "steps": {
+      "capture": {
+        "title": "Crear una conversación",
+        "description": "Elige cómo añadir tu audio"
+      },
+      "context": {
+        "title": "Añadir contexto",
+        "description": "Proporciona contexto para mejorar la precisión de la transcripción (opcional)"
+      },
+      "processing": {
+        "title": "Procesando...",
+        "description": "Esto puede tardar un momento"
+      }
+    },
+    "contextLabel": "Contexto (opcional)",
+    "contextPlaceholder": "ej. reunión de producto, llamada de ventas, entrevista...",
+    "back": "Atrás",
+    "skip": "Omitir",
+    "continue": "Continuar"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -136,7 +181,41 @@
     "emptyStateDescription": "Aún no has subido ningún archivo de audio. Comienza subiendo tu primera grabación.",
     "emptyStateButton": "Sube tu primer audio",
     "uploadFile": "Subir archivo",
-    "recordAudio": "Grabar audio"
+    "recordAudio": "Grabar audio",
+    "learnMore": "Más información",
+    "importAudio": "Importar audio",
+    "importAudioDesc": "Subir archivo de audio/video",
+    "recordAudioDesc": "Grabar conversación en vivo",
+    "recordAudioInfo": "Inicia una sesión de grabación en vivo. Puedes elegir grabar desde tu micrófono o capturar audio de una pestaña del navegador (para videollamadas).",
+    "importAudioInfo": "Importa un archivo de audio o video existente desde tu dispositivo. Formatos compatibles: MP3, M4A, WAV, MP4, MOV, WebM. El tamaño máximo del archivo depende de tu suscripción.",
+    "recordRoom": "Grabar la sala",
+    "recordRoomDesc": "Reuniones, notas de voz, entrevistas",
+    "recordTab": "Grabar pestaña",
+    "recordTabDesc": "Google Meet, Zoom (web), videos de YouTube",
+    "uploadFileLabel": "Subir archivo",
+    "uploadFileDesc": "Archivos de audio o video de cualquier fuente",
+    "conversations": "Conversaciones",
+    "folders": "Carpetas",
+    "itemsOfTotal": "{count} de {total}",
+    "itemsCount": "{count} elementos",
+    "new": "Nuevo",
+    "add": "Añadir",
+    "emptyConversationsHint": "Comienza grabando o subiendo tu primera conversación",
+    "startFirstConversation": "Iniciar primera conversación",
+    "showMore": "Mostrar más ({count} restantes)",
+    "emptyFoldersHint": "Crea carpetas para organizar tus conversaciones",
+    "createFirstFolder": "Crear primera carpeta",
+    "folderNamePlaceholder": "Nombre de carpeta...",
+    "createFolder": "Crear carpeta",
+    "cancel": "Cancelar",
+    "sharedWithYou": "Compartido contigo",
+    "dragHint": "Arrastra conversaciones aquí para organizarlas",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Más reciente",
+      "date-asc": "Más antiguo"
+    }
   },
   "upload": {
     "title": "Subir archivo de audio",
@@ -249,10 +328,27 @@
       "label": "Fuente de grabación",
       "microphone": "Micrófono",
       "microphoneDescription": "Grabar desde el micrófono de tu dispositivo",
-      "tabAudio": "Audio de pestaña de reunión",
-      "tabAudioDescription": "Capturar audio de una pestaña del navegador (Google Meet, Zoom)",
-      "tabAudioNotSupported": "La captura de audio de pestaña solo es compatible con navegadores Chrome y Edge. Utilice la grabación por micrófono o cambie a un navegador compatible.",
-      "tabAudioInstructions": "Cuando se le solicite, seleccione la pestaña del navegador con su reunión y asegúrese de marcar 'Compartir audio de pestaña' para obtener la mejor calidad."
+      "tabAudio": "Audio de pestaña",
+      "tabAudioDescription": "Grabar audio de una pestaña del navegador",
+      "tabAudioNotSupported": "No compatible con este navegador",
+      "tabAudioInstructions": "Primero permite el acceso al micrófono (para capturar tu voz), luego selecciona la pestaña con tu reunión y marca 'Compartir audio de pestaña'.",
+      "changeSource": "Cambiar fuente",
+      "changeMethod": "Cambiar método",
+      "recordingFrom": "Grabando desde:",
+      "chooseSource": "Elegir fuente de grabación",
+      "chooseSourceDescription": "Selecciona desde dónde quieres grabar",
+      "selectMicrophone": "Seleccionar micrófono",
+      "loadingMicrophones": "Cargando micrófonos...",
+      "inputLevel": "Nivel de entrada",
+      "initializing": "Inicializando...",
+      "noAudioDetected": "No se detecta audio. Comprueba que tu micrófono funciona y no está silenciado.",
+      "useThisMicrophone": "Usar este micrófono",
+      "recordTabAudio": "Grabar audio de pestaña",
+      "includeMicrophone": "Incluir mi micrófono",
+      "recommendedForCalls": "Recomendado para videollamadas",
+      "usingMicrophone": "Usando:",
+      "switchingMicrophone": "Cambiando micrófono...",
+      "switchedToDevice": "Cambiado a {device}"
     },
     "status": {
       "ready": "Listo para grabar",
@@ -263,20 +359,26 @@
     },
     "controls": {
       "start": "Iniciar grabación",
-      "stop": "Detener grabación",
+      "stop": "Finalizar",
+      "finishing": "Finalizando...",
       "pause": "Pausar",
       "resume": "Reanudar",
       "reset": "Volver a grabar",
       "upload": "Subir y transcribir",
-      "uploading": "Subiendo..."
+      "uploading": "Subiendo...",
+      "cancel": "Cancelar",
+      "dismissWarning": "Cerrar advertencia"
     },
     "preview": {
-      "title": "Vista previa de grabación"
+      "title": "Vista previa de grabación",
+      "yourRecording": "Previsualiza tu grabación",
+      "proceed": "Continuar",
+      "reRecord": "Volver a grabar"
     },
     "fileSize": "Tamaño estimado: {size}",
     "errors": {
       "title": "Error de grabación",
-      "notSupported": "La grabación de audio no es compatible con su navegador.",
+      "notSupported": "La grabación no es compatible con tu navegador. Prueba Chrome, Firefox o Edge.",
       "notSupportedDetails": "Utilice un navegador moderno como Chrome, Firefox, Safari o Edge para grabar audio.",
       "permissionDenied": "Acceso al micrófono denegado. Permita el acceso al micrófono en la configuración de su navegador.",
       "noMicrophoneFound": "No se encontró ningún micrófono. Conecte un micrófono e inténtelo de nuevo.",
@@ -284,9 +386,37 @@
       "recordingFailed": "Error en la grabación. Inténtelo de nuevo.",
       "uploadFailed": "Error en la carga. Inténtelo de nuevo."
     },
+    "confirm": {
+      "cancelRecording": "¿Estás seguro de que quieres cancelar? Tu grabación se perderá.",
+      "goBack": "Volver"
+    },
     "warnings": {
-      "title": "Aviso"
+      "title": "Aviso",
+      "durationApproaching": "La grabación se detendrá automáticamente en {minutes} minutos (límite de 3 horas)",
+      "durationLimit": "Duración máxima de grabación alcanzada (3 horas). La grabación ha sido guardada.",
+      "storageCritical": "Almacenamiento casi lleno ({remaining} restante). Grabación detenida para evitar pérdida de datos.",
+      "storageLow": "Almacenamiento bajo ({remaining} restante). Considere detenerse pronto.",
+      "memoryHigh": "Uso de memoria de grabación alto ({size}). Considere detenerse para evitar problemas.",
+      "memoryCritical": "Memoria de grabación casi llena ({size}). Grabación detenida para evitar pérdida de datos.",
+      "micUnavailable": "Micrófono no disponible - grabando solo audio de la pestaña. Su voz no se incluirá."
     }
+  },
+  "recovery": {
+    "title": "Recuperar grabaciones no guardadas",
+    "description": "Encontramos {count, plural, one {1 grabación} other {# grabaciones}} que no {count, plural, one {fue} other {fueron}} subida{count, plural, one {} other {s}}.",
+    "preview": "Vista previa",
+    "recover": "Recuperar",
+    "processImmediately": "Procesar inmediatamente",
+    "continueRecording": "Continuar grabación",
+    "discard": "Descartar",
+    "close": "Cerrar",
+    "footerNote": "Las grabaciones se guardan automáticamente en su dispositivo y se eliminan después de 7 días.",
+    "confirmDiscard": "¿Descartar?",
+    "discardTitle": "Descartar grabación",
+    "discardMessage": "Esta grabación se eliminará permanentemente. Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "microphoneRecording": "Grabación de micrófono",
+    "tabAudioRecording": "Grabación de audio de pestaña"
   },
   "transcription": {
     "title": "Transcripción",
@@ -320,6 +450,7 @@
     "status_processing": "Procesando",
     "status_completed": "Completado",
     "status_failed": "Fallido",
+    "uploadingFile": "Subiendo y preparando para la transcripción...",
     "processingAudio": "Procesando audio...",
     "analyzingContent": "Analizando contenido...",
     "generatingSummary": "Generando resumen...",
@@ -332,8 +463,6 @@
     "copyToClipboard": "Copiar al portapapeles",
     "copyTranscript": "Copiar transcripción",
     "copySummary": "Copiar resumen",
-    "fixTranscript": "Corregir transcripción",
-    "fixTranscriptTooltip": "Corregir errores tipográficos y otros errores con IA",
     "shareTranscription": "Compartir transcripción",
     "failedToLoad": "Error al cargar transcripciones",
     "failedToDelete": "Error al eliminar transcripción",
@@ -344,6 +473,178 @@
     "share": "Compartir",
     "loadingMore": "Cargando...",
     "noMoreTranscriptions": "Has llegado al final"
+  },
+  "aiAssets": {
+    "title": "Assets de IA",
+    "description": "Transforma esta conversación en acción",
+    "newAsset": "Generar nuevo",
+    "createAsset": "Crear asset de IA",
+    "emptyTitle": "Sin assets de IA",
+    "emptyDescription": "Crea tu primer asset de IA para transformar esta conversación en un entregable",
+    "emptyButton": "Crear asset de IA",
+    "loading": "Cargando asset de IA...",
+    "notFound": "Asset de IA no encontrado",
+    "notFoundDescription": "El asset de IA que buscas no existe o no tienes acceso.",
+    "modal": {
+      "title": "Crear asset de IA",
+      "steps": {
+        "selectType": "Elegir tipo",
+        "instructions": "Instrucciones",
+        "review": "Revisar",
+        "generate": "Generar"
+      },
+      "generating": "Creando tu asset de IA...",
+      "success": "¡Asset de IA creado!",
+      "error": "Error al crear. Por favor, inténtalo de nuevo.",
+      "whatToCreate": "¿Qué te gustaría crear?",
+      "chooseOutputType": "Elige el tipo de salida para esta conversación",
+      "categoryAnalysis": "Análisis",
+      "categoryContent": "Contenido",
+      "categoryEmails": "Correos",
+      "customInstructionsTitle": "Añadir instrucciones personalizadas (opcional)",
+      "customInstructionsDescription": "Proporciona instrucciones específicas para adaptar la salida a tus necesidades",
+      "customInstructionsLabel": "Instrucciones personalizadas",
+      "customInstructionsPlaceholder": "Ejemplo: Céntrate en los aspectos técnicos, mantenlo por debajo de 500 palabras e incluye las métricas discutidas.",
+      "leaveBlankDefault": "Deja en blanco para usar la configuración predeterminada de {name}",
+      "reviewTitle": "Revisar y confirmar",
+      "reviewDescription": "Comprueba tus selecciones antes de generar",
+      "outputType": "Tipo de salida",
+      "noCustomInstructions": "Sin instrucciones personalizadas",
+      "sourceConversation": "Conversación fuente",
+      "generatingOutput": "Generando tu {name}...",
+      "generatingWait": "Esto puede tardar unos momentos",
+      "generationFailed": "Error en la generación",
+      "tryAgain": "Intentar de nuevo",
+      "generationSuccess": "¡Salida generada con éxito!",
+      "outputCreated": "Tu {name} ha sido creado",
+      "generateOutput": "Generar salida",
+      "quota": {
+        "remaining": "{count} salida IA restante este mes",
+        "remainingPlural": "{count} salidas IA restantes este mes",
+        "exceeded": "Límite mensual alcanzado",
+        "exceededDescription": "Has utilizado todas las {limit} salidas IA gratuitas este mes. Actualiza a Pro para salidas ilimitadas.",
+        "upgradeButton": "Actualizar a Pro"
+      }
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Elementos de acción",
+        "description": "Lista estructurada de tareas"
+      },
+      "communicationAnalysis": {
+        "name": "Análisis de comunicación",
+        "description": "Evaluar efectividad de comunicación"
+      },
+      "blogPost": {
+        "name": "Entrada de blog",
+        "description": "Artículo listo para publicar"
+      },
+      "linkedin": {
+        "name": "Publicación de LinkedIn",
+        "description": "Contenido atractivo para redes sociales"
+      },
+      "followUpEmail": {
+        "name": "Correo de seguimiento",
+        "description": "Resumen de reunión con decisiones y acciones"
+      },
+      "salesEmail": {
+        "name": "Contacto de ventas",
+        "description": "Correo post-discovery con propuesta de valor y CTA"
+      },
+      "internalUpdate": {
+        "name": "Actualización interna",
+        "description": "Briefing para stakeholders con TLDR y decisiones clave"
+      },
+      "clientProposal": {
+        "name": "Propuesta de cliente",
+        "description": "Propuesta formal con requisitos y solución"
+      },
+      "agileBacklog": {
+        "name": "Backlog Agile",
+        "description": "Epics e historias de usuario con criterios de aceptación",
+        "asA": "Como",
+        "iWant": "quiero",
+        "soThat": "para que",
+        "acceptanceCriteria": "Criterios de aceptación",
+        "technicalDetails": "Detalles técnicos",
+        "technicalNotes": "Notas técnicas",
+        "dependencies": "Dependencias",
+        "epics": "Epics",
+        "standaloneStories": "Stories independientes",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "historia de usuario",
+        "userStories": "historias de usuario",
+        "noStoriesFound": "No se encontraron historias de usuario",
+        "noStoriesDescription": "Esta conversación no contenía características o requisitos de producto explícitos para extraer.",
+        "copyStory": "Copiar story",
+        "copied": "¡Copiado!"
+      }
+    },
+    "sidebar": {
+      "title": "Assets de IA",
+      "generateNew": "Crear nuevo",
+      "emptyTitle": "Sin assets",
+      "emptyDescription": "Genera tu primer asset de IA",
+      "recordingContext": "Contexto de grabación",
+      "metadata": "Información del archivo"
+    },
+    "panel": {
+      "close": "Cerrar",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar este asset?",
+      "viewFull": "Ver página completa"
+    },
+    "findReplace": "Buscar y reemplazar",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar AI Asset?",
+    "deleteConfirmMessage": "Esta acción no se puede deshacer. Este AI Asset se eliminará permanentemente.",
+    "deleteConfirmYes": "Sí, eliminar",
+    "deleteConfirmNo": "Cancelar"
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Resumen",
+      "transcript": "Transcripción"
+    },
+    "actions": {
+      "askQuestions": "Hacer preguntas",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "share": "Compartir",
+      "delete": "Eliminar",
+      "deleteConfirm": "¿Eliminar esta conversación?",
+      "deleteYes": "Sí, eliminar",
+      "deleteNo": "Cancelar",
+      "deleteConfirmTitle": "¿Eliminar conversación?",
+      "deleteConfirmMessage": "Esta acción no se puede deshacer. Esta conversación y todos sus AI Assets se eliminarán permanentemente.",
+      "deleteConfirmYes": "Sí, eliminar",
+      "deleteConfirmNo": "Cancelar",
+      "exportPDF": "Exportar como PDF",
+      "generatingPDF": "Generando PDF...",
+      "proFeature": "Función Pro",
+      "upgradeToExportPDF": "Actualiza a Pro para exportar tus conversaciones como documentos PDF bellamente formateados.",
+      "upgradeToPro": "Actualizar a Pro",
+      "findReplace": "Buscar y reemplazar",
+      "findReplaceDisabledLegacy": "Buscar y reemplazar no está disponible para conversaciones antiguas"
+    },
+    "translation": {
+      "original": "Original",
+      "viewOriginal": "Ver original",
+      "availableTranslations": "Traducciones disponibles",
+      "translateTo": "Traducir a",
+      "translating": "Traduciendo...",
+      "translationComplete": "Traducción completada",
+      "translationFailed": "Traducción fallida",
+      "noTranslationsAvailable": "No hay traducciones disponibles",
+      "assetsTranslated": "elementos traducidos",
+      "changeLanguage": "Cambiar idioma",
+      "proFeature": "Función Pro",
+      "upgradeToTranslate": "Actualiza a Pro para traducir tus conversaciones a más de 50 idiomas.",
+      "upgradeToPro": "Actualizar a Pro"
+    }
   },
   "howItWorks": {
     "title": "Cómo funciona",
@@ -573,8 +874,20 @@
       "saveError": "Error al guardar el perfil",
       "saveSuccess": "Perfil actualizado exitosamente",
       "profilePhoto": "Foto de perfil",
-      "photoURLPlaceholder": "Ingrese la URL de la imagen",
-      "photoURLHelp": "Ingrese una URL de imagen para usar como foto de perfil",
+      "changePhoto": "Cambiar foto",
+      "useGooglePhoto": "Usar foto de Google",
+      "uploadPhoto": "Subir foto",
+      "removePhoto": "Eliminar foto",
+      "photoUploadError": "Error al subir la foto",
+      "photoSizeError": "La foto debe ser menor a 5 MB",
+      "photoTypeError": "Solo se permiten archivos JPG y PNG",
+      "uploadingPhoto": "Subiendo...",
+      "cropPhoto": "Recortar foto",
+      "cropPhotoDescription": "Arrastra para reposicionar, desplaza para hacer zoom",
+      "zoom": "Zoom",
+      "saveCrop": "Guardar",
+      "cancelCrop": "Cancelar",
+      "processingImage": "Procesando...",
       "displayName": "Nombre para mostrar",
       "displayNamePlaceholder": "Ingrese su nombre",
       "email": "Dirección de correo electrónico",
@@ -711,425 +1024,121 @@
   },
   "landing": {
     "hero": {
-      "headline": "Crea cualquier cosa con tu voz",
-      "subtitle": "Convierte conversaciones en resúmenes, correos, publicaciones y más.",
-      "ctaPrimary": "Comenzar gratis",
-      "ctaSecondary": "Ver demo",
-      "byline": "Plataforma de voz a contenido",
-      "trustIndicators": {
-        "users": "Confiado por profesionales",
-        "rating": "Altamente valorado",
-        "certified": "Compatible con RGPD"
-      },
-      "title": "Convierte cada reunión en",
-      "titleHighlight": "notas y acciones claras.",
-      "subtitle2": "La app de notas de reunión con IA que transforma grabaciones de Zoom, Teams y Google Meet en resúmenes accionables — automáticamente, con precisión e instantáneamente.",
-      "cta": {
-        "primary": "Comenzar gratis",
-        "secondary": "Ver cómo funciona"
-      },
-      "guarantee": "Plan gratuito siempre disponible • Sin tarjeta de crédito • Funciona con todas las plataformas de reuniones",
-      "features": {
-        "saveTime": "Ahorra 10+ horas/semana",
-        "accuracy": "99.5% de precisión",
-        "languages": "50+ idiomas"
+      "headline": "Tú hablas. Crea.",
+      "subtitlePart1": "Neural Summary convierte el pensamiento hablado en resultados estructurados y profesionales. ",
+      "subtitlePart2": "Para que las decisiones perduren y el trabajo avance.",
+      "ctaPrimary": "Ver ejemplos",
+      "ctaSecondary": "Cómo funciona",
+      "byline": "Tú hablas. Crea.",
+      "document": {
+        "backTitle": "Correo de seguimiento al cliente",
+        "backGreeting": "Hola Sarah,",
+        "backIntro": "Siguiendo nuestra llamada sobre el calendario Q4...",
+        "backPointsIntro": "Puntos clave discutidos:",
+        "backPoint1": "Prioridad de onboarding empresarial confirmada",
+        "backPoint2": "App móvil pospuesta a Q1",
+        "backPoint3": "API v2 en camino para noviembre",
+        "frontTitle": "Estrategia de producto Q4",
+        "frontBullet1": "Enfoque en rediseño del flujo de onboarding empresarial",
+        "frontBullet2": "Posponer app móvil a Q1 por limitaciones de recursos",
+        "frontBullet3": "Lanzamiento de API v2 para noviembre",
+        "frontBullet4": "Contratar dos ingenieros senior para el equipo de plataforma",
+        "decisionsTitle": "Decisiones",
+        "decision1": "Proceder con integración de Stripe en lugar de PayPal",
+        "decision2": "Retrasar internacionalización hasta Q2"
       }
     },
-    "why": {
-      "headline": "Tus mejores ideas se pierden en la traducción.",
-      "paragraph1": "Piensas en conversaciones. Trabajas en documentos.",
-      "paragraph2": "Entre ambos: Horas escribiendo, formateando, reestructurando.",
-      "paragraph3": "¿Y si tu voz se convirtiera en el documento?"
+    "transformation": {
+      "recording": "Grabando...",
+      "quote1": "\"...sí, la demo fue muy bien, estaban entusiasmados con el dashboard de analytics...\"",
+      "quote2": "\"...exacto, y Sarah dijo que la integración con Salesforce es imprescindible...\"",
+      "quote3": "\"...en cuanto al presupuesto, dijo que apuntan a Q1, unas 50 licencias para empezar...\"",
+      "quote4": "\"...ah, y quieren primero un piloto, dos semanas más o menos...\"",
+      "quote5": "\"...debería enviarles el caso de estudio de Acme...\"",
+      "quote6": "\"...espera, ¿también mencionó SSO? Creo que sí...\"",
+      "documentTitle": "Correo de seguimiento",
+      "greeting": "Hola Sarah,",
+      "intro": "Fue un placer hablar hoy sobre el dashboard de analytics. Los puntos clave:",
+      "point1": "Integración Salesforce: confirmada como imprescindible",
+      "point2": "50 licencias, lanzamiento en Q1",
+      "point3": "Programa piloto de 2 semanas para empezar",
+      "nextStepLabel": "Siguiente paso:",
+      "nextStepText": "Enviar caso de estudio antes del viernes."
     },
-    "what": {
-      "headline": "Tres pasos hacia la creación.",
-      "steps": {
-        "speak": {
-          "title": "Habla",
-          "description": "Graba reuniones, ideas, entrevistas. O deja que nuestra IA te entreviste para extraer tu visión."
-        },
-        "extract": {
-          "title": "Extrae",
-          "description": "La IA hace preguntas, estructura pensamientos, captura cada detalle—como un asistente personal."
-        },
-        "create": {
-          "title": "Crea",
-          "description": "Obtén documentos listos para trabajar al instante. Especificaciones, artículos, correos, estrategias."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Hablar se convierte en crear.",
-      "subtitle": "De una conversación de 3 minutos → Especificación de producto completa",
-      "tagline": "Sin escribir. Sin formatear. Solo piensa en voz alta."
-    },
-    "who": {
-      "headline": "Diseñado para tu flujo de trabajo.",
-      "personas": {
-        "productManager": {
-          "title": "Gerente de Producto",
-          "subtitle": "Lluvia de ideas → Especificación de producto en 5 minutos",
-          "description": "Discute tu idea de funcionalidad. Obtén una especificación completa lista para tu equipo de desarrollo."
-        },
-        "founder": {
-          "title": "Fundador",
-          "subtitle": "Charla de visión → Documento estratégico para tu equipo",
-          "description": "Graba tu visión estratégica. Comparte instantáneamente un brief estructurado con tu equipo."
-        },
-        "contentCreator": {
-          "title": "Creador de Contenido",
-          "subtitle": "Entrevista → Artículo listo para publicar",
-          "description": "Entrevista invitados naturalmente. Obtén contenido estructurado listo para publicar."
-        },
-        "salesLeader": {
-          "title": "Líder de Ventas",
-          "subtitle": "Llamada con cliente → Email de seguimiento en minutos",
-          "description": "Enfócate en la conversación. Envía resúmenes perfectos mientras los prospectos te recuerdan."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Diseñado para el enfoque.",
-      "accuracy": {
-        "title": "99.5% de precisión",
-        "description": "Cada palabra capturada. Etiquetas de hablante incluidas."
-      },
-      "largeFiles": {
-        "title": "Archivos hasta 5GB",
-        "description": "Maneja horas de audio. Sin límites."
-      },
-      "languages": {
-        "title": "99 idiomas",
-        "description": "Detección automática. Traducción instantánea."
-      }
-    },
-    "securitySection": {
-      "headline": "Tu privacidad importa.",
-      "description": "Audio eliminado en segundos. Solo queda el texto. Encriptación de nivel empresarial."
-    },
-    "warp": {
-      "headline": "El futuro del trabajo no es escribir.",
-      "subtitle": "Es pensar en voz alta.",
-      "line1": "Tus ideas se convierten en requisitos.",
-      "line2": "Tu visión se convierte en estrategia.",
-      "line3": "Tu voz se convierte en producción.",
-      "tagline": "Así es como debería sentirse el trabajo creativo."
-    },
-    "finalCta": {
-      "headline": "Hablar se convierte en crear",
-      "subtext": "Comienza gratis. No se requiere tarjeta.",
-      "button": "Comenzar gratis",
-      "benefits": {
-        "free": "Comienza gratis",
-        "noCard": "Sin tarjeta de crédito"
-      }
-    },
-    "valueProposition": {
-      "title": "Tu IA que escucha, entiende y resume — para que puedas pensar, liderar y decidir.",
-      "subtitle": "Neural Summary mejora cómo te comunicas y tomas decisiones fortaleciendo tres áreas clave con las que luchan los profesionales:",
-      "efficiency": {
-        "title": "Eficiencia",
-        "description": "Automatiza la transcripción y el resumen para recuperar horas cada semana."
-      },
-      "clarity": {
-        "title": "Claridad",
-        "description": "Captura lo que realmente importa de reuniones, entrevistas y discusiones."
-      },
-      "impact": {
-        "title": "Impacto",
-        "description": "Convierte insights en acción con resúmenes estructurados y compartibles y próximos pasos."
-      },
-      "tagline": "No solo recuerdes lo que se dijo — actúa en consecuencia."
-    },
-    "whyTeams": {
-      "title": "Por qué los equipos eligen Neural Summary",
-      "benefit1": "Ahorra 3-5 horas por semana en documentación manual",
-      "benefit2": "Reduce la pérdida de información y los malentendidos",
-      "benefit3": "Mantén equipos alineados sin compartir notas interminablemente",
-      "benefit4": "Seguro, conforme y escalable para cualquier organización",
-      "benefit5": "Seguro, conforme y escalable para cualquier organización",
-      "tagline": "Deja de perder tiempo en reuniones — comienza a convertir palabras en acción."
-    },
-    "benefits": {
-      "title": "Transforma tu flujo de trabajo, mejora tus habilidades",
-      "subtitle": "Descubre cómo Neural Summary te hace más efectivo",
-      "shareCollaborate": {
-        "title": "Comparte y Colabora Sin Esfuerzo",
-        "description": "Envía resúmenes profesionales a tu equipo con un clic. No más largos reportes de reuniones o tareas perdidas."
-      },
-      "improveCommunication": {
-        "title": "Mejora Tus Habilidades de Comunicación",
-        "description": "Analiza tus patrones de habla, identifica muletillas y convértete en un presentador más efectivo."
-      },
-      "saveTime": {
-        "title": "Ahorra 10+ Horas Cada Semana",
-        "description": "Convierte reuniones de 1 hora en resúmenes de 5 minutos. Enfócate en lo importante, no en tomar notas."
-      },
-      "neverMiss": {
-        "title": "Nunca Te Pierdas Detalles Importantes",
-        "description": "Captura automáticamente cada acción, decisión e insight. Tu asistente de IA nunca olvida."
-      }
-    },
-    "features": {
-      "title": "Funciones poderosas para cada profesional",
-      "ai": {
-        "title": "Resúmenes impulsados por IA",
-        "description": "Obtén resúmenes ejecutivos con puntos clave, tareas pendientes e insights"
-      },
-      "largeFiles": {
-        "title": "Soporte para archivos grandes",
-        "description": "Maneja archivos de hasta 5GB con transcripción avanzada de AssemblyAI"
-      },
-      "security": {
-        "title": "Tu Audio Nunca Se Almacena",
-        "description": "Los archivos se eliminan inmediatamente después del procesamiento. La arquitectura de conocimiento cero garantiza tu privacidad."
-      },
-      "demo": {
-        "dragDrop": "Arrastra y suelta tu archivo de audio aquí",
-        "record": "O graba directamente desde cualquier dispositivo"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Funciona con Todas las Plataformas de Reuniones",
-      "subtitle": "Graba en cualquier plataforma, obtén notas de reunión con IA automáticamente",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Graba localmente o en la nube, luego sube para transcripción instantánea"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Descarga grabaciones de Teams y obtén resúmenes de reunión con IA en minutos"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Sube grabaciones de Meet para transcripción automática con etiquetas de hablante"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transforma reuniones de WebEx en notas estructuradas y tareas pendientes"
-      },
-      "anyPlatform": {
-        "name": "Cualquier Plataforma",
-        "description": "Funciona con grabaciones telefónicas, reuniones presenciales, entrevistas y más"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Perfecto para Todos los Tipos de Reuniones",
-      "subtitle": "Desde reuniones 1-a-1 rápidas hasta reuniones generales, nunca pierdas detalles importantes",
-      "oneOnOnes": {
-        "title": "Reuniones 1-a-1",
-        "description": "Concéntrate en la conversación, no en tomar notas. Obtén registros perfectos de retroalimentación, objetivos y compromisos."
-      },
-      "teamStandups": {
-        "title": "Reuniones de Equipo & Sincronizaciones",
-        "description": "Mantén a todos alineados con actas automáticas y seguimiento de tareas pendientes."
-      },
-      "clientCalls": {
-        "title": "Llamadas con Clientes & Ventas",
-        "description": "Captura cada requisito, pregunta y compromiso. Comparte resúmenes profesionales al instante."
-      },
-      "allHands": {
-        "title": "Reuniones Generales",
-        "description": "Crea transcripciones buscables para miembros del equipo que no pudieron asistir. Nunca te repitas."
-      }
-    },
-    "howItWorks": {
-      "title": "Cómo Funciona",
-      "subtitle": "De la grabación de reunión a notas accionables en 3 simples pasos",
+    "how": {
+      "headline": "Cómo funciona",
       "step1": {
-        "title": "Graba tu reunión",
-        "description": "Usa Zoom, Teams, Google Meet, tu teléfono o cualquier dispositivo de grabación. Todos los formatos principales de audio y video son compatibles."
+        "title": "Habla libremente",
+        "description": "Graba una conversación, reunión o nota de voz."
       },
       "step2": {
-        "title": "La IA transcribe con etiquetas de hablante",
-        "description": "Nuestra IA identifica hablantes, transcribe con 99.5% de precisión y entiende el contexto — incluso jerga técnica."
+        "title": "Sacamos lo importante",
+        "description": "Decisiones, prioridades y próximos pasos. Estructurados automáticamente."
       },
       "step3": {
-        "title": "Obtén resumen de reunión y tareas",
-        "description": "Recibe resúmenes estructurados con decisiones clave, temas de discusión y tareas con responsables y plazos."
+        "title": "Avanzas",
+        "description": "Comparte, envía o actúa sobre trabajo que ya está claro."
       }
     },
-    "security": {
-      "title": "Confiado por profesionales que valoran la precisión y la privacidad",
-      "stats": {
-        "users": "Confiado por profesionales en todo el mundo",
-        "rating": "Altamente valorado por los usuarios"
-      },
-      "compliance": {
-        "title": "Arquitectura centrada en la privacidad",
-        "description": "Construido con cumplimiento de GDPR y protección de datos en el núcleo"
-      },
-      "useCases": {
-        "title": "Confiado por profesionales",
-        "description": "Usado por equipos legales, médicos, de investigación y ejecutivos donde cada palabra cuenta."
-      },
-      "technology": {
-        "title": "Impulsado por IA de vanguardia",
-        "description": "Construido con los últimos modelos de lenguaje ajustados para comunicación empresarial."
-      },
-      "encryption": {
-        "title": "Eliminación inmediata después del procesamiento",
-        "description": "Los archivos de audio se eliminan en segundos, nunca se almacenan en nuestros servidores"
-      },
-      "retention": {
-        "title": "Infraestructura en la nube segura",
-        "description": "Tus datos están cifrados en reposo y en tránsito con protocolos estándar de la industria"
-      },
-      "audit": {
-        "title": "Arquitectura de conocimiento cero",
-        "description": "Tus datos permanecen privados - solo procesamos lo necesario y eliminamos el audio de inmediato"
-      },
-      "badges": {
-        "soc2": "Cumple SOC 2",
-        "gdpr": "Cumple GDPR",
-        "hipaa": "Listo HIPAA",
-        "iso": "ISO 27001",
-        "compliance": "Los modelos de voz a texto cumplen con SOC 2, GDPR, HIPAA e ISO 27001."
-      }
-    },
-    "testimonials": {
-      "title": "Amado por equipos que valoran su tiempo",
-      "rating": "Altamente valorado por profesionales de reuniones",
-      "testimonial1": {
-        "quote": "Nuestras reuniones de equipo ahora son 10x más productivas. Todos reciben automáticamente el resumen y las tareas — no más '¿quién toma notas?'",
-        "author": "Michael Chen",
-        "role": "Gerente de Ingeniería, Startup Tech"
-      },
-      "testimonial2": {
-        "quote": "Puedo concentrarme en mis clientes, no en escribir. Los resúmenes de reunión son tan precisos que los comparto directamente con las partes interesadas.",
-        "author": "Dr. James Liu",
-        "role": "Investigador Clínico"
-      },
-      "testimonial3": {
-        "quote": "Grabo todas mis llamadas con clientes y obtengo transcripciones perfectas con tareas. Es como tener un asistente en cada llamada. ¡Cambio radical para ventas!",
-        "author": "Jennifer Brooks",
-        "role": "Ejecutiva de Cuentas, SaaS Sales"
-      }
-    },
-    "meetingFaq": {
-      "title": "Preguntas Frecuentes",
-      "subtitle": "Todo lo que necesitas saber sobre convertir voz en documentos listos para trabajar",
-      "question1": {
-        "question": "¿Cómo funciona Neural Summary?",
-        "answer": "Sube cualquier grabación de audio o video, o habla directamente en la plataforma. Nuestra IA procesa tu conversación, identifica información clave y genera documentos estructurados—resúmenes, tareas y análisis detallados. Funciona con reuniones, brainstormings, entrevistas o notas de voz. Del upload al documento finalizado en solo 3-5 minutos."
-      },
-      "question2": {
-        "question": "¿Qué tipos de documentos puedo crear?",
-        "answer": "Desde una sola grabación, crea resúmenes de reunión con tareas y decisiones, análisis de contenido, insights estratégicos y análisis de comunicación. Cada tipo de documento está optimizado para diferentes necesidades—resumen ejecutivo, transcripción detallada o plan de acción de equipo. Próximamente: creación de documentos guiada por IA para specs y artículos."
-      },
-      "question3": {
-        "question": "¿Funciona con Zoom, Teams y Google Meet?",
-        "answer": "¡Sí! Graba tu reunión en cualquier plataforma, descarga el archivo y súbelo a Neural Summary. Soportamos todos los formatos principales de video y audio incluyendo MP3, M4A, WAV, MP4, MOV y más. Sin bots, sin plugins—solo sube y crea."
-      },
-      "question4": {
-        "question": "¿Puede Neural Summary identificar diferentes hablantes?",
-        "answer": "¡Sí! Nuestra tecnología de diarización de hablantes detecta y etiqueta automáticamente múltiples hablantes a lo largo de tu conversación. Las contribuciones de cada hablante se atribuyen claramente, manteniendo el flujo natural del diálogo. Puedes renombrar hablantes después del procesamiento para aún más claridad en tus documentos."
-      },
-      "question5": {
-        "question": "¿Qué tan precisos son los resultados?",
-        "answer": "Ofrecemos 99.5% de precisión de transcripción con identificación de hablantes en más de 50 idiomas. Pero Neural Summary va más allá de la transcripción—nuestra IA extrae decisiones, tareas, temas e insights que la toma manual de notas suele perder. Obtienes tanto captura palabra por palabra precisa como análisis inteligente."
-      },
-      "question6": {
-        "question": "¿Mis datos son privados y seguros?",
-        "answer": "Tu audio NUNCA se almacena en nuestros servidores. Cuando subes una grabación, se procesa inmediatamente y se elimina en segundos. Solo conservamos el texto y los resultados del análisis. Esta arquitectura de conocimiento cero garantiza que tus conversaciones sensibles permanezcan completamente privadas—ideal para discusiones comerciales, legales o médicas confidenciales."
-      },
-      "question7": {
-        "question": "¿Puedo compartir y exportar documentos?",
-        "answer": "¡Sí! Comparte tus documentos mediante enlaces seguros protegidos por contraseña, envía por correo electrónico o exporta en formatos PDF y Word. Los planes profesionales incluyen compartir ilimitado y funciones de colaboración para equipos."
-      }
-    },
-    "cta": {
-      "title": "¿Listo para transformar tus reuniones de desperdicios de tiempo en impulsores de acción?",
-      "subtitle": "Únete a miles de equipos que usan Neural Summary para capturar automáticamente cada decisión, tarea e insight.",
-      "button": "Comenzar gratis — sin tarjeta de crédito",
-      "benefits": {
-        "free": "Sin tarjeta de crédito",
-        "noCard": "Funciona con Zoom, Teams, Meet",
-        "cancel": "Cancela cuando quieras"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Precios simples y transparentes",
-      "subtitle": "Comienza gratis, mejora cuando estés listo. Sin costos ocultos, sin sorpresas.",
-      "free": {
-        "name": "Gratis",
-        "description": "Perfecto para probar",
-        "features": {
-          "transcriptions": "3 transcripciones/mes",
-          "duration": "Máx 30 min por archivo",
-          "summary": "Resumen básico"
-        },
-        "cta": "Comenzar"
-      },
-      "professional": {
-        "name": "Profesional",
-        "description": "Para usuarios regulares",
-        "badge": "Más popular",
-        "features": {
-          "transcriptions": "Transcripciones ilimitadas",
-          "hours": "60 horas/mes incluidas",
-          "analyses": "Los 6 tipos de análisis",
-          "fileSize": "Máx 3GB de tamaño de archivo",
-          "priority": "Procesamiento prioritario"
-        },
-        "cta": "Prueba gratuita"
-      },
-      "payg": {
-        "name": "Paga según uses",
-        "description": "Por hora de audio",
-        "features": {
-          "credits": "Los créditos nunca expiran",
-          "analyses": "Los 6 tipos de análisis",
-          "occasional": "Perfecto para uso ocasional"
-        },
-        "cta": "Comprar créditos"
-      },
-      "viewFullPricing": "Ver detalles completos de precios"
+    "closingCta": {
+      "headline": "¿Listo para probarlo?",
+      "ctaPrimary": "Empezar gratis",
+      "ctaSecondary": "Ver ejemplos primero"
     },
     "nav": {
       "login": "Iniciar sesión",
-      "getStarted": "Comenzar",
-      "dashboard": "Ir al Panel de Control",
+      "getStarted": "Empezar gratis",
+      "dashboard": "Panel de control",
       "menu": "Menú",
       "language": "Idioma",
-      "features": "Características",
+      "examples": "Ejemplos",
       "howItWorks": "Cómo funciona",
-      "pricing": "Precios",
-      "faq": "FAQ"
+      "pricing": "Precios"
     },
     "footer": {
-      "product": {
-        "title": "Producto",
-        "features": "Características",
+      "sections": {
+        "product": "Producto",
+        "company": "Empresa",
+        "legal": "Legal"
+      },
+      "links": {
+        "features": "Funciones",
+        "examples": "Ejemplos",
         "pricing": "Precios",
-        "api": "API"
-      },
-      "company": {
-        "title": "Empresa",
-        "about": "Acerca de",
-        "blog": "Blog",
-        "careers": "Carreras"
-      },
-      "support": {
-        "title": "Soporte",
-        "help": "Centro de ayuda",
-        "contact": "Contacto",
-        "status": "Estado"
-      },
-      "legal": {
-        "title": "Legal",
+        "about": "Sobre nosotros",
+        "security": "Seguridad",
+        "help": "Ayuda",
         "privacy": "Privacidad",
         "terms": "Términos",
-        "security": "Seguridad"
+        "contact": "Contacto"
       },
-      "copyright": "© 2024 Neural Summary. Todos los derechos reservados.",
-      "tagline": "Creado por personas que han pasado demasiadas horas en reuniones."
+      "tagline": "Tú hablas. Crea.",
+      "copyright": "© 2026 Neural Summary. Todos los derechos reservados."
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "q1": {
+        "question": "¿Qué tipos de documentos puedo crear?",
+        "answer": "Neural Summary transforma tus conversaciones en documentos profesionales como resúmenes de reuniones, especificaciones de producto, artículos de blog, planes de acción, borradores de email y más. Elige entre 15+ plantillas o crea salidas personalizadas."
+      },
+      "q2": {
+        "question": "¿Qué tan precisa es la transcripción?",
+        "answer": "Utilizamos modelos de IA de última generación que alcanzan más del 95% de precisión. El sistema identifica automáticamente a los hablantes y maneja múltiples idiomas, acentos y terminología especializada."
+      },
+      "q3": {
+        "question": "¿Mis datos están seguros?",
+        "answer": "Sí. Todos los archivos de audio están cifrados en tránsito y en reposo. Nunca usamos tus datos para entrenar modelos de IA. Los archivos se eliminan automáticamente después del procesamiento, y puedes eliminar tus datos en cualquier momento."
+      },
+      "q4": {
+        "question": "¿Puedo probarlo gratis?",
+        "answer": "Absolutamente. Comienza con nuestro plan gratuito que incluye 3 archivos de audio al mes (hasta 30 minutos cada uno). No se requiere tarjeta de crédito. Actualiza en cualquier momento para más capacidad y funciones."
+      }
     }
   },
   "terms": {
     "meta": {
       "title": "Términos de Uso - Neural Summary",
-      "description": "Términos de Uso para el servicio de transcripción y análisis impulsado por IA de Neural Summary. Términos y condiciones conformes al RGPD."
+      "description": "Términos de Uso para el servicio de procesamiento de conversaciones y generación de AI Assets de Neural Summary. Términos y condiciones conformes al RGPD."
     },
     "title": "Términos de Uso",
     "effectiveDate": "Fecha de vigencia",
@@ -1146,12 +1155,12 @@
       },
       "serviceDescription": {
         "title": "Descripción del servicio",
-        "content": "Neural Summary proporciona servicios de transcripción de audio impulsados por IA y análisis inteligente. Nuestra plataforma incluye:",
+        "content": "Neural Summary proporciona servicios de procesamiento de conversaciones impulsados por IA y generación inteligente de AI Assets. Nuestra plataforma incluye:",
         "features": {
-          "transcription": "Transcripción automática de archivos de audio utilizando tecnología de IA avanzada",
-          "analysis": "Resumen inteligente y análisis del contenido transcrito",
-          "storage": "Almacenamiento seguro en la nube de sus transcripciones y archivos de audio",
-          "sharing": "Capacidad de compartir transcripciones con acceso controlado"
+          "transcription": "Procesamiento automático de archivos de audio en conversaciones utilizando tecnología de IA avanzada",
+          "analysis": "Generación inteligente de AI Assets a partir de sus conversaciones",
+          "storage": "Almacenamiento seguro en la nube de sus conversaciones. Los archivos de audio se conservan 30 días para soporte, luego se eliminan automáticamente",
+          "sharing": "Capacidad de compartir conversaciones con acceso controlado"
         }
       },
       "pricing": {
@@ -1203,7 +1212,7 @@
         },
         "userContent": {
           "title": "Su contenido",
-          "content": "Usted retiene todos los derechos sobre el contenido que carga al Servicio. Al cargar contenido, nos otorga una licencia limitada para procesar, almacenar y mostrar su contenido únicamente con el propósito de brindarle el Servicio."
+          "content": "Usted retiene todos los derechos sobre las conversaciones y AI Assets que crea con el Servicio. Al cargar contenido, nos otorga una licencia limitada para procesar, almacenar y mostrar su contenido únicamente con el propósito de brindarle el Servicio."
         },
         "license": {
           "title": "Otorgamiento de licencia",
@@ -1268,7 +1277,7 @@
   "privacy": {
     "meta": {
       "title": "Política de Privacidad - Neural Summary",
-      "description": "Política de Privacidad para Neural Summary. Aprenda cómo recopilamos, usamos y protegemos sus datos personales en cumplimiento del RGPD."
+      "description": "Política de Privacidad para Neural Summary. Aprenda cómo recopilamos, usamos y protegemos sus conversaciones y AI Assets en cumplimiento del RGPD."
     },
     "title": "Política de Privacidad",
     "effectiveDate": "Última actualización",
@@ -1301,9 +1310,9 @@
         },
         "usage": {
           "title": "Datos de uso",
-          "audioFiles": "Archivos de audio que carga para transcripción",
-          "transcriptions": "Transcripciones y resultados de análisis",
-          "analysisResults": "Resúmenes e insights generados por IA",
+          "audioFiles": "Archivos de audio que carga para procesamiento",
+          "transcriptions": "Conversaciones y sus transcripciones",
+          "analysisResults": "AI Assets e insights generados",
           "preferences": "Preferencias y configuraciones del usuario"
         },
         "technical": {
@@ -1319,7 +1328,7 @@
         "content": "Procesamos sus datos personales basados en los siguientes fundamentos legales:",
         "contract": {
           "title": "Ejecución del contrato",
-          "content": "Procesamiento necesario para brindarle nuestros servicios de transcripción y análisis."
+          "content": "Procesamiento necesario para brindarle nuestros servicios de procesamiento de conversaciones y generación de AI Assets."
         },
         "consent": {
           "title": "Consentimiento",
@@ -1338,7 +1347,7 @@
         "title": "Cómo usamos sus datos",
         "content": "Usamos los datos recopilados para varios propósitos:",
         "purposes": {
-          "service": "Para proporcionar y mantener nuestros servicios de transcripción y análisis",
+          "service": "Para proporcionar y mantener nuestros servicios de procesamiento de conversaciones y generación de AI Assets",
           "communication": "Para comunicarnos con usted sobre su cuenta y actualizaciones del servicio",
           "improvement": "Para mejorar y personalizar su experiencia",
           "security": "Para detectar, prevenir y abordar problemas técnicos y amenazas de seguridad",
@@ -1351,11 +1360,11 @@
         "content": "Podemos compartir sus datos con proveedores de servicios terceros confiables que nos ayudan a operar nuestro Servicio:",
         "serviceProviders": {
           "title": "Proveedores de servicios",
-          "hosting": "Infraestructura en la nube",
-          "transcription": "Servicios de transcripción",
-          "analysis": "Análisis de IA",
-          "email": "Servicio de correo electrónico",
-          "analytics": "Analíticas"
+          "hosting": "Infraestructura de nube de nivel empresarial para almacenamiento y procesamiento seguro de datos",
+          "transcription": "Servicios de transcripción líderes en la industria para transcripción precisa",
+          "analysis": "Modelos de IA de nivel empresarial para análisis inteligente de contenido",
+          "email": "Servicios de entrega de correo electrónico seguros para comunicaciones transaccionales",
+          "analytics": "Analíticas enfocadas en la privacidad para mejora del servicio"
         },
         "notice": "Nunca vendemos sus datos personales a terceros. Todos los proveedores de servicios están sujetos a estrictos acuerdos de confidencialidad y solo pueden usar sus datos para brindarnos servicios."
       },
@@ -1365,7 +1374,7 @@
         "periods": {
           "title": "Períodos de retención",
           "account": "Datos de cuenta",
-          "transcriptions": "Transcripciones",
+          "transcriptions": "Conversaciones",
           "audioFiles": "Archivos de audio",
           "logs": "Registros del sistema",
           "analytics": "Datos de analíticas"
@@ -1480,7 +1489,7 @@
     }
   },
   "share": {
-    "title": "Compartir Transcripción",
+    "title": "Compartir conversación",
     "shareSettings": "Configuración de Seguridad",
     "contentSelection": "Seleccionar Contenido para Compartir",
     "summaryOnly": "Solo Resumen",
@@ -1489,6 +1498,8 @@
     "customSelection": "Personalizado",
     "includeTranscript": "Transcripción Completa",
     "includeSummary": "Resumen",
+    "fullTranscript": "Transcripción completa",
+    "includeAIAssets": "Assets de IA",
     "includeCommunication": "Estilos de Comunicación",
     "includeActionItems": "Puntos de Acción",
     "includeSpeakerInfo": "Información del Hablante",
@@ -1502,6 +1513,8 @@
     "never": "Nunca",
     "passwordProtect": "Protección con Contraseña",
     "enterPassword": "Introducir contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
     "createLink": "Crear Enlace para Compartir",
     "creating": "Creando...",
     "linkCreated": "Enlace para Compartir Creado",
@@ -1523,61 +1536,106 @@
     "emailsSent": "¡Correos Enviados!",
     "emailsSentSuccess": "¡Correos enviados con éxito! Los destinatarios recibirán el enlace para compartir pronto.",
     "viewCount": "Vistas",
+    "views": "Vistas",
     "expiresOn": "Caduca",
+    "expires": "Caduca",
     "passwordProtected": "Protegido con contraseña",
+    "password": "Contraseña",
+    "protected": "Protegido",
     "scanQR": "Escanear código QR para compartir",
+    "showQRCode": "Mostrar código QR",
     "confirmRevoke": "¿Está seguro de que desea revocar este enlace para compartir? Las personas con el enlace ya no podrán acceder a esta transcripción."
   },
   "shared": {
-    "title": "Transcripción Compartida",
-    "loadingTranscript": "Cargando transcripción...",
-    "enterPassword": "Introducir Contraseña",
-    "passwordRequired": "Contraseña requerida",
-    "password": "Contraseña",
-    "submit": "Enviar",
-    "invalidPassword": "Contraseña inválida",
-    "transcriptNotFound": "Transcripción no encontrada",
-    "transcriptExpired": "Este enlace para compartir ha caducado",
-    "transcriptRevoked": "Este enlace para compartir ha sido revocado",
-    "errorLoading": "Error al cargar la transcripción",
-    "sharedBy": "Compartido por",
-    "sharedOn": "Compartido el",
-    "downloadTranscript": "Descargar Transcripción",
-    "playRecording": "Reproducir Grabación",
-    "backToTop": "Volver arriba",
-    "noAnalysisAvailable": "No hay análisis disponible",
-    "noTranscriptAvailable": "No hay transcripción disponible",
+    "translate": "Traducir",
     "loading": "Cargando transcripción...",
+    "passwordRequired": "Contraseña requerida",
     "passwordDescription": "Esta transcripción está protegida con contraseña. Ingrese la contraseña para verla.",
+    "enterPassword": "Introducir contraseña",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
+    "submit": "Enviar",
     "error": {
       "title": "Error de acceso",
       "invalidLink": "Este enlace para compartir es inválido o ha expirado.",
       "notFound": "Transcripción no encontrada.",
       "loadFailed": "Error al cargar la transcripción."
     },
+    "sharedBy": "Compartido por",
     "views": "Vistas",
     "readOnly": "Solo lectura",
     "analysis": "Análisis",
     "transcript": "Transcripción completa",
+    "summary": "Resumen",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "noSummary": "No hay resumen disponible",
+    "noTranscript": "No hay transcripción disponible",
     "footer": {
-      "poweredBy": "Powered by Neural Summary",
+      "poweredBy": "Desarrollado por",
       "copyright": "© {year} Neural Summary. Todos los derechos reservados."
+    },
+    "importCta": {
+      "title": "Guardar en tu biblioteca",
+      "description": "Importa esta conversación para acceder a ella en cualquier momento desde tu panel de control.",
+      "signUp": "Regístrate gratis",
+      "logIn": "Iniciar sesión",
+      "signUpTitle": "Guardar en tu biblioteca",
+      "signUpDescription": "Regístrate para importar esta conversación y acceder a ella en cualquier momento.",
+      "importButton": "Importar",
+      "importing": "Importando...",
+      "imported": "Importado"
+    },
+    "userMenu": {
+      "dashboard": "Ir al panel",
+      "signOut": "Cerrar sesión"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Compartido contigo",
+    "backToList": "Volver a compartidos",
+    "sharedBy": "Compartido por {name}",
+    "empty": {
+      "title": "Sin conversaciones compartidas",
+      "description": "Cuando alguien comparta una conversación contigo y la importes, aparecerá aquí."
+    },
+    "importButton": "Importar a biblioteca",
+    "importing": "Importando...",
+    "imported": "Importado",
+    "importedOn": "Importado el {date}",
+    "expiresIn": "{days} días restantes",
+    "expiresToday": "Expira hoy",
+    "expired": "Expirado",
+    "expiredTitle": "Esta conversación ha expirado",
+    "expiredDescription": "El enlace para compartir de esta conversación ha expirado y el contenido ya no está disponible.",
+    "unavailable": "Ya no disponible",
+    "unavailableTitle": "Conversación no disponible",
+    "unavailableDescription": "Esta conversación ya no está disponible. El propietario puede haber revocado el acceso o eliminado el original.",
+    "expirationWarning": "Esta conversación expira en {days} días",
+    "removeConfirm": "¿Eliminar de tu biblioteca?",
+    "removeDescription": "Esto no afectará la conversación original.",
+    "remove": "Eliminar",
+    "yes": "Sí",
+    "no": "No",
+    "error": {
+      "loadFailed": "Error al cargar las conversaciones compartidas",
+      "importFailed": "Error al importar la conversación",
+      "removeFailed": "Error al eliminar la conversación"
     }
   },
   "pricing": {
     "metadata": {
       "title": "Precios - Neural Summary",
-      "description": "Elija el plan perfecto para sus necesidades de transcripción. Desde gratuito hasta empresa, tenemos un plan que se ajusta a su flujo de trabajo."
+      "description": "Precios premium simples. Prueba Pro gratis durante 14 días. Transforma tus conversaciones en documentos profesionales."
     },
     "hero": {
-      "title": "Precios simples y transparentes",
-      "subtitle": "Elija el plan que se ajuste a sus necesidades. Comience gratis, actualice en cualquier momento.",
-      "currencyNotice": "Precios mostrados en USD. Se convierten automáticamente a su moneda local al pagar.",
+      "title": "Precios para trabajo que importa",
+      "subtitle": "Empieza gratis. Mejora cuando tu trabajo cuente.",
+      "trialMessage": "Prueba Pro gratis durante 14 días. No se requiere tarjeta de crédito.",
+      "currencyNotice": "Precios mostrados en USD. Se convierten automáticamente a tu moneda local al pagar.",
       "annual": "Anual",
       "monthly": "Mensual",
-      "save25": "Ahorre 25%",
+      "save25": "Ahorra 25%",
       "noCreditCard": "No se requiere tarjeta de crédito",
       "freeTrial": "Prueba gratuita de 14 días",
       "viewComparison": "Ver comparación detallada",
@@ -1588,17 +1646,18 @@
         "name": "Gratis",
         "title": "Gratis",
         "price": "Gratis",
-        "description": "Perfecto para probar Neural Summary",
+        "description": "Descubre las posibilidades. Prueba algunas conversaciones, sin compromiso.",
         "cta": "Comenzar",
         "features": {
-          "transcriptions": "3 transcripciones/mes",
-          "duration": "30 minutos máx por archivo",
+          "transcriptions": "5 conversaciones/mes",
+          "duration": "60 minutos máx por archivo",
           "fileSize": "100MB tamaño máx de archivo",
           "analyses": "Solo resumen básico",
-          "coreAnalyses": "4 análisis básicos incluidos",
-          "onDemand": "2 análisis bajo demanda/mes",
-          "translation": "Funciones de traducción",
-          "sharing": "Compartir transcripciones",
+          "coreAnalyses": "4 salidas IA incluidas",
+          "onDemand": "2 salidas IA bajo demanda/mes",
+          "translation": "Traducción (solo Pro)",
+          "askQuestions": "Hacer preguntas (solo Pro)",
+          "sharing": "Compartir conversaciones",
           "batch": "Procesamiento por lotes",
           "storage": "90 días de almacenamiento",
           "support": "Soporte comunitario"
@@ -1606,67 +1665,70 @@
         "period": "/mes"
       },
       "professional": {
-        "name": "Profesional",
-        "title": "Profesional",
+        "name": "Pro",
+        "title": "Pro",
         "period": "/mes",
-        "description": "Para profesionales que transcriben regularmente",
-        "cta": "Comenzar",
+        "description": "Para profesionales que necesitan documentos pulidos, consistentemente.",
+        "cta": "Comenzar prueba gratuita",
         "badge": "Más popular",
         "recommended": "RECOMENDADO",
         "guarantee": "Garantía de devolución de dinero de 30 días",
+        "trialBadge": "Prueba gratuita de 14 días",
         "features": {
-          "transcriptions": "Transcripciones ilimitadas",
+          "transcriptions": "Conversaciones ilimitadas",
           "hours": "60 horas/mes incluidas",
-          "unlimited": "Transcripciones ilimitadas",
+          "unlimited": "Conversaciones ilimitadas",
           "duration": "60 horas/mes incluidas",
           "overageRate": "{overageRate} por hora adicional",
           "overage": "Excedente: {overageRate}/hora",
           "fileSize": "5GB tamaño máx de archivo",
-          "analyses": "Todos los tipos de análisis",
-          "allAnalyses": "Todos los tipos de análisis",
-          "onDemandAnalyses": "Análisis bajo demanda ilimitados",
+          "analyses": "Todos los tipos de salidas IA",
+          "allAnalyses": "Todos los tipos de salidas IA",
+          "onDemandAnalyses": "Salidas IA bajo demanda ilimitadas",
           "storage": "Almacenamiento ilimitado",
           "sharing": "Funciones de compartir avanzadas",
           "advancedSharing": "Compartir y colaboración avanzados",
           "translation": "Traducción en 50+ idiomas",
+          "askQuestions": "Hacer preguntas con respuestas IA",
           "batch": "Procesamiento por lotes",
           "priority": "Procesamiento prioritario",
           "support": "Soporte por correo prioritario"
         }
       },
-      "payg": {
-        "name": "Paga según uses",
-        "title": "Paga según uses",
-        "priceUnit": "/hora",
-        "description": "Perfecto para uso ocasional",
-        "cta": "Comprar créditos",
+      "enterprise": {
+        "name": "Enterprise",
+        "title": "Enterprise",
+        "customPrice": "Contactar ventas",
+        "description": "Para equipos que necesitan control, consistencia y cumplimiento.",
+        "cta": "Contactar ventas",
         "features": {
-          "transcriptions": "Transcripciones ilimitadas",
-          "credits": "Los créditos nunca expiran",
-          "noSubscription": "No se requiere suscripción",
-          "allFeatures": "Todas las funciones incluidas",
-          "noExpiry": "Los créditos nunca expiran",
-          "minimum": "Compra mínima",
-          "rate": "Tarifa por hora flexible",
-          "fileSize": "5GB tamaño máx de archivo",
-          "analyses": "Todos los tipos de análisis",
-          "onDemandAnalyses": "Créditos por análisis",
-          "storage": "180 días de almacenamiento",
-          "support": "Soporte por correo"
+          "unlimited": "Conversaciones ilimitadas",
+          "unlimitedHours": "Horas de procesamiento ilimitadas",
+          "largeFiles": "10GB tamaño máx de archivo",
+          "allAnalyses": "Todos los tipos de salidas IA",
+          "customIntegrations": "Integraciones personalizadas",
+          "sso": "Inicio de sesión único (SSO)",
+          "adminDashboard": "Panel de administración de equipo",
+          "auditLogs": "Registros de auditoría y cumplimiento",
+          "dedicatedManager": "Gerente de cuenta dedicado",
+          "customContracts": "Contratos personalizados y SLAs",
+          "teamManagement": "Gestión de equipos",
+          "dedicatedSupport": "Soporte dedicado"
         }
       }
     },
     "finalCta": {
-      "title": "Comience a transcribir inteligentemente",
-      "subtitle": "No se requiere tarjeta de crédito para el plan gratuito",
-      "button": "Comenzar gratis"
+      "title": "Comienza a crear más inteligentemente",
+      "subtitle": "Transforma tus conversaciones en documentos profesionales",
+      "button": "Comenzar prueba gratuita",
+      "noCreditCard": "No se requiere tarjeta de crédito"
     },
     "comparison": {
       "feature": "Función",
       "tiers": {
         "free": "Gratis",
-        "professional": "Profesional",
-        "payg": "Paga según uses"
+        "professional": "Pro",
+        "enterprise": "Enterprise"
       },
       "categories": {
         "basics": "Básicos",
@@ -1674,20 +1736,24 @@
         "features": "Funciones adicionales"
       },
       "features": {
-        "transcriptions": "Transcripciones por mes",
+        "transcriptions": "Conversaciones por mes",
         "duration": "Duración máx por archivo",
         "fileSize": "Tamaño máx de archivo",
         "hours": "Horas mensuales incluidas",
-        "coreAnalyses": "Análisis básicos",
-        "onDemand": "Análisis bajo demanda",
+        "storageDuration": "Duración del almacenamiento",
+        "coreAnalyses": "Salidas IA básicas",
+        "onDemand": "Salidas IA bajo demanda",
         "translation": "Traducción",
+        "askQuestions": "Hacer preguntas",
         "sharing": "Funciones de compartir",
+        "pdfExport": "Exportación PDF",
         "batch": "Procesamiento por lotes",
         "priority": "Procesamiento prioritario",
+        "sso": "Single Sign-On (SSO)",
         "api": "Acceso API"
       },
       "title": "Comparar planes",
-      "subtitle": "Encuentre el plan perfecto para sus necesidades",
+      "subtitle": "Encuentra el plan perfecto para tus necesidades",
       "values": {
         "unlimited": "Ilimitado",
         "basic": "Básico",
@@ -1697,48 +1763,48 @@
         "email": "Correo",
         "priorityEmail": "Correo prioritario",
         "hoursIncluded": "60 horas/mes",
-        "payPerUse": "Pago por uso",
-        "creditBased": "Basado en créditos",
-        "comingSoon": "Próximamente"
+        "comingSoon": "Próximamente",
+        "storageFree": "30 días",
+        "storageUnlimited": "Ilimitado"
       }
     },
     "faq": {
       "title": "Preguntas frecuentes",
       "questions": {
+        "trial": {
+          "question": "¿Cómo funciona la prueba gratuita de 14 días?",
+          "answer": "Comienza tu prueba con acceso completo a todas las funciones Pro. No se requiere tarjeta de crédito. Al final de los 14 días, elige suscribirte o continuar con nuestro plan gratuito."
+        },
         "cost": {
-          "question": "¿Cuánto cuesta convertir conversaciones en documentos?",
-          "answer": "El plan Profesional incluye 60 horas/mes de procesamiento de audio por {professionalPrice}. Las horas adicionales cuestan {overageRate} cada una. Paga según uses es {paygPrice}/hora con créditos que nunca expiran. El plan Gratis incluye 3 archivos de audio/mes (máx 30 min cada uno)."
+          "question": "¿Cuánto cuesta Neural Summary?",
+          "answer": "El plan Pro cuesta {professionalPrice}/mes o {annualPrice}/año (ahorra 25%). Las horas adicionales más allá de 60/mes cuestan {overageRate} cada una. El plan Gratis incluye 5 conversaciones/mes."
         },
         "overage": {
           "question": "¿Qué pasa si excedo mi límite mensual?",
-          "answer": "Los usuarios Profesionales se les cobra automáticamente {overageRate} por hora adicional de procesamiento de audio. Los usuarios Gratis deben actualizar para continuar creando documentos. Los usuarios de Paga según uses simplemente compran más créditos según sea necesario."
+          "answer": "Los usuarios Pro son cobrados automáticamente {overageRate} por hora adicional de procesamiento de audio. Los usuarios Gratis pueden actualizar a Pro o esperar al próximo mes."
         },
         "cancel": {
-          "question": "¿Puedo cancelar en cualquier momento?",
-          "answer": "¡Sí! Puede cancelar en cualquier momento. Su suscripción permanece activa hasta el final de su período de facturación, y no se le cobrará más."
-        },
-        "currency": {
-          "question": "¿Qué monedas soportan?",
-          "answer": "Soportamos más de 15 monedas incluyendo USD, EUR, GBP, CAD, AUD, JPY y más. Los precios se convierten automáticamente a su moneda local."
+          "question": "¿Puedo cancelar mi suscripción en cualquier momento?",
+          "answer": "¡Sí! Puedes cancelar en cualquier momento. Tu suscripción permanece activa hasta el final de tu período de facturación, y no se te cobrará de nuevo."
         },
         "upgrade": {
-          "question": "¿Puedo cambiar de plan?",
-          "answer": "¡Sí! Las actualizaciones surten efecto inmediatamente con cargo prorrateado. Las rebajas de categoría surten efecto al final de su período de facturación actual, por lo que puede usar su plan actual hasta entonces."
+          "question": "¿Puedo mejorar o degradar mi plan?",
+          "answer": "¡Sí! Las mejoras surten efecto inmediatamente con cargos prorrateados. Las degradaciones surten efecto al final de tu período de facturación actual."
         },
-        "payg": {
-          "question": "¿Cómo funcionan los créditos de Paga según uses?",
-          "answer": "Los créditos cuestan {paygPrice} por hora de audio y pueden usarse para crear cualquier tipo de documento. Nunca expiran y pueden usarse en cualquier momento. Perfecto para necesidades ocasionales de creación de documentos."
+        "enterprise": {
+          "question": "¿Qué incluye el plan Enterprise?",
+          "answer": "Enterprise incluye procesamiento ilimitado, SSO (próximamente), integraciones personalizadas, soporte dedicado y contratos personalizados. Contacta a nuestro equipo de ventas para conocer los precios."
         }
       }
     },
     "cta": {
       "title": "¿Listo para comenzar?",
-      "subtitle": "Únase a miles de profesionales que usan Neural Summary para ahorrar tiempo y mejorar su trabajo.",
+      "subtitle": "Únete a miles de profesionales que usan Neural Summary para ahorrar tiempo y mejorar su trabajo.",
       "button": "Comenzar prueba gratuita"
     },
     "featureCategories": {
-      "transcription": "Transcripción",
-      "analysis": "Análisis",
+      "transcription": "Básicos",
+      "analysis": "Salidas IA",
       "collaboration": "Colaboración",
       "support": "Soporte"
     }
@@ -1810,6 +1876,7 @@
       "description": "Administre su suscripción, vea uso e historial de facturación"
     },
     "title": "Suscripción y facturación",
+    "description": "Administre su suscripción e información de facturación.",
     "loading": "Cargando detalles de suscripción...",
     "error": {
       "loadFailed": "Error al cargar detalles de suscripción",
@@ -1821,7 +1888,7 @@
       "title": "Plan actual",
       "free": "Plan Gratis",
       "professional": "Plan Profesional",
-      "payg": "Paga según uses",
+      "enterprise": "Plan Enterprise",
       "status": {
         "active": "Activo",
         "cancelled": "Cancelado",
@@ -1841,8 +1908,6 @@
       "hours": "Horas",
       "onDemandAnalyses": "Análisis bajo demanda",
       "resetDate": "Se reinicia el",
-      "paygCredits": "Créditos disponibles",
-      "buyMore": "Comprar más créditos",
       "overage": {
         "title": "Cargos por excedente",
         "description": "Ha usado {hours} horas más allá de su límite de 60 horas este mes",
@@ -1903,7 +1968,6 @@
     "usageThisMonth": "Uso este mes",
     "hoursUsed": "Horas usadas",
     "transcriptionsUsed": "Transcripciones",
-    "buyMoreCredits": "Comprar más créditos",
     "noBillingHistory": "Aún no hay historial de facturación",
     "downloadInvoice": "Descargar factura",
     "overageWarning": "Uso excedente",
@@ -1928,10 +1992,6 @@
         "title": "Archivo demasiado grande",
         "description": "Este archivo excede el límite de tamaño de su plan. Actualice para procesar archivos más grandes."
       },
-      "paygCredits": {
-        "title": "Créditos insuficientes",
-        "description": "No tiene suficientes créditos para esta transcripción. Compre más créditos para continuar."
-      },
       "onDemandAnalyses": {
         "title": "Límite de análisis alcanzado",
         "description": "Ha usado todos sus análisis bajo demanda este mes. Actualice para obtener más análisis o espere hasta el próximo mes."
@@ -1940,7 +2000,6 @@
       "limit": "Su límite",
       "required": "Requerido",
       "upgradeButton": "Actualizar plan",
-      "buyCreditsButton": "Comprar créditos",
       "cancelButton": "Cancelar"
     },
     "usageIndicator": {
@@ -1955,30 +2014,12 @@
     }
   },
   "cookieConsent": {
-    "title": "Usamos cookies para mejorar tu experiencia",
-    "subtitle": "Ayúdanos a mejorar Neural Summary permitiendo analytics",
-    "description": "Usamos Firebase Analytics para entender cómo usas nuestra aplicación y mejorar tu experiencia. Esto incluye el seguimiento de vistas de página, uso de funciones y métricas de rendimiento. Tus datos nunca se venden a terceros.",
-    "learnMore": "Más información sobre nuestras prácticas de privacidad",
-    "whatWeCollect": "Lo que recopilamos:",
-    "whatWeCollectItems": {
-      "pageViews": "Vistas de página y patrones de navegación",
-      "featureUsage": "Uso de funciones (cargas, transcripciones, resúmenes)",
-      "performance": "Métricas de rendimiento e informes de errores",
-      "deviceInfo": "Información del dispositivo y navegador"
-    },
-    "whatWeDontCollect": "Lo que NO recopilamos:",
-    "whatWeDontCollectItems": {
-      "audioFiles": "Tus archivos de audio o contenido de transcripción",
-      "personalInfo": "Información personal identificable sin consentimiento",
-      "advertising": "Datos con fines publicitarios"
-    },
-    "changePreference": "Puedes cambiar tu preferencia en cualquier momento en la configuración del panel.",
-    "accept": "Aceptar Analytics",
+    "title": "Preferencias de cookies",
+    "description": "Usamos cookies para mejorar tu experiencia. Al continuar, aceptas nuestro uso de cookies.",
+    "accept": "Aceptar",
     "decline": "Rechazar"
   },
   "analyses": {
-    "custom": "Análisis Personalizado",
-    "default": "Análisis Estándar",
     "copy": "Copiar",
     "copied": "¡Copiado!"
   },
@@ -1998,10 +2039,10 @@
     "yourUsage": "Su Uso",
     "resetsOn": "Se restablece el",
     "upgradePlan": "Actualizar Plan",
-    "transcriptions": "Transcripciones",
+    "transcriptions": "Conversaciones",
     "hours": "Horas",
     "remaining": "restante",
-    "onDemandAnalyses": "Análisis bajo demanda"
+    "onDemandAnalyses": "AI Assets"
   },
   "admin": {
     "title": "Panel de administración",
@@ -2055,6 +2096,275 @@
       "accessDenied": "Acceso denegado. Se requiere rol de administrador.",
       "failedToFetch": "Error al obtener datos",
       "userNotFound": "Usuario no encontrado"
+    }
+  },
+  "qa": {
+    "title": "Hacer preguntas",
+    "titleConversation": "Preguntar sobre esta conversación",
+    "titleFolder": "Buscar en esta carpeta",
+    "description": "Haz una pregunta sobre esta conversación",
+    "descriptionFolder": "Buscar en {count} conversaciones",
+    "placeholder": "Haz una pregunta...",
+    "submit": "Preguntar",
+    "loading": "Buscando respuesta...",
+    "sources": "Fuentes",
+    "answeredIn": "Respondido en {time}",
+    "noResults": "No pude encontrar información relevante sobre eso.",
+    "error": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "indexing": "Preparando búsqueda...",
+    "back": "Volver",
+    "in": "En",
+    "emptyState": "Haz una pregunta para buscar en la conversación",
+    "showMore": "Mostrar {count} más",
+    "showLess": "Mostrar menos",
+    "jumpToTimestamp": "Ir al momento",
+    "copy": "Copiar respuesta",
+    "copied": "¡Copiado!",
+    "proFeature": "Función Pro",
+    "upgradeToAsk": "Actualiza a Pro para hacer preguntas sobre tus conversaciones y obtener respuestas con IA y citas.",
+    "upgradeToPro": "Actualizar a Pro"
+  },
+  "folderPicker": {
+    "title": "Mover a carpeta",
+    "close": "Cerrar",
+    "createPlaceholder": "Crear nueva carpeta...",
+    "add": "Añadir",
+    "noFolder": "Sin carpeta (sin agrupar)",
+    "noFoldersYet": "Aún no hay carpetas. Crea una arriba.",
+    "cancel": "Cancelar",
+    "move": "Mover",
+    "moving": "Moviendo...",
+    "moveError": "No se pudo mover la conversación",
+    "createError": "No se pudo crear la carpeta"
+  },
+  "templateSelector": {
+    "base": "BASE",
+    "baseOutput": "Salida base (siempre incluida)",
+    "quickActions": "Acciones rápidas",
+    "additionalOutputs": "Salidas adicionales (opcional)",
+    "outputTemplates": "Plantillas de salida",
+    "selectedAdditionalOutputs": "Has seleccionado {count, plural, =1 {# salida adicional} other {# salidas adicionales}} para generar",
+    "selectAdditionalHint": "Selecciona salidas adicionales o continúa solo con la transcripción",
+    "templateSelected": "La plantilla seleccionada guiará la generación de IA",
+    "skipHint": "Puedes omitir este paso y generar salidas después",
+    "back": "Atrás",
+    "continueWithOutputs": "Continuar con transcripción + {count, plural, =1 {# salida} other {# salidas}}",
+    "continueTranscriptOnly": "Continuar solo con transcripción",
+    "clearSelection": "Limpiar selección",
+    "skipStep": "Omitir paso",
+    "continueWithTemplate": "Continuar con plantilla",
+    "continueWithoutTemplate": "Continuar sin plantilla"
+  },
+  "findReplace": {
+    "title": "Buscar y reemplazar",
+    "findPlaceholder": "Buscar texto...",
+    "replacePlaceholder": "Reemplazar con...",
+    "caseSensitive": "Sensible a mayúsculas",
+    "wholeWord": "Palabra completa",
+    "find": "Buscar",
+    "searching": "Buscando...",
+    "categories": {
+      "summary": "Resumen",
+      "transcript": "Transcripción",
+      "aiAssets": "Activos IA"
+    },
+    "patternCategories": {
+      "person_name": "Nombre de persona",
+      "company_name": "Nombre de empresa",
+      "place": "Lugar",
+      "technical_term": "Término técnico",
+      "custom": "Personalizado"
+    },
+    "savePattern": "Guardar para futuras conversaciones",
+    "replaceSelected": "Reemplazar seleccionados",
+    "replaceAll": "Reemplazar todo",
+    "replacing": "Reemplazando...",
+    "noMatches": "No se encontraron coincidencias",
+    "matchCount": "{count} coincidencias",
+    "matchCountSingular": "1 coincidencia encontrada",
+    "replacedCount": "Se reemplazaron {count} ocurrencias",
+    "selectAll": "Seleccionar todo",
+    "deselectAll": "Deseleccionar todo",
+    "selected": "{count} seleccionados",
+    "inCategory": "en {category}",
+    "error": "Ocurrió un error",
+    "patternSaved": "Patrón guardado para futuras conversaciones",
+    "suggestions": {
+      "title": "Reemplazos sugeridos",
+      "description": "Basado en tus patrones guardados",
+      "apply": "Aplicar",
+      "dismiss": "Descartar",
+      "matchesFound": "{count} coincidencias encontradas"
+    },
+    "close": "Cerrar",
+    "emptyState": "Ingresa texto para buscar y reemplazar en esta conversación",
+    "previousMatch": "Coincidencia anterior",
+    "nextMatch": "Siguiente coincidencia",
+    "refreshing": "Actualizando contenido...",
+    "pressEnterToSearch": "Presiona Enter para buscar",
+    "enterReplaceText": "Ingresa el texto de reemplazo arriba",
+    "clearSelection": "Limpiar",
+    "replace": "Reemplazar"
+  },
+  "examples": {
+    "meta": {
+      "title": "Ejemplos | Neural Summary",
+      "description": "Una conversación se convierte en cuatro documentos listos. Ve la transformación."
+    },
+    "hero": {
+      "headline": "Una conversación. Posibilidades infinitas.",
+      "subtitle": "Ve lo que Neural Summary crea a partir de una reunión.",
+      "scenarioLabel": "Generación en vivo"
+    },
+    "scenarios": {
+      "productLaunch": "Lanzamiento de producto",
+      "clientDiscovery": "Descubrimiento de cliente"
+    },
+    "cards": {
+      "actionItems": {
+        "title": "Tareas"
+      },
+      "email": {
+        "title": "Email de seguimiento"
+      },
+      "blogPost": {
+        "title": "Artículo de blog"
+      },
+      "linkedin": {
+        "title": "Post de LinkedIn"
+      },
+      "communicationAnalysis": {
+        "title": "Análisis de comunicación"
+      }
+    },
+    "cta": {
+      "headline": "Tu turno.",
+      "primaryButton": "Probar gratis",
+      "secondaryLink": "Ver precios"
+    },
+    "content": {
+      "productLaunch": {
+        "actionItems": {
+          "items": [
+            { "task": "Finalizar cronograma Q1 y compartir con stakeholders", "owner": "Sarah", "deadline": "8 ene" },
+            { "task": "Revisar feedback beta y priorizar correcciones", "owner": "Dev Team", "deadline": "10 ene" },
+            { "task": "Preparar nota de prensa y kit de medios", "owner": "Marketing", "deadline": "20 ene" },
+            { "task": "Programar webinar de clientes para semana de lanzamiento", "owner": "CS Team", "deadline": "25 ene" }
+          ]
+        },
+        "email": {
+          "subject": "Planificación del lanzamiento - Próximos pasos",
+          "greeting": "Hola equipo,",
+          "intro": "Aquí el resumen de la reunión de hoy sobre el lanzamiento de producto Q1.",
+          "decisionsLabel": "Decisiones confirmadas",
+          "decisions": [
+            "Fecha de lanzamiento confirmada para el 28 de enero",
+            "Programa beta extendido una semana para pruebas adicionales",
+            "Presupuesto de marketing aprobado para campaña con influencers"
+          ],
+          "closing": "Gracias a todos.",
+          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+        },
+        "blogPost": {
+          "headline": "Lo que aprendimos lanzando en enero",
+          "subheading": "Lecciones de nuestro equipo sobre generar impulso antes del día uno",
+          "hook": "El viejo manual dice esperar hasta que sea perfecto. Nosotros intentamos algo diferente.",
+          "body": "Nuestros beta testers no solo encontraban bugs. Estaban moldeando la dirección del producto. Su feedback nos llevó a cambiar completamente el flujo de onboarding. El resultado: 40% de mejora en tasas de activación antes del lanzamiento.",
+          "quote": { "text": "El producto se sentía como si estuviera hecho para nosotros, no solo vendido a nosotros.", "attribution": "Usuario Beta" },
+          "imageAlt": "Formas geométricas abstractas representando innovación"
+        },
+        "linkedin": {
+          "hook": "Casi retrasamos nuestro lanzamiento 3 meses.",
+          "bullets": [
+            "Feedback beta > suposiciones internas",
+            "El impulso supera la perfección",
+            "Tus primeros usuarios definen tu producto"
+          ],
+          "result": "2.000 registros en la primera semana. No porque fuéramos perfectos. Porque estábamos presentes.",
+          "callToAction": "¿Cuál es la mayor lección de tu último lanzamiento?",
+          "author": { "name": "Sarah Mitchell", "title": "Product Manager en TechFlow", "initials": "SM" }
+        }
+      },
+      "clientDiscovery": {
+        "actionItems": {
+          "items": [
+            { "task": "Enviar propuesta con tres opciones de paquete", "owner": "Marcus", "deadline": "15 ene" },
+            { "task": "Agendar reunión técnica con su CTO", "owner": "Marcus", "deadline": "12 ene" },
+            { "task": "Preparar caso de estudio de proyecto fintech similar", "owner": "Team", "deadline": "14 ene" },
+            { "task": "Elaborar cronograma para implementación Q2", "owner": "Marcus", "deadline": "18 ene" }
+          ]
+        },
+        "email": {
+          "subject": "Fue un placer hablar contigo - Próximos pasos",
+          "greeting": "Hola David,",
+          "intro": "Gracias por tomarte el tiempo de explicarme los desafíos de hoy. La situación de tu equipo es exactamente el tipo de problema en el que nos especializamos.",
+          "decisionsLabel": "Puntos clave discutidos",
+          "decisions": [
+            "Enfoque mobile-first alineado con la demografía de usuarios",
+            "Implementación por fases comenzando con funciones de pago core",
+            "Integración con su instancia existente de Salesforce"
+          ],
+          "closing": "Espero con interés la posibilidad de trabajar juntos.",
+          "signature": { "name": "Marcus Chen", "title": "Consultor Senior", "initials": "MC" }
+        },
+        "blogPost": {
+          "headline": "La llamada de descubrimiento que cambió mi forma de vender",
+          "subheading": "Por qué escuchar siempre supera a presentar",
+          "hook": "Antes entraba a las llamadas de descubrimiento con un deck. Ahora entro con preguntas.",
+          "body": "El cliente mencionó su problema real a los 47 minutos. Si hubiera estado presentando, lo habría perdido por completo. Su equipo no luchaba con la tecnología. Se ahogaban en procesos manuales que nadie tenía tiempo de arreglar.",
+          "quote": { "text": "Entendiste nuestro problema antes de que termináramos de explicarlo.", "attribution": "Feedback del cliente" },
+          "imageAlt": "Formas abstractas representando conversación y conexión"
+        },
+        "communicationAnalysis": {
+          "overallAssessment": "Fuertes habilidades de descubrimiento con espacio para profundizar la comprensión del cliente. Haces buenas preguntas pero podrías dejar respirar más las respuestas.",
+          "dimensions": {
+            "clarity": { "name": "Claridad", "strength": "Las preguntas fueron específicas y accionables", "improvement": "Resumir puntos clave antes de continuar" },
+            "activeListening": { "name": "Escucha activa", "strength": "Construyó naturalmente sobre las respuestas del cliente", "improvement": "Pausar más después de respuestas complejas" }
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contacto | Neural Summary",
+      "description": "Ponte en contacto con el equipo de Neural Summary"
+    },
+    "title": "Contáctanos",
+    "description": "¿Tienes una pregunta o comentario? Nos encantaría saber de ti.",
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "Tu nombre",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Selecciona un tema",
+      "message": "Mensaje",
+      "messagePlaceholder": "¿Cómo podemos ayudarte?",
+      "submit": "Enviar mensaje",
+      "submitting": "Enviando...",
+      "subjects": {
+        "general": "Consulta general",
+        "support": "Soporte técnico",
+        "sales": "Ventas",
+        "partnership": "Colaboración"
+      }
+    },
+    "success": {
+      "title": "Mensaje enviado",
+      "description": "Gracias por contactarnos. Te responderemos en 24 horas."
+    },
+    "error": {
+      "title": "Algo salió mal",
+      "description": "Por favor, inténtalo de nuevo o escríbenos directamente a hello@neuralsummary.com."
+    },
+    "validation": {
+      "nameRequired": "El nombre es obligatorio",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor, introduce un correo válido",
+      "subjectRequired": "Por favor, selecciona un asunto",
+      "messageRequired": "El mensaje es obligatorio",
+      "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
     }
   }
 }

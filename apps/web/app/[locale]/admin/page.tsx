@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { User, UserRole } from '@transcribe/shared';
@@ -58,7 +58,7 @@ export default function AdminPanel() {
   }, [user, authLoading, router]);
 
   // Fetch all users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -91,13 +91,13 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       fetchUsers();
     }
-  }, [user]);
+  }, [user, fetchUsers]);
 
   const handleDeleteUser = async (userId: string, hardDelete: boolean) => {
     const confirmMessage = hardDelete
@@ -146,7 +146,7 @@ export default function AdminPanel() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center text-gray-700 dark:text-gray-300">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#cc3399]" />
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#8D6AFA]" />
           <p className="text-gray-800 dark:text-gray-200">Loading...</p>
         </div>
       </div>
@@ -161,7 +161,7 @@ export default function AdminPanel() {
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <button
             onClick={() => router.push('/dashboard')}
-            className="w-full bg-[#cc3399] text-white py-2 rounded-lg hover:bg-[#b82d89] transition-colors"
+            className="w-full bg-[#8D6AFA] text-white py-2 rounded-lg hover:bg-[#7A5AE0] transition-colors"
           >
             Back to Dashboard
           </button>
@@ -177,7 +177,7 @@ export default function AdminPanel() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Shield className="w-8 h-8 text-[#cc3399]" />
+              <Shield className="w-8 h-8 text-[#8D6AFA]" />
               Admin Panel
             </h1>
             <p className="mt-2 text-gray-700 dark:text-gray-300">Manage users and system settings</p>
@@ -279,7 +279,7 @@ export default function AdminPanel() {
                           u.subscriptionTier === 'free'
                             ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                             : u.subscriptionTier === 'professional'
-                              ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-pink-300'
                               : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                         }`}
                       >
@@ -288,7 +288,7 @@ export default function AdminPanel() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                       {u.role === UserRole.ADMIN ? (
-                        <span className="text-[#cc3399] font-medium">Admin</span>
+                        <span className="text-[#8D6AFA] font-medium">Admin</span>
                       ) : (
                         'User'
                       )}

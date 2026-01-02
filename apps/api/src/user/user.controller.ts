@@ -1,14 +1,19 @@
 import {
   Controller,
   Get,
+  Post,
   Put,
   Delete,
   Body,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
   Req,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { UserService } from './user.service';
@@ -53,6 +58,52 @@ export class UserController {
       success: true,
       data: updatedUser,
     };
+  }
+
+  @Post('profile/photo')
+  @UseInterceptors(
+    FileInterceptor('photo', {
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
+  async uploadProfilePhoto(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ApiResponse<{ photoURL: string }>> {
+    if (!file) {
+      throw new BadRequestException('No file provided');
+    }
+
+    const userId = (req as any).user.uid;
+
+    try {
+      const photoURL = await this.userService.uploadProfilePhoto(userId, file);
+      return {
+        success: true,
+        data: { photoURL },
+      };
+    } catch (error: any) {
+      throw new BadRequestException(error.message || 'Failed to upload photo');
+    }
+  }
+
+  @Delete('profile/photo')
+  async deleteProfilePhoto(
+    @Req() req: Request,
+  ): Promise<ApiResponse<{ success: boolean }>> {
+    const userId = (req as any).user.uid;
+
+    try {
+      await this.userService.deleteProfilePhoto(userId);
+      return {
+        success: true,
+        data: { success: true },
+      };
+    } catch (error: any) {
+      throw new BadRequestException(error.message || 'Failed to delete photo');
+    }
   }
 
   @Put('preferences')
@@ -152,7 +203,6 @@ export class UserController {
       success: true,
       data: {
         ...stats,
-        paygCredits: user?.paygCredits,
         resetDate: nextReset,
       },
     };

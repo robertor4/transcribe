@@ -5,7 +5,7 @@ import {
   ForbiddenException,
   Logger,
 } from '@nestjs/common';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { User, UserRole } from '@transcribe/shared';
 
 interface AuthenticatedRequest {
@@ -23,7 +23,7 @@ interface AuthenticatedRequest {
 export class AdminGuard implements CanActivate {
   private readonly logger = new Logger(AdminGuard.name);
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private userRepository: UserRepository) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
@@ -35,7 +35,7 @@ export class AdminGuard implements CanActivate {
     }
 
     // Get user profile to check role
-    const userProfile: User | null = await this.firebaseService.getUser(
+    const userProfile: User | null = await this.userRepository.getUser(
       user.uid,
     );
 

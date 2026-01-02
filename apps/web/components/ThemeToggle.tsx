@@ -55,7 +55,7 @@ export function ThemeToggle() {
         text-gray-700 dark:text-gray-300
         hover:bg-gray-100 dark:hover:bg-gray-700
         transition-colors
-        focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2
+        focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2
       "
       aria-label={getTooltip()}
       title={getTooltip()}

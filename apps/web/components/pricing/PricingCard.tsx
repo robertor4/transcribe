@@ -1,12 +1,13 @@
 'use client';
 
 import { Check, X, Shield, ArrowRight } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
 import { formatPriceLocale } from '@transcribe/shared';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { useEffect } from 'react';
-import { formatViewItemParams, formatSelectItemParams, parseBillingCycle, type PricingTier, type BillingCycle } from '@/utils/analytics-helpers';
+import { formatViewItemParams, formatSelectItemParams, type PricingTier, type BillingCycle } from '@/utils/analytics-helpers';
 
 interface Feature {
   text: string;
@@ -17,7 +18,7 @@ interface Feature {
 }
 
 interface PricingCardProps {
-  tier: 'free' | 'professional' | 'payg';
+  tier: 'free' | 'professional' | 'enterprise';
   price: number;
   priceUnit?: string;
   title: string;
@@ -26,13 +27,15 @@ interface PricingCardProps {
   features: Feature[];
   ctaText: string;
   ctaLink: string;
-  locale: string; // Locale code for proper number formatting
-  currency?: string; // Kept for backwards compatibility
-  currencySymbol?: string; // Kept for backwards compatibility
+  locale: string;
+  currency?: string;
+  currencySymbol?: string;
   showGuarantee?: boolean;
   guaranteeText?: string;
   billingNote?: string;
-  billingCycle?: 'monthly' | 'annual'; // Add billing cycle for analytics
+  billingCycle?: 'monthly' | 'annual';
+  trialBadge?: string; // e.g., "14-day free trial"
+  customPriceLabel?: string; // e.g., "Contact sales" for enterprise
 }
 
 export function PricingCard({
@@ -47,21 +50,21 @@ export function PricingCard({
   ctaLink,
   locale,
   currency = 'USD',
-  currencySymbol = '$',
   showGuarantee = false,
   guaranteeText,
   billingNote,
   billingCycle = 'monthly',
+  trialBadge,
+  customPriceLabel,
 }: PricingCardProps) {
   const { trackEvent } = useAnalytics();
 
   // Use locale-aware formatting for the price
-  // PAYG uses 2 decimals (e.g., €1.40/hour), subscription tiers use 0 decimals (e.g., €27/month)
-  const decimals = tier === 'payg' ? 2 : 0;
-  const formattedPrice = formatPriceLocale(price, locale, { decimals });
+  const decimals = tier === 'professional' && billingCycle === 'annual' ? 2 : 0;
+  const formattedPrice = customPriceLabel ? null : formatPriceLocale(price, locale, { decimals });
 
-  // Determine billing cycle type for analytics
-  const cycle: BillingCycle = tier === 'payg' ? 'one-time' : billingCycle;
+  // Determine billing cycle type for analytics (enterprise uses monthly as default for tracking)
+  const cycle: BillingCycle = billingCycle;
 
   // Track view_item when card becomes visible
   useEffect(() => {
@@ -94,14 +97,23 @@ export function PricingCard({
         relative bg-white rounded-2xl p-8 transition-all duration-300
         ${
           featured
-            ? 'border border-[#cc3399] shadow-2xl md:scale-105 ring-2 ring-[#cc3399]/10'
+            ? 'border-2 border-[#8D6AFA] shadow-2xl md:scale-105 ring-2 ring-[#8D6AFA]/10'
             : 'border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
         }
       `}
     >
+      {/* Featured badge */}
       {featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#cc3399] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8D6AFA] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
           Most Popular
+        </div>
+      )}
+
+      {/* Trial badge for Pro tier */}
+      {trialBadge && (
+        <div className="flex items-center gap-1.5 text-[#14D0DC] text-sm font-medium mb-4">
+          <AiIcon size={16} />
+          <span>{trialBadge}</span>
         </div>
       )}
 
@@ -113,14 +125,26 @@ export function PricingCard({
       </div>
 
       <div className="mb-8">
-        <div className="flex items-baseline">
-          <span className="text-5xl font-light text-gray-900 tracking-tight">
-            {formattedPrice}
-          </span>
-          <span className="text-gray-700 ml-2 font-light">
-            {priceUnit}
-          </span>
-        </div>
+        {customPriceLabel ? (
+          // Custom price label for enterprise
+          <div className="flex items-baseline">
+            <span className="text-3xl font-semibold text-gray-900 tracking-tight">
+              {customPriceLabel}
+            </span>
+          </div>
+        ) : (
+          // Regular price display
+          <div className="flex items-baseline">
+            <span className="text-5xl font-light text-gray-900 tracking-tight">
+              {formattedPrice}
+            </span>
+            {priceUnit && (
+              <span className="text-gray-700 ml-2 font-light">
+                {priceUnit}
+              </span>
+            )}
+          </div>
+        )}
         {billingNote && (
           <p className="text-sm text-gray-600 mt-2 font-light">
             {billingNote}
@@ -132,12 +156,12 @@ export function PricingCard({
         href={ctaLink}
         onClick={handleCtaClick}
         className={`
-          group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 text-gray-800
+          group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6
           ${
             featured
-              ? 'bg-[#2c2c2c] text-white hover:bg-[#3c3c3c] shadow-lg'
+              ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
               : tier === 'free'
-              ? 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
+              ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
               : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
           }
         `}
@@ -165,7 +189,7 @@ export function PricingCard({
               )}
               <li className="flex items-start gap-3">
                 {feature.icon && (
-                  <feature.icon className="h-5 w-5 text-[#cc3399] mt-0.5 flex-shrink-0" />
+                  <feature.icon className="h-5 w-5 text-[#8D6AFA] mt-0.5 flex-shrink-0" />
                 )}
                 {!feature.icon && (
                   feature.included ? (

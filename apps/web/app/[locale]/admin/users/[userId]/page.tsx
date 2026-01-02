@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useParams } from 'next/navigation';
 import { UserActivity, TranscriptionStatus } from '@transcribe/shared';
@@ -11,13 +11,13 @@ import {
   Clock,
   Calendar,
   Activity,
-  Sparkles,
   User as UserIcon,
   Shield,
   TrendingUp,
   AlertCircle,
   RotateCcw,
 } from 'lucide-react';
+import { AiIcon } from '@/components/icons/AiIcon';
 
 export default function UserActivityPage() {
   const { user, loading: authLoading } = useAuth();
@@ -30,7 +30,7 @@ export default function UserActivityPage() {
   const [error, setError] = useState<string | null>(null);
   const [resettingUsage, setResettingUsage] = useState(false);
 
-  const fetchActivity = async () => {
+  const fetchActivity = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -63,7 +63,7 @@ export default function UserActivityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, userId]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -75,7 +75,7 @@ export default function UserActivityPage() {
     if (user && userId) {
       fetchActivity();
     }
-  }, [user, userId]);
+  }, [user, userId, fetchActivity]);
 
   const handleResetUsage = async () => {
     if (!activity) return;
@@ -193,7 +193,7 @@ export default function UserActivityPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center text-gray-700 dark:text-gray-300">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#cc3399]" />
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#8D6AFA]" />
           <p className="text-gray-800 dark:text-gray-200">Loading activity...</p>
         </div>
       </div>
@@ -208,7 +208,7 @@ export default function UserActivityPage() {
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
           <button
             onClick={() => router.push('/admin')}
-            className="w-full bg-[#cc3399] text-white py-2 rounded-lg hover:bg-[#b82d89] transition-colors"
+            className="w-full bg-[#8D6AFA] text-white py-2 rounded-lg hover:bg-[#7A5AE0] transition-colors"
           >
             Back to Admin Panel
           </button>
@@ -229,13 +229,13 @@ export default function UserActivityPage() {
           <div>
             <button
               onClick={() => router.push('/admin')}
-              className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-[#cc3399] dark:hover:text-[#cc3399] mb-4 transition-colors"
+              className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] mb-4 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="text-sm font-medium">Back to Admin Panel</span>
             </button>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Shield className="w-8 h-8 text-[#cc3399]" />
+              <Shield className="w-8 h-8 text-[#8D6AFA]" />
               User Activity Audit
             </h1>
             <p className="mt-2 text-gray-700 dark:text-gray-300">
@@ -254,7 +254,7 @@ export default function UserActivityPage() {
         {/* User Profile Card */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#cc3399] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-16 h-16 bg-[#8D6AFA] rounded-full flex items-center justify-center text-white text-2xl font-bold">
               {(activity.user.displayName || activity.user.email || 'U')[0].toUpperCase()}
             </div>
             <div className="flex-1">
@@ -268,7 +268,7 @@ export default function UserActivityPage() {
                     activity.user.subscriptionTier === 'free'
                       ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                       : activity.user.subscriptionTier === 'professional'
-                        ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300'
+                        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-pink-300'
                         : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                   }`}
                 >
@@ -311,7 +311,7 @@ export default function UserActivityPage() {
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-              <Sparkles className="w-4 h-4" />
+              <AiIcon size={16} />
               Analyses Generated
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">

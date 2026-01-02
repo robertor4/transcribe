@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import {
   User,
   signInWithPopup,
@@ -27,6 +27,7 @@ interface AuthContextType {
   sendPasswordResetEmail: (email: string) => Promise<void>;
   confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<void>;
   verifyPasswordResetCode: (oobCode: string) => Promise<string>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -39,6 +40,7 @@ const AuthContext = createContext<AuthContextType>({
   sendPasswordResetEmail: async () => {},
   confirmPasswordReset: async () => {},
   verifyPasswordResetCode: async () => '',
+  refreshUser: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -47,15 +49,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [hasRedirectedToVerify, setHasRedirectedToVerify] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
         // Always reload user to get latest email verification status
         try {
-          await user.reload();
+          await firebaseUser.reload();
+
           // Get the refreshed user
           const refreshedUser = auth.currentUser;
           setUser(refreshedUser);
@@ -63,80 +66,96 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Don't auto-redirect for unverified users - let pages handle it individually
           // This prevents redirect loops and flickering
 
-          // Connect WebSocket only for verified users
+          // Connect WebSocket only for verified users (non-blocking)
           if (refreshedUser && refreshedUser.emailVerified) {
-            await websocketService.connect();
+            // Don't await - let WebSocket connect in background to avoid blocking UI
+            websocketService.connect();
           }
         } catch (error) {
-          setUser(user);
+          setUser(firebaseUser);
         }
       } else {
         setUser(null);
         // Disconnect WebSocket when user logs out
         websocketService.disconnect();
       }
-      
+
       setLoading(false);
     });
 
     return unsubscribe;
   }, []);
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
-  const signInWithGoogle = async () => {
+  // Memoize auth functions to prevent unnecessary re-renders
+  const signInWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
-  };
+  }, []);
 
-  const signInWithEmail = async (email: string, password: string) => {
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);
-  };
+  }, []);
 
-  const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+  const signUpWithEmail = useCallback(async (email: string, password: string, displayName?: string) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     // Update the user's display name if provided
     if (displayName && userCredential.user) {
       await updateProfile(userCredential.user, {
         displayName: displayName,
       });
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await signOut(auth);
-  };
+  }, []);
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = useCallback(async (email: string) => {
     await sendPasswordResetEmail(auth, email);
-  };
+  }, []);
 
-  const confirmPasswordResetHandler = async (oobCode: string, newPassword: string) => {
+  const confirmPasswordResetHandler = useCallback(async (oobCode: string, newPassword: string) => {
     await confirmPasswordReset(auth, oobCode, newPassword);
-  };
+  }, []);
 
-  const verifyPasswordResetCodeHandler = async (oobCode: string) => {
+  const verifyPasswordResetCodeHandler = useCallback(async (oobCode: string) => {
     return await verifyPasswordResetCode(auth, oobCode);
-  };
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await currentUser.reload();
+      // Force a new ID token to be generated with updated claims (like email_verified)
+      // This is crucial because the backend validates email_verified from the token
+      await currentUser.getIdToken(true);
+      // After reload and token refresh, get the refreshed user and update state
+      setUser(auth.currentUser);
+    }
+  }, []);
+
+  // Memoize context value to prevent re-renders when values haven't changed
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    signInWithGoogle,
+    signInWithEmail,
+    signUpWithEmail,
+    logout,
+    sendPasswordResetEmail: resetPassword,
+    confirmPasswordReset: confirmPasswordResetHandler,
+    verifyPasswordResetCode: verifyPasswordResetCodeHandler,
+    refreshUser,
+  }), [user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, logout, resetPassword, confirmPasswordResetHandler, verifyPasswordResetCodeHandler, refreshUser]);
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        signInWithGoogle,
-        signInWithEmail,
-        signUpWithEmail,
-        logout,
-        sendPasswordResetEmail: resetPassword,
-        confirmPasswordReset: confirmPasswordResetHandler,
-        verifyPasswordResetCode: verifyPasswordResetCodeHandler,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

@@ -53,28 +53,47 @@ export function useAudioVisualization(
     const updateLevel = () => {
       if (!analyzer) return;
 
+      // Get time domain data - this should ALWAYS work and show waveform
+      const timeDomainData = new Uint8Array(bufferLength);
+      analyzer.getByteTimeDomainData(timeDomainData);
+
       // Get frequency data
       analyzer.getByteFrequencyData(dataArray);
 
+      // Calculate time domain amplitude (deviation from 128 which is silence)
+      // Time domain data is centered at 128 for silence
+      let timeDomainMax = 0;
+      for (let i = 0; i < bufferLength; i++) {
+        const deviation = Math.abs(timeDomainData[i] - 128);
+        timeDomainMax = Math.max(timeDomainMax, deviation);
+      }
+
       // Focus on voice frequency range (human voice is typically 300-3400 Hz)
-      // For fftSize=256, we get 128 frequency bins (0-24kHz at 48kHz sample rate)
-      // Voice range bins: approximately bins 2-18 (assuming 48kHz sample rate)
-      const voiceStartBin = Math.floor(bufferLength * 0.02); // ~300 Hz
-      const voiceEndBin = Math.floor(bufferLength * 0.15); // ~3600 Hz
+      const voiceStartBin = Math.floor(bufferLength * 0.02);
+      const voiceEndBin = Math.floor(bufferLength * 0.15);
 
       // Calculate average level in voice frequency range
-      let sum = 0;
+      let freqSum = 0;
       for (let i = voiceStartBin; i < voiceEndBin; i++) {
-        sum += dataArray[i];
+        freqSum += dataArray[i];
       }
-      const average = sum / (voiceEndBin - voiceStartBin);
+      const freqAverage = freqSum / (voiceEndBin - voiceStartBin);
 
-      // Simple normalization: average is 0-255, map to 0-100
-      // With moderate boost for visibility while maintaining dynamic range
-      const normalized = Math.min(100, Math.max(0, (average / 255) * 100 * 1.5));
+      // Use time domain data primarily - it's more reliable
+      // Time domain deviation: 0 = silence, 128 = max amplitude
+      // In practice, voice rarely exceeds 20-30 deviation, so we need significant boost
+      const effectiveLevel = timeDomainMax > 0 ? timeDomainMax : freqAverage;
+
+      // Normalize with aggressive boost for voice levels
+      // Voice typically produces timeDomainMax of 5-30, so we scale accordingly
+      // Using a power curve to make quiet sounds more visible while still showing loud peaks
+      const scaledLevel = Math.pow(effectiveLevel / 50, 0.7) * 100; // 50 is "normal talking" level
+      const normalized = Math.min(100, Math.max(0, scaledLevel));
 
       setAudioLevel(normalized);
-      setFrequencyData(new Uint8Array(dataArray));
+
+      // Always use time domain data for visualization - it's more reliable
+      setFrequencyData(timeDomainData);
 
       // Continue animation loop
       animationFrameRef.current = requestAnimationFrame(updateLevel);
@@ -121,6 +140,9 @@ export function useAudioVisualization(
 
     // Create audio context and analyzer
     try {
+      // Note: We no longer clone the stream. The original concern about MediaRecorder conflicts
+      // is not valid for modern browsers, and cloning creates additional resource pressure.
+      // This hook is now only used for mic preview (not during recording).
       const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
       const analyzer = audioContext.createAnalyser();
@@ -143,21 +165,24 @@ export function useAudioVisualization(
       analyzer.connect(gainNode);
       gainNode.connect(audioContext.destination);
 
-      // CRITICAL: Resume AudioContext if suspended
-      // Modern browsers start AudioContext in suspended state for autoplay policy
-      if (audioContext.state === 'suspended') {
-        audioContext.resume().catch((err) => {
-          console.error('[Audio Visualization] Failed to resume AudioContext:', err);
-        });
-      }
-
       audioContextRef.current = audioContext;
       analyzerRef.current = analyzer;
       sourceRef.current = source;
       gainNodeRef.current = gainNode;
 
-      setIsAnalyzing(true);
-      analyze();
+      // Resume AudioContext if suspended (modern browsers start in suspended state for autoplay policy)
+      const startAnalysis = () => {
+        setIsAnalyzing(true);
+        analyze();
+      };
+
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().then(startAnalysis).catch(() => {
+          // Failed to resume - visualization won't work but recording continues
+        });
+      } else {
+        startAnalysis();
+      }
     } catch (error) {
       console.error('Failed to create audio analyzer:', error);
       setIsAnalyzing(false);

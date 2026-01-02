@@ -65,19 +65,32 @@ export class WebSocketGateway
 
       client.emit('connected', { userId: decodedToken.uid });
     } catch (error) {
-      this.logger.error('Authentication failed:', error);
-
       // Determine error code based on Firebase error
       let errorCode: (typeof ERROR_CODES)[keyof typeof ERROR_CODES] =
         ERROR_CODES.AUTH_TOKEN_INVALID;
       let errorMessage = 'Authentication failed';
 
-      if (error?.errorInfo?.code === 'auth/id-token-expired') {
+      const firebaseErrorCode = error?.errorInfo?.code || error?.code;
+      const isTokenExpired = firebaseErrorCode === 'auth/id-token-expired';
+
+      if (isTokenExpired) {
         errorCode = ERROR_CODES.AUTH_TOKEN_EXPIRED;
         errorMessage =
           'Authentication token has expired. Please refresh and try again.';
-      } else if (error?.errorInfo?.code) {
-        errorMessage = error.errorInfo.message || errorMessage;
+        // Token expiry is common when mobile browsers are backgrounded - log as debug
+        this.logger.debug(
+          `Client ${client.id} reconnected with expired token (expected on mobile resume)`,
+        );
+      } else {
+        // Only log as error for unexpected auth failures
+        const errorDetails =
+          error?.errorInfo?.message || error?.message || 'Unknown error';
+        this.logger.warn(
+          `WebSocket auth failed for client ${client.id}: ${errorDetails}`,
+        );
+        if (firebaseErrorCode) {
+          errorMessage = error.errorInfo?.message || errorMessage;
+        }
       }
 
       // Send error to client before disconnecting

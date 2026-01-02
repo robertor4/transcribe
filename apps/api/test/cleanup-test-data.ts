@@ -119,4 +119,4 @@ async function cleanupTestData() {
 }
 
 // Run cleanup
-cleanupTestData();
+void cleanupTestData();

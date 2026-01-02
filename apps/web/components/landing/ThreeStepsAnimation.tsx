@@ -57,7 +57,7 @@ export function ThreeStepsAnimation() {
       {/* Step 1: Speak */}
       <motion.div variants={itemVariants} className="text-center">
         <motion.div
-          className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm"
+          className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center shadow-sm"
           animate={isInView ? {
             scale: [1, 1.05, 1],
           } : {}}
@@ -77,7 +77,7 @@ export function ThreeStepsAnimation() {
               ease: "easeInOut",
             }}
           >
-            <Mic className="w-10 h-10 text-[#cc3399]" />
+            <Mic className="w-10 h-10 text-[#8D6AFA]" />
           </motion.div>
         </motion.div>
         <div className="text-6xl font-bold text-gray-300 mb-4">1</div>
@@ -95,7 +95,7 @@ export function ThreeStepsAnimation() {
       {/* Step 2: Extract */}
       <motion.div variants={itemVariants} className="text-center">
         <motion.div
-          className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm"
+          className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center shadow-sm"
           animate={isInView ? {
             rotate: [0, 360],
           } : {}}
@@ -121,7 +121,7 @@ export function ThreeStepsAnimation() {
 
       {/* Step 3: Create */}
       <motion.div variants={itemVariants} className="text-center">
-        <div className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center shadow-sm">
+        <div className="mx-auto mb-6 w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center shadow-sm">
           <motion.div
             initial={{ opacity: 0 }}
             animate={isInView ? {
@@ -134,7 +134,7 @@ export function ThreeStepsAnimation() {
               repeatDelay: 1,
             }}
           >
-            <FileText className="w-10 h-10 text-[#cc3399]" />
+            <FileText className="w-10 h-10 text-[#8D6AFA]" />
           </motion.div>
         </div>
         <div className="text-6xl font-bold text-gray-300 mb-4">3</div>

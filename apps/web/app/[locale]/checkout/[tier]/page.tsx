@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { getMinimumPaygPackage, getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
+import { getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
 import { formatBeginCheckoutParams, parsePricingTier, parseBillingCycle } from '@/utils/analytics-helpers';
 
 export default function CheckoutPage() {
@@ -15,25 +15,13 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const { trackEvent } = useAnalytics();
   const t = useTranslations('checkout');
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const tier = params.tier as string;
   const locale = params.locale as string;
 
-  useEffect(() => {
-    if (!user) {
-      // Redirect to login with return URL
-      router.push(`/login?redirect=/checkout/${tier}`);
-      return;
-    }
-
-    createCheckoutSession();
-  }, [user, tier]);
-
-  async function createCheckoutSession() {
+  const createCheckoutSession = useCallback(async () => {
     try {
-      setLoading(true);
       setError(null);
 
       // Get user's Firebase ID token
@@ -60,8 +48,6 @@ export default function CheckoutPage() {
       let price = 0;
       if (tier === 'professional') {
         price = cycle === 'annual' ? pricing.professional.annualMonthly : pricing.professional.monthly;
-      } else if (tier === 'payg') {
-        price = getMinimumPaygPackage(currency).price;
       }
 
       // Track begin_checkout event
@@ -73,24 +59,13 @@ export default function CheckoutPage() {
       });
 
       // Determine endpoint and payload based on tier
-      let endpoint = '/stripe/create-checkout-session';
-      let payload: Record<string, string | number> = {
+      const endpoint = '/stripe/create-checkout-session';
+      const payload: Record<string, string | number> = {
         tier,
         billing: cycle, // Use cycle from URL param
         successUrl,
         cancelUrl,
       };
-
-      if (tier === 'payg') {
-        endpoint = '/stripe/create-payg-session';
-        const minimumPackage = getMinimumPaygPackage('USD'); // Backend always uses USD for Stripe
-        payload = {
-          amount: minimumPackage.price,
-          hours: minimumPackage.hours,
-          successUrl,
-          cancelUrl,
-        };
-      }
 
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
@@ -134,9 +109,18 @@ export default function CheckoutPage() {
       });
 
       setError(err instanceof Error ? err.message : 'Failed to create checkout session');
-      setLoading(false);
     }
-  }
+  }, [user, tier, locale, trackEvent]);
+
+  useEffect(() => {
+    if (!user) {
+      // Redirect to login with return URL
+      router.push(`/login?redirect=/checkout/${tier}`);
+      return;
+    }
+
+    createCheckoutSession();
+  }, [user, tier, router, createCheckoutSession]);
 
   if (error) {
     return (
@@ -150,7 +134,7 @@ export default function CheckoutPage() {
           <div className="flex gap-4 justify-center">
             <a
               href={`/${params.locale}/pricing`}
-              className="px-6 py-3 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
+              className="px-6 py-3 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors"
             >
               {t('error.backToPricing')}
             </a>
@@ -169,7 +153,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
       <div className="text-center">
-        <Loader2 className="h-12 w-12 animate-spin text-[#cc3399] mx-auto mb-4" />
+        <Loader2 className="h-12 w-12 animate-spin text-[#8D6AFA] mx-auto mb-4" />
         <p className="text-gray-700 dark:text-gray-300 text-lg">{t('processing')}</p>
         <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
           {t('redirecting')}

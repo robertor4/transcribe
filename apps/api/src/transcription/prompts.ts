@@ -1,10 +1,54 @@
 import { AnalysisType } from '@transcribe/shared';
 
-// Default Summary Prompt
+// V2 Summary Prompt - JSON output
+// This prompt generates structured JSON that separates content from presentation
+export const SUMMARIZATION_PROMPT_V2 = `Analyze this conversation transcript and return a JSON object.
+
+Return ONLY valid JSON with this exact structure (no markdown, no explanation):
+
+{
+  "title": "Descriptive title capturing the key takeaway (max 10 words)",
+  "intro": "1-2 sentence overview of the conversation's purpose and outcome",
+  "keyPoints": [
+    {
+      "topic": "Short topic (2-5 words ONLY)",
+      "description": "One concise sentence"
+    }
+  ],
+  "detailedSections": [
+    {
+      "topic": "Matching topic from keyPoints",
+      "content": "Full paragraph with specifics (3-5 sentences)"
+    }
+  ],
+  "decisions": ["Decision 1", "Decision 2"],
+  "nextSteps": ["Next step 1"]
+}
+
+CRITICAL RULES:
+1. keyPoints.topic MUST be 2-5 words MAXIMUM. Examples: "BNNet communicatie", "AI-features prioriteit", "Budget discussion", "Team planning"
+2. keyPoints.description is exactly ONE sentence
+3. detailedSections.content should be substantial (3-5 sentences) with concrete details, examples, quotes, and specific terminology from the conversation
+4. ONLY include "decisions" if ACTUAL decisions were made in the conversation - DO NOT fabricate or infer decisions
+5. ONLY include "nextSteps" if forward-looking elements were EXPLICITLY discussed - DO NOT fabricate
+6. OMIT "decisions" field entirely if no decisions were made
+7. OMIT "nextSteps" field entirely if no next steps were discussed
+8. If the transcript is in a non-English language, ALL text (title, intro, topics, descriptions, content) must be in that same language
+9. Return ONLY valid JSON - no markdown code blocks, no explanation text
+
+Quality guidelines for detailedSections.content:
+- Be specific rather than generic - mention actual examples, tools, or solutions discussed
+- Capture the nuance of different viewpoints if there were disagreements
+- Include technical details, metrics, or specifications mentioned
+- Use the participants' actual terminology and frameworks
+- Make each section self-contained so readers understand that topic fully`;
+
+// LEGACY V1: Default Summary Prompt - Markdown output
+// This prompt is kept for backwards compatibility with existing workflows
 export const SUMMARIZATION_PROMPT = `Please analyze this conversation transcript and provide a comprehensive summary.
 
 **CRITICAL FORMATTING RULES:**
-1. START WITH A MAIN HEADING (using #) that is a clear, concise title (MAXIMUM 8 words) showing what this conversation was about. This should be the specific subject matter and context. Do NOT use a generic label - make the heading itself BE the topic. Keep it scannable and brief.
+1. START WITH A MAIN HEADING (using #) that is a clear, descriptive title (MAXIMUM 10 words) showing what this conversation was about. This should be the specific subject matter and context. Do NOT use a generic label - make the heading itself BE the topic. Keep it scannable and brief.
 2. Write ALL section headers in sentence case (European/Dutch style), capitalizing only the first word and proper nouns.
 3. If the transcript is in a non-English language, ALL headings and content must be in that same language.
 
@@ -332,7 +376,7 @@ ${basePrompt}`;
 
   // Add language instructions if specified
   if (language && language !== 'english') {
-    fullPrompt = `CRITICAL LANGUAGE REQUIREMENT: 
+    fullPrompt = `CRITICAL LANGUAGE REQUIREMENT:
 - The transcription is in ${language}
 - You MUST generate ALL output text in ${language}
 - This includes ALL section headings, titles, labels, and content
@@ -340,6 +384,47 @@ ${basePrompt}`;
 - Only keep English for: proper nouns, company names, and technical terms without standard translations
 - Use appropriate formatting and conventions for ${language}
 - DO NOT leave any headings or structural text in English
+
+${fullPrompt}`;
+  }
+
+  return `${fullPrompt}\n\n---\nTRANSCRIPT:\n${transcription}`;
+}
+
+// V2: System prompt for JSON summary generation
+export const SUMMARIZATION_SYSTEM_PROMPT_V2 =
+  'You are a helpful assistant that creates structured JSON summaries of meeting transcripts and conversations. You always return valid JSON and never include markdown formatting or explanations outside the JSON structure.';
+
+/**
+ * Build V2 summary prompt with context and language support.
+ * This version generates structured JSON instead of markdown.
+ */
+export function buildSummaryPromptV2(
+  transcription: string,
+  context = '',
+  language = '',
+): string {
+  let fullPrompt = SUMMARIZATION_PROMPT_V2;
+
+  // Add context if provided
+  if (context) {
+    fullPrompt = `Context information about this conversation:
+${context}
+
+Use this context to better understand references, participants, and technical terms.
+
+---
+
+${fullPrompt}`;
+  }
+
+  // Add language instructions if specified
+  if (language && language !== 'english') {
+    fullPrompt = `CRITICAL LANGUAGE REQUIREMENT:
+- The transcription is in ${language}
+- You MUST generate ALL JSON text values in ${language}
+- This includes: title, intro, topic names, descriptions, and all content
+- Only keep English for: proper nouns, company names, and technical terms without standard translations
 
 ${fullPrompt}`;
   }

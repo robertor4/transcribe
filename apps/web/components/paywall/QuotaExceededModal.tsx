@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -7,8 +8,8 @@ import Link from 'next/link';
 interface QuotaExceededModalProps {
   isOpen: boolean;
   onClose: () => void;
-  quotaType: 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' | 'on_demand_analyses';
-  currentTier: 'free' | 'professional' | 'payg';
+  quotaType: 'transcriptions' | 'duration' | 'filesize' | 'on_demand_analyses';
+  currentTier: 'free' | 'professional';
   details?: {
     current?: number;
     limit?: number;
@@ -20,10 +21,21 @@ export function QuotaExceededModal({
   isOpen,
   onClose,
   quotaType,
-  currentTier,
+  // currentTier is available for future tier-specific messaging
   details,
 }: QuotaExceededModalProps) {
   const t = useTranslations('paywall.quotaExceeded');
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -46,12 +58,6 @@ export function QuotaExceededModal({
       upgradeLink: '/pricing',
       upgradeText: t('upgradeButton'),
     },
-    payg_credits: {
-      title: t('paygCredits.title'),
-      description: t('paygCredits.description'),
-      upgradeLink: '/checkout/payg',
-      upgradeText: t('buyCreditsButton'),
-    },
     on_demand_analyses: {
       title: t('onDemandAnalyses.title'),
       description: t('onDemandAnalyses.description'),
@@ -69,7 +75,7 @@ export function QuotaExceededModal({
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center">
             <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400 mr-3" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-wide">
               {message.title}
             </h2>
           </div>
@@ -128,7 +134,7 @@ export function QuotaExceededModal({
           </button>
           <Link
             href={message.upgradeLink}
-            className="flex-1 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors text-center"
+            className="flex-1 px-4 py-2 bg-[#8D6AFA] text-white rounded-lg hover:bg-[#7A5AE0] transition-colors text-center"
           >
             {message.upgradeText}
           </Link>

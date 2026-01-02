@@ -48,7 +48,7 @@ export default function ForgotPasswordForm() {
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30">
             <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
             {tAuth('resetLinkSent')}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -71,7 +71,7 @@ export default function ForgotPasswordForm() {
               setEmailSent(false);
               setEmail('');
             }}
-            className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
+            className="text-sm text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]"
           >
             {tAuth('tryDifferentEmail')}
           </button>
@@ -90,7 +90,7 @@ export default function ForgotPasswordForm() {
   return (
     <div className="max-w-md w-full space-y-8">
       <div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
           {tAuth('resetPassword')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -124,7 +124,7 @@ export default function ForgotPasswordForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               placeholder={tAuth('enterYourEmail')}
             />
           </div>
@@ -134,7 +134,7 @@ export default function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

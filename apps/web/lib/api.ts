@@ -1,16 +1,29 @@
 import axios from 'axios';
-import { auth } from './firebase';
+import { auth, authReady } from './firebase';
 import {
   ApiResponse,
   AnalysisType,
   AnalysisTemplate,
   GeneratedAnalysis,
-  CorrectTranscriptRequest,
-  CorrectionPreview,
-  CorrectionApplyResponse,
-  RoutingPlan,
+  BlogHeroImage,
+  Translation,
+  ConversationTranslations,
+  TranslateConversationResponse,
+  AskResponse,
+  QAHistoryItem,
+  FindResponse,
+  FindReplaceResults,
+  ReplaceResponse,
+  ImportedConversation,
+  ImportConversationResponse,
+  ImportedConversationWithContent,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
+
+// Extended type for recent analyses with conversation title
+export interface RecentAnalysis extends GeneratedAnalysis {
+  conversationTitle: string;
+}
 
 const API_URL = getApiUrl();
 
@@ -25,23 +38,15 @@ const api = axios.create({
 });
 
 // Add auth token to requests
+// IMPORTANT: Wait for Firebase Auth to initialize before checking currentUser
+// This prevents race conditions on page refresh where requests fire before
+// auth.currentUser is populated from IndexedDB
 api.interceptors.request.use(async (config) => {
-  // Wait a moment for auth to stabilize if needed
-  let user = auth.currentUser;
-  
-  // If no user, wait briefly for auth state to settle (useful right after sign-in)
-  // This is especially important for email/password login
-  if (!user) {
-    // Try waiting up to 1 second with multiple checks
-    for (let i = 0; i < 10; i++) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      user = auth.currentUser;
-      if (user) {
-        break;
-      }
-    }
-  }
-  
+  // Wait for auth to be ready (resolves immediately if already initialized)
+  await authReady;
+
+  const user = auth.currentUser;
+
   if (user) {
     try {
       const token = await user.getIdToken();
@@ -75,6 +80,11 @@ api.interceptors.response.use(
         });
       }
       
+      // Wait for auth to be ready before checking user state
+      // This is critical on page refresh - auth.currentUser may be null
+      // while Firebase is still restoring the session from IndexedDB
+      await authReady;
+
       // Check if user is still authenticated
       const user = auth.currentUser;
       if (user) {
@@ -82,26 +92,26 @@ api.interceptors.response.use(
           // Try to get a fresh token
           const newToken = await user.getIdToken(true); // force refresh
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          
+
           // Retry the request with the new token
           return api(originalRequest);
         } catch (refreshError) {
           // If token refresh fails, then redirect to login
           window.location.href = '/login';
           // Still return a rejected promise with proper error
-          return Promise.reject({ 
-            status: 401, 
-            message: 'Authentication failed', 
-            originalError: refreshError 
+          return Promise.reject({
+            status: 401,
+            message: 'Authentication failed',
+            originalError: refreshError
           });
         }
       } else {
-        // User is not authenticated, redirect to login
+        // User is genuinely not authenticated (auth is ready and no user)
         window.location.href = '/login';
         // Return a rejected promise with proper error
-        return Promise.reject({ 
-          status: 401, 
-          message: 'User not authenticated' 
+        return Promise.reject({
+          status: 401,
+          message: 'User not authenticated'
         });
       }
     }
@@ -113,12 +123,13 @@ api.interceptors.response.use(
 );
 
 export const transcriptionApi = {
-  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
+  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string, selectedTemplates?: string[]): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
     console.log('[TranscriptionAPI] Starting upload:', {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
       analysisType,
+      selectedTemplates,
     });
 
     const formData = new FormData();
@@ -126,6 +137,7 @@ export const transcriptionApi = {
     if (analysisType) formData.append('analysisType', analysisType);
     if (context) formData.append('context', context);
     if (contextId) formData.append('contextId', contextId);
+    if (selectedTemplates?.length) formData.append('selectedTemplates', JSON.stringify(selectedTemplates));
 
     try {
       const response: ApiResponse<{ jobId: string; transcriptionId: string }> = await api.post('/transcriptions/upload', formData, {
@@ -173,6 +185,31 @@ export const transcriptionApi = {
     return api.get('/transcriptions', {
       params: { page, pageSize },
     });
+  },
+
+  search: async (query: string, limit = 20): Promise<ApiResponse<{ items: unknown[]; total: number }>> => {
+    return api.get('/transcriptions/search', {
+      params: { query, limit },
+    });
+  },
+
+  // Semantic search using vector similarity (Qdrant)
+  semanticSearch: async (query: string, limit = 10): Promise<ApiResponse<FindResponse>> => {
+    return api.post('/vector/find', { query, maxResults: limit });
+  },
+
+  getRecentlyOpened: async (limit = 5): Promise<ApiResponse<unknown[]>> => {
+    return api.get('/transcriptions/recently-opened', {
+      params: { limit },
+    });
+  },
+
+  clearRecentlyOpened: async (): Promise<ApiResponse<{ cleared: number }>> => {
+    return api.delete('/transcriptions/recently-opened');
+  },
+
+  recordAccess: async (id: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.post(`/transcriptions/${id}/access`);
   },
 
   get: async (id: string): Promise<ApiResponse<unknown>> => {
@@ -247,41 +284,240 @@ export const transcriptionApi = {
     return api.get('/transcriptions/analysis-templates');
   },
 
-  generateAnalysis: async (id: string, templateId: string): Promise<ApiResponse<GeneratedAnalysis>> => {
-    return api.post(`/transcriptions/${id}/generate-analysis`, { templateId });
+  generateAnalysis: async (id: string, templateId: string, customInstructions?: string): Promise<ApiResponse<GeneratedAnalysis>> => {
+    return api.post(`/transcriptions/${id}/generate-analysis`, { templateId, customInstructions });
   },
 
   getUserAnalyses: async (id: string): Promise<ApiResponse<GeneratedAnalysis[]>> => {
     return api.get(`/transcriptions/${id}/analyses`);
   },
 
+  getAnalysis: async (id: string, analysisId: string): Promise<ApiResponse<GeneratedAnalysis>> => {
+    return api.get(`/transcriptions/${id}/analyses/${analysisId}`);
+  },
+
   deleteAnalysis: async (id: string, analysisId: string): Promise<ApiResponse> => {
     return api.delete(`/transcriptions/${id}/analyses/${analysisId}`);
   },
 
-  // Transcript Correction API methods
-  analyzeCorrections: async (
-    id: string,
-    instructions: string,
-  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> => {
-    return api.post(`/transcriptions/${id}/analyze-corrections`, {
-      instructions,
+  generateBlogImage: async (id: string, analysisId: string): Promise<ApiResponse<{ heroImage: BlogHeroImage }>> => {
+    return api.post(`/transcriptions/${id}/analyses/${analysisId}/generate-image`);
+  },
+
+  getRecentAnalyses: async (limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {
+    return api.get(`/transcriptions/recent-analyses?limit=${limit}`);
+  },
+
+  getRecentAnalysesByFolder: async (folderId: string, limit: number = 8): Promise<ApiResponse<RecentAnalysis[]>> => {
+    return api.get(`/transcriptions/recent-analyses/folder/${folderId}?limit=${limit}`);
+  },
+
+  // Folder API method
+  moveToFolder: async (id: string, folderId: string | null): Promise<ApiResponse<{ message: string }>> => {
+    return api.patch(`/transcriptions/${id}/folder`, { folderId });
+  },
+
+  // Send email draft to self
+  sendEmailToSelf: async (analysisId: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.post(`/transcriptions/analyses/${analysisId}/send-to-self`);
+  },
+
+  // Q&A API methods
+  askQuestion: async (id: string, question: string, maxResults = 10, history?: QAHistoryItem[]): Promise<ApiResponse<AskResponse>> => {
+    return api.post(`/transcriptions/${id}/ask`, { question, maxResults, history });
+  },
+
+  getIndexingStatus: async (id: string): Promise<ApiResponse<{ indexed: boolean; chunkCount: number; indexedAt?: string }>> => {
+    return api.get(`/transcriptions/${id}/indexing-status`);
+  },
+};
+
+// Folder API
+export const folderApi = {
+  list: async (): Promise<ApiResponse<unknown[]>> => {
+    return api.get('/folders');
+  },
+
+  get: async (id: string): Promise<ApiResponse<unknown>> => {
+    return api.get(`/folders/${id}`);
+  },
+
+  create: async (name: string, color?: string): Promise<ApiResponse<unknown>> => {
+    return api.post('/folders', { name, color });
+  },
+
+  update: async (id: string, data: { name?: string; color?: string; sortOrder?: number }): Promise<ApiResponse<unknown>> => {
+    return api.put(`/folders/${id}`, data);
+  },
+
+  delete: async (id: string, deleteContents: boolean = false): Promise<ApiResponse<{ message: string; deletedConversations?: number }>> => {
+    const params = deleteContents
+      ? { deleteContents: 'true', confirm: 'true' }
+      : {};
+    return api.delete(`/folders/${id}`, { params });
+  },
+
+  getTranscriptions: async (id: string): Promise<ApiResponse<unknown[]>> => {
+    return api.get(`/folders/${id}/transcriptions`);
+  },
+
+  // Q&A API methods
+  askQuestion: async (id: string, question: string, maxResults = 15, history?: QAHistoryItem[]): Promise<ApiResponse<AskResponse>> => {
+    return api.post(`/folders/${id}/ask`, { question, maxResults, history });
+  },
+};
+
+// Find/Replace API
+export const findReplaceApi = {
+  /**
+   * Find matches in a conversation
+   */
+  findMatches: async (
+    transcriptionId: string,
+    findText: string,
+    options?: { caseSensitive?: boolean; wholeWord?: boolean }
+  ): Promise<ApiResponse<FindReplaceResults>> => {
+    return api.post(`/transcriptions/${transcriptionId}/find`, {
+      findText,
+      ...options,
     });
   },
 
-  correctTranscript: async (
-    id: string,
-    instructions: string,
-    previewOnly: boolean = true,
-  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> => {
-    return api.post(`/transcriptions/${id}/correct-transcript`, {
-      instructions,
-      previewOnly,
+  /**
+   * Replace matches in a conversation
+   */
+  replaceMatches: async (
+    transcriptionId: string,
+    request: {
+      findText: string;
+      replaceText: string;
+      caseSensitive: boolean;
+      wholeWord: boolean;
+      replaceAll?: boolean;
+      replaceCategories?: ('summary' | 'transcript' | 'aiAssets')[];
+      matchIds?: string[];
+    }
+  ): Promise<ApiResponse<ReplaceResponse>> => {
+    return api.post(`/transcriptions/${transcriptionId}/replace`, request);
+  },
+};
+
+// Translation API (V2 - uses separate translations collection)
+export const translationApi = {
+  /**
+   * Translate conversation content to target locale
+   */
+  translate: async (
+    transcriptionId: string,
+    targetLocale: string,
+    options?: { translateSummary?: boolean; translateAssets?: boolean; assetIds?: string[] }
+  ): Promise<ApiResponse<TranslateConversationResponse>> => {
+    return api.post(`/translations/${transcriptionId}`, {
+      targetLocale,
+      ...options,
     });
   },
 
-  regenerateCoreAnalyses: async (id: string): Promise<ApiResponse<unknown>> => {
-    return api.post(`/transcriptions/${id}/regenerate-core-analyses`);
+  /**
+   * Get translation status for a conversation
+   */
+  getStatus: async (transcriptionId: string): Promise<ApiResponse<ConversationTranslations>> => {
+    return api.get(`/translations/${transcriptionId}/status`);
+  },
+
+  /**
+   * Get all translations for a specific locale
+   */
+  getForLocale: async (transcriptionId: string, localeCode: string): Promise<ApiResponse<Translation[]>> => {
+    return api.get(`/translations/${transcriptionId}/${localeCode}`);
+  },
+
+  /**
+   * Delete all translations for a locale
+   */
+  deleteForLocale: async (transcriptionId: string, localeCode: string): Promise<ApiResponse<{ deletedCount: number }>> => {
+    return api.delete(`/translations/${transcriptionId}/${localeCode}`);
+  },
+
+  /**
+   * Update locale preference for a conversation
+   */
+  updatePreference: async (transcriptionId: string, localeCode: string): Promise<ApiResponse> => {
+    return api.patch(`/translations/${transcriptionId}/preference`, { localeCode });
+  },
+
+  // ============================================================
+  // PUBLIC ENDPOINTS (FOR SHARED CONVERSATIONS)
+  // ============================================================
+
+  /**
+   * Get translation status for a shared conversation (no auth required)
+   */
+  getSharedStatus: async (shareToken: string, transcriptionId: string): Promise<ApiResponse<ConversationTranslations>> => {
+    return api.get(`/translations/shared/${shareToken}/status?transcriptionId=${transcriptionId}`);
+  },
+
+  /**
+   * Get translations for a specific locale (shared conversation, no auth required)
+   */
+  getSharedForLocale: async (
+    shareToken: string,
+    localeCode: string,
+    transcriptionId: string
+  ): Promise<ApiResponse<Translation[]>> => {
+    return api.get(`/translations/shared/${shareToken}/${localeCode}?transcriptionId=${transcriptionId}`);
+  },
+};
+
+// Imported Conversations API (V2 - Shared with you folder)
+export const importedConversationApi = {
+  /**
+   * Import a shared conversation by its share token.
+   * Creates a linked reference to the original share.
+   */
+  import: async (
+    shareToken: string,
+    password?: string
+  ): Promise<ApiResponse<ImportConversationResponse>> => {
+    return api.post(`/imported-conversations/${shareToken}`, { password });
+  },
+
+  /**
+   * Get all imported conversations for the current user.
+   */
+  list: async (): Promise<ApiResponse<ImportedConversation[]>> => {
+    return api.get('/imported-conversations');
+  },
+
+  /**
+   * Get the count of imported conversations.
+   */
+  getCount: async (): Promise<ApiResponse<{ count: number }>> => {
+    return api.get('/imported-conversations/count');
+  },
+
+  /**
+   * Get an imported conversation with its live content.
+   * Validates the share is still accessible.
+   */
+  get: async (importId: string): Promise<ApiResponse<ImportedConversationWithContent>> => {
+    return api.get(`/imported-conversations/${importId}`);
+  },
+
+  /**
+   * Remove an imported conversation (soft delete).
+   */
+  remove: async (importId: string): Promise<ApiResponse<{ message: string }>> => {
+    return api.delete(`/imported-conversations/${importId}`);
+  },
+
+  /**
+   * Check if the current user has imported a specific share.
+   */
+  checkStatus: async (
+    shareToken: string
+  ): Promise<ApiResponse<{ imported: boolean; importedAt?: Date }>> => {
+    return api.get(`/imported-conversations/check/${shareToken}`);
   },
 };
 

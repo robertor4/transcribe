@@ -8,6 +8,8 @@ import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { auth } from '@/lib/firebase';
 import { Mail, Lock, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
+import { importedConversationApi } from '@/lib/api';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -47,6 +49,19 @@ export default function LoginForm() {
         if (refreshedUser.emailVerified === false) {
           router.push('/verify-email');
         } else {
+          // Check for pending import
+          const pendingImport = getPendingImport();
+          if (pendingImport) {
+            try {
+              await importedConversationApi.import(pendingImport.shareToken);
+              clearPendingImport();
+              router.push('/shared-with-me');
+              return;
+            } catch (importError) {
+              console.error('Failed to auto-import conversation:', importError);
+              clearPendingImport();
+            }
+          }
           router.push('/dashboard');
         }
       } else {
@@ -115,6 +130,20 @@ export default function LoginForm() {
       });
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Check for pending import
+      const pendingImport = getPendingImport();
+      if (pendingImport) {
+        try {
+          await importedConversationApi.import(pendingImport.shareToken);
+          clearPendingImport();
+          router.push('/shared-with-me');
+          return;
+        } catch (importError) {
+          console.error('Failed to auto-import conversation:', importError);
+          clearPendingImport();
+        }
+      }
       router.push('/dashboard');
     } catch (error) {
       const errorObj = error as { message?: string };
@@ -153,7 +182,7 @@ export default function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 py-3 border border-gray-300 dark:border-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-800/40 rounded-t-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('email')}
               />
             </div>
@@ -174,7 +203,7 @@ export default function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-800/40 rounded-b-md focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] focus:z-10 sm:text-sm"
                 placeholder={tAuth('password')}
               />
               <button
@@ -198,15 +227,15 @@ export default function LoginForm() {
             href="/forgot-password"
             className={`text-sm transition-all ${
               showPasswordReset
-                ? 'text-[#cc3399] dark:text-[#cc3399] font-semibold animate-pulse hover:text-[#b82d89] dark:hover:text-[#b82d89]'
-                : 'text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]'
+                ? 'text-[#8D6AFA] dark:text-[#8D6AFA] font-semibold animate-pulse hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]'
+                : 'text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]'
             }`}
           >
             {tAuth('forgotPassword')}
           </Link>
           <Link
             href="/signup"
-            className="text-sm text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
+            className="text-sm text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]"
           >
             {tAuth('dontHaveAccount')}
           </Link>
@@ -216,7 +245,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -231,7 +260,7 @@ export default function LoginForm() {
             <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('alreadyHaveAccount')}</span>
+            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('orContinueWith')}</span>
           </div>
         </div>
 
@@ -240,10 +269,10 @@ export default function LoginForm() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className={`w-full flex justify-center items-center px-4 py-3 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
+            className={`w-full flex justify-center items-center px-4 py-3 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-all ${
               suggestGoogle
-                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-200 hover:bg-pink-100 dark:hover:bg-pink-900/40 animate-pulse'
-                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+                ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-purple-900/40 animate-pulse'
+                : 'border-gray-300 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800/40 hover:bg-gray-50 dark:hover:bg-gray-700/50'
             }`}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

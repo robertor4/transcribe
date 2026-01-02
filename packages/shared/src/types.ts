@@ -1,4 +1,5 @@
 import { BASE_PRICING } from './pricing';
+import { SummaryV2 } from './types/summary';
 
 export enum TranscriptionStatus {
   PENDING = 'pending',
@@ -40,8 +41,8 @@ export interface User {
   // NEW: Last login tracking
   lastLogin?: Date; // When user last authenticated
 
-  // NEW: Subscription fields
-  subscriptionTier: 'free' | 'professional' | 'payg';
+  // Subscription fields
+  subscriptionTier: 'free' | 'professional' | 'enterprise';
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
@@ -49,16 +50,13 @@ export interface User {
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
 
-  // NEW: Usage tracking
+  // Usage tracking
   usageThisMonth: {
     hours: number;
     transcriptions: number;
     onDemandAnalyses: number;
     lastResetAt: Date;
   };
-
-  // NEW: Pay-As-You-Go credits
-  paygCredits?: number; // Remaining hours for PAYG users
 
   // DEPRECATED: Old subscription format (kept for backward compatibility)
   subscription?: {
@@ -83,6 +81,29 @@ export interface TranscriptionContext {
   updatedAt: Date;
 }
 
+// V2 Folder support
+export interface Folder {
+  id: string;
+  userId: string;
+  name: string;
+  color?: string;
+  sortOrder?: number;
+  conversationCount?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateFolderRequest {
+  name: string;
+  color?: string;
+}
+
+export interface UpdateFolderRequest {
+  name?: string;
+  color?: string;
+  sortOrder?: number;
+}
+
 export interface AnalysisResults {
   summary?: string;
   communicationStyles?: string;
@@ -95,12 +116,17 @@ export interface AnalysisResults {
   details?: string; // Metadata and recording information
 }
 
-// New: Core analyses that are always generated
+/**
+ * @deprecated Use summaryV2 directly on Transcription and generatedAnalyses collection for other analyses.
+ * This interface is kept for backwards compatibility with existing transcriptions.
+ * Will be removed after migration is complete.
+ */
 export interface CoreAnalyses {
-  summary: string;
+  summary: string; // Markdown summary (V1 format for backwards compatibility)
+  summaryV2?: SummaryV2; // V2 structured JSON summary (new)
   actionItems: string;
   communicationStyles: string;
-  transcript: string;
+  // Note: transcript removed - use transcriptText directly (no duplication)
 }
 
 // New: Analysis template definition
@@ -108,7 +134,7 @@ export interface AnalysisTemplate {
   id: string; // e.g., "system-emotional-iq"
   name: string; // "Emotional Intelligence"
   description: string; // Short description for catalog
-  category: 'professional' | 'content' | 'specialized';
+  category: string; // Dynamic category (e.g., 'professional', 'content', 'specialized')
   icon: string; // Lucide icon name
   color: string; // Badge color
   systemPrompt: string; // GPT system prompt
@@ -117,9 +143,233 @@ export interface AnalysisTemplate {
   estimatedSeconds: number; // ~20 for mini, ~30 for gpt-5
   featured: boolean; // Show in featured section
   order: number; // Display order
+  outputFormat?: 'markdown' | 'structured'; // V2: Output format (default: markdown for backwards compat)
+  jsonSchema?: string; // V2: JSON schema for structured outputs
   createdAt: Date;
   updatedAt: Date;
+
+  // Taxonomy (optional) - for filtering and discovery
+  tags?: string[]; // e.g., ["linkedin", "social-media", "professional"]
+  targetRoles?: string[]; // e.g., ["founder", "content-creator", "product-manager"]
+  templateGroup?: string; // Groups variants together, e.g., "linkedin" for all LinkedIn templates
+
+  // Ownership & visibility
+  createdBy: string; // "system" for built-in templates, userId for user-created
+  isSystemTemplate: boolean; // true = hardcoded system template, false = user-created
+  visibility: 'public' | 'private'; // public = anyone can see, private = creator only
+  requiredTier?: 'free' | 'professional' | 'business'; // Subscription tier required to use
+
+  // Versioning - for template evolution and compatibility tracking
+  version: string; // Semantic version (e.g., "1.0.0", "1.1.0", "2.0.0")
+  baseTemplateId?: string; // If forked from another template
 }
+
+// ============================================================
+// V2 STRUCTURED OUTPUT TYPES
+// ============================================================
+
+/** Action item extracted from conversation */
+export interface ActionItem {
+  task: string;
+  owner: string | null;
+  deadline: string | null;
+  priority: 'high' | 'medium' | 'low';
+  priorityReason?: string; // Explains why this priority was assigned (shown in tooltip)
+  context?: string;
+}
+
+/** Structured action items output */
+export interface ActionItemsOutput {
+  type: 'actionItems';
+  immediateActions: ActionItem[]; // This week
+  shortTermActions: ActionItem[]; // This month
+  longTermActions: ActionItem[]; // Beyond this month
+}
+
+// ============================================================
+// SPECIALIZED EMAIL OUTPUT TYPES
+// ============================================================
+
+/** Action item with owner for email templates */
+export interface EmailActionItem {
+  task: string;
+  owner: string | null;
+  deadline: string | null;
+}
+
+/** Follow-up Email - Post-meeting recap with decisions and action items */
+export interface FollowUpEmailOutput {
+  type: 'followUpEmail';
+  subject: string;
+  greeting: string;
+  meetingRecap: string;
+  body: string[];
+  decisionsConfirmed: string[];
+  actionItems: EmailActionItem[];
+  nextSteps: string;
+  closing: string;
+}
+
+/** Sales Outreach Email - Post-discovery call with value proposition */
+export interface SalesEmailOutput {
+  type: 'salesEmail';
+  subject: string;
+  greeting: string;
+  body: string[];
+  painPointsAddressed: string[];
+  valueProposition: string;
+  callToAction: string;
+  urgencyHook?: string;
+  closing: string;
+}
+
+/** Internal Update Email - Stakeholder brief with TLDR and decisions */
+export interface InternalUpdateOutput {
+  type: 'internalUpdate';
+  subject: string;
+  greeting: string;
+  tldr: string;
+  body: string[];
+  keyDecisions: string[];
+  blockers?: string[];
+  nextMilestone: string;
+  closing: string;
+}
+
+/** Client Proposal Email - Formal proposal with requirements and solution */
+export interface ClientProposalOutput {
+  type: 'clientProposal';
+  subject: string;
+  greeting: string;
+  executiveSummary: string;
+  body: string[];
+  requirementsSummary: string[];
+  proposedSolution: string;
+  timelineEstimate?: string;
+  nextStepsToEngage: string[];
+  closing: string;
+}
+
+/** Blog post section */
+export interface BlogSection {
+  heading: string;
+  paragraphs: string[];
+  bulletPoints?: string[];
+  quotes?: { text: string; attribution: string }[];
+}
+
+/** Hero image for blog posts (AI-generated) */
+export interface BlogHeroImage {
+  url: string;
+  alt: string;
+  prompt?: string; // Store prompt for regeneration
+}
+
+/** Structured blog post output */
+export interface BlogPostOutput {
+  type: 'blogPost';
+  headline: string;
+  subheading?: string;
+  hook: string;
+  sections: BlogSection[];
+  callToAction: string;
+  heroImage?: BlogHeroImage;
+  metadata: {
+    wordCount: number;
+    targetAudience?: string;
+    tone: string;
+  };
+}
+
+/** Structured LinkedIn post output */
+export interface LinkedInOutput {
+  type: 'linkedin';
+  hook: string;
+  content: string;
+  hashtags: string[];
+  callToAction: string;
+  characterCount: number;
+}
+
+/** Communication dimension score */
+export interface CommunicationDimension {
+  name: string;
+  score: number;
+  strengths: string[];
+  improvements: string[];
+}
+
+/** Structured communication analysis output */
+export interface CommunicationAnalysisOutput {
+  type: 'communicationAnalysis';
+  overallScore: number;
+  dimensions: CommunicationDimension[];
+  overallAssessment: string;
+  keyTakeaway: string;
+}
+
+// ============================================================
+// AGILE BACKLOG OUTPUT TYPES
+// ============================================================
+
+/** Acceptance criterion for a user story */
+export interface AcceptanceCriterion {
+  criterion: string;
+  type?: 'given-when-then' | 'simple';
+}
+
+/** User story in Agile format */
+export interface UserStory {
+  id: string; // Generated: US-001, US-002, etc.
+  title: string;
+  statement: string; // Full formatted user story in transcript language (e.g., "Als gebruiker wil ik... zodat...")
+  acceptanceCriteria: AcceptanceCriterion[];
+  technicalNotes?: string[]; // Only if explicitly discussed
+  priority?: 'must-have' | 'should-have' | 'could-have' | 'wont-have';
+  dependencies?: string[]; // References to other story IDs
+}
+
+/** Epic containing related user stories */
+export interface Epic {
+  id: string; // Generated: EP-001, EP-002, etc.
+  title: string;
+  description: string;
+  stories: UserStory[];
+}
+
+/** Structured Agile backlog output */
+export interface AgileBacklogOutput {
+  type: 'agileBacklog';
+  summary?: string;
+  epics: Epic[];
+  standaloneStories: UserStory[];
+}
+
+/** Union type for all structured outputs */
+export type StructuredOutput =
+  | ActionItemsOutput
+  | FollowUpEmailOutput
+  | SalesEmailOutput
+  | InternalUpdateOutput
+  | ClientProposalOutput
+  | BlogPostOutput
+  | LinkedInOutput
+  | CommunicationAnalysisOutput
+  | AgileBacklogOutput;
+
+/** Type guard to check if content is structured */
+export function isStructuredOutput(content: unknown): content is StructuredOutput {
+  return (
+    typeof content === 'object' &&
+    content !== null &&
+    'type' in content &&
+    typeof (content as StructuredOutput).type === 'string'
+  );
+}
+
+// ============================================================
+// GENERATED ANALYSIS
+// ============================================================
 
 // New: Generated analysis record
 export interface GeneratedAnalysis {
@@ -128,8 +378,11 @@ export interface GeneratedAnalysis {
   userId: string;
   templateId: string; // Links to AnalysisTemplate
   templateName: string; // Snapshot for history (e.g., "Emotional Intelligence")
-  content: string; // Generated markdown content
+  templateVersion: string; // Snapshot of template version at generation time (e.g., "1.0.0")
+  content: string | StructuredOutput; // Markdown (V1) or structured JSON (V2)
+  contentType: 'markdown' | 'structured'; // Indicates how to render content
   model: 'gpt-5' | 'gpt-5-mini';
+  customInstructions?: string; // User-provided instructions at generation time
   tokenUsage?: {
     prompt: number;
     completion: number;
@@ -138,7 +391,7 @@ export interface GeneratedAnalysis {
   generatedAt: Date;
   generationTimeMs?: number;
   translations?: {
-    [languageCode: string]: string; // Translated content for each language (e.g., { 'en': '...', 'es': '...' })
+    [languageCode: string]: string | StructuredOutput; // Translated content for each language
   };
 }
 
@@ -154,6 +407,7 @@ export interface TranslationData {
 export interface Transcription {
   id: string;
   userId: string;
+  folderId?: string | null; // V2: Optional folder assignment
   fileName: string;
   title?: string; // Custom user-defined title, defaults to fileName
   fileUrl?: string; // Optional - cleared after file deletion for privacy
@@ -172,31 +426,46 @@ export interface Transcription {
   detectedLanguage?: string; // Language detected from the audio (e.g., 'english', 'dutch', 'german')
   summaryLanguage?: string; // Language used for the summary
   analyses?: AnalysisResults; // All analysis results - DEPRECATED, use coreAnalyses
-  // NEW: Core analyses generated automatically
+  // V2 ARCHITECTURE: summaryV2 stored directly on doc, other analyses in generatedAnalyses collection
+  summaryV2?: SummaryV2; // V2: Structured summary stored directly for fast access
+  /**
+   * @deprecated Use summaryV2 directly on Transcription and generatedAnalyses collection.
+   * Kept for backwards compatibility with existing transcriptions.
+   */
   coreAnalyses?: CoreAnalyses;
-  coreAnalysesOutdated?: boolean; // True when transcript corrected but analyses not regenerated
-  // NEW: References to on-demand analyses
+  // References to analyses in generatedAnalyses collection (actionItems, communicationAnalysis, etc.)
   generatedAnalysisIds?: string[]; // Array of GeneratedAnalysis IDs
   error?: string;
   createdAt: Date;
   updatedAt: Date;
   completedAt?: Date;
+  lastAccessedAt?: Date; // When the user last opened this conversation
   cost?: number;
   metadata?: Record<string, any>;
   // Speaker diarization fields
   speakerCount?: number;
   speakers?: Speaker[];
   speakerSegments?: SpeakerSegment[];
-  transcriptWithSpeakers?: string; // Formatted transcript with speaker labels
+  // Note: transcriptWithSpeakers removed - derive from speakerSegments using formatTranscriptWithSpeakers()
   diarizationConfidence?: number;
   // Sharing fields
   shareToken?: string;
   shareSettings?: ShareSettings;
   sharedAt?: Date;
   sharedWith?: SharedEmailRecord[]; // Email addresses this transcript was shared with (cleared when shareToken is revoked)
-  // Translation fields
-  translations?: Record<string, TranslationData>; // Key is language code (e.g., 'es', 'fr')
-  preferredTranslationLanguage?: string; // User's preferred language for this transcription (e.g., 'es', 'fr', or 'original')
+  // Translation fields (V1 - deprecated, use translations collection)
+  translations?: Record<string, TranslationData>; // DEPRECATED: Key is language code (e.g., 'es', 'fr')
+  preferredTranslationLanguage?: string; // DEPRECATED: Use preferredLocale instead
+  // Translation V2: Uses separate 'translations' collection
+  preferredLocale?: string; // User's preferred locale: 'original' | 'es-ES' | 'nl-NL' | etc.
+  // Soft delete fields
+  deletedAt?: Date; // When the transcription was soft-deleted (null = not deleted)
+  // V2: Template selection - controls which analyses are generated
+  selectedTemplates?: string[]; // Array of template IDs from frontend (e.g., ['transcribe-only', 'actionItems'])
+  // Vector indexing metadata (for Q&A feature)
+  vectorIndexedAt?: Date;      // When last indexed in Qdrant
+  vectorChunkCount?: number;   // Number of chunks stored in Qdrant
+  vectorIndexVersion?: number; // Schema version for future migrations
 }
 
 export interface TranscriptionJob {
@@ -211,6 +480,8 @@ export interface TranscriptionJob {
   maxRetries: number;
   createdAt: Date;
   processedAt?: Date;
+  // V2: Template selection - controls which analyses are generated
+  selectedTemplates?: string[]; // Array of template IDs from frontend
 }
 
 export interface FileUploadRequest {
@@ -369,6 +640,7 @@ export interface SharedTranscriptionView {
   title?: string;
   transcriptText?: string;
   analyses?: Partial<AnalysisResults>;  // Core analyses (legacy + new coreAnalyses)
+  summaryV2?: SummaryV2;  // V2 structured summary for rich rendering
   generatedAnalyses?: GeneratedAnalysis[];  // On-demand analyses from separate collection
   speakerSegments?: SpeakerSegment[];
   speakers?: Speaker[];
@@ -378,6 +650,70 @@ export interface SharedTranscriptionView {
   contentOptions?: ShareContentOptions;
   translations?: Record<string, TranslationData>; // All available translations at time of sharing
   preferredTranslationLanguage?: string; // Sender's preferred language (e.g., 'es', 'fr', or 'original')
+}
+
+// ============================================================================
+// Imported Conversations (V2 - Shared with you folder)
+// ============================================================================
+
+/**
+ * Represents a linked reference to a shared conversation.
+ * The import points to the original share; if the share is revoked or expires,
+ * the imported reference becomes inaccessible.
+ */
+export interface ImportedConversation {
+  id: string;
+  userId: string; // Who imported it
+  shareToken: string; // Reference to original share
+  originalTranscriptionId: string; // For tracking/analytics
+
+  // Cached metadata (snapshot at import time for display)
+  title: string;
+  sharedByName?: string;
+  sharedByEmail?: string;
+  expiresAt?: Date; // Copied from share settings
+
+  // Timestamps
+  importedAt: Date;
+  lastAccessedAt?: Date;
+  deletedAt?: Date; // Soft delete
+}
+
+/**
+ * Status of an imported conversation based on the underlying share's state.
+ */
+export type ImportedConversationStatus =
+  | 'active' // Share is valid and accessible
+  | 'expired' // Share has passed its expiration date
+  | 'revoked' // Owner has revoked the share
+  | 'unavailable'; // Share not found or other error
+
+/**
+ * Response when fetching an imported conversation with its live content.
+ */
+export interface ImportedConversationWithContent {
+  importedConversation: ImportedConversation;
+  sharedContent: SharedTranscriptionView | null; // null if unavailable
+  status: ImportedConversationStatus;
+}
+
+/**
+ * Response when importing a shared conversation.
+ */
+export interface ImportConversationResponse {
+  importedConversation: ImportedConversation;
+  alreadyImported: boolean; // True if user had already imported this
+}
+
+/**
+ * Extended shared transcription view with import status.
+ * Used when an authenticated user views a shared link.
+ */
+export interface SharedTranscriptionViewWithImportStatus
+  extends SharedTranscriptionView {
+  canImport: boolean; // Always true for valid shares
+  alreadyImported: boolean; // Whether current user has imported this
+  importedAt?: Date; // When user imported (if they did)
 }
 
 export interface TranslateRequest {
@@ -475,10 +811,174 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' }
 ];
 
+// ============================================================
+// TRANSLATION V2 - SEPARATE COLLECTION ARCHITECTURE
+// ============================================================
+
+/**
+ * V2 Supported Locale - Uses ISO country codes for extensibility
+ * Examples: 'en-US', 'es-ES', 'nl-NL', 'pt-BR', 'zh-CN'
+ */
+export interface SupportedLocale {
+  code: string;        // ISO: 'en-US', 'es-ES', 'nl-NL', 'de-DE', 'fr-FR'
+  language: string;    // 'English', 'Spanish', 'Dutch', 'German', 'French'
+  nativeName: string;  // 'English', 'Español', 'Nederlands', 'Deutsch', 'Français'
+  region?: string;     // 'United States', 'Spain', etc.
+}
+
+/**
+ * Supported locales for translation (V2)
+ * Easy to extend with regional variants: pt-BR, zh-CN, zh-TW, etc.
+ */
+export const SUPPORTED_LOCALES: SupportedLocale[] = [
+  { code: 'en-US', language: 'English', nativeName: 'English', region: 'United States' },
+  { code: 'es-ES', language: 'Spanish', nativeName: 'Español', region: 'Spain' },
+  { code: 'nl-NL', language: 'Dutch', nativeName: 'Nederlands', region: 'Netherlands' },
+  { code: 'de-DE', language: 'German', nativeName: 'Deutsch', region: 'Germany' },
+  { code: 'fr-FR', language: 'French', nativeName: 'Français', region: 'France' },
+  { code: 'it-IT', language: 'Italian', nativeName: 'Italiano', region: 'Italy' },
+  { code: 'pt-PT', language: 'Portuguese', nativeName: 'Português', region: 'Portugal' },
+  { code: 'pt-BR', language: 'Portuguese', nativeName: 'Português', region: 'Brazil' },
+  { code: 'zh-CN', language: 'Chinese', nativeName: '简体中文', region: 'China' },
+  { code: 'zh-TW', language: 'Chinese', nativeName: '繁體中文', region: 'Taiwan' },
+  { code: 'ja-JP', language: 'Japanese', nativeName: '日本語', region: 'Japan' },
+  { code: 'ko-KR', language: 'Korean', nativeName: '한국어', region: 'South Korea' },
+  { code: 'ar-SA', language: 'Arabic', nativeName: 'العربية', region: 'Saudi Arabia' },
+  { code: 'ru-RU', language: 'Russian', nativeName: 'Русский', region: 'Russia' },
+  { code: 'hi-IN', language: 'Hindi', nativeName: 'हिन्दी', region: 'India' },
+  { code: 'pl-PL', language: 'Polish', nativeName: 'Polski', region: 'Poland' },
+  { code: 'tr-TR', language: 'Turkish', nativeName: 'Türkçe', region: 'Turkey' },
+];
+
+/**
+ * Get locale by code
+ */
+export function getLocaleByCode(code: string): SupportedLocale | undefined {
+  return SUPPORTED_LOCALES.find(l => l.code === code);
+}
+
+/**
+ * Translated Summary V2 - Mirrors SummaryV2 structure for translated content
+ */
+export interface TranslatedSummaryV2 {
+  type: 'summaryV2';
+  title: string;
+  intro: string;
+  keyPoints: Array<{ topic: string; description: string }>;
+  detailedSections: Array<{ topic: string; content: string }>;
+  decisions?: string[];
+  nextSteps?: string[];
+}
+
+/**
+ * Translated Summary V1 - Simple text for legacy markdown summaries
+ */
+export interface TranslatedSummaryV1 {
+  type: 'summaryV1';
+  text: string;
+}
+
+/**
+ * Translated Analysis - For GeneratedAnalysis content
+ */
+export interface TranslatedAnalysis {
+  type: 'analysis';
+  content: string | StructuredOutput;
+  contentType: 'markdown' | 'structured';
+}
+
+/**
+ * Union of all translated content types
+ */
+export type TranslatedContent =
+  | TranslatedSummaryV2
+  | TranslatedSummaryV1
+  | TranslatedAnalysis;
+
+/**
+ * Translation Document - Stored in 'translations' collection (V2 architecture)
+ *
+ * Each document represents a translation of a specific content item
+ * (either a Summary or an AI Asset) into a target locale.
+ */
+export interface Translation {
+  id: string;
+
+  // Reference to source content
+  sourceType: 'summary' | 'analysis';
+  sourceId: string;           // transcriptionId for summary, analysisId for AI assets
+  transcriptionId: string;    // Always set for querying all translations of a conversation
+  userId: string;             // Owner for access control
+
+  // Target locale
+  localeCode: string;         // ISO: 'es-ES', 'nl-NL', 'de-DE'
+  localeName: string;         // Human-readable: 'Spanish', 'Dutch', 'German'
+
+  // Translated content
+  content: TranslatedContent;
+
+  // Metadata
+  translatedAt: Date;
+  translatedBy: 'gpt-5' | 'gpt-5-mini';
+  tokenUsage?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
+
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Status of translation for a specific locale
+ */
+export interface LocaleTranslationStatus {
+  code: string;                  // 'es-ES'
+  name: string;                  // 'Spanish'
+  nativeName: string;            // 'Español'
+  hasSummaryTranslation: boolean;
+  translatedAssetCount: number;
+  totalAssetCount: number;
+  lastTranslatedAt?: Date;
+}
+
+/**
+ * Aggregated translation status for a conversation
+ */
+export interface ConversationTranslations {
+  transcriptionId: string;
+  originalLocale?: string;       // Detected from audio (e.g., 'en-US')
+  availableLocales: LocaleTranslationStatus[];
+  preferredLocale: string;       // 'original' | 'es-ES' | etc.
+}
+
+/**
+ * Request to translate conversation content
+ */
+export interface TranslateConversationRequest {
+  targetLocale: string;          // ISO locale code: 'es-ES', 'nl-NL'
+  translateSummary?: boolean;    // Default: true
+  translateAssets?: boolean;     // Default: true (all existing assets)
+  assetIds?: string[];           // Optional: specific asset IDs to translate
+  forceRetranslate?: boolean;    // Default: false - if true, deletes existing and re-translates
+}
+
+/**
+ * Response with translation results
+ */
+export interface TranslateConversationResponse {
+  transcriptionId: string;
+  localeCode: string;
+  localeName: string;
+  translationsCreated: number;
+  translations: Translation[];
+}
+
 // NEW: Subscription and pricing types
 
 export interface SubscriptionTier {
-  id: 'free' | 'payg' | 'professional' | 'business' | 'enterprise';
+  id: 'free' | 'professional' | 'enterprise';
   name: string;
   price: {
     monthly?: number;
@@ -495,6 +995,8 @@ export interface SubscriptionTier {
     coreAnalyses: boolean;
     onDemandAnalyses: boolean;
     translation: boolean;
+    askQuestions: boolean;
+    pdfExport: boolean;
     advancedSharing: boolean;
     batchUpload: boolean;
     priorityProcessing: boolean;
@@ -509,8 +1011,8 @@ export interface UsageRecord {
   durationSeconds: number;
   durationHours: number;
   type: 'transcription' | 'analysis' | 'translation';
-  tier: 'free' | 'professional' | 'payg';
-  cost?: number; // For PAYG or overages (in cents)
+  tier: 'free' | 'professional' | 'enterprise';
+  cost?: number; // For overages (in cents)
   createdAt: Date;
 }
 
@@ -532,9 +1034,9 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     name: 'Free',
     price: {},
     limits: {
-      transcriptionsPerMonth: 3,
+      transcriptionsPerMonth: 5, // Updated from 3 - more generous free tier
       hoursPerMonth: undefined,
-      maxFileDuration: 30, // minutes
+      maxFileDuration: 60, // Updated from 30 minutes - more generous
       maxFileSize: 100 * 1024 * 1024, // 100MB
       onDemandAnalysesPerMonth: 2,
     },
@@ -542,37 +1044,18 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true, // Limited to 2/month
       translation: false,
+      askQuestions: false,
+      pdfExport: false,
       advancedSharing: false,
       batchUpload: false,
       priorityProcessing: false,
       apiAccess: false,
     },
   },
-  payg: {
-    id: 'payg',
-    name: 'Pay As You Go',
-    price: {}, // PAYG pricing available in BASE_PRICING.usd.payg
-    limits: {
-      transcriptionsPerMonth: undefined, // unlimited
-      hoursPerMonth: undefined, // based on purchased credits
-      maxFileDuration: undefined, // unlimited
-      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
-      onDemandAnalysesPerMonth: undefined, // unlimited
-    },
-    features: {
-      coreAnalyses: true,
-      onDemandAnalyses: true,
-      translation: true,
-      advancedSharing: true,
-      batchUpload: true,
-      priorityProcessing: false,
-      apiAccess: false,
-    },
-  },
   professional: {
     id: 'professional',
-    name: 'Professional',
-    price: BASE_PRICING.usd.professional, // Reference centralized pricing
+    name: 'Pro',
+    price: BASE_PRICING.usd.professional, // Reference centralized pricing ($25/month)
     limits: {
       transcriptionsPerMonth: undefined, // unlimited
       hoursPerMonth: 60,
@@ -584,43 +1067,21 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true,
       translation: true,
+      askQuestions: true,
+      pdfExport: true,
       advancedSharing: true,
       batchUpload: true,
       priorityProcessing: true,
-      apiAccess: false, // Add-on
-    },
-  },
-  business: {
-    id: 'business',
-    name: 'Business',
-    price: {
-      monthly: 79,
-      annual: 790, // 17% discount
-    },
-    limits: {
-      transcriptionsPerMonth: undefined,
-      hoursPerMonth: 200,
-      maxFileDuration: undefined,
-      maxFileSize: 5 * 1024 * 1024 * 1024, // 5GB
-      onDemandAnalysesPerMonth: undefined,
-    },
-    features: {
-      coreAnalyses: true,
-      onDemandAnalyses: true,
-      translation: true,
-      advancedSharing: true,
-      batchUpload: true,
-      priorityProcessing: true,
-      apiAccess: true,
+      apiAccess: false, // Future add-on
     },
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterprise',
-    price: {}, // Custom pricing
+    price: {}, // Custom pricing - Contact Sales
     limits: {
       transcriptionsPerMonth: undefined,
-      hoursPerMonth: undefined,
+      hoursPerMonth: undefined, // Unlimited
       maxFileDuration: undefined,
       maxFileSize: 10 * 1024 * 1024 * 1024, // 10GB
       onDemandAnalysesPerMonth: undefined,
@@ -629,6 +1090,8 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
       coreAnalyses: true,
       onDemandAnalyses: true,
       translation: true,
+      askQuestions: true,
+      pdfExport: true,
       advancedSharing: true,
       batchUpload: true,
       priorityProcessing: true,
@@ -636,72 +1099,6 @@ export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
     },
   },
 };
-
-// Transcript Correction Types
-
-export interface CorrectTranscriptRequest {
-  instructions: string;
-  previewOnly?: boolean; // Default: true
-}
-
-export interface TranscriptDiff {
-  segmentIndex: number;
-  speakerTag: string;
-  timestamp: string; // Formatted like "1:23"
-  oldText: string;
-  newText: string;
-}
-
-export interface CorrectionPreview {
-  original: string; // Full original transcript
-  corrected: string; // Full corrected transcript
-  diff: TranscriptDiff[]; // Only changed segments
-  summary: {
-    totalChanges: number; // Number of text changes
-    affectedSegments: number; // Number of segments changed
-  };
-}
-
-export interface CorrectionApplyResponse {
-  success: boolean;
-  transcription: Transcription; // Updated transcript object
-  deletedAnalysisIds: string[]; // IDs of deleted custom analyses
-  clearedTranslations: string[]; // Language codes that were cleared (e.g., ['es', 'fr'])
-}
-
-// AI-First Intelligent Routing Types
-export interface SimpleReplacement {
-  find: string;
-  replace: string;
-  caseSensitive: boolean;
-  estimatedMatches: number;
-  confidence: 'high' | 'medium' | 'low';
-}
-
-export interface ComplexCorrection {
-  description: string;
-  affectedSegmentIndices: number[];
-  speakerTag?: string;
-  reason: string;
-}
-
-export interface RoutingPlan {
-  simpleReplacements: SimpleReplacement[];
-  complexCorrections: ComplexCorrection[];
-  estimatedTime: {
-    regex: string;
-    ai: string;
-    total: string;
-  };
-  summary: {
-    totalCorrections: number;
-    simpleCount: number;
-    complexCount: number;
-    totalSegmentsAffected: number;
-    totalSegments: number;
-    percentageAffected: string;
-  };
-}
 
 // Admin Activity Audit Types
 export interface AccountEvent {
@@ -730,4 +1127,272 @@ export interface UserActivity {
   recentAnalyses: GeneratedAnalysis[];
   usageRecords: UsageRecord[];
   accountEvents: AccountEvent[];
+}
+
+// ============================================================
+// Q&A VECTOR SEARCH TYPES
+// ============================================================
+
+/**
+ * Citation from a conversation used in Q&A answers
+ */
+export interface Citation {
+  transcriptionId: string;
+  conversationTitle: string;
+  speaker: string;
+  timestamp: string;        // "12:34" format
+  timestampSeconds: number; // Raw seconds for seeking
+  text: string;             // The quoted text
+  relevanceScore: number;   // 0-1 similarity score
+}
+
+/**
+ * A single Q&A exchange for conversation history
+ * Used to provide context for follow-up questions
+ */
+export interface QAHistoryItem {
+  question: string;
+  answer: string;
+}
+
+/**
+ * Debug information for Q&A requests
+ */
+export interface QADebugInfo {
+  summaryTokens: number;           // Tokens from summary context
+  chunksTokens: number;            // Tokens from transcript excerpts
+  historyTokens: number;           // Tokens from Q&A history
+  questionTokens: number;          // Tokens from user question
+  systemPromptTokens: number;      // Tokens from system prompt
+  totalInputTokens: number;        // Total input tokens
+  outputTokens: number;            // Output tokens (from response)
+  historyCount: number;            // Number of Q&A pairs in context
+  chunksCount: number;             // Number of transcript chunks found
+  estimatedCostUsd: number;        // Estimated cost in USD
+  model: string;                   // Model used
+}
+
+/**
+ * Response from Q&A "ask" endpoints
+ */
+export interface AskResponse {
+  answer: string;
+  citations: Citation[];
+  searchScope: 'conversation' | 'folder' | 'global';
+  processingTimeMs: number;
+  indexed?: boolean;        // Whether the conversation was already indexed
+  debug?: QADebugInfo;      // Debug info (only in development)
+}
+
+/**
+ * Response from "find conversations" endpoint
+ */
+export interface FindResponse {
+  conversations: ConversationMatch[];
+  totalConversations: number;
+  searchScope: 'folder' | 'global';
+  processingTimeMs: number;
+}
+
+/**
+ * A conversation matching a search query
+ */
+export interface ConversationMatch {
+  transcriptionId: string;
+  title: string;
+  createdAt: Date;
+  folderId: string | null;
+  folderName: string | null;
+  matchedSnippets: MatchedSnippet[];
+  totalMatches: number;
+}
+
+/**
+ * A text snippet matching the search query
+ */
+export interface MatchedSnippet {
+  text: string;
+  speaker: string;
+  timestamp: string;        // "12:34" format
+  timestampSeconds: number;
+  relevanceScore: number;
+}
+
+/**
+ * Payload structure for vector chunks stored in Qdrant
+ */
+export interface TranscriptChunkPayload {
+  userId: string;
+  transcriptionId: string;
+  folderId: string | null;
+  chunkType: 'content' | 'metadata';  // 'metadata' for title/summary chunks
+  segmentIndex: number;
+  speaker: string;
+  startTime: number;        // seconds
+  endTime: number;          // seconds
+  text: string;
+  chunkIndex: number;       // 0 if segment not split
+  totalChunks: number;      // 1 if segment not split
+  conversationTitle: string;
+  conversationDate: string; // ISO date
+  indexedAt: string;        // ISO timestamp
+}
+
+/**
+ * A chunk prepared for embedding
+ */
+export interface TranscriptChunk {
+  segmentIndex: number;
+  chunkIndex: number;
+  totalChunks: number;
+  speaker: string;
+  startTime: number;
+  endTime: number;
+  text: string;
+}
+
+/**
+ * A chunk with its embedding vector
+ */
+export interface EmbeddedChunk extends TranscriptChunk {
+  embedding: number[];
+}
+
+/**
+ * Search result from Qdrant
+ */
+export interface ScoredChunk {
+  id: string;
+  score: number;
+  payload: TranscriptChunkPayload;
+}
+
+// ============================================================
+// FIND/REPLACE TYPES
+// ============================================================
+
+/**
+ * Category of a saved find/replace pattern for smart suggestions
+ */
+export type FindReplacePatternCategory =
+  | 'person_name'
+  | 'company_name'
+  | 'place'
+  | 'technical_term'
+  | 'custom';
+
+/**
+ * A saved find/replace pattern for reuse across conversations
+ */
+export interface SavedFindReplacePattern {
+  id: string;
+  userId: string;
+  findText: string;
+  replaceText: string;
+  category: FindReplacePatternCategory;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+  useCount: number;
+  createdAt: Date;
+  lastUsedAt: Date;
+}
+
+/**
+ * Location where a match was found in conversation content
+ */
+export interface MatchLocation {
+  type: 'transcript' | 'summary' | 'aiAsset';
+
+  // For transcript matches
+  segmentIndex?: number;
+  charOffset?: number;
+
+  // For summaryV2 matches
+  summaryField?: 'title' | 'intro' | 'keyPoint' | 'detailedSection' | 'decision' | 'nextStep';
+  arrayIndex?: number;
+  subField?: 'topic' | 'description' | 'content';
+
+  // For AI asset matches
+  analysisId?: string;
+  contentPath?: string; // JSON path for structured content (e.g., "sections[0].heading")
+}
+
+/**
+ * A single match found in content
+ */
+export interface FindReplaceMatch {
+  id: string;
+  location: MatchLocation;
+  matchedText: string; // The actual text that matched (preserves case)
+  context: string; // ~50 chars before/after for preview
+}
+
+/**
+ * Grouped matches by content category
+ */
+export interface FindReplaceResults {
+  transcriptionId: string;
+  findText: string;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+  summary: FindReplaceMatch[];
+  transcript: FindReplaceMatch[];
+  aiAssets: {
+    analysisId: string;
+    templateName: string;
+    matches: FindReplaceMatch[];
+  }[];
+  totalMatches: number;
+}
+
+/**
+ * Request to find matches in a conversation
+ */
+export interface FindRequest {
+  findText: string;
+  caseSensitive?: boolean;
+  wholeWord?: boolean;
+}
+
+/**
+ * Request to replace matches in a conversation
+ */
+export interface ReplaceRequest {
+  findText: string;
+  replaceText: string;
+  caseSensitive: boolean;
+  wholeWord: boolean;
+
+  // Selection options (exactly one should be specified)
+  replaceAll?: boolean;
+  replaceCategories?: ('summary' | 'transcript' | 'aiAssets')[];
+  matchIds?: string[];
+
+  // Optional: save as pattern for future use
+  saveAsPattern?: {
+    category: FindReplacePatternCategory;
+  };
+}
+
+/**
+ * Response from replace operation
+ */
+export interface ReplaceResponse {
+  transcriptionId: string;
+  replacedCount: number;
+  replacedLocations: {
+    summary: number;
+    transcript: number;
+    aiAssets: { analysisId: string; count: number }[];
+  };
+  patternSaved?: string; // Pattern ID if saved
+}
+
+/**
+ * A pattern suggestion for a conversation
+ */
+export interface PatternSuggestion {
+  pattern: SavedFindReplacePattern;
+  matchCount: number;
+  relevanceScore: number; // Based on use count and recency
 }

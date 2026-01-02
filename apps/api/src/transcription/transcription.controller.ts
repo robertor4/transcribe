@@ -14,8 +14,11 @@ import {
   UploadedFiles,
   Req,
   BadRequestException,
-  ParseIntPipe,
   UnauthorizedException,
+  ServiceUnavailableException,
+  HttpCode,
+  HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
@@ -24,25 +27,17 @@ import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
 import { UsageService } from '../usage/usage.service';
-import {
-  TranscriptCorrectionRouterService,
-  RoutingPlan,
-} from './transcript-correction-router.service';
-import { ShareContentOptions } from '@transcribe/shared';
+import { VectorService } from '../vector/vector.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { SubscriptionGuard } from '../guards/subscription.guard';
+import { AskQuestionDto } from '../vector/dto/ask-question.dto';
 import { PaginationDto } from './dto/pagination.dto';
+import { SearchTranscriptionsDto } from './dto/search.dto';
 import { AddCommentDto, UpdateCommentDto } from './dto/add-comment.dto';
 import {
   CreateShareLinkDto,
   UpdateShareSettingsDto,
   SendShareEmailDto,
 } from './dto/share-link.dto';
-import type {
-  CorrectTranscriptRequest,
-  CorrectionPreview,
-  CorrectionApplyResponse,
-} from '@transcribe/shared';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -50,23 +45,26 @@ import {
   PaginatedResponse,
   Transcription,
   SummaryComment,
-  RegenerateSummaryRequest,
   AnalysisType,
   SharedTranscriptionView,
   BatchUploadResponse,
   MAX_FILE_SIZE,
   AnalysisTemplate,
   GeneratedAnalysis,
+  BlogHeroImage,
+  AskResponse,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
 export class TranscriptionController {
+  private readonly logger = new Logger(TranscriptionController.name);
+
   constructor(
     private readonly transcriptionService: TranscriptionService,
     private readonly templateService: AnalysisTemplateService,
     private readonly onDemandAnalysisService: OnDemandAnalysisService,
     private readonly usageService: UsageService,
-    private readonly correctionRouter: TranscriptCorrectionRouterService,
+    private readonly vectorService: VectorService,
   ) {}
 
   // Public endpoint for shared transcripts (no auth required)
@@ -112,6 +110,7 @@ export class TranscriptionController {
     @Body('analysisType') analysisType: AnalysisType,
     @Body('context') context: string,
     @Body('contextId') contextId: string,
+    @Body('selectedTemplates') selectedTemplatesJson: string, // V2: JSON string of template IDs
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<Transcription>> {
     if (!file) {
@@ -152,12 +151,26 @@ export class TranscriptionController {
       estimatedDurationMinutes,
     );
 
+    // V2: Parse selectedTemplates from JSON string
+    let selectedTemplates: string[] | undefined;
+    if (selectedTemplatesJson) {
+      try {
+        selectedTemplates = JSON.parse(selectedTemplatesJson);
+        this.logger.log(
+          `Parsed selectedTemplates: ${JSON.stringify(selectedTemplates)}`,
+        );
+      } catch (e) {
+        this.logger.warn('Failed to parse selectedTemplates JSON:', e);
+      }
+    }
+
     const transcription = await this.transcriptionService.createTranscription(
       req.user.uid,
       file,
       analysisType,
       context,
       contextId,
+      selectedTemplates,
     );
 
     return {
@@ -269,6 +282,29 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Search transcriptions by query string
+   * Searches across title, fileName, and summary content
+   */
+  @Get('search')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 30, ttl: 60000 } }) // 30 searches per minute
+  async searchTranscriptions(
+    @Req() req: Request & { user: any },
+    @Query() searchDto: SearchTranscriptionsDto,
+  ): Promise<ApiResponse<{ items: Partial<Transcription>[]; total: number }>> {
+    const result = await this.transcriptionService.searchTranscriptions(
+      req.user.uid,
+      searchDto.query,
+      searchDto.limit,
+    );
+
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
   // ============================================================
   // ANALYSIS TEMPLATE ENDPOINTS (Must come before :id routes!)
   // ============================================================
@@ -279,10 +315,10 @@ export class TranscriptionController {
   @Get('analysis-templates')
   async getAnalysisTemplates(): Promise<ApiResponse<AnalysisTemplate[]>> {
     const templates = this.templateService.getTemplates();
-    return {
+    return Promise.resolve({
       success: true,
       data: templates,
-    };
+    });
   }
 
   /**
@@ -298,9 +334,98 @@ export class TranscriptionController {
       throw new BadRequestException(`Template not found: ${templateId}`);
     }
 
-    return {
+    return Promise.resolve({
       success: true,
       data: template,
+    });
+  }
+
+  /**
+   * Get recent AI-generated analyses for the current user
+   * Used for the dashboard "Recent Outputs" section
+   */
+  @Get('recent-analyses')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentAnalyses(
+    @Query('limit') limit: string = '8',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<any[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 8, 1), 20);
+    const analyses = await this.transcriptionService.getRecentAnalyses(
+      req.user.uid,
+      parsedLimit,
+    );
+
+    return {
+      success: true,
+      data: analyses,
+    };
+  }
+
+  /**
+   * Get recent AI-generated analyses for conversations in a specific folder
+   * Used for the folder page "Recent Outputs" section
+   */
+  @Get('recent-analyses/folder/:folderId')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentAnalysesByFolder(
+    @Param('folderId') folderId: string,
+    @Query('limit') limit: string = '8',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<any[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 8, 1), 20);
+    const analyses = await this.transcriptionService.getRecentAnalysesByFolder(
+      req.user.uid,
+      folderId,
+      parsedLimit,
+    );
+
+    return {
+      success: true,
+      data: analyses,
+    };
+  }
+
+  /**
+   * Get recently opened conversations for the current user
+   * Returns conversations ordered by lastAccessedAt (most recent first)
+   */
+  @Get('recently-opened')
+  @UseGuards(FirebaseAuthGuard)
+  async getRecentlyOpened(
+    @Query('limit') limit: string = '5',
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription[]>> {
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 5, 1), 10);
+    const transcriptions =
+      await this.transcriptionService.getRecentlyOpenedTranscriptions(
+        req.user.uid,
+        parsedLimit,
+      );
+
+    return {
+      success: true,
+      data: transcriptions,
+    };
+  }
+
+  /**
+   * Clear recently opened history for the current user
+   * Removes lastAccessedAt from all user's transcriptions
+   */
+  @Delete('recently-opened')
+  @UseGuards(FirebaseAuthGuard)
+  async clearRecentlyOpened(
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ cleared: number }>> {
+    const cleared = await this.transcriptionService.clearRecentlyOpened(
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: { cleared },
+      message: 'Recently opened history cleared',
     };
   }
 
@@ -325,6 +450,24 @@ export class TranscriptionController {
     };
   }
 
+  /**
+   * Record that the user accessed/opened a conversation
+   * Updates the lastAccessedAt timestamp for "Recently Opened" tracking
+   */
+  @Post(':id/access')
+  @UseGuards(FirebaseAuthGuard)
+  async recordAccess(
+    @Param('id') id: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    await this.transcriptionService.recordTranscriptionAccess(req.user.uid, id);
+
+    return {
+      success: true,
+      data: { message: 'Access recorded' },
+    };
+  }
+
   @Put(':id/title')
   @UseGuards(FirebaseAuthGuard)
   async updateTitle(
@@ -346,6 +489,28 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Title updated successfully',
+    };
+  }
+
+  /**
+   * Move transcription to a folder (or remove from folder with null)
+   */
+  @Patch(':id/folder')
+  @UseGuards(FirebaseAuthGuard)
+  async moveToFolder(
+    @Param('id') id: string,
+    @Body('folderId') folderId: string | null,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    await this.transcriptionService.moveToFolder(req.user.uid, id, folderId);
+
+    return {
+      success: true,
+      data: {
+        message: folderId
+          ? 'Transcription moved to folder'
+          : 'Transcription removed from folder',
+      },
     };
   }
 
@@ -477,119 +642,6 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Summary regeneration started',
-    };
-  }
-
-  /**
-   * NEW: Analyze correction request and return routing plan (Phase 1)
-   */
-  @Post(':id/analyze-corrections')
-  @UseGuards(FirebaseAuthGuard)
-  @Throttle({ short: { limit: 20, ttl: 60000 } }) // 20 analyses per minute
-  async analyzeCorrections(
-    @Param('id') transcriptionId: string,
-    @Body() dto: { instructions: string },
-    @Req() req: Request & { user: any },
-  ): Promise<ApiResponse<{ routingPlan: RoutingPlan }>> {
-    // Validate instructions
-    if (!dto.instructions || dto.instructions.trim().length === 0) {
-      throw new BadRequestException('Instructions are required');
-    }
-
-    if (dto.instructions.length > 2000) {
-      throw new BadRequestException(
-        'Instructions must be less than 2000 characters',
-      );
-    }
-
-    // Get transcription
-    const transcription = await this.transcriptionService.getTranscription(
-      req.user.uid,
-      transcriptionId,
-    );
-
-    if (!transcription) {
-      throw new BadRequestException('Transcription not found');
-    }
-
-    const segments = transcription.speakerSegments || [];
-
-    if (segments.length === 0) {
-      throw new BadRequestException(
-        'No speaker segments available for correction',
-      );
-    }
-
-    // Perform routing analysis
-    const routingPlan = await this.correctionRouter.analyzeAndRoute(
-      segments,
-      dto.instructions.trim(),
-      transcription.detectedLanguage || 'en',
-      transcription.duration,
-    );
-
-    return {
-      success: true,
-      data: { routingPlan },
-      message: 'Correction analysis complete',
-    };
-  }
-
-  @Post(':id/correct-transcript')
-  @UseGuards(FirebaseAuthGuard)
-  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 corrections per minute
-  async correctTranscript(
-    @Param('id') transcriptionId: string,
-    @Body() dto: CorrectTranscriptRequest,
-    @Req() req: Request & { user: any },
-  ): Promise<ApiResponse<CorrectionPreview | CorrectionApplyResponse>> {
-    // Validate instructions
-    if (!dto.instructions || dto.instructions.trim().length === 0) {
-      throw new BadRequestException('Instructions are required');
-    }
-
-    if (dto.instructions.length > 2000) {
-      throw new BadRequestException(
-        'Instructions must be less than 2000 characters',
-      );
-    }
-
-    // Default to preview mode if not specified
-    const previewOnly = dto.previewOnly !== false;
-
-    const result = await this.transcriptionService.correctTranscriptWithAI(
-      req.user.uid,
-      transcriptionId,
-      dto.instructions.trim(),
-      previewOnly,
-    );
-
-    return {
-      success: true,
-      data: result,
-      message: previewOnly
-        ? 'Preview generated successfully'
-        : 'Transcript corrected successfully',
-    };
-  }
-
-  @Post(':id/regenerate-core-analyses')
-  @UseGuards(FirebaseAuthGuard)
-  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 regenerations per minute
-  async regenerateCoreAnalyses(
-    @Param('id') transcriptionId: string,
-    @Req() req: Request & { user: any },
-  ): Promise<ApiResponse<Transcription>> {
-    const transcription =
-      await this.transcriptionService.regenerateCoreAnalysesForTranscription(
-        req.user.uid,
-        transcriptionId,
-      );
-
-    return {
-      success: true,
-      data: transcription,
-      message: 'Core analyses regenerated successfully',
     };
   }
 
@@ -783,6 +835,7 @@ export class TranscriptionController {
   async generateAnalysis(
     @Param('id') transcriptionId: string,
     @Body('templateId') templateId: string,
+    @Body('customInstructions') customInstructions: string | undefined,
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<GeneratedAnalysis>> {
     if (!templateId) {
@@ -796,6 +849,7 @@ export class TranscriptionController {
       transcriptionId,
       templateId,
       req.user.uid,
+      customInstructions,
     );
 
     // Track usage after successful generation
@@ -828,6 +882,27 @@ export class TranscriptionController {
   }
 
   /**
+   * Get a single generated analysis by ID
+   */
+  @Get(':id/analyses/:analysisId')
+  @UseGuards(FirebaseAuthGuard)
+  async getAnalysis(
+    @Param('id') transcriptionId: string,
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<GeneratedAnalysis>> {
+    const analysis = await this.onDemandAnalysisService.getAnalysisById(
+      analysisId,
+      req.user.uid,
+    );
+
+    return {
+      success: true,
+      data: analysis,
+    };
+  }
+
+  /**
    * Delete a generated analysis
    */
   @Delete(':id/analyses/:analysisId')
@@ -842,6 +917,53 @@ export class TranscriptionController {
     return {
       success: true,
       message: 'Analysis deleted successfully',
+    };
+  }
+
+  /**
+   * Generate a hero image for an existing blog post analysis (Premium only)
+   */
+  @Post(':id/analyses/:analysisId/generate-image')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 image generations per minute
+  async generateBlogImage(
+    @Param('id') transcriptionId: string,
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ heroImage: BlogHeroImage }>> {
+    const heroImage =
+      await this.onDemandAnalysisService.generateImageForBlogPost(
+        analysisId,
+        req.user.uid,
+      );
+
+    return {
+      success: true,
+      data: { heroImage },
+      message: 'Hero image generated successfully',
+    };
+  }
+
+  /**
+   * Send an email analysis draft to the user's own email address
+   * Rate limited to 5 emails per minute to prevent abuse
+   */
+  @Post('analyses/:analysisId/send-to-self')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 emails per minute
+  async sendEmailToSelf(
+    @Param('analysisId') analysisId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ message: string }>> {
+    const result = await this.onDemandAnalysisService.sendEmailToSelf(
+      analysisId,
+      req.user.uid,
+    );
+
+    return {
+      success: result.success,
+      data: { message: result.message },
+      message: result.message,
     };
   }
 
@@ -874,5 +996,117 @@ export class TranscriptionController {
 
     // Cap estimate at reasonable max (e.g., 8 hours = 480 minutes)
     return Math.min(estimatedMinutes, 480);
+  }
+
+  /**
+   * Ask a question about a specific conversation
+   * Uses semantic search to find relevant context and synthesizes an answer with citations
+   */
+  @Post(':id/ask')
+  @UseGuards(FirebaseAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async askQuestion(
+    @Param('id') transcriptionId: string,
+    @Body() body: AskQuestionDto,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<AskResponse>> {
+    const userId = req.user.uid;
+
+    // Check if vector search is available
+    if (!this.vectorService.isAvailable()) {
+      throw new ServiceUnavailableException('Q&A feature is not available');
+    }
+
+    const response = await this.vectorService.askConversation(
+      userId,
+      transcriptionId,
+      body.question,
+      body.maxResults,
+      body.history,
+    );
+
+    return {
+      success: true,
+      data: response,
+    };
+  }
+
+  /**
+   * Get indexing status for a conversation (for Q&A feature)
+   */
+  @Get(':id/indexing-status')
+  @UseGuards(FirebaseAuthGuard)
+  async getIndexingStatus(
+    @Param('id') transcriptionId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<
+    ApiResponse<{ indexed: boolean; chunkCount: number; indexedAt?: Date }>
+  > {
+    const userId = req.user.uid;
+
+    const status = await this.vectorService.getIndexingStatus(
+      userId,
+      transcriptionId,
+    );
+
+    return {
+      success: true,
+      data: status,
+    };
+  }
+
+  /**
+   * Merge multiple audio files into a single file
+   * Used for combining recovered recording chunks with new recording on the frontend
+   * This is much faster than client-side merging using Web Audio API
+   *
+   * Returns the merged audio as base64-encoded data along with metadata
+   */
+  @Post('merge-audio')
+  @UseGuards(FirebaseAuthGuard)
+  @UseInterceptors(
+    FilesInterceptor('files', 10, { limits: { fileSize: 500 * 1024 * 1024 } }),
+  ) // Max 10 files, 500MB each
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 merges per minute
+  async mergeAudio(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Req() req: Request & { user: any },
+  ): Promise<
+    ApiResponse<{
+      duration: number;
+      mimeType: string;
+      base64: string;
+      size: number;
+    }>
+  > {
+    if (!files || files.length < 2) {
+      throw new BadRequestException(
+        'At least 2 audio files are required for merging',
+      );
+    }
+
+    this.logger.log(
+      `[mergeAudio] User ${req.user.uid} merging ${files.length} audio files`,
+    );
+
+    try {
+      const result = await this.transcriptionService.mergeAudioFiles(files);
+
+      // Return the merged audio as base64
+      return {
+        success: true,
+        data: {
+          duration: result.duration,
+          mimeType: result.mimeType,
+          base64: result.buffer.toString('base64'),
+          size: result.buffer.length,
+        },
+      };
+    } catch (error) {
+      this.logger.error(`[mergeAudio] Failed to merge audio:`, error);
+      throw new BadRequestException(
+        `Failed to merge audio files: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 }

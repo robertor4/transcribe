@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { PublicFooter } from '@/components/PublicFooter';
 import { ArrowLeft, FileText, Shield, Scale, Globe, AlertCircle, Mail, DollarSign, TrendingUp } from 'lucide-react';
 
 export default async function TermsPage({
@@ -59,9 +60,10 @@ export default async function TermsPage({
                   <span className="hidden sm:inline">{tCommon('back')}</span>
                 </Link>
                 <div className="flex items-center">
-                  <img 
-                    src="/assets/NS-symbol.webp" 
-                    alt="Neural Summary" 
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/logos/neural-summary-logo.svg"
+                    alt="Neural Summary"
                     className="h-8 w-auto mr-3"
                     width={32}
                     height={32}
@@ -83,7 +85,7 @@ export default async function TermsPage({
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             {/* Title Section */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-[#cc3399] to-[#9933cc] rounded-full mb-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-[#8D6AFA] rounded-full mb-3">
                 <FileText className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('title')}</h1>
@@ -94,17 +96,17 @@ export default async function TermsPage({
             <nav className="bg-gray-50 rounded-lg p-4 mb-8">
               <h2 className="text-base font-semibold text-gray-900 mb-3">{t('tableOfContents')}</h2>
               <ol className="space-y-1 list-decimal list-inside text-sm text-gray-700">
-                <li><a href="#acceptance" className="hover:text-[#cc3399] transition-colors">{t('sections.acceptance.title')}</a></li>
-                <li><a href="#service-description" className="hover:text-[#cc3399] transition-colors">{t('sections.serviceDescription.title')}</a></li>
-                <li><a href="#pricing" className="hover:text-[#cc3399] transition-colors">{t('sections.pricing.title')}</a></li>
-                <li><a href="#fair-use" className="hover:text-[#cc3399] transition-colors">{t('sections.fairUse.title')}</a></li>
-                <li><a href="#user-obligations" className="hover:text-[#cc3399] transition-colors">{t('sections.userObligations.title')}</a></li>
-                <li><a href="#intellectual-property" className="hover:text-[#cc3399] transition-colors">{t('sections.intellectualProperty.title')}</a></li>
-                <li><a href="#privacy" className="hover:text-[#cc3399] transition-colors">{t('sections.privacy.title')}</a></li>
-                <li><a href="#liability" className="hover:text-[#cc3399] transition-colors">{t('sections.liability.title')}</a></li>
-                <li><a href="#termination" className="hover:text-[#cc3399] transition-colors">{t('sections.termination.title')}</a></li>
-                <li><a href="#governing-law" className="hover:text-[#cc3399] transition-colors">{t('sections.governingLaw.title')}</a></li>
-                <li><a href="#contact" className="hover:text-[#cc3399] transition-colors">{t('sections.contact.title')}</a></li>
+                <li><a href="#acceptance" className="hover:text-[#8D6AFA] transition-colors">{t('sections.acceptance.title')}</a></li>
+                <li><a href="#service-description" className="hover:text-[#8D6AFA] transition-colors">{t('sections.serviceDescription.title')}</a></li>
+                <li><a href="#pricing" className="hover:text-[#8D6AFA] transition-colors">{t('sections.pricing.title')}</a></li>
+                <li><a href="#fair-use" className="hover:text-[#8D6AFA] transition-colors">{t('sections.fairUse.title')}</a></li>
+                <li><a href="#user-obligations" className="hover:text-[#8D6AFA] transition-colors">{t('sections.userObligations.title')}</a></li>
+                <li><a href="#intellectual-property" className="hover:text-[#8D6AFA] transition-colors">{t('sections.intellectualProperty.title')}</a></li>
+                <li><a href="#privacy" className="hover:text-[#8D6AFA] transition-colors">{t('sections.privacy.title')}</a></li>
+                <li><a href="#liability" className="hover:text-[#8D6AFA] transition-colors">{t('sections.liability.title')}</a></li>
+                <li><a href="#termination" className="hover:text-[#8D6AFA] transition-colors">{t('sections.termination.title')}</a></li>
+                <li><a href="#governing-law" className="hover:text-[#8D6AFA] transition-colors">{t('sections.governingLaw.title')}</a></li>
+                <li><a href="#contact" className="hover:text-[#8D6AFA] transition-colors">{t('sections.contact.title')}</a></li>
               </ol>
             </nav>
 
@@ -113,7 +115,7 @@ export default async function TermsPage({
               {/* 1. Acceptance of Terms */}
               <section id="acceptance">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Shield className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Shield className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.acceptance.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.acceptance.content')}</p>
@@ -128,7 +130,7 @@ export default async function TermsPage({
               {/* 2. Service Description */}
               <section id="service-description">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Globe className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Globe className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.serviceDescription.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.serviceDescription.content')}</p>
@@ -143,7 +145,7 @@ export default async function TermsPage({
               {/* 3. Pricing and Payment Terms */}
               <section id="pricing">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <DollarSign className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <DollarSign className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.pricing.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.pricing.content')}</p>
@@ -161,7 +163,7 @@ export default async function TermsPage({
               {/* 4. Usage Limits and Fair Use Policy */}
               <section id="fair-use">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <TrendingUp className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <TrendingUp className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.fairUse.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.fairUse.content')}</p>
@@ -226,7 +228,7 @@ export default async function TermsPage({
               {/* 8. Limitation of Liability */}
               <section id="liability">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Scale className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Scale className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.liability.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.liability.disclaimer')}</p>
@@ -264,7 +266,7 @@ export default async function TermsPage({
               {/* 11. Contact Information */}
               <section id="contact">
                 <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                  <Mail className="h-5 w-5 text-[#cc3399] mr-2" />
+                  <Mail className="h-5 w-5 text-[#8D6AFA] mr-2" />
                   {t('sections.contact.title')}
                 </h2>
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed">{t('sections.contact.content')}</p>
@@ -289,23 +291,7 @@ export default async function TermsPage({
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-300 py-8 mt-20">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <p className="text-sm">
-                © {new Date().getFullYear()} Neural Summary. {tCommon('allRightsReserved')}
-              </p>
-              <div className="mt-4 space-x-6 text-sm">
-                <Link href={`/${locale}/privacy`} className="hover:text-white transition-colors">
-                  {t('links.privacy')}
-                </Link>
-                <Link href={`/${locale}/landing`} className="hover:text-white transition-colors">
-                  {t('links.home')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter locale={locale} />
       </div>
     </>
   );

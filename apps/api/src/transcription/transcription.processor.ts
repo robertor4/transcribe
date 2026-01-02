@@ -7,11 +7,14 @@ import {
   QUEUE_NAMES,
 } from '@transcribe/shared';
 import { TranscriptionService } from './transcription.service';
-import { FirebaseService } from '../firebase/firebase.service';
+import { OnDemandAnalysisService } from './on-demand-analysis.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { EmailService } from '../email/email.service';
 import { UserService } from '../user/user.service';
 import { UsageService } from '../usage/usage.service';
+import { VectorService } from '../vector/vector.service';
 
 @Processor(QUEUE_NAMES.TRANSCRIPTION)
 export class TranscriptionProcessor {
@@ -19,11 +22,14 @@ export class TranscriptionProcessor {
 
   constructor(
     private transcriptionService: TranscriptionService,
-    private firebaseService: FirebaseService,
+    private onDemandAnalysisService: OnDemandAnalysisService,
+    private storageService: StorageService,
+    private transcriptionRepository: TranscriptionRepository,
     private websocketGateway: WebSocketGateway,
     private emailService: EmailService,
     private userService: UserService,
     private usageService: UsageService,
+    private vectorService: VectorService,
   ) {
     const concurrency = parseInt(
       process.env.TRANSCRIPTION_CONCURRENCY || '2',
@@ -39,8 +45,14 @@ export class TranscriptionProcessor {
     concurrency: parseInt(process.env.TRANSCRIPTION_CONCURRENCY || '2', 10),
   })
   async handleTranscription(job: Job<TranscriptionJob>) {
-    const { transcriptionId, userId, fileUrl, analysisType, context } =
-      job.data;
+    const {
+      transcriptionId,
+      userId,
+      fileUrl,
+      // analysisType is kept in job.data for future use but currently unused
+      context,
+      selectedTemplates,
+    } = job.data;
 
     const concurrency = parseInt(
       process.env.TRANSCRIPTION_CONCURRENCY || '2',
@@ -52,7 +64,7 @@ export class TranscriptionProcessor {
 
     try {
       // Update status to processing
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.PROCESSING,
         updatedAt: new Date(),
       });
@@ -96,7 +108,7 @@ export class TranscriptionProcessor {
       const detectedLanguage = transcriptionResult.language;
       const speakers = transcriptionResult.speakers;
       const speakerSegments = transcriptionResult.speakerSegments;
-      const transcriptWithSpeakers = transcriptionResult.transcriptWithSpeakers;
+      // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
       const speakerCount = transcriptionResult.speakerCount;
       const durationSeconds = transcriptionResult.durationSeconds || 0;
 
@@ -106,38 +118,80 @@ export class TranscriptionProcessor {
         );
       }
 
+      // V2: Parse template selection to determine which analyses to generate
+      const analysisSelection =
+        this.transcriptionService.parseTemplateSelection(selectedTemplates);
+
       // Update progress for summarization phase
       this.websocketGateway.sendTranscriptionProgress(userId, {
         transcriptionId,
         status: TranscriptionStatus.PROCESSING,
         progress: 60,
-        message: 'Transcription complete, generating core analyses...',
+        message: 'Transcription complete, generating analyses...',
         stage: 'summarizing',
       });
 
-      // Generate CORE analyses only (Summary, Action Items, Communication, Transcript)
-      const coreAnalyses = await this.transcriptionService.generateCoreAnalyses(
-        transcriptText,
-        context,
-        detectedLanguage,
-      );
+      // V2 ARCHITECTURE: Generate summaryV2 directly, other analyses via templates
+      // 1. Generate summaryV2 (always, stored on transcription doc for fast access)
+      const summaryV2 = analysisSelection.generateSummary
+        ? await this.transcriptionService.generateSummaryV2Only(
+            transcriptText,
+            context,
+            detectedLanguage,
+          )
+        : null;
 
-      // For backward compatibility, keep the summary field
-      const summary = coreAnalyses.summary;
+      // 2. Generate actionItems and communicationStyles as GeneratedAnalysis docs
+      const generatedAnalysisIds: string[] = [];
 
-      // Extract title from the summary and generate a short version
-      const extractedTitle =
-        this.transcriptionService.extractTitleFromSummary(summary);
+      if (analysisSelection.generateActionItems) {
+        try {
+          this.logger.log(
+            `Generating actionItems analysis for transcription ${transcriptionId}`,
+          );
+          const actionItemsDoc =
+            await this.onDemandAnalysisService.generateFromTemplate(
+              transcriptionId,
+              'actionItems',
+              userId,
+              undefined,
+              { skipDuplicateCheck: true },
+            );
+          generatedAnalysisIds.push(actionItemsDoc.id);
+          this.logger.log(`ActionItems analysis created: ${actionItemsDoc.id}`);
+        } catch (err) {
+          this.logger.error('Failed to generate actionItems analysis:', err);
+          // Continue processing even if this fails
+        }
+      }
+
+      if (analysisSelection.generateCommunicationStyles) {
+        try {
+          this.logger.log(
+            `Generating communicationAnalysis for transcription ${transcriptionId}`,
+          );
+          const commDoc =
+            await this.onDemandAnalysisService.generateFromTemplate(
+              transcriptionId,
+              'communicationAnalysis',
+              userId,
+              undefined,
+              { skipDuplicateCheck: true },
+            );
+          generatedAnalysisIds.push(commDoc.id);
+          this.logger.log(`CommunicationAnalysis created: ${commDoc.id}`);
+        } catch (err) {
+          this.logger.error('Failed to generate communicationAnalysis:', err);
+          // Continue processing even if this fails
+        }
+      }
+
+      // V2: Use title directly from summaryV2 (AI generates max 10 words)
       let finalTitle: string | undefined;
-      if (extractedTitle) {
+      if (summaryV2?.title) {
+        finalTitle = summaryV2.title;
         this.logger.log(
-          `Extracted title for transcription ${transcriptionId}: ${extractedTitle}`,
-        );
-        // Generate a shorter, more scannable title (5-7 words)
-        finalTitle =
-          await this.transcriptionService.generateShortTitle(extractedTitle);
-        this.logger.log(
-          `Short title for transcription ${transcriptionId}: ${finalTitle}`,
+          `Using summaryV2 title for transcription ${transcriptionId}: ${finalTitle}`,
         );
       }
 
@@ -161,24 +215,21 @@ export class TranscriptionProcessor {
         stage: 'summarizing',
       });
 
-      // Save transcription results
-      const transcriptUrl = await this.firebaseService.uploadText(
+      // Save transcription results (upload but URL not needed since we store text directly)
+      await this.storageService.uploadText(
         transcriptText,
         `transcriptions/${userId}/${transcriptionId}/transcript.txt`,
       );
 
-      const summaryUrl = await this.firebaseService.uploadText(
-        summary,
-        `transcriptions/${userId}/${transcriptionId}/summary.md`,
-      );
+      // V2: No longer save markdown summary file (summaryV2 is stored as JSON on doc)
 
       // Update transcription document with language and speaker information
+      // V2 ARCHITECTURE: summaryV2 stored directly on doc, other analyses in generatedAnalyses collection
       const updateData: any = {
         status: TranscriptionStatus.COMPLETED,
         transcriptText,
-        summary, // Keep for backward compatibility
-        coreAnalyses, // NEW: Store core analyses
-        generatedAnalysisIds: [], // Initialize empty array for on-demand analyses
+        summaryV2, // V2: Structured summary stored directly on doc for fast access
+        generatedAnalysisIds, // V2: References to actionItems, communicationAnalysis, etc.
         duration: durationSeconds, // Audio duration in seconds
         completedAt: new Date(),
         updatedAt: new Date(),
@@ -198,14 +249,14 @@ export class TranscriptionProcessor {
       if (speakers && speakers.length > 0) {
         updateData.speakers = speakers;
         updateData.speakerSegments = speakerSegments;
-        updateData.transcriptWithSpeakers = transcriptWithSpeakers;
+        // Note: transcriptWithSpeakers no longer stored - derived from speakerSegments on demand
         updateData.speakerCount = speakerCount;
         this.logger.log(
           `Added speaker diarization data: ${speakerCount} speakers identified`,
         );
       }
 
-      await this.firebaseService.updateTranscription(
+      await this.transcriptionRepository.updateTranscription(
         transcriptionId,
         updateData,
       );
@@ -228,39 +279,22 @@ export class TranscriptionProcessor {
         );
       }
 
-      // Delete original uploaded file for security and privacy
-      try {
-        this.logger.log(
-          `Deleting original audio file for transcription ${transcriptionId}`,
-        );
+      // Audio files are retained for 30 days for support/recovery purposes
+      // Cleanup is handled by the scheduled 30-day cleanup job in cleanup.service.ts
 
-        // Get the transcription to check for storagePath
-        const transcription = await this.firebaseService.getTranscription(
+      // Index for semantic search (non-blocking - fallback to keyword search if fails)
+      try {
+        const chunkCount = await this.vectorService.indexTranscription(
           userId,
           transcriptionId,
         );
-
-        if (transcription?.storagePath) {
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-        } else {
-          await this.firebaseService.deleteFile(fileUrl);
-        }
-
         this.logger.log(
-          `Successfully deleted original audio file for transcription ${transcriptionId}`,
+          `Indexed ${chunkCount} chunks for search (transcription ${transcriptionId})`,
         );
-
-        // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(
-          transcriptionId,
-        );
-      } catch (deleteError) {
-        // Log but don't fail the entire job if file deletion fails
+      } catch (indexError) {
+        // Log but don't fail - keyword search fallback will work
         this.logger.warn(
-          `Failed to delete original audio file for transcription ${transcriptionId}:`,
-          deleteError,
+          `Failed to index transcription ${transcriptionId} for search: ${indexError instanceof Error ? indexError.message : 'Unknown error'}`,
         );
       }
 
@@ -276,10 +310,11 @@ export class TranscriptionProcessor {
       try {
         const user = await this.userService.getUserProfile(userId);
         if (user) {
-          const transcription = await this.firebaseService.getTranscription(
-            userId,
-            transcriptionId,
-          );
+          const transcription =
+            await this.transcriptionRepository.getTranscription(
+              userId,
+              transcriptionId,
+            );
           if (transcription) {
             await this.emailService.sendTranscriptionCompleteEmail(
               user,
@@ -307,47 +342,16 @@ export class TranscriptionProcessor {
         error,
       );
 
-      // Delete original uploaded file even on failure for security and privacy
-      try {
-        this.logger.log(
-          `Deleting original audio file for failed transcription ${transcriptionId}`,
-        );
-
-        // Get the transcription to check for storagePath
-        const transcription = await this.firebaseService.getTranscription(
-          userId,
-          transcriptionId,
-        );
-
-        if (transcription?.storagePath) {
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-        } else {
-          await this.firebaseService.deleteFile(fileUrl);
-        }
-
-        this.logger.log(
-          `Successfully deleted original audio file for failed transcription ${transcriptionId}`,
-        );
-
-        // Clear file references after successful deletion to prevent double deletion
-        await this.firebaseService.clearTranscriptionFileReferences(
-          transcriptionId,
-        );
-      } catch (deleteError) {
-        this.logger.warn(
-          `Failed to delete original audio file for failed transcription ${transcriptionId}:`,
-          deleteError,
-        );
-      }
+      // Audio files are retained for 30 days even on failure for support/recovery purposes
+      // Cleanup is handled by the scheduled 30-day cleanup job in cleanup.service.ts
 
       // Check if transcription was already completed before marking as failed
       // This prevents post-completion cleanup errors from marking successful transcriptions as failed
-      const currentTranscription = await this.firebaseService.getTranscription(
-        userId,
-        transcriptionId,
-      );
+      const currentTranscription =
+        await this.transcriptionRepository.getTranscription(
+          userId,
+          transcriptionId,
+        );
 
       if (currentTranscription?.status === TranscriptionStatus.COMPLETED) {
         this.logger.warn(
@@ -358,7 +362,7 @@ export class TranscriptionProcessor {
       }
 
       // Update status to failed only if it wasn't completed
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         status: TranscriptionStatus.FAILED,
         error: error.message || 'Transcription failed',
         updatedAt: new Date(),

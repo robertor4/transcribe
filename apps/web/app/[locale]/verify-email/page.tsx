@@ -14,7 +14,7 @@ export default function VerifyEmailPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [checkingVerification, setCheckingVerification] = useState(false);
 
-  const { user, loading, logout } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
   const tAuth = useTranslations('auth');
 
@@ -41,6 +41,8 @@ export default function VerifyEmailPage() {
       if (auth.currentUser) {
         await reload(auth.currentUser);
         if (auth.currentUser.emailVerified) {
+          // Update the AuthContext state so dashboard sees verified status
+          await refreshUser();
           setSuccess(true);
           setTimeout(() => {
             router.push('/dashboard');
@@ -51,7 +53,7 @@ export default function VerifyEmailPage() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [user, loading, router]);
+  }, [user, loading, router, refreshUser]);
 
   // Handle cooldown timer
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function VerifyEmailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#cc3399] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8D6AFA] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
@@ -112,17 +114,18 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/neural-summary-logo.webp"
-              alt="Neural Summary"
-              className="h-24 w-auto"
+              src="/assets/logos/neural-summary-logo-wTagLine.png"
+              alt="Neural Summary - You speak. It creates."
+              className="h-16 w-auto"
             />
           </div>
           
           {success ? (
             <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
                 {tAuth('emailVerified')}
               </h2>
               <div className="mt-6 flex justify-center">
@@ -134,7 +137,7 @@ export default function VerifyEmailPage() {
             </>
           ) : (
             <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900">
+              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
                 {tAuth('verifyYourEmail')}
               </h2>
               <p className="mt-4 text-center text-sm text-gray-600">
@@ -178,7 +181,7 @@ export default function VerifyEmailPage() {
                   <button
                     onClick={handleResendEmail}
                     disabled={resendCooldown > 0 || checkingVerification}
-                    className="font-medium text-[#cc3399] hover:text-[#b82d89] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {resendCooldown > 0 
                       ? `${tAuth('resendIn')} ${resendCooldown}s`

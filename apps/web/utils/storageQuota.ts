@@ -24,7 +24,6 @@ export interface StorageQuotaInfo {
 export async function checkStorageQuota(): Promise<StorageQuotaInfo | null> {
   // Check if StorageManager API is available
   if (!('storage' in navigator) || !('estimate' in navigator.storage)) {
-    console.warn('[StorageQuota] StorageManager API not available');
     return null;
   }
 
@@ -48,10 +47,6 @@ export async function checkStorageQuota(): Promise<StorageQuotaInfo | null> {
       canStore3HourRecording: available > threeHourBytes,
     };
 
-    console.log('[StorageQuota] Current usage:', formatBytes(usage));
-    console.log('[StorageQuota] Available quota:', formatBytes(quota));
-    console.log('[StorageQuota] Percent used:', percentUsed.toFixed(1) + '%');
-
     return quotaInfo;
   } catch (error) {
     console.error('[StorageQuota] Failed to check storage quota:', error);
@@ -66,18 +61,11 @@ export async function checkStorageQuota(): Promise<StorageQuotaInfo | null> {
  */
 export async function requestPersistentStorage(): Promise<boolean> {
   if (!('storage' in navigator) || !('persist' in navigator.storage)) {
-    console.warn('[StorageQuota] Persistent storage API not available');
     return false;
   }
 
   try {
-    const isPersisted = await navigator.storage.persist();
-    if (isPersisted) {
-      console.log('[StorageQuota] Persistent storage granted');
-    } else {
-      console.log('[StorageQuota] Persistent storage denied');
-    }
-    return isPersisted;
+    return await navigator.storage.persist();
   } catch (error) {
     console.error('[StorageQuota] Failed to request persistent storage:', error);
     return false;
@@ -95,8 +83,7 @@ export async function isPersistentStorage(): Promise<boolean> {
 
   try {
     return await navigator.storage.persisted();
-  } catch (error) {
-    console.error('[StorageQuota] Failed to check persistent storage:', error);
+  } catch {
     return false;
   }
 }

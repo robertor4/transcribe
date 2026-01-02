@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import fixWebmDuration from 'webm-duration-fix';
 import {
   detectBestAudioFormat,
   isRecordingSupported,
@@ -18,8 +19,24 @@ import {
 } from '@/utils/audio';
 import { getRecordingStorage, type RecoverableRecording } from '@/utils/recordingStorage';
 import { mixAudioStreams } from '@/utils/audioMixer';
+import { mergeRecoveredWithNew } from '@/utils/audioMerge';
+import { HotSwapRecorder } from '@/utils/hotSwapRecorder';
+
+// Duration limits
+const MAX_RECORDING_DURATION = 3 * 60 * 60; // 3 hours in seconds
+const DURATION_WARNING_THRESHOLD = 2.5 * 60 * 60; // 2.5 hours - warn user
 
 export type RecordingSource = 'microphone' | 'tab-audio';
+
+/**
+ * Stored chunk format for iOS Safari compatibility.
+ * Blobs stored in React state/refs can become stale on iOS Safari,
+ * so we store as ArrayBuffer which is more reliable.
+ */
+interface StoredChunk {
+  buffer: ArrayBuffer;
+  type: string;
+}
 
 export type RecordingState = 'idle' | 'requesting-permission' | 'recording' | 'paused' | 'stopped';
 
@@ -28,7 +45,10 @@ export interface UseMediaRecorderOptions {
   onError?: (error: Error) => void;
   onStateChange?: (state: RecordingState) => void;
   onRecoveryAvailable?: (recordings: RecoverableRecording[]) => void;
+  onDurationWarning?: () => void; // Called when approaching max duration
+  onDeviceSwapped?: (deviceId: string) => void; // Called when microphone is swapped mid-recording
   enableAutoSave?: boolean; // Default: true
+  userId?: string; // Firebase user ID for scoping recordings (privacy/security)
 }
 
 export interface UseMediaRecorderReturn {
@@ -41,19 +61,31 @@ export interface UseMediaRecorderReturn {
   isSupported: boolean;
   canUseTabAudio: boolean;
   audioFormat: AudioFormat;
+  currentDeviceId: string | null; // Currently active microphone device ID
+  isSwappingDevice: boolean; // True while swapping microphone
+  isStopping: boolean; // True while stop is in progress (prevents double-click)
 
   // Actions
-  startRecording: (source: RecordingSource) => Promise<void>;
+  startRecording: (source: RecordingSource, deviceId?: string) => Promise<void>;
   stopRecording: () => void;
   pauseRecording: () => void;
   resumeRecording: () => void;
   reset: () => void;
   markAsUploaded: () => Promise<void>; // Mark recording as uploaded, removes beforeunload warning and cleans IndexedDB
+  createMarkAsUploaded: () => () => Promise<void>; // Factory to create a markAsUploaded callback that captures current recording ID
   loadRecoveredRecording: (blob: Blob, recordingDuration: number) => void; // Load a recovered recording into preview
+  prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => Promise<void>; // Prepare to continue from a recovered recording (async to convert Blobs to ArrayBuffer for iOS Safari)
   clearWarning: () => void; // Clear the warning message
+  swapMicrophone: (deviceId: string) => Promise<void>; // Swap microphone mid-recording (microphone source only)
 
-  // Audio stream (for visualization)
+  // Audio stream (for visualization via useAudioVisualization)
   audioStream: MediaStream | null;
+
+  // Recording source (for conditional UI rendering)
+  recordingSource: RecordingSource | null;
+
+  // Chunk count for tab audio visualization (increments on each ondataavailable)
+  chunkCount: number;
 }
 
 export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMediaRecorderReturn {
@@ -62,7 +94,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onError,
     onStateChange,
     onRecoveryAvailable,
+    onDurationWarning,
+    onDeviceSwapped,
     enableAutoSave = true,
+    userId,
   } = options;
 
   // State
@@ -72,9 +107,16 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [recordingSource, setRecordingSource] = useState<RecordingSource | null>(null);
+  const [chunkCount, setChunkCount] = useState(0);
+  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
+  const [isSwappingDevice, setIsSwappingDevice] = useState(false);
+  const [isStopping, setIsStopping] = useState(false); // Prevents double-click on stop button
 
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const hotSwapRecorderRef = useRef<HotSwapRecorder | null>(null);
+  const stateRef = useRef<RecordingState>(state); // Ref for state to avoid stale closure in swapMicrophone
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -91,15 +133,39 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const mixerCleanupRef = useRef<(() => void) | null>(null);
   const originalStreamsRef = useRef<MediaStream[]>([]);
 
+  // Chunk count ref to avoid frequent state updates from ondataavailable (fires every 100ms)
+  const chunkCountRef = useRef<number>(0);
+
+  // Duration warning ref (to avoid showing warning multiple times)
+  const durationWarningShownRef = useRef<boolean>(false);
+
+  // Continue recording refs (for recovery flow)
+  // We store as StoredChunk[] (ArrayBuffer) instead of Blob[] for iOS Safari compatibility
+  // iOS Safari's Blob references can become stale when stored in React state/refs
+  const recoveredChunksRef = useRef<StoredChunk[]>([]);
+  const recoveredDurationRef = useRef<number>(0);
+  const isContinueModeRef = useRef<boolean>(false);
+  const recoveredRecordingIdRef = useRef<string | null>(null);
+  // Track if current recording session is a continuation (set when recording starts, used in onstop)
+  const wasInContinueModeRef = useRef<boolean>(false);
+  // Store a copy of recovered chunks for merging in onstop (separate from chunksRef which gets new chunks appended)
+  const recoveredChunksCopyRef = useRef<StoredChunk[]>([]);
+
   // Capabilities
   const isSupported = isRecordingSupported();
   const canUseTabAudio = isTabAudioSupported();
   const audioFormat = detectBestAudioFormat();
 
+  // Keep stateRef in sync with state
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   // Update state with callback
   const updateState = useCallback(
     (newState: RecordingState) => {
       setState(newState);
+      stateRef.current = newState; // Also update ref immediately
       onStateChange?.(newState);
     },
     [onStateChange]
@@ -114,16 +180,34 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     if (reset) {
       setDuration(0);
       durationRef.current = 0;
+      durationWarningShownRef.current = false;
     }
 
     timerRef.current = setInterval(() => {
       setDuration((prev) => {
         const newDuration = prev + 1;
         durationRef.current = newDuration;
+
+        // Sync chunkCount ref to state once per second (avoids 10x/sec updates from ondataavailable)
+        setChunkCount(chunkCountRef.current);
+
+        // Check duration limits
+        if (newDuration >= MAX_RECORDING_DURATION) {
+          // Auto-stop at max duration
+          console.log('[useMediaRecorder] Max duration reached, auto-stopping');
+          if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+          }
+        } else if (newDuration >= DURATION_WARNING_THRESHOLD && !durationWarningShownRef.current) {
+          // Warn user when approaching limit
+          durationWarningShownRef.current = true;
+          onDurationWarning?.();
+        }
+
         return newDuration;
       });
     }, 1000);
-  }, []);
+  }, [onDurationWarning]);
 
   // Stop duration timer
   const stopTimer = useCallback(() => {
@@ -154,17 +238,40 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Get media stream based on source
   const getMediaStream = useCallback(
-    async (source: RecordingSource): Promise<MediaStream> => {
+    async (source: RecordingSource, deviceId?: string): Promise<MediaStream> => {
+      // Check if mediaDevices API is available (requires HTTPS or localhost)
+      if (!navigator.mediaDevices) {
+        throw new Error(
+          'Recording is not available. Please ensure you are using HTTPS or localhost.'
+        );
+      }
+
       if (source === 'microphone') {
-        // Request microphone access
+        if (!navigator.mediaDevices.getUserMedia) {
+          throw new Error(
+            'Microphone recording is not supported in your browser.'
+          );
+        }
+
+        // Request microphone access with optional device selection
+        const audioConstraints: MediaTrackConstraints = {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        };
+
+        // Add deviceId if provided - use { exact: } to ensure the specific device is used
+        // Without exact, Chrome may fall back to a different device
+        if (deviceId) {
+          audioConstraints.deviceId = { exact: deviceId };
+        }
+
         return await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            sampleRate: 44100,
-          },
+          audio: audioConstraints,
         });
       } else {
+        // Tab audio recording - auto-gain is NOT applied here
+        // Auto-gain is designed for microphone normalization, not for mixed/tab audio
         // Request tab audio capture (getDisplayMedia) with microphone mixing
         if (!canUseTabAudio) {
           throw new Error(
@@ -172,11 +279,51 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           );
         }
 
-        // Step 1: Request screen/tab sharing with audio
-        const displayStream = await navigator.mediaDevices.getDisplayMedia({
-          video: true, // Required, but we'll only use audio
-          audio: true,
-        });
+        // Step 1: Request microphone FIRST (before tab selection) - only if deviceId provided
+        // When deviceId is undefined, user opted out of microphone mixing (tab audio only)
+        let micStream: MediaStream | null = null;
+        if (deviceId) {
+          try {
+            // Use exact deviceId to ensure the specific device is used
+            const micConstraints: MediaTrackConstraints = {
+              echoCancellation: true,
+              noiseSuppression: true,
+              sampleRate: 44100,
+              deviceId: { exact: deviceId }, // Use selected microphone device
+            };
+
+            micStream = await navigator.mediaDevices.getUserMedia({
+              audio: micConstraints,
+            });
+            const micTrack = micStream.getAudioTracks()[0];
+            console.log(`[useMediaRecorder] Microphone acquired for mixing: "${micTrack?.label}"`);
+          } catch (micError) {
+            // Microphone denied or unavailable - warn but continue
+            const errorMessage =
+              micError instanceof Error && micError.name === 'NotAllowedError'
+                ? 'Microphone access denied - recording tab audio only. Your voice won\'t be included.'
+                : 'Microphone unavailable - recording tab audio only. Your voice won\'t be included.';
+            console.warn('[useMediaRecorder] Microphone unavailable for mixing:', micError);
+            setWarning(errorMessage);
+          }
+        } else {
+          console.log('[useMediaRecorder] Tab audio only mode (microphone not requested)');
+        }
+
+        // Step 2: Request screen/tab sharing with audio
+        let displayStream: MediaStream;
+        try {
+          displayStream = await navigator.mediaDevices.getDisplayMedia({
+            video: true, // Required, but we'll only use audio
+            audio: true,
+          });
+        } catch (displayError) {
+          // User cancelled tab selection - clean up mic stream if it was acquired
+          if (micStream) {
+            micStream.getTracks().forEach((track) => track.stop());
+          }
+          throw displayError;
+        }
 
         // Stop video track immediately (we only want audio)
         const videoTrack = displayStream.getVideoTracks()[0];
@@ -188,51 +335,38 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         // Check if audio track exists
         const tabAudioTrack = displayStream.getAudioTracks()[0];
         if (!tabAudioTrack) {
+          // Clean up mic stream if no tab audio
+          if (micStream) {
+            micStream.getTracks().forEach((track) => track.stop());
+          }
           throw new Error(
             'No audio track available. Make sure to check "Share tab audio" when selecting the tab.'
           );
         }
 
-        // Step 2: Try to get microphone for mixing (graceful failure)
-        let micStream: MediaStream | null = null;
-        try {
-          micStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              sampleRate: 44100,
-            },
-          });
-          console.log('[useMediaRecorder] Microphone acquired for mixing with tab audio');
-        } catch (micError) {
-          // Microphone denied or unavailable - continue with tab audio only
-          const errorMessage =
-            micError instanceof Error && micError.name === 'NotAllowedError'
-              ? 'Microphone access denied - recording tab audio only. Your voice won\'t be included.'
-              : 'Microphone unavailable - recording tab audio only. Your voice won\'t be included.';
-          console.warn('[useMediaRecorder] Microphone unavailable for mixing:', micError);
-          setWarning(errorMessage);
-          return displayStream;
+        // Step 3: If we have microphone, mix both streams using Web Audio API
+        if (micStream) {
+          try {
+            const { mixedStream, cleanup } = await mixAudioStreams([displayStream, micStream]);
+
+            // Store references for cleanup
+            mixerCleanupRef.current = cleanup;
+            originalStreamsRef.current = [displayStream, micStream];
+
+            console.log('[useMediaRecorder] Tab audio + microphone mixed successfully');
+            return mixedStream;
+          } catch (mixError) {
+            // Mixing failed - fall back to tab audio only
+            console.error('[useMediaRecorder] Audio mixing failed, using tab audio only:', mixError);
+            setWarning('Audio mixing failed - recording tab audio only. Your voice won\'t be included.');
+            // Stop mic stream since we can't use it
+            micStream.getTracks().forEach((track) => track.stop());
+            return displayStream;
+          }
         }
 
-        // Step 3: Mix both streams using Web Audio API
-        try {
-          const { mixedStream, cleanup } = await mixAudioStreams([displayStream, micStream]);
-
-          // Store references for cleanup
-          mixerCleanupRef.current = cleanup;
-          originalStreamsRef.current = [displayStream, micStream];
-
-          console.log('[useMediaRecorder] Tab audio + microphone mixed successfully');
-          return mixedStream;
-        } catch (mixError) {
-          // Mixing failed - fall back to tab audio only
-          console.error('[useMediaRecorder] Audio mixing failed, using tab audio only:', mixError);
-          setWarning('Audio mixing failed - recording tab audio only. Your voice won\'t be included.');
-          // Stop mic stream since we can't use it
-          micStream.getTracks().forEach((track) => track.stop());
-          return displayStream;
-        }
+        // No microphone available - return tab audio only
+        return displayStream;
       }
     },
     [canUseTabAudio]
@@ -240,17 +374,42 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Start recording
   const startRecording = useCallback(
-    async (source: RecordingSource) => {
+    async (source: RecordingSource, deviceId?: string) => {
       try {
         // Reset previous state
         setError(null);
         setWarning(null);
         setAudioBlob(null);
-        chunksRef.current = [];
         hasUploadedRef.current = false;
 
-        // Generate unique recording ID for auto-save
-        recordingIdRef.current = `recording-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        // Check if we're in continue mode (recovering from previous recording)
+        if (isContinueModeRef.current) {
+          // Continue mode: store recovered chunks separately for proper merging in onstop
+          // We DON'T add recovered chunks to chunksRef - instead we'll merge them later
+          // This avoids the WebM header concatenation problem
+          wasInContinueModeRef.current = true;
+          recoveredChunksCopyRef.current = [...recoveredChunksRef.current];
+          chunksRef.current = []; // Start fresh - new chunks only
+          setDuration(recoveredDurationRef.current);
+          durationRef.current = recoveredDurationRef.current;
+          // Use the original recording ID for IndexedDB updates
+          recordingIdRef.current = recoveredRecordingIdRef.current;
+          console.log(
+            `[useMediaRecorder] Continue mode: will merge ${recoveredChunksCopyRef.current.length} recovered chunks with new recording`
+          );
+        } else {
+          // Fresh recording: reset everything
+          chunksRef.current = [];
+          setDuration(0);
+          durationRef.current = 0;
+          // Generate unique recording ID for auto-save
+          recordingIdRef.current = `recording-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+        }
+
+        // Reset audio visualization state
+        chunkCountRef.current = 0;
+        setChunkCount(0);
+        setRecordingSource(source);
         recordingSourceRef.current = source;
 
         // Check support
@@ -260,47 +419,167 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
         updateState('requesting-permission');
 
-        // Get media stream
-        const stream = await getMediaStream(source);
-        streamRef.current = stream;
-        setAudioStream(stream);
+        let mediaRecorder: MediaRecorder;
 
-        // Create MediaRecorder
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: audioFormat.mimeType,
-        });
+        // For microphone recordings, use HotSwapRecorder to enable mid-recording device switching
+        if (source === 'microphone') {
+          // Create and initialize HotSwapRecorder
+          const hotSwapRecorder = new HotSwapRecorder({
+            onDataAvailable: (event) => {
+              if (event.data && event.data.size > 0) {
+                chunksRef.current.push(event.data);
+                chunkCountRef.current += 1;
+              }
+            },
+            onError: (err) => {
+              setError(getPermissionErrorMessage(err));
+              onError?.(err);
+              updateState('idle');
+            },
+            onDeviceSwapped: (newDeviceId) => {
+              setCurrentDeviceId(newDeviceId);
+              onDeviceSwapped?.(newDeviceId);
+            },
+            timeslice: 10000,
+          });
 
-        mediaRecorderRef.current = mediaRecorder;
+          await hotSwapRecorder.initialize(deviceId);
+          hotSwapRecorderRef.current = hotSwapRecorder;
 
-        // Handle data available
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0) {
-            chunksRef.current.push(event.data);
+          // Use the output stream for visualization
+          const outputStream = hotSwapRecorder.outputStream;
+          if (outputStream) {
+            streamRef.current = outputStream;
+            setAudioStream(outputStream);
           }
-        };
+
+          // Track the current device
+          setCurrentDeviceId(deviceId || null);
+
+          // Get the internal MediaRecorder for event handling
+          const internalRecorder = hotSwapRecorder.recorder;
+          if (!internalRecorder) {
+            throw new Error('HotSwapRecorder internal MediaRecorder not available');
+          }
+          mediaRecorder = internalRecorder;
+          mediaRecorderRef.current = mediaRecorder;
+        } else {
+          // For tab audio, use standard MediaRecorder (hot-swap not applicable)
+          const stream = await getMediaStream(source, deviceId);
+          streamRef.current = stream;
+          setAudioStream(stream);
+
+          // Create MediaRecorder
+          mediaRecorder = new MediaRecorder(stream, {
+            mimeType: audioFormat.mimeType,
+          });
+
+          mediaRecorderRef.current = mediaRecorder;
+
+          // Handle data available for tab audio
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              chunksRef.current.push(event.data);
+              chunkCountRef.current += 1;
+            }
+          };
+        }
 
         // Handle recording stop
         mediaRecorder.onstop = async () => {
-          const blob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+          let blob: Blob;
+
+          console.log('[useMediaRecorder] onstop fired');
+          console.log(`  - wasInContinueModeRef: ${wasInContinueModeRef.current}`);
+          console.log(`  - recoveredChunksCopyRef: ${recoveredChunksCopyRef.current.length} chunks`);
+          console.log(`  - chunksRef (new): ${chunksRef.current.length} chunks`);
+
+          // Check if this was a continued recording (has recovered chunks to merge)
+          if (wasInContinueModeRef.current && recoveredChunksCopyRef.current.length > 0) {
+            // Convert StoredChunks (ArrayBuffer) back to Blobs for merging
+            // We stored as ArrayBuffer to avoid iOS Safari stale Blob reference issue
+            const recoveredBlobs = recoveredChunksCopyRef.current.map(
+              (chunk) => new Blob([chunk.buffer], { type: chunk.type })
+            );
+
+            // Merge recovered chunks with new chunks using proper audio decoding/encoding
+            // This creates a properly-formatted audio file that Web Audio API can decode fully
+            const recoveredTotalSize = recoveredBlobs.reduce((s, c) => s + c.size, 0);
+            const newTotalSize = chunksRef.current.reduce((s, c) => s + c.size, 0);
+            console.log(
+              `[useMediaRecorder] Merging ${recoveredBlobs.length} recovered chunks (${recoveredTotalSize} bytes) with ${chunksRef.current.length} new chunks (${newTotalSize} bytes)`
+            );
+
+            try {
+              const { blob: mergedBlob } = await mergeRecoveredWithNew(
+                recoveredBlobs,
+                chunksRef.current,
+                audioFormat.mimeType
+              );
+              blob = mergedBlob;
+              console.log('[useMediaRecorder] Audio merge successful');
+            } catch (err) {
+              console.error('[useMediaRecorder] Audio merge failed, falling back to concatenation:', err);
+              // Fallback: concatenate chunks (waveform may not work, but audio should play)
+              const rawBlob = new Blob(
+                [...recoveredBlobs, ...chunksRef.current],
+                { type: audioFormat.mimeType }
+              );
+              try {
+                const fixedBlob = await fixWebmDuration(rawBlob);
+                blob = fixedBlob.type === audioFormat.mimeType
+                  ? fixedBlob
+                  : new Blob([fixedBlob], { type: audioFormat.mimeType });
+              } catch {
+                blob = rawBlob;
+              }
+            }
+
+            // Clear continue mode state
+            wasInContinueModeRef.current = false;
+            recoveredChunksCopyRef.current = [];
+          } else {
+            // Normal recording (not continued) - use standard WebM duration fix
+            const rawBlob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+
+            // Fix WebM duration metadata bug
+            // MediaRecorder creates WebM files without duration metadata because the header
+            // is written before recording ends. This causes audio to stop early during playback.
+            // See: https://bugs.chromium.org/p/chromium/issues/detail?id=642012
+            // Using webm-duration-fix which auto-calculates duration from blob content
+            try {
+              const fixedBlob = await fixWebmDuration(rawBlob);
+
+              // Ensure the fixed blob has the correct MIME type
+              // webm-duration-fix may return a blob without proper type
+              if (!fixedBlob.type || fixedBlob.type !== audioFormat.mimeType) {
+                blob = new Blob([fixedBlob], { type: audioFormat.mimeType });
+              } else {
+                blob = fixedBlob;
+              }
+            } catch (err) {
+              console.warn('[useMediaRecorder] Failed to fix WebM duration, using raw blob:', err);
+              blob = rawBlob;
+            }
+          }
+
           setAudioBlob(blob);
           onDataAvailable?.(blob);
 
-          // Clean up IndexedDB on normal stop (happy path - user stopped intentionally)
-          // Only keep auto-saved data for crash/accidental close scenarios
-          if (enableAutoSave && recordingIdRef.current) {
-            try {
-              const storage = await getRecordingStorage();
-              await storage.deleteRecording(recordingIdRef.current);
-              console.log('[useMediaRecorder] Cleaned up auto-save on normal stop');
-            } catch (err) {
-              console.error('[useMediaRecorder] Failed to clean up on stop:', err);
-            }
-          }
+          // DO NOT clean up IndexedDB here - keep the backup until upload/transcription succeeds
+          // The backup will be cleaned up by markAsUploaded() after successful upload
+          // This protects against: upload failures, transcription failures, accidental tab close, etc.
 
           // Cleanup
           stopTimer();
           releaseWakeLock(wakeLockRef.current);
           wakeLockRef.current = null;
+
+          // Clean up HotSwapRecorder if used (for microphone source)
+          if (hotSwapRecorderRef.current) {
+            hotSwapRecorderRef.current.dispose();
+            hotSwapRecorderRef.current = null;
+          }
 
           // Stop all tracks
           if (streamRef.current) {
@@ -309,8 +588,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           }
           setAudioStream(null);
 
+          // Reset device tracking
+          setCurrentDeviceId(null);
+
           // Clean up audio mixer resources (if used for tab audio + mic mixing)
           cleanupMixer();
+
+          // Reset stopping flag now that we're done
+          setIsStopping(false);
 
           updateState('stopped');
         };
@@ -323,10 +608,18 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           updateState('idle');
         };
 
-        // Start recording
-        mediaRecorder.start(1000); // Collect data every second
+        // Start recording with 10 second timeslice
+        // Larger timeslice = fewer callbacks = less resource pressure for long recordings
+        // Worst case data loss on crash: ~10 seconds (acceptable for meeting recordings)
+        mediaRecorder.start(10000);
         updateState('recording');
-        startTimer();
+        // Don't reset timer in continue mode - duration was already set from recovered recording
+        startTimer(!isContinueModeRef.current);
+        // Clear continue mode after starting (it's a one-time setup)
+        isContinueModeRef.current = false;
+        recoveredChunksRef.current = [];
+        recoveredDurationRef.current = 0;
+        recoveredRecordingIdRef.current = null;
 
         // Request wake lock (prevent screen sleep on mobile)
         wakeLockRef.current = await requestWakeLock();
@@ -337,12 +630,17 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         onError?.(error);
         updateState('idle');
 
-        // Cleanup on error
+        // Clean up any partially initialized resources
+        if (hotSwapRecorderRef.current) {
+          hotSwapRecorderRef.current.dispose();
+          hotSwapRecorderRef.current = null;
+        }
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
+          streamRef.current.getTracks().forEach(track => track.stop());
           streamRef.current = null;
         }
         setAudioStream(null);
+        setCurrentDeviceId(null);
         cleanupMixer();
       }
     },
@@ -351,6 +649,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       audioFormat,
       getMediaStream,
       onDataAvailable,
+      onDeviceSwapped,
       onError,
       startTimer,
       stopTimer,
@@ -361,50 +660,120 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
   // Stop recording
   const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state !== 'idle' && state !== 'stopped') {
-      mediaRecorderRef.current.stop();
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+
+    // Prevent double-clicks - if we're already stopping, ignore
+    if (isStopping) {
+      console.log('[useMediaRecorder] Already stopping, ignoring duplicate stop request');
+      return;
     }
-  }, [state]);
+
+    // Check the ACTUAL MediaRecorder state, not just React state
+    // This is critical for iOS Safari where the recorder can become 'inactive'
+    // unexpectedly (e.g., due to audio session interruptions, tab backgrounding)
+    if (recorder.state === 'inactive') {
+      console.warn('[useMediaRecorder] MediaRecorder already inactive, cannot call stop()');
+      // Don't do anything here - if the recorder is inactive, onstop should have
+      // already fired and handled the blob creation. Creating a new blob here
+      // would overwrite the correctly merged audio in continue mode.
+      return;
+    }
+
+    // Also verify React state as a secondary check
+    if (state === 'idle' || state === 'stopped') {
+      return;
+    }
+
+    // Mark as stopping to prevent double-clicks
+    setIsStopping(true);
+
+    // Clear auto-save interval immediately - don't wait for state change
+    // This prevents unnecessary saves during the async merge process
+    if (autoSaveIntervalRef.current) {
+      clearInterval(autoSaveIntervalRef.current);
+      autoSaveIntervalRef.current = null;
+    }
+
+    // Simply call stop() - MediaRecorder will automatically fire one final
+    // ondataavailable event with any remaining data before onstop fires
+    // Note: Do NOT call requestData() before stop() - this can cause race conditions
+    // where the blob is created before the final data chunk is available
+    recorder.stop();
+  }, [state, isStopping]);
 
   // Pause recording
   const pauseRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state === 'recording') {
-      mediaRecorderRef.current.pause();
-      stopTimer();
-      updateState('paused');
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || state !== 'recording') return;
+
+    // Check actual MediaRecorder state (iOS Safari can have unexpected state changes)
+    if (recorder.state !== 'recording') {
+      console.warn(`[useMediaRecorder] Cannot pause: MediaRecorder state is '${recorder.state}'`);
+      return;
     }
+
+    recorder.pause();
+    stopTimer();
+    updateState('paused');
   }, [state, stopTimer, updateState]);
 
   // Resume recording
   const resumeRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state === 'paused') {
-      mediaRecorderRef.current.resume();
-      startTimer(false); // Don't reset duration when resuming
-      updateState('recording');
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || state !== 'paused') return;
+
+    // Check actual MediaRecorder state (iOS Safari can have unexpected state changes)
+    if (recorder.state !== 'paused') {
+      console.warn(`[useMediaRecorder] Cannot resume: MediaRecorder state is '${recorder.state}'`);
+      return;
     }
+
+    recorder.resume();
+    startTimer(false); // Don't reset duration when resuming
+    updateState('recording');
   }, [state, startTimer, updateState]);
 
-  // Mark recording as uploaded (clean up IndexedDB, remove beforeunload warning)
-  const markAsUploaded = useCallback(async () => {
-    hasUploadedRef.current = true;
+  // Create a markAsUploaded callback that captures the current recording ID
+  // This is necessary because reset() clears recordingIdRef.current, but we need
+  // to delete the recording from IndexedDB after processing completes (which happens later)
+  const createMarkAsUploaded = useCallback(() => {
+    // Capture the recording ID at the time this callback is created
+    const capturedRecordingId = recordingIdRef.current;
 
-    // Clean up IndexedDB after successful upload
-    if (enableAutoSave && recordingIdRef.current) {
-      try {
-        const storage = await getRecordingStorage();
-        await storage.deleteRecording(recordingIdRef.current);
-        console.log('[useMediaRecorder] Cleaned up IndexedDB after upload');
-      } catch (err) {
-        console.error('[useMediaRecorder] Failed to clean up IndexedDB:', err);
+    return async () => {
+      hasUploadedRef.current = true;
+
+      // Clean up IndexedDB after successful upload
+      if (enableAutoSave && capturedRecordingId) {
+        try {
+          const storage = await getRecordingStorage();
+          await storage.deleteRecording(capturedRecordingId);
+          console.log('[useMediaRecorder] Cleaned up IndexedDB after upload, recordingId:', capturedRecordingId);
+        } catch (err) {
+          console.error('[useMediaRecorder] Failed to clean up IndexedDB:', err);
+        }
       }
-    }
+    };
   }, [enableAutoSave]);
+
+  // Legacy markAsUploaded for backwards compatibility (uses current ref value)
+  const markAsUploaded = useCallback(async () => {
+    const callback = createMarkAsUploaded();
+    await callback();
+  }, [createMarkAsUploaded]);
 
   // Reset to initial state
   const reset = useCallback(() => {
     // Stop recording if active
     if (mediaRecorderRef.current && state !== 'idle' && state !== 'stopped') {
       mediaRecorderRef.current.stop();
+    }
+
+    // Clean up HotSwapRecorder if used
+    if (hotSwapRecorderRef.current) {
+      hotSwapRecorderRef.current.dispose();
+      hotSwapRecorderRef.current = null;
     }
 
     // Clear all state
@@ -417,6 +786,24 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     hasUploadedRef.current = false;
     recordingIdRef.current = null;
     recordingSourceRef.current = null;
+
+    // Reset audio visualization state
+    chunkCountRef.current = 0;
+    setChunkCount(0);
+    setRecordingSource(null);
+
+    // Reset device tracking state
+    setCurrentDeviceId(null);
+    setIsSwappingDevice(false);
+    setIsStopping(false);
+
+    // Reset continue mode state
+    recoveredChunksRef.current = [];
+    recoveredDurationRef.current = 0;
+    isContinueModeRef.current = false;
+    recoveredRecordingIdRef.current = null;
+    wasInContinueModeRef.current = false;
+    recoveredChunksCopyRef.current = [];
 
     // Stop all tracks
     if (streamRef.current) {
@@ -456,9 +843,42 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     [updateState]
   );
 
+  // Prepare for continue recording (from recovery flow)
+  // Must be called BEFORE startRecording when continuing from a recovered recording
+  // IMPORTANT: We immediately convert Blobs to ArrayBuffers to prevent iOS Safari stale reference issues
+  const prepareForContinue = useCallback(
+    async (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => {
+      // Convert Blobs to StoredChunks immediately to avoid iOS Safari stale Blob issue
+      // On iOS Safari, Blobs from IndexedDB can become empty after being stored in React state
+      console.log(
+        `[useMediaRecorder] Converting ${chunks.length} chunks to ArrayBuffer for iOS Safari compatibility...`
+      );
+      const storedChunks: StoredChunk[] = [];
+      for (const chunk of chunks) {
+        const buffer = await chunk.arrayBuffer();
+        storedChunks.push({ buffer, type: chunk.type });
+      }
+      const totalSize = storedChunks.reduce((s, c) => s + c.buffer.byteLength, 0);
+      console.log(
+        `[useMediaRecorder] Converted ${storedChunks.length} chunks, total size: ${totalSize} bytes`
+      );
+
+      recoveredChunksRef.current = storedChunks;
+      recoveredDurationRef.current = previousDuration;
+      isContinueModeRef.current = true;
+      recoveredRecordingIdRef.current = recordingId;
+      setRecordingSource(source);
+      console.log(
+        `[useMediaRecorder] Prepared for continue mode: ${previousDuration}s, ${storedChunks.length} chunks, recordingId: ${recordingId}`
+      );
+    },
+    []
+  );
+
   // Auto-save recording chunks to IndexedDB
   const saveRecordingToStorage = useCallback(async () => {
-    if (!enableAutoSave || !recordingIdRef.current || chunksRef.current.length === 0) {
+    // Require userId to save - ensures recordings are always scoped to a user
+    if (!enableAutoSave || !recordingIdRef.current || chunksRef.current.length === 0 || !userId) {
       return;
     }
 
@@ -467,6 +887,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       const currentDuration = durationRef.current; // Use ref for accurate duration
       await storage.saveRecording({
         id: recordingIdRef.current,
+        userId, // Scope recording to user for privacy
         startTime: Date.now() - currentDuration * 1000,
         chunks: [...chunksRef.current],
         duration: currentDuration,
@@ -479,7 +900,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       console.error('[useMediaRecorder] Failed to auto-save recording:', err);
       // Non-critical error, continue recording
     }
-  }, [enableAutoSave, audioFormat.mimeType]);
+  }, [enableAutoSave, audioFormat.mimeType, userId]);
 
   // Check for recoverable recordings on mount
   useEffect(() => {
@@ -586,12 +1007,63 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     };
   }, [state, saveRecordingToStorage]);
 
+  // Swap microphone mid-recording (microphone source only)
+  const swapMicrophone = useCallback(
+    async (deviceId: string) => {
+      // Only works for microphone source during recording or paused state
+      // Use refs to get current values (avoids stale closure from debounced calls)
+      const currentState = stateRef.current;
+      const currentSource = recordingSourceRef.current;
+
+      if (!hotSwapRecorderRef.current) {
+        return;
+      }
+
+      if (currentState !== 'recording' && currentState !== 'paused') {
+        return;
+      }
+
+      if (currentSource !== 'microphone') {
+        return;
+      }
+
+      try {
+        setIsSwappingDevice(true);
+        setError(null);
+
+        await hotSwapRecorderRef.current.swapMicrophone(deviceId);
+
+        // Update the audio stream for visualization
+        const newStream = hotSwapRecorderRef.current.outputStream;
+        if (newStream) {
+          setAudioStream(newStream);
+        }
+
+        setCurrentDeviceId(deviceId);
+        onDeviceSwapped?.(deviceId);
+      } catch (err) {
+        const error = err as Error;
+        console.error('[useMediaRecorder] Failed to swap microphone:', error);
+        setError(`Failed to switch microphone: ${error.message}`);
+        onError?.(error);
+      } finally {
+        setIsSwappingDevice(false);
+      }
+    },
+    [onDeviceSwapped, onError]
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopTimer();
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      // Clean up HotSwapRecorder
+      if (hotSwapRecorderRef.current) {
+        hotSwapRecorderRef.current.dispose();
+        hotSwapRecorderRef.current = null;
       }
       releaseWakeLock(wakeLockRef.current);
       if (autoSaveIntervalRef.current) {
@@ -617,6 +1089,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     isSupported,
     canUseTabAudio,
     audioFormat,
+    currentDeviceId,
+    isSwappingDevice,
+    isStopping,
 
     // Actions
     startRecording,
@@ -625,10 +1100,19 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     resumeRecording,
     reset,
     markAsUploaded,
+    createMarkAsUploaded,
     loadRecoveredRecording,
+    prepareForContinue,
     clearWarning,
+    swapMicrophone,
 
-    // Audio stream
+    // Audio stream (for visualization via useAudioVisualization)
     audioStream,
+
+    // Recording source (for conditional UI rendering)
+    recordingSource,
+
+    // Chunk count for tab audio visualization
+    chunkCount,
   };
 }

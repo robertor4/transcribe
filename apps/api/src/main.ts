@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { json } from 'express';
 import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
@@ -60,6 +59,12 @@ async function bootstrap() {
   const localNetworkRegex =
     /^http:\/\/(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):\d+$/;
 
+  // Regex to match Cloudflare quick tunnels (used for mobile testing)
+  const cloudflareQuickTunnelRegex = /^https:\/\/[a-z-]+\.trycloudflare\.com$/;
+
+  // Regex to match custom Cloudflare tunnel domains (uneti.ai subdomains)
+  const customTunnelRegex = /^https:\/\/[a-z-]+\.uneti\.ai$/;
+
   // Validate FRONTEND_URL against whitelist
   const frontendUrl =
     process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL;
@@ -82,13 +87,16 @@ async function bootstrap() {
         return;
       }
 
-      // In development, allow local network IPs
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        localNetworkRegex.test(origin)
-      ) {
-        callback(null, true);
-        return;
+      // In development, allow local network IPs and Cloudflare tunnels
+      if (process.env.NODE_ENV !== 'production') {
+        if (
+          localNetworkRegex.test(origin) ||
+          cloudflareQuickTunnelRegex.test(origin) ||
+          customTunnelRegex.test(origin)
+        ) {
+          callback(null, true);
+          return;
+        }
       }
 
       console.warn(`Blocked CORS request from origin: ${origin}`);
@@ -123,6 +131,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   const server = await app.listen(port);
+  // const server = await app.listen(port, '0.0.0.0');
 
   // Increase HTTP timeout for large file uploads (default is 2 minutes)
   // Set to 30 minutes to support 3+ hour recordings (up to 1GB files)
@@ -133,4 +142,4 @@ async function bootstrap() {
   console.log(`HTTP timeout: 30 minutes (for large file uploads)`);
   console.log('Graceful shutdown enabled');
 }
-bootstrap();
+void bootstrap();

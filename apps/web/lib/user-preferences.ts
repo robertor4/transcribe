@@ -102,7 +102,7 @@ export async function updateEmailNotifications(settings: {
     }
 
     const token = await user.getIdToken();
-    
+
     const response = await axios.put(
       `${API_URL}/user/email-notifications`,
       settings,
@@ -118,4 +118,48 @@ export async function updateEmailNotifications(settings: {
     console.error('Error updating email notifications:', error);
     throw error;
   }
+}
+
+/**
+ * Upload a profile photo file
+ * @param file - The image file to upload (JPG/PNG, max 5MB)
+ * @returns The URL of the uploaded photo
+ */
+export async function uploadProfilePhoto(file: File): Promise<string> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('No user logged in');
+  }
+
+  const token = await user.getIdToken();
+
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  const response = await axios.post(`${API_URL}/user/profile/photo`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data.data.photoURL;
+}
+
+/**
+ * Delete the current profile photo
+ */
+export async function deleteProfilePhoto(): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('No user logged in');
+  }
+
+  const token = await user.getIdToken();
+
+  await axios.delete(`${API_URL}/user/profile/photo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }

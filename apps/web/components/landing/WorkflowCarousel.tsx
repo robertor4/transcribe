@@ -58,7 +58,7 @@ export default function WorkflowCarousel() {
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, workflows.length]);
 
   // Scroll to current card
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function WorkflowCarousel() {
                     priority
                   />
                   {/* Gradient overlay - stronger at bottom for text */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
+                  <div className="absolute inset-0 bg-black/50" />
                 </div>
 
                 {/* Content overlay - Bottom left alignment */}
@@ -176,7 +176,7 @@ export default function WorkflowCarousel() {
             onClick={() => handleDotClick(index)}
             className={`transition-all ${
               index === currentIndex
-                ? 'w-8 h-2 bg-[#cc3399]'
+                ? 'w-8 h-2 bg-[#8D6AFA]'
                 : 'w-2 h-2 bg-white/60 hover:bg-white'
             } rounded-full`}
             aria-label={`Go to slide ${index + 1}`}

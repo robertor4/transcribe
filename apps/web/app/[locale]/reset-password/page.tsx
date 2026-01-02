@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Suspense fallback={<div className="text-gray-900 dark:text-white">Loading...</div>}>
         <ResetPasswordForm />
       </Suspense>

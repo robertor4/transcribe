@@ -1,4 +1,7 @@
 import { UsageProvider } from '@/contexts/UsageContext';
+import { ConversationsProvider } from '@/contexts/ConversationsContext';
+import { FoldersProvider } from '@/contexts/FoldersContext';
+import { ImportedConversationsProvider } from '@/contexts/ImportedConversationsContext';
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
 import { getDashboardMetadata } from '@/utils/metadata';
@@ -19,5 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return <UsageProvider>{children}</UsageProvider>;
+  return (
+    <UsageProvider>
+      <FoldersProvider>
+        <ImportedConversationsProvider>
+          <ConversationsProvider>{children}</ConversationsProvider>
+        </ImportedConversationsProvider>
+      </FoldersProvider>
+    </UsageProvider>
+  );
 }

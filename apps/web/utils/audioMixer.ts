@@ -23,6 +23,7 @@ export async function mixAudioStreams(
   const AudioContextClass =
     window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
   const audioContext = new AudioContextClass();
+  console.log('[audioMixer] Created mixer AudioContext, state:', audioContext.state);
 
   // Resume if suspended (browser autoplay policy)
   if (audioContext.state === 'suspended') {
@@ -35,7 +36,7 @@ export async function mixAudioStreams(
   // Track all source nodes for cleanup
   const sourceNodes: MediaStreamAudioSourceNode[] = [];
 
-  // Connect each stream to the destination
+  // Connect each stream directly to the destination (no gain nodes - simpler pipeline)
   for (const stream of streams) {
     const audioTracks = stream.getAudioTracks();
     if (audioTracks.length > 0) {
@@ -46,6 +47,7 @@ export async function mixAudioStreams(
   }
 
   const cleanup = () => {
+    console.log('[audioMixer] cleanup called');
     // Disconnect all source nodes
     sourceNodes.forEach((node) => {
       try {
@@ -56,8 +58,9 @@ export async function mixAudioStreams(
     });
 
     // Close the audio context
-    audioContext.close().catch((err) => {
-      console.warn('[audioMixer] Failed to close AudioContext:', err);
+    console.log('[audioMixer] Closing mixer AudioContext');
+    audioContext.close().catch(() => {
+      // Ignore close errors
     });
   };
 

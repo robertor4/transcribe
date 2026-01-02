@@ -2,42 +2,27 @@
 
 import React, { useState } from 'react';
 import { SpeakerSegment } from '@transcribe/shared';
-import { User, Clock, ChevronDown, ChevronUp, Pencil, Info } from 'lucide-react';
-import TranscriptCorrectionModal from './TranscriptCorrectionModal';
+import { User, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TranscriptWithSpeakersProps {
   transcriptionId: string;
   segments?: SpeakerSegment[];
-  transcriptWithSpeakers?: string;
   className?: string;
-  onRefresh?: () => void; // Callback to refresh transcription after correction
 }
 
 export default function TranscriptWithSpeakers({
   transcriptionId,
   segments,
-  transcriptWithSpeakers,
   className = '',
-  onRefresh,
 }: TranscriptWithSpeakersProps) {
+  // Keep transcriptionId to maintain the interface, even if not currently used
+  void transcriptionId;
+
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [showTimestamps, setShowTimestamps] = useState(false);
-  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
 
+  // Return null if no segments available
   if (!segments || segments.length === 0) {
-    // Fall back to formatted transcript if no segments
-    if (transcriptWithSpeakers) {
-      return (
-        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Transcript with Speakers</h3>
-          <div className="prose prose-sm max-w-none dark:prose-invert">
-            <pre className="whitespace-pre-wrap font-sans text-gray-700 dark:text-gray-300">
-              {transcriptWithSpeakers}
-            </pre>
-          </div>
-        </div>
-      );
-    }
     return null;
   }
 
@@ -54,7 +39,7 @@ export default function TranscriptWithSpeakers({
       'border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/30',
       'border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/30',
       'border-yellow-400 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/30',
-      'border-pink-400 dark:border-pink-600 bg-pink-50 dark:bg-pink-900/30',
+      'border-pink-400 dark:border-pink-600 bg-purple-50 dark:bg-purple-900/30',
       'border-indigo-400 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30',
       'border-orange-400 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/30',
       'border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/30',
@@ -120,36 +105,13 @@ export default function TranscriptWithSpeakers({
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Transcript with Speakers</h3>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setIsCorrectionModalOpen(true)}
-              className="text-sm text-[#cc3399] hover:text-[#b82d89] font-medium flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 rounded px-2 py-1"
-            >
-              <Pencil className="w-4 h-4" />
-              Fix
-            </button>
-
-            {/* Info Icon with Tooltip */}
-            <div className="group relative">
-              <Info className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
-
-              {/* Tooltip */}
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10 shadow-lg">
-                Correct speaker names, typos, and mistakes using AI
-                <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></span>
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setShowTimestamps(!showTimestamps)}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600/20 rounded px-2 py-1"
-          >
-            <Clock className="w-4 h-4" />
-            {showTimestamps ? 'Hide' : 'Show'} Timestamps
-          </button>
-        </div>
+        <button
+          onClick={() => setShowTimestamps(!showTimestamps)}
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-600/20 rounded px-2 py-1"
+        >
+          <Clock className="w-4 h-4" />
+          {showTimestamps ? 'Hide' : 'Show'} Timestamps
+        </button>
       </div>
 
       <div className="space-y-4">
@@ -224,18 +186,6 @@ export default function TranscriptWithSpeakers({
           {segments.length} segments • {formatTime(segments[segments.length - 1].endTime)} total duration
         </div>
       )}
-
-      {/* Transcript Correction Modal */}
-      <TranscriptCorrectionModal
-        transcriptionId={transcriptionId}
-        isOpen={isCorrectionModalOpen}
-        onClose={() => setIsCorrectionModalOpen(false)}
-        onSuccess={() => {
-          if (onRefresh) {
-            onRefresh();
-          }
-        }}
-      />
     </div>
   );
 }

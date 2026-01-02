@@ -14,7 +14,6 @@ import { Request } from 'express';
 import { StripeService } from './stripe.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
-import { CreatePaygSessionDto } from './dto/create-payg-session.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { ConfigService } from '@nestjs/config';
 
@@ -74,58 +73,6 @@ export class StripeController {
         error.stack,
       );
       throw new BadRequestException('Failed to create checkout session');
-    }
-  }
-
-  /**
-   * Create Stripe Checkout session for PAYG credits
-   */
-  @Post('create-payg-session')
-  @UseGuards(FirebaseAuthGuard)
-  async createPaygSession(@Req() req: any, @Body() dto: CreatePaygSessionDto) {
-    const user = req.user;
-    const frontendUrl =
-      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
-
-    const successUrl =
-      dto.successUrl ||
-      `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = dto.cancelUrl || `${frontendUrl}/pricing`;
-
-    // Validate minimum purchase
-    if (dto.amount < 15 || dto.hours < 10) {
-      throw new BadRequestException('Minimum purchase is $15 for 10 hours');
-    }
-
-    try {
-      // Get full user record from Firestore to include displayName
-      const userData = await this.stripeService['firebaseService'].getUser(
-        user.uid,
-      );
-
-      const session = await this.stripeService.createPaygCheckoutSession(
-        user.uid,
-        user.email,
-        dto.amount * 100, // Convert to cents
-        dto.hours,
-        successUrl,
-        cancelUrl,
-        dto.locale,
-        dto.currency,
-        userData?.displayName,
-      );
-
-      return {
-        success: true,
-        sessionId: session.id,
-        url: session.url,
-      };
-    } catch (error) {
-      this.logger.error(
-        `Failed to create PAYG session: ${error.message}`,
-        error.stack,
-      );
-      throw new BadRequestException('Failed to create PAYG checkout session');
     }
   }
 
@@ -335,8 +282,8 @@ export class StripeController {
    * Get supported currencies for multi-currency pricing
    */
   @Get('currencies')
-  async getSupportedCurrencies() {
-    const currencies = await this.stripeService.getSupportedCurrencies();
+  getSupportedCurrencies() {
+    const currencies = this.stripeService.getSupportedCurrencies();
     return {
       success: true,
       currencies,
@@ -365,7 +312,7 @@ export class StripeController {
 
     try {
       // Verify webhook signature and construct event
-      const event = await this.stripeService.constructWebhookEvent(
+      const event = this.stripeService.constructWebhookEvent(
         req.rawBody,
         signature,
       );

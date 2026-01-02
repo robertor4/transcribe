@@ -13,6 +13,7 @@ import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 import { nanoid } from 'nanoid';
 import {
   Transcription,
@@ -30,19 +31,21 @@ import {
   BatchUploadResponse,
   SUPPORTED_LANGUAGES,
   GeneratedAnalysis,
+  SummaryV2,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
+import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
-import { AudioSplitter, AudioChunk } from '../utils/audio-splitter';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
+import { CommentRepository } from '../firebase/repositories/comment.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
+import { AudioSplitter } from '../utils/audio-splitter';
 import { WebSocketGateway } from '../websocket/websocket.gateway';
 import { AssemblyAIService } from '../assembly-ai/assembly-ai.service';
 import { EmailService } from '../email/email.service';
 import { UsageService } from '../usage/usage.service';
-import {
-  TranscriptCorrectionRouterService,
-  RoutingPlan,
-  ComplexCorrection,
-} from './transcript-correction-router.service';
 
 @Injectable()
 export class TranscriptionService {
@@ -55,6 +58,11 @@ export class TranscriptionService {
     @InjectQueue(QUEUE_NAMES.SUMMARY) private summaryQueue: Queue,
     private configService: ConfigService,
     private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private userRepository: UserRepository,
+    private analysisRepository: AnalysisRepository,
+    private commentRepository: CommentRepository,
+    private transcriptionRepository: TranscriptionRepository,
     @Inject(forwardRef(() => WebSocketGateway))
     private websocketGateway: WebSocketGateway,
     @Inject(forwardRef(() => AssemblyAIService))
@@ -63,12 +71,64 @@ export class TranscriptionService {
     private emailService: EmailService,
     @Inject(forwardRef(() => UsageService))
     private usageService: UsageService,
-    private correctionRouter: TranscriptCorrectionRouterService,
   ) {
     this.openai = new OpenAI({
       apiKey: this.configService.get('OPENAI_API_KEY'),
     });
     this.audioSplitter = new AudioSplitter();
+  }
+
+  /**
+   * V2: Parse selected templates into analysis selection flags.
+   * Maps frontend template IDs to backend analysis types.
+   *
+   * Template mapping:
+   * - 'transcribe-only' → summaryV2 only (no action items, no communication)
+   * - 'email', 'blogPost', 'linkedinPost' → summaryV2 only (output format templates)
+   * - 'actionItems' → generate ACTION_ITEMS analysis
+   * - 'communicationAnalysis' → generate COMMUNICATION_STYLES analysis
+   *
+   * @param selectedTemplates Array of template IDs from frontend
+   * @returns Object with flags for each analysis type
+   */
+  parseTemplateSelection(selectedTemplates?: string[]): {
+    generateSummary: boolean;
+    generateActionItems: boolean;
+    generateCommunicationStyles: boolean;
+  } {
+    // V2: Default behavior is summary only - other analyses are generated on-demand
+    if (!selectedTemplates || selectedTemplates.length === 0) {
+      this.logger.log(
+        'No selectedTemplates provided - generating summary only (V2 default)',
+      );
+      return {
+        generateSummary: true,
+        generateActionItems: false,
+        generateCommunicationStyles: false,
+      };
+    }
+
+    // V2: Check what templates are selected
+    const hasActionItems = selectedTemplates.includes('actionItems');
+    const hasCommunication = selectedTemplates.includes(
+      'communicationAnalysis',
+    );
+
+    // Summary (summaryV2) is always generated when any template is selected
+    // Action items and communication styles are ONLY generated when explicitly requested
+    const result = {
+      generateSummary: true, // Always generate summaryV2
+      generateActionItems: hasActionItems,
+      generateCommunicationStyles: hasCommunication,
+    };
+
+    this.logger.log(
+      `Parsed template selection: ${JSON.stringify(selectedTemplates)} → ` +
+        `summary=${result.generateSummary}, actionItems=${result.generateActionItems}, ` +
+        `communication=${result.generateCommunicationStyles}`,
+    );
+
+    return result;
   }
 
   async createTranscription(
@@ -77,22 +137,26 @@ export class TranscriptionService {
     analysisType?: AnalysisType,
     context?: string,
     contextId?: string,
+    selectedTemplates?: string[], // V2: Template IDs to control which analyses are generated
   ): Promise<Transcription> {
     this.logger.log(
       `Creating transcription for user ${userId}, file: ${file.originalname}`,
     );
 
+    // Sanitize filename to prevent path traversal attacks
+    const safeFilename = path.basename(file.originalname);
+
     // Upload file to Firebase Storage
-    const uploadResult = await this.firebaseService.uploadFile(
+    const uploadResult = await this.storageService.uploadFile(
       file.buffer,
-      `audio/${userId}/${Date.now()}_${file.originalname}`,
+      `audio/${userId}/${Date.now()}_${safeFilename}`,
       file.mimetype,
     );
 
     // Create transcription document
     const transcription: Omit<Transcription, 'id'> = {
       userId,
-      fileName: file.originalname,
+      fileName: safeFilename,
       fileUrl: uploadResult.url,
       storagePath: uploadResult.path,
       fileSize: file.size,
@@ -112,9 +176,12 @@ export class TranscriptionService {
     if (contextId) {
       transcription.contextId = contextId;
     }
+    if (selectedTemplates?.length) {
+      transcription.selectedTemplates = selectedTemplates;
+    }
 
     const transcriptionId =
-      await this.firebaseService.createTranscription(transcription);
+      await this.transcriptionRepository.createTranscription(transcription);
 
     // Create job and add to queue
     const job: TranscriptionJob = {
@@ -128,6 +195,7 @@ export class TranscriptionService {
       retryCount: 0,
       maxRetries: 3,
       createdAt: new Date(),
+      selectedTemplates, // V2: Pass template selection to processor
     };
 
     await this.transcriptionQueue.add('transcribe', job, {
@@ -168,13 +236,15 @@ export class TranscriptionService {
         const tempFilePaths: string[] = [];
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const tempPath = path.join(tempDir, `${i}_${file.originalname}`);
+          // Sanitize filename to prevent path traversal attacks
+          const safeFilename = path.basename(file.originalname);
+          const tempPath = path.join(tempDir, `${i}_${safeFilename}`);
           await fs.promises.writeFile(tempPath, file.buffer);
           tempFilePaths.push(tempPath);
         }
 
-        // Merge files
-        const mergedFileName = `merged_${Date.now()}.mp3`;
+        // Merge files (use cryptographic random for unpredictable filename)
+        const mergedFileName = `merged_${crypto.randomBytes(16).toString('hex')}.mp3`;
         const mergedFilePath = path.join(tempDir, mergedFileName);
         await this.audioSplitter.mergeAudioFiles(tempFilePaths, mergedFilePath);
 
@@ -187,7 +257,7 @@ export class TranscriptionService {
         );
 
         // Upload merged file to Firebase
-        const uploadResult = await this.firebaseService.uploadFile(
+        const uploadResult = await this.storageService.uploadFile(
           mergedBuffer,
           `audio/${userId}/${Date.now()}_${mergedFileName}`,
           'audio/mpeg',
@@ -198,7 +268,9 @@ export class TranscriptionService {
         );
 
         // Create transcription document
-        const fileNames = files.map((f) => f.originalname).join(', ');
+        const fileNames = files
+          .map((f) => path.basename(f.originalname))
+          .join(', ');
         const transcription: Omit<Transcription, 'id'> = {
           userId,
           fileName: `Merged: ${fileNames}`,
@@ -216,7 +288,7 @@ export class TranscriptionService {
         if (contextId) transcription.contextId = contextId;
 
         const transcriptionId =
-          await this.firebaseService.createTranscription(transcription);
+          await this.transcriptionRepository.createTranscription(transcription);
 
         // Create job and add to queue
         const job: TranscriptionJob = {
@@ -293,7 +365,7 @@ export class TranscriptionService {
           contextId,
         );
         transcriptionIds.push(transcription.id);
-        fileNames.push(file.originalname);
+        fileNames.push(path.basename(file.originalname));
       }
 
       return {
@@ -313,7 +385,7 @@ export class TranscriptionService {
     language?: string;
     speakers?: Speaker[];
     speakerSegments?: SpeakerSegment[];
-    transcriptWithSpeakers?: string;
+    // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
     speakerCount?: number;
     durationSeconds?: number;
   }> {
@@ -345,7 +417,6 @@ export class TranscriptionService {
         ...result,
         speakers: undefined,
         speakerSegments: undefined,
-        transcriptWithSpeakers: undefined,
         speakerCount: undefined,
       };
     }
@@ -360,7 +431,7 @@ export class TranscriptionService {
     language?: string;
     speakers?: Speaker[];
     speakerSegments?: SpeakerSegment[];
-    transcriptWithSpeakers?: string;
+    // Note: transcriptWithSpeakers removed - derived from speakerSegments on demand
     speakerCount?: number;
     durationSeconds?: number;
   }> {
@@ -375,7 +446,7 @@ export class TranscriptionService {
 
       // AssemblyAI needs a publicly accessible URL
       // Since our Firebase Storage URLs require auth, we need to create a temporary public URL
-      const publicUrl = await this.firebaseService.getPublicUrl(fileUrl);
+      const publicUrl = await this.storageService.getPublicUrl(fileUrl);
 
       if (onProgress) {
         onProgress(15, 'Audio uploaded successfully...');
@@ -426,7 +497,7 @@ export class TranscriptionService {
         language: result.language,
         speakers: result.speakers,
         speakerSegments: result.speakerSegments,
-        transcriptWithSpeakers: result.transcriptWithSpeakers,
+        // Note: transcriptWithSpeakers no longer returned - derived from speakerSegments on demand
         speakerCount: result.speakerCount,
         durationSeconds: result.durationSeconds,
       };
@@ -441,7 +512,7 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<{ text: string; language?: string }> {
+  ): Promise<{ text: string; language?: string; durationSeconds?: number }> {
     return this.transcribeAudio(fileUrl, context, onProgress);
   }
 
@@ -451,14 +522,14 @@ export class TranscriptionService {
     fileUrl: string,
     context?: string,
     onProgress?: (progress: number, message: string) => void,
-  ): Promise<{ text: string; language?: string }> {
+  ): Promise<{ text: string; language?: string; durationSeconds?: number }> {
     try {
       this.logger.log(
         'Starting transcription with OpenAI Whisper API (with auto-chunking for large files)',
       );
 
       // Download file from Firebase Storage
-      const fileBuffer = await this.firebaseService.downloadFile(fileUrl);
+      const fileBuffer = await this.storageService.downloadFile(fileUrl);
 
       // Extract file extension from URL
       let fileExtension = '.m4a'; // default for compatibility
@@ -470,7 +541,7 @@ export class TranscriptionService {
           fileExtension = `.${match[1]}`;
           this.logger.log(`Detected file extension: ${fileExtension}`);
         }
-      } catch (e) {
+      } catch {
         this.logger.warn(
           'Could not extract file extension from URL, using .m4a',
         );
@@ -489,6 +560,7 @@ export class TranscriptionService {
 
       let transcriptText = '';
       let detectedLanguage: string | undefined;
+      let totalDuration: number | undefined;
 
       if (fileSizeInMB > 25) {
         this.logger.log(
@@ -505,6 +577,7 @@ export class TranscriptionService {
 
         // Process each chunk
         const transcriptions: string[] = [];
+        let accumulatedDuration = 0;
         for (let i = 0; i < chunks.length; i++) {
           const chunk = chunks[i];
 
@@ -536,13 +609,22 @@ export class TranscriptionService {
             this.logger.log(`Detected language: ${detectedLanguage}`);
           }
 
+          // Accumulate duration from each chunk
+          if (response.duration) {
+            accumulatedDuration += response.duration;
+          }
+
           // Clean up chunk file
           fs.unlinkSync(chunk.path);
         }
 
         // Combine all transcriptions
         transcriptText = transcriptions.join(' ');
-        this.logger.log(`Combined ${chunks.length} chunk transcriptions`);
+        totalDuration =
+          accumulatedDuration > 0 ? accumulatedDuration : undefined;
+        this.logger.log(
+          `Combined ${chunks.length} chunk transcriptions, total duration: ${totalDuration}s`,
+        );
       } else {
         this.logger.log(
           `File size ${fileSizeInMB}MB is within limit. Processing directly...`,
@@ -562,16 +644,24 @@ export class TranscriptionService {
 
         transcriptText = response.text;
         detectedLanguage = response.language;
+        totalDuration = response.duration;
 
         if (detectedLanguage) {
           this.logger.log(`Detected language: ${detectedLanguage}`);
+        }
+        if (totalDuration) {
+          this.logger.log(`Audio duration from Whisper: ${totalDuration}s`);
         }
       }
 
       // Clean up temp file
       fs.unlinkSync(tempFilePath);
 
-      return { text: transcriptText, language: detectedLanguage };
+      return {
+        text: transcriptText,
+        language: detectedLanguage,
+        durationSeconds: totalDuration,
+      };
     } catch (error) {
       this.logger.error('Error transcribing audio:', error);
       throw error;
@@ -603,6 +693,7 @@ export class TranscriptionService {
     model?: string,
     customSystemPrompt?: string, // NEW: For on-demand analysis templates
     customUserPrompt?: string, // NEW: For on-demand analysis templates
+    outputFormat?: 'markdown' | 'structured', // V2: Output format for structured JSON
   ): Promise<string> {
     try {
       const languageInstruction = language
@@ -663,21 +754,156 @@ ${fullCustomPrompt}`;
         `Using model ${selectedModel} for ${analysisType || 'custom'} generation`,
       );
 
+      // V2: Use JSON output format for structured outputs
+      const useJsonFormat = outputFormat === 'structured';
+      if (useJsonFormat) {
+        this.logger.log('Using JSON output format for structured response');
+      }
+
+      // GPT-5 models use reasoning tokens that count against max_completion_tokens.
+      // For structured JSON outputs, we use low reasoning effort to prioritize output tokens.
+      // For complex analysis, we use higher token budget to allow for reasoning.
+      const isGpt5Model =
+        selectedModel.startsWith('gpt-5') || selectedModel.startsWith('o1');
+      const maxTokens = useJsonFormat ? 16000 : 8000; // Higher budget for structured outputs
+
       const completion = await this.openai.chat.completions.create({
         model: selectedModel,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        max_completion_tokens: 8000, // GPT-5 uses max_completion_tokens instead of max_tokens
+        max_completion_tokens: maxTokens,
         // GPT-5 only supports default temperature (1), so we remove custom temperature/top_p/penalties
+        // For GPT-5 structured outputs, use low reasoning effort to leave tokens for the actual output
+        ...(isGpt5Model &&
+          useJsonFormat && {
+            reasoning_effort: 'low' as const,
+          }),
+        ...(useJsonFormat && {
+          response_format: { type: 'json_object' as const },
+        }),
       });
 
-      return completion.choices[0].message.content || '';
+      // Log completion details for debugging
+      const choice = completion.choices[0];
+      if (!choice) {
+        this.logger.error('OpenAI returned no choices in response');
+        throw new Error('OpenAI returned no choices in response');
+      }
+
+      // Check finish reason for issues
+      if (choice.finish_reason === 'content_filter') {
+        this.logger.error(
+          'OpenAI content filter triggered - response was blocked',
+        );
+        throw new Error(
+          'Content was blocked by safety filters. Please review the transcript for sensitive content.',
+        );
+      }
+
+      if (choice.finish_reason === 'length') {
+        this.logger.warn(
+          'OpenAI response truncated due to max tokens - may be incomplete',
+        );
+      }
+
+      const content = choice.message.content;
+      const usage = completion.usage;
+      const reasoningTokens =
+        (usage as { reasoning_tokens?: number })?.reasoning_tokens || 0;
+      const outputTokens = (usage?.completion_tokens || 0) - reasoningTokens;
+
+      if (!content) {
+        this.logger.error(
+          `OpenAI returned empty content. Finish reason: ${choice.finish_reason}, ` +
+            `Model: ${selectedModel}, Reasoning: ${reasoningTokens}, Output: ${outputTokens}, ` +
+            `Total: ${usage?.total_tokens || 'unknown'}`,
+        );
+        // If reasoning consumed all tokens, provide actionable error
+        if (reasoningTokens > 0 && outputTokens === 0) {
+          throw new Error(
+            'AI used all tokens for reasoning with no output. This is a token budget issue.',
+          );
+        }
+      } else {
+        this.logger.log(
+          `OpenAI response received. Length: ${content.length} chars, ` +
+            `Finish reason: ${choice.finish_reason}, Reasoning: ${reasoningTokens}, ` +
+            `Output: ${outputTokens}, Total: ${usage?.total_tokens || 'unknown'}`,
+        );
+      }
+
+      return content || '';
     } catch (error) {
       this.logger.error('Error generating summary:', error);
       throw error;
     }
+  }
+
+  /**
+   * V2: Generate structured JSON summary using the new V2 prompt and parser.
+   * Returns a SummaryV2 object with structured data instead of markdown.
+   */
+  async generateSummaryV2(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<SummaryV2> {
+    try {
+      this.logger.log('Generating V2 structured summary...');
+
+      const systemPrompt = prompts.SUMMARIZATION_SYSTEM_PROMPT_V2;
+      const userPrompt = prompts.buildSummaryPromptV2(
+        transcriptionText,
+        context,
+        language,
+      );
+
+      const completion = await this.openai.chat.completions.create({
+        model: 'gpt-5', // Always use GPT-5 for summaries
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        max_completion_tokens: 8000,
+      });
+
+      const aiResponse = completion.choices[0].message.content || '';
+
+      // Parse and validate the JSON response
+      const summaryV2 = parseSummaryV2(aiResponse);
+
+      this.logger.log(
+        `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections`,
+      );
+
+      return summaryV2;
+    } catch (error) {
+      this.logger.error('Error generating V2 summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate V2 summary and also return markdown version for backwards compatibility.
+   * Used during transition period.
+   */
+  async generateSummaryV2WithMarkdown(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<{ summaryV2: SummaryV2; markdownSummary: string }> {
+    const summaryV2 = await this.generateSummaryV2(
+      transcriptionText,
+      context,
+      language,
+    );
+
+    // Convert to markdown for backwards compatibility
+    const markdownSummary = summaryV2ToMarkdown(summaryV2);
+
+    return { summaryV2, markdownSummary };
   }
 
   /**
@@ -802,73 +1028,161 @@ ${fullCustomPrompt}`;
   }
 
   /**
-   * NEW: Generate only core analyses (Summary, Action Items, Communication, Transcript)
-   * This is the new default for the on-demand analysis system
+   * Generate only the V2 structured summary.
+   * Used by the processor during initial transcription processing.
+   * The summary is stored directly on the transcription document for fast access.
+   *
+   * @param transcriptionText The transcript text to analyze
+   * @param context Optional context to improve analysis quality
+   * @param language Detected language of the transcript
+   * @returns SummaryV2 structured JSON, or null if generation fails
+   */
+  async generateSummaryV2Only(
+    transcriptionText: string,
+    context?: string,
+    language?: string,
+  ): Promise<SummaryV2 | null> {
+    try {
+      this.logger.log('Generating V2 summary only (no other core analyses)...');
+      const summaryV2 = await this.generateSummaryV2(
+        transcriptionText,
+        context,
+        language,
+      );
+      return summaryV2;
+    } catch (error) {
+      this.logger.error('V2 summary generation failed:', error);
+      return null;
+    }
+  }
+
+  /**
+   * @deprecated Use generateSummaryV2Only() for summary and onDemandAnalysisService.generateFromTemplate()
+   * for actionItems and communicationStyles. This method will be removed in a future version.
+   *
+   * Generate core analyses (Summary, Action Items, Communication).
+   * V2 UPDATE: Now generates structured SummaryV2 JSON only (no markdown summary).
+   * Respects template selection to only generate requested analyses.
+   *
+   * @param transcriptionText The transcript text to analyze
+   * @param context Optional context to improve analysis quality
+   * @param language Detected language of the transcript
+   * @param selection Optional flags to control which analyses are generated (V2)
    */
   async generateCoreAnalyses(
     transcriptionText: string,
     context?: string,
     language?: string,
+    selection?: {
+      generateSummary: boolean;
+      generateActionItems: boolean;
+      generateCommunicationStyles: boolean;
+    },
   ): Promise<{
     summary: string;
+    summaryV2?: SummaryV2;
     actionItems: string;
     communicationStyles: string;
-    transcript: string;
+    // Note: transcript removed - stored separately as transcriptText (no duplication)
   }> {
+    // Default to all analyses if no selection provided (backwards compatibility)
+    const sel = selection ?? {
+      generateSummary: true,
+      generateActionItems: true,
+      generateCommunicationStyles: true,
+    };
+
     try {
       this.logger.log(
-        'Generating core analyses (Summary, Action Items, Communication)...',
+        `Generating core analyses: summary=${sel.generateSummary}, ` +
+          `actionItems=${sel.generateActionItems}, communication=${sel.generateCommunicationStyles}`,
       );
 
-      const analysisPromises = [
-        // Summary - Always use GPT-5
-        this.generateSummaryWithModel(
-          transcriptionText,
-          AnalysisType.SUMMARY,
-          context,
-          language,
-          'gpt-5',
-        ).catch((err) => {
-          this.logger.error('Summary generation failed:', err);
-          return 'Summary generation failed. Please try again.';
-        }),
+      // Build promises array based on selection - only generate what's requested
+      const analysisPromises: Promise<unknown>[] = [];
+      let summaryIndex = -1;
+      let actionItemsIndex = -1;
+      let communicationIndex = -1;
 
-        // Action Items - Use GPT-5-mini
-        this.generateSummaryWithModel(
-          transcriptionText,
-          AnalysisType.ACTION_ITEMS,
-          context,
-          language,
-          'gpt-5-mini',
-        ).catch((err) => {
-          this.logger.error('Action items generation failed:', err);
-          return null;
-        }),
+      // V2 Summary - Structured JSON format with GPT-5
+      if (sel.generateSummary) {
+        summaryIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryV2WithMarkdown(
+            transcriptionText,
+            context,
+            language,
+          ).catch((err) => {
+            this.logger.error('V2 Summary generation failed:', err);
+            return null;
+          }),
+        );
+      }
 
-        // Communication Styles - Use GPT-5-mini
-        this.generateSummaryWithModel(
-          transcriptionText,
-          AnalysisType.COMMUNICATION_STYLES,
-          context,
-          language,
-          'gpt-5-mini',
-        ).catch((err) => {
-          this.logger.error('Communication styles generation failed:', err);
-          return null;
-        }),
-      ];
+      // Action Items - Use GPT-5-mini (only if requested)
+      if (sel.generateActionItems) {
+        actionItemsIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryWithModel(
+            transcriptionText,
+            AnalysisType.ACTION_ITEMS,
+            context,
+            language,
+            'gpt-5-mini',
+          ).catch((err) => {
+            this.logger.error('Action items generation failed:', err);
+            return null;
+          }),
+        );
+      }
 
-      const [summary, actionItems, communicationStyles] =
-        await Promise.all(analysisPromises);
+      // Communication Styles - Use GPT-5-mini (only if requested)
+      if (sel.generateCommunicationStyles) {
+        communicationIndex = analysisPromises.length;
+        analysisPromises.push(
+          this.generateSummaryWithModel(
+            transcriptionText,
+            AnalysisType.COMMUNICATION_STYLES,
+            context,
+            language,
+            'gpt-5-mini',
+          ).catch((err) => {
+            this.logger.error('Communication styles generation failed:', err);
+            return null;
+          }),
+        );
+      }
 
-      this.logger.log('Core analyses completed');
+      const results = await Promise.all(analysisPromises);
+
+      this.logger.log(
+        `Core analyses completed (${analysisPromises.length} generated)`,
+      );
+
+      // Extract results based on indices
+      const summaryData =
+        summaryIndex >= 0
+          ? (results[summaryIndex] as {
+              summaryV2: SummaryV2;
+              markdownSummary: string;
+            } | null)
+          : null;
+      const actionItems =
+        actionItemsIndex >= 0
+          ? (results[actionItemsIndex] as string | null)
+          : null;
+      const communicationStyles =
+        communicationIndex >= 0
+          ? (results[communicationIndex] as string | null)
+          : null;
 
       return {
-        summary: summary || 'Summary generation failed. Please try again.',
-        actionItems: actionItems || 'No action items identified.',
-        communicationStyles:
-          communicationStyles || 'Communication analysis unavailable.',
-        transcript: transcriptionText, // No AI needed - just the text
+        // V2: summary field is empty for new transcriptions (UI uses summaryV2)
+        summary: '',
+        summaryV2: summaryData?.summaryV2, // V2 structured data (undefined if not generated or failed)
+        actionItems: actionItems || '',
+        communicationStyles: communicationStyles || '',
+        // Note: transcript not included - stored separately as transcriptText (no duplication)
       };
     } catch (error) {
       this.logger.error('Critical error generating core analyses:', error);
@@ -902,11 +1216,44 @@ ${fullCustomPrompt}`;
   }
 
   async getTranscriptions(userId: string, page = 1, pageSize = 20) {
-    return this.firebaseService.getTranscriptions(userId, page, pageSize);
+    return this.transcriptionRepository.getTranscriptions(
+      userId,
+      page,
+      pageSize,
+    );
+  }
+
+  async searchTranscriptions(userId: string, query: string, limit?: number) {
+    return this.transcriptionRepository.searchTranscriptions(
+      userId,
+      query,
+      limit,
+    );
+  }
+
+  async recordTranscriptionAccess(userId: string, transcriptionId: string) {
+    return this.transcriptionRepository.recordTranscriptionAccess(
+      userId,
+      transcriptionId,
+    );
+  }
+
+  async getRecentlyOpenedTranscriptions(userId: string, limit?: number) {
+    return this.transcriptionRepository.getRecentlyOpenedTranscriptions(
+      userId,
+      limit,
+    );
+  }
+
+  async clearRecentlyOpened(userId: string): Promise<number> {
+    return this.transcriptionRepository.clearRecentlyOpened(userId);
   }
 
   async getTranscription(userId: string, transcriptionId: string) {
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+    return this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
   }
 
   extractTitleFromSummary(summary: string): string | null {
@@ -944,8 +1291,8 @@ ${fullCustomPrompt}`;
       // Count words in the title
       const wordCount = fullTitle.trim().split(/\s+/).length;
 
-      // If title is already 8 words or less, use as-is
-      if (wordCount <= 8) {
+      // If title is already 10 words or less, use as-is
+      if (wordCount <= 10) {
         this.logger.log(
           `Title already concise (${wordCount} words), skipping API call`,
         );
@@ -967,7 +1314,7 @@ ${fullCustomPrompt}`;
           },
           {
             role: 'user',
-            content: `Shorten this heading to MAXIMUM 6 words while preserving the core meaning and language:\n\n"${fullTitle}"\n\nIMPORTANT: Your response must be 6 words or less. Return ONLY the shortened title, nothing else. Keep the same language as the original.`,
+            content: `Shorten this heading to MAXIMUM 10 words while preserving the key takeaway and language:\n\n"${fullTitle}"\n\nIMPORTANT: Your response must be 10 words or less. Return ONLY the shortened title, nothing else. Keep the same language as the original.`,
           },
         ],
         max_completion_tokens: 30,
@@ -978,13 +1325,13 @@ ${fullCustomPrompt}`;
 
       // Verify the shortened title actually follows the word limit
       const shortTitleWordCount = shortTitle.trim().split(/\s+/).length;
-      if (shortTitleWordCount > 8) {
+      if (shortTitleWordCount > 10) {
         this.logger.warn(
           `AI-generated title still too long (${shortTitleWordCount} words), applying fallback`,
         );
         // Use fallback if AI didn't follow instructions
         const words = fullTitle.trim().split(/\s+/);
-        return words.slice(0, 6).join(' ') + '...';
+        return words.slice(0, 10).join(' ') + '...';
       }
 
       this.logger.log(`Short title generated: "${shortTitle}"`);
@@ -993,10 +1340,10 @@ ${fullCustomPrompt}`;
     } catch (error) {
       this.logger.error('Error generating short title, using fallback:', error);
 
-      // Fallback: Take first 6 words and add ellipsis if truncated
+      // Fallback: Take first 10 words and add ellipsis if truncated
       const words = fullTitle.trim().split(/\s+/);
-      if (words.length > 6) {
-        return words.slice(0, 6).join(' ') + '...';
+      if (words.length > 10) {
+        return words.slice(0, 10).join(' ') + '...';
       }
       return fullTitle;
     }
@@ -1008,7 +1355,7 @@ ${fullCustomPrompt}`;
     title: string,
   ): Promise<Transcription> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1017,18 +1364,30 @@ ${fullCustomPrompt}`;
       throw new Error('Transcription not found or access denied');
     }
 
-    // Update the title
-    const updates = {
+    // Update the title - sync both transcription.title and summaryV2.title
+    const updates: Record<string, unknown> = {
       title,
       updatedAt: new Date(),
     };
 
-    await this.firebaseService.updateTranscription(transcriptionId, updates);
+    // Also update summaryV2.title if summaryV2 exists to keep them in sync
+    if (transcription.summaryV2) {
+      updates.summaryV2 = {
+        ...transcription.summaryV2,
+        title,
+      };
+    }
 
-    const updatedTranscription = await this.firebaseService.getTranscription(
-      userId,
+    await this.transcriptionRepository.updateTranscription(
       transcriptionId,
+      updates,
     );
+
+    const updatedTranscription =
+      await this.transcriptionRepository.getTranscription(
+        userId,
+        transcriptionId,
+      );
     if (!updatedTranscription) {
       throw new Error('Failed to retrieve updated transcription');
     }
@@ -1036,44 +1395,34 @@ ${fullCustomPrompt}`;
     return updatedTranscription;
   }
 
+  /**
+   * Move a transcription to a folder (or remove from folder with null)
+   */
+  async moveToFolder(
+    userId: string,
+    transcriptionId: string,
+    folderId: string | null,
+  ): Promise<void> {
+    await this.transcriptionRepository.moveToFolder(
+      userId,
+      transcriptionId,
+      folderId,
+    );
+  }
+
   async deleteTranscription(userId: string, transcriptionId: string) {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
 
     if (transcription) {
-      // Delete file from storage if it exists and hasn't been deleted already
-      try {
-        if (transcription.storagePath) {
-          // Use the storage path for reliable deletion (new transcriptions)
-          await this.firebaseService.deleteFileByPath(
-            transcription.storagePath,
-          );
-          this.logger.log(
-            `Deleted file via storage path for transcription ${transcriptionId}`,
-          );
-        } else if (transcription.fileUrl) {
-          // Fallback to URL-based deletion for older transcriptions
-          await this.firebaseService.deleteFile(transcription.fileUrl);
-          this.logger.log(
-            `Deleted file via URL for transcription ${transcriptionId}`,
-          );
-        } else {
-          // File already deleted (e.g., after processing)
-          this.logger.log(
-            `No file to delete for transcription ${transcriptionId} - already cleaned up`,
-          );
-        }
-      } catch (error) {
-        // Log but don't fail the deletion if file is already gone
-        this.logger.warn(
-          `File deletion failed for transcription ${transcriptionId}, continuing with document deletion`,
-        );
-      }
-
-      // Delete transcription document
-      await this.firebaseService.deleteTranscription(transcriptionId);
+      // Soft delete: set deletedAt timestamp instead of hard deleting
+      // Audio files are kept until cleanup job runs (allows 30-day recovery)
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
+        deletedAt: new Date(),
+      });
+      this.logger.log(`Soft-deleted transcription ${transcriptionId}`);
     }
 
     return { success: true };
@@ -1087,7 +1436,7 @@ ${fullCustomPrompt}`;
     content: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1103,13 +1452,13 @@ ${fullCustomPrompt}`;
       resolved: false,
     };
 
-    const commentId = await this.firebaseService.addSummaryComment(
+    const commentId = await this.commentRepository.addSummaryComment(
       transcriptionId,
       commentData,
     );
 
     // Fetch the complete comment object
-    const comment = await this.firebaseService.getSummaryComment(
+    const comment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1127,7 +1476,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<any[]> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1135,7 +1484,7 @@ ${fullCustomPrompt}`;
       throw new Error('Transcription not found or access denied');
     }
 
-    return this.firebaseService.getSummaryComments(transcriptionId);
+    return this.commentRepository.getSummaryComments(transcriptionId);
   }
 
   async updateSummaryComment(
@@ -1145,7 +1494,7 @@ ${fullCustomPrompt}`;
     updates: any,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1154,7 +1503,7 @@ ${fullCustomPrompt}`;
     }
 
     // Verify user owns this comment
-    const existingComment = await this.firebaseService.getSummaryComment(
+    const existingComment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1162,13 +1511,13 @@ ${fullCustomPrompt}`;
       throw new Error('Comment not found or access denied');
     }
 
-    await this.firebaseService.updateSummaryComment(
+    await this.commentRepository.updateSummaryComment(
       transcriptionId,
       commentId,
       updates,
     );
 
-    const updatedComment = await this.firebaseService.getSummaryComment(
+    const updatedComment = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1190,7 +1539,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1199,7 +1548,7 @@ ${fullCustomPrompt}`;
     }
 
     // Verify user owns this comment
-    const commentToDelete = await this.firebaseService.getSummaryComment(
+    const commentToDelete = await this.commentRepository.getSummaryComment(
       transcriptionId,
       commentId,
     );
@@ -1207,7 +1556,10 @@ ${fullCustomPrompt}`;
       throw new Error('Comment not found or access denied');
     }
 
-    await this.firebaseService.deleteSummaryComment(transcriptionId, commentId);
+    await this.commentRepository.deleteSummaryComment(
+      transcriptionId,
+      commentId,
+    );
 
     // Notify via WebSocket
     this.websocketGateway.notifyCommentDeleted(transcriptionId, commentId);
@@ -1219,7 +1571,7 @@ ${fullCustomPrompt}`;
     instructions?: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1233,7 +1585,7 @@ ${fullCustomPrompt}`;
 
     // Get existing comments for this transcription
     const comments =
-      await this.firebaseService.getSummaryComments(transcriptionId);
+      await this.commentRepository.getSummaryComments(transcriptionId);
 
     // Generate new summary with feedback in the same language
     const newSummary = await this.generateSummaryWithFeedback(
@@ -1252,9 +1604,15 @@ ${fullCustomPrompt}`;
       updatedAt: new Date(),
     };
 
-    await this.firebaseService.updateTranscription(transcriptionId, updates);
+    await this.transcriptionRepository.updateTranscription(
+      transcriptionId,
+      updates,
+    );
 
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+    return this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
   }
 
   // Share-related methods
@@ -1273,7 +1631,7 @@ ${fullCustomPrompt}`;
 
       // Check if this token already exists
       const existing =
-        await this.firebaseService.getTranscriptionByShareToken(token);
+        await this.transcriptionRepository.getTranscriptionByShareToken(token);
       if (!existing) {
         return token;
       }
@@ -1301,7 +1659,7 @@ ${fullCustomPrompt}`;
     },
   ): Promise<{ shareToken: string; shareUrl: string }> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1343,7 +1701,7 @@ ${fullCustomPrompt}`;
     }
 
     // Update transcription with share info
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       shareToken,
       shareSettings,
       sharedAt: new Date(),
@@ -1364,7 +1722,7 @@ ${fullCustomPrompt}`;
     userId: string,
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1373,7 +1731,7 @@ ${fullCustomPrompt}`;
     }
 
     // Remove share info - use special method to delete fields
-    await this.firebaseService.deleteShareInfo(transcriptionId);
+    await this.transcriptionRepository.deleteShareInfo(transcriptionId);
 
     this.logger.log(`Share link revoked for transcription ${transcriptionId}`);
   }
@@ -1389,7 +1747,7 @@ ${fullCustomPrompt}`;
     },
   ): Promise<void> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1437,7 +1795,7 @@ ${fullCustomPrompt}`;
       updatedSettings.contentOptions = settings.contentOptions;
     }
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       shareSettings: updatedSettings,
       updatedAt: new Date(),
     });
@@ -1454,7 +1812,9 @@ ${fullCustomPrompt}`;
   ): Promise<SharedTranscriptionView | null> {
     // Find transcription by share token
     const transcription =
-      await this.firebaseService.getTranscriptionByShareToken(shareToken);
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
 
     if (!transcription || !transcription.shareSettings?.enabled) {
       return null;
@@ -1475,9 +1835,15 @@ ${fullCustomPrompt}`;
       return null;
     }
 
-    // Check password if required
-    if (settings.password && settings.password !== password) {
-      throw new UnauthorizedException('Invalid password');
+    // Check password if required (passwords are bcrypt hashed)
+    if (settings.password) {
+      const isValidPassword = await bcrypt.compare(
+        password || '',
+        settings.password,
+      );
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Invalid password');
+      }
     }
 
     // Only increment view count if requested (to avoid multiple increments)
@@ -1488,7 +1854,7 @@ ${fullCustomPrompt}`;
         ...settings,
         viewCount: finalViewCount,
       };
-      await this.firebaseService.updateTranscription(transcription.id, {
+      await this.transcriptionRepository.updateTranscription(transcription.id, {
         shareSettings: updatedSettings,
       });
       this.logger.log(
@@ -1497,7 +1863,7 @@ ${fullCustomPrompt}`;
     }
 
     // Get user display name for sharedBy field
-    const user = await this.firebaseService.getUserById(transcription.userId);
+    const user = await this.userRepository.getUserById(transcription.userId);
     const sharedBy = user?.displayName || user?.email || 'Anonymous';
 
     // Get content options (default to core analyses for backward compatibility)
@@ -1515,37 +1881,59 @@ ${fullCustomPrompt}`;
     // Support both old format (analyses) and new format (coreAnalyses)
     let filteredAnalyses: Partial<typeof transcription.analyses> = undefined;
 
-    // Build analyses object from either coreAnalyses (new) or analyses (old)
-    const analysesSource = transcription.coreAnalyses
-      ? {
-          summary: transcription.coreAnalyses.summary,
-          actionItems: transcription.coreAnalyses.actionItems,
-          communicationStyles: transcription.coreAnalyses.communicationStyles,
-        }
-      : transcription.analyses;
+    // Helper to get summary content - V2 uses summaryV2 (structured JSON), V1 uses summary (markdown)
+    const getSummaryContent = (): string => {
+      // V2 Architecture: Check for summaryV2 (structured JSON) and convert to markdown
+      const summaryV2Source =
+        transcription.summaryV2 || transcription.coreAnalyses?.summaryV2;
+      if (summaryV2Source) {
+        return summaryV2ToMarkdown(summaryV2Source);
+      }
+      // Fall back to V1 markdown summary
+      return (
+        transcription.coreAnalyses?.summary ||
+        transcription.analyses?.summary ||
+        ''
+      );
+    };
 
-    if (analysesSource) {
-      filteredAnalyses = {};
-      if (contentOptions.includeSummary && analysesSource.summary) {
-        filteredAnalyses.summary = analysesSource.summary;
-      }
-      if (
-        contentOptions.includeCommunicationStyles &&
-        analysesSource.communicationStyles
-      ) {
-        filteredAnalyses.communicationStyles =
-          analysesSource.communicationStyles;
-      }
-      if (contentOptions.includeActionItems && analysesSource.actionItems) {
-        filteredAnalyses.actionItems = analysesSource.actionItems;
-      }
+    // Build analyses object from either coreAnalyses (new) or analyses (old)
+    const analysesSource = {
+      summary: getSummaryContent(),
+      actionItems:
+        transcription.coreAnalyses?.actionItems ||
+        transcription.analyses?.actionItems ||
+        '',
+      communicationStyles:
+        transcription.coreAnalyses?.communicationStyles ||
+        transcription.analyses?.communicationStyles ||
+        '',
+    };
+
+    // Filter analyses based on content options
+    filteredAnalyses = {};
+    if (contentOptions.includeSummary && analysesSource.summary) {
+      filteredAnalyses.summary = analysesSource.summary;
+    }
+    if (
+      contentOptions.includeCommunicationStyles &&
+      analysesSource.communicationStyles
+    ) {
+      filteredAnalyses.communicationStyles = analysesSource.communicationStyles;
+    }
+    if (contentOptions.includeActionItems && analysesSource.actionItems) {
+      filteredAnalyses.actionItems = analysesSource.actionItems;
+    }
+    // Only include filteredAnalyses if it has content
+    if (Object.keys(filteredAnalyses).length === 0) {
+      filteredAnalyses = undefined;
     }
 
     // Fetch on-demand analyses if requested
     let sharedOnDemandAnalyses: GeneratedAnalysis[] = [];
     if (contentOptions.includeOnDemandAnalyses) {
       const allGeneratedAnalyses =
-        await this.firebaseService.getGeneratedAnalyses(
+        await this.analysisRepository.getGeneratedAnalyses(
           transcription.id,
           transcription.userId,
         );
@@ -1573,6 +1961,10 @@ ${fullCustomPrompt}`;
         ? transcription.transcriptText
         : undefined,
       analyses: filteredAnalyses,
+      // V2: Include structured summary for rich rendering in frontend
+      summaryV2: contentOptions.includeSummary
+        ? transcription.summaryV2 || transcription.coreAnalyses?.summaryV2
+        : undefined,
       generatedAnalyses: sharedOnDemandAnalyses,
       speakerSegments: contentOptions.includeSpeakerInfo
         ? transcription.speakerSegments
@@ -1599,7 +1991,7 @@ ${fullCustomPrompt}`;
     emailRequest: ShareEmailRequest,
   ): Promise<boolean> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1619,7 +2011,7 @@ ${fullCustomPrompt}`;
     }
 
     // Get user info for sender name
-    const user = await this.firebaseService.getUserById(userId);
+    const user = await this.userRepository.getUserById(userId);
     const senderName =
       emailRequest.senderName || user?.displayName || user?.email || 'Someone';
 
@@ -1646,7 +2038,7 @@ ${fullCustomPrompt}`;
         sentAt: new Date(),
       });
 
-      await this.firebaseService.updateTranscription(transcriptionId, {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
         sharedWith,
       });
     }
@@ -1773,7 +2165,7 @@ ${transcription}`;
     targetLanguage: string,
   ): Promise<any> {
     // Verify user owns this transcription
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -1865,7 +2257,7 @@ ${transcription}`;
     const translations = transcription.translations || {};
     translations[targetLanguage] = translationData;
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       translations,
       preferredTranslationLanguage: targetLanguage, // Auto-save user's language preference
       updatedAt: new Date(),
@@ -1881,10 +2273,11 @@ ${transcription}`;
       );
 
       // Fetch all generated analyses for this transcription
-      const generatedAnalyses = await this.firebaseService.getGeneratedAnalyses(
-        transcriptionId,
-        transcription.userId,
-      );
+      const generatedAnalyses =
+        await this.analysisRepository.getGeneratedAnalyses(
+          transcriptionId,
+          transcription.userId,
+        );
 
       if (generatedAnalyses.length > 0) {
         // Translate all on-demand analyses in parallel
@@ -1913,10 +2306,13 @@ ${transcription}`;
               const updatedTranslations = analysis.translations || {};
               updatedTranslations[targetLanguage] = translatedContent;
 
-              await this.firebaseService.updateGeneratedAnalysis(analysis.id, {
-                translations: updatedTranslations,
-                updatedAt: new Date(),
-              });
+              await this.analysisRepository.updateGeneratedAnalysis(
+                analysis.id,
+                {
+                  translations: updatedTranslations,
+                  updatedAt: new Date(),
+                },
+              );
 
               this.logger.log(
                 `Translated on-demand analysis ${analysis.id} (${analysis.templateName}) to ${targetLang.name}`,
@@ -1984,7 +2380,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     language: string,
   ): Promise<any> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2006,7 +2402,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     language: string,
   ): Promise<void> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2024,7 +2420,7 @@ CRITICAL INSTRUCTIONS:
     const translations = { ...transcription.translations };
     delete translations[language];
 
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       translations,
       updatedAt: new Date(),
     });
@@ -2039,7 +2435,7 @@ CRITICAL INSTRUCTIONS:
     userId: string,
     languageCode: string,
   ): Promise<void> {
-    const transcription = await this.firebaseService.getTranscription(
+    const transcription = await this.transcriptionRepository.getTranscription(
       userId,
       transcriptionId,
     );
@@ -2048,7 +2444,7 @@ CRITICAL INSTRUCTIONS:
     }
 
     // Update the preferred translation language
-    await this.firebaseService.updateTranscription(transcriptionId, {
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
       preferredTranslationLanguage: languageCode,
       updatedAt: new Date(),
     });
@@ -2059,433 +2455,141 @@ CRITICAL INSTRUCTIONS:
   }
 
   /**
-   * Correct transcript using AI-First intelligent routing
-   * Supports preview mode and apply mode
+   * Get recent generated analyses for a user across all conversations
+   * Used for the dashboard "Recent Outputs" section
    */
-  async correctTranscriptWithAI(
+  async getRecentAnalyses(userId: string, limit: number = 8): Promise<any[]> {
+    return this.analysisRepository.getRecentGeneratedAnalyses(userId, limit);
+  }
+
+  /**
+   * Get recent generated analyses for conversations in a specific folder
+   * Used for the folder page "Recent Outputs" section
+   */
+  async getRecentAnalysesByFolder(
     userId: string,
-    transcriptionId: string,
-    instructions: string,
-    previewOnly: boolean = true,
-    routingPlan?: RoutingPlan, // Optional: can be provided to skip routing phase
-  ): Promise<any> {
-    this.logger.log(
-      `Correcting transcript ${transcriptionId} for user ${userId}, previewOnly: ${previewOnly}`,
-    );
-
-    // Fetch transcription and validate ownership
-    const transcription = await this.firebaseService.getTranscription(
+    folderId: string,
+    limit: number = 8,
+  ): Promise<any[]> {
+    return this.analysisRepository.getRecentGeneratedAnalysesByFolder(
       userId,
-      transcriptionId,
-    );
-    if (!transcription) {
-      throw new BadRequestException('Transcription not found or access denied');
-    }
-
-    // Validate transcript exists and is completed
-    if (!transcription.transcriptText || transcription.status !== 'completed') {
-      throw new BadRequestException(
-        'Transcription must be completed before correction',
-      );
-    }
-
-    const segments = transcription.speakerSegments || [];
-
-    if (segments.length === 0) {
-      throw new BadRequestException(
-        'No speaker segments available for correction',
-      );
-    }
-
-    // Phase 1: Routing analysis (if not provided)
-    const plan =
-      routingPlan ||
-      (await this.correctionRouter.analyzeAndRoute(
-        segments,
-        instructions,
-        transcription.detectedLanguage || 'en',
-        transcription.duration,
-      ));
-
-    // Phase 3: Parallel execution
-    const [regexResult, aiResult] = await Promise.all([
-      // Path A: Simple replacements (instant)
-      Promise.resolve(
-        this.correctionRouter.applySimpleReplacements(
-          segments,
-          plan.simpleReplacements,
-        ),
-      ),
-
-      // Path B: Complex corrections (AI-powered)
-      plan.complexCorrections.length > 0
-        ? this.applyComplexCorrections(
-            segments,
-            plan.complexCorrections,
-            instructions,
-          )
-        : Promise.resolve(new Map<number, string>()),
-    ]);
-
-    // Phase 4: Merge results
-    const mergedSegments = this.correctionRouter.mergeResults(
-      segments,
-      regexResult.correctedSegments,
-      aiResult,
-    );
-
-    // Generate diff
-    const diff = this.generateDiff(segments, mergedSegments);
-
-    if (previewOnly) {
-      return {
-        original: this.reconstructTranscriptFromSegments(segments),
-        corrected: this.reconstructTranscriptFromSegments(mergedSegments),
-        diff,
-        summary: {
-          totalChanges: diff.length,
-          affectedSegments: new Set([...diff.map((d) => d.segmentIndex)]).size,
-          method: 'intelligent-routing',
-          routingPlan: plan,
-        },
-      };
-    }
-
-    // Apply mode: Save changes and clean up
-    return this.applyCorrection(
-      transcriptionId,
-      userId,
-      transcription,
-      mergedSegments,
+      folderId,
+      limit,
     );
   }
 
   /**
-   * Apply complex corrections using AI on affected segments only
+   * Merge multiple audio files into a single file using FFmpeg
+   * Used for combining recovered recording chunks with new recording on the frontend
+   * @param files Array of uploaded audio file buffers
+   * @returns Buffer of merged audio file
    */
-  private async applyComplexCorrections(
-    allSegments: SpeakerSegment[],
-    complexCorrections: ComplexCorrection[],
-    originalInstructions: string,
-  ): Promise<Map<number, string>> {
-    this.logger.log(
-      `Applying ${complexCorrections.length} complex corrections with AI...`,
-    );
-
-    // Flatten all affected segment indices
-    const affectedIndices = [
-      ...new Set(complexCorrections.flatMap((c) => c.affectedSegmentIndices)),
-    ].sort((a, b) => a - b);
-
-    if (affectedIndices.length === 0) {
-      return new Map();
+  async mergeAudioFiles(
+    files: Express.Multer.File[],
+  ): Promise<{ buffer: Buffer; mimeType: string; duration: number }> {
+    if (!files || files.length === 0) {
+      throw new Error('No files provided for merging');
     }
 
-    // Extract affected segments with context (previous/next for continuity)
-    const segmentsWithContext = affectedIndices.map((index) => {
-      const prev = index > 0 ? allSegments[index - 1] : null;
-      const current = allSegments[index];
-      const next =
-        index < allSegments.length - 1 ? allSegments[index + 1] : null;
-
+    if (files.length === 1) {
+      // Single file - just return it
+      const duration = await this.getAudioDurationFromBuffer(files[0].buffer);
       return {
-        index,
-        context: {
-          previous: prev ? `${prev.speakerTag}: ${prev.text}` : null,
-          current: `${current.speakerTag}: ${current.text}`,
-          next: next ? `${next.speakerTag}: ${next.text}` : null,
-        },
+        buffer: files[0].buffer,
+        mimeType: files[0].mimetype,
+        duration,
       };
-    });
+    }
 
-    // Build focused correction prompt
-    const correctionDetails = complexCorrections
-      .map((c) => `- ${c.description} (Reason: ${c.reason})`)
-      .join('\n');
+    this.logger.log(`Merging ${files.length} audio files`);
 
-    const segmentsList = segmentsWithContext
-      .map(
-        (s) => `[${s.index}]
-${s.context.previous ? `  Context (before): ${s.context.previous}` : ''}
-  Target: ${s.context.current}
-${s.context.next ? `  Context (after): ${s.context.next}` : ''}`,
-      )
-      .join('\n\n');
+    // Log file info for debugging format issues across browsers
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const first16Bytes = file.buffer.subarray(0, 16).toString('hex');
+      this.logger.log(
+        `File ${i}: ${file.originalname}, size=${file.buffer.length}, mimetype=${file.mimetype}, magic=${first16Bytes}`,
+      );
+    }
 
-    const prompt = `You are correcting specific segments of a transcript based on user instructions.
-
-ORIGINAL USER REQUEST:
-${originalInstructions}
-
-CORRECTIONS TO APPLY:
-${correctionDetails}
-
-SEGMENTS TO CORRECT (with context):
-${segmentsList}
-
-TASK: Return ONLY the corrected text for each target segment, maintaining the exact format:
-
-[index] Speaker Tag: corrected text
-
-IMPORTANT:
-- Return ALL segments in the same order
-- Keep speaker tags unchanged
-- Only modify the spoken text based on user instructions
-- Maintain natural flow and context
-- Do not add or remove segments`;
+    // Create temp directory for merge operation
+    const tempDir = `/tmp/merge_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    await fs.promises.mkdir(tempDir, { recursive: true });
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a transcript correction assistant. Return only the corrected segments in the exact format requested.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3,
-        max_tokens: Math.min(affectedIndices.length * 250, 16000),
-      });
-
-      const responseText = completion.choices[0]?.message?.content?.trim();
-      if (!responseText) {
-        throw new Error('Empty response from AI correction');
+      // Write files to temp directory
+      const inputPaths: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const ext = this.getExtensionFromMimeType(files[i].mimetype);
+        const filePath = `${tempDir}/input_${i}.${ext}`;
+        await fs.promises.writeFile(filePath, files[i].buffer);
+        inputPaths.push(filePath);
       }
 
-      // Parse AI response
-      const correctedMap = new Map<number, string>();
-      const lines = responseText.split('\n').filter((line) => line.trim());
+      // Determine output format (use first file's format)
+      const outputExt = this.getExtensionFromMimeType(files[0].mimetype);
+      const outputPath = `${tempDir}/merged.${outputExt}`;
 
-      for (const line of lines) {
-        const match = line.match(/^\[(\d+)\]\s+(.+?):\s+(.+)$/);
-        if (match) {
-          const index = parseInt(match[1]);
-          const correctedText = match[3].trim();
-          correctedMap.set(index, correctedText);
-        }
-      }
+      // Merge using AudioSplitter
+      await this.audioSplitter.mergeAudioFiles(inputPaths, outputPath);
+
+      // Read merged file
+      const mergedBuffer = await fs.promises.readFile(outputPath);
+      const duration = await this.audioSplitter.getAudioDuration(outputPath);
 
       this.logger.log(
-        `Complex corrections complete: ${correctedMap.size} segments corrected`,
+        `Audio merge complete: ${mergedBuffer.length} bytes, ${duration.toFixed(2)}s`,
       );
 
-      return correctedMap;
-    } catch (error) {
-      this.logger.error('Complex correction failed:', error);
-      throw new Error('Failed to apply complex corrections');
-    }
-  }
-
-  /**
-   * Reconstruct full transcript from speaker segments
-   */
-  private reconstructTranscriptFromSegments(
-    segments: SpeakerSegment[],
-  ): string {
-    let currentSpeaker = '';
-    const lines: string[] = [];
-
-    for (const segment of segments) {
-      if (segment.speakerTag !== currentSpeaker) {
-        currentSpeaker = segment.speakerTag;
-        lines.push(`${segment.speakerTag}: ${segment.text}`);
-      } else {
-        lines.push(segment.text);
-      }
-    }
-
-    return lines.join('\n\n');
-  }
-
-  /**
-   * Apply correction to Firestore
-   */
-  private async applyCorrection(
-    transcriptionId: string,
-    userId: string,
-    transcription: any,
-    correctedSegments: SpeakerSegment[],
-  ): Promise<any> {
-    this.logger.log('Applying transcript corrections...');
-
-    const correctedTranscript =
-      this.reconstructTranscriptFromSegments(correctedSegments);
-
-    // Get existing translations for tracking what was cleared
-    const existingTranslations = Object.keys(transcription.translations || {});
-
-    // Delete custom analyses
-    const deletedAnalysisIds =
-      await this.firebaseService.deleteGeneratedAnalysesByTranscription(
-        transcriptionId,
-        userId,
-      );
-
-    // Update Firestore
-    await this.firebaseService.updateTranscription(transcriptionId, {
-      transcriptText: correctedTranscript,
-      transcriptWithSpeakers: correctedTranscript,
-      speakerSegments: correctedSegments,
-      translations: {},
-      generatedAnalysisIds: [],
-      coreAnalysesOutdated: true, // Mark core analyses as stale
-      updatedAt: new Date(),
-    });
-
-    // Fetch updated transcription
-    const updatedTranscription = await this.firebaseService.getTranscription(
-      userId,
-      transcriptionId,
-    );
-
-    this.logger.log(
-      `Transcript correction applied successfully. Deleted ${deletedAnalysisIds.length} custom analyses, cleared ${existingTranslations.length} translations`,
-    );
-
-    return {
-      success: true,
-      transcription: updatedTranscription,
-      deletedAnalysisIds,
-      clearedTranslations: existingTranslations,
-    };
-  }
-
-  /**
-   * Apply corrections from corrected text to speaker segments
-   * Parses corrected text by speaker labels and updates segment text
-   */
-  private applyCorrectionsToSegments(
-    originalSegments: SpeakerSegment[],
-    correctedText: string,
-  ): SpeakerSegment[] {
-    // Parse corrected text into speaker segments
-    // Match pattern: "Speaker N: text" or "Speaker A: text"
-    const regex = /(Speaker [A-Z0-9]+):\s*/gi;
-    const parts = correctedText.split(regex).filter((p) => p.trim());
-
-    const parsedSegments: Array<{ speakerTag: string; text: string }> = [];
-    for (let i = 0; i < parts.length; i += 2) {
-      if (i + 1 < parts.length) {
-        parsedSegments.push({
-          speakerTag: parts[i].trim(),
-          text: parts[i + 1].trim(),
-        });
-      }
-    }
-
-    // Match parsed segments to original by order and speaker tag
-    const updatedSegments = originalSegments.map((original, index) => {
-      const parsed = parsedSegments[index];
-
-      // If structure mismatch, keep original
-      if (
-        !parsed ||
-        parsed.speakerTag.toLowerCase() !== original.speakerTag.toLowerCase()
-      ) {
-        this.logger.warn(
-          `Segment mismatch at index ${index}, preserving original`,
-        );
-        return original;
-      }
-
-      // Update only the text field, preserve timestamps and metadata
       return {
-        ...original,
-        text: parsed.text,
+        buffer: mergedBuffer,
+        mimeType: files[0].mimetype,
+        duration,
       };
-    });
-
-    return updatedSegments;
-  }
-
-  /**
-   * Generate diff between original and corrected segments
-   */
-  private generateDiff(
-    originalSegments: SpeakerSegment[],
-    correctedSegments: SpeakerSegment[],
-  ): any[] {
-    const diff: any[] = [];
-
-    originalSegments.forEach((original, index) => {
-      const corrected = correctedSegments[index];
-
-      // Only include segments where text changed
-      if (corrected && original.text !== corrected.text) {
-        diff.push({
-          segmentIndex: index,
-          speakerTag: original.speakerTag,
-          timestamp: this.formatTime(original.startTime),
-          oldText: original.text,
-          newText: corrected.text,
-        });
+    } finally {
+      // Cleanup temp files
+      try {
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
+      } catch (cleanupError) {
+        this.logger.warn(
+          `Failed to cleanup temp dir ${tempDir}:`,
+          cleanupError,
+        );
       }
-    });
-
-    return diff;
+    }
   }
 
   /**
-   * Format time in seconds to MM:SS format
+   * Get audio duration from a buffer by writing to temp file and using ffprobe
    */
-  private formatTime(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  private async getAudioDurationFromBuffer(buffer: Buffer): Promise<number> {
+    const tempPath = `/tmp/duration_check_${Date.now()}.webm`;
+    try {
+      await fs.promises.writeFile(tempPath, buffer);
+      return await this.audioSplitter.getAudioDuration(tempPath);
+    } finally {
+      try {
+        await fs.promises.unlink(tempPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
   }
 
   /**
-   * Regenerate core analyses for a transcription
-   * Used after transcript corrections to update analyses with corrected text
+   * Get file extension from MIME type
    */
-  async regenerateCoreAnalysesForTranscription(
-    userId: string,
-    transcriptionId: string,
-  ): Promise<any> {
-    this.logger.log(
-      `Regenerating core analyses for transcription ${transcriptionId}`,
-    );
-
-    // Fetch transcription and validate ownership
-    const transcription = await this.firebaseService.getTranscription(
-      userId,
-      transcriptionId,
-    );
-    if (!transcription) {
-      throw new BadRequestException('Transcription not found or access denied');
-    }
-
-    // Validate transcript exists and is completed
-    if (!transcription.transcriptText || transcription.status !== 'completed') {
-      throw new BadRequestException(
-        'Transcription must be completed before regenerating analyses',
-      );
-    }
-
-    // Generate new core analyses using the corrected transcript
-    const coreAnalyses = await this.generateCoreAnalyses(
-      transcription.transcriptText,
-      undefined, // no context
-      transcription.detectedLanguage,
-    );
-
-    // Update transcription with new core analyses
-    await this.firebaseService.updateTranscription(transcriptionId, {
-      coreAnalyses,
-      coreAnalysesOutdated: false, // Clear stale flag
-      updatedAt: new Date(),
-    });
-
-    this.logger.log(
-      `Core analyses regenerated successfully for transcription ${transcriptionId}`,
-    );
-
-    // Fetch and return updated transcription
-    return this.firebaseService.getTranscription(userId, transcriptionId);
+  private getExtensionFromMimeType(mimeType: string): string {
+    const mimeToExt: Record<string, string> = {
+      'audio/webm': 'webm',
+      'audio/webm;codecs=opus': 'webm',
+      'audio/mp4': 'm4a',
+      'audio/mpeg': 'mp3',
+      'audio/mp3': 'mp3',
+      'audio/wav': 'wav',
+      'audio/ogg': 'ogg',
+      'audio/flac': 'flac',
+    };
+    return mimeToExt[mimeType] || 'webm';
   }
 }

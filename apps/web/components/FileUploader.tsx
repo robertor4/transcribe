@@ -45,7 +45,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [quotaModal, setQuotaModal] = useState<{
     isOpen: boolean;
-    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits';
+    quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize';
     details?: { current?: number; limit?: number; required?: number };
   }>({ isOpen: false, quotaType: 'transcriptions' });
 
@@ -237,7 +237,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         const errorDetails = error.response?.data?.details;
 
         // Map error code to quota type
-        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' | 'payg_credits' = 'transcriptions';
+        let quotaType: 'on_demand_analyses' | 'transcriptions' | 'duration' | 'filesize' = 'transcriptions';
 
         if (errorCode === 'QUOTA_EXCEEDED_TRANSCRIPTIONS') {
           quotaType = 'transcriptions';
@@ -245,8 +245,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
           quotaType = 'duration';
         } else if (errorCode === 'QUOTA_EXCEEDED_FILESIZE') {
           quotaType = 'filesize';
-        } else if (errorCode === 'QUOTA_EXCEEDED_PAYG_CREDITS') {
-          quotaType = 'payg_credits';
         } else if (errorCode === 'QUOTA_EXCEEDED_ON_DEMAND_ANALYSES') {
           quotaType = 'on_demand_analyses';
         }
@@ -310,20 +308,20 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               border-2 border-dashed rounded-2xl p-6 sm:p-8 md:p-12 text-center cursor-pointer
               transition-all duration-200 transform
               ${isDragActive
-                ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20 scale-[1.02] shadow-xl'
-                : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] bg-white dark:bg-gray-800 hover:bg-pink-50/20 dark:hover:bg-pink-900/10 hover:shadow-lg hover:scale-[1.01]'
+                ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20 scale-[1.02] shadow-xl'
+                : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA] bg-white dark:bg-gray-800 hover:bg-purple-50/20 dark:hover:bg-purple-900/10 hover:shadow-lg hover:scale-[1.01]'
               }
             `}
           >
             <input {...getInputProps()} />
             <div className="flex justify-center mb-4">
               <div className="p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-full shadow-md">
-                <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-[#cc3399]" />
+                <Upload className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-[#8D6AFA]" />
               </div>
             </div>
             {isDragActive ? (
               <>
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#cc3399] mb-2">{t('releaseToUpload')}</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-[#8D6AFA] mb-2">{t('releaseToUpload')}</p>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{t('transcriptionStartsImmediately')}</p>
               </>
             ) : (
@@ -334,7 +332,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
                   {t('orClickToBrowse')}
                 </p>
-                <button className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-[#cc3399] text-white text-sm sm:text-base font-semibold rounded-lg shadow-md hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399] focus:ring-offset-2">
+                <button className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-[#8D6AFA] text-white text-sm sm:text-base font-semibold rounded-lg shadow-md hover:bg-[#7A5AE0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2">
                   {t('selectAudioFile')}
                 </button>
                 <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
@@ -343,7 +341,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                     <span>{t('instantProcessing')}</span>
                   </div>
                   <div className="flex items-center">
-                    <Lock className="h-4 w-4 text-[#cc3399] mr-1" />
+                    <Lock className="h-4 w-4 text-[#8D6AFA] mr-1" />
                     <span>{t('secure')}</span>
                   </div>
                   <div className="flex items-center">
@@ -391,8 +389,8 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   className={`
                     flex items-center justify-between bg-white dark:bg-gray-700 border rounded-lg p-3 transition-all
                     ${draggedIndex === index
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30'
-                      : 'border-gray-200 dark:border-gray-600 hover:border-[#cc3399]'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-[#8D6AFA]'
                     }
                     ${files.length > 1 ? 'cursor-move' : ''}
                   `}
@@ -404,11 +402,11 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                       </div>
                     )}
                     <div className="flex items-center space-x-2 min-w-0 flex-1">
-                      <FileAudio className="h-5 w-5 text-[#cc3399] flex-shrink-0" />
+                      <FileAudio className="h-5 w-5 text-[#8D6AFA] flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center space-x-2">
                           {files.length > 1 && (
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#cc3399] text-white text-xs font-semibold flex-shrink-0">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#8D6AFA] text-white text-xs font-semibold flex-shrink-0">
                               {index + 1}
                             </span>
                           )}
@@ -441,14 +439,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
                 transition-all duration-200
                 ${isDragActive
-                  ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-[#cc3399] bg-white dark:bg-gray-700 hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                  ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA] bg-white dark:bg-gray-700 hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
                 }
               `}
             >
               <input {...getInputProps()} />
               <div className="flex items-center justify-center space-x-2">
-                <Upload className="h-5 w-5 text-[#cc3399]" />
+                <Upload className="h-5 w-5 text-[#8D6AFA]" />
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('dropMoreFiles') || 'Add more files'}
                 </p>
@@ -491,13 +489,13 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   className={`
                     flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
                     ${processingMode === 'individual'
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#8D6AFA] hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-2 mb-1">
-                    <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#cc3399]' : 'text-gray-600 dark:text-gray-400'}`} />
+                    <FileAudio className={`h-5 w-5 ${processingMode === 'individual' ? 'text-[#8D6AFA]' : 'text-gray-600 dark:text-gray-400'}`} />
                     <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('processIndividually')}</span>
                   </div>
                   <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processIndividuallyDesc')}</span>
@@ -509,13 +507,13 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
                   className={`
                     flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all duration-200
                     ${processingMode === 'merged'
-                      ? 'border-[#cc3399] bg-pink-50 dark:bg-pink-900/30 text-gray-900 dark:text-gray-100'
-                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#cc3399] hover:bg-pink-50/20 dark:hover:bg-pink-900/10'
+                      ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-gray-900 dark:text-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-[#8D6AFA] hover:bg-purple-50/20 dark:hover:bg-purple-900/10'
                     }
                   `}
                 >
                   <div className="flex items-center space-x-2 mb-1">
-                    <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#cc3399]' : 'text-gray-600 dark:text-gray-400'}`} />
+                    <Upload className={`h-5 w-5 ${processingMode === 'merged' ? 'text-[#8D6AFA]' : 'text-gray-600 dark:text-gray-400'}`} />
                     <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{t('processMerged')}</span>
                   </div>
                   <span className="text-xs text-gray-600 dark:text-gray-400 text-center">{t('processMergedDesc')}</span>
@@ -536,7 +534,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder={t('contextPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#cc3399] focus:border-[#cc3399] text-gray-800 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm bg-white dark:bg-gray-700 transition-all duration-200 hover:border-[#cc3399]"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#8D6AFA] focus:border-[#8D6AFA] text-gray-800 dark:text-gray-200 placeholder:text-gray-500 dark:placeholder:text-gray-400 text-sm bg-white dark:bg-gray-700 transition-all duration-200 hover:border-[#8D6AFA]"
               rows={3}
             />
           </div>
@@ -549,7 +547,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
               w-full py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center
               ${uploading
                 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-[#cc3399] text-white hover:bg-[#b82d89]'
+                : 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
               }
             `}
           >
@@ -604,19 +602,19 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
             <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 text-sm">{t('security')}</h4>
             <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
               <div className="flex items-start">
-                <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
+                <Shield className="h-3 w-3 text-[#8D6AFA] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('encryption')}</span>
               </div>
               <div className="flex items-start">
-                <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
+                <Lock className="h-3 w-3 text-[#8D6AFA] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('gdprCompliant')}</span>
               </div>
               <div className="flex items-start">
-                <Shield className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
+                <Shield className="h-3 w-3 text-[#8D6AFA] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('autoDeleteAfterProcessing')}</span>
               </div>
               <div className="flex items-start">
-                <Lock className="h-3 w-3 text-[#cc3399] mr-1.5 mt-0.5 flex-shrink-0" />
+                <Lock className="h-3 w-3 text-[#8D6AFA] mr-1.5 mt-0.5 flex-shrink-0" />
                 <span>{t('noDataSharing')}</span>
               </div>
             </div>
@@ -640,7 +638,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onUploadComplete }) 
         isOpen={quotaModal.isOpen}
         onClose={() => setQuotaModal({ ...quotaModal, isOpen: false })}
         quotaType={quotaModal.quotaType}
-        currentTier={(usageStats?.tier as 'free' | 'professional' | 'payg') || 'free'}
+        currentTier={(usageStats?.tier as 'free' | 'professional') || 'free'}
         details={quotaModal.details}
       />
     </div>

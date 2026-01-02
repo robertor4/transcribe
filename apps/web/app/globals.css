@@ -6,18 +6,24 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  
-  /* Theme Colors */
-  --color-primary: #cc3399;
-  --color-primary-hover: #b82d89;
-  --color-primary-light: rgba(204, 51, 153, 0.1);
-  
+
+  /* Dynamic viewport height for mobile browsers */
+  --vh: 1vh;
+
+  /* Theme Colors - Neural Summary Brand */
+  --color-primary: #8D6AFA;
+  --color-primary-hover: #7A5AE0;
+  --color-primary-light: rgba(141, 106, 250, 0.1);
+  --color-secondary: #14D0DC;
+  --color-secondary-alt: #3F38A0;
+  --color-accent-dark: #23194B;
+
   /* Text Colors */
   --color-text-primary: #111827; /* gray-900 */
   --color-text-secondary: #374151; /* gray-700 */
   --color-text-muted: #6b7280; /* gray-500 */
   --color-text-light: #9ca3af; /* gray-400 */
-  
+
   /* Placeholder Colors */
   --color-placeholder: #6b7280; /* gray-500 */
 }
@@ -31,17 +37,20 @@
 
 /* Dark mode via manual toggle - this takes precedence */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
+  --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
 
   /* Theme Colors (Dark Mode) */
-  --color-primary: #cc3399;
-  --color-primary-hover: #ff66cc;
-  --color-primary-light: rgba(204, 51, 153, 0.2);
+  --color-primary: #8D6AFA;
+  --color-primary-hover: #A080FF;
+  --color-primary-light: rgba(141, 106, 250, 0.2);
+  --color-secondary: #14D0DC;
+  --color-secondary-alt: #3F38A0;
+  --color-accent-dark: #23194B;
 
-  /* Text Colors (Dark Mode) */
-  --color-text-primary: #f9fafb; /* gray-50 */
-  --color-text-secondary: #e5e7eb; /* gray-200 */
+  /* Text Colors (Dark Mode) - softened for less contrast */
+  --color-text-primary: #e5e7eb; /* gray-200 */
+  --color-text-secondary: #d1d5db; /* gray-300 */
   --color-text-muted: #9ca3af; /* gray-400 */
   --color-text-light: #6b7280; /* gray-500 */
 
@@ -52,17 +61,20 @@
 /* Dark mode via OS preference (only when no manual override) */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
+    --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
 
     /* Theme Colors (Dark Mode) */
-    --color-primary: #cc3399;
-    --color-primary-hover: #ff66cc;
-    --color-primary-light: rgba(204, 51, 153, 0.2);
+    --color-primary: #8D6AFA;
+    --color-primary-hover: #A080FF;
+    --color-primary-light: rgba(141, 106, 250, 0.2);
+    --color-secondary: #14D0DC;
+    --color-secondary-alt: #3F38A0;
+    --color-accent-dark: #23194B;
 
-    /* Text Colors (Dark Mode) */
-    --color-text-primary: #f9fafb; /* gray-50 */
-    --color-text-secondary: #e5e7eb; /* gray-200 */
+    /* Text Colors (Dark Mode) - softened for less contrast */
+    --color-text-primary: #e5e7eb; /* gray-200 */
+    --color-text-secondary: #d1d5db; /* gray-300 */
     --color-text-muted: #9ca3af; /* gray-400 */
     --color-text-light: #6b7280; /* gray-500 */
 
@@ -74,13 +86,18 @@
 /* Smooth scroll behavior for anchor links */
 html {
   scroll-behavior: smooth;
-  scrollbar-gutter: stable; /* Prevent layout shift when scrollbar appears/disappears */
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll from dropdown portals */
+}
+
+/* Dual-font system: Montserrat for headings, Geist for body text */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
 }
 
 /* Smooth transitions for theme changes */
@@ -150,13 +167,13 @@ body {
   margin-bottom: 0.5em !important;
 }
 
-/* Dark mode prose styles */
+/* Dark mode prose styles - softened for less contrast */
 .dark .prose {
   color: #d1d5db !important; /* gray-300 */
 }
 
 .dark .prose p {
-  color: #e5e7eb !important; /* gray-200 */
+  color: #d1d5db !important; /* gray-300 - softened */
 }
 
 .dark .prose h1,
@@ -165,15 +182,15 @@ body {
 .dark .prose h4,
 .dark .prose h5,
 .dark .prose h6 {
-  color: #f9fafb !important; /* gray-50 */
+  color: #e5e7eb !important; /* gray-200 - softened from gray-50 */
 }
 
 .dark .prose strong {
-  color: #f9fafb !important; /* gray-50 */
+  color: #e5e7eb !important; /* gray-200 - softened */
 }
 
 .dark .prose li {
-  color: #e5e7eb !important; /* gray-200 */
+  color: #d1d5db !important; /* gray-300 - softened */
 }
 
 .dark .prose code {
@@ -182,7 +199,7 @@ body {
 }
 
 .dark .prose a {
-  color: #cc3399 !important;
+  color: #8D6AFA !important;
 }
 
 .dark .prose blockquote {
@@ -312,6 +329,17 @@ body {
   }
 }
 
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Animation Utility Classes */
 .animate-fadeUp {
   animation: fadeUp 1s ease-out forwards;
@@ -395,7 +423,7 @@ body {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 20px rgba(204, 51, 153, 0.3);
+  box-shadow: 0 0 20px rgba(141, 106, 250, 0.3);
 }
 
 /* Button Shimmer Effect */
@@ -411,13 +439,17 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: shimmer 2s infinite;
+  background: rgba(255, 255, 255, 0.2);
+  animation: shimmerPulse 2s infinite;
+}
+
+@keyframes shimmerPulse {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Smooth Transitions */
@@ -571,4 +603,278 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
+}
+
+/* Subtle scrollbar styling for main content areas */
+.scrollbar-subtle {
+  scrollbar-width: thin;  /* Firefox */
+  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;  /* Firefox: thumb track */
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.3);  /* gray-400 at 30% */
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.5);  /* gray-400 at 50% */
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-subtle {
+  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;  /* Firefox: gray-600 at 40% */
+}
+
+.dark .scrollbar-subtle::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.4);  /* gray-600 at 40% */
+}
+
+.dark .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(75, 85, 99, 0.6);  /* gray-600 at 60% */
+}
+
+/* ===== Slide Panel Animations ===== */
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideOutToBottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-slideInFromRight {
+  animation: slideInFromRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideOutToRight {
+  animation: slideOutToRight 0.2s ease-in forwards;
+}
+
+.animate-slideInFromBottom {
+  animation: slideInFromBottom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideOutToBottom {
+  animation: slideOutToBottom 0.2s ease-in forwards;
+}
+
+.animate-backdropFadeIn {
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+
+.animate-backdropFadeOut {
+  animation: backdropFadeOut 0.15s ease-in forwards;
+}
+
+/* ===== AI Icon Sparkle Animation ===== */
+
+@keyframes sparkle-pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.25) rotate(180deg);
+    fill: #8D6AFA;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.animate-sparkle-pulse {
+  animation: sparkle-pulse 900ms ease-out forwards;
+}
+
+/* Trigger animation when parent with group class is hovered */
+.group:hover .group-hover-sparkle-pulse {
+  animation: sparkle-pulse 900ms ease-out forwards;
+}
+
+/* ===== Mobile Viewport Height Utilities ===== */
+
+/* Dynamic viewport height - handles mobile browser chrome (address bar, bottom nav) */
+@supports (height: 100dvh) {
+  :root {
+    --vh: 1dvh;
+  }
+}
+
+/* Safe full-screen height that accounts for mobile browser UI */
+.h-screen-safe {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ===== iOS Safe Area Utilities ===== */
+
+/* Safe area padding for notched devices and home indicator */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-x {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-y {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-all {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Margin variants for positioned elements */
+  .safe-margin-bottom {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-margin-top {
+    margin-top: env(safe-area-inset-top);
+  }
+}
+
+/* ===== Mobile App Drawer Animations ===== */
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-slideInFromLeft {
+  animation: slideInFromLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideOutToLeft {
+  animation: slideOutToLeft 0.2s ease-in forwards;
+}
+
+/* ===== Hero Section Animations ===== */
+
+/* Background dots slow horizontal drift - visible but subtle */
+@keyframes heroDotsSlowDrift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+.animate-hero-dots-drift {
+  animation: heroDotsSlowDrift 15s ease-in-out infinite;
+}
+
+/* Disable hero animations when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-dots-drift {
+    animation: none !important;
+  }
+}
+
+/* Consistent easing for landing page animations - easeOutQuad */
+.ease-hero {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

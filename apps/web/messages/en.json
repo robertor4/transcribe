@@ -31,6 +31,50 @@
     "browserNotifications": "Browser Notifications",
     "allRightsReserved": "All rights reserved"
   },
+  "search": {
+    "placeholder": "Search conversations...",
+    "resultsTitle": "Search Results",
+    "resultsCount": "{count} found",
+    "noResults": "No conversations found for \"{query}\"",
+    "clearSearch": "Clear search"
+  },
+  "leftNavigation": {
+    "closeSidebar": "Close sidebar",
+    "dashboard": "Dashboard",
+    "newConversation": "New Conversation",
+    "folders": "Folders",
+    "expandFolders": "Expand folders",
+    "collapseFolders": "Collapse folders",
+    "noFoldersYet": "No folders yet",
+    "sharedWithYou": "Shared with you",
+    "recentlyOpened": "Recently opened",
+    "clearRecentlyOpened": "Clear recently opened",
+    "noConversationsYet": "No conversations yet",
+    "results": "Results"
+  },
+  "conversationCreate": {
+    "confirmCancel": "Are you sure you want to cancel? Your progress will be lost.",
+    "closeModal": "Close modal",
+    "steps": {
+      "capture": {
+        "title": "Create a conversation",
+        "description": "Choose how to add your audio"
+      },
+      "context": {
+        "title": "Add context",
+        "description": "Provide context to improve transcription accuracy (optional)"
+      },
+      "processing": {
+        "title": "Processing...",
+        "description": "This may take a moment"
+      }
+    },
+    "contextLabel": "Context (optional)",
+    "contextPlaceholder": "e.g., product meeting, sales call, interview...",
+    "back": "Back",
+    "skip": "Skip",
+    "continue": "Continue"
+  },
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
@@ -137,7 +181,41 @@
     "uploadNewAudio": "Upload New Audio",
     "emptyStateTitle": "Welcome to Neural Summary!",
     "emptyStateDescription": "You haven't uploaded any audio files yet. Get started by uploading your first recording.",
-    "emptyStateButton": "Upload Your First Audio"
+    "emptyStateButton": "Upload Your First Audio",
+    "learnMore": "Learn more",
+    "importAudio": "Import audio",
+    "importAudioDesc": "Upload audio/video file",
+    "recordAudioDesc": "Record live conversation",
+    "recordAudioInfo": "Start a live recording session. You can choose to record from your microphone or capture audio from a browser tab (for video calls).",
+    "importAudioInfo": "Import an existing audio or video file from your device. Supported formats: MP3, M4A, WAV, MP4, MOV, WebM. Maximum file size depends on your subscription plan.",
+    "recordRoom": "Record the room",
+    "recordRoomDesc": "In-person meetings, voice memos, interviews",
+    "recordTab": "Record browser tab",
+    "recordTabDesc": "Google Meet, Zoom (web), YouTube videos",
+    "uploadFileLabel": "Upload file",
+    "uploadFileDesc": "Audio or video files from any source",
+    "conversations": "Conversations",
+    "folders": "Folders",
+    "itemsOfTotal": "{count} of {total}",
+    "itemsCount": "{count} items",
+    "new": "New",
+    "add": "Add",
+    "emptyConversationsHint": "Start by recording or uploading your first conversation",
+    "startFirstConversation": "Start First Conversation",
+    "showMore": "Show More ({count} remaining)",
+    "emptyFoldersHint": "Create folders to organize your conversations",
+    "createFirstFolder": "Create First Folder",
+    "folderNamePlaceholder": "Folder name...",
+    "createFolder": "Create folder",
+    "cancel": "Cancel",
+    "sharedWithYou": "Shared with you",
+    "dragHint": "Drag conversations here to organize them",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Newest",
+      "date-asc": "Oldest"
+    }
   },
   "upload": {
     "title": "Upload Audio File",
@@ -233,7 +311,7 @@
     "error": {
       "fileSize": "File size exceeds 5GB limit",
       "fileTooLarge": "File too large (max 100MB)",
-      "fileTooLargeWhisper": "File is too large. Maximum size is 25MB due to OpenAI Whisper API limit. For larger files, consider splitting them.",
+      "fileTooLargeWhisper": "File is too large. Maximum size is 25MB due to API limit. For larger files, consider splitting them.",
       "fileType": "Unsupported file type",
       "unsupportedFormat": "Unsupported format (type: {type})",
       "invalidFileType": "Invalid file type. Supported formats: {formats}",
@@ -249,11 +327,28 @@
     "source": {
       "label": "Recording Source",
       "microphone": "Microphone",
-      "microphoneDescription": "Record from your device microphone",
-      "tabAudio": "Meeting Tab Audio",
-      "tabAudioDescription": "Capture audio from a browser tab (Google Meet, Zoom)",
-      "tabAudioNotSupported": "Tab audio capture is only supported in Chrome and Edge browsers. Please use microphone recording or switch to a supported browser.",
-      "tabAudioInstructions": "When prompted, select the browser tab with your meeting and make sure to check 'Share tab audio' for best quality."
+      "microphoneDescription": "Record from your device's microphone",
+      "tabAudio": "Tab Audio",
+      "tabAudioDescription": "Record audio from a browser tab",
+      "tabAudioNotSupported": "Not supported in this browser",
+      "tabAudioInstructions": "First allow microphone access (to capture your voice), then select the browser tab with your meeting and check 'Share tab audio'.",
+      "changeSource": "Change source",
+      "changeMethod": "Change method",
+      "recordingFrom": "Recording from:",
+      "chooseSource": "Choose recording source",
+      "chooseSourceDescription": "Select where you want to record from",
+      "selectMicrophone": "Select microphone",
+      "loadingMicrophones": "Loading microphones...",
+      "inputLevel": "Input level",
+      "initializing": "Initializing...",
+      "noAudioDetected": "No audio detected. Check your microphone is working and not muted.",
+      "useThisMicrophone": "Use this microphone",
+      "recordTabAudio": "Record tab audio",
+      "includeMicrophone": "Include my microphone",
+      "recommendedForCalls": "Recommended for video calls",
+      "usingMicrophone": "Using:",
+      "switchingMicrophone": "Switching microphone...",
+      "switchedToDevice": "Switched to {device}"
     },
     "status": {
       "ready": "Ready to record",
@@ -264,20 +359,26 @@
     },
     "controls": {
       "start": "Start Recording",
-      "stop": "Stop Recording",
+      "stop": "Finish",
+      "finishing": "Finishing...",
       "pause": "Pause",
       "resume": "Resume",
       "reset": "Re-record",
       "upload": "Upload & Transcribe",
-      "uploading": "Uploading..."
+      "uploading": "Uploading...",
+      "cancel": "Cancel",
+      "dismissWarning": "Dismiss warning"
     },
     "preview": {
-      "title": "Preview Recording"
+      "title": "Preview Recording",
+      "yourRecording": "Preview your recording",
+      "proceed": "Proceed",
+      "reRecord": "Re-record"
     },
     "fileSize": "Estimated size: {size}",
     "errors": {
       "title": "Recording Error",
-      "notSupported": "Audio recording is not supported in your browser.",
+      "notSupported": "Recording is not supported in your browser. Please try Chrome, Firefox, or Edge.",
       "notSupportedDetails": "Please use a modern browser like Chrome, Firefox, Safari, or Edge to record audio.",
       "permissionDenied": "Microphone access denied. Please allow microphone access in your browser settings.",
       "noMicrophoneFound": "No microphone found. Please connect a microphone and try again.",
@@ -285,9 +386,37 @@
       "recordingFailed": "Recording failed. Please try again.",
       "uploadFailed": "Upload failed. Please try again."
     },
+    "confirm": {
+      "cancelRecording": "Are you sure you want to cancel? Your recording will be lost.",
+      "goBack": "Go back"
+    },
     "warnings": {
-      "title": "Notice"
+      "title": "Notice",
+      "durationApproaching": "Recording will automatically stop in {minutes} minutes (3-hour limit)",
+      "durationLimit": "Maximum recording duration reached (3 hours). Recording has been saved.",
+      "storageCritical": "Storage almost full ({remaining} remaining). Recording stopped to prevent data loss.",
+      "storageLow": "Storage running low ({remaining} remaining). Consider stopping soon.",
+      "memoryHigh": "Recording memory usage is high ({size}). Consider stopping soon to prevent issues.",
+      "memoryCritical": "Recording memory nearly full ({size}). Recording stopped to prevent data loss.",
+      "micUnavailable": "Microphone unavailable - recording tab audio only. Your voice won't be included."
     }
+  },
+  "recovery": {
+    "title": "Recover unsaved recordings",
+    "description": "We found {count, plural, one {1 recording} other {# recordings}} that {count, plural, one {was} other {were}} not uploaded.",
+    "preview": "Preview",
+    "recover": "Recover",
+    "processImmediately": "Process immediately",
+    "continueRecording": "Continue recording",
+    "discard": "Discard",
+    "close": "Close",
+    "footerNote": "Recordings are auto-saved to your device and deleted after 7 days.",
+    "confirmDiscard": "Discard?",
+    "discardTitle": "Discard recording",
+    "discardMessage": "This recording will be permanently deleted. This action cannot be undone.",
+    "cancel": "Cancel",
+    "microphoneRecording": "Microphone recording",
+    "tabAudioRecording": "Tab audio recording"
   },
   "transcription": {
     "title": "Transcription",
@@ -334,8 +463,6 @@
     "copyToClipboard": "Copy to Clipboard",
     "copyTranscript": "Copy transcript",
     "copySummary": "Copy summary",
-    "fixTranscript": "Fix transcript",
-    "fixTranscriptTooltip": "Correct typos and other mistakes using AI",
     "shareTranscription": "Share Transcription",
     "failedToLoad": "Failed to load transcriptions",
     "failedToDelete": "Failed to delete transcription",
@@ -347,6 +474,178 @@
     "loadingMore": "Loading more...",
     "noMoreTranscriptions": "You've reached the end"
   },
+  "aiAssets": {
+    "title": "AI Assets",
+    "description": "Transform this conversation into action",
+    "newAsset": "Generate New",
+    "createAsset": "Create AI Asset",
+    "emptyTitle": "No AI assets yet",
+    "emptyDescription": "Create your first AI asset to transform this conversation into a deliverable",
+    "emptyButton": "Create AI Asset",
+    "loading": "Loading AI asset...",
+    "notFound": "AI asset not found",
+    "notFoundDescription": "The AI asset you are looking for does not exist or you do not have access to it.",
+    "modal": {
+      "title": "Create AI Asset",
+      "steps": {
+        "selectType": "Select Type",
+        "instructions": "Instructions",
+        "review": "Review",
+        "generate": "Generate"
+      },
+      "generating": "Creating your AI asset...",
+      "success": "AI asset created!",
+      "error": "Failed to create AI asset. Please try again.",
+      "whatToCreate": "What would you like to create?",
+      "chooseOutputType": "Choose the type of output to generate from this conversation",
+      "categoryAnalysis": "Analysis",
+      "categoryContent": "Content",
+      "categoryEmails": "Emails",
+      "customInstructionsTitle": "Add custom instructions (optional)",
+      "customInstructionsDescription": "Provide specific guidance for the AI to tailor the output to your needs",
+      "customInstructionsLabel": "Custom Instructions",
+      "customInstructionsPlaceholder": "Example: Focus on the technical aspects, keep it under 500 words, and include specific metrics discussed.",
+      "leaveBlankDefault": "Leave blank to use default settings for {name}",
+      "reviewTitle": "Review and confirm",
+      "reviewDescription": "Check your selections before generating the output",
+      "outputType": "Output Type",
+      "noCustomInstructions": "No custom instructions provided",
+      "sourceConversation": "Source Conversation",
+      "generatingOutput": "Generating your {name}...",
+      "generatingWait": "This may take a few moments",
+      "generationFailed": "Generation failed",
+      "tryAgain": "Try Again",
+      "generationSuccess": "Output generated successfully!",
+      "outputCreated": "Your {name} has been created",
+      "generateOutput": "Generate Output",
+      "quota": {
+        "remaining": "{count} AI output remaining this month",
+        "remainingPlural": "{count} AI outputs remaining this month",
+        "exceeded": "Monthly limit reached",
+        "exceededDescription": "You've used all {limit} free AI outputs this month. Upgrade to Pro for unlimited outputs.",
+        "upgradeButton": "Upgrade to Pro"
+      }
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Action Items",
+        "description": "Structured task list"
+      },
+      "communicationAnalysis": {
+        "name": "Communication Analysis",
+        "description": "Score communication effectiveness"
+      },
+      "blogPost": {
+        "name": "Blog Post",
+        "description": "Publish-ready article"
+      },
+      "linkedin": {
+        "name": "LinkedIn Post",
+        "description": "Engaging social media content"
+      },
+      "followUpEmail": {
+        "name": "Follow-up Email",
+        "description": "Post-meeting recap with decisions and action items"
+      },
+      "salesEmail": {
+        "name": "Sales Outreach",
+        "description": "Post-discovery email with value proposition and CTA"
+      },
+      "internalUpdate": {
+        "name": "Internal Update",
+        "description": "Stakeholder brief with TLDR and key decisions"
+      },
+      "clientProposal": {
+        "name": "Client Proposal",
+        "description": "Formal proposal with requirements and solution"
+      },
+      "agileBacklog": {
+        "name": "Agile Backlog",
+        "description": "Epics and user stories with acceptance criteria",
+        "asA": "As a",
+        "iWant": "I want",
+        "soThat": "so that",
+        "acceptanceCriteria": "Acceptance Criteria",
+        "technicalDetails": "Technical details",
+        "technicalNotes": "Technical Notes",
+        "dependencies": "Dependencies",
+        "epics": "Epics",
+        "standaloneStories": "Standalone Stories",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "user story",
+        "userStories": "user stories",
+        "noStoriesFound": "No user stories found",
+        "noStoriesDescription": "This conversation didn't contain any explicit product features or requirements to extract.",
+        "copyStory": "Copy story",
+        "copied": "Copied!"
+      }
+    },
+    "sidebar": {
+      "title": "AI Assets",
+      "generateNew": "Create New",
+      "emptyTitle": "No assets yet",
+      "emptyDescription": "Generate your first AI asset",
+      "recordingContext": "Recording Context",
+      "metadata": "File Information"
+    },
+    "panel": {
+      "close": "Close",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "delete": "Delete",
+      "confirmDelete": "Delete this asset?",
+      "viewFull": "View Full Page"
+    },
+    "findReplace": "Find & Replace",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete AI Asset?",
+    "deleteConfirmMessage": "This action cannot be undone. This AI asset will be permanently deleted.",
+    "deleteConfirmYes": "Yes, delete",
+    "deleteConfirmNo": "Cancel"
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Summary",
+      "transcript": "Transcript"
+    },
+    "actions": {
+      "askQuestions": "Ask Questions",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "share": "Share",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this conversation?",
+      "deleteYes": "Yes, delete",
+      "deleteNo": "Cancel",
+      "deleteConfirmTitle": "Delete Conversation?",
+      "deleteConfirmMessage": "This action cannot be undone. This conversation and all its AI assets will be permanently deleted.",
+      "deleteConfirmYes": "Yes, delete",
+      "deleteConfirmNo": "Cancel",
+      "exportPDF": "Export as PDF",
+      "generatingPDF": "Generating PDF...",
+      "proFeature": "Pro Feature",
+      "upgradeToExportPDF": "Upgrade to Pro to export your conversations as beautifully formatted PDF documents.",
+      "upgradeToPro": "Upgrade to Pro",
+      "findReplace": "Find & Replace",
+      "findReplaceDisabledLegacy": "Find & Replace is not available for legacy conversations"
+    },
+    "translation": {
+      "original": "Original",
+      "viewOriginal": "View original",
+      "availableTranslations": "Available translations",
+      "translateTo": "Translate to",
+      "translating": "Translating...",
+      "translationComplete": "Translation complete",
+      "translationFailed": "Translation failed",
+      "noTranslationsAvailable": "No translations available",
+      "assetsTranslated": "assets translated",
+      "changeLanguage": "Change language",
+      "proFeature": "Pro feature",
+      "upgradeToTranslate": "Upgrade to Pro to translate your conversations into 50+ languages.",
+      "upgradeToPro": "Upgrade to Pro"
+    }
+  },
   "howItWorks": {
     "title": "How It Works",
     "subtitle": "Transform your audio into actionable insights in three simple steps",
@@ -356,7 +655,7 @@
     },
     "step2": {
       "title": "AI Transcription",
-      "description": "Our advanced AI powered by OpenAI Whisper transcribes your audio with high accuracy, automatically handling multiple languages."
+      "description": "Our advanced AI transcribes your audio with high accuracy, automatically handling multiple languages."
     },
     "step3": {
       "title": "Smart Summary",
@@ -575,8 +874,20 @@
       "saveError": "Failed to save profile",
       "saveSuccess": "Profile updated successfully",
       "profilePhoto": "Profile Photo",
-      "photoURLPlaceholder": "Enter image URL",
-      "photoURLHelp": "Enter a URL to an image to use as your profile photo",
+      "changePhoto": "Change Photo",
+      "useGooglePhoto": "Use Google Photo",
+      "uploadPhoto": "Upload Photo",
+      "removePhoto": "Remove Photo",
+      "photoUploadError": "Failed to upload photo",
+      "photoSizeError": "Photo must be less than 5MB",
+      "photoTypeError": "Only JPG and PNG files are allowed",
+      "uploadingPhoto": "Uploading...",
+      "cropPhoto": "Crop Photo",
+      "cropPhotoDescription": "Drag to reposition, scroll to zoom",
+      "zoom": "Zoom",
+      "saveCrop": "Save",
+      "cancelCrop": "Cancel",
+      "processingImage": "Processing...",
       "displayName": "Display Name",
       "displayNamePlaceholder": "Enter your name",
       "email": "Email Address",
@@ -711,7 +1022,7 @@
     "decline": "Decline"
   },
   "footer": {
-    "copyright": "© 2024 Neural Summary. All rights reserved.",
+    "copyright": "© 2026 Neural Summary. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "contact": "Contact Us",
@@ -735,423 +1046,119 @@
   },
   "landing": {
     "hero": {
-      "headline": "Create anything with your voice",
-      "subtitle": "Turn conversations into summaries, emails, social posts and more.",
-      "ctaPrimary": "Get started free",
-      "ctaSecondary": "Watch demo",
-      "byline": "Speech-to-content platform",
-      "trustIndicators": {
-        "users": "Trusted by professionals",
-        "rating": "Highly rated",
-        "certified": "Audio never stored"
-      },
-      "title": "Turn every meeting into crystal-clear",
-      "titleHighlight": "notes and action items.",
-      "subtitle2": "Upload recordings from Zoom, Teams, Google Meet, or any platform. Our AI transcribes with 99.5% accuracy and deletes your audio within seconds — your conversations stay private.",
-      "cta": {
-        "primary": "Start free",
-        "secondary": "See how it works"
-      },
-      "guarantee": "Always free plan available • Audio deleted immediately • Works with all meeting platforms",
-      "features": {
-        "saveTime": "Save 10+ hours/week",
-        "accuracy": "99.5% accuracy",
-        "languages": "50+ languages"
+      "headline": "You speak. It creates.",
+      "subtitlePart1": "Neural Summary turns spoken thinking into structured, professional output. ",
+      "subtitlePart2": "So decisions stick and work moves forward.",
+      "ctaPrimary": "View examples",
+      "ctaSecondary": "See how it works",
+      "byline": "You speak. It creates.",
+      "document": {
+        "backTitle": "Client Follow-up Email",
+        "backGreeting": "Hi Sarah,",
+        "backIntro": "Following up on our call regarding the Q4 timeline...",
+        "backPointsIntro": "Key points we discussed:",
+        "backPoint1": "Enterprise onboarding priority confirmed",
+        "backPoint2": "Mobile app postponed to Q1",
+        "backPoint3": "API v2 on track for November",
+        "frontTitle": "Q4 Product Strategy",
+        "frontBullet1": "Focus on enterprise onboarding flow redesign",
+        "frontBullet2": "Defer mobile app to Q1 based on resource constraints",
+        "frontBullet3": "API v2 launch targeting November release",
+        "frontBullet4": "Hire two senior engineers for platform team",
+        "decisionsTitle": "Decisions",
+        "decision1": "Proceed with Stripe integration over PayPal",
+        "decision2": "Delay internationalization until Q2"
       }
     },
-    "why": {
-      "headline": "Your best ideas get lost in translation.",
-      "paragraph1": "You think in conversations. You work in documents.",
-      "paragraph2": "Between the two: Hours of typing, formatting, restructuring.",
-      "paragraph3": "What if your voice became the document?"
+    "transformation": {
+      "recording": "Recording...",
+      "quote1": "\"...so yeah, the demo went really well, they seemed excited about the analytics dashboard...\"",
+      "quote2": "\"...right, and Sarah mentioned they need it integrated with Salesforce, that's a must-have...\"",
+      "quote3": "\"...budget-wise she said they're looking at Q1, probably around 50 seats to start...\"",
+      "quote4": "\"...oh and they want a pilot program first, maybe two weeks...\"",
+      "quote5": "\"...I should probably send them the case study we did with Acme...\"",
+      "quote6": "\"...wait, did she say they also need SSO? I think she mentioned that...\"",
+      "documentTitle": "Follow-up Email",
+      "greeting": "Hi Sarah,",
+      "intro": "Great speaking with you today about the analytics dashboard. A few key points from our call:",
+      "point1": "Salesforce integration: confirmed as must-have",
+      "point2": "50 seats, targeting Q1 rollout",
+      "point3": "2-week pilot program to start",
+      "nextStepLabel": "Next step:",
+      "nextStepText": "Sending case study by EOD Friday."
     },
-    "what": {
-      "headline": "Three steps to creation.",
-      "steps": {
-        "speak": {
-          "title": "Speak",
-          "description": "Record meetings, ideas, interviews. Or let our AI interview you to extract your vision."
-        },
-        "extract": {
-          "title": "Extract",
-          "description": "AI asks questions, structures thoughts, captures every detail—like a personal assistant."
-        },
-        "create": {
-          "title": "Create",
-          "description": "Get work-ready documents instantly. Specs, articles, emails, strategies."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Speaking becomes creating.",
-      "subtitle": "Go from a 3-minute conversation → Complete product spec",
-      "tagline": "No writing. No formatting. Just think out loud."
-    },
-    "who": {
-      "headline": "Built for your workflow.",
-      "personas": {
-        "productManager": {
-          "title": "Product Manager",
-          "subtitle": "Brainstorm → Product spec in 5 minutes",
-          "description": "Talk through your feature idea. Get a complete spec ready for your dev team."
-        },
-        "founder": {
-          "title": "Founder",
-          "subtitle": "Vision talk → Strategy doc for your team",
-          "description": "Record your strategic vision. Share a structured brief with your team instantly."
-        },
-        "contentCreator": {
-          "title": "Content Creator",
-          "subtitle": "Interview → Publish-ready article",
-          "description": "Interview guests naturally. Get structured content ready to publish."
-        },
-        "salesLeader": {
-          "title": "Sales Leader",
-          "subtitle": "Client call → Follow-up email in minutes",
-          "description": "Focus on the conversation. Send perfect summaries while prospects remember you."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Built for focus.",
-      "accuracy": {
-        "title": "99.5% accuracy",
-        "description": "Every word captured. Speaker labels included."
-      },
-      "largeFiles": {
-        "title": "Files up to 5GB",
-        "description": "Handle hours of audio. No limits."
-      },
-      "languages": {
-        "title": "99 languages",
-        "description": "Automatic detection. Translate instantly."
-      }
-    },
-    "securitySection": {
-      "headline": "Your privacy matters.",
-      "description": "Audio deleted within seconds. Only text remains. Enterprise-grade encryption."
-    },
-    "warp": {
-      "headline": "The future of work isn't typing.",
-      "subtitle": "It's thinking out loud.",
-      "line1": "Your ideas become requirements.",
-      "line2": "Your vision becomes strategy.",
-      "line3": "Your voice becomes output.",
-      "tagline": "This is how creative work should feel."
-    },
-    "finalCta": {
-      "headline": "Speaking becomes creating",
-      "subtext": "Start free. No card required.",
-      "button": "Get started free",
-      "benefits": {
-        "free": "Start free",
-        "noCard": "No credit card"
-      }
-    },
-    "valueProposition": {
-      "title": "Your AI that listens, understands, and summarizes — so you can think, lead, and decide.",
-      "subtitle": "Neural Summary improves how you communicate and make decisions by enhancing three key areas professionals struggle with:",
-      "efficiency": {
-        "title": "Efficiency",
-        "description": "Automate transcription and summarization so you reclaim hours every week."
-      },
-      "clarity": {
-        "title": "Clarity",
-        "description": "Capture what really matters from meetings, interviews, and discussions."
-      },
-      "impact": {
-        "title": "Impact",
-        "description": "Turn insights into action with structured, shareable summaries and next steps."
-      },
-      "tagline": "Don't just remember what was said — act on it."
-    },
-    "benefits": {
-      "title": "Transform your workflow, elevate your skills",
-      "subtitle": "Discover how Neural Summary makes you more effective",
-      "shareCollaborate": {
-        "title": "Share & Collaborate Effortlessly",
-        "description": "Send polished summaries to your team with one click. No more lengthy meeting recaps or missed action items."
-      },
-      "improveCommunication": {
-        "title": "Improve Your Communication Skills",
-        "description": "Analyze your speaking patterns, identify filler words, and become a more effective presenter."
-      },
-      "saveTime": {
-        "title": "Save 10+ Hours Every Week",
-        "description": "Turn 1-hour meetings into 5-minute summaries. Focus on what matters, not note-taking."
-      },
-      "neverMiss": {
-        "title": "Never Miss Important Details",
-        "description": "Capture every action item, decision, and insight automatically. Your AI assistant never forgets."
-      }
-    },
-    "whyTeams": {
-      "title": "Why Teams Choose Neural Summary",
-      "benefit1": "No awkward bots joining your sensitive meetings",
-      "benefit2": "Save 3–5 hours per week on manual documentation",
-      "benefit3": "Audio deleted immediately — complete privacy guaranteed",
-      "benefit4": "Keep teams aligned without endless note-sharing",
-      "benefit5": "Secure, compliant, and scalable for any organization",
-      "tagline": "Stop wasting time in meetings — start turning words into action."
-    },
-    "features": {
-      "title": "Powerful features for every professional",
-      "ai": {
-        "title": "AI-Powered Summaries",
-        "description": "Get executive summaries with key points, action items, and insights"
-      },
-      "largeFiles": {
-        "title": "Large File Support",
-        "description": "Handle files up to 5GB with enterprise-grade transcription technology"
-      },
-      "security": {
-        "title": "Your Audio Is Never Stored",
-        "description": "Files deleted immediately after processing. Zero-knowledge architecture ensures your privacy."
-      },
-      "demo": {
-        "dragDrop": "Drag & drop your audio file here",
-        "record": "Or record directly from any device"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Works with Every Meeting Platform",
-      "subtitle": "No awkward bot joining your calls. Simply upload recordings from any platform after your meeting ends.",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Record locally or to cloud, then upload for instant transcription — no bot required"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Download Teams recordings and get AI meeting summaries in minutes"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Upload Meet recordings for automatic transcription with speaker labels"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transform WebEx meetings into structured notes and action items"
-      },
-      "anyPlatform": {
-        "name": "Any Platform",
-        "description": "Works with phone recordings, in-person meetings, interviews, and more"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Perfect for Every Type of Meeting",
-      "subtitle": "From quick 1-on-1s to all-hands meetings, never miss important details again",
-      "oneOnOnes": {
-        "title": "1-on-1 Meetings",
-        "description": "Focus on the conversation, not taking notes. Get perfect records of feedback, goals, and commitments."
-      },
-      "teamStandups": {
-        "title": "Team Standups & Syncs",
-        "description": "Keep everyone aligned with automatic meeting minutes and action item tracking."
-      },
-      "clientCalls": {
-        "title": "Client Calls & Sales",
-        "description": "Capture every requirement, question, and commitment. Share polished summaries instantly."
-      },
-      "allHands": {
-        "title": "All-Hands & Town Halls",
-        "description": "Create searchable transcripts for team members who couldn't attend. Never repeat yourself."
-      }
-    },
-    "howItWorks": {
-      "title": "How It Works",
-      "subtitle": "From meeting recording to actionable notes in 3 simple steps — no bots, no interruptions",
+    "how": {
+      "headline": "How it works",
       "step1": {
-        "title": "Record your meeting naturally",
-        "description": "Use Zoom, Teams, Google Meet, your phone, or any recording device. No bot joins your call. All major audio and video formats supported."
+        "title": "Speak freely",
+        "description": "Record a conversation, meeting, or voice memo."
       },
       "step2": {
-        "title": "Upload and AI processes securely",
-        "description": "Our AI identifies speakers, transcribes with 99.5% accuracy, and understands context. Your audio is deleted within seconds after processing."
+        "title": "We extract what matters",
+        "description": "Decisions, priorities, and next steps. Structured automatically."
       },
       "step3": {
-        "title": "Get meeting summary & action items",
-        "description": "Receive structured summaries with key decisions, discussion topics, and action items with owners and deadlines. Only text transcripts are retained."
+        "title": "You move forward",
+        "description": "Share, send, or act on work that's already clear."
       }
     },
-    "security": {
-      "title": "Trusted by professionals who value precision and privacy",
-      "stats": {
-        "users": "Trusted by professionals worldwide",
-        "rating": "Highly rated by users"
-      },
-      "compliance": {
-        "title": "Privacy-first architecture",
-        "description": "Built with GDPR compliance and data protection at the core. No bots join your meetings — keep sensitive conversations truly private."
-      },
-      "useCases": {
-        "title": "Trusted by professionals",
-        "description": "Used by legal, medical, research, and executive teams where every word matters and confidentiality is non-negotiable."
-      },
-      "technology": {
-        "title": "Powered by cutting-edge AI",
-        "description": "Enterprise-grade transcription services process your audio securely and delete it immediately."
-      },
-      "encryption": {
-        "title": "Audio never stored on our servers",
-        "description": "Files sent to secure transcription services and deleted within seconds — we only retain text transcripts, never audio"
-      },
-      "retention": {
-        "title": "Secure cloud infrastructure",
-        "description": "Your data is encrypted at rest and in transit with industry-standard protocols"
-      },
-      "audit": {
-        "title": "Zero-knowledge architecture",
-        "description": "Your data remains private - we only process what's necessary and delete audio immediately after transcription"
-      },
-      "badges": {
-        "soc2": "SOC 2 Compliant",
-        "gdpr": "GDPR Compliant",
-        "hipaa": "HIPAA Ready",
-        "iso": "ISO 27001",
-        "compliance": "Speech-to-text models are SOC 2, GDPR, HIPAA, and ISO 27001 compliant."
-      }
-    },
-    "testimonials": {
-      "title": "Loved by teams who value their time",
-      "rating": "Highly rated by meeting professionals",
-      "testimonial1": {
-        "quote": "Our team meetings are 10x more productive now. Everyone gets the summary and action items automatically — no more 'who's taking notes?'",
-        "author": "Michael Chen",
-        "role": "Engineering Manager, Tech Startup"
-      },
-      "testimonial2": {
-        "quote": "I can focus on my clients, not on typing. The meeting summaries are so accurate, I share them directly with stakeholders.",
-        "author": "Dr. James Liu",
-        "role": "Clinical Researcher"
-      },
-      "testimonial3": {
-        "quote": "I record all my client meetings and get perfect transcripts with action items. It's like having an assistant in every call. Game changer for sales!",
-        "author": "Jennifer Brooks",
-        "role": "Account Executive, SaaS Sales"
-      }
-    },
-    "meetingFaq": {
-      "title": "Frequently Asked Questions",
-      "subtitle": "Everything you need to know about turning voice into work-ready documents",
-      "question1": {
-        "question": "How does Neural Summary work?",
-        "answer": "Upload any audio or video recording, or speak directly into the platform. Our AI processes your conversation, identifies key insights, and generates structured documents—summaries, action items, and detailed analysis. It works with meetings, brainstorms, interviews, or voice memos. From upload to finished document takes just 3-5 minutes."
-      },
-      "question2": {
-        "question": "What types of documents can I create?",
-        "answer": "From a single recording, create meeting summaries with action items and decisions, content analysis, strategic insights, and communication breakdowns. Each document type is optimized for different needs—whether you need executive summaries, detailed transcripts, or team action plans. Coming soon: AI-guided document creation for specs and articles."
-      },
-      "question3": {
-        "question": "Does it work with Zoom, Teams, and Google Meet?",
-        "answer": "Yes! Record your meeting on any platform, download the file, and upload it to Neural Summary. We support all major video and audio formats including MP3, M4A, WAV, MP4, MOV, and more. No bots, no plugins—just upload and create."
-      },
-      "question4": {
-        "question": "Can Neural Summary identify different speakers?",
-        "answer": "Yes! Our speaker diarization technology automatically detects and labels multiple speakers throughout your conversation. Each speaker's contributions are clearly attributed, maintaining the natural flow of dialogue. You can rename speakers after processing for even greater clarity in your documents."
-      },
-      "question5": {
-        "question": "How accurate are the results?",
-        "answer": "We deliver 99.5% transcription accuracy with speaker identification in over 50 languages. But Neural Summary goes beyond transcription—our AI extracts decisions, action items, themes, and insights that manual note-taking often misses. You get both precise word-for-word capture and intelligent analysis."
-      },
-      "question6": {
-        "question": "Is my data private and secure?",
-        "answer": "Your audio is NEVER stored on our servers. When you upload a recording, it's processed immediately and deleted within seconds. We only retain the text and analysis results. This zero-knowledge architecture ensures your sensitive conversations remain completely private—ideal for confidential business, legal, or medical discussions."
-      },
-      "question7": {
-        "question": "Can I share and export documents?",
-        "answer": "Yes! Share your documents via secure password-protected links, send via email, or export to PDF and Word formats. Professional plans include unlimited sharing and collaboration features for teams."
-      }
-    },
-    "cta": {
-      "title": "Ready to transform your meetings from time-wasters into action-drivers?",
-      "subtitle": "Join thousands of teams using Neural Summary to capture every decision, action item, and insight — automatically.",
-      "button": "Start free — no credit card required",
-      "benefits": {
-        "free": "No credit card",
-        "noCard": "Works with Zoom, Teams, Meet",
-        "cancel": "Cancel anytime"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Simple, transparent pricing",
-      "subtitle": "Start free, upgrade when you're ready. No hidden fees, no surprises.",
-      "free": {
-        "name": "Free",
-        "description": "Perfect for trying out",
-        "features": {
-          "transcriptions": "3 transcriptions/month",
-          "duration": "30 min max per file",
-          "summary": "Basic summary"
-        },
-        "cta": "Get Started"
-      },
-      "professional": {
-        "name": "Professional",
-        "description": "For regular users",
-        "badge": "Most Popular",
-        "features": {
-          "transcriptions": "Unlimited transcriptions",
-          "hours": "60 hours/month included",
-          "analyses": "All 6 analysis types",
-          "fileSize": "3GB max file size",
-          "priority": "Priority processing"
-        },
-        "cta": "Start Free Trial"
-      },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "description": "Per hour of audio",
-        "features": {
-          "credits": "Credits never expire",
-          "analyses": "All 6 analysis types",
-          "occasional": "Perfect for occasional use"
-        },
-        "cta": "Buy Credits"
-      },
-      "viewFullPricing": "View full pricing details"
+    "closingCta": {
+      "headline": "Ready to try it?",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "View examples first"
     },
     "nav": {
       "login": "Log in",
-      "getStarted": "Get Started",
+      "getStarted": "Start free",
       "dashboard": "Go to Dashboard",
       "menu": "Menu",
       "language": "Language",
-      "features": "Features",
+      "examples": "Examples",
       "howItWorks": "How it works",
-      "pricing": "Pricing",
-      "faq": "FAQ"
+      "pricing": "Pricing"
     },
     "footer": {
-      "product": {
-        "title": "Product",
+      "sections": {
+        "product": "Product",
+        "company": "Company",
+        "legal": "Legal"
+      },
+      "links": {
         "features": "Features",
+        "examples": "Examples",
         "pricing": "Pricing",
-        "api": "API"
-      },
-      "company": {
-        "title": "Company",
         "about": "About",
-        "blog": "Blog",
-        "careers": "Careers"
-      },
-      "support": {
-        "title": "Support",
-        "help": "Help Center",
-        "contact": "Contact",
-        "status": "Status"
-      },
-      "legal": {
-        "title": "Legal",
+        "security": "Security",
+        "help": "Help",
         "privacy": "Privacy",
         "terms": "Terms",
-        "security": "Security"
+        "contact": "Contact"
       },
-      "copyright": "© 2024 Neural Summary. All rights reserved.",
-      "tagline": "Built by people who've spent too many hours in meetings."
+      "tagline": "You speak. It creates.",
+      "copyright": "© 2026 Neural Summary. All rights reserved."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "question": "What types of documents can I create?",
+        "answer": "Neural Summary transforms your conversations into professional documents like meeting summaries, product specs, blog posts, action items, email drafts, and more. Choose from 15+ templates or create custom outputs."
+      },
+      "q2": {
+        "question": "How accurate is the transcription?",
+        "answer": "We use state-of-the-art AI models that achieve over 95% accuracy. The system automatically identifies speakers and handles multiple languages, accents, and industry terminology."
+      },
+      "q3": {
+        "question": "Is my data secure?",
+        "answer": "Yes. All audio files are encrypted in transit and at rest. We never use your data to train AI models. Files are automatically deleted after processing, and you can delete your data anytime."
+      },
+      "q4": {
+        "question": "Can I try it for free?",
+        "answer": "Absolutely. Start with our free plan that includes 3 audio files per month (up to 30 minutes each). No credit card required. Upgrade anytime for more capacity and features."
+      }
     }
   },
   "share": {
-    "title": "Share Transcript",
+    "title": "Share Conversation",
     "shareSettings": "Security Settings",
     "contentSelection": "Select Content to Share",
     "summaryOnly": "Summary Only",
@@ -1160,6 +1167,8 @@
     "customSelection": "Custom",
     "includeTranscript": "Full Transcript",
     "includeSummary": "Summary",
+    "fullTranscript": "Full Transcript",
+    "includeAIAssets": "AI Assets",
     "includeCommunication": "Communication Styles",
     "includeActionItems": "Action Items",
     "includeSpeakerInfo": "Speaker Information",
@@ -1196,13 +1205,18 @@
     "emailsSent": "Emails Sent!",
     "emailsSentSuccess": "Emails sent successfully! Recipients will receive the share link shortly.",
     "viewCount": "Views",
+    "views": "Views",
     "expiresOn": "Expires",
+    "expires": "Expires",
     "passwordProtected": "Password protected",
+    "password": "Password",
+    "protected": "Protected",
     "scanQR": "Scan QR code to share",
     "showQRCode": "Show QR Code",
     "confirmRevoke": "Are you sure you want to revoke this share link? Anyone with the link will no longer be able to access this transcript."
   },
   "shared": {
+    "translate": "Translate",
     "loading": "Loading transcript...",
     "passwordRequired": "Password Required",
     "passwordDescription": "This transcript is password protected. Please enter the password to view it.",
@@ -1221,15 +1235,67 @@
     "readOnly": "Read-Only",
     "analysis": "Analysis",
     "transcript": "Full Transcript",
+    "summary": "Summary",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "noSummary": "No summary available",
+    "noTranscript": "No transcript available",
     "footer": {
-      "poweredBy": "Powered by Neural Summary",
+      "poweredBy": "Powered by",
       "copyright": "© {year} Neural Summary. All rights reserved."
+    },
+    "importCta": {
+      "title": "Save to your library",
+      "description": "Import this conversation to access it anytime from your dashboard.",
+      "signUp": "Sign up free",
+      "logIn": "Log in",
+      "signUpTitle": "Save to your library",
+      "signUpDescription": "Sign up to import this conversation and access it anytime.",
+      "importButton": "Import",
+      "importing": "Importing...",
+      "imported": "Imported"
+    },
+    "userMenu": {
+      "dashboard": "Go to Dashboard",
+      "signOut": "Sign Out"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Shared with you",
+    "backToList": "Back to shared",
+    "sharedBy": "Shared by {name}",
+    "empty": {
+      "title": "No shared conversations",
+      "description": "When someone shares a conversation with you and you import it, it will appear here."
+    },
+    "importButton": "Import to Library",
+    "importing": "Importing...",
+    "imported": "Imported",
+    "importedOn": "Imported on {date}",
+    "expiresIn": "{days} days left",
+    "expiresToday": "Expires today",
+    "expired": "Expired",
+    "expiredTitle": "This conversation has expired",
+    "expiredDescription": "The share link for this conversation has expired and the content is no longer available.",
+    "unavailable": "No longer available",
+    "unavailableTitle": "Conversation unavailable",
+    "unavailableDescription": "This conversation is no longer available. The owner may have revoked access or deleted the original.",
+    "expirationWarning": "This conversation will expire in {days} days",
+    "removeConfirm": "Remove from your library?",
+    "removeDescription": "This won't affect the original conversation.",
+    "remove": "Remove",
+    "yes": "Yes",
+    "no": "No",
+    "error": {
+      "loadFailed": "Failed to load shared conversations",
+      "importFailed": "Failed to import conversation",
+      "removeFailed": "Failed to remove conversation"
     }
   },
   "terms": {
     "meta": {
       "title": "Terms of Use - Neural Summary",
-      "description": "Terms of Use for Neural Summary's AI-powered transcription and analysis service. GDPR compliant terms and conditions."
+      "description": "Terms of Use for Neural Summary's AI-powered conversation processing and AI Asset generation service. GDPR compliant terms and conditions."
     },
     "title": "Terms of Use",
     "effectiveDate": "Effective Date",
@@ -1246,12 +1312,12 @@
       },
       "serviceDescription": {
         "title": "Service Description",
-        "content": "Neural Summary provides AI-powered audio transcription and intelligent analysis services. Our platform includes:",
+        "content": "Neural Summary provides AI-powered conversation processing and intelligent AI Asset generation services. Our platform includes:",
         "features": {
-          "transcription": "Automatic transcription of audio files using advanced AI technology",
-          "analysis": "Intelligent summarization and analysis of transcribed content",
-          "storage": "Secure cloud storage of your transcriptions and audio files",
-          "sharing": "Ability to share transcriptions with controlled access"
+          "transcription": "Automatic processing of audio files into conversations using advanced AI technology",
+          "analysis": "Intelligent AI Asset generation from your conversation content",
+          "storage": "Secure cloud storage of your conversations. Audio files are retained for 30 days for support purposes, then automatically deleted",
+          "sharing": "Ability to share conversations with controlled access"
         }
       },
       "pricing": {
@@ -1303,7 +1369,7 @@
         },
         "userContent": {
           "title": "Your Content",
-          "content": "You retain all rights to the content you upload to the Service. By uploading content, you grant us a limited license to process, store, and display your content solely for the purpose of providing the Service to you."
+          "content": "You retain all rights to the conversations and AI Assets you create using the Service. By uploading content, you grant us a limited license to process, store, and display your content solely for the purpose of providing the Service to you."
         },
         "license": {
           "title": "License Grant",
@@ -1368,11 +1434,12 @@
   "pricing": {
     "metadata": {
       "title": "Pricing - Neural Summary",
-      "description": "Choose the perfect plan for your transcription needs. From free to enterprise, we have a plan that fits your workflow."
+      "description": "Simple, premium pricing. Try Pro free for 14 days. Transform your conversations into professional documents."
     },
     "hero": {
-      "title": "Simple, transparent pricing",
-      "subtitle": "Choose the plan that fits your needs. Start free, upgrade anytime.",
+      "title": "Pricing for work that ships",
+      "subtitle": "Start free. Upgrade when your output matters.",
+      "trialMessage": "Try Pro free for 14 days. No credit card required.",
       "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout.",
       "annual": "Annual",
       "monthly": "Monthly",
@@ -1387,17 +1454,18 @@
         "name": "Free",
         "title": "Free",
         "price": "Free",
-        "description": "Perfect for trying out Neural Summary",
+        "description": "See what's possible. Try a few conversations, no commitment.",
         "cta": "Get Started",
         "features": {
-          "transcriptions": "3 transcriptions/month",
-          "duration": "30 minutes max per file",
+          "transcriptions": "5 conversations/month",
+          "duration": "60 minutes max per file",
           "fileSize": "100MB max file size",
           "analyses": "Basic summary only",
-          "coreAnalyses": "4 core analyses included",
-          "onDemand": "2 on-demand analyses/month",
-          "translation": "Translation features",
-          "sharing": "Share transcripts",
+          "coreAnalyses": "4 core AI outputs included",
+          "onDemand": "2 on-demand AI outputs/month",
+          "translation": "Translation (Pro only)",
+          "askQuestions": "Ask Questions (Pro only)",
+          "sharing": "Share conversations",
           "batch": "Batch processing",
           "storage": "90 days storage",
           "support": "Community support"
@@ -1405,67 +1473,70 @@
         "period": "/month"
       },
       "professional": {
-        "name": "Professional",
-        "title": "Professional",
+        "name": "Pro",
+        "title": "Pro",
         "period": "/month",
-        "description": "For professionals who transcribe regularly",
-        "cta": "Get Started",
+        "description": "For professionals who need polished documents, consistently.",
+        "cta": "Start Free Trial",
         "badge": "Most Popular",
         "recommended": "RECOMMENDED",
         "guarantee": "30-day money-back guarantee",
+        "trialBadge": "14-day free trial",
         "features": {
-          "transcriptions": "Unlimited transcriptions",
+          "transcriptions": "Unlimited conversations",
           "hours": "60 hours/month included",
-          "unlimited": "Unlimited transcriptions",
+          "unlimited": "Unlimited conversations",
           "duration": "60 hours/month included",
           "overageRate": "{overageRate} per additional hour",
           "overage": "Overage: {overageRate}/hour",
           "fileSize": "5GB max file size",
-          "analyses": "All analysis types",
-          "allAnalyses": "All analysis types",
-          "onDemandAnalyses": "Unlimited on-demand analyses",
+          "analyses": "All AI output types",
+          "allAnalyses": "All AI output types",
+          "onDemandAnalyses": "Unlimited on-demand AI outputs",
           "storage": "Unlimited storage",
           "sharing": "Advanced sharing features",
           "advancedSharing": "Advanced sharing & collaboration",
           "translation": "Translation to 50+ languages",
+          "askQuestions": "Ask Questions with AI answers",
           "batch": "Batch processing",
           "priority": "Priority processing",
           "support": "Priority email support"
         }
       },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "title": "Pay-As-You-Go",
-        "priceUnit": "/hour",
-        "description": "Perfect for occasional use",
-        "cta": "Buy Credits",
+      "enterprise": {
+        "name": "Enterprise",
+        "title": "Enterprise",
+        "customPrice": "Contact sales",
+        "description": "For teams that need control, consistency, and compliance.",
+        "cta": "Contact Sales",
         "features": {
-          "transcriptions": "Unlimited transcriptions",
-          "credits": "Credits never expire",
-          "noSubscription": "No subscription required",
-          "allFeatures": "All features included",
-          "noExpiry": "Credits never expire",
-          "minimum": "Minimum purchase",
-          "rate": "Flexible hourly rate",
-          "fileSize": "5GB max file size",
-          "analyses": "All analysis types",
-          "onDemandAnalyses": "Credits per analysis",
-          "storage": "180 days storage",
-          "support": "Email support"
+          "unlimited": "Unlimited conversations",
+          "unlimitedHours": "Unlimited processing hours",
+          "largeFiles": "10GB max file size",
+          "allAnalyses": "All AI output types",
+          "customIntegrations": "Custom integrations",
+          "sso": "Single sign-on (SSO)",
+          "adminDashboard": "Team admin dashboard",
+          "auditLogs": "Audit logs & compliance",
+          "dedicatedManager": "Dedicated account manager",
+          "customContracts": "Custom contracts & SLAs",
+          "teamManagement": "Team management",
+          "dedicatedSupport": "Dedicated support"
         }
       }
     },
     "finalCta": {
-      "title": "Start transcribing smarter",
-      "subtitle": "No credit card required for free plan",
-      "button": "Get Started Free"
+      "title": "Start creating smarter",
+      "subtitle": "Transform your conversations into professional documents",
+      "button": "Start Free Trial",
+      "noCreditCard": "No credit card required"
     },
     "comparison": {
       "feature": "Feature",
       "tiers": {
         "free": "Free",
-        "professional": "Professional",
-        "payg": "Pay-As-You-Go"
+        "professional": "Pro",
+        "enterprise": "Enterprise"
       },
       "categories": {
         "basics": "Basics",
@@ -1473,19 +1544,23 @@
         "features": "Additional Features"
       },
       "features": {
-        "transcriptions": "Transcriptions per month",
+        "transcriptions": "Conversations per month",
         "duration": "Max duration per file",
         "fileSize": "Max file size",
         "hours": "Monthly hours included",
-        "coreAnalyses": "Core analyses",
-        "onDemand": "On-demand analyses",
+        "storageDuration": "Storage duration",
+        "coreAnalyses": "Core AI outputs",
+        "onDemand": "On-demand AI outputs",
         "translation": "Translation",
+        "askQuestions": "Ask Questions",
         "sharing": "Sharing features",
+        "pdfExport": "PDF export",
         "batch": "Batch processing",
         "priority": "Priority processing",
+        "sso": "Single sign-on (SSO)",
         "api": "API access"
       },
-      "title": "Compare Plans",
+      "title": "Compare plans",
       "subtitle": "Find the perfect plan for your needs",
       "values": {
         "unlimited": "Unlimited",
@@ -1496,37 +1571,37 @@
         "email": "Email",
         "priorityEmail": "Priority Email",
         "hoursIncluded": "60 hours/month",
-        "payPerUse": "Pay per use",
-        "creditBased": "Credit-based",
-        "comingSoon": "Coming soon"
+        "comingSoon": "Coming soon",
+        "storageFree": "30 days",
+        "storageUnlimited": "Unlimited"
       }
     },
     "faq": {
-      "title": "Frequently Asked Questions",
+      "title": "Frequently asked questions",
       "questions": {
+        "trial": {
+          "question": "How does the 14-day free trial work?",
+          "answer": "Start your trial with full access to all Pro features. No credit card required. At the end of 14 days, choose to subscribe or continue with our free plan."
+        },
         "cost": {
-          "question": "How much does it cost to turn conversations into documents?",
-          "answer": "Professional plan includes 60 hours/month of audio processing for {professionalPrice}. Additional hours are {overageRate} each. Pay-As-You-Go is {paygPrice}/hour with credits that never expire. Free plan includes 3 audio files/month (30 min max each)."
+          "question": "How much does Neural Summary cost?",
+          "answer": "Pro plan is {professionalPrice}/month or {annualPrice}/year (save 25%). Additional hours beyond 60/month are {overageRate} each. Free plan includes 5 conversations/month."
         },
         "overage": {
           "question": "What happens if I exceed my monthly limit?",
-          "answer": "Professional users are automatically charged {overageRate} per additional hour of audio processing. Free users must upgrade to continue creating documents. Pay-As-You-Go users simply purchase more credits as needed."
+          "answer": "Pro users are automatically charged {overageRate} per additional hour of audio processing. Free users can upgrade to Pro or wait for the next month."
         },
         "cancel": {
           "question": "Can I cancel my subscription anytime?",
           "answer": "Yes! You can cancel anytime. Your subscription remains active until the end of your billing period, and you won't be charged again."
         },
-        "currency": {
-          "question": "What currencies do you support?",
-          "answer": "We support 15+ currencies including USD, EUR, GBP, CAD, AUD, JPY, and more. Prices are automatically converted to your local currency."
-        },
         "upgrade": {
           "question": "Can I upgrade or downgrade my plan?",
-          "answer": "Yes! Upgrades take effect immediately with prorated charges. Downgrades take effect at the end of your current billing period, so you can use your current plan until then."
+          "answer": "Yes! Upgrades take effect immediately with prorated charges. Downgrades take effect at the end of your current billing period."
         },
-        "payg": {
-          "question": "How do Pay-As-You-Go credits work?",
-          "answer": "Credits cost {paygPrice} per hour of audio and can be used to create any type of document. They never expire and can be used anytime. Perfect for occasional document creation needs."
+        "enterprise": {
+          "question": "What's included in the Enterprise plan?",
+          "answer": "Enterprise includes unlimited processing, SSO (coming soon), custom integrations, dedicated support, and custom contracts. Contact our sales team for pricing."
         }
       }
     },
@@ -1536,8 +1611,8 @@
       "button": "Start Free Trial"
     },
     "featureCategories": {
-      "transcription": "Transcription",
-      "analysis": "Analysis",
+      "transcription": "Basics",
+      "analysis": "AI Outputs",
       "collaboration": "Collaboration",
       "support": "Support"
     }
@@ -1609,6 +1684,7 @@
       "description": "Manage your subscription, view usage, and billing history"
     },
     "title": "Subscription & Billing",
+    "description": "Manage your subscription and billing information.",
     "loading": "Loading subscription details...",
     "error": {
       "loadFailed": "Failed to load subscription details",
@@ -1620,7 +1696,7 @@
       "title": "Current Plan",
       "free": "Free Plan",
       "professional": "Professional Plan",
-      "payg": "Pay-As-You-Go",
+      "enterprise": "Enterprise Plan",
       "status": {
         "active": "Active",
         "cancelled": "Cancelled",
@@ -1640,8 +1716,6 @@
       "hours": "Hours",
       "onDemandAnalyses": "On-Demand Analyses",
       "resetDate": "Resets on",
-      "paygCredits": "Available Credits",
-      "buyMore": "Buy More Credits",
       "overage": {
         "title": "Overage Charges",
         "description": "You've used {hours} hours over your 60-hour limit this month",
@@ -1727,10 +1801,6 @@
         "title": "File Too Large",
         "description": "This file exceeds your plan's file size limit. Upgrade to process larger files."
       },
-      "paygCredits": {
-        "title": "Insufficient Credits",
-        "description": "You don't have enough credits for this transcription. Purchase more credits to continue."
-      },
       "onDemandAnalyses": {
         "title": "Analysis Limit Reached",
         "description": "You've used all your on-demand analyses this month. Upgrade to get more analyses or wait until next month."
@@ -1739,7 +1809,6 @@
       "limit": "Your limit",
       "required": "Required",
       "upgradeButton": "Upgrade Plan",
-      "buyCreditsButton": "Buy Credits",
       "cancelButton": "Cancel"
     },
     "usageIndicator": {
@@ -1756,7 +1825,7 @@
   "privacy": {
     "meta": {
       "title": "Privacy Policy - Neural Summary",
-      "description": "Privacy Policy for Neural Summary. Learn how we collect, use, and protect your personal data in compliance with GDPR."
+      "description": "Privacy Policy for Neural Summary. Learn how we collect, use, and protect your conversations and AI Assets in compliance with GDPR."
     },
     "title": "Privacy Policy",
     "effectiveDate": "Last Updated",
@@ -1789,9 +1858,9 @@
         },
         "usage": {
           "title": "Usage Data",
-          "audioFiles": "Audio files you upload for transcription",
-          "transcriptions": "Transcriptions and analysis results",
-          "analysisResults": "AI-generated summaries and insights",
+          "audioFiles": "Audio files you upload for processing",
+          "transcriptions": "Conversations and their transcripts",
+          "analysisResults": "AI Assets and generated insights",
           "preferences": "User preferences and settings"
         },
         "technical": {
@@ -1807,7 +1876,7 @@
         "content": "We process your personal data based on the following legal grounds:",
         "contract": {
           "title": "Contract Performance",
-          "content": "Processing necessary to provide you with our transcription and analysis services."
+          "content": "Processing necessary to provide you with our conversation processing and AI Asset generation services."
         },
         "consent": {
           "title": "Consent",
@@ -1826,7 +1895,7 @@
         "title": "How We Use Your Data",
         "content": "We use the collected data for various purposes:",
         "purposes": {
-          "service": "To provide and maintain our transcription and analysis services",
+          "service": "To provide and maintain our conversation processing and AI Asset generation services",
           "communication": "To communicate with you about your account and service updates",
           "improvement": "To improve and personalize your experience",
           "security": "To detect, prevent, and address technical issues and security threats",
@@ -1839,11 +1908,11 @@
         "content": "We may share your data with trusted third-party service providers who assist us in operating our Service:",
         "serviceProviders": {
           "title": "Service Providers",
-          "hosting": "Cloud Infrastructure",
-          "transcription": "Transcription Services",
-          "analysis": "AI Analysis",
-          "email": "Email Service",
-          "analytics": "Analytics"
+          "hosting": "Enterprise-grade cloud infrastructure for secure data storage and processing",
+          "transcription": "Industry-leading speech-to-text services for accurate transcription",
+          "analysis": "Enterprise-grade AI models for intelligent content analysis",
+          "email": "Secure email delivery services for transactional communications",
+          "analytics": "Privacy-focused analytics for service improvement"
         },
         "notice": "We never sell your personal data to third parties. All service providers are bound by strict confidentiality agreements and can only use your data to provide services to us."
       },
@@ -1853,7 +1922,7 @@
         "periods": {
           "title": "Retention Periods",
           "account": "Account Data",
-          "transcriptions": "Transcriptions",
+          "transcriptions": "Conversations",
           "audioFiles": "Audio Files",
           "logs": "System Logs",
           "analytics": "Analytics Data"
@@ -1971,10 +2040,10 @@
     "yourUsage": "Your Usage",
     "resetsOn": "Resets on",
     "upgradePlan": "Upgrade Plan",
-    "transcriptions": "Transcriptions",
+    "transcriptions": "Conversations",
     "hours": "Hours",
     "remaining": "remaining",
-    "onDemandAnalyses": "On-Demand Analyses"
+    "onDemandAnalyses": "AI Assets"
   },
   "admin": {
     "title": "Admin Panel",
@@ -2028,6 +2097,280 @@
       "accessDenied": "Access denied. Admin role required.",
       "failedToFetch": "Failed to fetch data",
       "userNotFound": "User not found"
+    }
+  },
+  "qa": {
+    "title": "Ask Questions",
+    "titleConversation": "Ask about this conversation",
+    "titleFolder": "Ask across this folder",
+    "description": "Ask anything about this conversation",
+    "descriptionFolder": "Search across {count} conversations",
+    "placeholder": "Ask a question...",
+    "submit": "Ask",
+    "loading": "Finding answer...",
+    "sources": "Sources",
+    "answeredIn": "Answered in {time}",
+    "noResults": "I couldn't find relevant information about that.",
+    "error": "Something went wrong. Please try again.",
+    "indexing": "Preparing for search...",
+    "back": "Back",
+    "in": "In",
+    "emptyState": "Ask a question to search through the conversation",
+    "showMore": "Show {count} more",
+    "showLess": "Show less",
+    "jumpToTimestamp": "Jump to timestamp",
+    "copy": "Copy answer",
+    "copied": "Copied!",
+    "proFeature": "Pro Feature",
+    "upgradeToAsk": "Upgrade to Pro to ask questions about your conversations and get AI-powered answers with citations.",
+    "upgradeToPro": "Upgrade to Pro"
+  },
+  "folderPicker": {
+    "title": "Move to folder",
+    "close": "Close",
+    "createPlaceholder": "Create new folder...",
+    "add": "Add",
+    "noFolder": "No folder (ungrouped)",
+    "noFoldersYet": "No folders yet. Create one above.",
+    "cancel": "Cancel",
+    "move": "Move",
+    "moving": "Moving...",
+    "moveError": "Failed to move conversation",
+    "createError": "Failed to create folder"
+  },
+  "templateSelector": {
+    "base": "BASE",
+    "baseOutput": "Base Output (Always Included)",
+    "quickActions": "Quick Actions",
+    "additionalOutputs": "Additional Outputs (Optional)",
+    "outputTemplates": "Output Templates",
+    "selectedAdditionalOutputs": "You've selected {count, plural, =1 {# additional output} other {# additional outputs}} to generate",
+    "selectAdditionalHint": "Select additional outputs to generate, or continue with just the transcript",
+    "templateSelected": "Selected template will guide the AI output generation",
+    "skipHint": "You can skip this step and generate outputs later",
+    "back": "Back",
+    "continueWithOutputs": "Continue with transcription + {count, plural, =1 {# output} other {# outputs}}",
+    "continueTranscriptOnly": "Continue with transcription only",
+    "clearSelection": "Clear selection",
+    "skipStep": "Skip this step",
+    "continueWithTemplate": "Continue with template",
+    "continueWithoutTemplate": "Continue without template"
+  },
+  "findReplace": {
+    "title": "Find & Replace",
+    "findLabel": "Find",
+    "replaceLabel": "Replace with",
+    "findPlaceholder": "Enter text to find...",
+    "replacePlaceholder": "Enter replacement text...",
+    "caseSensitive": "Case sensitive",
+    "wholeWord": "Whole word",
+    "search": "Search",
+    "find": "Find",
+    "categories": {
+      "summary": "Summary",
+      "transcript": "Transcript",
+      "aiAssets": "AI Assets"
+    },
+    "patternCategories": {
+      "person_name": "Person name",
+      "company_name": "Company name",
+      "place": "Place",
+      "technical_term": "Technical term",
+      "custom": "Custom"
+    },
+    "savePattern": "Save for future conversations",
+    "replaceSelected": "Replace Selected",
+    "replaceAll": "Replace All",
+    "cancel": "Cancel",
+    "noMatches": "No matches found",
+    "matchCount": "{count} matches found",
+    "replacedCount": "Replaced {count} occurrences",
+    "selectedCount": "{selected} of {total} selected",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "errors": {
+      "emptySearch": "Please enter text to search for",
+      "searchFailed": "Search failed. Please try again.",
+      "replaceFailed": "Replace failed. Please try again."
+    },
+    "suggestions": {
+      "title": "Suggested replacements",
+      "apply": "Apply",
+      "dismiss": "Dismiss"
+    },
+    "close": "Close",
+    "emptyState": "Enter text to find and replace in this conversation",
+    "previousMatch": "Previous match",
+    "nextMatch": "Next match",
+    "selected": "{count} selected",
+    "refreshing": "Refreshing content...",
+    "searching": "Searching...",
+    "pressEnterToSearch": "Press Enter to search",
+    "matchCountSingular": "1 match found",
+    "error": "An error occurred",
+    "enterReplaceText": "Enter replacement text above",
+    "clearSelection": "Clear",
+    "replace": "Replace"
+  },
+  "examples": {
+    "meta": {
+      "title": "Examples | Neural Summary",
+      "description": "One conversation becomes four work-ready outputs. See the transformation."
+    },
+    "hero": {
+      "headline": "One conversation. Endless possibilities.",
+      "subtitle": "See what Neural Summary creates from a single meeting.",
+      "scenarioLabel": "Live generation"
+    },
+    "scenarios": {
+      "productLaunch": "Product Launch",
+      "clientDiscovery": "Client Discovery"
+    },
+    "cards": {
+      "actionItems": {
+        "title": "Action Items"
+      },
+      "email": {
+        "title": "Follow-Up Email"
+      },
+      "blogPost": {
+        "title": "Blog Post"
+      },
+      "linkedin": {
+        "title": "LinkedIn Post"
+      },
+      "communicationAnalysis": {
+        "title": "Communication Analysis"
+      }
+    },
+    "cta": {
+      "headline": "Your turn.",
+      "primaryButton": "Try it free",
+      "secondaryLink": "View pricing"
+    },
+    "content": {
+      "productLaunch": {
+        "actionItems": {
+          "items": [
+            { "task": "Finalize Q1 launch timeline and share with stakeholders", "owner": "Sarah", "deadline": "Jan 8" },
+            { "task": "Review beta feedback and prioritize bug fixes", "owner": "Dev Team", "deadline": "Jan 10" },
+            { "task": "Prepare press release and media kit", "owner": "Marketing", "deadline": "Jan 20" },
+            { "task": "Schedule customer webinar for launch week", "owner": "CS Team", "deadline": "Jan 25" }
+          ]
+        },
+        "email": {
+          "subject": "Product Launch Planning - Next Steps",
+          "greeting": "Hi team,",
+          "intro": "Here's the recap from today's meeting on our Q1 product launch.",
+          "decisionsLabel": "Decisions confirmed",
+          "decisions": [
+            "Launch date confirmed for January 28th",
+            "Beta program extended by one week for additional testing",
+            "Marketing budget approved for influencer campaign"
+          ],
+          "closing": "Thanks everyone.",
+          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+        },
+        "blogPost": {
+          "headline": "What We Learned Shipping in January",
+          "subheading": "Lessons from our team on building momentum before day one",
+          "hook": "The old playbook says wait until perfect. We tried something different.",
+          "body": "Our beta testers weren't just finding bugs. They were shaping the product direction. Their feedback led us to pivot our onboarding flow entirely. The result: a 40% improvement in activation rates before we even launched.",
+          "quote": { "text": "The product felt like it was built for us, not just sold to us.", "attribution": "Beta User" },
+          "imageAlt": "Abstract geometric shapes representing innovation"
+        },
+        "linkedin": {
+          "hook": "We almost delayed our launch by 3 months.",
+          "bullets": [
+            "Beta feedback > internal assumptions",
+            "Momentum beats perfection",
+            "Your first users define your product"
+          ],
+          "result": "2,000 signups in the first week. Not because we were perfect. Because we were present.",
+          "callToAction": "What's the biggest lesson from your last launch?",
+          "author": { "name": "Sarah Mitchell", "title": "Product Manager at TechFlow", "initials": "SM" }
+        }
+      },
+      "clientDiscovery": {
+        "actionItems": {
+          "items": [
+            { "task": "Send proposal with three package options", "owner": "Marcus", "deadline": "Jan 15" },
+            { "task": "Schedule technical deep-dive with their CTO", "owner": "Marcus", "deadline": "Jan 12" },
+            { "task": "Prepare case study from similar fintech project", "owner": "Team", "deadline": "Jan 14" },
+            { "task": "Draft timeline for Q2 implementation", "owner": "Marcus", "deadline": "Jan 18" }
+          ]
+        },
+        "email": {
+          "subject": "Great speaking with you - Next steps",
+          "greeting": "Hi David,",
+          "intro": "Thank you for taking the time to walk me through your challenges today. Your team's situation is exactly the kind of problem we specialize in solving.",
+          "decisionsLabel": "Key points discussed",
+          "decisions": [
+            "Mobile-first approach aligned with your user demographics",
+            "Phased rollout starting with core payment features",
+            "Integration with your existing Salesforce instance"
+          ],
+          "closing": "Looking forward to the possibility of working together.",
+          "signature": { "name": "Marcus Chen", "title": "Senior Consultant", "initials": "MC" }
+        },
+        "blogPost": {
+          "headline": "The Discovery Call That Changed How I Sell",
+          "subheading": "Why listening beats pitching every time",
+          "hook": "I used to walk into discovery calls with a deck. Now I walk in with questions.",
+          "body": "The client mentioned their real problem 47 minutes in. If I had been pitching, I would have missed it entirely. Their team wasn't struggling with technology. They were drowning in manual processes that nobody had time to fix.",
+          "quote": { "text": "You understood our problem before we finished explaining it.", "attribution": "Client Feedback" },
+          "imageAlt": "Abstract shapes representing conversation and connection"
+        },
+        "communicationAnalysis": {
+          "overallAssessment": "Strong discovery skills with room to deepen client understanding. You ask good questions but could let answers breathe more.",
+          "dimensions": {
+            "clarity": { "name": "Clarity", "strength": "Questions were specific and actionable", "improvement": "Summarize key points before moving on" },
+            "activeListening": { "name": "Active Listening", "strength": "Built on client responses naturally", "improvement": "Pause longer after complex answers" }
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact Us | Neural Summary",
+      "description": "Get in touch with the Neural Summary team"
+    },
+    "title": "Contact us",
+    "description": "Have a question or feedback? We'd love to hear from you.",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a topic",
+      "message": "Message",
+      "messagePlaceholder": "How can we help?",
+      "submit": "Send message",
+      "submitting": "Sending...",
+      "subjects": {
+        "general": "General inquiry",
+        "support": "Technical support",
+        "sales": "Sales",
+        "partnership": "Partnership"
+      }
+    },
+    "success": {
+      "title": "Message sent",
+      "description": "Thank you for reaching out. We'll get back to you within 24 hours."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "description": "Please try again or email us directly at hello@neuralsummary.com."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "subjectRequired": "Please select a subject",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters"
     }
   }
 }

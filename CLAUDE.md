@@ -8,34 +8,98 @@ A production-ready monorepo application that **transforms conversations into wor
 ### Core Value Proposition
 **"Speaking becomes creating"** - Turn thinking (conversations) into working (documents) without the friction of manual writing, formatting, and structuring.
 
-## Design Language: Calm Intelligence
+## Terminology Mapping (UI vs Code)
 
-Neural Summary embodies a **futuristic-minimal** aesthetic that blends human warmth with machine precision.
+Since V2, the user-facing terminology differs from the internal code naming. This is intentional - renaming internal code would require database migrations, API changes, and significant testing effort.
 
-### Design Principles
-- **Tone**: Serene, confident, intelligent
-- **Style**: Minimal, cinematic, spatial, human-centric
-- **Visual DNA**: White space, soft gradients (gray-50 to white), precise typography (Geist font), subtle motion
-- **Philosophy**: Technology that listens rather than shouts — invisible, yet deeply present
+| UI Term (V2) | Code Term | Description |
+|--------------|-----------|-------------|
+| **Conversation** | `transcription` | An uploaded audio file with its transcript and metadata |
+| **AI Asset** | `analysis` | Generated content from a template (blog post, email, action items, etc.) |
+| **AI Asset Template** | `analysisTemplate` | The prompt configuration that generates an AI Asset |
+
+**Key locations:**
+- Database collections: `transcriptions`, `analyses` (Firestore)
+- Shared types: `Transcription`, `Analysis`, `AnalysisTemplate` (`packages/shared`)
+- API endpoints: `/transcription/*`, `/analysis/*`
+- WebSocket events: `transcription_progress`, `transcription_completed`
+- Frontend rendering: `outputTemplates/` (renders AI Asset content)
+- Backend prompts: `analysis-templates.ts`, `prompts.ts`
+
+**Rule:** Use V2 terminology in UI strings (translations, labels, tooltips). Keep code names unchanged.
+
+## Brand Guidelines
+
+### Brand Positioning
+Neural Summary is an AI workspace that turns spoken thinking into structured, professional output. Category: **Speech-to-Structure**.
+
+**Mission**: Transform spoken thinking, meetings, and rough notes into structured, finished outputs.
+
+**Primary Audience**: Product managers, engineering leads, consultants, and professional knowledge workers.
+
+### Brand Personality & Voice
+The brand feels like a highly capable professional assistant.
+
+**Personality Attributes**: Calm, precise, confident, structured, opinionated but not loud.
+
+**Voice Principles**:
+- Clear over clever
+- Professional, not academic
+- Direct, not apologetic
+- Human, not chatty
+
+**Language Rules**:
+- Use short sentences, active voice, concrete nouns
+- Avoid emojis, exclamation marks, buzzwords, and AI self-reference
+
+### Color Palette
+- **Primary**: `#8D6AFA` (brand purple for key actions)
+- **Primary Hover**: `#7A5AE0` (darker purple)
+- **Secondary**: `#14D0DC` (cyan for emphasis)
+- **Secondary Alt**: `#3F38A0` (deep purple for structure)
+- **Accent/Dark**: `#23194B` (rare, deliberate use for dark backgrounds)
+- **Text**: `text-gray-900` (headlines), `text-gray-700` (body)
+- Light backgrounds: `from-gray-50 to-white` gradients
+
+### Typography
+- **Primary Font**: Montserrat (geometric sans-serif via Google Fonts)
+- **Weights**: 300-800 for clear hierarchy
+- Clear/confident headings, readable paragraphs with generous line height
+
+### Tagline
+**"YOU SPEAK. IT CREATES."**
+
+### Logo & Brand Mark
+- **Full logo**: `/apps/web/public/assets/logos/neural-summary-logo-wTagLine.svg`
+- **Logo (no tagline)**: `/apps/web/public/assets/logos/neural-summary-logo.svg`
+- **Logotype only**: `/apps/web/public/assets/logos/neural-summary-logotype.svg`
+
+### Imagery Direction
+**Good**: Abstract geometric visuals, diagrams, flows, grids, systems, calm compositions with whitespace.
+**Bad**: Human faces, AI brains, glowing heads, robots, standard stock office scenes.
 
 ### UI Guidelines
 - **Minimal text**: Few words, no marketing fluff - clarity and emotion over explanation
-- **Futuristic-minimal**: Apple-like aesthetic with generous white space
-- **Typography**: Geist font (300-800 weights) applied globally via Google Fonts
-- **Color palette**:
-  - Light backgrounds: `from-gray-50 to-white` gradients
-  - Dark sections: `#2c2c2c` (warm dark gray) for emotional contrast
-  - Primary: `#cc3399` (brand pink) for accents only
-  - Text: `text-gray-900` (headlines), `text-gray-700` (body)
 - **Spacing**: Generous padding, `space-y-8` to `space-y-16` for breathing room
 - **No clutter**: Remove unnecessary badges, trust indicators, or marketing copy unless essential
-- **Button styling** (following Apple's design language):
+- **Button styling**:
   - Primary CTAs: `rounded-full` (pill-shaped) - distinctive, approachable, modern
   - Secondary buttons: `rounded-lg` (8px) - for utility actions, forms
-  - Component: Use `CTAButton` component for consistent styling
-  - Variants: `primary` (solid `#2c2c2c` background), `secondary` (outlined with hover fill)
+  - Component: Use `Button` component (`/apps/web/components/Button.tsx`) for consistent styling
+  - Variants: `primary` (solid `#23194B` background), `secondary` (outlined with hover fill), `ghost` (transparent with hover background), `brand` (purple `#8D6AFA`), `danger` (red)
+  - **Always prefer using the `Button` component** over custom styled `<button>` elements for consistency
+- **Inline action confirmations** (for destructive actions like Delete):
+  - Initial state: `Button` with `variant="ghost"` showing the action (e.g., "Delete" with Trash icon)
+  - Confirmation state: Replace button with inline confirmation UI containing:
+    - Colored background container (`bg-red-50 dark:bg-red-900/20` for danger)
+    - Confirmation text (e.g., "Delete?")
+    - "Yes" button with `variant="danger"` and `size="sm"`
+    - "No" button with `variant="ghost"` and `size="sm"`
+  - Example: See `FolderClient.tsx` delete confirmation pattern
 
-*The visual equivalent of AI that feels effortless.*
+### Radix UI Component Library
+
+**CRITICAL**: Before creating custom UI components, always check [Radix UI Primitives](https://www.radix-ui.com/primitives) for an existing solution. Radix provides accessible, unstyled primitives that work with Tailwind CSS and handle edge cases (click-outside, escape key, focus management, ARIA) automatically.
 
 ## Messaging Framework: The Five W's
 
@@ -82,16 +146,16 @@ Neural Summary's landing page follows a strategic narrative arc using the **Five
 
 ## Brand Byline
 
-**Official Header Byline**: "Voice-to-output creation platform"
+**Official Header Byline**: "You speak. It creates."
 
-This category-defining tagline appears in the header beneath the Neural Summary logo and establishes market positioning as a voice-to-output platform rather than a traditional transcription service.
+This tagline appears in the header beneath the Neural Summary logo and embodies the core brand promise of Speech-to-Structure.
 
 **Translations:**
-- **English**: "Voice-to-output creation platform"
-- **German**: "Von Sprache zu Dokumenten" (From speech to documents)
-- **Spanish**: "Plataforma de creación de voz a documento" (Voice-to-document creation platform)
-- **French**: "Plateforme de création voix-vers-document" (Voice-to-document creation platform)
-- **Dutch**: "Van spraak naar document platform" (From speech to document platform)
+- **English**: "You speak. It creates."
+- **German**: "Du sprichst. Es kreiert."
+- **Spanish**: "Tú hablas. Crea."
+- **French**: "Vous parlez. Ça crée."
+- **Dutch**: "Jij spreekt. Het creëert."
 
 **Implementation:**
 - **Location**: Header component (`apps/web/components/PublicHeader.tsx:35`)
@@ -109,6 +173,37 @@ When making any changes to the codebase, always update the `[Unreleased]` sectio
 - **Removed**: Deprecated or deleted features
 
 The changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and helps track project evolution. Update it immediately after implementing changes, not at the end of a session.
+
+## Cutting a Release
+
+Neural Summary uses **feature-based versioning**. Cut a new version when a significant feature or set of features is complete.
+
+### Release Process
+
+1. **Move Unreleased to versioned section**:
+   - Change `## [Unreleased]` content to `## [X.Y.Z] - YYYY-MM-DD`
+   - Add new empty `## [Unreleased]` section at top
+   - Add a brief subtitle (e.g., `### UI Rebrand & Dashboard Refinements`)
+
+2. **Update version in package.json**:
+   - Bump version to match changelog (e.g., `"version": "2.2.0"`)
+
+3. **Commit and tag**:
+   ```bash
+   git add CHANGELOG.md package.json
+   git commit -m "chore: release vX.Y.Z"
+   git tag vX.Y.Z
+   git push && git push --tags
+   ```
+
+### Version Numbering
+- **Major (X.0.0)**: Breaking changes, major rewrites
+- **Minor (X.Y.0)**: New features, significant improvements
+- **Patch (X.Y.Z)**: Bug fixes, small tweaks
+
+### Changelog Entry Format
+Group changes by type: Added, Changed, Fixed, Removed, Security.
+Include file locations for significant changes using `[filename](path)` links.
 
 ## Tech Stack
 - **Monorepo**: Turborepo with shared TypeScript packages
@@ -159,6 +254,45 @@ npm run lint          # Run Next.js ESLint
 # Monorepo-wide
 npm run lint          # Run ESLint across all packages
 ```
+
+### Linting Requirements
+
+**CRITICAL**: Check and fix linter issues after every code change.
+
+1. **Run linter after each change**: After modifying any file, run the appropriate lint command:
+   ```bash
+   # Frontend changes
+   cd apps/web && npm run lint
+
+   # Backend changes
+   cd apps/api && npm run lint
+
+   # Or run from root for all packages
+   npm run lint
+   ```
+
+2. **Fix issues immediately**: Do not leave linter errors or warnings unresolved. Fix them before moving to the next task.
+
+3. **Common issues to watch for**:
+   - Unused imports and variables
+   - Missing type annotations
+   - Incorrect import paths
+   - React hooks dependency arrays
+   - Tailwind class ordering (if configured)
+
+4. **Auto-fix when possible**: Use `npm run lint -- --fix` to automatically fix issues that can be resolved programmatically.
+
+### Testing Requirements
+
+**CRITICAL**: Follow these testing practices:
+
+1. **Cover new code with unit tests**: All new functionality, especially core business logic like transcription processing, duration extraction, and API integrations, must have corresponding unit tests.
+
+2. **Run tests before committing**: Always run `npm run test` in the relevant package (e.g., `apps/api`) before committing code to ensure no regressions.
+
+3. **Test file naming**: Place test files adjacent to the code they test with `.spec.ts` suffix (e.g., `assembly-ai.service.spec.ts` for `assembly-ai.service.ts`).
+
+4. **Mock external dependencies**: Use Jest mocks for external APIs (OpenAI, AssemblyAI, Firebase) to ensure tests are fast and deterministic.
 
 ### Build & Production
 ```bash
@@ -348,10 +482,21 @@ Supported analysis types: Summary, Communication Styles, Action Items, Emotional
 FIREBASE_STORAGE_BUCKET=project-id.firebasestorage.app
 ```
 
-### Required Firestore Composite Index
-Create composite index for transcriptions:
+### Required Firestore Composite Indexes
+
+**Transcriptions index** (existing):
 - Collection: `transcriptions`
 - Fields: `userId` (Ascending), `createdAt` (Descending)
+
+**Folders index** (V2):
+- Collection: `folders`
+- Fields: `userId` (Ascending), `sortOrder` (Ascending), `createdAt` (Ascending)
+
+**Transcriptions by folder index** (V2):
+- Collection: `transcriptions`
+- Fields: `userId` (Ascending), `folderId` (Ascending), `createdAt` (Descending)
+
+Note: Firestore will provide a link to auto-create indexes when queries fail. Follow the link in the error message to create the index.
 
 ### Audio Processing Constraints
 - Max file size: 1GB (Free), 3GB (Pro), 5GB (Enterprise)
@@ -526,6 +671,20 @@ The application runs **5 automated cron jobs** for maintenance, billing, and cle
 - Check logs: `docker logs -f transcribe-api | grep -E "Cleanup|Usage"`
 - Failed jobs log errors but don't crash the application
 
+## V2 Prototype Components
+
+See [V2 Prototype Guide](docs/V2_PROTOTYPE_GUIDE.md) for detailed component specs.
+
+**Quick Reference:**
+- `MilestoneToast` - Celebration toasts for 1st, 10th, 50th, etc. (`/apps/web/components/MilestoneToast.tsx`)
+- `EmptyState` - Friendly empty states across app (`/apps/web/components/EmptyState.tsx`)
+- Helper functions in `/apps/web/lib/userHelpers.ts`
+
+**Active V2 Pages:**
+- `/prototype-dashboard-v2` - Dashboard with personalized greeting, milestones
+- `/prototype-conversation-v2/[id]` - Conversation view with vertical sections
+- `/prototype-folder-v2/[id]` - Folder view with improved empty states
+
 ## SEO Guidelines for Landing Page
 
 **CRITICAL**: All landing page changes MUST follow these requirements:
@@ -667,37 +826,13 @@ Test with staging, then remove this line for production certs.
 
 ## UI Design Guidelines
 
-### Brand Colors
-- **Primary**: `#cc3399` (pink/magenta) 
-- **Primary hover**: `#b82d89` (darker pink)
-- **Primary light**: `bg-pink-50` for subtle backgrounds
-- Always use brand colors for new UI screens and components
+See [UI Design System](docs/UI_DESIGN_SYSTEM.md) for comprehensive styling rules.
 
-### Text Color Best Practices
-
-**CRITICAL: Always specify explicit text colors for readability**
-
-When creating UI components, NEVER use text size classes without color:
-- ❌ WRONG: `className="text-sm"` or `className="text-sm font-medium"`
-- ✅ CORRECT: `className="text-sm text-gray-700"` or `className="text-sm font-medium text-gray-800"`
-
-**Text Color Guidelines:**
-- **Headers/Titles**: `text-gray-900` (maximum contrast)
-- **Primary text**: `text-gray-800` (buttons, important labels)
-- **Secondary text**: `text-gray-700` (descriptions, form labels)
-- **Tertiary text**: `text-gray-600` (hints only - use sparingly)
-- **Never use**: `text-gray-500` or lighter for body text (poor readability)
-
-**Interactive Elements:**
-- **Default state**: `text-gray-700` minimum
-- **Hover state**: `hover:text-gray-900` or `hover:text-[#cc3399]`
-- **Selected/Active**: `text-[#cc3399]` or `text-gray-900`
-
-**Input Fields & Textareas:**
-- **Always include both text and placeholder colors**
-- ❌ WRONG: `className="px-3 py-2 border border-gray-400 rounded-lg"`
-- ✅ CORRECT: `className="px-3 py-2 border border-gray-400 rounded-lg text-gray-800 placeholder:text-gray-500"`
-- **Input text**: `text-gray-800` (dark, readable)
-- **Placeholder text**: `placeholder:text-gray-500` (visible but subtle)
-- **Border**: `border-gray-400` minimum (not gray-300 or lighter)
-- **Focus state**: `focus:border-[#cc3399] focus:ring-2 focus:ring-[#cc3399]/20`
+**Quick Reference:**
+- **Primary brand**: `#cc3399` (hover: `#b82d89`)
+- **Text**: Always specify explicit colors (never just `text-sm` without color)
+- **Headers**: `text-gray-900`, **Body**: `text-gray-700`, **Hints**: `text-gray-600`
+- **Buttons**: Use `<Button>` component (`/apps/web/components/Button.tsx`)
+  - Variants: `primary`, `secondary`, `brand`, `ghost`, `danger`
+  - Sizes: `sm`, `md`, `lg`
+  - Always use `rounded-full` for main CTAs

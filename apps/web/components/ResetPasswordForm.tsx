@@ -135,7 +135,7 @@ export default function ResetPasswordForm() {
   if (verifying) {
     return (
       <div className="max-w-md w-full space-y-8 text-center">
-        <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#8D6AFA]" />
         <p className="text-gray-600 dark:text-gray-400">{tAuth('verifyingResetLink')}</p>
       </div>
     );
@@ -148,7 +148,7 @@ export default function ResetPasswordForm() {
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30">
             <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
             {tAuth('passwordResetSuccess')}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -166,7 +166,7 @@ export default function ResetPasswordForm() {
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30">
             <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
             {tAuth('resetPasswordError')}
           </h2>
           <p className="mt-2 text-sm text-red-600 dark:text-red-400">
@@ -176,7 +176,7 @@ export default function ResetPasswordForm() {
         <div className="text-center">
           <Link
             href="/forgot-password"
-            className="text-[#cc3399] dark:text-[#cc3399] hover:text-[#b82d89] dark:hover:text-[#b82d89]"
+            className="text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]"
           >
             {tAuth('requestNewLink')}
           </Link>
@@ -188,7 +188,7 @@ export default function ResetPasswordForm() {
   return (
     <div className="max-w-md w-full space-y-8">
       <div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
           {tAuth('createNewPassword')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -222,7 +222,7 @@ export default function ResetPasswordForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               placeholder={tAuth('enterNewPassword')}
             />
             <button
@@ -256,7 +256,7 @@ export default function ResetPasswordForm() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#cc3399] focus:border-[#cc3399] sm:text-sm"
+              className="appearance-none block w-full px-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
               placeholder={tAuth('confirmYourPassword')}
             />
             <button
@@ -336,7 +336,7 @@ export default function ResetPasswordForm() {
           <button
             type="submit"
             disabled={loading || !isPasswordValid() || password !== confirmPassword}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

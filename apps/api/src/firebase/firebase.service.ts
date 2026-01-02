@@ -4,9 +4,12 @@ import * as admin from 'firebase-admin';
 import {
   Transcription,
   PaginatedResponse,
-  TranscriptionStatus,
   SummaryComment,
-  GeneratedAnalysis,
+  Folder,
+  CreateFolderRequest,
+  UpdateFolderRequest,
+  Translation,
+  TranslatedContent,
 } from '@transcribe/shared';
 
 @Injectable()
@@ -23,6 +26,10 @@ export class FirebaseService implements OnModuleInit {
 
   get auth(): admin.auth.Auth {
     return admin.auth();
+  }
+
+  get storageService(): admin.storage.Storage {
+    return this.storage;
   }
 
   onModuleInit() {
@@ -54,12 +61,31 @@ export class FirebaseService implements OnModuleInit {
   }
 
   /**
-   * Extract transcription ID from file path for logging
-   * Example: "transcriptions/abc123/audio.mp3" -> "abc123"
+   * Extract identifier from file path for logging
+   * Handles multiple path patterns:
+   * - "transcriptions/userId/transcriptionId/file" -> "transcriptionId"
+   * - "audio/userId/timestamp_filename" -> "timestamp_filename" (truncated)
    */
   private extractIdFromPath(path: string): string {
-    const match = path.match(/transcriptions\/([^\/]+)/);
-    return match ? match[1] : 'unknown';
+    // Try transcriptions path first: transcriptions/{userId}/{transcriptionId}/...
+    const transcriptionMatch = path.match(/transcriptions\/[^/]+\/([^/]+)/);
+    if (transcriptionMatch) {
+      return transcriptionMatch[1];
+    }
+
+    // Try audio path: audio/{userId}/{timestamp}_{filename}
+    const audioMatch = path.match(/audio\/[^/]+\/(.+)/);
+    if (audioMatch) {
+      // Return truncated filename for readability
+      const filename = audioMatch[1];
+      return filename.length > 30
+        ? filename.substring(0, 30) + '...'
+        : filename;
+    }
+
+    // Fallback: return last path segment
+    const segments = path.split('/').filter(Boolean);
+    return segments.length > 0 ? segments[segments.length - 1] : 'unknown';
   }
 
   async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {
@@ -136,23 +162,52 @@ export class FirebaseService implements OnModuleInit {
   ): Promise<PaginatedResponse<Transcription>> {
     const offset = (page - 1) * pageSize;
 
-    const countSnapshot = await this.db
-      .collection('transcriptions')
-      .where('userId', '==', userId)
-      .count()
-      .get();
+    // Firestore can't efficiently filter for "field doesn't exist OR field is null"
+    // So we fetch more records than needed and filter in memory
+    // To optimize, we fetch in batches and stop once we have enough non-deleted items
 
-    const total = countSnapshot.data().count;
+    // For page 1, try to fetch just what we need plus some buffer for deleted items
+    // For later pages, we need to scan from the beginning (less efficient but correct)
+    const fetchLimit = page === 1 ? pageSize * 2 : offset + pageSize * 2;
 
     const snapshot = await this.db
       .collection('transcriptions')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
-      .limit(pageSize)
-      .offset(offset)
+      .limit(fetchLimit)
       .get();
 
-    const items = snapshot.docs.map((doc) => {
+    // Filter out soft-deleted items (where deletedAt exists and is not null)
+    const allDocs = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      return !data.deletedAt;
+    });
+
+    // If we didn't get enough non-deleted docs on page 1, fetch all
+    let finalDocs = allDocs;
+    if (
+      allDocs.length < offset + pageSize &&
+      snapshot.docs.length === fetchLimit
+    ) {
+      // Need to fetch all to get accurate count and pagination
+      const fullSnapshot = await this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+      finalDocs = fullSnapshot.docs.filter((doc) => {
+        const data = doc.data();
+        return !data.deletedAt;
+      });
+    }
+
+    const total = finalDocs.length;
+
+    // Apply pagination to filtered results
+    const paginatedDocs = finalDocs.slice(offset, offset + pageSize);
+
+    const items = paginatedDocs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -185,6 +240,175 @@ export class FirebaseService implements OnModuleInit {
       pageSize,
       hasMore: offset + items.length < total,
     };
+  }
+
+  /**
+   * Search transcriptions by query string
+   * Searches across title, fileName, and summary content
+   */
+  async searchTranscriptions(
+    userId: string,
+    query: string,
+    limit = 20,
+  ): Promise<{ items: Partial<Transcription>[]; total: number }> {
+    const normalizedQuery = query.toLowerCase().trim();
+
+    // Fetch all user transcriptions - Firestore doesn't support full-text search
+    // so we fetch with a lightweight projection and filter in memory
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    // Filter out soft-deleted items and search across relevant fields
+    const results = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+
+      // Skip soft-deleted items
+      if (data.deletedAt) {
+        return false;
+      }
+
+      // Build searchable text from relevant fields
+      const searchableFields: string[] = [
+        data.title || '',
+        data.fileName || '',
+      ];
+
+      // Add V2 summary fields if available
+      if (data.summaryV2) {
+        if (data.summaryV2.headline) {
+          searchableFields.push(data.summaryV2.headline);
+        }
+        if (
+          data.summaryV2.keyPoints &&
+          Array.isArray(data.summaryV2.keyPoints)
+        ) {
+          for (const kp of data.summaryV2.keyPoints) {
+            if (kp.topic) searchableFields.push(kp.topic);
+            if (kp.description) searchableFields.push(kp.description);
+          }
+        }
+        if (data.summaryV2.themes && Array.isArray(data.summaryV2.themes)) {
+          searchableFields.push(...data.summaryV2.themes);
+        }
+      }
+
+      // Also check legacy summary fields for older transcriptions
+      if (data.coreAnalyses?.summaryV2) {
+        const v2 = data.coreAnalyses.summaryV2;
+        if (v2.headline) searchableFields.push(v2.headline);
+        if (v2.keyPoints && Array.isArray(v2.keyPoints)) {
+          for (const kp of v2.keyPoints) {
+            if (kp.topic) searchableFields.push(kp.topic);
+            if (kp.description) searchableFields.push(kp.description);
+          }
+        }
+      }
+
+      const searchableText = searchableFields.join(' ').toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    });
+
+    const total = results.length;
+    const limitedResults = results.slice(0, limit);
+
+    return {
+      items: limitedResults.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title || data.fileName || 'Untitled',
+          fileName: data.fileName,
+          status: data.status,
+          folderId: data.folderId || null,
+          createdAt: data.createdAt?.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt,
+          updatedAt: data.updatedAt?.toDate
+            ? data.updatedAt.toDate()
+            : data.updatedAt,
+        };
+      }),
+      total,
+    };
+  }
+
+  /**
+   * Record that a user accessed/opened a transcription
+   * Updates the lastAccessedAt timestamp
+   */
+  async recordTranscriptionAccess(userId: string, id: string): Promise<void> {
+    const doc = await this.db.collection('transcriptions').doc(id).get();
+
+    if (!doc.exists) {
+      throw new Error('Transcription not found');
+    }
+
+    const data = doc.data();
+    if (!data || data.userId !== userId) {
+      throw new Error('Transcription not found');
+    }
+
+    await this.db.collection('transcriptions').doc(id).update({
+      lastAccessedAt: new Date(),
+    });
+  }
+
+  /**
+   * Get recently opened transcriptions for a user
+   * Returns transcriptions ordered by lastAccessedAt (most recent first)
+   */
+  async getRecentlyOpenedTranscriptions(
+    userId: string,
+    limit = 5,
+  ): Promise<Transcription[]> {
+    // Query for transcriptions with lastAccessedAt, ordered by most recent
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .orderBy('lastAccessedAt', 'desc')
+      .limit(limit * 2) // Fetch extra to account for soft-deleted items
+      .get();
+
+    // Filter out soft-deleted items
+    const validDocs = snapshot.docs.filter((doc) => {
+      const data = doc.data();
+      return !data.deletedAt && data.lastAccessedAt;
+    });
+
+    // Take only the requested limit
+    const limitedDocs = validDocs.slice(0, limit);
+
+    return limitedDocs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt,
+        updatedAt: data.updatedAt?.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt,
+        completedAt: data.completedAt?.toDate
+          ? data.completedAt.toDate()
+          : data.completedAt,
+        lastAccessedAt: data.lastAccessedAt?.toDate
+          ? data.lastAccessedAt.toDate()
+          : data.lastAccessedAt,
+        sharedAt: data.sharedAt?.toDate
+          ? data.sharedAt.toDate()
+          : data.sharedAt,
+        sharedWith: data.sharedWith?.map((record: any) => ({
+          email: record.email,
+          sentAt: record.sentAt?.toDate
+            ? record.sentAt.toDate()
+            : record.sentAt,
+        })),
+      } as Transcription;
+    });
   }
 
   async deleteTranscription(id: string) {
@@ -920,6 +1144,7 @@ export class FirebaseService implements OnModuleInit {
   /**
    * Get a single generated analysis by ID
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getGeneratedAnalysisById(analysisId: string): Promise<any | null> {
     const doc = await this.db
       .collection('generatedAnalyses')
@@ -1010,6 +1235,151 @@ export class FirebaseService implements OnModuleInit {
         generatedAnalysisIds:
           admin.firestore.FieldValue.arrayRemove(analysisId),
       });
+  }
+
+  /**
+   * Get recent generated analyses for a user across all conversations
+   * @param userId - User ID to query
+   * @param limit - Maximum number of analyses to return (default: 8)
+   * @returns Array of GeneratedAnalysis with conversationTitle
+   */
+  async getRecentGeneratedAnalyses(
+    userId: string,
+    limit: number = 8,
+  ): Promise<any[]> {
+    try {
+      // Get recent analyses
+      const analysesSnapshot = await this.db
+        .collection('generatedAnalyses')
+        .where('userId', '==', userId)
+        .orderBy('generatedAt', 'desc')
+        .limit(limit)
+        .get();
+
+      if (analysesSnapshot.empty) {
+        return [];
+      }
+
+      // Get unique transcription IDs
+      const transcriptionIds = [
+        ...new Set(
+          analysesSnapshot.docs.map((doc) => doc.data().transcriptionId),
+        ),
+      ];
+
+      // Batch fetch transcriptions for titles
+      const transcriptionTitles = new Map<string, string>();
+      for (const transcriptionId of transcriptionIds) {
+        const transcriptionDoc = await this.db
+          .collection('transcriptions')
+          .doc(transcriptionId)
+          .get();
+        if (transcriptionDoc.exists) {
+          const data = transcriptionDoc.data();
+          transcriptionTitles.set(
+            transcriptionId,
+            data?.title || data?.fileName || 'Untitled',
+          );
+        }
+      }
+
+      // Map analyses with conversation titles
+      return analysesSnapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          generatedAt: data.generatedAt?.toDate?.()
+            ? data.generatedAt.toDate()
+            : data.generatedAt,
+          conversationTitle:
+            transcriptionTitles.get(data.transcriptionId) || 'Untitled',
+        };
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error fetching recent generated analyses: ${error.message}`,
+      );
+      // If composite index doesn't exist, Firestore will provide a link to create it
+      return [];
+    }
+  }
+
+  /**
+   * Get recent generated analyses for conversations in a specific folder
+   * @param userId - User ID to query
+   * @param folderId - Folder ID to filter by
+   * @param limit - Maximum number of analyses to return (default: 8)
+   * @returns Array of GeneratedAnalysis with conversationTitle
+   */
+  async getRecentGeneratedAnalysesByFolder(
+    userId: string,
+    folderId: string,
+    limit: number = 8,
+  ): Promise<any[]> {
+    try {
+      // First, get all transcription IDs in this folder
+      const transcriptionsSnapshot = await this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .where('folderId', '==', folderId)
+        .select('id', 'title', 'fileName')
+        .get();
+
+      if (transcriptionsSnapshot.empty) {
+        return [];
+      }
+
+      // Build a map of transcription IDs to titles
+      const transcriptionMap = new Map<string, string>();
+      transcriptionsSnapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        transcriptionMap.set(doc.id, data.title || data.fileName || 'Untitled');
+      });
+
+      const transcriptionIds = Array.from(transcriptionMap.keys());
+
+      // Firestore 'in' queries support max 30 items, so chunk if needed
+      const chunkSize = 30;
+      const allAnalyses: any[] = [];
+
+      for (let i = 0; i < transcriptionIds.length; i += chunkSize) {
+        const chunk = transcriptionIds.slice(i, i + chunkSize);
+
+        const analysesSnapshot = await this.db
+          .collection('generatedAnalyses')
+          .where('userId', '==', userId)
+          .where('transcriptionId', 'in', chunk)
+          .orderBy('generatedAt', 'desc')
+          .limit(limit)
+          .get();
+
+        analysesSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          allAnalyses.push({
+            id: doc.id,
+            ...data,
+            generatedAt: data.generatedAt?.toDate?.()
+              ? data.generatedAt.toDate()
+              : data.generatedAt,
+            conversationTitle:
+              transcriptionMap.get(data.transcriptionId) || 'Untitled',
+          });
+        });
+      }
+
+      // Sort all results by generatedAt desc and take top 'limit'
+      return allAnalyses
+        .sort(
+          (a, b) =>
+            new Date(b.generatedAt).getTime() -
+            new Date(a.generatedAt).getTime(),
+        )
+        .slice(0, limit);
+    } catch (error) {
+      this.logger.error(`Error fetching folder analyses: ${error.message}`);
+      return [];
+    }
   }
 
   /**
@@ -1207,6 +1577,457 @@ export class FirebaseService implements OnModuleInit {
       recentAnalyses: analyses,
       usageRecords,
       accountEvents,
+    };
+  }
+
+  // ============================================================
+  // FOLDER METHODS (V2 UI Support)
+  // ============================================================
+
+  /**
+   * Create a new folder for a user
+   */
+  async createFolder(
+    userId: string,
+    data: CreateFolderRequest,
+  ): Promise<string> {
+    const now = new Date();
+    const folderData = {
+      userId,
+      name: data.name,
+      color: data.color || null,
+      sortOrder: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const docRef = await this.db.collection('folders').add(folderData);
+    this.logger.log(`Created folder ${docRef.id} for user ${userId}`);
+    return docRef.id;
+  }
+
+  /**
+   * Get all folders for a user with conversation counts
+   */
+  async getUserFolders(userId: string): Promise<Folder[]> {
+    // Get folders and transcriptions in parallel for efficiency
+    const [foldersSnapshot, transcriptionsSnapshot] = await Promise.all([
+      this.db
+        .collection('folders')
+        .where('userId', '==', userId)
+        .orderBy('sortOrder', 'asc')
+        .orderBy('createdAt', 'asc')
+        .get(),
+      this.db
+        .collection('transcriptions')
+        .where('userId', '==', userId)
+        .select('folderId', 'deletedAt') // Only fetch needed fields
+        .get(),
+    ]);
+
+    // Count conversations per folder (excluding soft-deleted)
+    const folderCounts = new Map<string, number>();
+    for (const doc of transcriptionsSnapshot.docs) {
+      const data = doc.data();
+      if (data.folderId && !data.deletedAt) {
+        folderCounts.set(
+          data.folderId,
+          (folderCounts.get(data.folderId) || 0) + 1,
+        );
+      }
+    }
+
+    return foldersSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.userId,
+        name: data.name,
+        color: data.color,
+        sortOrder: data.sortOrder,
+        conversationCount: folderCounts.get(doc.id) || 0,
+        createdAt: data.createdAt?.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt,
+        updatedAt: data.updatedAt?.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt,
+      } as Folder;
+    });
+  }
+
+  /**
+   * Get a single folder by ID
+   */
+  async getFolder(userId: string, folderId: string): Promise<Folder | null> {
+    const doc = await this.db.collection('folders').doc(folderId).get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    const data = doc.data();
+    if (!data || data.userId !== userId) {
+      return null;
+    }
+
+    return {
+      id: doc.id,
+      userId: data.userId,
+      name: data.name,
+      color: data.color,
+      sortOrder: data.sortOrder,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
+    } as Folder;
+  }
+
+  /**
+   * Update a folder
+   */
+  async updateFolder(
+    userId: string,
+    folderId: string,
+    data: UpdateFolderRequest,
+  ): Promise<void> {
+    const folder = await this.getFolder(userId, folderId);
+    if (!folder) {
+      throw new Error('Folder not found or access denied');
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.color !== undefined) updateData.color = data.color;
+    if (data.sortOrder !== undefined) updateData.sortOrder = data.sortOrder;
+
+    await this.db.collection('folders').doc(folderId).update(updateData);
+    this.logger.log(`Updated folder ${folderId}`);
+  }
+
+  /**
+   * Delete a folder
+   * @param deleteContents - If true, soft-delete all conversations in the folder
+   *                         If false, move conversations to unfiled (default)
+   * @returns Object with deletedConversations count
+   */
+  async deleteFolder(
+    userId: string,
+    folderId: string,
+    deleteContents: boolean = false,
+  ): Promise<{ deletedConversations: number }> {
+    const folder = await this.getFolder(userId, folderId);
+    if (!folder) {
+      throw new Error('Folder not found or access denied');
+    }
+
+    // Get all transcriptions in this folder
+    const transcriptions = await this.getTranscriptionsByFolder(
+      userId,
+      folderId,
+    );
+
+    // Use batch writes for better performance (max 500 per batch)
+    const batchSize = 500;
+    const now = new Date();
+
+    for (let i = 0; i < transcriptions.length; i += batchSize) {
+      const batch = this.db.batch();
+      const chunk = transcriptions.slice(i, i + batchSize);
+
+      for (const t of chunk) {
+        const docRef = this.db.collection('transcriptions').doc(t.id);
+        if (deleteContents) {
+          // Soft delete: mark transcriptions as deleted
+          batch.update(docRef, {
+            deletedAt: now,
+            folderId: null, // Clear folder reference
+          });
+        } else {
+          // Move to unfiled: just clear the folder reference
+          batch.update(docRef, { folderId: null });
+        }
+      }
+
+      await batch.commit();
+    }
+
+    if (deleteContents) {
+      this.logger.log(
+        `Soft-deleted ${transcriptions.length} transcriptions from folder ${folderId}`,
+      );
+    } else {
+      this.logger.log(
+        `Moved ${transcriptions.length} transcriptions to unfiled from folder ${folderId}`,
+      );
+    }
+
+    // Delete the folder document
+    await this.db.collection('folders').doc(folderId).delete();
+    this.logger.log(`Deleted folder ${folderId}`);
+
+    return { deletedConversations: transcriptions.length };
+  }
+
+  /**
+   * Get transcriptions in a specific folder
+   */
+  async getTranscriptionsByFolder(
+    userId: string,
+    folderId: string | null,
+  ): Promise<Transcription[]> {
+    let query = this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId);
+
+    if (folderId === null) {
+      // Get unfiled transcriptions (no folderId or folderId is null)
+      // Firestore can't query for missing fields, so we query all and filter
+      const snapshot = await query.orderBy('createdAt', 'desc').get();
+      return snapshot.docs
+        .filter((doc) => {
+          const data = doc.data();
+          // Exclude soft-deleted items and items in folders
+          return !data.folderId && !data.deletedAt;
+        })
+        .map((doc) => this.mapTranscriptionDoc(doc));
+    } else {
+      query = query.where('folderId', '==', folderId);
+      const snapshot = await query.orderBy('createdAt', 'desc').get();
+      // Filter out soft-deleted items
+      return snapshot.docs
+        .filter((doc) => !doc.data().deletedAt)
+        .map((doc) => this.mapTranscriptionDoc(doc));
+    }
+  }
+
+  /**
+   * Move a transcription to a folder (or remove from folder with null)
+   */
+  async moveToFolder(
+    userId: string,
+    transcriptionId: string,
+    folderId: string | null,
+  ): Promise<void> {
+    // Parallelize the verification queries for better performance
+    const [transcription, folder] = await Promise.all([
+      this.getTranscription(userId, transcriptionId),
+      folderId ? this.getFolder(userId, folderId) : Promise.resolve(null),
+    ]);
+
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    // If moving to a folder, verify the folder exists and belongs to user
+    if (folderId && !folder) {
+      throw new Error('Folder not found or access denied');
+    }
+
+    await this.updateTranscription(transcriptionId, {
+      folderId: folderId,
+    });
+    this.logger.log(
+      `Moved transcription ${transcriptionId} to folder ${folderId || 'none'}`,
+    );
+  }
+
+  /**
+   * Helper to map Firestore document to Transcription object
+   */
+  private mapTranscriptionDoc(
+    doc: admin.firestore.QueryDocumentSnapshot,
+  ): Transcription {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
+      completedAt: data.completedAt?.toDate
+        ? data.completedAt.toDate()
+        : data.completedAt,
+      sharedAt: data.sharedAt?.toDate ? data.sharedAt.toDate() : data.sharedAt,
+      sharedWith: data.sharedWith?.map((record: any) => ({
+        email: record.email,
+        sentAt: record.sentAt?.toDate ? record.sentAt.toDate() : record.sentAt,
+      })),
+    } as Transcription;
+  }
+
+  // ============================================================
+  // TRANSLATIONS COLLECTION (V2)
+  // ============================================================
+
+  /**
+   * Create a new translation document
+   */
+  async createTranslation(
+    translation: Omit<Translation, 'id'>,
+  ): Promise<string> {
+    const docRef = await this.db.collection('translations').add({
+      ...translation,
+      translatedAt: admin.firestore.Timestamp.fromDate(
+        translation.translatedAt,
+      ),
+      createdAt: admin.firestore.Timestamp.fromDate(translation.createdAt),
+      updatedAt: admin.firestore.Timestamp.fromDate(translation.updatedAt),
+    });
+    return docRef.id;
+  }
+
+  /**
+   * Get all translations for a conversation
+   */
+  async getTranslationsByConversation(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<Translation[]> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('userId', '==', userId)
+      .get();
+
+    return snapshot.docs.map((doc) => this.mapTranslationDoc(doc));
+  }
+
+  /**
+   * Get a specific translation by source and locale
+   */
+  async getTranslation(
+    transcriptionId: string,
+    sourceType: 'summary' | 'analysis',
+    sourceId: string,
+    localeCode: string,
+    userId: string,
+  ): Promise<Translation | null> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('sourceType', '==', sourceType)
+      .where('sourceId', '==', sourceId)
+      .where('localeCode', '==', localeCode)
+      .where('userId', '==', userId)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) return null;
+    return this.mapTranslationDoc(snapshot.docs[0]);
+  }
+
+  /**
+   * Get translations for a specific locale
+   */
+  async getTranslationsForLocale(
+    transcriptionId: string,
+    localeCode: string,
+    userId: string,
+  ): Promise<Translation[]> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('localeCode', '==', localeCode)
+      .where('userId', '==', userId)
+      .get();
+
+    return snapshot.docs.map((doc) => this.mapTranslationDoc(doc));
+  }
+
+  /**
+   * Get translations for a shared conversation (no userId filter)
+   */
+  async getTranslationsForSharedConversation(
+    transcriptionId: string,
+  ): Promise<Translation[]> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .get();
+
+    return snapshot.docs.map((doc) => this.mapTranslationDoc(doc));
+  }
+
+  /**
+   * Delete all translations for a specific locale
+   */
+  async deleteTranslationsForLocale(
+    transcriptionId: string,
+    localeCode: string,
+    userId: string,
+  ): Promise<number> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('localeCode', '==', localeCode)
+      .where('userId', '==', userId)
+      .get();
+
+    if (snapshot.empty) return 0;
+
+    const batch = this.db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    return snapshot.size;
+  }
+
+  /**
+   * Delete all translations for a conversation
+   */
+  async deleteTranslationsByConversation(
+    transcriptionId: string,
+    userId: string,
+  ): Promise<number> {
+    const snapshot = await this.db
+      .collection('translations')
+      .where('transcriptionId', '==', transcriptionId)
+      .where('userId', '==', userId)
+      .get();
+
+    if (snapshot.empty) return 0;
+
+    const batch = this.db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    return snapshot.size;
+  }
+
+  /**
+   * Map Firestore document to Translation type
+   */
+  private mapTranslationDoc(
+    doc: admin.firestore.DocumentSnapshot,
+  ): Translation {
+    const data = doc.data()!;
+    return {
+      id: doc.id,
+      sourceType: data.sourceType,
+      sourceId: data.sourceId,
+      transcriptionId: data.transcriptionId,
+      userId: data.userId,
+      localeCode: data.localeCode,
+      localeName: data.localeName,
+      content: data.content as TranslatedContent,
+      translatedAt: data.translatedAt?.toDate
+        ? data.translatedAt.toDate()
+        : data.translatedAt,
+      translatedBy: data.translatedBy,
+      tokenUsage: data.tokenUsage,
+      createdAt: data.createdAt?.toDate
+        ? data.createdAt.toDate()
+        : data.createdAt,
+      updatedAt: data.updatedAt?.toDate
+        ? data.updatedAt.toDate()
+        : data.updatedAt,
     };
   }
 }

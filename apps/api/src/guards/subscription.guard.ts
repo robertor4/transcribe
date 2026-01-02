@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UsageService } from '../usage/usage.service';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
 import { UserRole } from '@transcribe/shared';
 
@@ -20,7 +20,7 @@ export class SubscriptionGuard implements CanActivate {
 
   constructor(
     private usageService: UsageService,
-    private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -32,7 +32,7 @@ export class SubscriptionGuard implements CanActivate {
     }
 
     // Check if user is admin - bypass all quota checks
-    const userProfile = await this.firebaseService.getUser(user.uid);
+    const userProfile = await this.userRepository.getUser(user.uid);
     if (userProfile?.role === UserRole.ADMIN) {
       this.logger.log(
         `Admin bypass: Skipping quota check for admin user ${user.uid}`,
@@ -121,7 +121,7 @@ export class OnDemandAnalysisGuard implements CanActivate {
 
   constructor(
     private usageService: UsageService,
-    private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -133,7 +133,7 @@ export class OnDemandAnalysisGuard implements CanActivate {
     }
 
     // Check if user is admin - bypass all quota checks
-    const userProfile = await this.firebaseService.getUser(user.uid);
+    const userProfile = await this.userRepository.getUser(user.uid);
     if (userProfile?.role === UserRole.ADMIN) {
       this.logger.log(
         `Admin bypass: Skipping on-demand analysis quota check for admin user ${user.uid}`,

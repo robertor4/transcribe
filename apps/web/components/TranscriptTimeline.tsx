@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Search, X, Pencil, Info } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import TranscriptCorrectionModal from './TranscriptCorrectionModal';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { type HighlightOptions } from './TextHighlighter';
 
 interface SpeakerSegment {
   speakerTag: string;
@@ -13,21 +12,17 @@ interface SpeakerSegment {
   confidence?: number;
 }
 
-interface TranscriptTimelineProps {
-  transcriptionId: string;
+export interface TranscriptTimelineProps {
   segments: SpeakerSegment[];
   className?: string;
-  onRefresh?: () => void;
-  readOnlyMode?: boolean;
+  highlightOptions?: HighlightOptions;
 }
 
-export default function TranscriptTimeline({ transcriptionId, segments, className = '', onRefresh, readOnlyMode = false }: TranscriptTimelineProps) {
-  const t = useTranslations('transcription');
+export default function TranscriptTimeline({ segments, className = '', highlightOptions }: TranscriptTimelineProps) {
   const [expandedSegments, setExpandedSegments] = useState<Set<number>>(new Set());
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Set<number>>(new Set());
-  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   const totalDuration = segments.length > 0 ? segments[segments.length - 1].endTime : 0;
@@ -62,7 +57,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
       { bg: 'bg-green-50 dark:bg-green-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-700 dark:text-green-400', avatar: 'bg-green-500' },
       { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-400', avatar: 'bg-purple-500' },
       { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-700 dark:text-orange-400', avatar: 'bg-orange-500' },
-      { bg: 'bg-pink-50 dark:bg-pink-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-pink-500' },
+      { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-purple-500' },
       { bg: 'bg-teal-50 dark:bg-teal-900/30', border: 'border-teal-400 dark:border-teal-600', text: 'text-teal-700 dark:text-teal-400', avatar: 'bg-teal-500' },
     ];
 
@@ -113,15 +108,49 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
     setExpandedSegments(newExpanded);
   };
 
-  const highlightText = (text: string, query: string) => {
-    if (!query) return text;
+  // Track global match index for scroll-to-match navigation
+  // This ref is reset at the start of each render cycle
+  const matchIndexRef = useRef(0);
+  // Reset at the start of each render
+  matchIndexRef.current = 0;
 
-    const regex = new RegExp(`(${query})`, 'gi');
+  const highlightText = (text: string, query: string) => {
+    // Combine local search query with external highlightOptions
+    const searchTerms: string[] = [];
+    if (query) searchTerms.push(query);
+    if (highlightOptions?.searchText && highlightOptions.searchText.length >= 2) {
+      searchTerms.push(highlightOptions.searchText);
+    }
+
+    if (searchTerms.length === 0) return text;
+
+    // Build regex pattern for all search terms
+    const escapedTerms = searchTerms.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const pattern = escapedTerms.join('|');
+    const flags = highlightOptions?.caseSensitive ? 'g' : 'gi';
+    const regex = new RegExp(`(${pattern})`, flags);
     const parts = text.split(regex);
 
+    const currentMatchIndex = highlightOptions?.currentMatchIndex;
+
     return parts.map((part, index) => {
-      if (part.toLowerCase() === query.toLowerCase()) {
-        return <mark key={index} className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-gray-100 px-1 rounded">{part}</mark>;
+      const isMatch = searchTerms.some(term =>
+        highlightOptions?.caseSensitive
+          ? part === term
+          : part.toLowerCase() === term.toLowerCase()
+      );
+      if (isMatch) {
+        const globalIndex = matchIndexRef.current++;
+        const isActive = currentMatchIndex === globalIndex;
+        return (
+          <mark
+            key={index}
+            data-match-index={globalIndex}
+            className={`bg-yellow-200 dark:bg-yellow-500/40 text-gray-900 dark:text-gray-100 px-0.5 rounded ${isActive ? 'ring-2 ring-purple-500 ring-offset-1' : ''}`}
+          >
+            {part}
+          </mark>
+        );
       }
       return <span key={index} className="text-gray-700 dark:text-gray-300">{part}</span>;
     });
@@ -191,17 +220,17 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
   }
 
   return (
-    <div className={`bg-white dark:bg-transparent rounded-lg ${className}`}>
-      {/* Header with Search and Fix Button */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="relative flex-1">
+    <div className={`bg-white dark:bg-transparent rounded-lg overflow-x-hidden ${className}`}>
+      {/* Header with Search */}
+      <div className="mb-6">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
           <input
             type="text"
             placeholder="Search transcript..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-24 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 focus:border-[#cc3399]"
+            className="w-full pl-10 pr-24 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 focus:border-[#8D6AFA]"
           />
           {searchQuery && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -218,30 +247,6 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
             </div>
           )}
         </div>
-
-        {/* Fix Button with Info Icon - only show for authenticated users, not in read-only mode */}
-        {!readOnlyMode && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsCorrectionModalOpen(true)}
-              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors focus:outline-none focus:ring-2 focus:ring-[#cc3399]/20 text-sm font-medium"
-            >
-              <Pencil className="w-4 h-4" />
-              {t('fixTranscript')}
-            </button>
-
-            {/* Info Icon with Tooltip */}
-            <div className="group/tooltip relative">
-              <Info className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-help transition-colors" />
-
-              {/* Tooltip */}
-              <span className="invisible opacity-0 group-hover/tooltip:visible group-hover/tooltip:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg whitespace-nowrap pointer-events-none z-10 shadow-lg">
-                {t('fixTranscriptTooltip')}
-                <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></span>
-              </span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Summary Stats */}
@@ -270,8 +275,8 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
         </div>
       </div>
 
-      {/* Interactive Timeline Bar */}
-      <div className="mb-8">
+      {/* Interactive Timeline Bar - hidden on mobile for space */}
+      <div className="hidden sm:block mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">Timeline Overview</span>
           <span className="text-sm text-gray-500 dark:text-gray-400">{formatTime(totalDuration)}</span>
@@ -286,7 +291,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
             const leftPercent = (group.startTime / totalDuration) * 100;
             const widthPercent = ((group.endTime - group.startTime) / totalDuration) * 100;
             const colors = getSpeakerColor(group.speakerTag);
-            
+
             return (
               <div
                 key={index}
@@ -299,7 +304,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
               />
             );
           })}
-          
+
           {/* Time markers */}
           {timeMarkers.map((time) => (
             <div
@@ -312,14 +317,14 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
               </span>
             </div>
           ))}
-          
+
           {/* Selected time indicator */}
           {selectedTime !== null && (
             <div
-              className="absolute top-0 h-full w-0.5 bg-[#cc3399]"
+              className="absolute top-0 h-full w-0.5 bg-[#8D6AFA]"
               style={{ left: `${(selectedTime / totalDuration) * 100}%` }}
             >
-              <div className="absolute -top-1 -left-1.5 w-4 h-4 bg-[#cc3399] rounded-full" />
+              <div className="absolute -top-1 -left-1.5 w-4 h-4 bg-[#8D6AFA] rounded-full" />
             </div>
           )}
         </div>
@@ -337,19 +342,19 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
               id={`segment-${group.segments[0].index}`}
               className="relative transition-all mb-6"
             >
-              {/* Timeline connector */}
-              <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
+              {/* Timeline connector - hidden on mobile for space */}
+              <div className="hidden sm:block absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
 
-              {/* Time marker */}
-              <div className="absolute left-0 top-4 flex items-center">
+              {/* Time marker - simplified on mobile */}
+              <div className="hidden sm:flex absolute left-0 top-4 items-center">
                 <div className={`w-4 h-4 rounded-full ${colors.avatar} ring-4 ring-white dark:ring-gray-800`} />
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400 font-medium">
                   {formatTime(group.startTime)}
                 </span>
               </div>
-              
-              {/* Content card */}
-              <div className={`ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
+
+              {/* Content card - full width on mobile, indented on desktop */}
+              <div className={`sm:ml-20 rounded-lg border-2 ${colors.border} ${colors.bg} p-4`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${colors.avatar} flex items-center justify-center text-white text-sm font-semibold shadow-sm`}>
@@ -360,6 +365,7 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
                         {group.speakerTag}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="sm:hidden">{formatTime(group.startTime)} · </span>
                         {formatDuration(group.startTime, group.endTime)}
                       </div>
                     </div>
@@ -405,18 +411,6 @@ export default function TranscriptTimeline({ transcriptionId, segments, classNam
           );
         })}
       </div>
-
-      {/* Transcript Correction Modal */}
-      <TranscriptCorrectionModal
-        transcriptionId={transcriptionId}
-        isOpen={isCorrectionModalOpen}
-        onClose={() => setIsCorrectionModalOpen(false)}
-        onSuccess={() => {
-          if (onRefresh) {
-            onRefresh();
-          }
-        }}
-      />
     </div>
   );
 }

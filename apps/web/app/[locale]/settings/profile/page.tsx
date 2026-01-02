@@ -1,36 +1,79 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from 'next-intl';
-import { Camera, Mail, Calendar, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { getUserProfile, updateUserProfile } from '@/lib/user-preferences';
+import { useRouter } from '@/i18n/navigation';
+import {
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  Trash2,
+} from 'lucide-react';
+import {
+  getUserProfile,
+  updateUserProfile,
+  uploadProfilePhoto,
+  deleteProfilePhoto,
+} from '@/lib/user-preferences';
+import { ProfilePhotoUploader } from '@/components/ProfilePhotoUploader';
 import { auth } from '@/lib/firebase';
-import { sendEmailVerification } from 'firebase/auth';
+import {
+  sendEmailVerification,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from 'firebase/auth';
 import type { User } from '@transcribe/shared';
 
 export default function ProfileSettingsPage() {
-  const { user: authUser } = useAuth();
+  const { user: authUser, logout, refreshUser } = useAuth();
   const t = useTranslations('settings.profilePage');
-  const tCommon = useTranslations('common');
-  
+  const tAccount = useTranslations('settings.accountPage');
+  const router = useRouter();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<User | null>(null);
-  
+
+  // Profile fields
   const [displayName, setDisplayName] = useState('');
   const [photoURL, setPhotoURL] = useState('');
   const [sendingVerification, setSendingVerification] = useState(false);
 
-  useEffect(() => {
-    loadUserProfile();
-  }, [authUser]);
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const loadUserProfile = async () => {
+  // Delete account state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
+
+  // Check auth providers
+  const hasPasswordProvider = authUser?.providerData?.some(
+    (provider) => provider?.providerId === 'password'
+  );
+  const hasGoogleProvider = authUser?.providerData?.some(
+    (provider) => provider?.providerId === 'google.com'
+  );
+
+  const loadUserProfile = useCallback(async () => {
     if (!authUser) return;
-    
+
     try {
       setLoading(true);
       const profile = await getUserProfile();
@@ -45,13 +88,17 @@ export default function ProfileSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser, t]);
+
+  useEffect(() => {
+    loadUserProfile();
+  }, [authUser, loadUserProfile]);
 
   const handleSave = async () => {
     if (!authUser) return;
 
     setError(null);
-    setSuccess(false);
+    setSuccess(null);
     setSaving(true);
 
     try {
@@ -60,14 +107,9 @@ export default function ProfileSettingsPage() {
         photoURL: photoURL.trim() || undefined,
       });
 
-      // Reload the Firebase Auth user to get the updated profile
-      // This ensures the photoURL and displayName are synced across the app
-      await authUser.reload();
-
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-
-      // Reload profile to get updated data
+      await refreshUser();
+      setSuccess(t('saveSuccess'));
+      setTimeout(() => setSuccess(null), 3000);
       await loadUserProfile();
     } catch (err) {
       console.error('Error saving profile:', err);
@@ -79,14 +121,14 @@ export default function ProfileSettingsPage() {
 
   const handleResendVerification = async () => {
     if (!auth.currentUser || auth.currentUser.emailVerified) return;
-    
+
     setSendingVerification(true);
     setError(null);
-    
+
     try {
       await sendEmailVerification(auth.currentUser);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 5000);
+      setSuccess(t('verificationSent'));
+      setTimeout(() => setSuccess(null), 5000);
     } catch (err) {
       console.error('Error sending verification:', err);
       setError(t('verificationError'));
@@ -95,107 +137,216 @@ export default function ProfileSettingsPage() {
     }
   };
 
+  const handlePasswordChange = async () => {
+    setError(null);
+    setSuccess(null);
+
+    if (newPassword !== confirmPassword) {
+      setError(tAccount('passwordMismatch'));
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError(tAccount('passwordTooShort'));
+      return;
+    }
+
+    if (!auth.currentUser) {
+      setError(tAccount('notAuthenticated'));
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        authUser?.email || '',
+        currentPassword
+      );
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await updatePassword(auth.currentUser, newPassword);
+
+      setSuccess(tAccount('passwordChangeSuccess'));
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+
+      setTimeout(() => setSuccess(null), 5000);
+    } catch (err) {
+      console.error('Error changing password:', err);
+      const firebaseError = err as { code?: string };
+      if (firebaseError.code === 'auth/wrong-password') {
+        setError(tAccount('incorrectPassword'));
+      } else if (firebaseError.code === 'auth/requires-recent-login') {
+        setError(tAccount('requiresRecentLogin'));
+      } else {
+        setError(tAccount('passwordChangeError'));
+      }
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!auth.currentUser) {
+      setError(tAccount('notAuthenticated'));
+      return;
+    }
+
+    setError(null);
+    setDeletingAccount(true);
+
+    try {
+      if (hasPasswordProvider) {
+        const credential = EmailAuthProvider.credential(
+          authUser?.email || '',
+          deletePassword
+        );
+        await reauthenticateWithCredential(auth.currentUser, credential);
+      } else if (hasGoogleProvider) {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      }
+
+      await auth.currentUser.delete();
+      await logout();
+      router.push('/');
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      const firebaseError = err as { code?: string };
+      if (firebaseError.code === 'auth/wrong-password') {
+        setError(tAccount('incorrectPassword'));
+      } else if (firebaseError.code === 'auth/requires-recent-login') {
+        setError(tAccount('requiresRecentLogin'));
+      } else {
+        setError(tAccount('deleteAccountError'));
+      }
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#cc3399]"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          {t('description')}
-        </p>
-      </div>
-
+    <div className="space-y-8">
       {/* Success/Error Messages */}
       {success && (
-        <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-4">
-          <div className="flex">
-            <CheckCircle className="h-5 w-5 text-green-400" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-green-800 dark:text-green-300">
-                {t('saveSuccess')}
-              </p>
-            </div>
+        <div className="rounded-lg bg-green-50 dark:bg-green-900/30 p-4">
+          <div className="flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <p className="ml-3 text-sm font-medium text-green-800 dark:text-green-300">
+              {success}
+            </p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-4">
-          <div className="flex">
-            <AlertCircle className="h-5 w-5 text-red-400" />
-            <div className="ml-3">
-              <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
-            </div>
+        <div className="rounded-lg bg-red-50 dark:bg-red-900/30 p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+            <p className="ml-3 text-sm font-medium text-red-800 dark:text-red-300">
+              {error}
+            </p>
           </div>
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6 space-y-6">
-          {/* Profile Photo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('profilePhoto')}
-            </label>
-            <div className="mt-2 flex items-center space-x-4">
-              <div className="relative">
-                {photoURL ? (
-                  <img
-                    src={photoURL}
-                    alt="Profile"
-                    className="h-20 w-20 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="h-20 w-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                    <Camera className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <input
-                  type="url"
-                  value={photoURL}
-                  onChange={(e) => setPhotoURL(e.target.value)}
-                  placeholder={t('photoURLPlaceholder')}
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('photoURLHelp')}</p>
-              </div>
+      {/* Profile Information Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6 space-y-6">
+          {/* Profile Photo Row */}
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+                {t('profilePhoto')}
+              </label>
+            </div>
+            <div className="sm:w-2/3">
+              <ProfilePhotoUploader
+                currentPhotoURL={photoURL}
+                displayName={displayName}
+                email={authUser?.email || undefined}
+                authUser={authUser}
+                onPhotoChange={async (newPhotoURL) => {
+                  setPhotoURL(newPhotoURL);
+                  // Save immediately when using Google photo
+                  try {
+                    await updateUserProfile({ photoURL: newPhotoURL });
+                    await refreshUser();
+                    setSuccess(t('saveSuccess'));
+                    setTimeout(() => setSuccess(null), 3000);
+                  } catch (err) {
+                    console.error('Error saving photo:', err);
+                    setError(t('saveError'));
+                  }
+                }}
+                onUpload={async (file) => {
+                  const newPhotoURL = await uploadProfilePhoto(file);
+                  setPhotoURL(newPhotoURL);
+                  await refreshUser();
+                  await loadUserProfile();
+                  setSuccess(t('saveSuccess'));
+                  setTimeout(() => setSuccess(null), 3000);
+                  return newPhotoURL;
+                }}
+                onDelete={async () => {
+                  await deleteProfilePhoto();
+                  setPhotoURL('');
+                  await refreshUser();
+                  await loadUserProfile();
+                  setSuccess(t('saveSuccess'));
+                  setTimeout(() => setSuccess(null), 3000);
+                }}
+              />
             </div>
           </div>
 
-          {/* Display Name */}
-          <div>
-            <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('displayName')}
-            </label>
-            <input
-              type="text"
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder={t('displayNamePlaceholder')}
-              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-[#cc3399] focus:ring-[#cc3399] sm:text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-            />
+          {/* Display Name Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label
+                htmlFor="displayName"
+                className="block text-base font-medium text-gray-900 dark:text-gray-100"
+              >
+                {t('displayName')}
+              </label>
+            </div>
+            <div className="sm:w-2/3">
+              <input
+                type="text"
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder={t('displayNamePlaceholder')}
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+              />
+            </div>
           </div>
 
-          {/* Email (Read-only) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('email')}
-            </label>
-            <div className="mt-1 flex items-center">
-              <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
-              <span className="text-sm text-gray-900 dark:text-gray-100">{authUser?.email}</span>
+          {/* Email Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+                {t('email')}
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('emailHelp')}
+              </p>
+            </div>
+            <div className="sm:w-2/3 flex items-center gap-3">
+              <span className="text-sm text-gray-900 dark:text-gray-100">
+                {authUser?.email}
+              </span>
               {authUser?.emailVerified ? (
-                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
                   <CheckCircle className="h-3 w-3 mr-1" />
                   {t('verified')}
                 </span>
@@ -203,7 +354,7 @@ export default function ProfileSettingsPage() {
                 <button
                   onClick={handleResendVerification}
                   disabled={sendingVerification}
-                  className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/40 transition-colors"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors"
                 >
                   {sendingVerification ? (
                     <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -214,61 +365,267 @@ export default function ProfileSettingsPage() {
                 </button>
               )}
             </div>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('emailHelp')}</p>
           </div>
 
-          {/* Account Created */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('accountCreated')}
-            </label>
-            <div className="mt-1 flex items-center">
-              <Calendar className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-2" />
-              <span className="text-sm text-gray-900 dark:text-gray-100">
+          {/* Account Created Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+                {t('accountCreated')}
+              </label>
+            </div>
+            <div className="sm:w-2/3">
+              <span className="text-sm text-gray-700 dark:text-gray-300">
                 {userProfile?.createdAt
                   ? new Date(userProfile.createdAt).toLocaleDateString()
-                  : '-'
-                }
+                  : '-'}
               </span>
             </div>
           </div>
 
-          {/* Subscription Status */}
-          {userProfile?.subscription && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('subscription')}
+          {/* Connected Accounts Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+                {tAccount('connectedAccounts')}
               </label>
-              <div className="mt-1">
-                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 capitalize">
-                  {userProfile.subscription.type}
-                </span>
-                {userProfile.subscription.expiresAt && (
-                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                    {t('expiresOn')} {new Date(userProfile.subscription.expiresAt).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
             </div>
-          )}
+            <div className="sm:w-2/3 flex flex-wrap gap-2">
+              {authUser?.providerData?.map((provider) => (
+                <span
+                  key={provider?.providerId}
+                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                >
+                  {provider?.providerId === 'password' &&
+                    tAccount('emailPassword')}
+                  {provider?.providerId === 'google.com' &&
+                    tAccount('googleAccount')}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Save Button */}
-        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 text-right sm:px-6">
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#cc3399] hover:bg-[#b82d89] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#cc3399] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {saving ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('saving')}
-              </>
-            ) : (
-              t('saveChanges')
-            )}
+            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {t('saveChanges')}
           </button>
+        </div>
+      </div>
+
+      {/* Security Section - Password Change (only for password provider) */}
+      {hasPasswordProvider && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6">
+            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-6">
+              {tAccount('changePassword')}
+            </h3>
+
+            <div className="space-y-4 max-w-md">
+              {/* Current Password */}
+              <div>
+                <label
+                  htmlFor="current-password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  {tAccount('currentPassword')}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    id="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label
+                  htmlFor="new-password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  {tAccount('newPassword')}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    id="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label
+                  htmlFor="confirm-password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  {tAccount('confirmPassword')}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="confirm-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={handlePasswordChange}
+                disabled={
+                  changingPassword ||
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmPassword
+                }
+                className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {changingPassword && (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                )}
+                {tAccount('updatePassword')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Danger Zone - Delete Account */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 dark:border-red-900/50">
+        <div className="p-6">
+          <h3 className="text-base font-medium text-red-600 dark:text-red-400 mb-2">
+            {tAccount('dangerZone')}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            {tAccount('deleteAccountWarning')}
+          </p>
+
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-red-600 border border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {tAccount('deleteAccount')}
+            </button>
+          ) : (
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="flex items-start mb-4">
+                <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                    {tAccount('deleteConfirmTitle')}
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                    {tAccount('deleteConfirmMessage')}
+                  </p>
+                </div>
+              </div>
+
+              {hasPasswordProvider && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="delete-password"
+                    className="block text-sm font-medium text-red-700 dark:text-red-400 mb-1"
+                  >
+                    {tAccount('enterPasswordToConfirm')}
+                  </label>
+                  <div className="relative max-w-sm">
+                    <input
+                      type={showDeletePassword ? 'text' : 'password'}
+                      id="delete-password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      className="w-full rounded-lg border border-red-300 dark:border-red-700 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowDeletePassword(!showDeletePassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      {showDeletePassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={
+                    deletingAccount || (hasPasswordProvider && !deletePassword)
+                  }
+                  className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {deletingAccount && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
+                  {tAccount('confirmDelete')}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeletePassword('');
+                  }}
+                  className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  {tAccount('cancel')}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

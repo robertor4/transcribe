@@ -38,13 +38,13 @@ export interface GA4EcommerceParams {
 /**
  * Pricing tier configuration
  */
-export type PricingTier = 'free' | 'professional' | 'payg';
-export type BillingCycle = 'monthly' | 'annual' | 'one-time';
+export type PricingTier = 'free' | 'professional' | 'enterprise';
+export type BillingCycle = 'monthly' | 'annual';
 
 /**
  * Format pricing tier as GA4 item
  *
- * @param tier - Pricing tier (free, professional, payg)
+ * @param tier - Pricing tier (free, professional, enterprise)
  * @param price - Price in the specified currency
  * @param currency - ISO 4217 currency code
  * @param billingCycle - Billing cycle (monthly, annual, one-time)
@@ -58,19 +58,17 @@ export function formatPricingTierItem(
 ): GA4Item {
   const tierNames: Record<PricingTier, string> = {
     free: 'Free Plan',
-    professional: 'Professional Plan',
-    payg: 'Pay-As-You-Go Credits'
+    professional: 'Pro Plan',
+    enterprise: 'Enterprise Plan'
   };
 
-  const itemId = tier === 'payg'
-    ? 'payg_credits'
-    : `${tier}_${billingCycle}`;
+  const itemId = `${tier}_${billingCycle}`;
 
   return {
     item_id: itemId,
     item_name: tierNames[tier],
-    item_category: tier === 'payg' ? 'Credits' : 'Subscription',
-    item_category2: billingCycle === 'one-time' ? 'One-Time' : billingCycle === 'annual' ? 'Annual' : 'Monthly',
+    item_category: 'Subscription',
+    item_category2: billingCycle === 'annual' ? 'Annual' : 'Monthly',
     item_variant: billingCycle,
     price: price,
     quantity: 1,
@@ -237,7 +235,7 @@ export function getCurrencyFromLocale(locale: string): string {
  * @returns Validated pricing tier
  */
 export function parsePricingTier(tierParam: string): PricingTier {
-  const validTiers: PricingTier[] = ['free', 'professional', 'payg'];
+  const validTiers: PricingTier[] = ['free', 'professional', 'enterprise'];
   const tier = tierParam.toLowerCase() as PricingTier;
 
   return validTiers.includes(tier) ? tier : 'free';
@@ -254,7 +252,6 @@ export function parseBillingCycle(cycleParam: string | null): BillingCycle {
 
   const cycle = cycleParam.toLowerCase();
   if (cycle === 'annual' || cycle === 'yearly') return 'annual';
-  if (cycle === 'one-time' || cycle === 'payg') return 'one-time';
 
   return 'monthly';
 }

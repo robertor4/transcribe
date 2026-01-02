@@ -25,7 +25,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
       name: platformStrings.zoom.name,
       description: platformStrings.zoom.description,
       icon: Video,
-      color: 'from-blue-500 to-blue-600',
+      color: 'bg-blue-500',
       bgColor: 'bg-blue-100',
       iconColor: 'text-blue-600',
     },
@@ -33,7 +33,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
       name: platformStrings.teams.name,
       description: platformStrings.teams.description,
       icon: MessageSquare,
-      color: 'from-purple-500 to-purple-600',
+      color: 'bg-purple-500',
       bgColor: 'bg-purple-100',
       iconColor: 'text-purple-600',
     },
@@ -41,7 +41,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
       name: platformStrings.meet.name,
       description: platformStrings.meet.description,
       icon: Calendar,
-      color: 'from-green-500 to-green-600',
+      color: 'bg-green-500',
       bgColor: 'bg-green-100',
       iconColor: 'text-green-600',
     },
@@ -49,7 +49,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
       name: platformStrings.webex.name,
       description: platformStrings.webex.description,
       icon: Users,
-      color: 'from-orange-500 to-orange-600',
+      color: 'bg-orange-500',
       bgColor: 'bg-orange-100',
       iconColor: 'text-orange-600',
     },
@@ -57,14 +57,14 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
       name: platformStrings.anyPlatform.name,
       description: platformStrings.anyPlatform.description,
       icon: Mic,
-      color: 'from-gray-500 to-gray-600',
+      color: 'bg-gray-500',
       bgColor: 'bg-gray-100',
       iconColor: 'text-gray-600',
     },
   ];
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="meeting-platforms-heading">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50" aria-labelledby="meeting-platforms-heading">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <ScrollAnimation>
@@ -87,7 +87,7 @@ export function MeetingPlatforms({ title, subtitle, platforms: platformStrings }
                 animation={index % 2 === 0 ? 'slideLeft' : 'slideRight'}
                 delay={index * 100}
               >
-                <div className="bg-white rounded-xl shadow-lg p-6 h-full border-2 border-transparent hover:border-[#cc3399] transition-all hover-lift">
+                <div className="bg-white rounded-xl shadow-lg p-6 h-full border-2 border-transparent hover:border-[#8D6AFA] transition-all hover-lift">
                   <div className={`w-14 h-14 ${platform.bgColor} rounded-xl flex items-center justify-center mb-4 mx-auto`}>
                     <Icon className={`h-7 w-7 ${platform.iconColor}`} aria-hidden="true" />
                   </div>

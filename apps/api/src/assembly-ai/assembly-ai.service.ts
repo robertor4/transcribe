@@ -67,7 +67,7 @@ export class AssemblyAIService {
   ): Promise<AssemblyAIResult> {
     try {
       // Extract transcription ID from URL for concise logging
-      const idMatch = audioUrl.match(/transcriptions%2F([^%\/]+)/);
+      const idMatch = audioUrl.match(/transcriptions%2F([^%/]+)/);
       const transcriptionId = idMatch ? idMatch[1] : 'unknown';
       this.logger.log(
         `Starting AssemblyAI transcription for job ${transcriptionId}`,
@@ -305,6 +305,29 @@ export class AssemblyAIService {
       );
     }
 
+    // Get duration from AssemblyAI, or calculate from speaker segments as fallback
+    let durationSeconds = transcript.audio_duration;
+
+    // If no duration from AssemblyAI, try to calculate from last utterance end time
+    if (
+      !durationSeconds &&
+      transcript.utterances &&
+      transcript.utterances.length > 0
+    ) {
+      const lastUtterance =
+        transcript.utterances[transcript.utterances.length - 1];
+      durationSeconds = lastUtterance.end / 1000; // Convert ms to seconds
+      this.logger.log(
+        `AssemblyAI audio_duration was ${transcript.audio_duration}, calculated from utterances: ${durationSeconds}s`,
+      );
+    }
+
+    if (!durationSeconds) {
+      this.logger.warn(
+        `Could not determine audio duration. AssemblyAI returned: ${transcript.audio_duration}`,
+      );
+    }
+
     return {
       text: transcript.text || '',
       language: mappedLanguage,
@@ -314,7 +337,7 @@ export class AssemblyAIService {
       transcriptWithSpeakers: transcriptWithSpeakers.trim(),
       confidence: transcript.confidence,
       speakerCount: speakers.length,
-      durationSeconds: transcript.audio_duration, // Audio duration in seconds from AssemblyAI
+      durationSeconds,
     };
   }
 

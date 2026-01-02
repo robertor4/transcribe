@@ -31,6 +31,50 @@
     "browserNotifications": "Browsermeldingen",
     "allRightsReserved": "Alle rechten voorbehouden"
   },
+  "search": {
+    "placeholder": "Zoek gesprekken...",
+    "resultsTitle": "Zoekresultaten",
+    "resultsCount": "{count} gevonden",
+    "noResults": "Geen gesprekken gevonden voor \"{query}\"",
+    "clearSearch": "Zoekopdracht wissen"
+  },
+  "leftNavigation": {
+    "closeSidebar": "Zijbalk sluiten",
+    "dashboard": "Dashboard",
+    "newConversation": "Nieuw gesprek",
+    "folders": "Mappen",
+    "expandFolders": "Mappen uitvouwen",
+    "collapseFolders": "Mappen invouwen",
+    "noFoldersYet": "Nog geen mappen",
+    "sharedWithYou": "Gedeeld met jou",
+    "recentlyOpened": "Recent geopend",
+    "clearRecentlyOpened": "Recent geopend wissen",
+    "noConversationsYet": "Nog geen gesprekken",
+    "results": "Resultaten"
+  },
+  "conversationCreate": {
+    "confirmCancel": "Weet je zeker dat je wilt annuleren? Je voortgang gaat verloren.",
+    "closeModal": "Venster sluiten",
+    "steps": {
+      "capture": {
+        "title": "Nieuw gesprek",
+        "description": "Kies hoe je je audio wilt toevoegen"
+      },
+      "context": {
+        "title": "Context toevoegen",
+        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)"
+      },
+      "processing": {
+        "title": "Verwerken...",
+        "description": "Dit kan even duren"
+      }
+    },
+    "contextLabel": "Context (optioneel)",
+    "contextPlaceholder": "bijv. productmeeting, verkoopgesprek, interview...",
+    "back": "Terug",
+    "skip": "Overslaan",
+    "continue": "Doorgaan"
+  },
   "auth": {
     "signIn": "Inloggen",
     "signUp": "Registreren",
@@ -137,7 +181,41 @@
     "uploadNewAudio": "Nieuwe audio uploaden",
     "emptyStateTitle": "Welkom bij Neural Summary!",
     "emptyStateDescription": "Je hebt nog geen audiobestanden geüpload. Begin door je eerste opname te uploaden.",
-    "emptyStateButton": "Upload je eerste audio"
+    "emptyStateButton": "Upload je eerste audio",
+    "learnMore": "Meer info",
+    "importAudio": "Importeer audio",
+    "importAudioDesc": "Upload audio/video bestand",
+    "recordAudioDesc": "Neem live gesprek op",
+    "recordAudioInfo": "Start een live opnamesessie. Je kunt kiezen om op te nemen via je microfoon of audio van een browsertabblad vastleggen (voor videogesprekken).",
+    "importAudioInfo": "Importeer een bestaand audio- of videobestand van je apparaat. Ondersteunde formaten: MP3, M4A, WAV, MP4, MOV, WebM. Maximale bestandsgrootte hangt af van je abonnement.",
+    "recordRoom": "Neem de ruimte op",
+    "recordRoomDesc": "Vergaderingen, spraaknotities, interviews",
+    "recordTab": "Tabblad opnemen",
+    "recordTabDesc": "Google Meet, Zoom (web), YouTube video's",
+    "uploadFileLabel": "Bestand uploaden",
+    "uploadFileDesc": "Audio- of videobestanden van elke bron",
+    "conversations": "Gesprekken",
+    "folders": "Mappen",
+    "itemsOfTotal": "{count} van {total}",
+    "itemsCount": "{count} items",
+    "new": "Nieuw",
+    "add": "Toevoegen",
+    "emptyConversationsHint": "Begin met opnemen of uploaden van je eerste gesprek",
+    "startFirstConversation": "Eerste gesprek starten",
+    "showMore": "Meer tonen ({count} resterend)",
+    "emptyFoldersHint": "Maak mappen aan om je gesprekken te organiseren",
+    "createFirstFolder": "Eerste map maken",
+    "folderNamePlaceholder": "Mapnaam...",
+    "createFolder": "Map maken",
+    "cancel": "Annuleren",
+    "sharedWithYou": "Met jou gedeeld",
+    "dragHint": "Sleep gesprekken hierheen om ze te organiseren",
+    "sort": {
+      "name-asc": "A-Z",
+      "name-desc": "Z-A",
+      "date-desc": "Nieuwste",
+      "date-asc": "Oudste"
+    }
   },
   "upload": {
     "title": "Audiobestand uploaden",
@@ -233,7 +311,7 @@
     "error": {
       "fileSize": "Bestandsgrootte overschrijdt limiet van 5GB",
       "fileTooLarge": "Bestand te groot (max 100MB)",
-      "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege OpenAI Whisper API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
+      "fileTooLargeWhisper": "Bestand is te groot. Maximale grootte is 25MB vanwege API limiet. Voor grotere bestanden, overweeg ze te splitsen.",
       "fileType": "Niet-ondersteund bestandstype",
       "unsupportedFormat": "Niet-ondersteund formaat (type: {type})",
       "invalidFileType": "Ongeldig bestandstype. Ondersteunde formaten: {formats}",
@@ -250,10 +328,27 @@
       "label": "Opnamebron",
       "microphone": "Microfoon",
       "microphoneDescription": "Opnemen via je apparaatmicrofoon",
-      "tabAudio": "Vergadertabblad audio",
-      "tabAudioDescription": "Audio vastleggen van een browsertabblad (Google Meet, Zoom)",
-      "tabAudioNotSupported": "Tabblad-audio-opname wordt alleen ondersteund in Chrome en Edge browsers. Gebruik microfoonopname of schakel over naar een ondersteunde browser.",
-      "tabAudioInstructions": "Selecteer het browsertabblad met je vergadering en zorg ervoor dat je 'Tabblad audio delen' aanvinkt voor de beste kwaliteit."
+      "tabAudio": "Tabblad audio",
+      "tabAudioDescription": "Audio opnemen van een browsertabblad",
+      "tabAudioNotSupported": "Niet ondersteund in deze browser",
+      "tabAudioInstructions": "Sta eerst microfoon toegang toe (om je stem vast te leggen), selecteer dan het browsertabblad met je vergadering en vink 'Tabblad audio delen' aan.",
+      "changeSource": "Bron wijzigen",
+      "changeMethod": "Methode wijzigen",
+      "recordingFrom": "Opname van:",
+      "chooseSource": "Kies opnamebron",
+      "chooseSourceDescription": "Selecteer waar je van wilt opnemen",
+      "selectMicrophone": "Selecteer microfoon",
+      "loadingMicrophones": "Microfoons laden...",
+      "inputLevel": "Inputniveau",
+      "initializing": "Initialiseren...",
+      "noAudioDetected": "Geen geluid gedetecteerd. Controleer of je microfoon werkt en niet op mute staat.",
+      "useThisMicrophone": "Gebruik deze microfoon",
+      "recordTabAudio": "Tabblad audio opnemen",
+      "includeMicrophone": "Mijn microfoon toevoegen",
+      "recommendedForCalls": "Aanbevolen voor videogesprekken",
+      "usingMicrophone": "Gebruikt:",
+      "switchingMicrophone": "Microfoon wordt gewisseld...",
+      "switchedToDevice": "Gewisseld naar {device}"
     },
     "status": {
       "ready": "Klaar om op te nemen",
@@ -264,20 +359,26 @@
     },
     "controls": {
       "start": "Start opname",
-      "stop": "Stop opname",
+      "stop": "Voltooien",
+      "finishing": "Afronden...",
       "pause": "Pauzeer",
       "resume": "Hervat",
       "reset": "Opnieuw opnemen",
       "upload": "Uploaden & transcriberen",
-      "uploading": "Uploaden..."
+      "uploading": "Uploaden...",
+      "cancel": "Annuleren",
+      "dismissWarning": "Waarschuwing sluiten"
     },
     "preview": {
-      "title": "Opname voorbeeld"
+      "title": "Opname voorbeeld",
+      "yourRecording": "Beluister je opname",
+      "proceed": "Doorgaan",
+      "reRecord": "Opnieuw opnemen"
     },
     "fileSize": "Geschatte grootte: {size}",
     "errors": {
       "title": "Opnamefout",
-      "notSupported": "Audio-opname wordt niet ondersteund in je browser.",
+      "notSupported": "Opnemen wordt niet ondersteund in je browser. Probeer Chrome, Firefox of Edge.",
       "notSupportedDetails": "Gebruik een moderne browser zoals Chrome, Firefox, Safari of Edge om audio op te nemen.",
       "permissionDenied": "Microfoontoegang geweigerd. Sta microfoontoegang toe in je browserinstellingen.",
       "noMicrophoneFound": "Geen microfoon gevonden. Sluit een microfoon aan en probeer opnieuw.",
@@ -285,9 +386,37 @@
       "recordingFailed": "Opname mislukt. Probeer opnieuw.",
       "uploadFailed": "Upload mislukt. Probeer opnieuw."
     },
+    "confirm": {
+      "cancelRecording": "Weet je zeker dat je wilt annuleren? Je opname gaat verloren.",
+      "goBack": "Ga terug"
+    },
     "warnings": {
-      "title": "Let op"
+      "title": "Let op",
+      "durationApproaching": "Opname stopt automatisch over {minutes} minuten (3 uur limiet)",
+      "durationLimit": "Maximale opnameduur bereikt (3 uur). Opname is opgeslagen.",
+      "storageCritical": "Opslag bijna vol ({remaining} beschikbaar). Opname gestopt om gegevensverlies te voorkomen.",
+      "storageLow": "Opslag raakt vol ({remaining} beschikbaar). Overweeg binnenkort te stoppen.",
+      "memoryHigh": "Opname geheugengebruik is hoog ({size}). Overweeg te stoppen om problemen te voorkomen.",
+      "memoryCritical": "Opname geheugen bijna vol ({size}). Opname gestopt om gegevensverlies te voorkomen.",
+      "micUnavailable": "Microfoon niet beschikbaar - alleen tabgeluid wordt opgenomen. Je stem wordt niet meegenomen."
     }
+  },
+  "recovery": {
+    "title": "Herstel niet-opgeslagen opnames",
+    "description": "We hebben {count, plural, one {1 opname} other {# opnames}} gevonden die niet {count, plural, one {was} other {waren}} geüpload.",
+    "preview": "Voorbeeld",
+    "recover": "Herstel",
+    "processImmediately": "Direct verwerken",
+    "continueRecording": "Opname voortzetten",
+    "discard": "Verwijderen",
+    "close": "Sluiten",
+    "footerNote": "Opnames worden automatisch op je apparaat opgeslagen en na 7 dagen verwijderd.",
+    "confirmDiscard": "Verwijderen?",
+    "discardTitle": "Opname verwijderen",
+    "discardMessage": "Deze opname wordt permanent verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+    "cancel": "Annuleren",
+    "microphoneRecording": "Microfoonopname",
+    "tabAudioRecording": "Tabgeluidsopname"
   },
   "transcription": {
     "title": "Transcriptie",
@@ -321,6 +450,7 @@
     "status_processing": "Verwerken",
     "status_completed": "Voltooid",
     "status_failed": "Mislukt",
+    "uploadingFile": "Bestand uploaden en voorbereiden voor transcriptie...",
     "processingAudio": "Audio verwerken...",
     "analyzingContent": "Inhoud analyseren...",
     "generatingSummary": "Samenvatting genereren...",
@@ -333,8 +463,6 @@
     "copyToClipboard": "Kopiëren naar klembord",
     "copyTranscript": "Transcript kopiëren",
     "copySummary": "Samenvatting kopiëren",
-    "fixTranscript": "Transcript corrigeren",
-    "fixTranscriptTooltip": "Corrigeer typefouten en andere fouten met AI",
     "shareTranscription": "Transcriptie delen",
     "failedToLoad": "Laden van transcripties mislukt",
     "failedToDelete": "Verwijderen van transcriptie mislukt",
@@ -345,6 +473,178 @@
     "share": "Delen",
     "loadingMore": "Meer laden...",
     "noMoreTranscriptions": "Je hebt het einde bereikt"
+  },
+  "aiAssets": {
+    "title": "AI Assets",
+    "description": "Zet dit gesprek om in actie",
+    "newAsset": "Genereer nieuw",
+    "createAsset": "AI Asset maken",
+    "emptyTitle": "Nog geen AI assets",
+    "emptyDescription": "Maak je eerste AI asset om dit gesprek om te zetten naar een deliverable",
+    "emptyButton": "AI Asset maken",
+    "loading": "AI asset laden...",
+    "notFound": "AI asset niet gevonden",
+    "notFoundDescription": "De AI asset die je zoekt bestaat niet of je hebt geen toegang.",
+    "modal": {
+      "title": "AI Asset maken",
+      "steps": {
+        "selectType": "Type kiezen",
+        "instructions": "Instructies",
+        "review": "Controleren",
+        "generate": "Genereren"
+      },
+      "generating": "Je AI asset wordt gemaakt...",
+      "success": "AI asset gemaakt!",
+      "error": "AI asset maken mislukt. Probeer het opnieuw.",
+      "whatToCreate": "Wat wil je maken?",
+      "chooseOutputType": "Kies het type uitvoer voor dit gesprek",
+      "categoryAnalysis": "Analyse",
+      "categoryContent": "Inhoud",
+      "categoryEmails": "E-mails",
+      "customInstructionsTitle": "Aangepaste instructies toevoegen (optioneel)",
+      "customInstructionsDescription": "Geef specifieke instructies om de uitvoer aan te passen aan je behoeften",
+      "customInstructionsLabel": "Aangepaste instructies",
+      "customInstructionsPlaceholder": "Voorbeeld: Focus op de technische aspecten, houd het onder 500 woorden en vermeld de besproken cijfers.",
+      "leaveBlankDefault": "Laat leeg voor standaardinstellingen van {name}",
+      "reviewTitle": "Controleren en bevestigen",
+      "reviewDescription": "Controleer je selecties voor het genereren",
+      "outputType": "Uitvoertype",
+      "noCustomInstructions": "Geen aangepaste instructies opgegeven",
+      "sourceConversation": "Brongesprek",
+      "generatingOutput": "{name} wordt gegenereerd...",
+      "generatingWait": "Dit kan even duren",
+      "generationFailed": "Genereren mislukt",
+      "tryAgain": "Opnieuw proberen",
+      "generationSuccess": "Uitvoer succesvol gegenereerd!",
+      "outputCreated": "Je {name} is gemaakt",
+      "generateOutput": "Uitvoer genereren",
+      "quota": {
+        "remaining": "{count} AI-uitvoer resterend deze maand",
+        "remainingPlural": "{count} AI-uitvoeren resterend deze maand",
+        "exceeded": "Maandlimiet bereikt",
+        "exceededDescription": "Je hebt alle {limit} gratis AI-uitvoeren deze maand gebruikt. Upgrade naar Pro voor onbeperkte uitvoeren.",
+        "upgradeButton": "Upgraden naar Pro"
+      }
+    },
+    "templates": {
+      "actionItems": {
+        "name": "Actiepunten",
+        "description": "Gestructureerde takenlijst"
+      },
+      "communicationAnalysis": {
+        "name": "Communicatieanalyse",
+        "description": "Communicatie-effectiviteit beoordelen"
+      },
+      "blogPost": {
+        "name": "Blogpost",
+        "description": "Publicatieklaar artikel"
+      },
+      "linkedin": {
+        "name": "LinkedIn-bericht",
+        "description": "Aansprekende social media content"
+      },
+      "followUpEmail": {
+        "name": "Follow-up e-mail",
+        "description": "Meeting-samenvatting met beslissingen en actiepunten"
+      },
+      "salesEmail": {
+        "name": "Verkoopbenadering",
+        "description": "Post-discovery e-mail met waardepropositie en CTA"
+      },
+      "internalUpdate": {
+        "name": "Interne update",
+        "description": "Stakeholder-briefing met TLDR en belangrijke beslissingen"
+      },
+      "clientProposal": {
+        "name": "Klantvoorstel",
+        "description": "Formeel voorstel met eisen en oplossing"
+      },
+      "agileBacklog": {
+        "name": "Agile Backlog",
+        "description": "Epics en user stories met acceptatiecriteria",
+        "asA": "Als",
+        "iWant": "wil ik",
+        "soThat": "zodat",
+        "acceptanceCriteria": "Acceptatiecriteria",
+        "technicalDetails": "Technische details",
+        "technicalNotes": "Technische notities",
+        "dependencies": "Afhankelijkheden",
+        "epics": "Epics",
+        "standaloneStories": "Losse stories",
+        "stories": "stories",
+        "epic": "epic",
+        "userStory": "user story",
+        "userStories": "user stories",
+        "noStoriesFound": "Geen user stories gevonden",
+        "noStoriesDescription": "Dit gesprek bevatte geen expliciete productfuncties of vereisten om te extraheren.",
+        "copyStory": "Story kopiëren",
+        "copied": "Gekopieerd!"
+      }
+    },
+    "sidebar": {
+      "title": "AI Assets",
+      "generateNew": "Nieuwe maken",
+      "emptyTitle": "Nog geen assets",
+      "emptyDescription": "Genereer je eerste AI asset",
+      "recordingContext": "Opnamecontext",
+      "metadata": "Bestandsinformatie"
+    },
+    "panel": {
+      "close": "Sluiten",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "delete": "Verwijderen",
+      "confirmDelete": "Deze asset verwijderen?",
+      "viewFull": "Bekijk volledige pagina"
+    },
+    "findReplace": "Zoeken en vervangen",
+    "delete": "Verwijderen",
+    "deleteConfirmTitle": "AI Asset verwijderen?",
+    "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit AI Asset wordt permanent verwijderd.",
+    "deleteConfirmYes": "Ja, verwijderen",
+    "deleteConfirmNo": "Annuleren"
+  },
+  "conversation": {
+    "tabs": {
+      "summary": "Samenvatting",
+      "transcript": "Transcript"
+    },
+    "actions": {
+      "askQuestions": "Stel vragen",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd!",
+      "share": "Delen",
+      "delete": "Verwijderen",
+      "deleteConfirm": "Dit gesprek verwijderen?",
+      "deleteYes": "Ja, verwijderen",
+      "deleteNo": "Annuleren",
+      "deleteConfirmTitle": "Gesprek verwijderen?",
+      "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit gesprek en alle bijbehorende AI Assets worden permanent verwijderd.",
+      "deleteConfirmYes": "Ja, verwijderen",
+      "deleteConfirmNo": "Annuleren",
+      "exportPDF": "Exporteren als PDF",
+      "generatingPDF": "PDF wordt gegenereerd...",
+      "proFeature": "Pro-functie",
+      "upgradeToExportPDF": "Upgrade naar Pro om je gesprekken te exporteren als prachtig opgemaakte PDF-documenten.",
+      "upgradeToPro": "Upgraden naar Pro",
+      "findReplace": "Zoeken en vervangen",
+      "findReplaceDisabledLegacy": "Zoeken en vervangen is niet beschikbaar voor oudere gesprekken"
+    },
+    "translation": {
+      "original": "Origineel",
+      "viewOriginal": "Bekijk origineel",
+      "availableTranslations": "Beschikbare vertalingen",
+      "translateTo": "Vertalen naar",
+      "translating": "Bezig met vertalen...",
+      "translationComplete": "Vertaling voltooid",
+      "translationFailed": "Vertaling mislukt",
+      "noTranslationsAvailable": "Geen vertalingen beschikbaar",
+      "assetsTranslated": "items vertaald",
+      "changeLanguage": "Taal wijzigen",
+      "proFeature": "Pro-functie",
+      "upgradeToTranslate": "Upgrade naar Pro om je gesprekken in meer dan 50 talen te vertalen.",
+      "upgradeToPro": "Upgraden naar Pro"
+    }
   },
   "howItWorks": {
     "title": "Hoe het werkt",
@@ -574,8 +874,20 @@
       "saveError": "Opslaan van profiel mislukt",
       "saveSuccess": "Profiel succesvol bijgewerkt",
       "profilePhoto": "Profielfoto",
-      "photoURLPlaceholder": "Voer afbeeldings-URL in",
-      "photoURLHelp": "Voer een URL in naar een afbeelding om als profielfoto te gebruiken",
+      "changePhoto": "Foto wijzigen",
+      "useGooglePhoto": "Google-foto gebruiken",
+      "uploadPhoto": "Foto uploaden",
+      "removePhoto": "Foto verwijderen",
+      "photoUploadError": "Foto uploaden mislukt",
+      "photoSizeError": "Foto moet kleiner zijn dan 5 MB",
+      "photoTypeError": "Alleen JPG- en PNG-bestanden zijn toegestaan",
+      "uploadingPhoto": "Uploaden...",
+      "cropPhoto": "Foto bijsnijden",
+      "cropPhotoDescription": "Sleep om te verplaatsen, scroll om te zoomen",
+      "zoom": "Zoom",
+      "saveCrop": "Opslaan",
+      "cancelCrop": "Annuleren",
+      "processingImage": "Verwerken...",
       "displayName": "Weergavenaam",
       "displayNamePlaceholder": "Voer je naam in",
       "email": "E-mailadres",
@@ -734,423 +1046,119 @@
   },
   "landing": {
     "hero": {
-      "headline": "Creëer alles met je stem",
-      "subtitle": "Verander gesprekken in samenvattingen, e-mails, social posts en meer.",
-      "ctaPrimary": "Start gratis",
-      "ctaSecondary": "Bekijk demo",
-      "byline": "Spraak-naar-content platform",
-      "trustIndicators": {
-        "users": "Vertrouwd door professionals",
-        "rating": "Hoog gewaardeerd",
-        "certified": "AVG-compliant"
-      },
-      "title": "Zet elke vergadering om in kristalheldere",
-      "titleHighlight": "notities en actiepunten.",
-      "subtitle2": "De AI vergadernotities-app die Zoom, Teams en Google Meet-opnames omzet in bruikbare samenvattingen — automatisch, nauwkeurig en direct.",
-      "cta": {
-        "primary": "Start gratis",
-        "secondary": "Zie hoe het werkt"
-      },
-      "guarantee": "Altijd gratis abonnement beschikbaar • Geen creditcard vereist • Werkt met alle vergaderplatforms",
-      "features": {
-        "saveTime": "Bespaar 10+ uur/week",
-        "accuracy": "99.5% nauwkeurigheid",
-        "languages": "50+ talen"
+      "headline": "Jij spreekt. Het creëert.",
+      "subtitlePart1": "Neural Summary zet gesproken gedachten om in gestructureerde, professionele output. ",
+      "subtitlePart2": "Zodat beslissingen vastliggen en werk vooruit gaat.",
+      "ctaPrimary": "Bekijk voorbeelden",
+      "ctaSecondary": "Zie hoe het werkt",
+      "byline": "Jij spreekt. Het creëert.",
+      "document": {
+        "backTitle": "Klant opvolg-e-mail",
+        "backGreeting": "Hoi Sarah,",
+        "backIntro": "Even terugkomen op ons gesprek over de Q4 planning...",
+        "backPointsIntro": "Belangrijkste punten die we bespraken:",
+        "backPoint1": "Enterprise onboarding prioriteit bevestigd",
+        "backPoint2": "Mobiele app uitgesteld naar Q1",
+        "backPoint3": "API v2 op schema voor november",
+        "frontTitle": "Q4 Productstrategie",
+        "frontBullet1": "Focus op enterprise onboarding flow herontwerp",
+        "frontBullet2": "Mobiele app uitstellen naar Q1 vanwege capaciteit",
+        "frontBullet3": "API v2 lancering gericht op november release",
+        "frontBullet4": "Twee senior engineers aannemen voor platform team",
+        "decisionsTitle": "Beslissingen",
+        "decision1": "Doorgaan met Stripe integratie in plaats van PayPal",
+        "decision2": "Internationalisering uitstellen tot Q2"
       }
     },
-    "why": {
-      "headline": "Je beste ideeën raken verloren in vertaling.",
-      "paragraph1": "Je denkt in gesprekken. Je werkt in documenten.",
-      "paragraph2": "Daartussen: Uren typen, formatteren, herstructureren.",
-      "paragraph3": "Wat als je stem het document werd?"
+    "transformation": {
+      "recording": "Opnemen...",
+      "quote1": "\"...ja, de demo ging echt goed, ze waren enthousiast over het analytics dashboard...\"",
+      "quote2": "\"...klopt, en Sarah zei dat Salesforce-integratie echt nodig is, dat is een must...\"",
+      "quote3": "\"...qua budget zei ze dat ze mikken op Q1, zo'n 50 licenties om te beginnen...\"",
+      "quote4": "\"...oh en ze willen eerst een proefperiode, twee weken ofzo...\"",
+      "quote5": "\"...ik moet ze die case study van Acme nog sturen...\"",
+      "quote6": "\"...wacht, had ze het ook over SSO? Ik dacht dat ze dat noemde...\"",
+      "documentTitle": "Opvolg-e-mail",
+      "greeting": "Hoi Sarah,",
+      "intro": "Fijn dat we vandaag konden praten over het analytics dashboard. De belangrijkste punten:",
+      "point1": "Salesforce-integratie: bevestigd als must-have",
+      "point2": "50 licenties, starten in Q1",
+      "point3": "Proefperiode van 2 weken om te beginnen",
+      "nextStepLabel": "Volgende stap:",
+      "nextStepText": "Case study sturen voor vrijdag einde dag."
     },
-    "what": {
-      "headline": "Drie stappen naar creatie.",
-      "steps": {
-        "speak": {
-          "title": "Spreek",
-          "description": "Neem vergaderingen, ideeën, interviews op. Of laat onze AI je interviewen om je visie te extraheren."
-        },
-        "extract": {
-          "title": "Extraheer",
-          "description": "AI stelt vragen, structureert gedachten, legt elk detail vast—zoals een persoonlijke assistent."
-        },
-        "create": {
-          "title": "Creëer",
-          "description": "Krijg direct werkklare documenten. Specificaties, artikelen, e-mails, strategieën."
-        }
-      }
-    },
-    "wow": {
-      "headline": "Spreken wordt creëren.",
-      "subtitle": "Van een 3-minuten gesprek → Complete productspecificatie",
-      "tagline": "Niet typen. Niet formatteren. Denk gewoon hardop."
-    },
-    "who": {
-      "headline": "Gebouwd voor jouw workflow.",
-      "personas": {
-        "productManager": {
-          "title": "Productmanager",
-          "subtitle": "Brainstorm → Productspecificatie in 5 minuten",
-          "description": "Bespreek je feature-idee. Krijg een complete specificatie klaar voor je dev-team."
-        },
-        "founder": {
-          "title": "Oprichter",
-          "subtitle": "Visiegesprek → Strategiedocument voor je team",
-          "description": "Neem je strategische visie op. Deel direct een gestructureerde briefing met je team."
-        },
-        "contentCreator": {
-          "title": "Content Creator",
-          "subtitle": "Interview → Publicatieklaar artikel",
-          "description": "Interview gasten natuurlijk. Krijg gestructureerde content klaar om te publiceren."
-        },
-        "salesLeader": {
-          "title": "Salesleider",
-          "subtitle": "Klantgesprek → Opvolg-e-mail in minuten",
-          "description": "Focus op het gesprek. Verstuur perfecte samenvattingen terwijl prospects je onthouden."
-        }
-      }
-    },
-    "featuresSection": {
-      "headline": "Gebouwd voor focus.",
-      "accuracy": {
-        "title": "99.5% nauwkeurigheid",
-        "description": "Elk woord vastgelegd. Spreker labels inbegrepen."
-      },
-      "largeFiles": {
-        "title": "Bestanden tot 5GB",
-        "description": "Verwerk uren audio. Geen limieten."
-      },
-      "languages": {
-        "title": "99 talen",
-        "description": "Automatische detectie. Direct vertalen."
-      }
-    },
-    "securitySection": {
-      "headline": "Jouw privacy is belangrijk.",
-      "description": "Audio binnen seconden verwijderd. Alleen tekst blijft. Enterprise-grade encryptie."
-    },
-    "warp": {
-      "headline": "De toekomst van werk is niet typen.",
-      "subtitle": "Het is hardop denken.",
-      "line1": "Je ideeën worden vereisten.",
-      "line2": "Je visie wordt strategie.",
-      "line3": "Je stem wordt output.",
-      "tagline": "Zo zou creatief werk moeten aanvoelen."
-    },
-    "finalCta": {
-      "headline": "Spreken wordt creëren",
-      "subtext": "Gratis starten. Geen creditcard nodig.",
-      "button": "Gratis beginnen",
-      "benefits": {
-        "free": "Gratis starten",
-        "noCard": "Geen creditcard"
-      }
-    },
-    "valueProposition": {
-      "title": "Je AI die luistert, begrijpt en samenvat — zodat jij kunt denken, leiden en beslissen.",
-      "subtitle": "Neural Summary verbetert hoe je communiceert en beslissingen neemt door drie belangrijke gebieden te versterken waar professionals mee worstelen:",
-      "efficiency": {
-        "title": "Efficiëntie",
-        "description": "Automatiseer transcriptie en samenvatting zodat je elke week uren terugwint."
-      },
-      "clarity": {
-        "title": "Helderheid",
-        "description": "Leg vast wat echt belangrijk is uit vergaderingen, interviews en discussies."
-      },
-      "impact": {
-        "title": "Impact",
-        "description": "Zet inzichten om in actie met gestructureerde, deelbare samenvattingen en vervolgstappen."
-      },
-      "tagline": "Onthoud niet alleen wat er gezegd werd — handel ernaar."
-    },
-    "whyTeams": {
-      "title": "Waarom teams kiezen voor Neural Summary",
-      "benefit1": "Bespaar 3-5 uur per week op handmatige documentatie",
-      "benefit2": "Verminder informatieverlies en miscommunicatie",
-      "benefit3": "Houd teams op één lijn zonder eindeloos notities delen",
-      "benefit4": "Veilig, compliant en schaalbaar voor elke organisatie",
-      "benefit5": "Veilig, compliant en schaalbaar voor elke organisatie",
-      "tagline": "Stop tijd verspillen in vergaderingen — begin woorden om te zetten in actie."
-    },
-    "benefits": {
-      "title": "Transformeer je werkwijze, verbeter je vaardigheden",
-      "subtitle": "Ontdek hoe Neural Summary je effectiever maakt",
-      "shareCollaborate": {
-        "title": "Deel & Werk Moeiteloos Samen",
-        "description": "Stuur gepolijste samenvattingen naar je team met één klik. Geen lange vergadersamenvatting of gemiste actiepunten meer."
-      },
-      "improveCommunication": {
-        "title": "Verbeter Je Communicatievaardigheden",
-        "description": "Analyseer je spreekpatronen, identificeer vulwoorden en word een effectievere presentator."
-      },
-      "saveTime": {
-        "title": "Bespaar 10+ Uur Elke Week",
-        "description": "Verander 1-uur vergaderingen in 5-minuten samenvattingen. Focus op wat belangrijk is, niet op notities maken."
-      },
-      "neverMiss": {
-        "title": "Mis Nooit Belangrijke Details",
-        "description": "Leg automatisch elk actiepunt, beslissing en inzicht vast. Je AI-assistent vergeet nooit."
-      }
-    },
-    "features": {
-      "title": "Krachtige functies voor elke professional",
-      "ai": {
-        "title": "AI-gestuurde samenvattingen",
-        "description": "Krijg executive samenvattingen met kernpunten, actiepunten en inzichten"
-      },
-      "largeFiles": {
-        "title": "Ondersteuning voor grote bestanden",
-        "description": "Verwerk bestanden tot 5GB met enterprise-grade transcriptietechnologie"
-      },
-      "security": {
-        "title": "Je Audio Wordt Nooit Opgeslagen",
-        "description": "Bestanden worden direct na verwerking verwijderd. Zero-knowledge architectuur garandeert je privacy."
-      },
-      "demo": {
-        "dragDrop": "Sleep je audiobestand hier",
-        "record": "Of neem direct op vanaf elk apparaat"
-      }
-    },
-    "meetingPlatforms": {
-      "title": "Werkt met Elk Vergaderplatform",
-      "subtitle": "Neem op in elk platform, krijg automatisch AI-vergadernotities",
-      "zoom": {
-        "name": "Zoom",
-        "description": "Neem lokaal of in de cloud op, upload voor directe transcriptie"
-      },
-      "teams": {
-        "name": "Microsoft Teams",
-        "description": "Download Teams-opnames en krijg binnen enkele minuten AI-vergadersamenvattingen"
-      },
-      "meet": {
-        "name": "Google Meet",
-        "description": "Upload Meet-opnames voor automatische transcriptie met sprekerslabels"
-      },
-      "webex": {
-        "name": "WebEx",
-        "description": "Transformeer WebEx-vergaderingen in gestructureerde notities en actiepunten"
-      },
-      "anyPlatform": {
-        "name": "Elk Platform",
-        "description": "Werkt met telefoonopnames, persoonlijke vergaderingen, interviews en meer"
-      }
-    },
-    "meetingUseCases": {
-      "title": "Perfect voor Elk Type Vergadering",
-      "subtitle": "Van snelle 1-op-1's tot grote teamvergaderingen, mis nooit meer belangrijke details",
-      "oneOnOnes": {
-        "title": "1-op-1 Vergaderingen",
-        "description": "Focus op het gesprek, niet op notities maken. Krijg perfecte verslagen van feedback, doelen en afspraken."
-      },
-      "teamStandups": {
-        "title": "Team Stand-ups & Syncs",
-        "description": "Houd iedereen op één lijn met automatische notulen en actiepunt-tracking."
-      },
-      "clientCalls": {
-        "title": "Klantgesprekken & Verkoop",
-        "description": "Leg elke vereiste, vraag en afspraak vast. Deel direct gepolijste samenvattingen."
-      },
-      "allHands": {
-        "title": "All-Hands & Town Halls",
-        "description": "Maak doorzoekbare transcripten voor teamleden die niet aanwezig konden zijn. Herhaal jezelf nooit meer."
-      }
-    },
-    "howItWorks": {
-      "title": "Hoe het werkt",
-      "subtitle": "Van vergaderopname tot bruikbare notities in 3 eenvoudige stappen",
+    "how": {
+      "headline": "Hoe het werkt",
       "step1": {
-        "title": "Neem je vergadering op",
-        "description": "Gebruik Zoom, Teams, Google Meet, je telefoon of elk opnameapparaat. Alle grote audio- en videoformaten ondersteund."
+        "title": "Spreek vrijuit",
+        "description": "Neem een gesprek, vergadering of spraakmemo op."
       },
       "step2": {
-        "title": "AI transcribeert met sprekerslabels",
-        "description": "Onze AI identificeert sprekers, transcribeert met 99,5% nauwkeurigheid en begrijpt context — zelfs technisch jargon."
+        "title": "Wij halen eruit wat belangrijk is",
+        "description": "Beslissingen, prioriteiten en vervolgstappen. Automatisch gestructureerd."
       },
       "step3": {
-        "title": "Ontvang vergadersamenvatting & actiepunten",
-        "description": "Ontvang gestructureerde samenvattingen met belangrijke beslissingen, discussieonderwerpen en actiepunten met eigenaren en deadlines."
+        "title": "Jij gaat verder",
+        "description": "Deel, verstuur of handel op werk dat al duidelijk is."
       }
     },
-    "security": {
-      "title": "Vertrouwd door professionals die precisie en privacy waarderen",
-      "stats": {
-        "users": "Vertrouwd door professionals wereldwijd",
-        "rating": "Hoog gewaardeerd door gebruikers"
-      },
-      "compliance": {
-        "title": "Privacy-first architectuur",
-        "description": "Gebouwd met AVG-compliance en gegevensbescherming in de kern"
-      },
-      "useCases": {
-        "title": "Vertrouwd door professionals",
-        "description": "Gebruikt door juridische, medische, onderzoeks- en leidinggevende teams waar elk woord telt."
-      },
-      "technology": {
-        "title": "Aangedreven door geavanceerde AI",
-        "description": "Gebouwd met de nieuwste taalmodellen, verfijnd voor zakelijke communicatie."
-      },
-      "encryption": {
-        "title": "Directe verwijdering na verwerking",
-        "description": "Audiobestanden worden binnen seconden verwijderd, nooit opgeslagen op onze servers"
-      },
-      "retention": {
-        "title": "Beveiligde cloudinfrastructuur",
-        "description": "Je gegevens worden versleuteld tijdens opslag en verzending met industriestandaard protocollen"
-      },
-      "audit": {
-        "title": "Zero-knowledge architectuur",
-        "description": "Je gegevens blijven privé - wij verwerken alleen wat nodig is en verwijderen audio direct"
-      },
-      "badges": {
-        "soc2": "SOC 2 Conform",
-        "gdpr": "AVG Conform",
-        "hipaa": "HIPAA Klaar",
-        "iso": "ISO 27001",
-        "compliance": "Spraak-naar-tekst modellen zijn SOC 2, AVG, HIPAA en ISO 27001 conform."
-      }
-    },
-    "testimonials": {
-      "title": "Geliefd door teams die hun tijd waarderen",
-      "rating": "Hoog gewaardeerd door vergaderprofessionals",
-      "testimonial1": {
-        "quote": "Onze teamvergaderingen zijn nu 10x productiever. Iedereen krijgt automatisch de samenvatting en actiepunten — geen 'wie maakt de notities?' meer.",
-        "author": "Michael Chen",
-        "role": "Engineering Manager, Tech Start-up"
-      },
-      "testimonial2": {
-        "quote": "Ik kan me focussen op mijn cliënten, niet op typen. De vergadersamenvattingen zijn zo nauwkeurig dat ik ze direct met stakeholders deel.",
-        "author": "Dr. James Liu",
-        "role": "Klinisch Onderzoeker"
-      },
-      "testimonial3": {
-        "quote": "Ik neem al mijn klantgesprekken op en krijg perfecte transcripties met actiepunten. Het is alsof ik een assistent in elk gesprek heb. Gamechanger voor verkoop!",
-        "author": "Jennifer Brooks",
-        "role": "Account Executive, SaaS-verkoop"
-      }
-    },
-    "meetingFaq": {
-      "title": "Veelgestelde Vragen",
-      "subtitle": "Alles wat je moet weten over het omzetten van spraak in werkklare documenten",
-      "question1": {
-        "question": "Hoe werkt Neural Summary?",
-        "answer": "Upload een audio- of video-opname, of spreek direct in het platform. Onze AI verwerkt je gesprek, identificeert belangrijke inzichten en genereert gestructureerde documenten—samenvattingen, actiepunten en gedetailleerde analyses. Werkt met vergaderingen, brainstorms, interviews of spraaknotities. Van upload tot afgerond document duurt slechts 3-5 minuten."
-      },
-      "question2": {
-        "question": "Welke soorten documenten kan ik maken?",
-        "answer": "Van één opname creëer je vergadersamenvattingen met actiepunten en beslissingen, inhoudsanalyses, strategische inzichten en communicatieanalyses. Elk documenttype is geoptimaliseerd voor verschillende behoeften—executive summary, gedetailleerd transcript of teamactieplan. Binnenkort: AI-begeleide documentcreatie voor specs en artikelen."
-      },
-      "question3": {
-        "question": "Werkt het met Zoom, Teams en Google Meet?",
-        "answer": "Ja! Neem je vergadering op elk platform op, download het bestand en upload het naar Neural Summary. We ondersteunen alle belangrijke video- en audioformaten waaronder MP3, M4A, WAV, MP4, MOV en meer. Geen bots, geen plugins—gewoon uploaden en creëren."
-      },
-      "question4": {
-        "question": "Kan Neural Summary verschillende sprekers identificeren?",
-        "answer": "Ja! Onze speaker diarization-technologie detecteert en labelt automatisch meerdere sprekers door je hele gesprek. De bijdragen van elke spreker worden duidelijk toegeschreven, waarbij de natuurlijke gespreksflow behouden blijft. Je kunt sprekers na verwerking hernoemen voor nog meer duidelijkheid in je documenten."
-      },
-      "question5": {
-        "question": "Hoe nauwkeurig zijn de resultaten?",
-        "answer": "We leveren 99,5% transcriptie-nauwkeurigheid met sprekeridentificatie in meer dan 50 talen. Maar Neural Summary gaat verder dan transcriptie—onze AI extraheert beslissingen, actiepunten, thema's en inzichten die handmatige notities vaak missen. Je krijgt zowel nauwkeurige woord-voor-woord vastlegging als intelligente analyse."
-      },
-      "question6": {
-        "question": "Zijn mijn gegevens privé en veilig?",
-        "answer": "Je audio wordt NOOIT opgeslagen op onze servers. Wanneer je een opname uploadt, wordt deze direct verwerkt en binnen seconden verwijderd. We bewaren alleen de tekst en analyseresultaten. Deze zero-knowledge architectuur zorgt ervoor dat je gevoelige gesprekken volledig privé blijven—ideaal voor vertrouwelijke zakelijke, juridische of medische discussies."
-      },
-      "question7": {
-        "question": "Kan ik documenten delen en exporteren?",
-        "answer": "Ja! Deel je documenten via beveiligde wachtwoordbeveiligde links, verstuur via e-mail of exporteer naar PDF- en Word-formaten. Professionele abonnementen bevatten onbeperkt delen en samenwerkingsfuncties voor teams."
-      }
-    },
-    "cta": {
-      "title": "Klaar om je vergaderingen van tijdverspillers naar actie-drivers te transformeren?",
-      "subtitle": "Sluit je aan bij duizenden teams die Neural Summary gebruiken om automatisch elke beslissing, actiepunt en inzicht vast te leggen.",
-      "button": "Start gratis — geen creditcard vereist",
-      "benefits": {
-        "free": "Geen creditcard",
-        "noCard": "Werkt met Zoom, Teams, Meet",
-        "cancel": "Altijd opzegbaar"
-      }
-    },
-    "pricingTeaser": {
-      "title": "Eenvoudige, transparante prijzen",
-      "subtitle": "Begin gratis, upgrade wanneer je klaar bent. Geen verborgen kosten, geen verrassingen.",
-      "free": {
-        "name": "Gratis",
-        "description": "Perfect om uit te proberen",
-        "features": {
-          "transcriptions": "3 transcripties/maand",
-          "duration": "Max 30 min per bestand",
-          "summary": "Basissamenvatting"
-        },
-        "cta": "Aan de slag"
-      },
-      "professional": {
-        "name": "Professioneel",
-        "description": "Voor regelmatige gebruikers",
-        "badge": "Meest populair",
-        "features": {
-          "transcriptions": "Onbeperkte transcripties",
-          "hours": "60 uur/maand inbegrepen",
-          "analyses": "Alle 6 analysetypes",
-          "fileSize": "Max 3GB bestandsgrootte",
-          "priority": "Prioriteitsverwerking"
-        },
-        "cta": "Start gratis proef"
-      },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "description": "Per uur audio",
-        "features": {
-          "credits": "Tegoed vervalt nooit",
-          "analyses": "Alle 6 analysetypes",
-          "occasional": "Perfect voor incidenteel gebruik"
-        },
-        "cta": "Koop tegoed"
-      },
-      "viewFullPricing": "Bekijk volledige prijsdetails"
+    "closingCta": {
+      "headline": "Klaar om het te proberen?",
+      "ctaPrimary": "Start gratis",
+      "ctaSecondary": "Bekijk eerst voorbeelden"
     },
     "nav": {
       "login": "Inloggen",
-      "getStarted": "Aan de slag",
+      "getStarted": "Start gratis",
       "dashboard": "Naar Dashboard",
       "menu": "Menu",
       "language": "Taal",
-      "features": "Kenmerken",
+      "examples": "Voorbeelden",
       "howItWorks": "Hoe het werkt",
-      "pricing": "Prijzen",
-      "faq": "Veelgestelde vragen"
+      "pricing": "Prijzen"
     },
     "footer": {
-      "product": {
-        "title": "Product",
+      "sections": {
+        "product": "Product",
+        "company": "Bedrijf",
+        "legal": "Juridisch"
+      },
+      "links": {
         "features": "Functies",
+        "examples": "Voorbeelden",
         "pricing": "Prijzen",
-        "api": "API"
-      },
-      "company": {
-        "title": "Bedrijf",
         "about": "Over ons",
-        "blog": "Blog",
-        "careers": "Carrières"
-      },
-      "support": {
-        "title": "Ondersteuning",
-        "help": "Helpcentrum",
-        "contact": "Contact",
-        "status": "Status"
-      },
-      "legal": {
-        "title": "Juridisch",
+        "security": "Beveiliging",
+        "help": "Hulp",
         "privacy": "Privacy",
         "terms": "Voorwaarden",
-        "security": "Beveiliging"
+        "contact": "Contact"
       },
-      "copyright": "© 2024 Neural Summary. Alle rechten voorbehouden.",
-      "tagline": "Gemaakt door mensen die te veel uren in vergaderingen hebben doorgebracht."
+      "tagline": "Jij spreekt. Het creëert.",
+      "copyright": "© 2026 Neural Summary. Alle rechten voorbehouden."
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "q1": {
+        "question": "Welke soorten documenten kan ik maken?",
+        "answer": "Neural Summary transformeert je gesprekken in professionele documenten zoals vergadersamenvattingen, productspecificaties, blogposts, actiepunten, e-mailconcepten en meer. Kies uit 15+ templates of maak aangepaste outputs."
+      },
+      "q2": {
+        "question": "Hoe nauwkeurig is de transcriptie?",
+        "answer": "We gebruiken de nieuwste AI-modellen die meer dan 95% nauwkeurigheid bereiken. Het systeem identificeert automatisch sprekers en verwerkt meerdere talen, accenten en vakjargon."
+      },
+      "q3": {
+        "question": "Is mijn data veilig?",
+        "answer": "Ja. Alle audiobestanden worden versleuteld tijdens transport en opslag. We gebruiken je data nooit om AI-modellen te trainen. Bestanden worden automatisch verwijderd na verwerking, en je kunt je data altijd verwijderen."
+      },
+      "q4": {
+        "question": "Kan ik het gratis proberen?",
+        "answer": "Absoluut. Begin met ons gratis plan met 3 audiobestanden per maand (maximaal 30 minuten elk). Geen creditcard nodig. Upgrade op elk moment voor meer capaciteit en functies."
+      }
     }
   },
   "share": {
-    "title": "Transcript delen",
+    "title": "Gesprek delen",
     "shareSettings": "Beveiligingsinstellingen",
     "contentSelection": "Selecteer inhoud om te delen",
     "summaryOnly": "Alleen samenvatting",
@@ -1159,6 +1167,8 @@
     "customSelection": "Aangepast",
     "includeTranscript": "Volledig transcript",
     "includeSummary": "Samenvatting",
+    "fullTranscript": "Volledig transcript",
+    "includeAIAssets": "AI-assets",
     "includeCommunication": "Communicatiestijlen",
     "includeActionItems": "Actiepunten",
     "includeSpeakerInfo": "Sprekerinformatie",
@@ -1172,6 +1182,8 @@
     "never": "Nooit",
     "passwordProtect": "Wachtwoordbeveiliging",
     "enterPassword": "Voer wachtwoord in",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen",
     "createLink": "Deel link aanmaken",
     "creating": "Aanmaken...",
     "linkCreated": "Deel link aangemaakt",
@@ -1193,13 +1205,18 @@
     "emailsSent": "E-mails verstuurd!",
     "emailsSentSuccess": "E-mails succesvol verstuurd! Ontvangers krijgen binnenkort de deel link.",
     "viewCount": "Weergaven",
+    "views": "Weergaven",
     "expiresOn": "Verloopt op",
+    "expires": "Verloopt",
     "passwordProtected": "Wachtwoordbeveiligd",
+    "password": "Wachtwoord",
+    "protected": "Beveiligd",
     "scanQR": "Scan QR-code om te delen",
     "showQRCode": "QR-code tonen",
     "confirmRevoke": "Weet je zeker dat je deze deel link wilt intrekken? Iedereen met de link kan dit transcript niet meer bekijken."
   },
   "shared": {
+    "translate": "Vertalen",
     "loading": "Transcript laden...",
     "passwordRequired": "Wachtwoord vereist",
     "passwordDescription": "Dit transcript is beveiligd met een wachtwoord. Voer het wachtwoord in om het te bekijken.",
@@ -1218,15 +1235,67 @@
     "readOnly": "Alleen-lezen",
     "analysis": "Analyse",
     "transcript": "Volledig transcript",
+    "summary": "Samenvatting",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "noSummary": "Geen samenvatting beschikbaar",
+    "noTranscript": "Geen transcript beschikbaar",
     "footer": {
-      "poweredBy": "Mogelijk gemaakt door Neural Summary",
+      "poweredBy": "Mogelijk gemaakt door",
       "copyright": "© {year} Neural Summary. Alle rechten voorbehouden."
+    },
+    "importCta": {
+      "title": "Opslaan in je bibliotheek",
+      "description": "Importeer dit gesprek om het altijd vanuit je dashboard te kunnen openen.",
+      "signUp": "Gratis aanmelden",
+      "logIn": "Inloggen",
+      "signUpTitle": "Opslaan in je bibliotheek",
+      "signUpDescription": "Meld je aan om dit gesprek te importeren en altijd toegang te hebben.",
+      "importButton": "Importeren",
+      "importing": "Importeren...",
+      "imported": "Geïmporteerd"
+    },
+    "userMenu": {
+      "dashboard": "Naar dashboard",
+      "signOut": "Uitloggen"
+    }
+  },
+  "sharedWithMe": {
+    "title": "Gedeeld met jou",
+    "backToList": "Terug naar gedeeld",
+    "sharedBy": "Gedeeld door {name}",
+    "empty": {
+      "title": "Geen gedeelde gesprekken",
+      "description": "Wanneer iemand een gesprek met je deelt en je het importeert, verschijnt het hier."
+    },
+    "importButton": "Importeren naar bibliotheek",
+    "importing": "Importeren...",
+    "imported": "Geïmporteerd",
+    "importedOn": "Geïmporteerd op {date}",
+    "expiresIn": "Nog {days} dagen",
+    "expiresToday": "Verloopt vandaag",
+    "expired": "Verlopen",
+    "expiredTitle": "Dit gesprek is verlopen",
+    "expiredDescription": "De deellink voor dit gesprek is verlopen en de inhoud is niet meer beschikbaar.",
+    "unavailable": "Niet meer beschikbaar",
+    "unavailableTitle": "Gesprek niet beschikbaar",
+    "unavailableDescription": "Dit gesprek is niet meer beschikbaar. De eigenaar heeft mogelijk de toegang ingetrokken of het origineel verwijderd.",
+    "expirationWarning": "Dit gesprek verloopt over {days} dagen",
+    "removeConfirm": "Verwijderen uit je bibliotheek?",
+    "removeDescription": "Dit heeft geen invloed op het originele gesprek.",
+    "remove": "Verwijderen",
+    "yes": "Ja",
+    "no": "Nee",
+    "error": {
+      "loadFailed": "Laden van gedeelde gesprekken mislukt",
+      "importFailed": "Importeren van gesprek mislukt",
+      "removeFailed": "Verwijderen van gesprek mislukt"
     }
   },
   "terms": {
     "meta": {
       "title": "Servicevoorwaarden - Neural Summary",
-      "description": "Servicevoorwaarden voor Neural Summary's AI-aangedreven transcriptie- en analyseservice. AVG-conforme algemene voorwaarden."
+      "description": "Servicevoorwaarden voor Neural Summary's AI-aangedreven gesprekverwerking en AI Asset generatieservice. AVG-conforme algemene voorwaarden."
     },
     "title": "Servicevoorwaarden",
     "effectiveDate": "Ingangsdatum",
@@ -1243,12 +1312,12 @@
       },
       "serviceDescription": {
         "title": "Servicebeschrijving",
-        "content": "Neural Summary biedt AI-aangedreven audiotranscriptie en intelligente analyseservices. Ons platform omvat:",
+        "content": "Neural Summary biedt AI-aangedreven gesprekverwerking en intelligente AI Asset generatieservices. Ons platform omvat:",
         "features": {
-          "transcription": "Automatische transcriptie van audiobestanden met behulp van geavanceerde AI-technologie",
-          "analysis": "Intelligente samenvatting en analyse van de inhoud",
-          "storage": "Veilige cloudopslag van uw transcripties en audiobestanden",
-          "sharing": "Mogelijkheid om transcripties te delen met gecontroleerde toegang"
+          "transcription": "Automatische verwerking van audiobestanden naar gesprekken met behulp van geavanceerde AI-technologie",
+          "analysis": "Intelligente AI Asset generatie uit uw gesprekinhoud",
+          "storage": "Veilige cloudopslag van uw gesprekken. Audiobestanden worden 30 dagen bewaard voor support, daarna automatisch verwijderd",
+          "sharing": "Mogelijkheid om gesprekken te delen met gecontroleerde toegang"
         }
       },
       "pricing": {
@@ -1300,7 +1369,7 @@
         },
         "userContent": {
           "title": "Uw Inhoud",
-          "content": "U behoudt alle rechten op de inhoud die u uploadt naar de Service. Door inhoud te uploaden, verleent u ons een beperkte licentie om uw inhoud te verwerken, op te slaan en weer te geven uitsluitend voor het doel van het verlenen van de Service aan u."
+          "content": "U behoudt alle rechten op de gesprekken en AI Assets die u maakt met de Service. Door inhoud te uploaden, verleent u ons een beperkte licentie om uw inhoud te verwerken, op te slaan en weer te geven uitsluitend voor het doel van het verlenen van de Service aan u."
         },
         "license": {
           "title": "Licentieverlening",
@@ -1365,7 +1434,7 @@
   "privacy": {
     "meta": {
       "title": "Privacybeleid - Neural Summary",
-      "description": "Privacybeleid voor Neural Summary. Leer hoe wij uw persoonsgegevens verzamelen, gebruiken en beschermen in overeenstemming met de AVG."
+      "description": "Privacybeleid voor Neural Summary. Leer hoe wij uw gesprekken en AI Assets verzamelen, gebruiken en beschermen in overeenstemming met de AVG."
     },
     "title": "Privacybeleid",
     "effectiveDate": "Laatst bijgewerkt",
@@ -1398,9 +1467,9 @@
         },
         "usage": {
           "title": "Gebruiksgegevens",
-          "audioFiles": "Audiobestanden die u uploadt voor transcriptie",
-          "transcriptions": "Transcripties en analyseresultaten",
-          "analysisResults": "AI-gegenereerde samenvattingen en inzichten",
+          "audioFiles": "Audiobestanden die u uploadt voor verwerking",
+          "transcriptions": "Gesprekken en hun transcripties",
+          "analysisResults": "AI Assets en gegenereerde inzichten",
           "preferences": "Gebruikersvoorkeuren en instellingen"
         },
         "technical": {
@@ -1416,7 +1485,7 @@
         "content": "Wij verwerken uw persoonsgegevens op basis van de volgende rechtsgronden:",
         "contract": {
           "title": "Contractuitvoering",
-          "content": "Verwerking die noodzakelijk is om u onze transcriptie- en analyseservices te bieden."
+          "content": "Verwerking die noodzakelijk is om u onze gesprekverwerking en AI Asset generatieservices te bieden."
         },
         "consent": {
           "title": "Toestemming",
@@ -1435,7 +1504,7 @@
         "title": "Hoe Wij Uw Gegevens Gebruiken",
         "content": "Wij gebruiken de verzamelde gegevens voor verschillende doeleinden:",
         "purposes": {
-          "service": "Om onze transcriptie- en analyseservices te leveren en te onderhouden",
+          "service": "Om onze gesprekverwerking en AI Asset generatieservices te leveren en te onderhouden",
           "communication": "Om met u te communiceren over uw account en service-updates",
           "improvement": "Om uw ervaring te verbeteren en te personaliseren",
           "security": "Om technische problemen en beveiligingsdreigingen te detecteren, voorkomen en aan te pakken",
@@ -1448,11 +1517,11 @@
         "content": "Wij kunnen uw gegevens delen met vertrouwde externe serviceproviders die ons helpen bij het beheren van onze Service:",
         "serviceProviders": {
           "title": "Serviceproviders",
-          "hosting": "Cloudinfrastructuur",
-          "transcription": "Transcriptieservices",
-          "analysis": "AI-analyse",
-          "email": "E-mailservice",
-          "analytics": "Analytics"
+          "hosting": "Enterprise-grade cloudinfrastructuur voor veilige gegevensopslag en -verwerking",
+          "transcription": "Toonaangevende spraak-naar-tekst services voor nauwkeurige transcriptie",
+          "analysis": "Enterprise-grade AI-modellen voor intelligente inhoudsanalyse",
+          "email": "Beveiligde e-mailbezorgservices voor transactionele communicatie",
+          "analytics": "Privacy-gerichte analytics voor serviceverbetering"
         },
         "notice": "Wij verkopen nooit uw persoonsgegevens aan externe partijen. Alle serviceproviders zijn gebonden aan strikte vertrouwelijkheidsovereenkomsten en kunnen uw gegevens alleen gebruiken om diensten aan ons te verlenen."
       },
@@ -1462,7 +1531,7 @@
         "periods": {
           "title": "Bewaringsperioden",
           "account": "Accountgegevens",
-          "transcriptions": "Transcripties",
+          "transcriptions": "Gesprekken",
           "audioFiles": "Audiobestanden",
           "logs": "Systeemlogboeken",
           "analytics": "Analytische gegevens"
@@ -1580,25 +1649,26 @@
     "yourUsage": "Uw Verbruik",
     "resetsOn": "Wordt gereset op",
     "upgradePlan": "Upgrade Abonnement",
-    "transcriptions": "Transcripties",
+    "transcriptions": "Gesprekken",
     "hours": "Uren",
     "remaining": "resterend",
-    "onDemandAnalyses": "On-Demand Analyses"
+    "onDemandAnalyses": "AI Assets"
   },
   "pricing": {
     "metadata": {
       "title": "Prijzen - Neural Summary",
-      "description": "Kies het perfecte abonnement voor je transcriptiebehoeften. Van gratis tot enterprise, we hebben een abonnement dat past bij je workflow."
+      "description": "Eenvoudige premium prijzen. Probeer Pro 14 dagen gratis. Transformeer je gesprekken naar professionele documenten."
     },
     "hero": {
-      "title": "Eenvoudige, transparante prijzen",
-      "subtitle": "Kies het abonnement dat bij je past. Begin gratis, upgrade wanneer je wilt.",
-      "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij het afrekenen.",
+      "title": "Prijzen voor werk dat telt",
+      "subtitle": "Start gratis. Upgrade wanneer je output ertoe doet.",
+      "trialMessage": "Probeer Pro 14 dagen gratis. Geen creditcard vereist.",
+      "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij afrekenen.",
       "annual": "Jaarlijks",
       "monthly": "Maandelijks",
       "save25": "Bespaar 25%",
       "noCreditCard": "Geen creditcard vereist",
-      "freeTrial": "14 dagen gratis proef",
+      "freeTrial": "14 dagen gratis proefperiode",
       "viewComparison": "Bekijk gedetailleerde vergelijking",
       "billedAnnually": "Jaarlijks gefactureerd ({amount}/jaar)"
     },
@@ -1607,17 +1677,18 @@
         "name": "Gratis",
         "title": "Gratis",
         "price": "Gratis",
-        "description": "Perfect om Neural Summary uit te proberen",
+        "description": "Ontdek de mogelijkheden. Probeer een paar gesprekken, vrijblijvend.",
         "cta": "Aan de slag",
         "features": {
-          "transcriptions": "3 transcripties/maand",
-          "duration": "Max 30 minuten per bestand",
-          "fileSize": "Max 100MB bestandsgrootte",
+          "transcriptions": "5 gesprekken/maand",
+          "duration": "60 minuten max per bestand",
+          "fileSize": "100MB max bestandsgrootte",
           "analyses": "Alleen basissamenvatting",
-          "coreAnalyses": "4 kernanalyses inbegrepen",
-          "onDemand": "2 on-demand analyses/maand",
-          "translation": "Vertaalfuncties",
-          "sharing": "Transcripten delen",
+          "coreAnalyses": "4 AI-outputs inbegrepen",
+          "onDemand": "2 on-demand AI-outputs/maand",
+          "translation": "Vertaling (alleen Pro)",
+          "askQuestions": "Vragen stellen (alleen Pro)",
+          "sharing": "Gesprekken delen",
           "batch": "Batchverwerking",
           "storage": "90 dagen opslag",
           "support": "Community ondersteuning"
@@ -1625,67 +1696,70 @@
         "period": "/maand"
       },
       "professional": {
-        "name": "Professioneel",
-        "title": "Professioneel",
+        "name": "Pro",
+        "title": "Pro",
         "period": "/maand",
-        "description": "Voor professionals die regelmatig notities maken",
-        "cta": "Aan de slag",
+        "description": "Voor professionals die regelmatig professionele documenten nodig hebben.",
+        "cta": "Start gratis proefperiode",
         "badge": "Meest populair",
         "recommended": "AANBEVOLEN",
         "guarantee": "30 dagen geld-terug-garantie",
+        "trialBadge": "14 dagen gratis proefperiode",
         "features": {
-          "transcriptions": "Onbeperkte transcripties",
+          "transcriptions": "Onbeperkte gesprekken",
           "hours": "60 uur/maand inbegrepen",
-          "unlimited": "Onbeperkte transcripties",
+          "unlimited": "Onbeperkte gesprekken",
           "duration": "60 uur/maand inbegrepen",
           "overageRate": "{overageRate} per extra uur",
           "overage": "Overschrijding: {overageRate}/uur",
-          "fileSize": "Max 5GB bestandsgrootte",
-          "analyses": "Alle analysetypes",
-          "allAnalyses": "Alle analysetypes",
-          "onDemandAnalyses": "Onbeperkte on-demand analyses",
+          "fileSize": "5GB max bestandsgrootte",
+          "analyses": "Alle AI-outputtypes",
+          "allAnalyses": "Alle AI-outputtypes",
+          "onDemandAnalyses": "Onbeperkte on-demand AI-outputs",
           "storage": "Onbeperkte opslag",
           "sharing": "Geavanceerde deelfuncties",
           "advancedSharing": "Geavanceerd delen & samenwerken",
           "translation": "Vertaling naar 50+ talen",
+          "askQuestions": "Vragen stellen met AI-antwoorden",
           "batch": "Batchverwerking",
           "priority": "Prioriteitsverwerking",
           "support": "Prioriteit e-mail ondersteuning"
         }
       },
-      "payg": {
-        "name": "Pay-As-You-Go",
-        "title": "Pay-As-You-Go",
-        "priceUnit": "/uur",
-        "description": "Perfect voor incidenteel gebruik",
-        "cta": "Koop tegoed",
+      "enterprise": {
+        "name": "Enterprise",
+        "title": "Enterprise",
+        "customPrice": "Neem contact op",
+        "description": "Voor teams die controle, consistentie en compliance nodig hebben.",
+        "cta": "Neem contact op",
         "features": {
-          "transcriptions": "Onbeperkte transcripties",
-          "credits": "Tegoed vervalt nooit",
-          "noSubscription": "Geen abonnement vereist",
-          "allFeatures": "Alle functies inbegrepen",
-          "noExpiry": "Tegoed vervalt nooit",
-          "minimum": "Minimale aankoop",
-          "rate": "Flexibel uurtarief",
-          "fileSize": "Max 5GB bestandsgrootte",
-          "analyses": "Alle analysetypes",
-          "onDemandAnalyses": "Tegoed per analyse",
-          "storage": "180 dagen opslag",
-          "support": "E-mail ondersteuning"
+          "unlimited": "Onbeperkte gesprekken",
+          "unlimitedHours": "Onbeperkte verwerkingsuren",
+          "largeFiles": "10GB max bestandsgrootte",
+          "allAnalyses": "Alle AI-outputtypes",
+          "customIntegrations": "Aangepaste integraties",
+          "sso": "Single sign-on (SSO)",
+          "adminDashboard": "Team admin dashboard",
+          "auditLogs": "Audit logs & compliance",
+          "dedicatedManager": "Toegewijde accountmanager",
+          "customContracts": "Aangepaste contracten & SLA's",
+          "teamManagement": "Teambeheer",
+          "dedicatedSupport": "Toegewijde ondersteuning"
         }
       }
     },
     "finalCta": {
-      "title": "Begin slimmer te notuleren",
-      "subtitle": "Geen creditcard vereist voor gratis abonnement",
-      "button": "Start gratis"
+      "title": "Begin slimmer te creëren",
+      "subtitle": "Transformeer je gesprekken naar professionele documenten",
+      "button": "Start gratis proefperiode",
+      "noCreditCard": "Geen creditcard vereist"
     },
     "comparison": {
       "feature": "Functie",
       "tiers": {
         "free": "Gratis",
-        "professional": "Professioneel",
-        "payg": "Pay-As-You-Go"
+        "professional": "Pro",
+        "enterprise": "Enterprise"
       },
       "categories": {
         "basics": "Basis",
@@ -1693,16 +1767,20 @@
         "features": "Extra functies"
       },
       "features": {
-        "transcriptions": "Transcripties per maand",
+        "transcriptions": "Gesprekken per maand",
         "duration": "Max duur per bestand",
         "fileSize": "Max bestandsgrootte",
         "hours": "Maandelijkse uren inbegrepen",
-        "coreAnalyses": "Kernanalyses",
-        "onDemand": "On-demand analyses",
+        "storageDuration": "Opslagduur",
+        "coreAnalyses": "Kern-AI-outputs",
+        "onDemand": "On-demand AI-outputs",
         "translation": "Vertaling",
+        "askQuestions": "Vragen stellen",
         "sharing": "Deelfuncties",
+        "pdfExport": "PDF-export",
         "batch": "Batchverwerking",
         "priority": "Prioriteitsverwerking",
+        "sso": "Single Sign-On (SSO)",
         "api": "API-toegang"
       },
       "title": "Vergelijk abonnementen",
@@ -1716,48 +1794,48 @@
         "email": "E-mail",
         "priorityEmail": "Prioriteit e-mail",
         "hoursIncluded": "60 uur/maand",
-        "payPerUse": "Betaal per gebruik",
-        "creditBased": "Op basis van tegoed",
-        "comingSoon": "Binnenkort beschikbaar"
+        "comingSoon": "Binnenkort",
+        "storageFree": "30 dagen",
+        "storageUnlimited": "Onbeperkt"
       }
     },
     "faq": {
       "title": "Veelgestelde vragen",
       "questions": {
+        "trial": {
+          "question": "Hoe werkt de 14-daagse gratis proefperiode?",
+          "answer": "Start je proefperiode met volledige toegang tot alle Pro-functies. Geen creditcard vereist. Na 14 dagen kun je kiezen voor een abonnement of doorgaan met ons gratis abonnement."
+        },
         "cost": {
-          "question": "Wat kost het om gesprekken om te zetten in documenten?",
-          "answer": "Professioneel abonnement bevat 60 uur/maand audio-verwerking voor {professionalPrice}. Extra uren kosten {overageRate} per stuk. Pay-As-You-Go is {paygPrice}/uur met tegoed dat nooit vervalt. Gratis abonnement bevat 3 audiobestanden/maand (max 30 min elk)."
+          "question": "Wat kost Neural Summary?",
+          "answer": "Pro-abonnement is {professionalPrice}/maand of {annualPrice}/jaar (bespaar 25%). Extra uren boven 60/maand kosten {overageRate} per stuk. Het gratis abonnement bevat 5 gesprekken/maand."
         },
         "overage": {
           "question": "Wat gebeurt er als ik mijn maandlimiet overschrijd?",
-          "answer": "Professionele gebruikers worden automatisch {overageRate} per extra uur audio-verwerking in rekening gebracht. Gratis gebruikers moeten upgraden om documenten te blijven maken. Pay-As-You-Go gebruikers kopen simpelweg meer tegoed naar behoefte."
+          "answer": "Pro-gebruikers worden automatisch {overageRate} per extra uur audio-verwerking in rekening gebracht. Gratis gebruikers kunnen upgraden naar Pro of wachten tot de volgende maand."
         },
         "cancel": {
-          "question": "Kan ik mijn abonnement altijd opzeggen?",
-          "answer": "Ja! Je kunt altijd opzeggen. Je abonnement blijft actief tot het einde van je factureringsperiode en je wordt niet opnieuw in rekening gebracht."
-        },
-        "currency": {
-          "question": "Welke valuta's ondersteunen jullie?",
-          "answer": "We ondersteunen 15+ valuta's waaronder USD, EUR, GBP, CAD, AUD, JPY en meer. Prijzen worden automatisch omgerekend naar je lokale valuta."
+          "question": "Kan ik mijn abonnement op elk moment opzeggen?",
+          "answer": "Ja! Je kunt op elk moment opzeggen. Je abonnement blijft actief tot het einde van je factureringsperiode en je wordt niet opnieuw in rekening gebracht."
         },
         "upgrade": {
           "question": "Kan ik mijn abonnement upgraden of downgraden?",
-          "answer": "Ja! Upgrades gaan direct in met evenredige kosten. Downgrades gaan in aan het einde van je huidige factureringsperiode, zodat je tot dan je huidige abonnement kunt gebruiken."
+          "answer": "Ja! Upgrades gaan direct in met evenredige kosten. Downgrades gaan in aan het einde van je huidige factureringsperiode."
         },
-        "payg": {
-          "question": "Hoe werkt Pay-As-You-Go tegoed?",
-          "answer": "Tegoed kost {paygPrice} per uur audio en kan worden gebruikt om elk type document te maken. Het vervalt nooit en kan altijd worden gebruikt. Perfect voor incidentele document-creatie behoeften."
+        "enterprise": {
+          "question": "Wat is inbegrepen bij het Enterprise-abonnement?",
+          "answer": "Enterprise bevat onbeperkte verwerking, SSO (binnenkort), aangepaste integraties, toegewijde ondersteuning en aangepaste contracten. Neem contact op met ons verkoopteam voor prijzen."
         }
       }
     },
     "cta": {
       "title": "Klaar om te beginnen?",
       "subtitle": "Sluit je aan bij duizenden professionals die Neural Summary gebruiken om tijd te besparen en hun werk te verbeteren.",
-      "button": "Start gratis proef"
+      "button": "Start gratis proefperiode"
     },
     "featureCategories": {
-      "transcription": "Transcriptie",
-      "analysis": "Analyse",
+      "transcription": "Basis",
+      "analysis": "AI-outputs",
       "collaboration": "Samenwerking",
       "support": "Ondersteuning"
     }
@@ -1829,6 +1907,7 @@
       "description": "Beheer je abonnement, bekijk gebruik en factureringsgeschiedenis"
     },
     "title": "Abonnement & facturering",
+    "description": "Beheer je abonnement en factuurgegevens.",
     "loading": "Abonnementsgegevens laden...",
     "error": {
       "loadFailed": "Laden van abonnementsgegevens mislukt",
@@ -1840,7 +1919,7 @@
       "title": "Huidig abonnement",
       "free": "Gratis abonnement",
       "professional": "Professioneel abonnement",
-      "payg": "Pay-As-You-Go",
+      "enterprise": "Enterprise abonnement",
       "status": {
         "active": "Actief",
         "cancelled": "Geannuleerd",
@@ -1860,8 +1939,6 @@
       "hours": "Uren",
       "onDemandAnalyses": "On-Demand analyses",
       "resetDate": "Wordt gereset op",
-      "paygCredits": "Beschikbaar tegoed",
-      "buyMore": "Meer tegoed kopen",
       "overage": {
         "title": "Overschrijdingskosten",
         "description": "Je hebt {hours} uur boven je 60-uur limiet deze maand gebruikt",
@@ -1922,7 +1999,6 @@
     "usageThisMonth": "Gebruik deze maand",
     "hoursUsed": "Gebruikte uren",
     "transcriptionsUsed": "Transcripties",
-    "buyMoreCredits": "Meer tegoed kopen",
     "noBillingHistory": "Nog geen factureringsgeschiedenis",
     "downloadInvoice": "Factuur downloaden",
     "overageWarning": "Overschrijdingsgebruik",
@@ -1947,10 +2023,6 @@
         "title": "Bestand te groot",
         "description": "Dit bestand overschrijdt de bestandsgroottelimiet van je abonnement. Upgrade om grotere bestanden te verwerken."
       },
-      "paygCredits": {
-        "title": "Onvoldoende tegoed",
-        "description": "Je hebt niet genoeg tegoed voor deze transcriptie. Koop meer tegoed om door te gaan."
-      },
       "onDemandAnalyses": {
         "title": "Analyselimiet bereikt",
         "description": "Je hebt al je on-demand analyses deze maand gebruikt. Upgrade voor meer analyses of wacht tot volgende maand."
@@ -1959,7 +2031,6 @@
       "limit": "Je limiet",
       "required": "Vereist",
       "upgradeButton": "Upgrade abonnement",
-      "buyCreditsButton": "Koop tegoed",
       "cancelButton": "Annuleren"
     },
     "usageIndicator": {
@@ -2025,6 +2096,275 @@
       "accessDenied": "Toegang geweigerd. Beheerdersrol vereist.",
       "failedToFetch": "Gegevens ophalen mislukt",
       "userNotFound": "Gebruiker niet gevonden"
+    }
+  },
+  "qa": {
+    "title": "Stel vragen",
+    "titleConversation": "Vraag over dit gesprek",
+    "titleFolder": "Zoek in deze map",
+    "description": "Stel een vraag over dit gesprek",
+    "descriptionFolder": "Zoek in {count} gesprekken",
+    "placeholder": "Stel een vraag...",
+    "submit": "Vraag",
+    "loading": "Antwoord zoeken...",
+    "sources": "Bronnen",
+    "answeredIn": "Beantwoord in {time}",
+    "noResults": "Ik kon geen relevante informatie hierover vinden.",
+    "error": "Er ging iets mis. Probeer het opnieuw.",
+    "indexing": "Voorbereiden voor zoeken...",
+    "back": "Terug",
+    "in": "In",
+    "emptyState": "Stel een vraag om door het gesprek te zoeken",
+    "showMore": "Toon {count} meer",
+    "showLess": "Toon minder",
+    "jumpToTimestamp": "Ga naar tijdstip",
+    "copy": "Kopieer antwoord",
+    "copied": "Gekopieerd!",
+    "proFeature": "Pro-functie",
+    "upgradeToAsk": "Upgrade naar Pro om vragen te stellen over je gesprekken en AI-gestuurde antwoorden met bronvermelding te krijgen.",
+    "upgradeToPro": "Upgrade naar Pro"
+  },
+  "folderPicker": {
+    "title": "Verplaats naar map",
+    "close": "Sluiten",
+    "createPlaceholder": "Nieuwe map maken...",
+    "add": "Toevoegen",
+    "noFolder": "Geen map (ongegroepeerd)",
+    "noFoldersYet": "Nog geen mappen. Maak er een hierboven.",
+    "cancel": "Annuleren",
+    "move": "Verplaatsen",
+    "moving": "Verplaatsen...",
+    "moveError": "Gesprek kon niet worden verplaatst",
+    "createError": "Map kon niet worden gemaakt"
+  },
+  "templateSelector": {
+    "base": "BASIS",
+    "baseOutput": "Basisuitvoer (altijd inbegrepen)",
+    "quickActions": "Snelle acties",
+    "additionalOutputs": "Aanvullende uitvoer (optioneel)",
+    "outputTemplates": "Uitvoersjablonen",
+    "selectedAdditionalOutputs": "Je hebt {count, plural, =1 {# aanvullende uitvoer} other {# aanvullende uitvoeren}} geselecteerd",
+    "selectAdditionalHint": "Selecteer aanvullende uitvoer of ga door met alleen het transcript",
+    "templateSelected": "Het geselecteerde sjabloon begeleidt de AI-uitvoer",
+    "skipHint": "Je kunt deze stap overslaan en later uitvoer genereren",
+    "back": "Terug",
+    "continueWithOutputs": "Doorgaan met transcriptie + {count, plural, =1 {# uitvoer} other {# uitvoeren}}",
+    "continueTranscriptOnly": "Alleen met transcriptie doorgaan",
+    "clearSelection": "Selectie wissen",
+    "skipStep": "Stap overslaan",
+    "continueWithTemplate": "Doorgaan met sjabloon",
+    "continueWithoutTemplate": "Doorgaan zonder sjabloon"
+  },
+  "findReplace": {
+    "title": "Zoeken en vervangen",
+    "findPlaceholder": "Zoek tekst...",
+    "replacePlaceholder": "Vervangen door...",
+    "caseSensitive": "Hoofdlettergevoelig",
+    "wholeWord": "Heel woord",
+    "find": "Zoeken",
+    "searching": "Zoeken...",
+    "categories": {
+      "summary": "Samenvatting",
+      "transcript": "Transcript",
+      "aiAssets": "AI-assets"
+    },
+    "patternCategories": {
+      "person_name": "Persoonsnaam",
+      "company_name": "Bedrijfsnaam",
+      "place": "Plaats",
+      "technical_term": "Technische term",
+      "custom": "Aangepast"
+    },
+    "savePattern": "Opslaan voor toekomstige gesprekken",
+    "replaceSelected": "Selectie vervangen",
+    "replaceAll": "Alles vervangen",
+    "replacing": "Bezig met vervangen...",
+    "noMatches": "Geen overeenkomsten gevonden",
+    "matchCount": "{count} overeenkomsten",
+    "matchCountSingular": "1 overeenkomst gevonden",
+    "replacedCount": "{count} voorkomens vervangen",
+    "selectAll": "Alles selecteren",
+    "deselectAll": "Alles deselecteren",
+    "selected": "{count} geselecteerd",
+    "inCategory": "in {category}",
+    "error": "Er is een fout opgetreden",
+    "patternSaved": "Patroon opgeslagen voor toekomstige gesprekken",
+    "suggestions": {
+      "title": "Voorgestelde vervangingen",
+      "description": "Gebaseerd op je opgeslagen patronen",
+      "apply": "Toepassen",
+      "dismiss": "Negeren",
+      "matchesFound": "{count} overeenkomsten gevonden"
+    },
+    "close": "Sluiten",
+    "emptyState": "Voer tekst in om te zoeken en vervangen in dit gesprek",
+    "previousMatch": "Vorige overeenkomst",
+    "nextMatch": "Volgende overeenkomst",
+    "refreshing": "Inhoud vernieuwen...",
+    "pressEnterToSearch": "Druk op Enter om te zoeken",
+    "enterReplaceText": "Voer hierboven de vervangende tekst in",
+    "clearSelection": "Wissen",
+    "replace": "Vervangen"
+  },
+  "examples": {
+    "meta": {
+      "title": "Voorbeelden | Neural Summary",
+      "description": "Eén gesprek wordt vier werkklare documenten. Zie de transformatie."
+    },
+    "hero": {
+      "headline": "Eén gesprek. Eindeloze mogelijkheden.",
+      "subtitle": "Zie wat Neural Summary maakt van een meeting.",
+      "scenarioLabel": "Live generatie"
+    },
+    "scenarios": {
+      "productLaunch": "Productlancering",
+      "clientDiscovery": "Klantgesprek"
+    },
+    "cards": {
+      "actionItems": {
+        "title": "Actiepunten"
+      },
+      "email": {
+        "title": "Follow-up e-mail"
+      },
+      "blogPost": {
+        "title": "Blogartikel"
+      },
+      "linkedin": {
+        "title": "LinkedIn bericht"
+      },
+      "communicationAnalysis": {
+        "title": "Communicatieanalyse"
+      }
+    },
+    "cta": {
+      "headline": "Jouw beurt.",
+      "primaryButton": "Gratis proberen",
+      "secondaryLink": "Bekijk prijzen"
+    },
+    "content": {
+      "productLaunch": {
+        "actionItems": {
+          "items": [
+            { "task": "Q1-tijdlijn afronden en delen met stakeholders", "owner": "Sarah", "deadline": "8 jan" },
+            { "task": "Beta feedback bekijken en bugfixes prioriteren", "owner": "Dev Team", "deadline": "10 jan" },
+            { "task": "Persbericht en mediakit voorbereiden", "owner": "Marketing", "deadline": "20 jan" },
+            { "task": "Klantwebinar plannen voor lanceringweek", "owner": "CS Team", "deadline": "25 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Productlancering planning - Vervolgstappen",
+          "greeting": "Hoi team,",
+          "intro": "Hier de samenvatting van onze meeting vandaag over de Q1-productlancering.",
+          "decisionsLabel": "Bevestigde beslissingen",
+          "decisions": [
+            "Lanceerdatum bevestigd voor 28 januari",
+            "Beta programma met een week verlengd voor extra testen",
+            "Marketing budget goedgekeurd voor influencer campagne"
+          ],
+          "closing": "Bedankt allemaal.",
+          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+        },
+        "blogPost": {
+          "headline": "Wat we leerden bij de lancering in januari",
+          "subheading": "Lessen van ons team over momentum opbouwen vóór dag één",
+          "hook": "Het oude draaiboek zegt: wacht tot het perfect is. Wij probeerden iets anders.",
+          "body": "Onze beta testers vonden niet alleen bugs. Ze vormden de productrichting. Hun feedback leidde tot een complete herziening van onze onboarding flow. Het resultaat: 40% betere activatiecijfers nog vóór de lancering.",
+          "quote": { "text": "Het product voelde alsof het voor ons gebouwd was, niet alleen aan ons verkocht.", "attribution": "Beta Gebruiker" },
+          "imageAlt": "Abstracte geometrische vormen voor innovatie"
+        },
+        "linkedin": {
+          "hook": "We hadden onze lancering bijna 3 maanden uitgesteld.",
+          "bullets": [
+            "Beta feedback > interne aannames",
+            "Momentum verslaat perfectie",
+            "Je eerste gebruikers definiëren je product"
+          ],
+          "result": "2.000 aanmeldingen in de eerste week. Niet omdat we perfect waren. Omdat we aanwezig waren.",
+          "callToAction": "Wat is de grootste les van je laatste lancering?",
+          "author": { "name": "Sarah Mitchell", "title": "Product Manager bij TechFlow", "initials": "SM" }
+        }
+      },
+      "clientDiscovery": {
+        "actionItems": {
+          "items": [
+            { "task": "Voorstel sturen met drie pakketopties", "owner": "Marcus", "deadline": "15 jan" },
+            { "task": "Technische deep-dive plannen met hun CTO", "owner": "Marcus", "deadline": "12 jan" },
+            { "task": "Case study voorbereiden van vergelijkbaar fintech project", "owner": "Team", "deadline": "14 jan" },
+            { "task": "Tijdlijn opstellen voor Q2 implementatie", "owner": "Marcus", "deadline": "18 jan" }
+          ]
+        },
+        "email": {
+          "subject": "Fijn om gesproken te hebben - Vervolgstappen",
+          "greeting": "Hoi David,",
+          "intro": "Bedankt dat je de tijd hebt genomen om je uitdagingen met me te delen. De situatie van je team is precies het type probleem waarin wij gespecialiseerd zijn.",
+          "decisionsLabel": "Besproken kernpunten",
+          "decisions": [
+            "Mobile-first aanpak afgestemd op jullie gebruikersdemografie",
+            "Gefaseerde uitrol beginnend met kernbetalingsfuncties",
+            "Integratie met jullie bestaande Salesforce instantie"
+          ],
+          "closing": "Ik kijk uit naar de mogelijkheid om samen te werken.",
+          "signature": { "name": "Marcus Chen", "title": "Senior Consultant", "initials": "MC" }
+        },
+        "blogPost": {
+          "headline": "Het kennismakingsgesprek dat mijn manier van verkopen veranderde",
+          "subheading": "Waarom luisteren altijd beter is dan presenteren",
+          "hook": "Vroeger ging ik kennismakingsgesprekken in met een deck. Nu ga ik binnen met vragen.",
+          "body": "De klant noemde zijn echte probleem na 47 minuten. Als ik had gepresenteerd, had ik het helemaal gemist. Zijn team worstelde niet met technologie. Ze verdronken in handmatige processen waar niemand tijd voor had.",
+          "quote": { "text": "Je begreep ons probleem voordat we klaar waren met uitleggen.", "attribution": "Klantfeedback" },
+          "imageAlt": "Abstracte vormen voor gesprek en verbinding"
+        },
+        "communicationAnalysis": {
+          "overallAssessment": "Sterke discovery-vaardigheden met ruimte om het klantbegrip te verdiepen. Je stelt goede vragen maar zou antwoorden meer kunnen laten ademen.",
+          "dimensions": {
+            "clarity": { "name": "Helderheid", "strength": "Vragen waren specifiek en uitvoerbaar", "improvement": "Kernpunten samenvatten voordat je verdergaat" },
+            "activeListening": { "name": "Actief luisteren", "strength": "Bouwde natuurlijk voort op klantantwoorden", "improvement": "Langer pauzeren na complexe antwoorden" }
+          }
+        }
+      }
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact | Neural Summary",
+      "description": "Neem contact op met het Neural Summary team"
+    },
+    "title": "Neem contact op",
+    "description": "Heb je een vraag of feedback? We horen graag van je.",
+    "form": {
+      "name": "Naam",
+      "namePlaceholder": "Je naam",
+      "email": "E-mail",
+      "emailPlaceholder": "jij@voorbeeld.nl",
+      "subject": "Onderwerp",
+      "subjectPlaceholder": "Selecteer een onderwerp",
+      "message": "Bericht",
+      "messagePlaceholder": "Hoe kunnen we helpen?",
+      "submit": "Verstuur bericht",
+      "submitting": "Versturen...",
+      "subjects": {
+        "general": "Algemene vraag",
+        "support": "Technische ondersteuning",
+        "sales": "Verkoop",
+        "partnership": "Samenwerking"
+      }
+    },
+    "success": {
+      "title": "Bericht verzonden",
+      "description": "Bedankt voor je bericht. We reageren binnen 24 uur."
+    },
+    "error": {
+      "title": "Er ging iets mis",
+      "description": "Probeer het opnieuw of mail ons direct via hello@neuralsummary.com."
+    },
+    "validation": {
+      "nameRequired": "Naam is verplicht",
+      "emailRequired": "E-mail is verplicht",
+      "emailInvalid": "Voer een geldig e-mailadres in",
+      "subjectRequired": "Selecteer een onderwerp",
+      "messageRequired": "Bericht is verplicht",
+      "messageMinLength": "Bericht moet minimaal 10 tekens bevatten"
     }
   }
 }

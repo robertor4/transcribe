@@ -30,27 +30,18 @@ export function useTheme() {
 
   const applyTheme = (mode: ThemeMode) => {
     const root = document.documentElement;
-    console.log('[useTheme] Applying theme:', mode);
-    console.log('[useTheme] Current classes before:', root.className);
-
     root.classList.remove('light', 'dark');
 
-    if (mode === 'light') {
-      // Light mode - remove dark class
-      console.log('[useTheme] Setting light mode - removing dark class');
-    } else if (mode === 'dark') {
-      console.log('[useTheme] Setting dark mode - adding dark class');
+    if (mode === 'dark') {
       root.classList.add('dark');
-    } else {
+    } else if (mode === 'system') {
       // System mode - respect OS preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      console.log('[useTheme] System mode - prefers dark?', prefersDark);
       if (prefersDark) {
         root.classList.add('dark');
       }
     }
-
-    console.log('[useTheme] Current classes after:', root.className);
+    // Light mode - no dark class needed
   };
 
   const setTheme = (newTheme: ThemeMode) => {

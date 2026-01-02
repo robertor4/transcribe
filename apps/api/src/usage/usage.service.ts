@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { SUBSCRIPTION_TIERS, UserRole } from '@transcribe/shared';
 import { PaymentRequiredException } from '../common/exceptions/payment-required.exception';
 
@@ -10,6 +11,7 @@ export class UsageService {
 
   constructor(
     private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
     private configService: ConfigService,
   ) {}
 
@@ -22,7 +24,7 @@ export class UsageService {
     fileSizeBytes: number,
     estimatedDurationMinutes: number,
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -167,34 +169,6 @@ export class UsageService {
       }
     }
 
-    // Check PAYG credits
-    if (tier === 'payg') {
-      const estimatedHours = estimatedDurationMinutes / 60;
-      const requiredCredits = estimatedHours; // 1 credit = 1 hour
-      const availableCredits = user.paygCredits || 0;
-
-      if (availableCredits < requiredCredits) {
-        throw new PaymentRequiredException(
-          `Insufficient PAYG credits. Required: ${requiredCredits.toFixed(2)} hours, Available: ${availableCredits.toFixed(2)} hours. Purchase more credits to continue.`,
-          'QUOTA_EXCEEDED_PAYG_CREDITS',
-        );
-      }
-
-      // Check file size limit (5GB for PAYG)
-      if (
-        tierLimits.limits.maxFileSize &&
-        fileSizeBytes > tierLimits.limits.maxFileSize
-      ) {
-        const maxSizeGB = Math.floor(
-          tierLimits.limits.maxFileSize / (1024 * 1024 * 1024),
-        );
-        throw new PaymentRequiredException(
-          `File size exceeds PAYG tier limit (${maxSizeGB}GB). Contact support for Enterprise tier.`,
-          'QUOTA_EXCEEDED_FILESIZE',
-        );
-      }
-    }
-
     this.logger.log(`Quota check passed for user ${userId} (${tier})`);
   }
 
@@ -203,7 +177,7 @@ export class UsageService {
    * @throws PaymentRequiredException if quota exceeded
    */
   async checkOnDemandAnalysisQuota(userId: string): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -253,7 +227,7 @@ export class UsageService {
     transcriptionId: string,
     durationSeconds: number,
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -275,24 +249,9 @@ export class UsageService {
       `Tracking transcription for user ${userId}: +${durationHours.toFixed(2)} hours, total: ${usage.hours.toFixed(2)} hours`,
     );
 
-    // Deduct PAYG credits if applicable
-    if (tier === 'payg') {
-      const currentCredits = user.paygCredits || 0;
-      const newCredits = Math.max(0, currentCredits - durationHours);
-
-      await this.firebaseService.updateUser(userId, {
-        paygCredits: newCredits,
-        usageThisMonth: usage,
-      });
-
-      this.logger.log(
-        `Deducted ${durationHours.toFixed(2)} PAYG credits from user ${userId}. Remaining: ${newCredits.toFixed(2)}`,
-      );
-    } else {
-      await this.firebaseService.updateUser(userId, {
-        usageThisMonth: usage,
-      });
-    }
+    await this.userRepository.updateUser(userId, {
+      usageThisMonth: usage,
+    });
 
     // Create usage record for analytics
     try {
@@ -303,7 +262,6 @@ export class UsageService {
         durationHours,
         type: 'transcription',
         tier,
-        cost: tier === 'payg' ? Math.ceil(durationHours * 150) : undefined, // $1.50/hour in cents
       });
     } catch (error) {
       this.logger.error(`Failed to create usage record: ${error.message}`);
@@ -318,14 +276,14 @@ export class UsageService {
    */
   async trackOnDemandAnalysis(
     userId: string,
-    analysisId: string,
+    _analysisId: string, // Reserved for future analytics/logging
   ): Promise<void> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const tier = user.subscriptionTier || 'free';
+    // tier is available for future tier-specific tracking
     const usage = user.usageThisMonth || {
       hours: 0,
       transcriptions: 0,
@@ -335,7 +293,7 @@ export class UsageService {
 
     usage.onDemandAnalyses += 1;
 
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       usageThisMonth: usage,
     });
 
@@ -351,7 +309,7 @@ export class UsageService {
     hours: number;
     amount: number; // in cents
   }> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       return { hours: 0, amount: 0 };
     }
@@ -389,7 +347,7 @@ export class UsageService {
    * Reset monthly usage (called by cron job)
    */
   async resetMonthlyUsage(userId: string): Promise<void> {
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       usageThisMonth: {
         hours: 0,
         transcriptions: 0,
@@ -423,7 +381,7 @@ export class UsageService {
     percentUsed: number;
     warnings: string[];
   }> {
-    const user = await this.firebaseService.getUser(userId);
+    const user = await this.userRepository.getUser(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -471,12 +429,6 @@ export class UsageService {
         `You have ${overage.hours.toFixed(2)} hours of overage charges ($${(overage.amount / 100).toFixed(2)})`,
       );
     }
-    if (tier === 'payg' && user.paygCredits && user.paygCredits < 5) {
-      warnings.push(
-        `Low PAYG credits: ${user.paygCredits.toFixed(2)} hours remaining`,
-      );
-    }
-
     return {
       tier,
       usage,
@@ -549,6 +501,7 @@ export class UsageService {
   /**
    * Get incomplete reset job (for resuming after crash)
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getIncompleteResetJob(): Promise<any | null> {
     const db = this.firebaseService['db'];
 
@@ -574,6 +527,7 @@ export class UsageService {
   /**
    * Get reset job status by ID
    */
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   async getResetJobStatus(jobId: string): Promise<any | null> {
     const db = this.firebaseService['db'];
 

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AnalysisTemplate } from '@transcribe/shared';
 import {
-  ANALYSIS_TEMPLATES,
   getTemplateById,
   getTemplatesByCategory,
   getFeaturedTemplates,

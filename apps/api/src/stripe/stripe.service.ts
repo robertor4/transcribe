@@ -1,12 +1,7 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
@@ -28,7 +23,7 @@ export class StripeService {
 
   constructor(
     private configService: ConfigService,
-    private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
     private analyticsService: AnalyticsService,
   ) {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
@@ -50,7 +45,7 @@ export class StripeService {
     name?: string,
   ): Promise<string> {
     // Check if user already has a Stripe customer ID
-    const user = await this.firebaseService.getUserById(userId);
+    const user = await this.userRepository.getUserById(userId);
     if (user?.stripeCustomerId) {
       this.logger.log(
         `User ${userId} already has Stripe customer: ${user.stripeCustomerId}`,
@@ -69,7 +64,7 @@ export class StripeService {
     });
 
     // Save customer ID to user document
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       stripeCustomerId: customer.id,
       updatedAt: new Date(),
     });
@@ -152,64 +147,6 @@ export class StripeService {
     });
 
     this.logger.log(`Created checkout session: ${session.id}`);
-    return session;
-  }
-
-  /**
-   * Create Stripe Checkout session for PAYG credits (one-time payment)
-   */
-  async createPaygCheckoutSession(
-    userId: string,
-    email: string,
-    amount: number, // Amount in USD cents
-    hours: number,
-    successUrl: string,
-    cancelUrl: string,
-    locale?: string,
-    currency?: string,
-    userName?: string,
-  ): Promise<Stripe.Checkout.Session> {
-    this.logger.log(
-      `Creating PAYG checkout for user ${userId}, amount: $${amount / 100}, hours: ${hours}, currency: ${currency || 'auto'}`,
-    );
-
-    // Get or create customer
-    const customerId = await this.getOrCreateCustomer(userId, email, userName);
-
-    // Create checkout session for one-time payment
-    const session = await this.stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: currency || 'usd',
-            product_data: {
-              name: 'Neural Summary Credits',
-              description: `${hours} hours of transcription credit`,
-            },
-            unit_amount: amount,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
-      automatic_tax: {
-        enabled: true,
-      },
-      customer_update: {
-        address: 'auto', // Save address entered in checkout to customer
-      },
-      metadata: {
-        userId,
-        type: 'payg',
-        hours: hours.toString(),
-      },
-    });
-
-    this.logger.log(`Created PAYG checkout session: ${session.id}`);
     return session;
   }
 
@@ -351,10 +288,7 @@ export class StripeService {
   /**
    * Construct webhook event from raw body and signature
    */
-  async constructWebhookEvent(
-    payload: Buffer,
-    signature: string,
-  ): Promise<Stripe.Event> {
+  constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
     const webhookSecret = this.configService.get<string>(
       'STRIPE_WEBHOOK_SECRET',
     );
@@ -390,83 +324,56 @@ export class StripeService {
 
     this.logger.log(`Processing checkout completion for user ${userId}`);
 
-    // Check if it's a subscription or PAYG
-    if (session.mode === 'subscription') {
-      const subscriptionId = session.subscription as string;
-      const tier = session.metadata?.tier as 'professional' | 'business';
-      const billing = session.metadata?.billing || 'monthly';
-
-      // Get actual amount paid (after discounts/coupons/taxes)
-      const amount = session.amount_total || 0;
-      const currency = session.currency || 'usd';
-
-      // Optional: Fetch subscription to log discount information
-      const subscription =
-        await this.stripe.subscriptions.retrieve(subscriptionId);
-      const originalAmount =
-        subscription.items.data[0]?.price?.unit_amount || 0;
-      const discountApplied = originalAmount - amount;
-
-      if (discountApplied > 0) {
-        this.logger.log(
-          `Discount applied: $${discountApplied / 100} (Original: $${originalAmount / 100}, Paid: $${amount / 100})`,
-        );
-      }
-
-      // Update user with subscription info and reset usage
-      await this.firebaseService.updateUser(userId, {
-        subscriptionTier: tier,
-        stripeSubscriptionId: subscriptionId,
-        subscriptionStatus: 'active',
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        updatedAt: new Date(),
-      });
-
-      // Track purchase in GA4 (server-side)
-      await this.analyticsService.trackPurchase(
-        userId,
-        session.id,
-        amount / 100, // Convert cents to dollars
-        currency.toUpperCase(),
-        tier,
-        billing,
-      );
-
-      this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
-    } else if (
-      session.mode === 'payment' &&
-      session.metadata?.type === 'payg'
-    ) {
-      // Add PAYG credits
-      const hours = parseInt(session.metadata.hours || '0', 10);
-      const user = await this.firebaseService.getUserById(userId);
-      const currentCredits = user?.paygCredits || 0;
-      const amount = session.amount_total || 0;
-      const currency = session.currency || 'usd';
-
-      await this.firebaseService.updateUser(userId, {
-        subscriptionTier: 'payg',
-        paygCredits: currentCredits + hours,
-        updatedAt: new Date(),
-      });
-
-      // Track PAYG purchase in GA4
-      await this.analyticsService.trackPurchase(
-        userId,
-        session.id,
-        amount / 100,
-        currency.toUpperCase(),
-        'payg',
-        'one-time',
-      );
-
-      this.logger.log(`Added ${hours} PAYG credits to user ${userId}`);
+    if (session.mode !== 'subscription') {
+      this.logger.warn(`Unexpected session mode: ${session.mode}`);
+      return;
     }
+
+    const subscriptionId = session.subscription as string;
+    const tier = session.metadata?.tier as 'professional' | 'enterprise';
+    const billing = session.metadata?.billing || 'monthly';
+
+    // Get actual amount paid (after discounts/coupons/taxes)
+    const amount = session.amount_total || 0;
+    const currency = session.currency || 'usd';
+
+    // Optional: Fetch subscription to log discount information
+    const subscription =
+      await this.stripe.subscriptions.retrieve(subscriptionId);
+    const originalAmount = subscription.items.data[0]?.price?.unit_amount || 0;
+    const discountApplied = originalAmount - amount;
+
+    if (discountApplied > 0) {
+      this.logger.log(
+        `Discount applied: $${discountApplied / 100} (Original: $${originalAmount / 100}, Paid: $${amount / 100})`,
+      );
+    }
+
+    // Update user with subscription info and reset usage
+    await this.userRepository.updateUser(userId, {
+      subscriptionTier: tier,
+      stripeSubscriptionId: subscriptionId,
+      subscriptionStatus: 'active',
+      usageThisMonth: {
+        hours: 0,
+        transcriptions: 0,
+        onDemandAnalyses: 0,
+        lastResetAt: new Date(),
+      },
+      updatedAt: new Date(),
+    });
+
+    // Track purchase in GA4 (server-side)
+    await this.analyticsService.trackPurchase(
+      userId,
+      session.id,
+      amount / 100, // Convert cents to dollars
+      currency.toUpperCase(),
+      tier,
+      billing,
+    );
+
+    this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
   }
 
   /**
@@ -508,7 +415,7 @@ export class StripeService {
       this.logger.log(`User ${userId} downgraded to free tier`);
     }
 
-    await this.firebaseService.updateUser(userId, updates);
+    await this.userRepository.updateUser(userId, updates);
   }
 
   /**
@@ -526,7 +433,7 @@ export class StripeService {
     this.logger.log(`Processing subscription deletion for user ${userId}`);
 
     // Downgrade to free tier
-    await this.firebaseService.updateUser(userId, {
+    await this.userRepository.updateUser(userId, {
       subscriptionTier: 'free',
       subscriptionStatus: undefined,
       stripeSubscriptionId: undefined,
@@ -550,7 +457,7 @@ export class StripeService {
 
     // Find user by customer ID
     const user =
-      await this.firebaseService.getUserByStripeCustomerId(customerId);
+      await this.userRepository.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
@@ -558,7 +465,7 @@ export class StripeService {
 
     // Reset usage if this is the start of a new billing period
     if (invoice.billing_reason === 'subscription_cycle') {
-      await this.firebaseService.updateUser(user.uid, {
+      await this.userRepository.updateUser(user.uid, {
         usageThisMonth: {
           hours: 0,
           transcriptions: 0,
@@ -585,14 +492,14 @@ export class StripeService {
 
     // Find user by customer ID
     const user =
-      await this.firebaseService.getUserByStripeCustomerId(customerId);
+      await this.userRepository.getUserByStripeCustomerId(customerId);
     if (!user) {
       this.logger.warn(`No user found for customer ${customerId}`);
       return;
     }
 
     // Update subscription status
-    await this.firebaseService.updateUser(user.uid, {
+    await this.userRepository.updateUser(user.uid, {
       subscriptionStatus: 'past_due',
       updatedAt: new Date(),
     });
@@ -605,9 +512,11 @@ export class StripeService {
    * Get supported currencies with their conversion rates
    * Used for displaying pricing in multiple currencies
    */
-  async getSupportedCurrencies(): Promise<
-    Array<{ code: string; name: string; symbol: string }>
-  > {
+  getSupportedCurrencies(): Array<{
+    code: string;
+    name: string;
+    symbol: string;
+  }> {
     return [
       { code: 'USD', name: 'US Dollar', symbol: '$' },
       { code: 'EUR', name: 'Euro', symbol: '€' },

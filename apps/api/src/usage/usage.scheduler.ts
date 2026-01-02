@@ -4,9 +4,10 @@ import {
   OnModuleInit,
   OnApplicationShutdown,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { UsageService } from './usage.service';
 import { FirebaseService } from '../firebase/firebase.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 
 @Injectable()
 export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
@@ -17,6 +18,7 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
   constructor(
     private usageService: UsageService,
     private firebaseService: FirebaseService,
+    private userRepository: UserRepository,
   ) {}
 
   /**
@@ -94,7 +96,7 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
         return;
       }
 
-      const users = await this.firebaseService.getAllUsers();
+      const users = await this.userRepository.getAllUsers();
       this.logger.log(
         `Checking ${users.length} users for missed resets (current month: ${firstOfMonth.toISOString().split('T')[0]})`,
       );
@@ -170,7 +172,7 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
       }
 
       this.logger.log('Starting monthly usage reset for all users...');
-      const users = await this.firebaseService.getAllUsers();
+      const users = await this.userRepository.getAllUsers();
 
       // Filter users if resuming from a crash
       let usersToProcess = users;
@@ -268,9 +270,9 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
     try {
       // Get all Professional and Business tier users
       const professionalUsers =
-        await this.firebaseService.getUsersByTier('professional');
+        await this.userRepository.getUsersByTier('professional');
       const businessUsers =
-        await this.firebaseService.getUsersByTier('business');
+        await this.userRepository.getUsersByTier('business');
       const allUsers = [...professionalUsers, ...businessUsers];
 
       this.logger.log(
@@ -347,11 +349,11 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
 
     try {
       // Get all users with active subscriptions
-      const freeUsers = await this.firebaseService.getUsersByTier('free');
+      const freeUsers = await this.userRepository.getUsersByTier('free');
       const professionalUsers =
-        await this.firebaseService.getUsersByTier('professional');
+        await this.userRepository.getUsersByTier('professional');
       const businessUsers =
-        await this.firebaseService.getUsersByTier('business');
+        await this.userRepository.getUsersByTier('business');
       const allUsers = [...freeUsers, ...professionalUsers, ...businessUsers];
 
       this.logger.log(`Checking ${allUsers.length} users for usage warnings`);

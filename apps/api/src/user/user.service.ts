@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { StorageService } from '../firebase/services/storage.service';
+import { UserRepository } from '../firebase/repositories/user.repository';
 import { StripeService } from '../stripe/stripe.service';
-import { User, UserRole } from '@transcribe/shared';
+import { User } from '@transcribe/shared';
 
 @Injectable()
 export class UserService {
@@ -9,29 +11,22 @@ export class UserService {
 
   constructor(
     private firebaseService: FirebaseService,
+    private storageService: StorageService,
+    private userRepository: UserRepository,
     private stripeService: StripeService,
   ) {}
 
   async getUserProfile(userId: string): Promise<User | null> {
     try {
-      const userDoc = await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .get();
+      const user = await this.userRepository.getUser(userId);
 
-      if (!userDoc.exists) {
+      if (!user) {
         // Create user profile if it doesn't exist
         const userData = await this.createUserProfile(userId);
         return userData;
       }
 
-      const data = userDoc.data();
-      return {
-        uid: userId,
-        ...data,
-        createdAt: data?.createdAt?.toDate() || new Date(),
-        updatedAt: data?.updatedAt?.toDate() || new Date(),
-      } as User;
+      return user;
     } catch (error) {
       this.logger.error(`Error getting user profile for ${userId}:`, error);
       throw error;
@@ -41,31 +36,16 @@ export class UserService {
   async createUserProfile(userId: string): Promise<User> {
     try {
       // Get user info from Firebase Auth
-      const authUser = await this.firebaseService.auth.getUser(userId);
+      const authUser = await this.userRepository.getUserById(userId);
 
-      const userData: Omit<User, 'uid'> = {
-        email: authUser.email || '',
-        emailVerified: authUser.emailVerified || false,
-        displayName: authUser.displayName || undefined,
-        photoURL: authUser.photoURL || undefined,
-        role: UserRole.USER,
-        subscriptionTier: 'free', // Default to free tier
-        usageThisMonth: {
-          hours: 0,
-          transcriptions: 0,
-          onDemandAnalyses: 0,
-          lastResetAt: new Date(),
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      const user = await this.userRepository.createUser({
+        uid: userId,
+        email: authUser?.email || '',
+        displayName: authUser?.displayName || undefined,
+        photoURL: authUser?.photoURL || undefined,
+      });
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .set(userData);
-
-      return { uid: userId, ...userData };
+      return user;
     } catch (error) {
       this.logger.error(`Error creating user profile for ${userId}:`, error);
       throw error;
@@ -85,40 +65,190 @@ export class UserService {
       }
 
       // Update profile in Firestore
+      const updatedAt = new Date();
       const updates = {
         ...profile,
-        updatedAt: new Date(),
+        updatedAt,
       };
-
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
 
       // Also update Firebase Auth profile to keep them in sync
       // This ensures photoURL and displayName are reflected in the user object
-      const authUpdates: { displayName?: string; photoURL?: string } = {};
+      const authUpdates: { displayName?: string; photoURL?: string | null } =
+        {};
       if (profile.displayName !== undefined) {
         authUpdates.displayName = profile.displayName;
       }
       if (profile.photoURL !== undefined) {
-        authUpdates.photoURL = profile.photoURL;
+        // Firebase Auth requires null to clear photoURL, empty string is invalid
+        authUpdates.photoURL = profile.photoURL || null;
       }
 
-      if (Object.keys(authUpdates).length > 0) {
-        await this.firebaseService.auth.updateUser(userId, authUpdates);
-      }
+      // Run Firestore and Auth updates in parallel for better performance
+      await Promise.all([
+        this.userRepository.updateUser(userId, updates),
+        Object.keys(authUpdates).length > 0
+          ? this.firebaseService.auth.updateUser(userId, authUpdates)
+          : Promise.resolve(),
+      ]);
 
-      // Return updated user
-      const updatedUser = await this.getUserProfile(userId);
-      if (!updatedUser) {
-        throw new Error('Failed to retrieve updated user');
-      }
-
-      return updatedUser;
+      // Return merged user data without extra fetch
+      return {
+        ...user,
+        ...profile,
+        updatedAt,
+      } as User;
     } catch (error) {
       this.logger.error(`Error updating profile for user ${userId}:`, error);
       throw error;
+    }
+  }
+
+  /**
+   * Upload a profile photo to Firebase Storage and update user profile
+   * @param userId - The user ID
+   * @param file - The uploaded file (must be image/jpeg or image/png, max 5MB)
+   * @returns The public URL of the uploaded photo
+   */
+  async uploadProfilePhoto(
+    userId: string,
+    file: Express.Multer.File,
+  ): Promise<string> {
+    try {
+      // Validate file type
+      const allowedMimeTypes = ['image/jpeg', 'image/png'];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        throw new Error(
+          'Invalid file type. Only JPG and PNG files are allowed.',
+        );
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new Error('File too large. Maximum size is 5MB.');
+      }
+
+      // Get file extension from mimetype
+      const ext = file.mimetype === 'image/jpeg' ? 'jpg' : 'png';
+
+      // Generate unique filename - use 'profiles/' path to match storage.rules
+      const timestamp = Date.now();
+      const filePath = `profiles/${userId}/${timestamp}.${ext}`;
+
+      // Get the user's current photo URL to delete old photo later
+      const currentUser = await this.getUserProfile(userId);
+      const oldPhotoPath =
+        currentUser?.photoURL?.includes('profiles/') ||
+        currentUser?.photoURL?.includes('profile-photos/')
+          ? this.extractPathFromUrl(currentUser.photoURL)
+          : null;
+
+      // Upload to Firebase Storage
+      const bucket = this.firebaseService.storageService.bucket();
+      const fileRef = bucket.file(filePath);
+
+      await fileRef.save(file.buffer, {
+        contentType: file.mimetype,
+        metadata: {
+          cacheControl: 'public, max-age=31536000', // 1 year cache
+        },
+      });
+
+      // Generate a signed URL with maximum expiration (7 days is the max for V4 signatures)
+      // For profile photos, we'll regenerate the URL when it's close to expiring
+      // or use a public bucket policy
+      const [signedUrl] = await fileRef.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days (max for V4)
+      });
+
+      const publicUrl = signedUrl;
+
+      // Update user profile with new photo URL
+      await this.updateUserProfile(userId, { photoURL: publicUrl });
+
+      // Delete old profile photo if it was a custom upload
+      if (oldPhotoPath) {
+        try {
+          await bucket.file(oldPhotoPath).delete();
+          this.logger.log(`Deleted old profile photo: ${oldPhotoPath}`);
+        } catch {
+          // Don't fail if old photo deletion fails
+          this.logger.warn(
+            `Failed to delete old profile photo: ${oldPhotoPath}`,
+          );
+        }
+      }
+
+      this.logger.log(
+        `Profile photo uploaded for user ${userId}: ${publicUrl}`,
+      );
+      return publicUrl;
+    } catch (error) {
+      this.logger.error(`Error uploading profile photo for ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete user's profile photo from storage and clear photoURL
+   */
+  async deleteProfilePhoto(userId: string): Promise<void> {
+    try {
+      const user = await this.getUserProfile(userId);
+
+      if (
+        user?.photoURL?.includes('profiles/') ||
+        user?.photoURL?.includes('profile-photos/')
+      ) {
+        const filePath = this.extractPathFromUrl(user.photoURL);
+        if (filePath) {
+          const bucket = this.firebaseService.storageService.bucket();
+          try {
+            await bucket.file(filePath).delete();
+            this.logger.log(`Deleted profile photo: ${filePath}`);
+          } catch {
+            this.logger.warn(`Failed to delete profile photo: ${filePath}`);
+          }
+        }
+      }
+
+      // Clear the photoURL in user profile
+      await this.updateUserProfile(userId, { photoURL: '' });
+      this.logger.log(`Profile photo cleared for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error deleting profile photo for ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Extract Firebase Storage path from public URL
+   * Handles multiple formats:
+   * - https://storage.googleapis.com/bucket/path (GCS public)
+   * - https://storage.googleapis.com/bucket/path?X-Goog-... (GCS signed URL)
+   * - https://firebasestorage.googleapis.com/v0/b/bucket/o/path?alt=media&token=xxx
+   */
+  private extractPathFromUrl(url: string): string | null {
+    try {
+      // Firebase Storage download URL format
+      const firebaseMatch = url.match(
+        /firebasestorage\.googleapis\.com\/v0\/b\/[^/]+\/o\/([^?]+)/,
+      );
+      if (firebaseMatch) {
+        return decodeURIComponent(firebaseMatch[1]);
+      }
+
+      // Google Cloud Storage format (with or without query params for signed URLs)
+      // URL format: https://storage.googleapis.com/bucket-name/path/to/file?X-Goog-...
+      const gcsMatch = url.match(/storage\.googleapis\.com\/[^/]+\/([^?]+)/);
+      if (gcsMatch) {
+        return decodeURIComponent(gcsMatch[1]);
+      }
+
+      return null;
+    } catch {
+      return null;
     }
   }
 
@@ -137,13 +267,9 @@ export class UserService {
       // Update preferences
       const updates = {
         ...preferences,
-        updatedAt: new Date(),
       };
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
+      await this.userRepository.updateUser(userId, updates);
 
       // Return updated user
       const updatedUser = await this.getUserProfile(userId);
@@ -192,13 +318,9 @@ export class UserService {
       // Update email notification preferences
       const updates = {
         emailNotifications: updatedEmailNotifications,
-        updatedAt: new Date(),
       };
 
-      await this.firebaseService.firestore
-        .collection('users')
-        .doc(userId)
-        .update(updates);
+      await this.userRepository.updateUser(userId, updates);
 
       // Return updated user
       const updatedUser = await this.getUserProfile(userId);
@@ -257,17 +379,17 @@ export class UserService {
 
         // 1. Delete all user transcriptions
         const transcriptionsDeleted =
-          await this.firebaseService.deleteUserTranscriptions(userId);
+          await this.userRepository.deleteUserTranscriptions(userId);
         deletedData.transcriptions = transcriptionsDeleted;
 
         // 2. Delete all generated analyses
         const analysesDeleted =
-          await this.firebaseService.deleteUserGeneratedAnalyses(userId);
+          await this.userRepository.deleteUserGeneratedAnalyses(userId);
         deletedData.analyses = analysesDeleted;
 
         // 3. Delete all storage files
         const storageFilesDeleted =
-          await this.firebaseService.deleteUserStorageFiles(userId);
+          await this.storageService.deleteUserFiles(userId);
         deletedData.storageFiles = storageFilesDeleted;
 
         // 4. Cancel Stripe subscription and delete customer
@@ -308,7 +430,7 @@ export class UserService {
         }
 
         // 5. Delete Firestore user document
-        await this.firebaseService.deleteUser(userId);
+        await this.userRepository.deleteUser(userId);
         deletedData.firestoreUser = true;
 
         // 6. Delete Firebase Auth account (LAST - no going back after this!)
@@ -344,7 +466,7 @@ export class UserService {
           `Performing soft delete - user will be marked as deleted, data preserved`,
         );
 
-        await this.firebaseService.softDeleteUser(userId);
+        await this.userRepository.softDeleteUser(userId);
         deletedData.firestoreUser = true;
 
         // Note: We do NOT cancel Stripe subscription on soft delete

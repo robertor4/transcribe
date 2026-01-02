@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
 import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
@@ -68,18 +68,10 @@ export default function SubscriptionPage() {
     return `${day}-${month}-${year}`;
   };
 
-  useEffect(() => {
-    if (user) {
-      loadSubscriptionData();
-    }
-  }, [user]);
-
-  async function loadSubscriptionData() {
+  const loadSubscriptionData = useCallback(async () => {
     try {
       setLoading(true);
       const token = await user?.getIdToken();
-      console.log('Current user UID:', user?.uid);
-      console.log('Current user email:', user?.email);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
       const [subResponse, usageResponse, historyResponse] = await Promise.all([
@@ -97,20 +89,13 @@ export default function SubscriptionPage() {
       // Handle subscription data (may fail if Stripe subscription doesn't exist)
       if (subResponse.ok) {
         const subData = await subResponse.json();
-        console.log('Subscription data:', subData);
-        console.log('Subscription object:', subData.subscription);
-        console.log('Current period start:', subData.subscription?.currentPeriodStart);
-        console.log('Current period end:', subData.subscription?.currentPeriodEnd);
         setSubscription(subData);
-      } else {
-        console.warn('Failed to load subscription details:', subResponse.status);
-        // Still allow page to render with basic tier info from usage stats
       }
+      // Still allow page to render with basic tier info from usage stats if subscription fetch fails
 
       // Handle usage stats
       if (usageResponse.ok) {
         const usageData = await usageResponse.json();
-        console.log('Usage data:', usageData);
         // Handle API response wrapper format
         setUsageStats(usageData.data || usageData);
       }
@@ -118,10 +103,8 @@ export default function SubscriptionPage() {
       // Handle billing history (may fail if no Stripe customer exists)
       if (historyResponse.ok) {
         const historyData = await historyResponse.json();
-        console.log('Billing history:', historyData);
         setBillingHistory(historyData.invoices || []);
       } else {
-        console.warn('Failed to load billing history:', historyResponse.status);
         setBillingHistory([]);
       }
     } catch (error) {
@@ -129,7 +112,13 @@ export default function SubscriptionPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadSubscriptionData();
+    }
+  }, [user, loadSubscriptionData]);
 
   async function handleCancelSubscription() {
     if (!confirm(t('cancelConfirm'))) {
@@ -166,7 +155,7 @@ export default function SubscriptionPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#cc3399]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
       </div>
     );
   }
@@ -174,44 +163,39 @@ export default function SubscriptionPage() {
   const tier = subscription?.tier || usageStats?.tier || 'free';
   const isFree = tier === 'free';
   const isProfessional = tier === 'professional';
-  const isPayg = tier === 'payg';
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-        {t('title')}
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8">
-        Manage your subscription and billing information.
-      </p>
-
+    <div className="space-y-8">
       {/* Current Plan */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              {t('currentPlan.title')}
-            </h2>
-            <div className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-[#cc3399]" />
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                isFree ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
-                isProfessional ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300' :
-                'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-              }`}>
-                {tier.charAt(0).toUpperCase() + tier.slice(1)}
-              </span>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+                {t('currentPlan.title')}
+              </label>
+            </div>
+            <div className="sm:w-2/3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-[#8D6AFA]" />
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  isFree ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
+                  isProfessional ? 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300' :
+                  'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                }`}>
+                  {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                </span>
+              </div>
+              {isFree && (
+                <Link
+                  href="/pricing"
+                  className="px-6 py-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] transition-colors text-sm font-medium"
+                >
+                  {t('upgrade')}
+                </Link>
+              )}
             </div>
           </div>
-          {isFree && (
-            <Link
-              href="/pricing"
-              className="px-6 py-2 bg-[#cc3399] text-white rounded-lg hover:bg-[#b82d89] transition-colors"
-            >
-              {t('upgrade')}
-            </Link>
-          )}
-        </div>
 
         {/* Subscription Details */}
         {(isProfessional || tier === 'business') && subscription?.subscription && (
@@ -265,31 +249,19 @@ export default function SubscriptionPage() {
           </div>
         )}
 
-        {isPayg && usageStats && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">{t('paygCredits')}:</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                {usageStats.usage.hours.toFixed(1)} {t('hours')}
-              </span>
-            </div>
-            <Link
-              href="/checkout/payg"
-              className="mt-3 block text-center px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
-            >
-              {t('buyMoreCredits')}
-            </Link>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Usage Stats - Hidden for admins */}
       {usageStats && !isAdmin && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-            <TrendingUp className="h-5 w-5 mr-2 text-[#cc3399]" />
-            {t('usageThisMonth')}
-          </h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-4 w-4 text-[#8D6AFA]" />
+              <label className="text-base font-medium text-gray-900 dark:text-gray-100">
+                {t('usageThisMonth')}
+              </label>
+            </div>
 
           {/* Hours (Professional/Business) */}
           {(isProfessional || tier === 'business') && usageStats?.limits?.hours && (
@@ -307,7 +279,7 @@ export default function SubscriptionPage() {
                   className={`h-2.5 rounded-full transition-all ${
                     usageStats.percentUsed >= 100 ? 'bg-red-600' :
                     usageStats.percentUsed >= 80 ? 'bg-orange-500' :
-                    'bg-[#cc3399]'
+                    'bg-[#8D6AFA]'
                   }`}
                   style={{ width: `${Math.min(100, usageStats.percentUsed)}%` }}
                 />
@@ -331,7 +303,7 @@ export default function SubscriptionPage() {
                   className={`h-2.5 rounded-full transition-all ${
                     usageStats.usage.transcriptions >= usageStats.limits.transcriptions ? 'bg-red-600' :
                     usageStats.usage.transcriptions >= usageStats.limits.transcriptions * 0.8 ? 'bg-orange-500' :
-                    'bg-[#cc3399]'
+                    'bg-[#8D6AFA]'
                   }`}
                   style={{ width: `${(usageStats.usage.transcriptions / usageStats.limits.transcriptions) * 100}%` }}
                 />
@@ -352,7 +324,7 @@ export default function SubscriptionPage() {
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                 <div
-                  className="h-2.5 rounded-full transition-all bg-[#cc3399]"
+                  className="h-2.5 rounded-full transition-all bg-[#8D6AFA]"
                   style={{ width: `${(usageStats.usage.onDemandAnalyses / usageStats.limits.onDemandAnalyses) * 100}%` }}
                 />
               </div>
@@ -387,76 +359,89 @@ export default function SubscriptionPage() {
               ))}
             </div>
           )}
+          </div>
         </div>
       )}
 
       {/* Billing History */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-          <CreditCard className="h-5 w-5 mr-2 text-[#cc3399]" />
-          {t('billingHistory.title')}
-        </h2>
-        {billingHistory.length === 0 ? (
-          <p className="text-gray-700 dark:text-gray-300">{t('noBillingHistory')}</p>
-        ) : (
-          <div className="space-y-3">
-            {billingHistory.map((invoice) => (
-              <div
-                key={invoice.id}
-                className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0"
-              >
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    ${(invoice.amount / 100).toFixed(2)} {invoice.currency.toUpperCase()}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {formatDate(invoice.created)}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      invoice.status === 'paid'
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                    }`}
-                  >
-                    {invoice.status}
-                  </span>
-                  {invoice.invoicePdf && (
-                    <a
-                      href={invoice.invoicePdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#cc3399] hover:underline text-sm"
-                    >
-                      {t('downloadInvoice')}
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <CreditCard className="h-4 w-4 text-[#8D6AFA]" />
+            <label className="text-base font-medium text-gray-900 dark:text-gray-100">
+              {t('billingHistory.title')}
+            </label>
           </div>
-        )}
+          {billingHistory.length === 0 ? (
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('noBillingHistory')}</p>
+          ) : (
+            <div className="space-y-3">
+              {billingHistory.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3 last:border-0"
+                >
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      ${(invoice.amount / 100).toFixed(2)} {invoice.currency.toUpperCase()}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {formatDate(invoice.created)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        invoice.status === 'paid'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                      }`}
+                    >
+                      {invoice.status}
+                    </span>
+                    {invoice.invoicePdf && (
+                      <a
+                        href={invoice.invoicePdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#8D6AFA] hover:underline text-sm"
+                      >
+                        {t('downloadInvoice')}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Cancel Subscription */}
       {isProfessional && subscription?.subscription && !subscription.subscription.cancelAtPeriodEnd && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            {t('cancelSubscription')}
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
-            {t('cancelDescription')}
-          </p>
-          <button
-            onClick={handleCancelSubscription}
-            disabled={cancelling}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-          >
-            {cancelling && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            {t('cancelButton')}
-          </button>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+              <div className="sm:w-1/3">
+                <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {t('cancelSubscription')}
+                </label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {t('cancelDescription')}
+                </p>
+              </div>
+              <div className="sm:w-2/3">
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={cancelling}
+                  className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm font-medium"
+                >
+                  {cancelling && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                  {t('cancelButton')}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -7,7 +7,1370 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Examples Page**: New `/examples` page showcasing AI Asset outputs with typewriter animations
+  - Demonstrates 4 AI Asset types: Action Items, Follow-Up Email, Blog Post, LinkedIn Post
+  - Uses "Product Launch Meeting" scenario with realistic sample outputs
+  - Typewriter text animation reveals content character-by-character
+  - Respects `prefers-reduced-motion` for accessibility
+  - Translations for all 5 locales (en, de, es, fr, nl)
+  - On-brand copy following Neural Summary voice guidelines
+  - Authentic template styling: Email signatures, magazine-style blog images, LinkedIn post UI
+  - AI-generated abstract image for blog post example (via Replicate flux-dev)
+  - Files: [page.tsx](apps/web/app/[locale]/examples/page.tsx), [ExamplesPageClient.tsx](apps/web/components/examples/ExamplesPageClient.tsx), [TypewriterText.tsx](apps/web/components/examples/TypewriterText.tsx), [ExampleCard.tsx](apps/web/components/examples/ExampleCard.tsx), [exampleData.ts](apps/web/components/examples/exampleData.ts)
+- **Agile Backlog AI Asset Template**: New structured template for extracting product features into Agile epics and user stories
+  - Supports epics with nested user stories and standalone stories for isolated features
+  - Standard user story format: "As a [role], I want [feature], so that [benefit]"
+  - Testable acceptance criteria extracted from what was discussed
+  - Technical notes section (only populated when explicitly mentioned in conversation)
+  - MoSCoW priority classification when discussed (must-have, should-have, could-have, won't-have)
+  - Story dependencies tracking
+  - Collapsible epic sections in UI with story count indicators
+  - Empty state handling when no features are found
+  - Files: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [template-helpers.ts](apps/api/src/transcription/template-helpers.ts), [types.ts](packages/shared/src/types.ts), [AgileBacklogTemplate.tsx](apps/web/components/outputTemplates/AgileBacklogTemplate.tsx), [agileBacklog.ts](apps/web/lib/outputTemplates/agileBacklog.ts)
+
+### Removed
+- **User Stories Template (V1)**: Replaced by the more comprehensive Agile Backlog template
+  - File removed: `apps/web/lib/outputTemplates/userStories.ts`
+
+### Fixed
+- **Mobile Processing Step Responsiveness**: Improved mobile layout for processing step in Create Conversation modal
+  - Stage indicators now use 2x2 grid on mobile (<640px), expanding to 4-column on desktop
+  - Reduced padding and icon sizes on mobile for better space utilization
+  - File name badge now truncates long names and prevents overflow
+  - Modal header uses smaller text and tighter padding on mobile
+  - Files: [RealProcessingView.tsx](apps/web/components/RealProcessingView.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+- **Mobile AudioContext Resume**: Fixed "AudioContext could not be resumed" error on mobile devices
+  - Added `ensureAudioContextReady()` function to pre-warm AudioContext on user gesture
+  - Recovery dialog preview button now initializes AudioContext before async operations
+  - Stop recording button now pre-warms AudioContext for preview waveform visualization
+  - Uses shared AudioContext instance to avoid multiple context creation
+  - Files: [useAudioWaveform.ts](apps/web/hooks/useAudioWaveform.ts), [RecordingRecoveryDialog.tsx](apps/web/components/RecordingRecoveryDialog.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx)
+
+### Added
+- **Mobile Navigation Drawer**: Full-featured slide-out navigation for mobile viewports (< 1024px)
+  - Hamburger menu button in top-left corner of all app pages
+  - Contains: Logo, search, navigation links, folders list, recent conversations, user profile
+  - Smooth slide animation with backdrop overlay
+  - Body scroll lock when open, escape key to close
+  - Touch-optimized tap targets (44px+ hit areas)
+  - Files: [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx), [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+- **Mobile Detection Hook**: `useIsMobile()` hook using `matchMedia` for performant viewport detection
+  - Also includes `useIsTouchDevice()` for touch capability detection
+  - File: [useIsMobile.ts](apps/web/hooks/useIsMobile.ts)
+- **Folder Picker Modal**: Mobile-friendly modal for moving conversations between folders
+  - Select from existing folders or create new folder inline
+  - Shows current folder with visual indicator
+  - Touch-optimized list items with 44px minimum height
+  - File: [FolderPickerModal.tsx](apps/web/components/FolderPickerModal.tsx)
+- **Mobile Testing Documentation**: Guide for testing on mobile devices over local network
+  - Instructions for configuring environment variables, CORS, and NestJS binding
+  - File: [2025-12-28_MOBILE_TESTING_SETUP.md](docs/2025-12-28_MOBILE_TESTING_SETUP.md)
+
 ### Changed
+- **Brand Color Simplification**: Removed all gradients (65+ instances across 36 files) and replaced with solid brand colors
+  - Purple gradients → solid `#8D6AFA` with `#7A5AE0` hover states
+  - Gray gradients → solid `bg-gray-100 dark:bg-gray-800`
+  - Page backgrounds → clean `bg-white` or `bg-gray-50`
+  - Shimmer animation → solid white with opacity pulse (simpler, cleaner)
+  - Dashboard greeting text → solid `text-[#8D6AFA]` instead of gradient text
+  - Files: 36 files including DashboardClient, landing pages, templates, modals, and globals.css
+- **Translation Performance**: Batch multiple texts into single API calls for 5-10x faster translation
+  - Summary translation now uses 1 API call instead of 9+ individual calls
+  - Multiple AI Assets are translated together in a single batch
+  - Reduces translation time from ~7 seconds to ~1.5 seconds for typical summaries
+  - Added validation to detect truncated/malformed batch responses
+  - Automatic fallback to individual translations if batch parsing fails
+  - File: [translation.service.ts](apps/api/src/translation/translation.service.ts)
+- **Responsive Conversation Cards**: Cards adapt to mobile viewports
+  - Drag handles hidden on mobile (drag-to-folder disabled)
+  - 3-dot menu with "Move to folder" action on mobile
+  - Title allows 2-line wrap on mobile instead of truncation
+  - Asset count badge hidden on small screens
+  - File: [DraggableConversationCard.tsx](apps/web/components/dashboard/DraggableConversationCard.tsx)
+- **Three-Pane Layout Mobile Support**: Layout adapts for mobile viewports
+  - Left sidebar hidden on mobile (replaced by drawer)
+  - Right panel hidden on mobile
+  - Top padding added for hamburger button clearance
+  - Uses `h-screen-safe` for proper mobile viewport height
+  - File: [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+- **Dashboard Mobile Adaptations**: Dashboard page optimized for mobile
+  - Passes `onNewConversation` callback to mobile drawer
+  - File: [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx)
+- **Folder Page Mobile Adaptations**: Folder view optimized for mobile
+  - Custom menu items for "Remove from folder" action
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
+- **CSS Mobile Viewport Utilities**: New utility classes for mobile-safe layouts
+  - `h-screen-safe`, `min-h-screen-safe` using `100dvh` for dynamic viewport
+  - iOS safe area padding utilities (`safe-area-bottom`, `safe-area-top`, etc.)
+  - Drawer slide animations (`animate-slideInFromLeft`, `animate-slideOutToLeft`)
+  - File: [globals.css](apps/web/app/globals.css)
+- **Left Navigation Mobile Hiding**: Navigation sidebar hidden on mobile (< lg breakpoint)
+  - File: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **API Network Binding**: NestJS now binds to `0.0.0.0` for mobile testing on local network
+  - File: [main.ts](apps/api/src/main.ts)
+
+### Security
+- **Share Link Password Verification**: Fixed critical bug where bcrypt-hashed passwords were compared using string equality instead of `bcrypt.compare()`, causing all password-protected share links to reject valid passwords
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [imported-conversation.service.ts](apps/api/src/imported-conversation/imported-conversation.service.ts)
+- **Path Traversal Prevention**: Added `path.basename()` sanitization to uploaded filenames to prevent directory traversal attacks via malicious filenames like `../../../etc/passwd.wav`
+  - File: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+- **Temp File Unpredictability**: Replaced predictable `Date.now()` with `crypto.randomBytes(16)` for merged audio temp filenames to prevent race condition attacks
+  - File: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+
+### Fixed
+- **Translation Menu**: Original language no longer appears in "Translate To" list
+  - A Dutch conversation won't show "Nederlands" as a translation option
+  - Matches by language code, name, and native name to handle various formats
+  - Fixed in both conversation page (3-dot menu) and shared view page (dropdown)
+  - Files: [TranslationMenuItems.tsx](apps/web/components/TranslationMenuItems.tsx), [TranslationDropdown.tsx](apps/web/components/TranslationDropdown.tsx)
+
+## [2.3.1] - 2025-12-27
+### Find & Replace Polish
+
+### Changed
+- **Q&A Language Matching**: The Ask Questions feature now responds in the same language as the user's question
+  - If user asks in Dutch, response is in Dutch; if in Spanish, response is in Spanish, etc.
+  - Works regardless of the conversation transcript's original language
+  - Updated prompts in [vector.service.ts](apps/api/src/vector/vector.service.ts)
+
+### Fixed
+- **Find & Replace Scoped Navigation**: Match counting and arrow navigation now respect the active tab filter
+  - When on Summary tab, only counts/navigates matches within summary section and title
+  - When on Transcript tab, only counts/navigates matches within transcript section
+  - Fixed match navigation jumping between tabs unexpectedly
+  - Files: [FindReplaceSlidePanel.tsx](apps/web/components/FindReplaceSlidePanel.tsx), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **Find & Replace Title Sync**: Replacing text in summary title now also updates the conversation title field
+  - Ensures transcription.title stays in sync with summaryV2.title after replacements
+  - Files: [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+- **Find & Replace Reliability**: Added `charOffset` to all match location objects for deterministic replacement ordering
+  - Fixes edge case where multiple replacements in same field could corrupt text
+  - Avoids Firestore rejecting undefined values in summaryV2 updates
+  - File: [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts)
+- **Title Search Highlighting**: Conversation title now highlights find/replace matches
+  - Added TextHighlighter wrapper to title element with proper ID for scoped queries
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **AssemblyAI Service Tests**: Expanded test coverage for transcription methods
+  - Added tests for `transcribeWithDiarization`, `transcribeFile`, `getTranscriptionStatus`
+  - Fixed mock setup to use proper AssemblyAI client method names
+  - File: [assembly-ai.service.spec.ts](apps/api/src/assembly-ai/assembly-ai.service.spec.ts)
+- **Transcription Duration Tests**: Fixed missing mock providers causing test failures
+  - Added mocks for StorageService, UserRepository, AnalysisRepository, CommentRepository, TranscriptionRepository
+  - File: [transcription-duration.spec.ts](apps/api/src/transcription/transcription-duration.spec.ts)
+
+### Added
+- **Recording Recovery Dialog**: Recover unsaved audio recordings from browser crashes or accidental tab closures
+  - Shows recovery dialog when opening "Create Conversation" modal if recoverable recordings exist
+  - Displays relative time (e.g., "10 minutes ago") using date-fns with locale support
+  - Preview recovered recordings with inline audio player and waveform visualization
+  - Recovery options: "Process immediately" (upload directly) or "Continue recording" (append new audio)
+  - Discard recordings with confirmation prompt
+  - Proper audio merging: Uses Web Audio API to decode, concatenate PCM data, and re-encode to compressed WebM
+  - Fixes waveform display issue when continuing recordings (avoids WebM header concatenation problem)
+  - Files: [RecordingRecoveryDialog.tsx](apps/web/components/RecordingRecoveryDialog.tsx), [audioMerge.ts](apps/web/utils/audioMerge.ts), [useMediaRecorder.ts](apps/web/hooks/useMediaRecorder.ts), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+  - Added `date-fns` dependency for relative time formatting
+  - Translation keys added for all 5 locales (EN, DE, ES, FR, NL)
+- **Find & Replace Feature**: Search and replace text across conversations with pattern memory
+  - Slide-out panel (like Q&A) allows viewing content while searching
+  - **Real-time highlighting**: Matches are highlighted in yellow in the summary and transcript as you type
+  - Find matches across summary, transcript, and AI assets with categorized preview
+  - Case-sensitive and whole-word search options
+  - Selective replacement: replace all, by category, or individual matches
+  - Save patterns (person names, company names, places, technical terms) for future use
+  - Pattern suggestions banner shows saved patterns with match counts on new conversations
+  - Access via three-dot menu in conversation header
+  - Full i18n support (EN, DE, ES, FR, NL translations)
+  - Backend: [find-replace.module.ts](apps/api/src/find-replace/find-replace.module.ts), [find-replace.service.ts](apps/api/src/find-replace/find-replace.service.ts), [find-replace.controller.ts](apps/api/src/find-replace/find-replace.controller.ts)
+  - Frontend: [FindReplaceSlidePanel.tsx](apps/web/components/FindReplaceSlidePanel.tsx), [TextHighlighter.tsx](apps/web/components/TextHighlighter.tsx), [PatternSuggestionBanner.tsx](apps/web/components/PatternSuggestionBanner.tsx)
+- **PDF Export for Summaries**: Export conversation summaries to professionally formatted PDFs
+  - New `ExportPDFMenuItem` component for dropdown menu integration
+  - `SummaryPDFDocument` React-PDF component with full branding (logo, colors, typography)
+  - Supports translated summaries (exports current locale translation if available)
+  - Includes key points with proper bullet formatting, action items with checkboxes
+  - Montserrat font embedded for brand consistency
+  - Files: [ExportPDFMenuItem.tsx](apps/web/components/ExportPDFMenuItem.tsx), [SummaryPDFDocument.tsx](apps/web/lib/pdf/SummaryPDFDocument.tsx), [pdfStyles.ts](apps/web/lib/pdf/pdfStyles.ts)
+- **Vector Index Backfill Script**: One-time script to index existing conversations into Qdrant
+  - Indexes all transcriptions without `vectorIndexedAt` field
+  - Rate limiting to avoid OpenAI API quota issues
+  - Progress reporting with success/failure counts
+  - File: [backfill-vector-index.ts](apps/api/scripts/backfill-vector-index.ts)
+- **Mobile App Planning Document**: Comprehensive plan for React Native Expo companion app
+  - Architecture decisions, tech stack comparison, monorepo integration strategy
+  - Feature priorities: recording, uploads, real-time progress, offline support
+  - File: [2025-12-26_MOBILE_APP_PLAN.md](docs/2025-12-26_MOBILE_APP_PLAN.md)
+- **Animated AI Icon Component**: Custom animated sparkle icon for Q&A feature
+  - Subtle pulse animation for visual interest
+  - Reusable across conversation header and sidebar
+  - Files: [AnimatedAiIcon.tsx](apps/web/components/icons/AnimatedAiIcon.tsx), [AiIcon.tsx](apps/web/components/icons/AiIcon.tsx)
+- **Q&A Debug Info**: Token usage and cost tracking for Q&A requests (development only)
+  - New `QADebugInfo` shared type with token counts, history/chunk counts, estimated cost
+  - Returned in `AskResponse.debug` field when in development mode
+  - File: [types.ts](packages/shared/src/types.ts)
+- **Queue Recovery Service**: Automatic recovery of stuck transcription jobs after server restart
+  - Stalled job detection: Bull now detects jobs that stall mid-processing (30s check interval, 5min lock duration)
+  - Automatic retry: Stalled jobs are retried up to 2 times before failing
+  - Startup recovery: On server start, finds PROCESSING transcriptions not in queue and re-queues them
+  - Grace period: 5-minute grace period to avoid re-queuing jobs that just started
+  - Event logging: Logs stalled, failed, and completed job events for debugging
+  - Files: [queue-recovery.service.ts](apps/api/src/transcription/queue-recovery.service.ts), [app.module.ts](apps/api/src/app.module.ts)
+
+### Changed
+- **Vector Indexing Enhanced**: Metadata chunks for better semantic search
+  - Now indexes title + summary intro + key point topics as separate "metadata" chunk
+  - Improves search relevance for high-level queries about conversation topics
+  - Bumped `vectorIndexVersion` to 2 to track enhanced index format
+  - Added `chunkType` field to `TranscriptChunkPayload` ('content' | 'metadata')
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+- **Q&A Synthesis Prompt Refined**: More concise, brand-aligned AI responses
+  - Includes conversation summary as context for general questions
+  - Shorter, more direct prompt following brand voice guidelines
+  - Removed verbose instructions and AI self-reference phrases
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+- **Semantic Search in Navigation**: Global search now uses vector similarity first
+  - `searchConversations` tries semantic search via `/vector/find` endpoint
+  - Falls back to keyword search if semantic search fails or returns no results
+  - Search results now include `matchedSnippets` and `relevanceScore`
+  - Shows matched snippet preview in search results dropdown
+  - Files: [conversationService.ts](apps/web/lib/services/conversationService.ts), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **Conversation Actions Redesign**: Streamlined header action buttons
+  - Moved Translation, Share, Delete into overflow dropdown menu (three-dot)
+  - Added "Ask Questions" button with animated AI icon as primary action
+  - New `TranslationMenuItems` component renders translations as expandable menu section
+  - PDF export added to dropdown menu when summary exists
+  - Inline delete confirmation replaced `DeleteConversationButton` component
+  - Files: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx), [TranslationMenuItems.tsx](apps/web/components/TranslationMenuItems.tsx)
+- **DropdownMenu Custom Content**: Enhanced dropdown to support custom React nodes
+  - New `type: 'custom'` item type with `content` property for arbitrary JSX
+  - Enables complex nested menus like translation selection
+  - File: [DropdownMenu.tsx](apps/web/components/DropdownMenu.tsx)
+- **Recently Opened Clearing**: Users can now clear recently opened conversations list
+  - New "Clear" button with trash icon in navigation sidebar
+  - `clearRecentlyOpened` function in ConversationsContext
+  - Persists cleared state so fallback list doesn't reappear
+  - Files: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [ConversationsContext.tsx](apps/web/contexts/ConversationsContext.tsx)
+- **Navigation Visual Polish**: Minor styling improvements
+  - Dashboard and New Conversation links now use `font-normal text-white/80` (less bold)
+  - Added divider between main nav and folders section
+  - File: [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+- **Summary Renderer Parsing**: Improved summary parsing for multilingual content
+  - Now correctly handles `###` subsection headers in detailed discussion sections
+  - Better handling of `##` section transitions (stops detailed parsing when new section starts)
+  - Reduced section title font size from `text-lg` to `text-base` for better hierarchy
+  - Changed body text from `font-medium leading-relaxed` to `leading-loose` for improved readability
+  - Cleans markdown artifacts (stray `#` characters) from parsed content
+  - File: [SummaryV1Renderer.tsx](apps/web/components/SummaryV1Renderer.tsx)
+
+### Fixed
+- **InlineCitation Tooltip Positioning**: Fixed tooltip appearing behind other elements
+  - Added explicit z-index to tooltip content for proper layering
+  - File: [InlineCitation.tsx](apps/web/components/InlineCitation.tsx)
+- **GeneratingLoader Animation**: Fixed SVG animation smoothness
+  - Adjusted keyframe timing for smoother pulse effect
+  - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
+
+### Removed
+- **Fix Transcript Feature**: Removed AI-powered transcript correction feature entirely
+  - Removed frontend components: `TranscriptCorrectionModal`, `DiffViewer`, `OutdatedAnalysisWarning`
+  - Removed backend service: `TranscriptCorrectionRouterService` and 7 correction methods from `TranscriptionService`
+  - Removed API endpoints: `POST /transcriptions/:id/correct-transcript`, `POST /transcriptions/:id/regenerate-core-analyses`, `POST /transcriptions/:id/analyze-corrections`
+  - Removed shared types: `CorrectTranscriptRequest`, `TranscriptDiff`, `CorrectionPreview`, `CorrectionApplyResponse`, `SimpleReplacement`, `ComplexCorrection`, `RoutingPlan`
+  - Removed `coreAnalysesOutdated` field from `Transcription` interface
+  - Removed translation keys: `fixTranscript`, `fixTranscriptTooltip` from all 5 locales
+  - Removed documentation: `TRANSCRIPT_CORRECTION_FEATURE.md`, `TRANSCRIPT_CORRECTION_FUTURE_ENHANCEMENTS.md`, `TRANSCRIPT_CORRECTION_OPTIMIZATION_PLAN.md`
+  - Cleaned up `TranscriptTimeline` component props (removed `transcriptionId`, `onRefresh`, `readOnlyMode`)
+
+### Added
+- **Q&A Vector Search Feature**: Semantic Q&A across conversations using Qdrant Cloud
+  - New `VectorModule` with services for vector indexing and search
+  - `QdrantService` for Qdrant Cloud client management and collection operations
+  - `EmbeddingService` for OpenAI `text-embedding-3-small` embeddings
+  - `ChunkingService` for intelligent speaker segment chunking with overlap
+  - `VectorService` orchestrating indexing, search, and GPT-5 answer synthesis
+  - On-demand indexing: conversations indexed when first Q&A request is made
+  - Timestamped citations: answers include speaker name and timestamp references
+  - Three search scopes: single conversation, folder, or global (all conversations)
+  - Two search modes: "Ask" (synthesized answer) and "Find" (conversation cards with snippets)
+  - Conversation history support: sliding window (first + last 5 exchanges) for follow-up questions
+  - New API endpoints: `POST /transcriptions/:id/ask`, `POST /folders/:id/ask`, `POST /vector/ask`, `POST /vector/find`
+  - New shared types: `Citation`, `AskResponse`, `FindResponse`, `ConversationMatch`, `MatchedSnippet`, `QAHistoryItem`
+  - New Firestore fields: `vectorIndexedAt`, `vectorChunkCount`, `vectorIndexVersion`
+  - Files: [vector.module.ts](apps/api/src/vector/vector.module.ts), [vector.service.ts](apps/api/src/vector/vector.service.ts), [qdrant.service.ts](apps/api/src/vector/qdrant.service.ts), [embedding.service.ts](apps/api/src/vector/embedding.service.ts), [chunking.service.ts](apps/api/src/vector/chunking.service.ts), [types.ts](packages/shared/src/types.ts)
+- **Q&A Frontend Components**: Full chat-like Q&A interface in slide panel
+  - `QASidebarEntry`: Compact entry point in AI Assets sidebar to launch Q&A
+  - `QASlidePanel`: Full-screen slide panel with chat interface, history, and input
+  - `QAMessage`: Individual Q&A exchange with question bubble, answer, and citations
+  - `CitationCard`: Displays citation with timestamp, speaker, and quote
+  - `InlineCitation`: Clickable inline citation chips with popover showing full quote
+  - Integrated into `AssetSidebar` (conversation page) and `AssetMobileSheet` (mobile)
+  - Copy answer to clipboard functionality
+  - Expandable/collapsible citations section
+  - Translations for all 5 locales (en, nl, de, fr, es)
+  - Files: [QASidebarEntry.tsx](apps/web/components/QASidebarEntry.tsx), [QASlidePanel.tsx](apps/web/components/QASlidePanel.tsx), [QAMessage.tsx](apps/web/components/QAMessage.tsx), [CitationCard.tsx](apps/web/components/CitationCard.tsx), [InlineCitation.tsx](apps/web/components/InlineCitation.tsx)
+
+### Fixed
+- **Q&A Answer Synthesis**: GPT prompt was too conservative, returning "couldn't find information" even when relevant content existed
+  - Updated synthesis prompt to be more helpful and extract partial information
+  - Changed from strict "ONLY the context" to "Answer based on the provided transcript excerpts"
+  - Added instruction to provide available information even if it only partially answers the question
+  - File: [vector.service.ts](apps/api/src/vector/vector.service.ts)
+
+### Changed
+- **FirebaseService Refactoring**: Extracted ~2000 line god service into domain-specific repositories
+  - Created `StorageService` for file upload/download/delete operations
+  - Created `UserRepository` for user CRUD, Stripe lookup, admin queries
+  - Created `AnalysisRepository` for generated analyses CRUD and references
+  - Created `FolderRepository` for folder CRUD and conversation management
+  - Created `CommentRepository` for summary comments CRUD
+  - Created `TranslationRepository` for translation CRUD and batch operations
+  - Created `TranscriptionRepository` for transcription CRUD, search, and folder operations
+  - Added 78 unit tests across all new repositories
+  - Updated all 15+ consumer services to use new repositories
+  - `FirebaseService` now slim (~500 lines) with only SDK initialization and raw getters
+  - Files: [storage.service.ts](apps/api/src/firebase/services/storage.service.ts), [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts), [analysis.repository.ts](apps/api/src/firebase/repositories/analysis.repository.ts), [folder.repository.ts](apps/api/src/firebase/repositories/folder.repository.ts), [comment.repository.ts](apps/api/src/firebase/repositories/comment.repository.ts), [translation.repository.ts](apps/api/src/firebase/repositories/translation.repository.ts), [transcription.repository.ts](apps/api/src/firebase/repositories/transcription.repository.ts)
+
+### Added
+- **AI Asset Translation System**: Full translation support for summaries and AI assets
+  - New `TranslationModule` with `TranslationService` and `TranslationController` for backend translation via OpenAI
+  - New `translations` Firestore collection to store translated content
+  - `TranslationDropdown` component for selecting translation locale (supports 30+ languages)
+  - `useConversationTranslations` hook for managing translation state and caching
+  - Auto-translation of new AI assets when existing translations exist for the conversation
+  - Translation support on shared conversation pages (read-only viewing of existing translations)
+  - Files: [translation.module.ts](apps/api/src/translation/translation.module.ts), [translation.service.ts](apps/api/src/translation/translation.service.ts), [translation.controller.ts](apps/api/src/translation/translation.controller.ts), [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [TranslationDropdown.tsx](apps/web/components/TranslationDropdown.tsx), [useConversationTranslations.ts](apps/web/hooks/useConversationTranslations.ts)
+- **Recording Context in AI Assets Sidebar**: Context notes now displayed in collapsible section
+  - Shows the user-provided context that was used to guide AI analysis
+  - New "Recording Context" section with MessageSquareText icon
+  - File: [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx)
+- **Brand Outline Button Variant**: New `brand-outline` variant for Button component
+  - Purple outline with transparent background, fills on hover
+  - Matches brand styling for secondary actions
+  - File: [Button.tsx](apps/web/components/Button.tsx)
+
+### Fixed
+- **Email Notification Link**: "View Your Conversation" link now goes directly to conversation page
+  - Previously linked to `/dashboard?transcriptionId=...` which didn't navigate to the conversation
+  - Now correctly links to `/conversation/{id}` for direct access
+  - File: [email.service.ts](apps/api/src/email/email.service.ts)
+
+### Changed
+- **Conversation Create Modal Context Field**: Improved context/description textarea
+  - Increased to 4 rows for better visibility of longer context
+  - Enhanced placeholder text with specific examples
+  - File: [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+- **Detail Metadata Panel Icons**: Improved icon semantics in AI Asset detail view
+  - Section title now uses MessageSquare icon (was FileText)
+  - Details section uses Info icon as default
+  - Added `sectionIcon` prop for customization
+  - Removed unused Clock icon import from OutputDetailClient
+  - Files: [DetailMetadataPanel.tsx](apps/web/components/detail-pages/DetailMetadataPanel.tsx), [OutputDetailClient.tsx](apps/web/app/[locale]/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+
+- **Folder Page AI Assets Sidebar**: Redesigned folder view with AI assets panel in right sidebar
+  - Replaces inline "Recent Outputs" section with a dedicated sidebar showing assets from all conversations in the folder
+  - New `FolderAssetCard` component with icon mapping by template type, content preview, and conversation title
+  - Clicking an asset opens the `AIAssetSlidePanel` with full content and actions
+  - Collapsible "Folder Stats" section at the bottom (conversations count, created date)
+  - Empty state with branded icon when no assets exist
+  - Loading skeleton during asset fetch
+  - Files: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx), [FolderAssetCard.tsx](apps/web/components/FolderAssetCard.tsx)
+- **Collapsed Sidebar Actions**: Search and New Conversation buttons in collapsed sidebar are now functional
+  - Search button expands sidebar and auto-focuses the search input
+  - New Conversation button navigates to dashboard with `?newConversation=true` query param to open modal
+  - Files: [LeftNavigationCollapsed.tsx](apps/web/components/LeftNavigationCollapsed.tsx), [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+### Changed
+- **Recording Waveform Visualization**: Tab audio recording now uses real-time audio level visualization
+  - Previously used chunk-based pulse animation for tab audio
+  - Now uses Web Audio API analyzer for reactive waveform (same as microphone recording)
+  - Removed unused `chunkCount` and `recordingSource` dependencies
+  - File: [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx)
+- **Summary Key Points Layout**: Added visual dividers between key points for better readability
+  - Each key point now separated by subtle horizontal line (`divide-y`)
+  - Consistent vertical padding on each item
+  - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
+- **Recent Assets Section Label**: Changed "Recent Outputs" to "Recent AI Assets" for terminology consistency
+  - Updated in both dashboard and folder page sections
+  - Files: [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx), [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+- **Folder Page Empty State**: Hide "+ New Conversation" button when folder is empty
+  - The empty state already has a prominent "Create your first conversation" button
+  - Removes redundant CTA from section header when no conversations exist
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
+
+### Added
+- **Simplified Dashboard Quick Actions**: Replaced 2 quick action buttons with 3 direct-entry buttons for faster workflow
+  - "Record the room" - Direct microphone recording (skips source selection)
+  - "Record browser tab" - Direct tab audio capture for Google Meet, Zoom (web), YouTube
+  - "Upload file" - File upload interface
+  - Descriptive use-case hints on each button (e.g., "In-person meetings, voice memos, interviews")
+  - Modal still used for workflow, but with fewer clicks to start recording
+  - Inline microphone selector shown when recording directly from dashboard
+  - Files: [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx), [UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+
+### Added
+- **True "Recently Opened" Tracking**: Left sidebar now shows actually recently opened conversations, not just recently created ones
+  - Added `lastAccessedAt` timestamp field to track when conversations are accessed
+  - New backend endpoints: `POST /transcriptions/:id/access` and `GET /transcriptions/recently-opened`
+  - ConversationsContext now fetches and exposes `recentlyOpened` list separately
+  - Sidebar updates immediately when opening a conversation
+  - Graceful fallback to recently created for users with no access history
+  - Files: [types.ts](packages/shared/src/types.ts), [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [ConversationsContext.tsx](apps/web/contexts/ConversationsContext.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **Scroll Position Restoration**: Conversation pages now remember and restore scroll position when navigating to AI assets and back
+  - New `useScrollRestoration` and `useConversationScrollRestoration` hooks
+  - Saves position when clicking on AI asset or transcript links
+  - Restores position when returning via browser back button
+  - Works with ThreePaneLayout's custom scroll container
+  - File: [useScrollRestoration.ts](apps/web/hooks/useScrollRestoration.ts)
+- **AI Assets List/Card View Toggle**: Added view mode toggle for AI assets gallery
+  - Switch between card grid (default) and compact list view
+  - View preference persisted in localStorage
+  - List view shows template name, relative time, and hover effects
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **GeneratingLoader Size Variants**: Added `sm`, `md`, `lg` size options to the audio wave loader component
+  - Default is `sm` (original size), `lg` used in generation modal
+  - File: [GeneratingLoader.tsx](apps/web/components/GeneratingLoader.tsx)
+
+### Fixed
+- **Client Proposal Email Next Steps**: Fixed empty numbered items appearing in "Next Steps" section
+  - Changed `nextStepsToEngage` from string (with embedded numbering) to string array
+  - AI now generates each step as a separate array item
+  - Frontend renders array directly as numbered list without regex parsing
+  - Email service updated to format array as proper HTML/text lists
+  - Files: [types.ts](packages/shared/src/types.ts), [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [email.service.ts](apps/api/src/email/email.service.ts)
+
+### Changed
+- **Compact Folder Display**: Folder cards now show name and count inline as "Folder Name (3)" instead of on two separate lines
+  - Cleaner, more compact appearance in the dashboard folders list
+  - File: [DroppableFolderCard.tsx](apps/web/components/dashboard/DroppableFolderCard.tsx)
+- **Dashboard Layout Swap**: Switched Conversations and Folders columns on the dashboard
+  - Conversations now appear on the left (wider, 2fr) as the primary content
+  - Folders now appear on the right (narrower, 1fr) as the organizational sidebar
+  - Section headers now use brand purple (#8D6AFA) for better visibility
+  - Files: [TwoColumnDashboardLayout.tsx](apps/web/components/dashboard/TwoColumnDashboardLayout.tsx), [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx), [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+- **Folder Page Cleanup**: Removed redundant "X conversations" subtitle from folder header
+  - The count is already shown in the "CONVERSATIONS (X)" section header
+  - Section header styling now matches dashboard (brand purple, smaller text)
+  - Increased horizontal padding (`px-12`) to match dashboard layout
+  - File: [FolderClient.tsx](apps/web/app/[locale]/folder/[id]/FolderClient.tsx)
+- **Email Template Prompts Refinement**: Improved AI prompts for all email templates to produce more natural-sounding output
+  - Added explicit instructions to avoid labels like "Summary:", "Context:", "Challenge:" in email body text
+  - Prompts now emphasize writing natural prose that flows conversationally
+  - Closing field now generates only sign-off phrase (e.g., "Best regards,") - user name added automatically by UI
+  - BAD/GOOD examples added to guide AI toward human-like email writing
+  - File: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts)
+- **Email Template UI Overhaul**: Redesigned email template rendering with brand-aligned styling
+  - Header now shows From/To/Subject fields like an email client with integrated "Send to myself" button
+  - Signature block displays user photo (or initial avatar), name, and email automatically
+  - All sections use brand colors: purple (#8D6AFA), cyan (#14D0DC), deep purple (#3F38A0)
+  - Consistent left border accent, uppercase tracking-wide headers, generous spacing
+  - Removed shared BulletList component in favor of inline styled lists
+  - File: [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx)
+- **AI Asset Card Styling**: Improved hover effects on AI asset cards in conversation view
+  - Purple gradient icon background transitions to solid purple on hover
+  - Consistent with RecentAssetCard styling in dashboard
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **RecentAssetCard Layout Update**: Improved dashboard recent AI asset cards
+  - Reordered to show conversation title prominently with template name + time as secondary
+  - Extended content preview from 80 to 150 characters with 2-line clamp
+  - Added subtle lift animation on hover (`hover:-translate-y-0.5`)
+  - File: [RecentAssetCard.tsx](apps/web/components/dashboard/RecentAssetCard.tsx)
+- **Generation Modal Loading State**: Replaced pulsing icon with larger audio wave loader
+  - Uses new `GeneratingLoader` with `size="lg"` for more prominent animation
+  - Removed uppercase tracking from modal headers
+  - File: [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **AI Assets Section Copy**: Updated description text to "Transform this conversation into action" (was "into professional deliverables")
+  - More concise and action-oriented messaging
+  - Updated across all 5 languages
+  - Files: [en.json](apps/web/messages/en.json), [de.json](apps/web/messages/de.json), [es.json](apps/web/messages/es.json), [fr.json](apps/web/messages/fr.json), [nl.json](apps/web/messages/nl.json)
+- **Analysis Regeneration with Custom Instructions**: Allow regenerating AI assets when custom instructions differ
+  - Previously, any existing analysis for a template would be returned from cache
+  - Now compares custom instructions - regenerates if they differ from cached version
+  - File: [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+
+### Fixed
+- **Folder Conversation Counts**: Fixed incorrect conversation counts in both sidebar and dashboard folder cards
+  - Backend now returns `conversationCount` with each folder (calculated server-side)
+  - Sidebar and dashboard folder cards now use backend-provided count instead of counting from paginated context
+  - Previously, folders showed counts based only on conversations loaded in memory (first 20)
+  - Now accurately reflects total conversations per folder regardless of pagination
+  - Files: [firebase.service.ts](apps/api/src/firebase/firebase.service.ts), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [types.ts](packages/shared/src/types.ts), [folderService.ts](apps/web/lib/services/folderService.ts), [DroppableFolderCard.tsx](apps/web/components/dashboard/DroppableFolderCard.tsx), [TwoColumnDashboardLayout.tsx](apps/web/components/dashboard/TwoColumnDashboardLayout.tsx), [DashboardClient.tsx](apps/web/app/[locale]/dashboard/DashboardClient.tsx)
+
+### Added
+- **Specialized Email Templates**: Replaced generic "Email Summary" with 4 purpose-built email templates for business professionals
+  - **Follow-up Email** (`followUpEmail`): Post-meeting recap with decisions confirmed, action items with owners/deadlines, and next steps
+  - **Sales Outreach** (`salesEmail`): Post-discovery call email addressing pain points, value proposition, and clear CTA
+  - **Internal Update** (`internalUpdate`): Stakeholder brief with TL;DR, key decisions, blockers/risks, and next milestone
+  - **Client Proposal** (`clientProposal`): Formal proposal with executive summary, requirements, solution, and timeline
+  - Each template has specialized UI sections with semantic colors (purple for decisions, green for actions, amber for challenges, etc.)
+  - Updated "Create AI Asset" modal to show 4 specialized email options instead of generic "Email"
+  - Files: [types.ts](packages/shared/src/types.ts), [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [index.tsx](apps/web/components/outputTemplates/index.tsx), [outputToMarkdown.ts](apps/web/lib/outputToMarkdown.ts), [lib/outputTemplates/](apps/web/lib/outputTemplates/)
+- **Send Email Draft to Myself**: Email templates now include a "Send to myself" feature
+  - Displays user's email address with a send button in brand purple styling
+  - Sends the email draft to the user's own inbox for review and forwarding
+  - Email HTML is clean and natural-looking (not templated) - can be forwarded professionally
+  - Includes a branded draft banner at top with instructions
+  - Rate limited to 5 emails per minute to prevent abuse
+  - Files: [EmailTemplate.tsx](apps/web/components/outputTemplates/EmailTemplate.tsx), [email.service.ts](apps/api/src/email/email.service.ts), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [api.ts](apps/web/lib/api.ts)
+- **Firebase Cleanup Script**: Added one-time script to remove legacy email analyses
+  - File: [cleanup-email-analyses.ts](scripts/cleanup-email-analyses.ts)
+
+### Removed
+- **Legacy Email Summary Template**: Removed generic `email` template type in favor of specialized templates
+  - Old `EmailOutput` type replaced with `FollowUpEmailOutput`, `SalesEmailOutput`, `InternalUpdateOutput`, `ClientProposalOutput`
+  - Run cleanup script before deployment to remove existing email analyses from Firebase
+
+### Changed
+- **ESLint Configuration Cleanup**: Resolved all linter warnings across the codebase
+  - Frontend: Added eslint-disable comments for legitimate `<img>` element usage (SVG logos, user profile photos, QR codes)
+  - Backend: Disabled overly strict `no-unsafe-*` TypeScript rules that are common patterns in NestJS apps
+  - Fixed floating promise warnings in [main.ts](apps/api/src/main.ts) and test files
+  - Files: [eslint.config.mjs](apps/api/eslint.config.mjs), various component files
+
+### Added
+- **AI-Generated Hero Images for Blog Posts**: Blog posts now automatically include an AI-generated hero image
+  - Uses Replicate's Flux Schnell model for fast image generation (~2 seconds)
+  - Content-aware prompts: GPT analyzes headline, subheading, and hook to generate images that reflect the article's theme and emotional tone
+  - Editorial illustration style (not abstract geometric) - symbolic imagery that helps readers sense what the article is about
+  - Magazine-style float-right layout with responsive sizing (full width on mobile, 384px on large screens)
+  - Images stored in Firebase Storage for persistence
+  - Graceful fallback: blog posts work fine without images if Replicate is not configured
+  - Cost: ~$0.003 per image
+  - Files: [replicate.service.ts](apps/api/src/replicate/replicate.service.ts), [image-prompt.service.ts](apps/api/src/transcription/image-prompt.service.ts), [BlogPostTemplate.tsx](apps/web/components/outputTemplates/BlogPostTemplate.tsx)
+- **Generate Image Button for Blog Posts (Premium)**: Premium users can generate hero images for existing blog posts
+  - "Generate Image" button appears in blog post detail view header when no image exists
+  - Free users see the button with a "Pro" badge linking to the pricing page
+  - Loading state with spinner during image generation
+  - Error handling with clear error messages
+  - Image is persisted to the analysis and displayed immediately after generation
+  - Files: [OutputDetailClient.tsx](apps/web/app/[locale]/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts)
+- **Action Items Persistence**: Checkmarks on action items are now persisted in localStorage
+  - Completing an action item saves state by analysis ID
+  - State is restored when revisiting the same AI asset
+  - File: [ActionItemsTemplate.tsx](apps/web/components/outputTemplates/ActionItemsTemplate.tsx)
+- **Action Items Collapsible Categories**: Added expand/collapse for action item priority categories
+  - Categories can be collapsed to reduce visual clutter
+  - Collapse state is persisted in localStorage per analysis
+  - Shows item count and completed count in collapsed header
+- **Escape Key Support for Modals**: Added keyboard navigation for modal dialogs
+  - ConversationCreateModal, TranscriptCorrectionModal, ShareModal now close on Escape
+  - Blocked during loading states to prevent accidental data loss
+
+### Changed
+- **Email Templates Branding Update**: Redesigned email templates to align with new Neural Summary brand guidelines
+  - Updated primary color from pink (#cc3399) to brand purple (#8D6AFA)
+  - Added Montserrat font family (brand typography) with system font fallbacks
+  - Updated V2 terminology: "Transcription" → "Conversation", "Transcript" → "Conversation"
+  - Pill-shaped CTA buttons (border-radius: 9999px) matching brand UI guidelines
+  - Added dark mode support with brand-aligned colors (#23194B background, #A78BFA accents)
+  - Updated all localized content for 5 languages (en, nl, de, fr, es)
+  - Replaced symbol logo with full Neural Summary logo SVG (includes wordmark)
+  - Removed redundant "Neural Summary" text and emoji icons for cleaner design
+  - File: [email.service.ts](apps/api/src/email/email.service.ts)
+- **Dark Mode Refinements**: Softened dark mode colors for reduced eye strain
+  - Background changed from pure black (#0a0a0a) to blue-tinted gray (#111827)
+  - Text colors softened (gray-50 → gray-200, gray-200 → gray-300)
+  - Prose styles updated for consistent soft contrast
+  - Added subtle scrollbar styling for main content areas
+  - File: [globals.css](apps/web/app/globals.css)
+- **Summary Renderer Improvements**: Enhanced V2 summary display
+  - Intro paragraph uses lighter font weight for elegance
+  - Key points now use numbered list (ordered list) instead of squares
+  - Decisions and Next Steps use brand colors (#14D0DC cyan, #3F38A0 deep purple)
+  - Increased spacing between list items for readability
+  - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
+- **Action Items Template Redesign**: Improved action items display
+  - Priority badges with color coding (red=high, amber=medium, gray=low)
+  - Sorted by priority (high first) within each category
+  - Deadline formatting improved (ISO dates → human-readable)
+  - "Why priority?" toggle with chevron indicators
+  - Better visual hierarchy with spacing adjustments
+- **GPT-5 Token Budget Optimization**: Improved handling of GPT-5 reasoning tokens
+  - Increased max_completion_tokens for structured JSON outputs (8K → 16K)
+  - Added `reasoning_effort: 'low'` for structured outputs to prioritize content over reasoning
+  - Added detailed logging of reasoning vs output token usage
+  - Better error handling when AI uses all tokens for reasoning
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+- **Creative Greeting First Name**: Dashboard greeting now extracts first name from email/display name
+  - "Good morning, Roberto" instead of "Good morning, roberto@example.com"
+  - File: [userHelpers.ts](apps/web/lib/userHelpers.ts)
+- **Dark Mode Input Fields**: Consistent semi-transparent backgrounds for form inputs
+  - Login form, search inputs, and modals use `bg-gray-800/40` with subtle borders
+  - Files: [LoginForm.tsx](apps/web/components/LoginForm.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+### Fixed
+- **Structured Output Validation**: Added validation for AI-generated structured outputs
+  - Validates required fields exist for each template type (actionItems, email, blogPost, etc.)
+  - Initializes missing arrays to empty arrays (prevents undefined errors)
+  - Throws clear error when AI returns empty or malformed content
+  - File: [on-demand-analysis.service.ts](apps/api/src/transcription/on-demand-analysis.service.ts)
+- **Empty Output Handling**: Added user-friendly error state for empty AI outputs
+  - Shows "Content unavailable" message with regenerate suggestion
+  - File: [outputTemplates/index.tsx](apps/web/components/outputTemplates/index.tsx)
+- **Regex Escape Warning**: Fixed regex escape sequence in AssemblyAI URL parsing
+  - Changed `[^%\/]` to `[^%/]` to avoid unnecessary escape
+  - File: [assembly-ai.service.ts](apps/api/src/assembly-ai/assembly-ai.service.ts)
+- **React Hook Dependency Warnings**: Fixed exhaustive-deps warnings across multiple components
+  - Wrapped async functions in `useCallback` in admin, checkout, and settings pages
+  - Added proper dependency arrays to `useEffect` hooks
+  - Added `eslint-disable` comments where intentional missing dependencies exist
+- **Unused Variable Warnings**: Cleaned up unused imports and variables
+  - Removed unused imports from API controllers and services
+  - Fixed unused catch clause variables by using bare `catch` syntax
+  - Removed unused prop destructuring in React components
+
+- **Chrome Crash During Long Recordings**: Fixed browser crashes (EXC_BREAKPOINT/SIGTRAP) after ~10 minutes of tab audio recording
+  - **Root cause**: MediaRecorder timeslice was 100ms (10 callbacks/sec), causing resource exhaustion over time
+  - **Solution**: Increased timeslice to 10,000ms (0.1 callbacks/sec) - 100x reduction in callback frequency
+  - Acceptable tradeoff: worst-case data loss on crash is ~10 seconds (vs 0.1 seconds before)
+- **Recording Waveform Performance**: RecordingWaveform now uses direct DOM manipulation instead of React state
+  - Eliminates ~60 state updates per second during recording animation
+  - Prevents accumulated garbage collection pressure over long recordings
+
+### Changed
+- **Recording Resource Optimization**: Simplified recording infrastructure for stability
+  - Removed auto-gain feature (~200 lines) - marginal benefit, significant complexity
+  - Removed memory monitoring from ondataavailable callback - not actionable
+  - Storage quota monitoring reduced from 30-second to 5-minute interval
+  - Device enumeration disabled during active recording to prevent stream interference
+  - Microphone constraints simplified (removed `{ exact: deviceId }` which caused issues)
+- **Recording Visualization**: Different visualization modes for different sources
+  - Microphone: Real-time audio level visualization via useAudioVisualization
+  - Tab audio: Chunk-based pulse visualization (no additional AudioContext needed)
+
+### Added
+- **Recent Outputs Dashboard Section**: New section on dashboard showing the 8 most recent AI-generated assets
+  - 4-column card grid layout (responsive: 2 columns on tablet, 1 on mobile)
+  - Each card displays: template icon, template name, conversation title, generation date, content preview
+  - Direct navigation to asset detail page on click
+  - Hidden when user has no AI assets
+  - New components: [RecentAssetCard.tsx](apps/web/components/dashboard/RecentAssetCard.tsx), [RecentAssetsSection.tsx](apps/web/components/dashboard/RecentAssetsSection.tsx)
+  - New API endpoint: `GET /transcriptions/recent-analyses`
+- **Folder Recent Outputs Section**: Similar section in folder detail view, scoped to that folder's conversations
+  - Shows AI assets only from conversations within the current folder
+  - Same 4-column card grid layout as dashboard
+  - New component: [FolderRecentAssetsSection.tsx](apps/web/components/dashboard/FolderRecentAssetsSection.tsx)
+  - New API endpoint: `GET /transcriptions/recent-analyses/folder/:folderId`
+- **Recording Protection System**: Browser-based audio recording now has safeguards against storage exhaustion
+  - **3-hour maximum duration limit**: Recording auto-stops at 3 hours with 5-minute advance warning
+  - **Storage quota monitoring**: Checks available storage every 30 seconds during recording
+    - Warning at 85% storage usage, auto-stop at 95% (critical)
+  - **Memory usage tracking**: Monitors accumulated chunk size in memory
+    - Warning at 150MB, auto-stop at 250MB (critical)
+  - Warning priority system ensures only most critical warning is shown
+  - New exports from [useMediaRecorder.ts](apps/web/hooks/useMediaRecorder.ts): `RecordingWarningType`, `RecordingWarningInfo`
+  - Translations added for all 5 languages (en, nl, de, fr, es)
+- **Share Conversation Feature (V2)**: Re-introduced sharing functionality in the conversation view
+  - Share button added to conversation header in [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+  - Simplified ShareModal with 3 content options: Summary, Full Transcript, AI Assets
+  - Backend returns `summaryV2` for rich structured summary rendering in shared views
+
+### Changed
+- **Shared Conversation Page Redesign**: Complete redesign of `/shared/[shareToken]` page
+  - Tabbed interface for Summary, Transcript, and AI Assets (preloaded for instant switching)
+  - Uses `SummaryRenderer` for rich V2 summary display with key points and detailed sections
+  - Uses `TranscriptTimeline` for speaker-segmented transcript display
+  - Removed redundant "Neural Summary" text from header (logo only)
+  - Added copy summary functionality
+  - Updated `SharedTranscriptionView` type to include `summaryV2` field
+
+### Removed
+- **AudioRecorder Component**: Deleted unused legacy audio recorder component (930 lines)
+  - Functionality superseded by RecordingInterface and useMediaRecorder hook
+  - File removed: `apps/web/components/AudioRecorder.tsx`
+
+---
+
+## [2.3.0] - 2025-12-21
+
+### Dark Mode Improvements & Cleanup
+
+### Fixed
+- **Dark Mode Flash Prevention**: Added inline script to apply theme before React hydration
+  - Theme is now applied synchronously in `<head>` before page renders
+  - Eliminates white flash when loading in dark mode
+  - Reads theme preference from localStorage and respects system preference
+
+### Added
+- **Dark Mode Logo Support**: Navigation now displays white logo variant in dark mode
+  - Added conditional logo rendering in [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+  - Uses `neural-summary-logo.svg` for light mode, `neural-summary-logo-white.svg` for dark mode
+  - Optimized white logo SVG for smaller file size
+
+### Changed
+- **Dark Mode Card Styling**: Improved contrast with translucent backgrounds
+  - Dashboard quick action cards: `dark:bg-gray-800/50` with `dark:border-gray-700/50`
+  - Conversation output cards: Same translucent treatment for consistency
+  - Empty state containers: Matching translucent styling
+- **Theme Hook Cleanup**: Removed console.log debug statements from [useTheme.ts](apps/web/hooks/useTheme.ts)
+- **Right Panel Cleanup**: Removed unused Actions section from [RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx)
+  - Removed Download PDF, Share Link, Copy Transcript, Edit Details buttons (not yet implemented)
+
+---
+
+## [2.2.0] - 2025-12-21
+
+### UI Rebrand & Dashboard Refinements
+
+### Changed
+- **Favicon Configuration**: Updated favicon paths to use new assets in `/assets/favicons/`
+  - All favicon references now point to `/assets/favicons/` directory
+  - Updated `site.webmanifest` with proper app name, description, and theme color
+  - Updated `manifest.json` icon paths and description
+  - Removed duplicate favicon files from root public folder
+- **Dashboard Visual Hierarchy Refinement**: Improved visual hierarchy so content stands out more than chrome
+  - **Greeting**: Reduced from `text-4xl font-extrabold` to `text-2xl font-bold`, converted questions to statements
+  - **Greeting Alignment**: Vertically aligned greeting baseline with logo bottom (`pt-[38px]`)
+  - **Section Headers**: FOLDERS/CONVERSATIONS headers now subtler (`text-sm text-gray-400` vs bold dark)
+  - **Secondary Text**: Folder counts and conversation dates use lighter color (`text-gray-400`)
+  - **Spacing**: Reduced greeting margin (`mb-8`), quick actions margin (`mb-10`), header margin (`mb-4`)
+- **Complete UI Rebrand**: Updated entire application UI with new brand identity
+  - **New Color Palette**: Primary brand color changed from pink (`#cc3399`) to purple (`#8D6AFA`)
+  - **New Typography**: Switched from Geist to Montserrat font (geometric sans-serif)
+  - **New Tagline**: "You speak. It creates." replaces "Voice-to-output creation platform" in all 5 languages
+  - **New Logo**: Updated all logo references to use new SVG logo assets at `/assets/logos/`
+  - **CSS Variables**: Updated all brand colors in `globals.css` (primary, hover, secondary, accent-dark)
+  - **Button Component**: Updated `Button.tsx` with new color scheme (`#23194B` primary, `#8D6AFA` brand)
+  - **92+ Component Files**: Replaced hardcoded colors with new brand purple across all UI components
+  - **Pink to Purple**: All `pink-*` Tailwind classes updated to `purple-*` for consistent theming
+  - **Manifest**: Updated `theme_color` to new brand purple
+  - **Documentation**: Updated `CLAUDE.md` and `docs/UI_DESIGN_SYSTEM.md` with new brand guidelines
+
+### Added
+- **Conversation Search**: Search through conversations by keyword from the left sidebar
+  - Backend search endpoint `GET /transcriptions/search` with in-memory Firestore filtering
+  - Searches title, fileName, and summary headlines/key points (case-insensitive)
+  - Frontend `useSearch` hook with 300ms debounce and 2-character minimum
+  - Search results appear directly under search box, pushing sidebar content down
+  - Escape key clears search, clicking a result navigates and clears
+  - Supports all 5 locales (en, nl, de, fr, es)
+- **Auto-Gain Normalization for Microphone Recording**: Automatically adjusts microphone input levels in real-time during recording
+  - Boosts quiet microphones up to 150% gain to ensure audible recordings
+  - Reduces loud inputs down to 50% gain to prevent clipping
+  - AGC tuned for speech: fast 50ms attack (catch loud bursts), slow 500ms release (avoid breathing artifacts)
+  - RMS averaging over 5 frames (~500ms window) for stable gain adjustments
+  - Works silently in background with no extra UI steps required
+  - Optional subtle boost indicator shows "+X%" during recording when gain is actively boosting
+  - New `useAutoGain` hook available for standalone use if needed
+  - Configurable via `enableAutoGain` option in `useMediaRecorder` (enabled by default)
+- **No Audio Detection Warning**: Microphone selection now shows a warning if no audio is detected after 3 seconds
+  - Helps users identify microphone issues (muted, wrong device, disconnected) before recording
+  - Warning appears below the input level meter in the "Create a conversation" modal
+  - Automatically resets when switching microphones or when audio is detected
+  - Non-blocking: users can still proceed with recording if they choose
+
+### Changed
+- **Comprehensive Performance Optimizations**: Major performance audit and improvements across frontend and backend
+  - **React Context Memoization**:
+    - `AuthContext.tsx`: Wrapped all auth functions with `useCallback`, memoized context value with `useMemo` to prevent cascading re-renders to all authenticated components
+    - `ConversationsContext.tsx`: Memoized context value to prevent unnecessary consumer re-renders
+    - `UsageContext.tsx`: Added proper error handling for parallel API fetches
+  - **React Component Optimizations**:
+    - `DraggableConversationCard.tsx`: Wrapped with `React.memo` to prevent re-renders when parent updates
+    - `DroppableFolderCard.tsx`: Wrapped with `React.memo` for same performance benefit
+    - `LeftNavigation.tsx`: Pre-computed folder counts using `useMemo` Map (O(n) once vs O(n×m) per render)
+    - `DashboardClient.tsx`: Pre-computed folder stats map, extracted button config outside component, memoized handlers
+  - **Data Fetching Optimizations**:
+    - `ConversationClient.tsx`: Changed from `useFolders()` to `useFoldersContext()` to eliminate duplicate folder API calls
+    - `websocket.ts`: Changed `getIdToken(true)` to `getIdToken()` to use cached Firebase tokens (saves ~100ms per connection)
+  - **Backend Query Optimizations**:
+    - `firebase.service.ts`: Changed folder deletion from sequential updates to Firestore batch writes (10-30s → <1s for 50+ items)
+    - `firebase.service.ts`: Parallelized `moveToFolder` queries with `Promise.all` (~50% faster)
+    - `user.service.ts`: Parallelized Firestore and Firebase Auth updates, removed redundant user fetch
+
+### Added
+- **30-Day Audio Retention**: Audio files are now retained for 30 days after transcription for support and recovery purposes
+  - Removed immediate audio deletion from `transcription.processor.ts` (both success and failure cases)
+  - Added daily cleanup cron job in `cleanup.service.ts` running at 4:00 AM UTC
+  - Cleanup job deletes audio files when: completed > 30 days, soft-deleted > 30 days, or failed > 30 days
+  - Updated zombie transcription cleanup to not delete audio (lets 30-day cleanup handle it)
+  - Updated privacy policy data retention section in all 5 languages
+  - Updated terms of service storage description in all 5 languages
+  - Updated landing page FAQ, security sections, and trust indicators in all 5 languages
+  - Enables support team to recover audio if something goes wrong with transcription
+- **Soft-Delete Conversations**: Users can now delete conversations with 30-day recovery window
+  - Conversations are soft-deleted (set `deletedAt` timestamp) rather than permanently removed
+  - Delete button available on conversation detail page header
+  - Delete option in folder view via dropdown menu (with danger variant styling)
+  - Delete button on dashboard conversation cards (appears on hover with inline confirmation)
+  - Soft-deleted items filtered from all list queries automatically
+  - Audio files preserved until 30-day cleanup job runs (enables data recovery)
+  - New `DeleteConversationButton` reusable component with inline confirmation UI
+  - Extended `DropdownMenu` component with `variant: 'danger'` support for destructive actions
+- **Profile Photo Cropper**: LinkedIn-style image cropper for profile photo uploads
+  - Circular crop area with drag-to-reposition and zoom controls
+  - Optimizes output to 400×400px JPEG at 85% quality for fast loading
+  - Mobile-friendly with touch gestures (pinch zoom, drag pan)
+  - New `PhotoCropperModal` component using `react-easy-crop` library
+  - Translations added for all 5 languages (en, de, es, fr, nl)
+- **Inline Folder Renaming**: Click on folder name to edit it directly on the Folder page
+  - Auto-focuses and selects text when entering edit mode
+  - Save on Enter or blur, cancel with Escape
+  - Visual hover indicator (cursor + underline) hints at editability
+- **Profile Photo Upload**: Replaced URL-only profile photo input with intuitive uploader
+  - New `ProfilePhotoUploader` component with dropdown menu
+  - "Use Google Photo" option (one-click sync for Google-connected accounts)
+  - File upload support for JPG/PNG images (max 5MB)
+  - "Remove Photo" option to clear profile picture
+  - Backend endpoints: `POST /user/profile/photo` and `DELETE /user/profile/photo`
+  - Photos stored in Firebase Storage at `profiles/{userId}/{timestamp}.{ext}` (matching storage.rules)
+  - Uses signed URLs (7-day expiration) for secure authenticated access
+  - Automatic cleanup of old profile photos when uploading new ones
+  - Translations added for all 5 languages (en, de, es, fr, nl)
+
+### Fixed
+- **Profile photo not syncing to dashboard**: Added `refreshUser()` method to AuthContext to properly update user state after profile photo changes
+  - Profile photo uploads now immediately reflect in the left navigation UserProfileMenu
+  - Previously, `authUser.reload()` didn't trigger React state update since `onAuthStateChanged` isn't fired by reload
+- Dashboard greeting now uses display name instead of email prefix (shows "Good afternoon, Roberto" instead of "Good afternoon, Dreamone4")
+- Folder page crash: Added missing UsageProvider layout wrapper to fix "useUsage must be used within UsageProvider" error
+- Conversation page crash: Added UsageProvider layout wrapper for same issue
+
+### Changed
+- **Settings Pages Consolidation**:
+  - Merged Account page functionality into Profile page (password change, account deletion, data export)
+  - Account page now redirects to Profile
+  - Removed Account from settings navigation (4 tabs → 3 tabs: Profile, Preferences, Subscription)
+  - Simplified settings layout header with cleaner breadcrumb styling
+  - Notifications page simplified with cleaner card-based layout
+  - Preferences page refactored with improved visual hierarchy
+  - Subscription page streamlined with consistent card styling
+- **Upload Interface Improvements**:
+  - Swapped order: "Record Audio" now appears first (primary action)
+  - Added expandable "Learn more" info sections for each method
+  - Internationalized all strings using next-intl translations
+
+### Removed
+- **Legacy Recording Components**: Removed unused `FloatingRecordButton` and `RecordingModal` components
+  - These were superseded by `SimpleAudioRecorder` integrated into `UploadInterface`
+  - Removed 156 lines of deprecated code
+
+---
+
+## [2.1.0] - 2025-12-15
+
+### V2 Architecture & Recording UX
+
+### Changed
+- **README Updated for V2**: Comprehensive documentation update reflecting V2 architecture
+  - Added new Core Features sections: Quick Recording & Upload, Folder Organization, Personalized Experience
+  - Updated AI-Powered Analysis section to reflect V2 Output System
+  - Expanded Project Structure to show V2 directories (folder/, dashboard/, outputTemplates/, hooks/, services/)
+  - Added Folder API endpoints documentation
+  - Updated Required Firestore Indexes section with V2 folder indexes
+- **V2 Architecture: Deprecate coreAnalyses in favor of generatedAnalyses**:
+  - New transcriptions now store `summaryV2` directly on transcription document (not in `coreAnalyses`)
+  - Action items and communication analysis are now generated as `GeneratedAnalysis` documents in the `generatedAnalyses` collection
+  - Frontend `AnalysisTabs` updated to read from both `generatedAnalyses` and legacy `coreAnalyses` (backwards compatible)
+  - Frontend `conversation.ts` adapter updated with fallback logic for old transcriptions
+  - Marked `CoreAnalyses` interface and `coreAnalyses` field as `@deprecated`
+  - Added `summaryV2` field directly to `Transcription` interface
+  - Added `generateSummaryV2Only()` method to `TranscriptionService`
+  - Added `skipDuplicateCheck` option to `OnDemandAnalysisService.generateFromTemplate()`
+  - Created migration script for Phase 2 cleanup: `apps/api/src/scripts/migrate-core-analyses.ts`
+    - Run with `--dry-run` to preview changes
+    - Run with `--limit=N` to process only N transcriptions
+    - Promotes `summaryV2` from `coreAnalyses` to root level and removes `coreAnalyses` field
+
+### Added
+- **V2 Output Generation**:
+  - Wired up `OutputGeneratorModal` to call the backend API for generating outputs
+  - Added V2 output templates to backend (matching frontend template IDs):
+    - `actionItems` - Extract actionable tasks from conversations
+    - `email` - Transform conversations into professional follow-up emails
+    - `blogPost` - Create publish-ready blog content
+    - `linkedin` - Generate engaging LinkedIn posts
+    - `communicationAnalysis` - Score conversation communication effectiveness
+  - Added outputs fetching to `ConversationClient` - displays generated outputs in gallery
+  - Added error handling and retry UI in OutputGeneratorModal
+  - Outputs refresh automatically after successful generation
+
+- **V2 Migration Phase 1 - Backend Folder Support**:
+  - Added `Folder`, `CreateFolderRequest`, `UpdateFolderRequest` types to shared package
+  - Added `folderId` field to `Transcription` interface
+  - Implemented folder CRUD methods in `FirebaseService`:
+    - `createFolder`, `getUserFolders`, `getFolder`, `updateFolder`, `deleteFolder`
+    - `getTranscriptionsByFolder`, `moveToFolder`
+  - Created `FolderModule` with `FolderController` endpoints:
+    - `POST /folders` - Create folder
+    - `GET /folders` - List user folders
+    - `GET /folders/:id` - Get single folder
+    - `PUT /folders/:id` - Update folder
+    - `DELETE /folders/:id` - Delete folder with options:
+      - Default: moves conversations to "unfiled"
+      - `?deleteContents=true&confirm=true`: soft-deletes all conversations in folder
+    - `GET /folders/:id/transcriptions` - Get folder transcriptions
+  - Added `deletedAt` field to `Transcription` interface for soft delete support
+  - Added `PATCH /transcriptions/:id/folder` endpoint to move transcriptions between folders
+  - Documented required Firestore composite indexes for folders
+
+- **V2 Migration Phase 2 - Frontend Data Layer**:
+  - Created `Conversation` type adapter ([lib/types/conversation.ts](apps/web/lib/types/conversation.ts)):
+    - Maps backend `Transcription` to frontend `Conversation` terminology
+    - Extracts summary, transcript, and sharing data from various source locations
+  - Added `folderApi` to API client ([lib/api.ts](apps/web/lib/api.ts))
+  - Created service layer:
+    - [lib/services/conversationService.ts](apps/web/lib/services/conversationService.ts) - High-level conversation operations
+    - [lib/services/folderService.ts](apps/web/lib/services/folderService.ts) - Folder management
+  - Created React hooks:
+    - [hooks/useConversations.ts](apps/web/hooks/useConversations.ts) - List with pagination, WebSocket progress
+    - [hooks/useConversation.ts](apps/web/hooks/useConversation.ts) - Single conversation fetching
+    - [hooks/useFolders.ts](apps/web/hooks/useFolders.ts) - Folder CRUD operations
+  - Added utility formatters ([lib/formatters.ts](apps/web/lib/formatters.ts)):
+    - `formatDuration`, `formatRelativeTime`, `formatFullDate`, `formatFileSize`, etc.
+
+- **SimpleAudioRecorder Component**: New lightweight recording component that reuses production infrastructure
+  - Replaces inline recording logic in UploadInterface (~150 lines removed)
+  - Reuses production `useMediaRecorder` hook for robustness (recovery, wake lock, error handling, browser compatibility)
+  - **Features**:
+    - Source selection: Microphone + Tab Audio support
+    - Pause/Resume controls
+    - Simple waveform animation (30 random bars - matches prototype UX)
+    - Integration with RecordingPreview component
+    - Auto-start support for direct recording flow
+  - **Production Features Inherited**:
+    - Recording recovery via IndexedDB auto-save (crash protection)
+    - Wake lock to prevent screen sleep on mobile
+    - Smart error categorization with user-friendly messages
+    - Browser capability detection
+    - beforeunload protection to prevent accidental data loss
+    - Proper stream cleanup and resource management
+  - **Files Added**:
+    - [apps/web/components/SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx) - New component (~270 lines)
+
+### Changed
+- **UploadInterface Refactoring**: Extracted recording functionality into SimpleAudioRecorder component
+  - **Removed** (~200 lines):
+    - All recording state management (recordingState, recordedBlob, recordingSeconds, waveformBars)
+    - MediaRecorder API integration and stream management
+    - Manual recording timer and waveform animation logic
+    - Recording event handlers (start, stop, cancel, confirm, re-record)
+    - All recording-related useEffect hooks and cleanup code
+    - Inline recording UI and preview sections
+  - **Simplified to core responsibilities**:
+    - Method selection (upload/record/URL)
+    - File upload with drag-and-drop
+    - Multi-file management
+  - **New approach**:
+    - Delegates all recording to SimpleAudioRecorder component
+    - Renders SimpleAudioRecorder when `selectedMethod === 'record'`
+    - Passes callbacks for completion and cancellation
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx) - Reduced from ~750 lines to ~490 lines
+  - **Benefits**:
+    - Single source of truth for recording logic (useMediaRecorder hook)
+    - Better separation of concerns (1 component = 1 responsibility)
+    - Easier to test and maintain
+    - Consistent recording behavior across prototype and production
+    - Inherits all production recording improvements automatically
+- **Conversation Creation Modal Close Confirmation**: Added confirmation dialog when closing modal during recording, processing, or with selected files
+  - Shows "Are you sure you want to cancel? Your progress will be lost." prompt before closing
+  - Triggered when: recording is in progress, processing step active, OR upload step with files selected
+  - Prevents accidental loss of work during recording/uploading
+  - **Implementation**:
+    - Added `onRecordingStateChange` callback prop to UploadInterface to notify parent of recording status
+    - ConversationCreateModal tracks recording state and includes it in confirmation logic
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:13,51-56) - Added callback prop and useEffect to notify parent
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:52,62,69,84,168) - Track recording state and updated confirmation
+
+### Changed
+- **Modal Text Color Consistency & Brand Compliance**: Fixed 21 text color inconsistencies across conversation creation modal to match brand guidelines
+  - **Updated text-gray-600 → text-gray-700**: Body text and descriptions for better readability (14 instances)
+  - **Updated text-gray-500 → text-gray-600/700**: Hints and secondary text for improved legibility (5 instances)
+  - **Replaced blue info notice with brand colors**: Changed blue-50/blue-200/blue-800 to gray-50/magenta border (CRITICAL brand consistency fix)
+  - **Interactive elements**: Enhanced close button and cancel links with darker grays for better visibility
+  - **Files Modified**:
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:142,153) - Subtitle and close button icon
+    - [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx:71,105,117,128) - Descriptions, section headers, help text
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:339,358,374,406,409,440,476,514,528-531,560,586,651) - Card descriptions, upload text, info notice (blue→gray+magenta), mode descriptions, cancel button
+    - [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx:98,160) - Duration text, playback tip
+    - [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx:142,206) - File chips, inactive stage labels
+  - **Impact**: Improved readability, better contrast, full brand consistency (no blue colors), proper text hierarchy
+- **Button Size Consistency in Conversation Creation Modal**: Standardized button sizes across all modal steps
+  - Removed `size="lg"` from all modal buttons to match TemplateSelector default (medium) size
+  - All modal buttons (template selection, upload, recording preview, processing) now use consistent medium size for uniform appearance
+  - **Files Modified**:
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:605,646) - Changed "Upload & Process" and "Stop Recording" buttons from `size="lg"` to default
+    - [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx:175) - Changed "Proceed with this recording" button from `size="lg"` to default
+    - [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx:229) - Changed "View Conversation" button from `size="lg"` to default
+- **Conversation Creation Flow Restructure**: Standardized flow across all dashboard cards for consistency
+  - **New Flow Pattern**:
+    1. **Record audio** → Template selector (can skip) → **Auto-start recording** (method pre-selected)
+    2. **Import audio** → Template selector (can skip) → **Auto-show upload** (method pre-selected)
+    3. **Template-specific cards** (Meeting, Email, Blog Post, LinkedIn, Action Items) → Method choice (Record/Upload/URL) → Proceed (template pre-selected)
+    4. **More templates** → Template selector (can skip) → Method choice (Record/Upload/URL) → Proceed
+  - **Key Changes**:
+    - "Record audio" and "Import audio" now show template selector FIRST, then proceed with pre-selected method (no redundant method choice)
+    - Template-specific cards (Meeting, Email, etc.) show method selection FIRST, then proceed with pre-selected template
+    - Method selection only shown when user hasn't already indicated their preferred input method via button clicked
+    - Eliminates redundant "choose method" step when method is already known from button context
+  - **Files Modified**:
+    - [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx) - Updated dashboard handlers with uploadMethod prop
+    - [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx) - Restored auto-method selection for pre-selected methods
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx) - Updated modal headers
+
+### Fixed
+- **Microphone Not Released After Recording**: Fixed Chrome microphone indicator staying active after stopping/canceling recording
+  - **Issue**: Microphone access wasn't properly released when recording stopped, leaving the Chrome mic indicator highlighted
+  - **Root Cause**: Media stream tracks weren't stopped immediately when `handleStopRecording` was called; relied only on `onstop` callback which had timing issues
+  - **Solution** (based on [Stack Overflow research](https://stackoverflow.com/questions/44274410/mediarecorder-stop-doesnt-clear-the-recording-icon-in-the-tab)):
+    - Store media stream in ref (`mediaStreamRef`)
+    - Stop tracks **immediately** in `handleStopRecording` (not just in `onstop` callback)
+    - Stop tracks in cancel handler and component unmount cleanup
+    - Set ref to `null` after stopping to enable garbage collection
+  - **Impact**: Microphone indicator now properly disappears instantly when recording stops or is canceled
+  - **File**: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx:46,103-110,277-280,307-310,318-321) - Added stream ref, immediate track cleanup, and unmount cleanup
+- **Processing Complete Confirmation Dialog**: Fixed unwanted confirmation dialog appearing when processing completes successfully
+  - **Issue**: When ProcessingSimulator auto-completes, it called `handleClose()` which triggered "Are you sure you want to cancel?" confirmation dialog
+  - **Root Cause**: `handleProcessingComplete` was calling `handleClose()` which checks if `currentStep === 'processing'` and shows confirmation
+  - **Solution**: Bypass `handleClose()` on successful completion and call `onClose()` directly with state reset
+  - **Impact**: Successful processing now closes modal smoothly without unwanted confirmation prompt
+  - **File**: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:113-127) - Updated `handleProcessingComplete` to reset state and close directly
+- **Template Selector Modal Button Visibility & Content Clipping**: Fixed action buttons not visible and template cards being clipped on sides
+  - **Issue**:
+    - Action buttons ("Skip this step" and "Continue") were completely hidden below scroll area, not visible without scrolling
+    - Template cards on left and right edges were being cut off
+  - **Root Cause**: Complex nested flexbox structure with TemplateSelector trying to manage its own sticky footer inside a constrained parent
+  - **Solution**: Simplified modal structure with fixed header/footer at modal level
+    - Restructured TemplateSelector to return fragments: scrollable body + fixed footer
+    - Modal now has: fixed header → scrollable body → fixed footer
+    - TemplateSelector body handles scrolling for template cards
+    - TemplateSelector footer is always visible at bottom of modal
+  - **Files Modified**:
+    - [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx:136) - Added `flex flex-col` to content wrapper
+    - [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx:97-150) - Restructured to return fragment with scrollable body and fixed footer
+  - **Impact**: Action buttons now always visible at bottom of modal, template cards properly padded and not clipped, simpler and more maintainable structure
+- **ConversationCreateModal State Reset**: Fixed inconsistent behavior when clicking dashboard cards multiple times
+  - **Issue**: Modal state wasn't resetting when props changed, causing unpredictable behavior (sometimes showing template selection, sometimes skipping to upload)
+  - **Root cause**: `useState` initializers only run once on mount, not when props update
+  - **Solution**: Added `useEffect` hook to reset modal state (`currentStep`, `selectedTemplateId`, `uploadedFiles`, `processingMode`) whenever modal opens with new props
+  - **Impact**: All dashboard cards now have consistent, predictable behavior on every click
+  - File: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+
+### Changed (Previous)
+- **Dashboard Quick Action Cards**: Updated to properly map to available templates
+  - Fixed "Meeting" card to map to `transcribe-only` template (was incorrectly mapped to `actionItems`)
+  - Removed duplicate cards: "Document" and "Article" both mapped to `blogPost`
+  - Added "Action Items" card mapping to `actionItems` template
+  - Updated "Blog Post" card with `Edit3` icon (matches template definition)
+  - Updated descriptions to match template purposes:
+    - Meeting: "Summary & transcribe" (not "Summary & notes")
+    - Blog Post: "Publish-ready article" (not "Spec or brief")
+    - Action Items: "Task list" (new card)
+  - **Card behavior** (skip template selection for quick actions):
+    - Meeting & Action Items: Skip directly to upload (like Record/Import audio)
+    - Email, Blog Post, LinkedIn: Show template confirmation first
+  - **Card lineup** (8 total):
+    1. Record audio (general method - skip to upload)
+    2. Import audio (general method - skip to upload)
+    3. Meeting → `transcribe-only` (skip to upload)
+    4. Email → `email` (show template confirmation)
+    5. Blog Post → `blogPost` (show template confirmation)
+    6. LinkedIn post → `linkedin` (show template confirmation)
+    7. Action Items → `actionItems` (skip to upload)
+    8. More templates (opens selector for Communication Analysis + future templates)
+  - File: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+### Added
+- **Context-Aware Conversation Creation** (Phase 1): Smart entry points based on button clicked
+  - **ConversationCreateModal** updated with context-aware props:
+    - `initialStep`: Start at specific step (template/upload/processing)
+    - `preselectedTemplateId`: Auto-select template (e.g., Email, LinkedIn)
+    - `uploadMethod`: Pre-select upload method ('file' or 'record')
+    - `skipTemplate`: Skip template selection entirely for quick workflows
+  - **Dashboard button mapping**:
+    - "Record audio" → Skip template, auto-start recording
+    - "Import audio" → Skip template, show file upload
+    - "Email", "LinkedIn", etc. → Pre-select template, show confirmation
+    - "More templates" → Standard template selector
+  - **UploadInterface** auto-selection via `initialMethod` prop
+  - Files: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **"Just Transcribe" Quick Action** (Phase 4): Simple transcription without custom outputs
+  - **transcribeOnlyTemplate**: New template with `isQuickAction: true` flag
+    - No AI prompt configuration (`prompt: null`)
+    - Category: 'quick' for UI grouping
+    - Provides basic transcription and summary only
+  - **TemplateSelector** updated with section dividers:
+    - "Quick Actions" section (Just Transcribe shown first)
+    - "Output Templates" section (5 core templates)
+    - Visual separation with different grid layouts
+  - **OutputTemplate interface** extended:
+    - `prompt: PromptConfig | null` (nullable for quick actions)
+    - `category?: 'quick' | 'output'`
+    - `isQuickAction?: boolean`
+  - Files: [apps/web/lib/outputTemplates/transcribeOnly.ts](apps/web/lib/outputTemplates/transcribeOnly.ts) (new), [apps/web/lib/outputTemplates/types.ts](apps/web/lib/outputTemplates/types.ts), [apps/web/lib/outputTemplates/index.ts](apps/web/lib/outputTemplates/index.ts), [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx)
+
+- **Multi-File Upload Support** (Phase 2): Upload up to 3 files with processing options
+  - **UploadInterface** updated to handle multiple files:
+    - Upload 1-3 audio/video files via drag-and-drop or file picker
+    - File validation: duplicate detection, type checking, 3-file limit
+    - Drag-to-reorder files (visual feedback with numbered badges)
+    - Compact "Add more files" dropzone when < 3 files selected
+    - File list UI: numbered badges, file sizes, remove buttons, drag handles
+    - Processing mode selector (only shown for 2+ files):
+      - **Individual**: Process as separate conversations
+      - **Merged**: Merge into single conversation (order matters)
+    - Info banner for merged mode explaining chronological ordering
+    - "Clear all" button to reset selection
+  - **ConversationCreateModal** multi-file state management:
+    - Changed `uploadedFile: File | null` to `uploadedFiles: File[]`
+    - Added `processingMode: 'individual' | 'merged'` state
+    - Updated `onFileUpload` signature to accept `(files: File[], mode)`
+    - Reset processing mode on modal close
+  - **ProcessingSimulator** multi-file display:
+    - Accepts `files: File[]` and `processingMode` props
+    - Smart file display message (single file name, "Merging X files", "Processing X files individually")
+    - Shows numbered file badges when multiple files selected
+    - Maintains same animated progress stages
+  - **Pattern**: Based on production `FileUploader.tsx` with drag-to-reorder, file management, and mode selection
+  - Files: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx), [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx)
+
+- **Recording Preview & Confirmation** (Phase 3): Audio playback before processing
+  - **RecordingPreview** component with full audio controls:
+    - Audio playback with play/pause toggle
+    - Seek bar with visual progress tracking
+    - Time display (current/total in MM:SS format)
+    - Static waveform visualization showing playback progress
+    - Three actions: "Re-record", "Cancel", "Proceed with this recording"
+  - **UploadInterface** recording state machine:
+    - States: `idle` → `recording` → `preview` → `confirmed`
+    - Stores recorded blob after stopping (doesn't immediately process)
+    - Shows RecordingPreview in 'preview' state
+    - Only calls `onRecordingComplete` after user confirms
+    - Re-record button starts fresh recording
+    - Cancel returns to method selection
+  - **Safety improvement**: Prevents accidental processing of bad recordings
+  - Files: [apps/web/components/RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx) (new), [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx)
+
+- **Conversation Create Flow**: Complete multi-step wizard for creating conversations
+  - **ConversationCreateModal**: 4-step modal wizard (template selection → upload method → file/record → processing)
+    - Files: [apps/web/components/ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx)
+  - **TemplateSelector**: Grid display of 5 core templates with icons, descriptions, selection state
+    - Allows skipping template selection to upload directly
+    - Visual feedback with brand color accent (#cc3399) for selected state
+    - Files: [apps/web/components/TemplateSelector.tsx](apps/web/components/TemplateSelector.tsx)
+  - **UploadInterface**: Three input methods (upload file, record audio, import from URL)
+    - Drag-and-drop file upload with validation for audio/video formats
+    - Live audio recording with waveform visualization and timer (MM:SS format)
+    - File preview with size display and ability to change selection
+    - Recording uses MediaRecorder API with Blob conversion
+    - Files: [apps/web/components/UploadInterface.tsx](apps/web/components/UploadInterface.tsx)
+  - **ProcessingSimulator**: Animated progress simulation (uploading → transcribing → analyzing → complete)
+    - 4-stage visual progress with icons (FileAudio, MessageSquare, Sparkles, CheckCircle2)
+    - Gradient progress bar (0-100%) with 4-5 second animation
+    - Stage indicators with color transitions (gray → pink → green)
+    - Auto-navigation to conversation detail on completion
+    - Files: [apps/web/components/ProcessingSimulator.tsx](apps/web/components/ProcessingSimulator.tsx)
+  - **Dashboard Integration**: All "Quick Create" buttons now open the ConversationCreateModal
+    - 8 create buttons (Record, Upload, Document, Meeting, Article, Email, LinkedIn, More templates)
+    - Empty state action updated to "Create Conversation"
+    - Navigation to conversation detail page after completion
+    - Files: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+
+- **Communication Analysis Output Template**: New core output type analyzing communication effectiveness
+  - Created template definition in `apps/web/lib/outputTemplates/communicationAnalysis.ts`
+  - Scores conversations across 6 dimensions: Clarity, Active Listening, Empathy, Persuasiveness, Collaboration, Conciseness (each 0-100)
+  - Provides actionable strengths and improvement areas with specific examples
+  - React renderer (`CommunicationAnalysisTemplate.tsx`) with circular progress indicator, dimension breakdowns, score visualizations
+  - Mock data includes comprehensive 6-dimension analysis with overall 78/100 score
+  - Files: [apps/web/lib/outputTemplates/communicationAnalysis.ts](apps/web/lib/outputTemplates/communicationAnalysis.ts), [apps/web/components/output-templates/CommunicationAnalysisTemplate.tsx](apps/web/components/output-templates/CommunicationAnalysisTemplate.tsx)
+
+- **LinkedIn Post Output Template**: Complete renderer for social media posts
+  - React template (`LinkedInTemplate.tsx`) with character counter (280 limit), LinkedIn blue branding, hashtag chips
+  - Character limit warnings (red if over 280) and engagement tips section
+  - Mock data includes formatted post (267 chars) with emojis, checkmarks, 5 relevant hashtags (#ProductStrategy, #AI, etc.)
+  - File: [apps/web/components/output-templates/LinkedInTemplate.tsx](apps/web/components/output-templates/LinkedInTemplate.tsx)
+
+- **Action Items Output Template**: Task management renderer with priority system
+  - React template (`ActionItemsTemplate.tsx`) with checklist UI, priority badges (high=red, medium=yellow, low=green)
+  - Shows owner assignments, deadlines, priority summary statistics
+  - Hover effects on tasks, brand color accents, empty state handling
+  - Mock data includes 5 tasks across all priority levels with assignments and deadlines
+  - File: [apps/web/components/output-templates/ActionItemsTemplate.tsx](apps/web/components/output-templates/ActionItemsTemplate.tsx)
+
+### Changed
+- **V2 Core Output Types Finalized**: Replaced "Custom" and "User Stories" with "Communication Analysis"
+  - **New Core 5**: Email, Blog Post, LinkedIn, Action Items, Communication Analysis
+  - User Stories moved to future roadmap (kept in library at `apps/web/lib/outputTemplates/userStories.ts` but not in core)
+  - Updated `OutputType` in mockData.ts: removed 'custom', added 'communicationAnalysis', kept 'userStories' with comment "// Keep for future"
+  - Updated template registry (`allTemplates` in index.ts) to export 5 core templates only
+  - **All 5 core types now have fully rendered React components** (100% template completion)
+  - Files: [apps/web/lib/outputTemplates/index.ts](apps/web/lib/outputTemplates/index.ts), [apps/web/lib/mockData.ts](apps/web/lib/mockData.ts)
+
+- **Output Detail Page: Full Template Support**: Updated router to render all 5 core types
+  - Added rendering cases for LinkedIn, Action Items, Communication Analysis (previously used PlaceholderTemplate)
+  - Updated icon mapping: added MessageSquareQuote for Communication Analysis
+  - Updated type label display logic for proper capitalization
+  - Updated PrototypeNotice description: "All 5 core output types now have custom renderers"
+  - File: [apps/web/app/[locale]/prototype-conversation-v2/[id]/outputs/[outputId]/OutputDetailClient.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+
+- **Viral Growth: Removed Member Limits**: Eliminated "max 2 members for free tier" restriction
+  - Changed to unlimited folder invitations for all tiers to maximize viral growth loop
+  - Removed 8 occurrences of member limit language from plan document
+  - Updated viral features decision: "Unlimited folder invitations (no member limits to enable viral growth)"
+  - Updated folder invitation flow mockups: changed "max 2 for free tier" to "unlimited invitations for viral growth"
+  - Updated data model: removed member limit from folder invitation notes
+  - Rationale: No artificial collaboration limits to enable Loop 2 (Folder Collaboration → Team Expansion)
+  - File: [docs/UI_REDESIGN_PLAN_V2.md](docs/UI_REDESIGN_PLAN_V2.md)
+
+- **UI Redesign Plan V2: Updated with Full Status**: Comprehensive update reflecting current prototype state
+  - Added implementation status overview at top showing 35% completion
+  - Added detailed "V2 Prototype Status" section documenting completed/partial/missing features
+  - Updated Design System section with component-by-component status (✅ implemented, 🚧 partial, ❌ not started)
+  - Updated all 5 implementation phases with progress indicators and status notes
+  - Added "Implementation Deviations" table (plan vs reality)
+  - Documented features added beyond plan (4-step wizard, detail page architecture)
+  - Updated "Next Steps" with prototype completion roadmap (2-3 days) vs backend implementation (4-5 weeks)
+  - Updated summary with achievements and priorities
+  - Updated data model output types: 'communicationAnalysis' replaces 'custom', 'userStories' marked "(future)"
+  - Updated output types summary: **NOW 5/5 core templates rendered** ✅ (was 2/5)
+  - Key findings: Viral growth 0%, templates 5/5 ✅, UI 85%
+  - File: [docs/UI_REDESIGN_PLAN_V2.md](docs/UI_REDESIGN_PLAN_V2.md)
+
+---
+
+## [2.0.1] - 2025-11-23
+
+### V2 Prototype & Multi-file Upload
+
+### Removed
+- **ChatGPT-Style Sidebar Collapse (V2 Prototype)**: Redesigned sidebar collapse behavior to match modern app patterns
+  - Collapsed left sidebar shows persistent 48px icon strip with action buttons (Open, Search, New Conversation, User Profile)
+  - Hover tooltips on all collapsed icons showing action labels
+  - Collapse button integrated into header (PanelLeft icon) instead of floating chevron arrows
+  - Added "Dashboard" and "New Conversation" navigation links in expanded sidebar
+  - Simplified header to show only icon (removed "Neural Summary" text to prevent wrapping)
+  - Smooth transitions with `collapsedWidth: 48px` for both left and right panels
+  - State persists in localStorage for consistent user experience
+  - Files: [apps/web/components/CollapsibleSidebar.tsx](apps/web/components/CollapsibleSidebar.tsx), [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [apps/web/components/LeftNavigationCollapsed.tsx](apps/web/components/LeftNavigationCollapsed.tsx), [apps/web/components/ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+
+- **Output Generator Modal (V2 Prototype)**: Built comprehensive 4-step wizard for generating outputs from conversations
+  - Step 1: Select output type (Email, Blog Post, LinkedIn, Action Items, User Stories) with visual cards
+  - Step 2: Add optional custom instructions with textarea
+  - Step 3: Review selections before generation
+  - Step 4: Generation progress with animated loading state and success confirmation
+  - Features progress indicator showing current step (1-4) with visual feedback
+  - "+ New Output" button in Generated Outputs section header (shown when outputs exist)
+  - "Generate Output" button in empty state (shown when no outputs exist)
+  - Modal includes smooth animations, dark mode support, and brand color accents (#cc3399)
+  - Files: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx), [apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/ConversationClient.tsx)
+
+### Changed
+- **Output Templates Restructure**: Separated output templates into individual files for better maintainability
+  - Created `apps/web/lib/outputTemplates/` directory with dedicated file per template
+  - Files: `types.ts` (shared interfaces), `email.ts`, `blogPost.ts`, `linkedinPost.ts`, `actionItems.ts`, `userStories.ts`
+  - Central registry in `index.ts` exports `allTemplates` array and `getTemplateById()` helper
+  - Updated `OutputGeneratorModal.tsx` to use template registry instead of inline array
+  - Benefits: Easier to add new templates, better code organization, template-specific logic co-location
+  - Files: [apps/web/lib/outputTemplates/](apps/web/lib/outputTemplates/), [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **AI Prompt Configuration Added to Templates**: Extended output templates with comprehensive AI prompt configuration
+  - Added `PromptConfig` interface with system prompt, user template, temperature, and maxTokens fields
+  - Each template now includes specialized prompts tailored to output type:
+    - **Email** (0.7 temp, 800 tokens): Professional email writer with focus on clarity and action items
+    - **Blog Post** (0.8 temp, 2000 tokens): Content writer creating engaging narratives with storytelling
+    - **LinkedIn Post** (0.8 temp, 500 tokens): Social media creator optimized for professional engagement
+    - **Action Items** (0.3 temp, 1000 tokens): Project manager extracting structured tasks with priorities
+    - **User Stories** (0.3 temp, 1500 tokens): Product manager creating Agile user stories with acceptance criteria
+  - Templates use placeholders (`{{TRANSCRIPT}}`, `{{CUSTOM_INSTRUCTIONS}}`) for dynamic content injection
+  - Files: [apps/web/lib/outputTemplates/types.ts](apps/web/lib/outputTemplates/types.ts), all template files
+- **Output Generator Progress Indicator**: Improved visual flow of connecting lines between step circles
+  - Lines now flow directly between circles instead of appearing disconnected
+  - Used absolute positioning for seamless connection from circle to circle
+  - Labels remain aligned below their corresponding numbered circles
+  - File: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx:127-167)
+- **Success State Contrast Fix**: Changed success checkmark from grey text on light green to white text on solid green (bg-green-500)
+  - Provides proper contrast and matches green color used in completed step indicators
+  - File: [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx:341-343)
+
+### Removed
+- **Code Cleanup**: Removed unused helper functions and dead code
+  - Deleted `PropertyRow` and `ActionButton` helper functions from RightContextPanel (were never used)
+  - Removed unused `canProceedFromStep2` variable from OutputGeneratorModal
+  - Files: [apps/web/components/RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx), [apps/web/components/OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+- **Visual Clarity Improvements (V2 Prototype)**:
+  - Enhanced pane contrast with subtle background tints for better visual separation:
+    - Left sidebar: `bg-gray-50 dark:bg-gray-900/50`
+    - Main content: `bg-white dark:bg-gray-950`
+    - Right panel: `bg-gray-50/50 dark:bg-gray-900/30`
+  - Implemented softer borders with 60% opacity (`border-gray-200/60 dark:border-gray-700/60`)
+  - Added gradient text to personalized greeting header: magenta to purple gradient (`from-[#cc3399] to-[#d946ef]`)
+
+- **Denser List Views**: Replaced card-based layouts with space-efficient list design
+  - Converted folder and conversation lists from cards (`py-5`) to compact rows (`py-3`)
+  - Implemented hairline borders (`divide-y divide-gray-100`) for subtle separation
+  - Hover states: subtle background change instead of heavy shadows
+  - Result: 8-10 visible items per screen (up from 4-5 with cards)
+  - Files: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx), [apps/web/app/[locale]/prototype-folder-v2/[id]/page.tsx](apps/web/app/[locale]/prototype-folder-v2/[id]/page.tsx)
+
+- **Refined Status Indicators**:
+  - Replaced verbose "✓ Ready" badges with subtle checkmark (✓) next to conversation title
+  - Kept prominent badges only for important states (Processing, Failed)
+  - Reduces visual noise while maintaining clarity
+  - Checkmark appears at end of title for "Ready" status conversations
+
+- **Polish & Refinements (Additional UX improvements)**:
+  - **Compact Quick Create Cards**: Reduced padding (`p-6` → `p-4`) and emoji size (`text-4xl` → `text-3xl`) for better space efficiency
+  - **Proportional Headers**: Reduced section headers from `text-3xl` to `text-2xl` for better visual hierarchy
+  - **Linear-Style Hover Effect**: Added magenta left border on hover (`border-l-2 hover:border-l-[#cc3399]`) to list items for spotlight effect
+  - **Lighter Typography**: Changed titles from `font-semibold` to `font-medium` for less visual weight
+  - **Sidebar Status Cleanup**: Removed "Ready" text from sidebar Recent section, showing only checkmark (✓) or processing icon (⏳)
+  - Result: Cleaner interface, better information hierarchy, increased content density
+
+### Changed
+- **CTA Button Placement**: Removed "New Conversation" button from top of left sidebar to reduce competition with logo and search bar
+  - Maintains cleaner header section with focus on search functionality
+  - FAB (Floating Action Button) remains primary quick-create mechanism
+  - File: [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+- **Button Spacing**: Moved "+ New Folder" button outside of bordered list container for better visual hierarchy
+  - Previously appeared inside the list border (confusing)
+  - Now appears below with proper spacing (`space-y-4`)
+  - File: [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **Modern Three-Pane Layout System**: Implemented 2025 productivity tool UI patterns
+  - Created reusable `ThreePaneLayout` component with collapsible sidebars
+  - Built `CollapsibleSidebar` component with smooth animations (300ms transitions)
+  - Implemented state persistence via localStorage (remembers sidebar collapsed/expanded state)
+  - Created `useCollapsibleSidebar` hook for managing sidebar state
+  - Left sidebar (240px → 0px): Navigation with folders + recent conversations
+  - Right panel (360px → 0px): Contextual properties, metadata, and quick actions
+  - Follows patterns from Linear, Notion, Height, and other modern productivity tools
+  - Files: [apps/web/components/ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx), [apps/web/components/CollapsibleSidebar.tsx](apps/web/components/CollapsibleSidebar.tsx), [apps/web/hooks/useCollapsibleSidebar.ts](apps/web/hooks/useCollapsibleSidebar.ts)
+
+- **Left Navigation Sidebar**: Modern folder tree navigation
+  - Search bar for filtering conversations
+  - "New Conversation" primary action button
+  - Folders section with conversation counts
+  - Recent conversations with status indicators
+  - Hover states and smooth transitions
+  - Sticky top and bottom sections
+  - File: [apps/web/components/LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx)
+
+- **Right Context Panel**: Contextual properties and actions panel
+  - Tabbed interface: Details vs Actions
+  - Details tab: File info, duration, status, folder, tags, speakers
+  - Actions tab: Generate outputs, Export, Share options
+  - All quick actions accessible without scrolling main content
+  - Sticky bottom actions (e.g., Delete button)
+  - Empty state when no conversation selected
+  - File: [apps/web/components/RightContextPanel.tsx](apps/web/components/RightContextPanel.tsx)
+
+- **Vertical Sections Layout**: Replaced horizontal tabs with scrollable sections
+  - No more tabs! Single page with vertical sections: Summary → Outputs → Transcript
+  - Sticky section headers remain visible during scroll
+  - Reduced clicks and improved keyboard navigation
+  - Better for long-form content reading
+  - Prototype V2 pages demonstrate new pattern
+  - Files: [apps/web/app/[locale]/prototype-conversation-v2/[id]/page.tsx](apps/web/app/[locale]/prototype-conversation-v2/[id]/page.tsx), [apps/web/app/[locale]/prototype-dashboard-v2/page.tsx](apps/web/app/[locale]/prototype-dashboard-v2/page.tsx)
+
+- **UI Prototype System**: Complete prototype interface for new "Conversations + Folders" paradigm
+  - Created `PrototypeHeader` component matching authenticated dashboard header
+  - Added folder detail view (`/prototype-folder/[id]`) showing all conversations in a folder
+  - Includes member management UI, conversation list, and empty states
+  - All prototype pages now include authenticated header (logo, usage badge, theme toggle, profile menu)
+  - Updated prototype dashboard to link folders to detail view instead of first conversation
+  - Updated PROTOTYPE_GUIDE.md with folder navigation testing instructions
+  - Files: [apps/web/components/PrototypeHeader.tsx](apps/web/components/PrototypeHeader.tsx), [apps/web/app/[locale]/prototype-folder/[id]/page.tsx](apps/web/app/[locale]/prototype-folder/[id]/page.tsx), [apps/web/app/[locale]/prototype-dashboard/page.tsx](apps/web/app/[locale]/prototype-dashboard/page.tsx), [apps/web/app/[locale]/prototype-conversation/[id]/page.tsx](apps/web/app/[locale]/prototype-conversation/[id]/page.tsx)
 - **Landing Page Hero Text**: Updated hero headline, subtitle, and byline across all 5 languages
   - Headline: "Speak. We'll remember." → "Create anything with your voice"
   - Subtitle: "Turn conversations into work-ready documents—effortlessly." → "Turn conversations into summaries, emails, social posts and more."

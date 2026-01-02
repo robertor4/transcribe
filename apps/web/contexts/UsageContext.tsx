@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import websocketService from '@/lib/websocket';
 import { WEBSOCKET_EVENTS, UserRole } from '@transcribe/shared';
@@ -23,7 +23,6 @@ interface UsageStats {
   };
   percentUsed: number;
   warnings: string[];
-  paygCredits?: number;
   resetDate: string;
 }
 
@@ -45,6 +44,10 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
 
+  // Track if we've already fetched for this user to prevent duplicate calls
+  const hasFetchedRef = useRef(false);
+  const lastUserIdRef = useRef<string | null>(null);
+
   const fetchUserProfile = async () => {
     if (!user) {
       setUserRole(null);
@@ -64,16 +67,12 @@ export function UsageProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('[UsageContext] User profile data:', data);
         const role = data.data?.role || UserRole.USER;
-        console.log('[UsageContext] User role:', role);
         setUserRole(role);
       } else {
-        console.error('[UsageContext] Failed to fetch user profile:', response.statusText);
         setUserRole(UserRole.USER);
       }
     } catch (err) {
-      console.error('[UsageContext] Error fetching user profile:', err);
       setUserRole(UserRole.USER); // Default to USER on error
     }
   };
@@ -101,7 +100,6 @@ export function UsageProvider({ children }: { children: ReactNode }) {
         setUsageStats(data.data);
         setError(null);
       } else {
-        console.error('Failed to fetch usage stats:', response.statusText);
         setError('Failed to fetch usage stats');
         // Set default free tier stats as fallback for new users
         setUsageStats({
@@ -154,10 +152,31 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Initial fetch - fetch both user profile and usage stats
+  // Initial fetch - only when user ID changes and email is verified
   useEffect(() => {
-    fetchUserProfile();
-    fetchUsage();
+    const userId = user?.uid || null;
+
+    // Only fetch if user ID changed (login/logout), not on every render
+    if (userId !== lastUserIdRef.current) {
+      lastUserIdRef.current = userId;
+      hasFetchedRef.current = false;
+    }
+
+    if (user && user.emailVerified && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      // Fetch in parallel with proper error handling
+      Promise.all([fetchUserProfile(), fetchUsage()]).catch((err) => {
+        setError(err instanceof Error ? err.message : 'Failed to fetch user data');
+        setLoading(false);
+      });
+    } else if (!user) {
+      setUserRole(null);
+      setUsageStats(null);
+      setLoading(false);
+    } else if (user && !user.emailVerified) {
+      // User exists but email not verified - don't fetch, just stop loading
+      setLoading(false);
+    }
   }, [user]);
 
   // Auto-refresh when transcription completes
@@ -167,7 +186,6 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     const unsubscribe = websocketService.on(
       WEBSOCKET_EVENTS.TRANSCRIPTION_COMPLETED,
       () => {
-        console.log('[UsageContext] Transcription completed, refreshing usage stats');
         fetchUsage();
       },
     );
@@ -176,11 +194,6 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const isAdmin = userRole === UserRole.ADMIN;
-
-  // Debug log whenever isAdmin changes
-  useEffect(() => {
-    console.log('[UsageContext] isAdmin:', isAdmin, 'userRole:', userRole);
-  }, [isAdmin, userRole]);
 
   return (
     <UsageContext.Provider

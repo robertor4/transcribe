@@ -3,7 +3,6 @@
  *
  * This module contains all pricing data for the application, including:
  * - Base USD pricing for all subscription tiers
- * - Pay-as-you-go package configurations
  * - Currency conversion rates
  * - Locale-to-currency mappings
  * - Utility functions for pricing calculations and formatting
@@ -22,14 +21,9 @@
 export const BASE_PRICING = {
   usd: {
     professional: {
-      monthly: 29,
-      annual: 261, // $21.75/month when billed annually (25% discount)
-      annualMonthly: 21.75, // Effective monthly rate for annual plan
-    },
-    payg: {
-      hourly: 1.50,
-      minimumPurchase: 15, // Minimum $15 purchase
-      minimumHours: 10, // Gets you 10 hours minimum
+      monthly: 25,
+      annual: 225, // $18.75/month when billed annually (~25% discount)
+      annualMonthly: 18.75, // Effective monthly rate for annual plan
     },
   },
 } as const;
@@ -39,17 +33,6 @@ export const BASE_PRICING = {
  * Charged per hour over the 60-hour monthly limit
  */
 export const OVERAGE_RATE_USD = 0.50;
-
-/**
- * Pay-as-you-go package tiers in USD
- * Each package offers bulk pricing for audio transcription hours
- */
-export const PAYG_PACKAGES_USD = [
-  { hours: 10, price: 15, savings: 0 },
-  { hours: 20, price: 30, savings: 0 },
-  { hours: 33, price: 50, savings: 0.50 }, // ~3% savings
-  { hours: 67, price: 100, savings: 0.50 }, // ~3% savings
-] as const;
 
 // ============================================================================
 // CURRENCY CONFIGURATION
@@ -130,18 +113,6 @@ export interface PricingData {
     annualSavings: number;
     annualSavingsPercent: number;
   };
-  payg: {
-    hourly: number;
-    minimumPurchase: number;
-    minimumHours: number;
-  };
-}
-
-export interface PaygPackage {
-  hours: number;
-  price: number;
-  savings: number;
-  effectiveHourlyRate: number;
 }
 
 export interface CurrencyData {
@@ -202,10 +173,6 @@ export function getPricingForLocale(locale: string): PricingData {
   const annualSavings = (professionalMonthly * 12) - professionalAnnual;
   const annualSavingsPercent = Math.round((annualSavings / (professionalMonthly * 12)) * 100);
 
-  // Convert PAYG pricing
-  const paygHourly = convertFromUsd(baseUsd.payg.hourly, currency);
-  const paygMinimumPurchase = convertFromUsd(baseUsd.payg.minimumPurchase, currency);
-
   return {
     professional: {
       monthly: professionalMonthly,
@@ -214,31 +181,7 @@ export function getPricingForLocale(locale: string): PricingData {
       annualSavings,
       annualSavingsPercent,
     },
-    payg: {
-      hourly: paygHourly,
-      minimumPurchase: paygMinimumPurchase,
-      minimumHours: baseUsd.payg.minimumHours,
-    },
   };
-}
-
-/**
- * Get PAYG package options for a given currency
- * @param currency - Currency code
- * @returns Array of PAYG packages with prices in the specified currency
- */
-export function getPaygPackages(currency: SupportedCurrency): PaygPackage[] {
-  return PAYG_PACKAGES_USD.map(pkg => {
-    const convertedPrice = convertFromUsd(pkg.price, currency);
-    const effectiveHourlyRate = convertedPrice / pkg.hours;
-
-    return {
-      hours: pkg.hours,
-      price: convertedPrice,
-      savings: pkg.savings,
-      effectiveHourlyRate: Math.round(effectiveHourlyRate * 100) / 100,
-    };
-  });
 }
 
 /**
@@ -252,10 +195,10 @@ export function getPaygPackages(currency: SupportedCurrency): PaygPackage[] {
  * @returns Formatted price string with proper locale formatting
  *
  * @example
- * formatPriceLocale(29, 'en') // "$29"
- * formatPriceLocale(27, 'nl') // "€ 27"
- * formatPriceLocale(1.50, 'en', { decimals: 2 }) // "$1.50"
- * formatPriceLocale(1.40, 'de', { decimals: 2 }) // "1,40 €"
+ * formatPriceLocale(25, 'en') // "$25"
+ * formatPriceLocale(23, 'nl') // "€ 23"
+ * formatPriceLocale(18.75, 'en', { decimals: 2 }) // "$18.75"
+ * formatPriceLocale(17.25, 'de', { decimals: 2 }) // "17,25 €"
  */
 export function formatPriceLocale(
   amount: number,
@@ -289,7 +232,7 @@ export function formatPriceLocale(
  * @param amount - Price amount
  * @param currency - Currency code
  * @param options - Formatting options
- * @returns Formatted price string (e.g., "$29" or "€27")
+ * @returns Formatted price string (e.g., "$25" or "€23")
  */
 export function formatPrice(
   amount: number,
@@ -345,14 +288,4 @@ export function calculateAnnualSavings(currency: SupportedCurrency): {
     percent: savingsPercent,
     monthlyEquivalent: annualMonthly,
   };
-}
-
-/**
- * Get the minimum PAYG package for a given currency
- * @param currency - Currency code
- * @returns The minimum PAYG package (10 hours)
- */
-export function getMinimumPaygPackage(currency: SupportedCurrency = 'USD'): PaygPackage {
-  const packages = getPaygPackages(currency);
-  return packages[0]; // First package is always the minimum
 }
