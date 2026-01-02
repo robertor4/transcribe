@@ -291,6 +291,97 @@ export class UserRepository {
     }
   }
 
+  /**
+   * Delete all user folders (batch operation for account deletion)
+   */
+  async deleteUserFolders(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.db
+        .collection('folders')
+        .where('userId', '==', userId)
+        .get();
+
+      let deletedCount = 0;
+      const batch = this.db.batch();
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        deletedCount++;
+      });
+
+      await batch.commit();
+      this.logger.log(`Deleted ${deletedCount} folders for user ${userId}`);
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(`Error deleting folders for user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete all user usage records (batch operation for account deletion)
+   */
+  async deleteUserUsageRecords(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.db
+        .collection('usageRecords')
+        .where('userId', '==', userId)
+        .get();
+
+      let deletedCount = 0;
+      const batch = this.db.batch();
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        deletedCount++;
+      });
+
+      await batch.commit();
+      this.logger.log(
+        `Deleted ${deletedCount} usage records for user ${userId}`,
+      );
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(
+        `Error deleting usage records for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Delete all user imported conversations (batch operation for account deletion)
+   */
+  async deleteUserImportedConversations(userId: string): Promise<number> {
+    try {
+      const snapshot = await this.db
+        .collection('importedConversations')
+        .where('userId', '==', userId)
+        .get();
+
+      let deletedCount = 0;
+      const batch = this.db.batch();
+
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+        deletedCount++;
+      });
+
+      await batch.commit();
+      this.logger.log(
+        `Deleted ${deletedCount} imported conversations for user ${userId}`,
+      );
+      return deletedCount;
+    } catch (error) {
+      this.logger.error(
+        `Error deleting imported conversations for user ${userId}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
   // ============================================================
   // ADMIN METHODS
   // ============================================================

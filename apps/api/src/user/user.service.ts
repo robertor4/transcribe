@@ -353,6 +353,9 @@ export class UserService {
     deletedData: {
       transcriptions?: number;
       analyses?: number;
+      folders?: number;
+      usageRecords?: number;
+      importedConversations?: number;
       storageFiles?: number;
       authAccount?: boolean;
       firestoreUser?: boolean;
@@ -366,6 +369,9 @@ export class UserService {
       const deletedData: {
         transcriptions?: number;
         analyses?: number;
+        folders?: number;
+        usageRecords?: number;
+        importedConversations?: number;
         storageFiles?: number;
         authAccount?: boolean;
         firestoreUser?: boolean;
@@ -387,12 +393,27 @@ export class UserService {
           await this.userRepository.deleteUserGeneratedAnalyses(userId);
         deletedData.analyses = analysesDeleted;
 
-        // 3. Delete all storage files
+        // 3. Delete all folders
+        const foldersDeleted =
+          await this.userRepository.deleteUserFolders(userId);
+        deletedData.folders = foldersDeleted;
+
+        // 4. Delete all usage records
+        const usageRecordsDeleted =
+          await this.userRepository.deleteUserUsageRecords(userId);
+        deletedData.usageRecords = usageRecordsDeleted;
+
+        // 5. Delete all imported conversations
+        const importedConversationsDeleted =
+          await this.userRepository.deleteUserImportedConversations(userId);
+        deletedData.importedConversations = importedConversationsDeleted;
+
+        // 6. Delete all storage files
         const storageFilesDeleted =
           await this.storageService.deleteUserFiles(userId);
         deletedData.storageFiles = storageFilesDeleted;
 
-        // 4. Cancel Stripe subscription and delete customer
+        // 7. Cancel Stripe subscription and delete customer
         const user = await this.getUserProfile(userId);
         if (user) {
           // Cancel active subscription immediately (if exists)
@@ -429,11 +450,11 @@ export class UserService {
           }
         }
 
-        // 5. Delete Firestore user document
+        // 8. Delete Firestore user document
         await this.userRepository.deleteUser(userId);
         deletedData.firestoreUser = true;
 
-        // 6. Delete Firebase Auth account (LAST - no going back after this!)
+        // 9. Delete Firebase Auth account (LAST - no going back after this!)
         try {
           await this.firebaseService.auth.deleteUser(userId);
           deletedData.authAccount = true;

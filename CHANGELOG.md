@@ -34,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File removed: `apps/web/lib/outputTemplates/userStories.ts`
 
 ### Fixed
+- **Account Deletion Data Cleanup**: Hard delete now properly removes all user data collections
+  - Added cleanup for `folders` collection (was previously orphaned)
+  - Added cleanup for `usageRecords` collection (was previously orphaned)
+  - Added cleanup for `importedConversations` collection (was previously orphaned)
+  - Files: [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts), [user.service.ts](apps/api/src/user/user.service.ts)
 - **Mobile Processing Step Responsiveness**: Improved mobile layout for processing step in Create Conversation modal
   - Stage indicators now use 2x2 grid on mobile (<640px), expanding to 4-column on desktop
   - Reduced padding and icon sizes on mobile for better space utilization
