@@ -1194,6 +1194,8 @@
     "copied": "Copied!",
     "noSummary": "No summary available",
     "noTranscript": "No transcript available",
+    "aiAssets": "AI Assets",
+    "noContent": "No content available for this conversation.",
     "footer": {
       "poweredBy": "Powered by",
       "copyright": "© {year} Neural Summary. All rights reserved."
@@ -1431,7 +1433,8 @@
         "title": "Pro",
         "period": "/month",
         "description": "For professionals who need polished documents, consistently.",
-        "cta": "Start Free Trial",
+        "cta": "Upgrade to Pro",
+        "trialCta": "Start Free Trial",
         "badge": "Most Popular",
         "recommended": "RECOMMENDED",
         "guarantee": "30-day money-back guarantee",
@@ -1685,6 +1688,11 @@
       "reactivate": "Reactivate Subscription",
       "manageBilling": "Manage Billing",
       "viewInvoices": "View Invoices"
+    },
+    "trial": {
+      "active": "Pro Trial Active",
+      "endsIn": "Your trial ends in {days} days",
+      "upgradeNow": "Upgrade Now"
     },
     "billingHistory": {
       "title": "Billing History",
@@ -1997,7 +2005,16 @@
     "transcriptions": "Conversations",
     "hours": "Hours",
     "remaining": "remaining",
-    "onDemandAnalyses": "AI Assets"
+    "onDemandAnalyses": "AI Assets",
+    "trial": "Trial"
+  },
+  "trial": {
+    "active": "Pro Trial Active",
+    "endsIn": "Your trial ends in {days} days",
+    "daysRemaining": "{days} days left in your Pro trial",
+    "upgradeNow": "Upgrade Now",
+    "startTrial": "Start 14-Day Free Trial",
+    "alreadyUsed": "You've already used your free trial"
   },
   "admin": {
     "title": "Admin Panel",

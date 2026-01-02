@@ -12,10 +12,12 @@ import {
   ImportedConversationWithContent,
   ImportConversationResponse,
   SharedTranscriptionView,
+  GeneratedAnalysis,
 } from '@transcribe/shared';
 import { ImportedConversationRepository } from '../firebase/repositories/imported-conversation.repository';
 import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
 import { UserRepository } from '../firebase/repositories/user.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
 
 /**
  * Service for managing imported conversations.
@@ -29,6 +31,7 @@ export class ImportedConversationService {
     private readonly importedConversationRepository: ImportedConversationRepository,
     private readonly transcriptionRepository: TranscriptionRepository,
     private readonly userRepository: UserRepository,
+    private readonly analysisRepository: AnalysisRepository,
   ) {}
 
   /**
@@ -293,6 +296,29 @@ export class ImportedConversationService {
       filteredAnalyses = undefined;
     }
 
+    // Fetch on-demand analyses (AI Assets) if share settings allow
+    let sharedOnDemandAnalyses: GeneratedAnalysis[] = [];
+    if (contentOptions.includeOnDemandAnalyses) {
+      const allGeneratedAnalyses =
+        await this.analysisRepository.getGeneratedAnalyses(
+          transcription.id,
+          transcription.userId,
+        );
+
+      // Filter by selected IDs if specified
+      if (
+        contentOptions.selectedAnalysisIds &&
+        contentOptions.selectedAnalysisIds.length > 0
+      ) {
+        sharedOnDemandAnalyses = allGeneratedAnalyses.filter((analysis) =>
+          contentOptions.selectedAnalysisIds!.includes(analysis.id),
+        );
+      } else {
+        // Share all on-demand analyses
+        sharedOnDemandAnalyses = allGeneratedAnalyses;
+      }
+    }
+
     const content: SharedTranscriptionView = {
       id: transcription.id,
       fileName: transcription.fileName,
@@ -304,7 +330,7 @@ export class ImportedConversationService {
       summaryV2: contentOptions.includeSummary
         ? transcription.summaryV2 || transcription.coreAnalyses?.summaryV2
         : undefined,
-      generatedAnalyses: [], // Don't fetch on-demand analyses for now
+      generatedAnalyses: sharedOnDemandAnalyses,
       speakerSegments: contentOptions.includeSpeakerInfo
         ? transcription.speakerSegments
         : undefined,

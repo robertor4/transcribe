@@ -1525,6 +1525,8 @@
     "copied": "Copié !",
     "noSummary": "Aucun résumé disponible",
     "noTranscript": "Aucune transcription disponible",
+    "aiAssets": "Contenus IA",
+    "noContent": "Aucun contenu disponible pour cette conversation.",
     "footer": {
       "poweredBy": "Propulsé par",
       "copyright": "© {year} Neural Summary. Tous droits réservés."
@@ -1629,7 +1631,8 @@
         "title": "Pro",
         "period": "/mois",
         "description": "Pour les professionnels qui ont besoin de documents soignés, régulièrement.",
-        "cta": "Commencer l'essai gratuit",
+        "cta": "Passer à Pro",
+        "trialCta": "Commencer l'essai gratuit",
         "badge": "Le plus populaire",
         "recommended": "RECOMMANDÉ",
         "guarantee": "Garantie satisfait ou remboursé 30 jours",
@@ -1996,7 +1999,16 @@
     "transcriptions": "Conversations",
     "hours": "Heures",
     "remaining": "restant",
-    "onDemandAnalyses": "AI Assets"
+    "onDemandAnalyses": "AI Assets",
+    "trial": "Essai"
+  },
+  "trial": {
+    "active": "Essai Pro Actif",
+    "endsIn": "Votre essai se termine dans {days} jours",
+    "daysRemaining": "{days} jours restants dans votre essai Pro",
+    "upgradeNow": "Mettre à niveau maintenant",
+    "startTrial": "Démarrer l'essai gratuit de 14 jours",
+    "alreadyUsed": "Vous avez déjà utilisé votre essai gratuit"
   },
   "admin": {
     "title": "Panneau d'administration",
