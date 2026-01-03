@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, X, Shield, ArrowRight } from 'lucide-react';
+import { Check, X, Shield, ArrowRight, Loader2 } from 'lucide-react';
 import { AiIcon } from '@/components/icons/AiIcon';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
@@ -36,6 +36,8 @@ interface PricingCardProps {
   billingCycle?: 'monthly' | 'annual';
   trialBadge?: string; // e.g., "14-day free trial"
   customPriceLabel?: string; // e.g., "Contact sales" for enterprise
+  onCtaClick?: () => void; // Custom click handler (e.g., for trial)
+  ctaLoading?: boolean; // Show loading state on CTA
 }
 
 export function PricingCard({
@@ -56,6 +58,8 @@ export function PricingCard({
   billingCycle = 'monthly',
   trialBadge,
   customPriceLabel,
+  onCtaClick,
+  ctaLoading = false,
 }: PricingCardProps) {
   const { trackEvent } = useAnalytics();
 
@@ -152,23 +156,52 @@ export function PricingCard({
         )}
       </div>
 
-      <Link
-        href={ctaLink}
-        onClick={handleCtaClick}
-        className={`
-          group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6
-          ${
-            featured
-              ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
-              : tier === 'free'
-              ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
-              : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
-          }
-        `}
-      >
-        {ctaText}
-        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-      </Link>
+      {onCtaClick ? (
+        <button
+          onClick={() => {
+            handleCtaClick();
+            onCtaClick();
+          }}
+          disabled={ctaLoading}
+          className={`
+            group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 disabled:opacity-50 disabled:cursor-not-allowed
+            ${
+              featured
+                ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
+                : tier === 'free'
+                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
+                : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
+            }
+          `}
+        >
+          {ctaLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              {ctaText}
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
+        </button>
+      ) : (
+        <Link
+          href={ctaLink}
+          onClick={handleCtaClick}
+          className={`
+            group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6
+            ${
+              featured
+                ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
+                : tier === 'free'
+                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
+                : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
+            }
+          `}
+        >
+          {ctaText}
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      )}
 
       {showGuarantee && guaranteeText && (
         <div className="flex items-center justify-center gap-2 text-sm text-gray-700 mb-8 pb-8 border-b border-gray-200 font-light">

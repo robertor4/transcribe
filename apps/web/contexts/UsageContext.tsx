@@ -7,6 +7,8 @@ import { WEBSOCKET_EVENTS, UserRole } from '@transcribe/shared';
 
 interface UsageStats {
   tier: string;
+  subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
+  trialEndsAt?: string;
   usage: {
     hours: number;
     transcriptions: number;

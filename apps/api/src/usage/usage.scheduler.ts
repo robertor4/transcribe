@@ -445,4 +445,87 @@ export class UsageScheduler implements OnModuleInit, OnApplicationShutdown {
       this.untrackJob('monthly-usage-cleanup');
     }
   }
+
+  /**
+   * Check for expiring trials and send reminders
+   * Runs daily at 09:00 UTC
+   */
+  @Cron('0 9 * * *', {
+    name: 'daily-trial-expiry-check',
+    timeZone: 'UTC',
+  })
+  async handleTrialExpiryCheck() {
+    if (this.isShuttingDown) {
+      this.logger.warn('Skipping trial expiry check - shutdown in progress');
+      return;
+    }
+
+    this.trackJob('daily-trial-expiry-check');
+
+    this.logger.log('Checking for expiring trials...');
+    const startTime = Date.now();
+
+    try {
+      // Get all users with trialing status
+      const users = await this.userRepository.getAllUsers();
+      const trialingUsers = users.filter(
+        (u) => u.subscriptionStatus === 'trialing' && u.trialEndsAt,
+      );
+
+      this.logger.log(`Found ${trialingUsers.length} users with active trials`);
+
+      const now = new Date();
+      const threeDaysFromNow = new Date();
+      threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+
+      let remindersCount = 0;
+      let expiredCount = 0;
+
+      for (const user of trialingUsers) {
+        try {
+          const trialEnd = new Date(user.trialEndsAt);
+
+          // Check if trial is expiring within 3 days and reminder not sent
+          if (
+            trialEnd <= threeDaysFromNow &&
+            trialEnd > now &&
+            !user.trialReminderSent
+          ) {
+            this.logger.log(
+              `User ${user.uid} trial expiring on ${trialEnd.toISOString()}`,
+            );
+
+            // Mark reminder as sent
+            await this.userRepository.updateUser(user.uid, {
+              trialReminderSent: true,
+              updatedAt: new Date(),
+            });
+
+            // TODO: Send email notification about trial ending
+            remindersCount++;
+          }
+
+          // Log expired trials (Stripe handles the actual downgrade)
+          if (trialEnd <= now) {
+            this.logger.log(`User ${user.uid} trial has expired`);
+            expiredCount++;
+          }
+        } catch (error) {
+          this.logger.error(
+            `Failed to check trial for user ${user.uid}:`,
+            error.message,
+          );
+        }
+      }
+
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      this.logger.log(
+        `Trial expiry check complete in ${duration}s. Reminders: ${remindersCount}, Expired: ${expiredCount}`,
+      );
+    } catch (error) {
+      this.logger.error('Trial expiry check failed:', error);
+    } finally {
+      this.untrackJob('daily-trial-expiry-check');
+    }
+  }
 }

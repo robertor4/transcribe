@@ -46,9 +46,7 @@ export class StripeController {
 
     try {
       // Get full user record from Firestore to include displayName
-      const userData = await this.stripeService['firebaseService'].getUser(
-        user.uid,
-      );
+      const userData = await this.stripeService.getUserById(user.uid);
 
       const session = await this.stripeService.createCheckoutSession(
         user.uid,
@@ -85,9 +83,7 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firestore
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -125,9 +121,7 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -173,9 +167,7 @@ export class StripeController {
   async getSubscription(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       return {
         success: true,
@@ -237,9 +229,7 @@ export class StripeController {
   async getBillingHistory(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeCustomerId) {
       return {
         success: true,
@@ -288,6 +278,95 @@ export class StripeController {
       success: true,
       currencies,
     };
+  }
+
+  /**
+   * Check if user is eligible for free trial
+   */
+  @Get('trial-eligibility')
+  @UseGuards(FirebaseAuthGuard)
+  async checkTrialEligibility(@Req() req: any) {
+    const user = req.user;
+
+    this.logger.log(`Checking trial eligibility for user ${user.uid}`);
+
+    const userData = await this.stripeService.getUserById(user.uid);
+
+    if (!userData) {
+      this.logger.log(`User ${user.uid} not found in Firestore`);
+      return {
+        eligible: false,
+        reason: 'User not found',
+      };
+    }
+
+    this.logger.log(
+      `User ${user.uid} data: subscriptionTier=${userData.subscriptionTier}, hasUsedTrial=${userData.hasUsedTrial}`,
+    );
+
+    // Check eligibility conditions
+    if (userData.hasUsedTrial) {
+      return {
+        eligible: false,
+        reason: 'Trial already used',
+      };
+    }
+
+    // Treat undefined/null as 'free' (default for new users)
+    const tier = userData.subscriptionTier || 'free';
+    if (tier !== 'free') {
+      return {
+        eligible: false,
+        reason: 'Already subscribed',
+      };
+    }
+
+    this.logger.log(`User ${user.uid} is eligible for trial`);
+    return {
+      eligible: true,
+    };
+  }
+
+  /**
+   * Create trial checkout session (14-day free trial, no card required)
+   */
+  @Post('create-trial-session')
+  @UseGuards(FirebaseAuthGuard)
+  async createTrialSession(@Req() req: any) {
+    const user = req.user;
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+
+    const successUrl = `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&trial=true`;
+    const cancelUrl = `${frontendUrl}/pricing`;
+
+    try {
+      // Get full user record from Firestore
+      const userData = await this.stripeService.getUserById(user.uid);
+
+      const session = await this.stripeService.createTrialCheckoutSession(
+        user.uid,
+        user.email,
+        successUrl,
+        cancelUrl,
+        userData?.preferredLanguage,
+        userData?.displayName,
+      );
+
+      return {
+        success: true,
+        sessionId: session.id,
+        url: session.url,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to create trial session: ${error.message}`,
+        error.stack,
+      );
+      throw new BadRequestException(
+        error.message || 'Failed to create trial session',
+      );
+    }
   }
 
   /**
@@ -349,6 +428,10 @@ export class StripeController {
           await this.stripeService.handleInvoicePaymentFailed(
             event.data.object as any,
           );
+          break;
+
+        case 'customer.subscription.trial_will_end':
+          await this.stripeService.handleTrialWillEnd(event.data.object as any);
           break;
 
         default:

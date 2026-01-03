@@ -367,6 +367,8 @@ export class UsageService {
    */
   async getUsageStats(userId: string): Promise<{
     tier: string;
+    subscriptionStatus?: 'active' | 'cancelled' | 'past_due' | 'trialing';
+    trialEndsAt?: Date;
     usage: {
       hours: number;
       transcriptions: number;
@@ -434,6 +436,8 @@ export class UsageService {
     }
     return {
       tier,
+      subscriptionStatus: user.subscriptionStatus,
+      trialEndsAt: user.trialEndsAt,
       usage,
       limits,
       overage,

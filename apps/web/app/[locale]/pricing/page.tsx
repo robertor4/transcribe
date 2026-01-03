@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -27,6 +27,66 @@ export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
   const [hasTrackedComparison, setHasTrackedComparison] = useState(false);
   const [hasTrackedFAQ, setHasTrackedFAQ] = useState(false);
+  const [isTrialEligible, setIsTrialEligible] = useState(false);
+  const [startingTrial, setStartingTrial] = useState(false);
+
+  // Check trial eligibility for authenticated users
+  useEffect(() => {
+    async function checkTrialEligibility() {
+      if (!user) {
+        setIsTrialEligible(false);
+        return;
+      }
+
+      try {
+        const token = await user.getIdToken();
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const response = await fetch(`${apiUrl}/stripe/trial-eligibility`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsTrialEligible(data.eligible);
+        }
+      } catch (error) {
+        console.error('Failed to check trial eligibility:', error);
+        setIsTrialEligible(false);
+      }
+    }
+
+    checkTrialEligibility();
+  }, [user]);
+
+  // Handle trial start
+  const handleStartTrial = useCallback(async () => {
+    if (!user || startingTrial) return;
+
+    setStartingTrial(true);
+    try {
+      const token = await user.getIdToken();
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/stripe/create-trial-session`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        trackEvent('trial_started', {
+          tier: 'professional',
+          locale: locale,
+        });
+        window.location.href = data.url;
+      } else {
+        console.error('No checkout URL returned');
+        setStartingTrial(false);
+      }
+    } catch (error) {
+      console.error('Failed to start trial:', error);
+      setStartingTrial(false);
+    }
+  }, [user, startingTrial, locale, trackEvent]);
 
   // Get pricing and currency info from centralized utility
   const pricing = getPricingForLocale(locale);
@@ -214,7 +274,7 @@ export default function PricingPage() {
                 description={t('tiers.professional.description')}
                 featured={true}
                 features={professionalFeatures}
-                ctaText={t('tiers.professional.cta')}
+                ctaText={isTrialEligible ? t('tiers.professional.trialCta') : t('tiers.professional.cta')}
                 ctaLink={getCtaLink('professional')}
                 showGuarantee={true}
                 guaranteeText={t('tiers.professional.guarantee')}
@@ -223,6 +283,8 @@ export default function PricingPage() {
                 currencySymbol={currencySymbol}
                 currency={currency}
                 billingCycle={billingCycle}
+                onCtaClick={isTrialEligible ? handleStartTrial : undefined}
+                ctaLoading={startingTrial}
               />
 
               {/* Enterprise Tier */}

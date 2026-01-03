@@ -37,6 +37,14 @@ export class StripeService {
   }
 
   /**
+   * Get user data from Firestore
+   * Exposes userRepository.getUserById for controller use
+   */
+  async getUserById(userId: string) {
+    return this.userRepository.getUserById(userId);
+  }
+
+  /**
    * Get or create Stripe customer for a user
    */
   async getOrCreateCustomer(
@@ -147,6 +155,89 @@ export class StripeService {
     });
 
     this.logger.log(`Created checkout session: ${session.id}`);
+    return session;
+  }
+
+  /**
+   * Create Stripe Checkout session for 14-day free trial
+   * No credit card required, auto-cancels if no payment method added
+   */
+  async createTrialCheckoutSession(
+    userId: string,
+    email: string,
+    successUrl: string,
+    cancelUrl: string,
+    locale?: string,
+    userName?: string,
+  ): Promise<Stripe.Checkout.Session> {
+    this.logger.log(`Creating trial checkout session for user ${userId}`);
+
+    // Check if user is eligible for trial
+    const user = await this.userRepository.getUserById(userId);
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.hasUsedTrial) {
+      throw new BadRequestException('You have already used your free trial');
+    }
+
+    // Treat undefined/null as 'free' (default for new users)
+    const tier = user.subscriptionTier || 'free';
+    if (tier !== 'free') {
+      throw new BadRequestException(
+        'Trial is only available for free tier users',
+      );
+    }
+
+    // Get or create customer
+    const customerId = await this.getOrCreateCustomer(userId, email, userName);
+
+    // Get professional monthly price ID
+    const priceId = this.priceIds.professional?.monthly;
+    if (!priceId) {
+      throw new BadRequestException(
+        'Professional monthly price not configured',
+      );
+    }
+
+    // Create checkout session with 14-day trial, no card required
+    const session = await this.stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      locale: (locale as Stripe.Checkout.SessionCreateParams.Locale) || 'auto',
+      payment_method_collection: 'if_required', // No card required for trial
+      billing_address_collection: 'auto',
+      metadata: {
+        userId,
+        tier: 'professional',
+        billing: 'monthly',
+        isTrial: 'true',
+      },
+      subscription_data: {
+        trial_period_days: 14,
+        metadata: {
+          userId,
+          tier: 'professional',
+          isTrial: 'true',
+        },
+        trial_settings: {
+          end_behavior: {
+            missing_payment_method: 'cancel', // Auto-cancel if no card added
+          },
+        },
+      },
+    });
+
+    this.logger.log(`Created trial checkout session: ${session.id}`);
     return session;
   }
 
@@ -349,11 +440,16 @@ export class StripeService {
       );
     }
 
-    // Update user with subscription info and reset usage
-    await this.userRepository.updateUser(userId, {
+    // Check if this is a trial subscription
+    const isTrial =
+      session.metadata?.isTrial === 'true' ||
+      subscription.status === 'trialing';
+
+    // Build user updates
+    const userUpdates: any = {
       subscriptionTier: tier,
       stripeSubscriptionId: subscriptionId,
-      subscriptionStatus: 'active',
+      subscriptionStatus: isTrial ? 'trialing' : 'active',
       usageThisMonth: {
         hours: 0,
         transcriptions: 0,
@@ -361,19 +457,42 @@ export class StripeService {
         lastResetAt: new Date(),
       },
       updatedAt: new Date(),
-    });
+    };
 
-    // Track purchase in GA4 (server-side)
-    await this.analyticsService.trackPurchase(
-      userId,
-      session.id,
-      amount / 100, // Convert cents to dollars
-      currency.toUpperCase(),
-      tier,
-      billing,
+    // Add trial-specific fields
+    if (isTrial) {
+      const trialStart = new Date();
+      const trialEnd = new Date();
+      trialEnd.setDate(trialEnd.getDate() + 14);
+
+      userUpdates.trialStartedAt = trialStart;
+      userUpdates.trialEndsAt = trialEnd;
+      userUpdates.hasUsedTrial = true;
+      userUpdates.trialReminderSent = false;
+
+      this.logger.log(
+        `User ${userId} started 14-day trial, ends ${trialEnd.toISOString()}`,
+      );
+    }
+
+    // Update user with subscription info and reset usage
+    await this.userRepository.updateUser(userId, userUpdates);
+
+    // Track purchase in GA4 (server-side) - only for non-trial purchases
+    if (!isTrial) {
+      await this.analyticsService.trackPurchase(
+        userId,
+        session.id,
+        amount / 100, // Convert cents to dollars
+        currency.toUpperCase(),
+        tier,
+        billing,
+      );
+    }
+
+    this.logger.log(
+      `User ${userId} ${isTrial ? 'started trial for' : 'upgraded to'} ${tier} - usage reset`,
     );
-
-    this.logger.log(`User ${userId} upgraded to ${tier} - usage reset`);
   }
 
   /**
@@ -506,6 +625,29 @@ export class StripeService {
 
     // TODO: Send email notification to user about failed payment
     this.logger.log(`Updated user ${user.uid} status to past_due`);
+  }
+
+  /**
+   * Handle customer.subscription.trial_will_end webhook
+   * Fired 3 days before trial expires
+   */
+  async handleTrialWillEnd(subscription: Stripe.Subscription): Promise<void> {
+    const userId = subscription.metadata?.userId;
+    if (!userId) {
+      this.logger.error('Subscription missing userId in metadata');
+      return;
+    }
+
+    this.logger.log(`Trial will end soon for user ${userId}`);
+
+    // Mark that we've sent the trial reminder
+    await this.userRepository.updateUser(userId, {
+      trialReminderSent: true,
+      updatedAt: new Date(),
+    });
+
+    // TODO: Send email notification to user about trial ending
+    this.logger.log(`Marked trial reminder sent for user ${userId}`);
   }
 
   /**
