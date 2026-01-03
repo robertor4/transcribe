@@ -182,7 +182,9 @@ export class StripeService {
       throw new BadRequestException('You have already used your free trial');
     }
 
-    if (user.subscriptionTier !== 'free') {
+    // Treat undefined/null as 'free' (default for new users)
+    const tier = user.subscriptionTier || 'free';
+    if (tier !== 'free') {
       throw new BadRequestException(
         'Trial is only available for free tier users',
       );

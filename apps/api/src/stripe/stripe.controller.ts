@@ -288,14 +288,21 @@ export class StripeController {
   async checkTrialEligibility(@Req() req: any) {
     const user = req.user;
 
+    this.logger.log(`Checking trial eligibility for user ${user.uid}`);
+
     const userData = await this.stripeService.getUserById(user.uid);
 
     if (!userData) {
+      this.logger.log(`User ${user.uid} not found in Firestore`);
       return {
         eligible: false,
         reason: 'User not found',
       };
     }
+
+    this.logger.log(
+      `User ${user.uid} data: subscriptionTier=${userData.subscriptionTier}, hasUsedTrial=${userData.hasUsedTrial}`,
+    );
 
     // Check eligibility conditions
     if (userData.hasUsedTrial) {
@@ -305,13 +312,16 @@ export class StripeController {
       };
     }
 
-    if (userData.subscriptionTier !== 'free') {
+    // Treat undefined/null as 'free' (default for new users)
+    const tier = userData.subscriptionTier || 'free';
+    if (tier !== 'free') {
       return {
         eligible: false,
         reason: 'Already subscribed',
       };
     }
 
+    this.logger.log(`User ${user.uid} is eligible for trial`);
     return {
       eligible: true,
     };
