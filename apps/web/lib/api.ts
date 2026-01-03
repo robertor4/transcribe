@@ -17,6 +17,7 @@ import {
   ImportedConversation,
   ImportConversationResponse,
   ImportedConversationWithContent,
+  Speaker,
 } from '@transcribe/shared';
 import { getApiUrl } from './config';
 
@@ -218,6 +219,13 @@ export const transcriptionApi = {
 
   updateTitle: async (id: string, title: string): Promise<ApiResponse<{ message: string }>> => {
     return api.put(`/transcriptions/${id}/title`, { title });
+  },
+
+  updateSpeakerLabels: async (
+    id: string,
+    speakers: { speakerId: number; customName?: string }[]
+  ): Promise<ApiResponse<{ speakers: Speaker[] }>> => {
+    return api.patch(`/transcriptions/${id}/speaker-labels`, { speakers });
   },
 
   delete: async (id: string): Promise<ApiResponse> => {

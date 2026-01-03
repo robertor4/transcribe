@@ -663,6 +663,17 @@
       "proFeature": "Pro feature",
       "upgradeToTranslate": "Upgrade to Pro to translate your conversations into 50+ languages.",
       "upgradeToPro": "Upgrade to Pro"
+    },
+    "speakerLabeling": {
+      "title": "Speaker Names",
+      "placeholder": "Enter name...",
+      "save": "Save Names",
+      "saving": "Saving...",
+      "regeneratePrompt": "Speaker names saved. Regenerate summary to use the new names?",
+      "regenerate": "Regenerate",
+      "proFeature": "Pro Feature",
+      "upgradePrompt": "Upgrade to Pro to label speakers by name for better AI accuracy.",
+      "upgradeToPro": "Upgrade to Pro"
     }
   },
   "howItWorks": {

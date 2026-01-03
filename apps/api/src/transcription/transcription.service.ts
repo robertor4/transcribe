@@ -32,6 +32,7 @@ import {
   SUPPORTED_LANGUAGES,
   GeneratedAnalysis,
   SummaryV2,
+  buildSpeakerMappingForAI,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
@@ -849,15 +850,18 @@ ${fullCustomPrompt}`;
     transcriptionText: string,
     context?: string,
     language?: string,
+    speakers?: Speaker[],
   ): Promise<SummaryV2> {
     try {
       this.logger.log('Generating V2 structured summary...');
 
+      const speakerMapping = buildSpeakerMappingForAI(speakers);
       const systemPrompt = prompts.SUMMARIZATION_SYSTEM_PROMPT_V2;
       const userPrompt = prompts.buildSummaryPromptV2(
         transcriptionText,
         context,
         language,
+        speakerMapping,
       );
 
       const completion = await this.openai.chat.completions.create({
@@ -901,11 +905,13 @@ ${fullCustomPrompt}`;
     transcriptionText: string,
     context?: string,
     language?: string,
+    speakers?: Speaker[],
   ): Promise<{ summaryV2: SummaryV2; markdownSummary: string }> {
     const summaryV2 = await this.generateSummaryV2(
       transcriptionText,
       context,
       language,
+      speakers,
     );
 
     // Convert to markdown for backwards compatibility
@@ -1043,12 +1049,14 @@ ${fullCustomPrompt}`;
    * @param transcriptionText The transcript text to analyze
    * @param context Optional context to improve analysis quality
    * @param language Detected language of the transcript
+   * @param speakers Optional speaker data for name mapping
    * @returns SummaryV2 structured JSON, or null if generation fails
    */
   async generateSummaryV2Only(
     transcriptionText: string,
     context?: string,
     language?: string,
+    speakers?: Speaker[],
   ): Promise<SummaryV2 | null> {
     try {
       this.logger.log('Generating V2 summary only (no other core analyses)...');
@@ -1056,6 +1064,7 @@ ${fullCustomPrompt}`;
         transcriptionText,
         context,
         language,
+        speakers,
       );
       return summaryV2;
     } catch (error) {
@@ -1418,6 +1427,56 @@ ${fullCustomPrompt}`;
     );
   }
 
+  /**
+   * Update custom speaker labels for a transcription (Pro feature)
+   * Allows users to rename "Speaker 1" to "Roberto", etc.
+   */
+  async updateSpeakerLabels(
+    userId: string,
+    transcriptionId: string,
+    speakerUpdates: { speakerId: number; customName?: string }[],
+  ): Promise<{ speakers: Speaker[] }> {
+    const transcription = await this.transcriptionRepository.getTranscription(
+      userId,
+      transcriptionId,
+    );
+
+    if (!transcription) {
+      throw new Error('Transcription not found or access denied');
+    }
+
+    if (!transcription.speakers || transcription.speakers.length === 0) {
+      throw new Error('No speakers found for this transcription');
+    }
+
+    // Update speaker custom names
+    const updatedSpeakers = transcription.speakers.map((speaker) => {
+      const update = speakerUpdates.find(
+        (u) => u.speakerId === speaker.speakerId,
+      );
+      if (update) {
+        return {
+          ...speaker,
+          // Set to undefined if empty string to remove the field
+          customName: update.customName?.trim() || undefined,
+        };
+      }
+      return speaker;
+    });
+
+    // Update Firestore
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
+      speakers: updatedSpeakers,
+      updatedAt: new Date(),
+    });
+
+    this.logger.log(
+      `Updated speaker labels for transcription ${transcriptionId}`,
+    );
+
+    return { speakers: updatedSpeakers };
+  }
+
   async deleteTranscription(userId: string, transcriptionId: string) {
     const transcription = await this.transcriptionRepository.getTranscription(
       userId,
@@ -1595,11 +1654,12 @@ ${fullCustomPrompt}`;
       `Regenerating V2 summary for transcription ${transcriptionId}`,
     );
 
-    // Generate new V2 structured summary
+    // Generate new V2 structured summary with speaker mapping
     const summaryV2 = await this.generateSummaryV2(
       transcription.transcriptText,
       transcription.context,
       transcription.detectedLanguage,
+      transcription.speakers,
     );
 
     // Update transcription with new V2 summary only

@@ -663,6 +663,17 @@
       "proFeature": "Función Pro",
       "upgradeToTranslate": "Actualiza a Pro para traducir tus conversaciones a más de 50 idiomas.",
       "upgradeToPro": "Actualizar a Pro"
+    },
+    "speakerLabeling": {
+      "title": "Nombres de oradores",
+      "placeholder": "Ingresa nombre...",
+      "save": "Guardar nombres",
+      "saving": "Guardando...",
+      "regeneratePrompt": "Nombres de oradores guardados. ¿Regenerar resumen con los nuevos nombres?",
+      "regenerate": "Regenerar",
+      "proFeature": "Función Pro",
+      "upgradePrompt": "Actualiza a Pro para etiquetar oradores por nombre para mejor precisión de IA.",
+      "upgradeToPro": "Actualizar a Pro"
     }
   },
   "howItWorks": {

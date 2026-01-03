@@ -396,15 +396,28 @@ export const SUMMARIZATION_SYSTEM_PROMPT_V2 =
   'You are a helpful assistant that creates structured JSON summaries of meeting transcripts and conversations. You always return valid JSON and never include markdown formatting or explanations outside the JSON structure.';
 
 /**
- * Build V2 summary prompt with context and language support.
+ * Build V2 summary prompt with context, language, and speaker mapping support.
  * This version generates structured JSON instead of markdown.
  */
 export function buildSummaryPromptV2(
   transcription: string,
   context = '',
   language = '',
+  speakerMapping = '',
 ): string {
   let fullPrompt = SUMMARIZATION_PROMPT_V2;
+
+  // Add speaker identification if provided
+  if (speakerMapping) {
+    fullPrompt = `SPEAKER IDENTIFICATION:
+${speakerMapping}
+
+Use these names when referring to speakers in the summary. Replace generic "Speaker X" labels with their actual names.
+
+---
+
+${fullPrompt}`;
+  }
 
   // Add context if provided
   if (context) {

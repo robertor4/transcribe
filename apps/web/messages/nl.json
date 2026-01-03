@@ -663,6 +663,17 @@
       "proFeature": "Pro-functie",
       "upgradeToTranslate": "Upgrade naar Pro om je gesprekken in meer dan 50 talen te vertalen.",
       "upgradeToPro": "Upgraden naar Pro"
+    },
+    "speakerLabeling": {
+      "title": "Sprekersnamen",
+      "placeholder": "Voer naam in...",
+      "save": "Namen opslaan",
+      "saving": "Opslaan...",
+      "regeneratePrompt": "Sprekersnamen opgeslagen. Samenvatting opnieuw genereren met de nieuwe namen?",
+      "regenerate": "Opnieuw genereren",
+      "proFeature": "Pro-functie",
+      "upgradePrompt": "Upgrade naar Pro om sprekers bij naam te labelen voor betere AI-nauwkeurigheid.",
+      "upgradeToPro": "Upgraden naar Pro"
     }
   },
   "howItWorks": {

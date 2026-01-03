@@ -13,9 +13,10 @@ import {
   MessageSquareText,
   FileText,
 } from 'lucide-react';
-import type { GeneratedAnalysis } from '@transcribe/shared';
+import type { GeneratedAnalysis, Speaker } from '@transcribe/shared';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
+import { SpeakerLabelingSection } from '@/components/SpeakerLabelingSection';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { AiIcon } from '@/components/icons/AiIcon';
@@ -24,7 +25,8 @@ interface ConversationMetadata {
   duration: number;
   createdAt: Date;
   status: 'pending' | 'processing' | 'ready' | 'failed';
-  speakers?: number;
+  speakerCount?: number;
+  speakersData?: Speaker[];
   context?: string;
   isLegacy?: boolean;
 }
@@ -36,6 +38,11 @@ interface AssetSidebarProps {
   onAssetClick: (asset: GeneratedAnalysis) => void;
   selectedAssetId?: string | null;
   metadata: ConversationMetadata;
+  transcriptionId: string;
+  userTier?: string;
+  isAdmin?: boolean;
+  onSpeakerLabelsUpdated?: (speakers: Speaker[]) => void;
+  onRegenerateSummary?: () => void;
 }
 
 export function AssetSidebar({
@@ -45,6 +52,11 @@ export function AssetSidebar({
   onAssetClick,
   selectedAssetId,
   metadata,
+  transcriptionId,
+  userTier = 'free',
+  isAdmin = false,
+  onSpeakerLabelsUpdated,
+  onRegenerateSummary,
 }: AssetSidebarProps) {
   const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
@@ -147,6 +159,18 @@ export function AssetSidebar({
         </div>
       )}
 
+      {/* Speaker Labeling Section (Pro feature) */}
+      {metadata.speakersData && metadata.speakersData.length > 0 && (
+        <SpeakerLabelingSection
+          speakers={metadata.speakersData}
+          transcriptionId={transcriptionId}
+          userTier={userTier}
+          isAdmin={isAdmin}
+          onLabelsUpdated={onSpeakerLabelsUpdated || (() => {})}
+          onRegenerateSummary={onRegenerateSummary || (() => {})}
+        />
+      )}
+
       {/* Collapsible Metadata Section */}
       <div className="border-t border-gray-200 dark:border-gray-700">
         <button
@@ -215,14 +239,14 @@ export function AssetSidebar({
             </div>
 
             {/* Speakers */}
-            {metadata.speakers && metadata.speakers > 0 && (
+            {metadata.speakerCount && metadata.speakerCount > 0 && (
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
                   <UsersIcon className="w-3.5 h-3.5" />
                   Speakers
                 </span>
                 <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                  {metadata.speakers}
+                  {metadata.speakerCount}
                 </span>
               </div>
             )}

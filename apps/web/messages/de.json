@@ -663,6 +663,17 @@
       "proFeature": "Pro-Funktion",
       "upgradeToTranslate": "Upgrade auf Pro, um deine Gespräche in über 50 Sprachen zu übersetzen.",
       "upgradeToPro": "Auf Pro upgraden"
+    },
+    "speakerLabeling": {
+      "title": "Sprechernamen",
+      "placeholder": "Name eingeben...",
+      "save": "Namen speichern",
+      "saving": "Speichern...",
+      "regeneratePrompt": "Sprechernamen gespeichert. Zusammenfassung mit den neuen Namen neu generieren?",
+      "regenerate": "Neu generieren",
+      "proFeature": "Pro-Funktion",
+      "upgradePrompt": "Upgrade auf Pro, um Sprecher namentlich zu kennzeichnen für bessere KI-Genauigkeit.",
+      "upgradeToPro": "Auf Pro upgraden"
     }
   },
   "howItWorks": {

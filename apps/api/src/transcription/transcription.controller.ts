@@ -15,6 +15,7 @@ import {
   Req,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
   ServiceUnavailableException,
   HttpCode,
   HttpStatus,
@@ -38,6 +39,7 @@ import {
   UpdateShareSettingsDto,
   SendShareEmailDto,
 } from './dto/share-link.dto';
+import { UpdateSpeakerLabelsDto } from './dto/speaker-labels.dto';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -53,6 +55,7 @@ import {
   GeneratedAnalysis,
   BlogHeroImage,
   AskResponse,
+  Speaker,
 } from '@transcribe/shared';
 
 @Controller('transcriptions')
@@ -584,6 +587,41 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Title updated successfully',
+    };
+  }
+
+  /**
+   * Update custom speaker labels (Pro feature)
+   * Allows users to rename "Speaker 1" to actual names like "Roberto"
+   */
+  @Patch(':id/speaker-labels')
+  @UseGuards(FirebaseAuthGuard)
+  async updateSpeakerLabels(
+    @Param('id') id: string,
+    @Body() dto: UpdateSpeakerLabelsDto,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<{ speakers: Speaker[] }>> {
+    // Check if user has Pro subscription or is admin
+    const { tier, isAdmin } = await this.usageService.getUserTierAndRole(
+      req.user.uid,
+    );
+
+    if (tier === 'free' && !isAdmin) {
+      throw new ForbiddenException(
+        'Speaker labeling requires a Pro subscription',
+      );
+    }
+
+    const result = await this.transcriptionService.updateSpeakerLabels(
+      req.user.uid,
+      id,
+      dto.speakers,
+    );
+
+    return {
+      success: true,
+      data: result,
+      message: 'Speaker labels updated successfully',
     };
   }
 

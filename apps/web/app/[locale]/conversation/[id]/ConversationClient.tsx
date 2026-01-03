@@ -16,7 +16,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
+import type { GeneratedAnalysis, Transcription, Speaker } from '@transcribe/shared';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { AssetSidebar } from '@/components/AssetSidebar';
@@ -445,12 +445,27 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   // V1 legacy conversation detection (no structured summaryV2)
   const isLegacyConversation = !conversation.source.summary.summaryV2;
 
+  // Handler for when speaker labels are updated
+  const handleSpeakerLabelsUpdated = (updatedSpeakers: Speaker[]) => {
+    // Update the local conversation state with new speaker data
+    updateConversationLocally({
+      source: {
+        ...conversation.source,
+        transcript: {
+          ...conversation.source.transcript,
+          speakersData: updatedSpeakers,
+        },
+      },
+    });
+  };
+
   // Metadata for the asset sidebar
   const sidebarMetadata = {
     duration: conversation.source.audioDuration,
     createdAt: conversation.createdAt,
     status: conversation.status,
-    speakers: conversation.source.transcript.speakers,
+    speakerCount: conversation.source.transcript.speakers,
+    speakersData: conversation.source.transcript.speakersData,
     context: conversation.context,
     isLegacy: isLegacyConversation,
   };
@@ -468,6 +483,11 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               onAssetClick={openAssetPanel}
               selectedAssetId={selectedAsset?.id}
               metadata={sidebarMetadata}
+              transcriptionId={conversationId}
+              userTier={userTier}
+              isAdmin={isAdmin}
+              onSpeakerLabelsUpdated={handleSpeakerLabelsUpdated}
+              onRegenerateSummary={handleRegenerateSummary}
             />
           </div>
         }

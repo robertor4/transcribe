@@ -363,6 +363,22 @@ export class UsageService {
   }
 
   /**
+   * Get user tier and admin status for feature gating
+   */
+  async getUserTierAndRole(
+    userId: string,
+  ): Promise<{ tier: string; isAdmin: boolean }> {
+    const user = await this.userRepository.getUser(userId);
+    if (!user) {
+      return { tier: 'free', isAdmin: false };
+    }
+    return {
+      tier: user.subscriptionTier || 'free',
+      isAdmin: user.role === UserRole.ADMIN,
+    };
+  }
+
+  /**
    * Get usage statistics for a user
    */
   async getUsageStats(userId: string): Promise<{

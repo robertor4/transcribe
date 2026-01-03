@@ -11,6 +11,8 @@ import {
   QAHistoryItem,
   SummaryV2,
   QADebugInfo,
+  Speaker,
+  buildSpeakerMappingForAI,
 } from '@transcribe/shared';
 import { QdrantService } from './qdrant.service';
 import { EmbeddingService } from './embedding.service';
@@ -19,7 +21,7 @@ import { TranscriptionRepository } from '../firebase/repositories/transcription.
 import { FolderRepository } from '../firebase/repositories/folder.repository';
 
 const QA_SYNTHESIS_PROMPT = `Answer questions about a recorded conversation.
-
+{speakerMapping}
 CONVERSATION SUMMARY:
 {summary}
 {chunks}
@@ -39,7 +41,7 @@ LANGUAGE:
 
 INSTRUCTIONS:
 1. Use the summary for general questions. Use transcript excerpts for specific details.
-2. Include citations [MM:SS, Speaker Name] when referencing transcript excerpts.
+2. Include citations [MM:SS, Speaker Name] when referencing transcript excerpts. Use real names when available.
 3. Answer what was asked. Skip preamble like "Based on the conversation..." or "The speaker discusses...".
 4. If information is partial, state what's available without over-explaining gaps.
 5. For follow-ups, use conversation history for context.
@@ -278,6 +280,7 @@ export class VectorService {
       results,
       history,
       summaryText,
+      transcription.speakers,
     );
 
     return {
@@ -553,10 +556,17 @@ export class VectorService {
     results: ScoredChunk[],
     history?: QAHistoryItem[],
     summary?: string,
+    speakers?: Speaker[],
   ): Promise<{ answer: string; citations: Citation[]; debug: QADebugInfo }> {
     const model = 'gpt-4o-mini';
     const systemContent =
       "You answer questions about recorded conversations. Be concise and direct. Use short sentences and active voice. Never use filler phrases, hedging language, or AI self-reference. IMPORTANT: Always respond in the same language as the user's question, regardless of the conversation transcript language.";
+
+    // Build speaker mapping for prompt
+    const speakerMapping = buildSpeakerMappingForAI(speakers);
+    const speakerMappingSection = speakerMapping
+      ? `\nSPEAKER IDENTIFICATION:\n${speakerMapping}\n`
+      : '';
 
     // Format context chunks with citations (if any relevant snippets found)
     const contextParts = results.map((result) => {
@@ -575,7 +585,11 @@ export class VectorService {
     const historySection = this.formatHistoryForPrompt(history);
     const summaryText = summary || 'No summary available.';
 
-    const prompt = QA_SYNTHESIS_PROMPT.replace('{summary}', summaryText)
+    const prompt = QA_SYNTHESIS_PROMPT.replace(
+      '{speakerMapping}',
+      speakerMappingSection,
+    )
+      .replace('{summary}', summaryText)
       .replace('{chunks}', chunksSection)
       .replace('{history}', historySection)
       .replace('{question}', question);

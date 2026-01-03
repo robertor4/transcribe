@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Speaker Labeling (Pro Feature)**: Allow Pro users to rename generic speaker labels ("Speaker 1", "Speaker 2") to real names
+  - New sidebar section in conversation view for editing speaker names
+  - Custom names propagate to AI summary regeneration and Q&A responses
+  - Inline banner prompt to regenerate summary after saving speaker names
+  - Pro-tier gated with admin bypass (free users see upgrade prompt)
+  - Full i18n support (en, nl, de, es, fr)
+  - API endpoint: `PATCH /transcriptions/:id/speaker-labels`
+  - Files: [SpeakerLabelingSection.tsx](apps/web/components/SpeakerLabelingSection.tsx), [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [vector.service.ts](apps/api/src/vector/vector.service.ts), [prompts.ts](apps/api/src/transcription/prompts.ts), [types.ts](packages/shared/src/types.ts), [utils.ts](packages/shared/src/utils.ts)
 - **Free Tier Recording Limit Enforcement**: Proper 60-minute limit for live recordings
   - Frontend auto-stops at 59 minutes (1-min buffer before backend limit)
   - Backend accepts up to 65 minutes (buffer for timing edge cases)

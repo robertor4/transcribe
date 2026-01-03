@@ -11,6 +11,7 @@ import type {
   TranscriptionStatus,
   SpeakerSegment,
   SummaryV2,
+  Speaker,
 } from '@transcribe/shared';
 
 /**
@@ -42,6 +43,7 @@ export interface ConversationSource {
     speakers: number;
     confidence: number;
     speakerSegments?: SpeakerSegment[];
+    speakersData?: Speaker[]; // Full speaker objects with customName support
   };
   summary: {
     text: string; // V1 markdown summary (for backwards compatibility)
@@ -171,6 +173,7 @@ function extractTranscript(transcription: Transcription): {
   speakers: number;
   confidence: number;
   speakerSegments?: SpeakerSegment[];
+  speakersData?: Speaker[];
 } {
   // Use transcriptText directly (no longer duplicated in coreAnalyses)
   // Derive transcriptWithSpeakers from speakerSegments if needed
@@ -184,6 +187,7 @@ function extractTranscript(transcription: Transcription): {
     speakers: transcription.speakerCount || 1,
     confidence: transcription.diarizationConfidence || 0.9,
     speakerSegments: transcription.speakerSegments,
+    speakersData: transcription.speakers,
   };
 }
 

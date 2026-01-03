@@ -579,6 +579,7 @@ export interface SummaryRegenerationProgress {
 export interface Speaker {
   speakerId: number;
   speakerTag: string; // e.g., "Speaker 1"
+  customName?: string; // User-defined name, e.g., "Roberto" (Pro feature)
   totalSpeakingTime: number; // seconds
   wordCount: number;
   firstAppearance: number; // timestamp in seconds

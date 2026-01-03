@@ -663,6 +663,17 @@
       "proFeature": "Fonction Pro",
       "upgradeToTranslate": "Passe à Pro pour traduire tes conversations dans plus de 50 langues.",
       "upgradeToPro": "Passer à Pro"
+    },
+    "speakerLabeling": {
+      "title": "Noms des orateurs",
+      "placeholder": "Entrer un nom...",
+      "save": "Enregistrer les noms",
+      "saving": "Enregistrement...",
+      "regeneratePrompt": "Noms des orateurs enregistrés. Régénérer le résumé avec les nouveaux noms ?",
+      "regenerate": "Régénérer",
+      "proFeature": "Fonction Pro",
+      "upgradePrompt": "Passe à Pro pour identifier les orateurs par leur nom pour une meilleure précision IA.",
+      "upgradeToPro": "Passer à Pro"
     }
   },
   "howItWorks": {
