@@ -46,9 +46,7 @@ export class StripeController {
 
     try {
       // Get full user record from Firestore to include displayName
-      const userData = await this.stripeService['firebaseService'].getUser(
-        user.uid,
-      );
+      const userData = await this.stripeService.getUserById(user.uid);
 
       const session = await this.stripeService.createCheckoutSession(
         user.uid,
@@ -85,9 +83,7 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firestore
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -125,9 +121,7 @@ export class StripeController {
     const user = req.user;
 
     // Get user's subscription ID from Firebase
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       throw new BadRequestException('No active subscription found');
     }
@@ -173,9 +167,7 @@ export class StripeController {
   async getSubscription(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeSubscriptionId) {
       return {
         success: true,
@@ -237,9 +229,7 @@ export class StripeController {
   async getBillingHistory(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
     if (!userData?.stripeCustomerId) {
       return {
         success: true,
@@ -298,9 +288,7 @@ export class StripeController {
   async checkTrialEligibility(@Req() req: any) {
     const user = req.user;
 
-    const userData = await this.stripeService['firebaseService'].getUser(
-      user.uid,
-    );
+    const userData = await this.stripeService.getUserById(user.uid);
 
     if (!userData) {
       return {
@@ -344,9 +332,7 @@ export class StripeController {
 
     try {
       // Get full user record from Firestore
-      const userData = await this.stripeService['firebaseService'].getUser(
-        user.uid,
-      );
+      const userData = await this.stripeService.getUserById(user.uid);
 
       const session = await this.stripeService.createTrialCheckoutSession(
         user.uid,

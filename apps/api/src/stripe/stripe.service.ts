@@ -37,6 +37,14 @@ export class StripeService {
   }
 
   /**
+   * Get user data from Firestore
+   * Exposes userRepository.getUserById for controller use
+   */
+  async getUserById(userId: string) {
+    return this.userRepository.getUserById(userId);
+  }
+
+  /**
    * Get or create Stripe customer for a user
    */
   async getOrCreateCustomer(
