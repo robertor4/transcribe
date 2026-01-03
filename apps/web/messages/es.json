@@ -2333,167 +2333,31 @@
       "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
     }
   },
-  "productOwnerLanding": {
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Perspectivas sobre speech-to-structure, gestión de productos y convertir conversaciones en documentos listos para trabajar."
+    },
     "hero": {
-      "badge": "Diseñado para Product Owners",
-      "headline": "De reuniones a PRDs en minutos",
-      "subtitle": "Deja de pasar horas escribiendo documentación. Neural Summary transforma tus conversaciones con stakeholders, planificación de sprints e investigación de usuarios en entregables estructurados.",
-      "ctaPrimary": "Empezar gratis",
-      "ctaSecondary": "Ver casos de uso",
-      "visual": {
-        "before": {
-          "title": "Notas dispersas..."
-        },
-        "after": {
-          "title": "Resumen de planificación de sprint",
-          "item1": {
-            "title": "Refactorización autenticación",
-            "desc": "Prioridad: Alta • Responsable: @sarah"
-          },
-          "item2": {
-            "title": "Rendimiento del dashboard",
-            "desc": "Prioridad: Media • Responsable: @mike"
-          },
-          "item3": {
-            "title": "Actualización documentación API",
-            "desc": "Prioridad: Baja • Responsable: @alex"
-          },
-          "footer": "Generado en 30 segundos"
-        }
-      }
+      "title": "Blog",
+      "subtitle": "Perspectivas, guías y mejores prácticas para convertir conversaciones en entregables estructurados."
     },
-    "painPoints": {
-      "headline": "¿Te suena familiar?",
-      "subheadline": "Los Product Owners pasan demasiado tiempo traduciendo conversaciones en documentación.",
-      "pain1": {
-        "title": "Horas perdidas en documentación",
-        "description": "Después de cada reunión, estás atrapado escribiendo PRDs, historias de usuario y correos de seguimiento en lugar de enfocarte en la estrategia."
-      },
-      "pain2": {
-        "title": "El contexto se pierde",
-        "description": "Decisiones importantes y matices de las conversaciones con stakeholders se escapan cuando tomas notas manualmente."
-      },
-      "pain3": {
-        "title": "Disperso entre herramientas",
-        "description": "Notas de reunión en Notion, elementos de acción en Slack, decisiones en correo. Nada está conectado ni estructurado."
-      }
+    "sections": {
+      "featured": "Destacados",
+      "latest": "Últimos Artículos"
     },
-    "useCases": {
-      "headline": "Diseñado para tu flujo de trabajo",
-      "subheadline": "Desde la planificación de sprints hasta llamadas con clientes, Neural Summary captura lo importante y lo estructura para la acción.",
-      "case1": {
-        "title": "Planificación de Sprint",
-        "description": "Graba tus sesiones de planificación y obtén notas de sprint estructuradas con prioridades, responsables y dependencias extraídos automáticamente.",
-        "tag1": "Historias de Usuario",
-        "tag2": "Elementos de Acción"
-      },
-      "case2": {
-        "title": "Entrevistas con Stakeholders",
-        "description": "Captura requisitos directamente de las conversaciones. Genera PRDs y especificaciones sin el trabajo de traducción manual.",
-        "tag1": "Generación de PRD",
-        "tag2": "Requisitos"
-      },
-      "case3": {
-        "title": "Sesiones de Investigación",
-        "description": "Extrae insights, puntos de dolor y oportunidades de las entrevistas con usuarios. Construye automáticamente tu repositorio de investigación.",
-        "tag1": "Insights",
-        "tag2": "Puntos de Dolor"
-      },
-      "case4": {
-        "title": "Llamadas con Clientes",
-        "description": "Convierte conversaciones con clientes en solicitudes de funcionalidades, reportes de bugs y correos de seguimiento profesionales.",
-        "tag1": "Solicitudes",
-        "tag2": "Seguimientos"
-      }
+    "empty": {
+      "message": "Aún no hay artículos. ¡Vuelve pronto!"
     },
-    "templates": {
-      "headline": "Plantillas diseñadas para Product Owners",
-      "subheadline": "Plantillas de IA preconfiguradas que entienden los flujos de trabajo de gestión de productos y formatos de salida.",
-      "template1": {
-        "title": "Generador de PRD",
-        "description": "Requisitos de producto completos desde conversaciones"
-      },
-      "template2": {
-        "title": "Creador de Historias de Usuario",
-        "description": "Formato Como usuario... con criterios de aceptación"
-      },
-      "template3": {
-        "title": "Notas de Sprint",
-        "description": "Prioridades, responsables y bloqueadores"
-      },
-      "template4": {
-        "title": "Notas de Versión",
-        "description": "Changelog listo para clientes desde demos"
-      },
-      "template5": {
-        "title": "Registro de Decisiones",
-        "description": "Formato ADR para decisiones técnicas"
-      },
-      "template6": {
-        "title": "Actualización Stakeholders",
-        "description": "Correos de resumen ejecutivo"
-      },
-      "template7": {
-        "title": "Síntesis de Investigación",
-        "description": "Insights de entrevistas con usuarios"
-      },
-      "template8": {
-        "title": "Resumen de Retro",
-        "description": "Acciones y aprendizajes capturados"
-      }
+    "post": {
+      "backToList": "Volver al Blog",
+      "updated": "Actualizado",
+      "relatedPosts": "Artículos Relacionados"
     },
-    "transformation": {
-      "headline": "Mira la transformación",
-      "subheadline": "Una reunión de planificación de sprint de 45 minutos se convierte en un documento estructurado en segundos.",
-      "before": {
-        "label": "Grabación de planificación de sprint",
-        "quote1": "Entonces el refactor de auth, eso es definitivamente la prioridad este sprint, ¿verdad? Sarah ha estado bloqueada en eso...",
-        "quote2": "Sí, y necesitamos resolver lo del rendimiento del dashboard, Mike mencionó que está siendo lento con los nuevos datos...",
-        "quote3": "¿Qué pasa con la documentación de la API? Alex dijo que los clientes se quejan pero no sé si es urgente...",
-        "duration": "Reunión de 45 min"
-      },
-      "after": {
-        "label": "Salida estructurada",
-        "title": "Resumen Planificación Sprint 24",
-        "section1": {
-          "title": "Prioridad Alta",
-          "item1": "Refactorización autenticación de usuario (Responsable: Sarah, bloqueado)",
-          "item2": "Optimización rendimiento del dashboard (Responsable: Mike)"
-        },
-        "section2": {
-          "title": "Prioridad Media",
-          "item1": "Actualización documentación API (Responsable: Alex)",
-          "item2": "Revisión de feedback de clientes"
-        },
-        "section3": {
-          "title": "Decisiones Tomadas",
-          "item1": "El refactor de auth tiene prioridad sobre nuevas funcionalidades"
-        },
-        "generated": "Generado en 30 segundos"
-      }
-    },
-    "roadmap": {
-      "badge": "Próximamente",
-      "headline": "El futuro de la documentación de producto",
-      "subheadline": "Estamos construyendo integraciones y funcionalidades específicamente para equipos de producto.",
-      "feature1": {
-        "title": "Integración JIRA & Linear",
-        "description": "Crea automáticamente tickets e historias de usuario directamente desde tus salidas de reunión. Sin copiar y pegar."
-      },
-      "feature2": {
-        "title": "Modo Entrevista IA",
-        "description": "Neural Summary te hace preguntas para extraer requisitos. Como tener un BA bajo demanda."
-      },
-      "feature3": {
-        "title": "Espacio de Trabajo de Equipo",
-        "description": "Biblioteca de conversaciones compartida para tu equipo de producto. Construye conocimiento institucional de cada reunión."
-      }
-    },
-    "closingCta": {
-      "headline": "Deja de escribir. Empieza a entregar.",
-      "subheadline": "Únete a los Product Owners que pasan menos tiempo en documentación y más construyendo grandes productos.",
-      "ctaPrimary": "Empezar gratis",
-      "ctaSecondary": "Ver ejemplos"
+    "cta": {
+      "title": "¿Listo para transformar tus conversaciones?",
+      "subtitle": "Comienza a convertir reuniones en documentos estructurados hoy.",
+      "button": "Prueba Neural Summary Gratis"
     }
   }
 }

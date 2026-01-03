@@ -8,16 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Product Owner Landing Page**: New `/product-owner` persona-specific landing page targeting Product Owners
-  - Tailored messaging addressing PO pain points: documentation burden, context loss, scattered tools
-  - Use cases section: Sprint Planning, Stakeholder Interviews, User Research, Customer Calls
-  - Templates showcase: PRD Generator, User Story Creator, Sprint Notes, Release Notes, Decision Record, and more
-  - Transformation demo: 45-minute meeting → structured sprint planning summary
-  - Coming soon section: JIRA/Linear Integration, AI Interview Mode, Team Workspace
-  - Full i18n support with translations for all 5 locales (en, nl, de, fr, es)
-  - SEO-optimized metadata with persona-specific keywords and descriptions
-  - Reuses existing landing page components: Hero animations, CTAButton, ScrollAnimation
-  - Files: [page.tsx](apps/web/app/[locale]/product-owner/page.tsx), [layout.tsx](apps/web/app/[locale]/product-owner/layout.tsx)
+- **Blog System with Contentlayer**: New internationalized blog infrastructure for SEO-optimized content
+  - Contentlayer2 integration for MDX-based content management (compatible with Next.js 15)
+  - BlogPost document type with computed fields: slug extraction, URL building, reading time
+  - Full i18n support with content organized by locale (`content/blog/{en,nl,de,fr,es}/*.mdx`)
+  - Blog listing page at `/[locale]/blog` with featured posts section
+  - Individual post pages with metadata, JSON-LD structured data, and related posts
+  - Custom MDX components: Callout for tips/warnings, styled code blocks with syntax highlighting
+  - Rehype plugins: pretty-code (syntax highlighting), slug (heading anchors), autolink-headings
+  - First blog post: "How Product Owners Can Save Hours of Documentation with AI" in all 5 locales
+  - SEO-optimized with Open Graph, Twitter cards, and Article structured data
+  - Files: [contentlayer.config.ts](apps/web/contentlayer.config.ts), [lib/blog.ts](apps/web/lib/blog.ts), [MdxComponents.tsx](apps/web/components/blog/MdxComponents.tsx), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx), [blog/[slug]/page.tsx](apps/web/app/[locale]/blog/[slug]/page.tsx)
 - **Examples Page**: New `/examples` page showcasing AI Asset outputs with typewriter animations
   - Demonstrates 4 AI Asset types: Action Items, Follow-Up Email, Blog Post, LinkedIn Post
   - Uses "Product Launch Meeting" scenario with realistic sample outputs

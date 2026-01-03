@@ -2338,167 +2338,31 @@
       "messageMinLength": "Bericht moet minimaal 10 tekens bevatten"
     }
   },
-  "productOwnerLanding": {
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Inzichten over speech-to-structure, product management en het omzetten van gesprekken naar werkklare documenten."
+    },
     "hero": {
-      "badge": "Gebouwd voor Product Owners",
-      "headline": "Van meetings naar PRDs in minuten",
-      "subtitle": "Stop met urenlang documentatie schrijven. Neural Summary transformeert je stakeholder gesprekken, sprint planning en gebruikersonderzoek naar gestructureerde deliverables.",
-      "ctaPrimary": "Start gratis",
-      "ctaSecondary": "Bekijk use cases",
-      "visual": {
-        "before": {
-          "title": "Verspreide notities..."
-        },
-        "after": {
-          "title": "Sprint Planning Samenvatting",
-          "item1": {
-            "title": "Gebruikersauthenticatie refactor",
-            "desc": "Prioriteit: Hoog • Eigenaar: @sarah"
-          },
-          "item2": {
-            "title": "Dashboard performance",
-            "desc": "Prioriteit: Gemiddeld • Eigenaar: @mike"
-          },
-          "item3": {
-            "title": "API documentatie update",
-            "desc": "Prioriteit: Laag • Eigenaar: @alex"
-          },
-          "footer": "Gegenereerd in 30 seconden"
-        }
-      }
+      "title": "Blog",
+      "subtitle": "Inzichten, handleidingen en best practices voor het omzetten van gesprekken naar gestructureerde deliverables."
     },
-    "painPoints": {
-      "headline": "Klinkt dit bekend?",
-      "subheadline": "Product Owners besteden te veel tijd aan het vertalen van gesprekken naar documentatie.",
-      "pain1": {
-        "title": "Uren verloren aan documentatie",
-        "description": "Na elke meeting zit je vast aan het schrijven van PRDs, user stories en follow-up emails in plaats van je te focussen op strategie."
-      },
-      "pain2": {
-        "title": "Context raakt verloren",
-        "description": "Belangrijke beslissingen en nuances uit stakeholder gesprekken glippen door de mazen als je handmatig notities maakt."
-      },
-      "pain3": {
-        "title": "Verspreid over tools",
-        "description": "Meeting notities in Notion, actiepunten in Slack, beslissingen in email. Niets is verbonden of gestructureerd."
-      }
+    "sections": {
+      "featured": "Uitgelicht",
+      "latest": "Laatste Berichten"
     },
-    "useCases": {
-      "headline": "Gebouwd voor jouw workflow",
-      "subheadline": "Van sprint planning tot klantgesprekken, Neural Summary vangt wat belangrijk is en structureert het voor actie.",
-      "case1": {
-        "title": "Sprint Planning",
-        "description": "Neem je planning sessies op en krijg gestructureerde sprint notities met prioriteiten, eigenaren en afhankelijkheden automatisch geëxtraheerd.",
-        "tag1": "User Stories",
-        "tag2": "Actiepunten"
-      },
-      "case2": {
-        "title": "Stakeholder Interviews",
-        "description": "Vang requirements direct uit gesprekken. Genereer PRDs en feature specs zonder het handmatige vertaalwerk.",
-        "tag1": "PRD Generatie",
-        "tag2": "Requirements"
-      },
-      "case3": {
-        "title": "Gebruikersonderzoek Sessies",
-        "description": "Extraheer inzichten, pijnpunten en kansen uit gebruikersinterviews. Bouw automatisch je onderzoeksrepository.",
-        "tag1": "Inzichten",
-        "tag2": "Pijnpunten"
-      },
-      "case4": {
-        "title": "Klantgesprekken",
-        "description": "Verander klantgesprekken in feature requests, bug reports en professionele follow-up emails.",
-        "tag1": "Feature Requests",
-        "tag2": "Follow-ups"
-      }
+    "empty": {
+      "message": "Nog geen berichten. Kom snel terug!"
     },
-    "templates": {
-      "headline": "Templates gebouwd voor Product Owners",
-      "subheadline": "Voorgeconfigureerde AI templates die product management workflows en output formaten begrijpen.",
-      "template1": {
-        "title": "PRD Generator",
-        "description": "Volledige product requirements uit gesprekken"
-      },
-      "template2": {
-        "title": "User Story Creator",
-        "description": "Als gebruiker... formaat met acceptatiecriteria"
-      },
-      "template3": {
-        "title": "Sprint Notities",
-        "description": "Prioriteiten, eigenaren en blockers"
-      },
-      "template4": {
-        "title": "Release Notes",
-        "description": "Klantklare changelog uit demo's"
-      },
-      "template5": {
-        "title": "Beslissingsrecord",
-        "description": "ADR formaat voor technische beslissingen"
-      },
-      "template6": {
-        "title": "Stakeholder Update",
-        "description": "Executive summary emails"
-      },
-      "template7": {
-        "title": "Onderzoek Synthese",
-        "description": "Inzichten uit gebruikersinterviews"
-      },
-      "template8": {
-        "title": "Retro Samenvatting",
-        "description": "Acties en learnings vastgelegd"
-      }
+    "post": {
+      "backToList": "Terug naar Blog",
+      "updated": "Bijgewerkt",
+      "relatedPosts": "Gerelateerde Berichten"
     },
-    "transformation": {
-      "headline": "Zie de transformatie",
-      "subheadline": "Een 45-minuten sprint planning meeting wordt een gestructureerd document in seconden.",
-      "before": {
-        "label": "Sprint Planning Opname",
-        "quote1": "Dus de auth refactor, dat is absoluut de prioriteit deze sprint, toch? Sarah zit daar al op te wachten...",
-        "quote2": "Ja, en we moeten iets doen aan die dashboard performance, Mike zei dat het traag wordt met de nieuwe data...",
-        "quote3": "Wat doen we met de API docs? Alex zei dat klanten klagen maar ik weet niet of het urgent is...",
-        "duration": "45 min meeting"
-      },
-      "after": {
-        "label": "Gestructureerde Output",
-        "title": "Sprint 24 Planning Samenvatting",
-        "section1": {
-          "title": "Hoge Prioriteit",
-          "item1": "Gebruikersauthenticatie refactor (Eigenaar: Sarah, geblokkeerd)",
-          "item2": "Dashboard performance optimalisatie (Eigenaar: Mike)"
-        },
-        "section2": {
-          "title": "Gemiddelde Prioriteit",
-          "item1": "API documentatie update (Eigenaar: Alex)",
-          "item2": "Klantfeedback review"
-        },
-        "section3": {
-          "title": "Genomen Beslissingen",
-          "item1": "Auth refactor krijgt voorrang op nieuwe features"
-        },
-        "generated": "Gegenereerd in 30 seconden"
-      }
-    },
-    "roadmap": {
-      "badge": "Binnenkort",
-      "headline": "De toekomst van product documentatie",
-      "subheadline": "We bouwen integraties en features specifiek voor product teams.",
-      "feature1": {
-        "title": "JIRA & Linear Integratie",
-        "description": "Maak automatisch tickets en user stories direct vanuit je meeting outputs. Geen copy-paste meer nodig."
-      },
-      "feature2": {
-        "title": "AI Interview Mode",
-        "description": "Neural Summary stelt je vragen om requirements te extraheren. Alsof je een BA on demand hebt."
-      },
-      "feature3": {
-        "title": "Team Workspace",
-        "description": "Gedeelde gesprekken bibliotheek voor je product team. Bouw institutionele kennis uit elke meeting."
-      }
-    },
-    "closingCta": {
-      "headline": "Stop met schrijven. Begin met shippen.",
-      "subheadline": "Sluit je aan bij Product Owners die minder tijd aan documentatie besteden en meer aan het bouwen van geweldige producten.",
-      "ctaPrimary": "Start gratis",
-      "ctaSecondary": "Bekijk voorbeelden"
+    "cta": {
+      "title": "Klaar om je gesprekken te transformeren?",
+      "subtitle": "Begin vandaag nog met het omzetten van meetings naar gestructureerde documenten.",
+      "button": "Probeer Neural Summary Gratis"
     }
   }
 }

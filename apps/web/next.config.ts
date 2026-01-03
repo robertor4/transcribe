@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withContentlayer } from 'next-contentlayer2';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
@@ -45,10 +46,10 @@ const nextConfig: NextConfig = {
   },
   // WebSocket proxy configuration for production
   async rewrites() {
-    const apiUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://api:3001' 
+    const apiUrl = process.env.NODE_ENV === 'production'
+      ? 'http://api:3001'
       : 'http://localhost:3001';
-    
+
     return [
       // Proxy socket.io WebSocket connections to the API
       {
@@ -61,4 +62,5 @@ const nextConfig: NextConfig = {
   // This allows runtime resolution of Docker service names
 };
 
-export default withNextIntl(nextConfig);
+// Compose plugins: withContentlayer wraps withNextIntl which wraps nextConfig
+export default withContentlayer(withNextIntl(nextConfig));
