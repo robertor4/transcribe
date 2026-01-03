@@ -140,15 +140,34 @@ export class TranscriptionController {
     }
 
     // Check quota before processing
+    // Use ffprobe for accurate duration instead of file-size estimation
     const fileSizeBytes = file.size;
-    const estimatedDurationMinutes = this.estimateDuration(
-      fileSizeBytes,
-      file.mimetype,
-    );
+    let actualDurationMinutes: number;
+    try {
+      const durationSeconds =
+        await this.transcriptionService.getAudioDurationFromBuffer(
+          file.buffer,
+          file.mimetype,
+        );
+      actualDurationMinutes = Math.ceil(durationSeconds / 60);
+      this.logger.log(
+        `Actual duration from ffprobe: ${actualDurationMinutes} minutes (${durationSeconds.toFixed(1)}s)`,
+      );
+    } catch (error) {
+      // Fallback to estimation if ffprobe fails (e.g., corrupted file)
+      this.logger.warn(
+        'FFprobe failed, falling back to file-size estimation:',
+        error,
+      );
+      actualDurationMinutes = this.estimateDuration(
+        fileSizeBytes,
+        file.mimetype,
+      );
+    }
     await this.usageService.checkQuota(
       req.user.uid,
       fileSizeBytes,
-      estimatedDurationMinutes,
+      actualDurationMinutes,
     );
 
     // V2: Parse selectedTemplates from JSON string
@@ -232,16 +251,35 @@ export class TranscriptionController {
     }
 
     // Check quota for each file before processing
+    // Use ffprobe for accurate duration instead of file-size estimation
     for (const file of files) {
       const fileSizeBytes = file.size;
-      const estimatedDurationMinutes = this.estimateDuration(
-        fileSizeBytes,
-        file.mimetype,
-      );
+      let actualDurationMinutes: number;
+      try {
+        const durationSeconds =
+          await this.transcriptionService.getAudioDurationFromBuffer(
+            file.buffer,
+            file.mimetype,
+          );
+        actualDurationMinutes = Math.ceil(durationSeconds / 60);
+        this.logger.log(
+          `Batch file ${file.originalname}: ${actualDurationMinutes} minutes from ffprobe`,
+        );
+      } catch (error) {
+        // Fallback to estimation if ffprobe fails
+        this.logger.warn(
+          `FFprobe failed for ${file.originalname}, using estimation:`,
+          error,
+        );
+        actualDurationMinutes = this.estimateDuration(
+          fileSizeBytes,
+          file.mimetype,
+        );
+      }
       await this.usageService.checkQuota(
         req.user.uid,
         fileSizeBytes,
-        estimatedDurationMinutes,
+        actualDurationMinutes,
       );
     }
 
@@ -261,6 +299,63 @@ export class TranscriptionController {
       message: shouldMerge
         ? 'Files merged and queued for transcription'
         : `${files.length} files uploaded and queued for transcription`,
+    };
+  }
+
+  /**
+   * Process a chunked recording from Firebase Storage
+   * Called after ChunkUploader has finished uploading chunks to Firebase Storage
+   * Backend will download, merge with FFmpeg, and process the recording
+   */
+  @Post('process-session')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 per minute (processing is expensive)
+  async processRecordingSession(
+    @Body('sessionId') sessionId: string,
+    @Body('analysisType') analysisType: AnalysisType,
+    @Body('context') context: string,
+    @Body('contextId') contextId: string,
+    @Body('selectedTemplates') selectedTemplatesJson: string,
+    @Body('folderId') folderId: string,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    if (!sessionId) {
+      throw new BadRequestException('Session ID is required');
+    }
+
+    // Validate session ID format (prevent path traversal)
+    // Format: timestamp_randomId (e.g., 1234567890123_AbCdEf12)
+    if (!/^\d+_[a-zA-Z0-9]+$/.test(sessionId)) {
+      throw new BadRequestException('Invalid session ID format');
+    }
+
+    this.logger.log(`Processing chunked recording session: ${sessionId}`);
+
+    // Parse selectedTemplates if provided
+    let selectedTemplates: string[] | undefined;
+    if (selectedTemplatesJson) {
+      try {
+        selectedTemplates = JSON.parse(selectedTemplatesJson);
+      } catch (e) {
+        this.logger.warn('Failed to parse selectedTemplates JSON:', e);
+      }
+    }
+
+    const transcription =
+      await this.transcriptionService.processChunkedRecording(
+        req.user.uid,
+        sessionId,
+        analysisType,
+        context,
+        contextId,
+        selectedTemplates,
+        folderId,
+      );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'Chunked recording queued for transcription',
     };
   }
 

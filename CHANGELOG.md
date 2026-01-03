@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - First blog post: "How Product Owners Can Save Hours of Documentation with AI" in all 5 locales
   - SEO-optimized with Open Graph, Twitter cards, and Article structured data
   - Files: [contentlayer.config.ts](apps/web/contentlayer.config.ts), [lib/blog.ts](apps/web/lib/blog.ts), [MdxComponents.tsx](apps/web/components/blog/MdxComponents.tsx), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx), [blog/[slug]/page.tsx](apps/web/app/[locale]/blog/[slug]/page.tsx)
+- **Free Tier Recording Limit Enforcement**: Proper 60-minute limit for live recordings
+  - Frontend auto-stops at 59 minutes (1-min buffer before backend limit)
+  - Backend accepts up to 65 minutes (buffer for timing edge cases)
+  - Countdown timer visible for free users during recording
+  - "Get Pro →" link opens pricing page in new tab
+  - Timer turns amber when < 5 minutes remaining
+  - Prevents bad UX of recording 70+ minutes only to fail at upload
+  - Files: [useMediaRecorder.ts](apps/web/hooks/useMediaRecorder.ts), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [usage.service.ts](apps/api/src/usage/usage.service.ts)
 - **Examples Page**: New `/examples` page showcasing AI Asset outputs with typewriter animations
   - Demonstrates 4 AI Asset types: Action Items, Follow-Up Email, Blog Post, LinkedIn Post
   - Uses "Product Launch Meeting" scenario with realistic sample outputs
@@ -45,6 +53,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - File removed: `apps/web/lib/outputTemplates/userStories.ts`
 
 ### Fixed
+- **Regenerate Summary Now Uses V2 Format**: Fixed regenerate summary feature to generate structured V2 summaries
+  - Previously used V1 `generateSummaryWithFeedback` which produced plain markdown
+  - Now uses `generateSummaryV2` for proper structured JSON with title, intro, key points, detailed sections
+  - Gated for Pro+ users or admins only (not available for free tier)
+  - Hidden for legacy V1 conversations to prevent format conflicts
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts:1576-1625), [ConversationClient.tsx](apps/web/app/[locale]/conversation/[id]/ConversationClient.tsx)
+- **Long Transcript Summary Truncation**: Fixed JSON parsing errors for 59+ minute recordings
+  - Increased `max_completion_tokens` from 8000 to 16000 for V2 summary generation
+  - Added `attemptJsonRepair` function to recover from truncated GPT responses
+  - Logs warning when GPT output is truncated (`finish_reason: 'length'`)
+  - Files: [transcription.service.ts](apps/api/src/transcription/transcription.service.ts:869), [summary-parser.ts](apps/api/src/transcription/parsers/summary-parser.ts:280-433)
 - **Account Deletion Data Cleanup**: Hard delete now properly removes all user data collections
   - Added cleanup for `folders` collection (was previously orphaned)
   - Added cleanup for `usageRecords` collection (was previously orphaned)

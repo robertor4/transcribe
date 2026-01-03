@@ -6,6 +6,7 @@ import { useMediaRecorder, RecordingSource } from '@/hooks/useMediaRecorder';
 import { useAudioVisualization } from '@/hooks/useAudioVisualization';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { RecordingPreview } from './RecordingPreview';
 import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
@@ -63,6 +64,11 @@ export function SimpleAudioRecorder({
   const t = useTranslations('recording');
   const { trackEvent } = useAnalytics();
   const { user } = useAuth();
+  const { usageStats } = useUsage();
+
+  // Free users get 59 minutes max (1 min buffer before 60 min backend limit)
+  const isFreeUser = usageStats?.tier === 'free';
+  const maxDurationForTier = isFreeUser ? 59 * 60 : undefined;
 
   // Recording source state (declared early for analytics callbacks)
   // If initialSource is provided, use it and skip source selection
@@ -77,6 +83,7 @@ export function SimpleAudioRecorder({
   const {
     state,
     duration,
+    maxDuration,
     audioBlob,
     error,
     warning,
@@ -98,6 +105,7 @@ export function SimpleAudioRecorder({
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
     userId: user?.uid, // Scope recordings to user for privacy/security
+    maxDurationSeconds: maxDurationForTier, // Free tier: 59 min, Paid: unlimited (3h default)
     onStateChange: (newState) => {
       if (newState === 'recording') {
         trackEvent('recording_started', {
@@ -968,6 +976,29 @@ export function SimpleAudioRecorder({
           {formatTime(duration)}
         </div>
       </div>
+
+      {/* Free tier countdown timer */}
+      {isFreeUser && (state === 'recording' || state === 'paused') && (
+        <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className={`text-sm font-medium ${
+              maxDuration - duration < 5 * 60
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-gray-600 dark:text-gray-400'
+            }`}>
+              {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
+            </span>
+          </div>
+          <a
+            href="/pricing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-[#8D6AFA] hover:text-[#7A5AE0] hover:underline transition-colors"
+          >
+            {t('limits.getPro')}
+          </a>
+        </div>
+      )}
 
       {/* Device switch notification */}
       {deviceSwitchNotification && (

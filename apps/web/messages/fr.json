@@ -187,7 +187,7 @@
     "recordAudioDesc": "Enregistrer une conversation en direct",
     "recordAudioInfo": "Démarrez une session d'enregistrement en direct. Vous pouvez choisir d'enregistrer depuis votre microphone ou capturer l'audio d'un onglet de navigateur (pour les appels vidéo).",
     "importAudioInfo": "Importez un fichier audio ou vidéo existant depuis votre appareil. Formats pris en charge : MP3, M4A, WAV, MP4, MOV, WebM. La taille maximale du fichier dépend de votre abonnement.",
-    "recordRoom": "Enregistrer la pièce",
+    "recordRoom": "Enregistrer via micro",
     "recordRoomDesc": "Réunions, mémos vocaux, entretiens",
     "recordTab": "Enregistrer l'onglet",
     "recordTabDesc": "Google Meet, Zoom (web), vidéos YouTube",
@@ -398,6 +398,10 @@
       "memoryHigh": "Utilisation mémoire élevée ({size}). Pensez à arrêter pour éviter les problèmes.",
       "memoryCritical": "Mémoire presque pleine ({size}). Enregistrement arrêté pour éviter la perte de données.",
       "micUnavailable": "Microphone non disponible - enregistrement audio de l'onglet uniquement. Votre voix ne sera pas incluse."
+    },
+    "limits": {
+      "remaining": "{time} restant",
+      "getPro": "Passer à Pro →"
     }
   },
   "recovery": {
@@ -416,6 +420,17 @@
     "cancel": "Annuler",
     "microphoneRecording": "Enregistrement microphone",
     "tabAudioRecording": "Enregistrement audio d'onglet"
+  },
+  "processing": {
+    "error": {
+      "title": "Échec du traitement",
+      "unexpected": "Une erreur inattendue s'est produite",
+      "retry": "Réessayer le téléversement",
+      "retrying": "Nouvelle tentative...",
+      "saveLocally": "Sauvegarder l'enregistrement",
+      "upgradeToPro": "Passer à Pro",
+      "quotaHint": "Sauvegardez votre enregistrement localement, puis passez à Pro pour traiter des audios plus longs"
+    }
   },
   "transcription": {
     "title": "Transcription",
@@ -628,6 +643,11 @@
       "upgradeToPro": "Passer à Pro",
       "findReplace": "Rechercher et remplacer",
       "findReplaceDisabledLegacy": "Rechercher et remplacer n'est pas disponible pour les anciennes conversations"
+    },
+    "summary": {
+      "notAvailable": "Le résumé n'est pas encore disponible.",
+      "regenerate": "Régénérer le résumé",
+      "regenerating": "Régénération en cours..."
     },
     "translation": {
       "original": "Original",

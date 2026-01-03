@@ -187,7 +187,7 @@
     "recordAudioDesc": "Grabar conversación en vivo",
     "recordAudioInfo": "Inicia una sesión de grabación en vivo. Puedes elegir grabar desde tu micrófono o capturar audio de una pestaña del navegador (para videollamadas).",
     "importAudioInfo": "Importa un archivo de audio o video existente desde tu dispositivo. Formatos compatibles: MP3, M4A, WAV, MP4, MOV, WebM. El tamaño máximo del archivo depende de tu suscripción.",
-    "recordRoom": "Grabar la sala",
+    "recordRoom": "Grabar desde mic",
     "recordRoomDesc": "Reuniones, notas de voz, entrevistas",
     "recordTab": "Grabar pestaña",
     "recordTabDesc": "Google Meet, Zoom (web), videos de YouTube",
@@ -398,6 +398,10 @@
       "memoryHigh": "Uso de memoria de grabación alto ({size}). Considere detenerse para evitar problemas.",
       "memoryCritical": "Memoria de grabación casi llena ({size}). Grabación detenida para evitar pérdida de datos.",
       "micUnavailable": "Micrófono no disponible - grabando solo audio de la pestaña. Su voz no se incluirá."
+    },
+    "limits": {
+      "remaining": "{time} restante",
+      "getPro": "Obtener Pro →"
     }
   },
   "recovery": {
@@ -416,6 +420,17 @@
     "cancel": "Cancelar",
     "microphoneRecording": "Grabación de micrófono",
     "tabAudioRecording": "Grabación de audio de pestaña"
+  },
+  "processing": {
+    "error": {
+      "title": "Error en el procesamiento",
+      "unexpected": "Se produjo un error inesperado",
+      "retry": "Reintentar subida",
+      "retrying": "Reintentando...",
+      "saveLocally": "Guardar grabación",
+      "upgradeToPro": "Actualizar a Pro",
+      "quotaHint": "Guarda tu grabación localmente y actualiza para procesar audios más largos"
+    }
   },
   "transcription": {
     "title": "Transcripción",
@@ -628,6 +643,11 @@
       "upgradeToPro": "Actualizar a Pro",
       "findReplace": "Buscar y reemplazar",
       "findReplaceDisabledLegacy": "Buscar y reemplazar no está disponible para conversaciones antiguas"
+    },
+    "summary": {
+      "notAvailable": "El resumen aún no está disponible.",
+      "regenerate": "Regenerar resumen",
+      "regenerating": "Regenerando..."
     },
     "translation": {
       "original": "Original",

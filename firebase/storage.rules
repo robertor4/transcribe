@@ -30,6 +30,17 @@ service firebase.storage {
       allow write: if false; // Only backend can write
       allow delete: if isOwner(userId);
     }
+
+    // Chunked recording uploads (streamed during recording)
+    // Structure: recordings/{userId}/{sessionId}/chunk_XXX.webm or metadata.json
+    match /recordings/{userId}/{sessionId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) &&
+        request.resource.size < 10 * 1024 * 1024 && // Max 10MB per chunk
+        (request.resource.contentType.matches('audio/.*') ||
+         request.resource.contentType == 'application/json');
+      allow delete: if isOwner(userId);
+    }
     
     // User profile images
     match /profiles/{userId}/{fileName} {
