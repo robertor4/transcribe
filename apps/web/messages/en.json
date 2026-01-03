@@ -2363,5 +2363,32 @@
       "messageRequired": "Message is required",
       "messageMinLength": "Message must be at least 10 characters"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Insights on speech-to-structure, product management, and turning conversations into work-ready documents."
+    },
+    "hero": {
+      "title": "Blog",
+      "subtitle": "Insights, guides, and best practices for turning conversations into structured deliverables."
+    },
+    "sections": {
+      "featured": "Featured",
+      "latest": "Latest Posts"
+    },
+    "empty": {
+      "message": "No posts yet. Check back soon!"
+    },
+    "post": {
+      "backToList": "Back to Blog",
+      "updated": "Updated",
+      "relatedPosts": "Related Posts"
+    },
+    "cta": {
+      "title": "Ready to transform your conversations?",
+      "subtitle": "Start turning meetings into structured documents today.",
+      "button": "Try Neural Summary Free"
+    }
   }
 }

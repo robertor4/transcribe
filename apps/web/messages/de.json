@@ -2357,5 +2357,32 @@
       "messageRequired": "Nachricht ist erforderlich",
       "messageMinLength": "Nachricht muss mindestens 10 Zeichen lang sein"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Einblicke in Speech-to-Structure, Produktmanagement und das Umwandeln von Gesprächen in arbeitsbereite Dokumente."
+    },
+    "hero": {
+      "title": "Blog",
+      "subtitle": "Einblicke, Anleitungen und Best Practices für die Umwandlung von Gesprächen in strukturierte Ergebnisse."
+    },
+    "sections": {
+      "featured": "Empfohlen",
+      "latest": "Neueste Beiträge"
+    },
+    "empty": {
+      "message": "Noch keine Beiträge. Schauen Sie bald wieder vorbei!"
+    },
+    "post": {
+      "backToList": "Zurück zum Blog",
+      "updated": "Aktualisiert",
+      "relatedPosts": "Ähnliche Beiträge"
+    },
+    "cta": {
+      "title": "Bereit, Ihre Gespräche zu transformieren?",
+      "subtitle": "Beginnen Sie noch heute, Meetings in strukturierte Dokumente umzuwandeln.",
+      "button": "Neural Summary kostenlos testen"
+    }
   }
 }
