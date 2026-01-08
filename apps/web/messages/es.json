@@ -2352,5 +2352,32 @@
       "messageRequired": "El mensaje es obligatorio",
       "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Perspectivas sobre speech-to-structure, gestión de productos y convertir conversaciones en documentos listos para trabajar."
+    },
+    "hero": {
+      "title": "Blog",
+      "subtitle": "Perspectivas, guías y mejores prácticas para convertir conversaciones en entregables estructurados."
+    },
+    "sections": {
+      "featured": "Destacados",
+      "latest": "Últimos Artículos"
+    },
+    "empty": {
+      "message": "Aún no hay artículos. ¡Vuelve pronto!"
+    },
+    "post": {
+      "backToList": "Volver al Blog",
+      "updated": "Actualizado",
+      "relatedPosts": "Artículos Relacionados"
+    },
+    "cta": {
+      "title": "¿Listo para transformar tus conversaciones?",
+      "subtitle": "Comienza a convertir reuniones en documentos estructurados hoy.",
+      "button": "Prueba Neural Summary Gratis"
+    }
   }
 }

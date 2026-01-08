@@ -2357,5 +2357,32 @@
       "messageRequired": "Bericht is verplicht",
       "messageMinLength": "Bericht moet minimaal 10 tekens bevatten"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Inzichten over speech-to-structure, product management en het omzetten van gesprekken naar werkklare documenten."
+    },
+    "hero": {
+      "title": "Blog",
+      "subtitle": "Inzichten, handleidingen en best practices voor het omzetten van gesprekken naar gestructureerde deliverables."
+    },
+    "sections": {
+      "featured": "Uitgelicht",
+      "latest": "Laatste Berichten"
+    },
+    "empty": {
+      "message": "Nog geen berichten. Kom snel terug!"
+    },
+    "post": {
+      "backToList": "Terug naar Blog",
+      "updated": "Bijgewerkt",
+      "relatedPosts": "Gerelateerde Berichten"
+    },
+    "cta": {
+      "title": "Klaar om je gesprekken te transformeren?",
+      "subtitle": "Begin vandaag nog met het omzetten van meetings naar gestructureerde documenten.",
+      "button": "Probeer Neural Summary Gratis"
+    }
   }
 }

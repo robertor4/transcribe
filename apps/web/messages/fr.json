@@ -2352,5 +2352,32 @@
       "messageRequired": "Le message est requis",
       "messageMinLength": "Le message doit contenir au moins 10 caractères"
     }
+  },
+  "blog": {
+    "meta": {
+      "title": "Blog | Neural Summary",
+      "description": "Perspectives sur le speech-to-structure, la gestion de produit et la transformation de conversations en documents prêts à l'emploi."
+    },
+    "hero": {
+      "title": "Blog",
+      "subtitle": "Perspectives, guides et meilleures pratiques pour transformer les conversations en livrables structurés."
+    },
+    "sections": {
+      "featured": "À la une",
+      "latest": "Derniers Articles"
+    },
+    "empty": {
+      "message": "Pas encore d'articles. Revenez bientôt !"
+    },
+    "post": {
+      "backToList": "Retour au Blog",
+      "updated": "Mis à jour",
+      "relatedPosts": "Articles Connexes"
+    },
+    "cta": {
+      "title": "Prêt à transformer vos conversations ?",
+      "subtitle": "Commencez à transformer vos réunions en documents structurés dès aujourd'hui.",
+      "button": "Essayer Neural Summary Gratuitement"
+    }
   }
 }
