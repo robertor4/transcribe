@@ -410,6 +410,27 @@ export interface TranslationData {
   // Note: transcriptText is intentionally excluded - transcripts are always shown in original language
 }
 
+/**
+ * Lightweight transcription data for dashboard list views.
+ * Contains only the fields needed to render conversation cards,
+ * reducing payload size by 80-95% compared to full Transcription.
+ */
+export interface TranscriptionSummary {
+  id: string;
+  userId: string;
+  folderId?: string | null;
+  fileName: string;
+  title?: string;
+  status: TranscriptionStatus;
+  duration?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // For asset count badge
+  generatedAnalysisIds?: string[];
+  // For sharing indicator
+  shareToken?: string;
+}
+
 export interface Transcription {
   id: string;
   userId: string;

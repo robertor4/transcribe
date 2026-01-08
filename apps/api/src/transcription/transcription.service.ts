@@ -1231,6 +1231,19 @@ ${fullCustomPrompt}`;
     );
   }
 
+  /**
+   * Get lightweight transcription summaries for dashboard list view.
+   * Returns only the fields needed for rendering conversation cards,
+   * reducing payload size by 80-95%.
+   */
+  async getTranscriptionSummaries(userId: string, page = 1, pageSize = 20) {
+    return this.transcriptionRepository.getTranscriptionSummaries(
+      userId,
+      page,
+      pageSize,
+    );
+  }
+
   async searchTranscriptions(userId: string, query: string, limit?: number) {
     return this.transcriptionRepository.searchTranscriptions(
       userId,

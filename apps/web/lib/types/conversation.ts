@@ -8,6 +8,7 @@
 
 import type {
   Transcription,
+  TranscriptionSummary,
   TranscriptionStatus,
   SpeakerSegment,
   SummaryV2,
@@ -228,4 +229,55 @@ export function transcriptionsToConversations(
   transcriptions: Transcription[]
 ): Conversation[] {
   return transcriptions.map(transcriptionToConversation);
+}
+
+/**
+ * Convert a lightweight TranscriptionSummary to a Conversation.
+ * Used for dashboard list views where full transcription data isn't needed.
+ * Creates a Conversation with minimal source data (no transcript/summary content).
+ */
+export function transcriptionSummaryToConversation(
+  summary: TranscriptionSummary
+): Conversation {
+  return {
+    id: summary.id,
+    title: summary.title || summary.fileName || 'Untitled',
+    folderId: summary.folderId || null,
+    userId: summary.userId,
+    createdAt: new Date(summary.createdAt),
+    updatedAt: new Date(summary.updatedAt),
+    status: mapStatus(summary.status),
+    source: {
+      audioUrl: undefined, // Not available in summary
+      audioDuration: summary.duration || 0,
+      transcript: {
+        text: '', // Not loaded - will be fetched when viewing conversation
+        speakers: 0,
+        confidence: 0,
+      },
+      summary: {
+        text: '', // Not loaded - will be fetched when viewing conversation
+        keyPoints: [],
+        generatedAt: new Date(summary.createdAt),
+      },
+    },
+    tags: [],
+    sharing: {
+      isPublic: !!summary.shareToken,
+      publicLinkId: summary.shareToken,
+      viewCount: 0, // Not available in summary
+      sharedWith: [],
+    },
+    assetsCount: summary.generatedAnalysisIds?.length || 0,
+    context: undefined, // Not available in summary
+  };
+}
+
+/**
+ * Convert an array of TranscriptionSummaries to Conversations
+ */
+export function transcriptionSummariesToConversations(
+  summaries: TranscriptionSummary[]
+): Conversation[] {
+  return summaries.map(transcriptionSummaryToConversation);
 }
