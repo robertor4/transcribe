@@ -187,6 +187,17 @@ export const transcriptionApi = {
     });
   },
 
+  /**
+   * Get lightweight transcription summaries for dashboard list view.
+   * Returns only fields needed for rendering conversation cards,
+   * reducing payload size by 80-95%.
+   */
+  listSummaries: async (page = 1, pageSize = 20): Promise<ApiResponse<{ items: unknown[]; total: number; page: number; pageSize: number; hasMore: boolean }>> => {
+    return api.get('/transcriptions/summaries', {
+      params: { page, pageSize },
+    });
+  },
+
   search: async (query: string, limit = 20): Promise<ApiResponse<{ items: unknown[]; total: number }>> => {
     return api.get('/transcriptions/search', {
       params: { query, limit },

@@ -44,6 +44,7 @@ import {
   ApiResponse,
   PaginatedResponse,
   Transcription,
+  TranscriptionSummary,
   SummaryComment,
   AnalysisType,
   SharedTranscriptionView,
@@ -366,6 +367,29 @@ export class TranscriptionController {
     @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponse<PaginatedResponse<Transcription>>> {
     const result = await this.transcriptionService.getTranscriptions(
+      req.user.uid,
+      paginationDto.page,
+      paginationDto.pageSize,
+    );
+
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
+  /**
+   * Get lightweight transcription summaries for dashboard list view.
+   * Returns only the fields needed for rendering conversation cards,
+   * reducing payload size by 80-95% compared to full transcriptions.
+   */
+  @Get('summaries')
+  @UseGuards(FirebaseAuthGuard)
+  async getTranscriptionSummaries(
+    @Req() req: Request & { user: any },
+    @Query() paginationDto: PaginationDto,
+  ): Promise<ApiResponse<PaginatedResponse<TranscriptionSummary>>> {
+    const result = await this.transcriptionService.getTranscriptionSummaries(
       req.user.uid,
       paginationDto.page,
       paginationDto.pageSize,

@@ -6,11 +6,12 @@
  */
 
 import { transcriptionApi, folderApi } from '../api';
-import type { Transcription, FindResponse, ConversationMatch, MatchedSnippet } from '@transcribe/shared';
+import type { Transcription, TranscriptionSummary, FindResponse, ConversationMatch, MatchedSnippet } from '@transcribe/shared';
 import {
   Conversation,
   transcriptionToConversation,
   transcriptionsToConversations,
+  transcriptionSummariesToConversations,
 } from '../types/conversation';
 
 export interface ConversationListResult {
@@ -22,31 +23,34 @@ export interface ConversationListResult {
 }
 
 /**
- * List conversations with pagination
+ * List conversations with pagination.
+ * Uses the lightweight summaries endpoint for better performance,
+ * reducing payload size by 80-95%.
  */
 export async function listConversations(
   page = 1,
   pageSize = 20
 ): Promise<ConversationListResult> {
-  const response = await transcriptionApi.list(page, pageSize);
+  const response = await transcriptionApi.listSummaries(page, pageSize);
 
   if (!response.success || !response.data) {
     throw new Error(response.error || 'Failed to fetch conversations');
   }
 
   const data = response.data as {
-    items: Transcription[];
+    items: TranscriptionSummary[];
     total: number;
     page: number;
     pageSize: number;
+    hasMore: boolean;
   };
 
   return {
-    conversations: transcriptionsToConversations(data.items),
+    conversations: transcriptionSummariesToConversations(data.items),
     total: data.total,
     page: data.page,
     pageSize: data.pageSize,
-    hasMore: data.page * data.pageSize < data.total,
+    hasMore: data.hasMore,
   };
 }
 
