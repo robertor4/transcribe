@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
+    "@next/bundle-analyzer": "^16.1.1",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/diff": "^7.0.2",
     "@types/dom-to-image": "^2.6.7",

@@ -4,10 +4,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { locales } from '@/i18n.config';
 import "../globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
-import { PageTracker } from "@/components/PageTracker";
-import { CookieConsent } from "@/components/CookieConsent";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -141,13 +137,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <AuthProvider>
-        <AnalyticsProvider>
-          <PageTracker />
-          {children}
-          <CookieConsent />
-        </AnalyticsProvider>
-      </AuthProvider>
+      {children}
     </NextIntlClientProvider>
   );
 }

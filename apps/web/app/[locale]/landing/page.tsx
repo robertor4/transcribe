@@ -1,15 +1,41 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
-import ScrollAnimation from '@/components/ScrollAnimation';
 import { CTAButton } from '@/components/landing/CTAButton';
-import { TransformationSection } from '@/components/landing/TransformationSection';
-import { DottedBackgroundDrift } from '@/components/landing/hero/DottedBackgroundDrift';
-import { HeroHeadline } from '@/components/landing/hero/HeroHeadline';
-import { HeroCTAs } from '@/components/landing/hero/HeroCTAs';
 import { SecondaryLink } from '@/components/landing/hero/SecondaryLink';
-import { DocumentStack } from '@/components/landing/hero/DocumentStack';
+
+// Dynamic imports for heavy client components (framer-motion)
+// This significantly reduces the initial bundle size for the landing page
+const ScrollAnimation = dynamic(() => import('@/components/ScrollAnimation'), {
+  ssr: true,
+});
+
+const TransformationSection = dynamic(
+  () => import('@/components/landing/TransformationSection').then(mod => ({ default: mod.TransformationSection })),
+  { ssr: true }
+);
+
+const DottedBackgroundDrift = dynamic(
+  () => import('@/components/landing/hero/DottedBackgroundDrift').then(mod => ({ default: mod.DottedBackgroundDrift })),
+  { ssr: true }
+);
+
+const HeroHeadline = dynamic(
+  () => import('@/components/landing/hero/HeroHeadline').then(mod => ({ default: mod.HeroHeadline })),
+  { ssr: true }
+);
+
+const HeroCTAs = dynamic(
+  () => import('@/components/landing/hero/HeroCTAs').then(mod => ({ default: mod.HeroCTAs })),
+  { ssr: true }
+);
+
+const DocumentStack = dynamic(
+  () => import('@/components/landing/hero/DocumentStack').then(mod => ({ default: mod.DocumentStack })),
+  { ssr: true }
+);
 
 export default async function LandingPage({
   params
