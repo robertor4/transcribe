@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Major Bundle Size Optimization**: Reduced landing page JavaScript from ~2.3 MB to ~341 KB (85% reduction)
+  - Created route groups for layout separation: `(authenticated)` for dashboard pages, `(auth)` for login/signup pages
+  - Moved heavy context providers (AuthProvider, AnalyticsProvider, ConversationsContext, FoldersContext, UsageContext) from root layout to authenticated route group
+  - Root locale layout now only contains NextIntlClientProvider (no Firebase or WebSocket code)
+  - Public pages (landing, pricing, examples, contact, terms, privacy) no longer bundle Firebase or analytics
+  - Added dynamic imports for heavy landing page components (framer-motion animations)
+  - Created lazy-loaded Firebase module (`lib/firebase-lazy.ts`) for on-demand initialization
+  - Installed and configured `@next/bundle-analyzer` for future bundle analysis (`ANALYZE=true npm run build`)
+  - Files: [layout.tsx](apps/web/app/[locale]/layout.tsx), [(authenticated)/layout.tsx](apps/web/app/[locale]/(authenticated)/layout.tsx), [(auth)/layout.tsx](apps/web/app/[locale]/(auth)/layout.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx), [firebase-lazy.ts](apps/web/lib/firebase-lazy.ts), [next.config.ts](apps/web/next.config.ts)
+
 ### Added
 - **Free Tier Recording Limit Enforcement**: Proper 60-minute limit for live recordings
   - Frontend auto-stops at 59 minutes (1-min buffer before backend limit)
