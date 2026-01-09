@@ -45,13 +45,13 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache static assets for 1 year (immutable)
+      // Cache static assets for 30 days (images, logos, etc. may be updated)
       {
         source: '/assets/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=2592000, stale-while-revalidate=86400',
           },
         ],
       },
