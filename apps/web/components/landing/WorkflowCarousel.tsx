@@ -128,7 +128,7 @@ export default function WorkflowCarousel() {
         onMouseLeave={() => setIsAutoPlaying(true)}
       >
         <div className="flex transition-transform duration-500 ease-out">
-          {workflows.map((workflow) => (
+          {workflows.map((workflow, index) => (
             <div
               key={workflow.id}
               className="min-w-full flex-shrink-0"
@@ -142,7 +142,8 @@ export default function WorkflowCarousel() {
                     fill
                     className="object-cover scale-105 hover:scale-100 transition-transform duration-700"
                     sizes="100vw"
-                    priority
+                    priority={index === 0} // Only prioritize first image for LCP
+                    loading={index === 0 ? 'eager' : 'lazy'}
                   />
                   {/* Gradient overlay - stronger at bottom for text */}
                   <div className="absolute inset-0 bg-black/50" />

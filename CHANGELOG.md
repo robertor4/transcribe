@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Font Loading Optimization**: Switched from Google Fonts external request to `next/font`
+  - Fonts are now self-hosted and auto-subsetted (zero external requests)
+  - Reduced font weights from 12 to 8 (only weights actually used)
+  - Eliminates render-blocking font requests
+  - Files: [layout.tsx](apps/web/app/layout.tsx), [globals.css](apps/web/app/globals.css)
+- **CSS Performance**: Removed global transitions causing interaction jank
+  - Moved `* { transition }` rule to opt-in `.theme-transition` class
+  - Theme switching still animates smoothly via temporary class toggle
+  - All other interactions now instant (no 0.2s delay on every color change)
+  - Files: [globals.css](apps/web/app/globals.css), [useTheme.ts](apps/web/hooks/useTheme.ts)
+- **Cache Headers**: Added proper caching for static assets
+  - `/assets/*`: 1 year immutable cache
+  - `/_next/static/*`: 1 year immutable cache
+  - `/_next/image/*`: 30 days with stale-while-revalidate
+  - Significantly improves repeat visit performance
+  - File: [next.config.ts](apps/web/next.config.ts)
+- **Image Loading**: Fixed WorkflowCarousel loading all 4 images with priority
+  - Only first carousel image now has `priority={true}`
+  - Other images lazy-load as user navigates
+  - Reduces initial page weight by ~1MB
+  - File: [WorkflowCarousel.tsx](apps/web/components/landing/WorkflowCarousel.tsx)
 - **Major Bundle Size Optimization**: Reduced landing page JavaScript from ~2.3 MB to ~341 KB (85% reduction)
   - Created route groups for layout separation: `(authenticated)` for dashboard pages, `(auth)` for login/signup pages
   - Moved heavy context providers (AuthProvider, AnalyticsProvider, ConversationsContext, FoldersContext, UsageContext) from root layout to authenticated route group

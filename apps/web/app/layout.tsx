@@ -1,8 +1,23 @@
 import { ReactNode } from 'react';
+import { Geist, Montserrat } from 'next/font/google';
 import "./globals.css";
 import { ThemeColor } from "@/components/ThemeColor";
 
-// Dual-font system: Geist for body text, Montserrat for headings (capitalized)
+// Dual-font system: Geist for body text, Montserrat for headings
+// Using next/font for zero-latency font loading (self-hosted, no external requests)
+const geist = Geist({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-geist',
+  weight: ['400', '500', '600', '700'], // Only weights we actually use
+});
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-montserrat',
+  weight: ['500', '600', '700', '800'], // For headings
+});
 
 type Props = {
   children: ReactNode;
@@ -25,16 +40,12 @@ const themeScript = `
 // Root layout required for error pages (404, 500, etc.)
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${montserrat.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <ThemeColor />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ fontFamily: 'Geist, system-ui, sans-serif' }}>
+      <body className={geist.className}>
         {children}
       </body>
     </html>

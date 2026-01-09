@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Fix COOP issues with OAuth popups
+  // Fix COOP issues with OAuth popups + cache headers for static assets
   async headers() {
     return [
       {
@@ -42,6 +42,36 @@ const nextConfig: NextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'no-referrer-when-downgrade', // Allow loading Google profile images
+          },
+        ],
+      },
+      // Cache static assets for 1 year (immutable)
+      {
+        source: '/assets/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Cache Next.js static chunks
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Cache images for 30 days
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, stale-while-revalidate=86400',
           },
         ],
       },

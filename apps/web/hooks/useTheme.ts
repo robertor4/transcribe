@@ -45,9 +45,19 @@ export function useTheme() {
   };
 
   const setTheme = (newTheme: ThemeMode) => {
+    const root = document.documentElement;
+
+    // Add transition class for smooth theme change
+    root.classList.add('theme-transition');
+
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
     applyTheme(newTheme);
+
+    // Remove transition class after animation completes to avoid jank on other interactions
+    setTimeout(() => {
+      root.classList.remove('theme-transition');
+    }, 200);
   };
 
   // Prevent hydration mismatch
