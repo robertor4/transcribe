@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { CheckCircle, AlertCircle, Loader2, Sun, Moon, Monitor } from 'lucide-react';
 import { getUserProfile, updateUserLanguagePreference } from '@/lib/user-preferences';
+import { SettingsSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { useRouter } from '@/i18n/navigation';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -71,11 +72,7 @@ export default function PreferencesSettingsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   return (

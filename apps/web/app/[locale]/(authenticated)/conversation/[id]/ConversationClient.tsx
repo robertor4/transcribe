@@ -6,7 +6,6 @@ import { useParams, useRouter } from 'next/navigation';
 import {
   Share2,
   ArrowLeft,
-  Loader2,
   AlertCircle,
   Copy,
   Zap,
@@ -14,6 +13,7 @@ import {
   Trash2,
   Replace,
   RefreshCw,
+  Loader2,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
@@ -45,6 +45,7 @@ import { useTranslations } from 'next-intl';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 import { TextHighlighter, useHighlightOptions } from '@/components/TextHighlighter';
+import { ConversationSkeleton } from '@/components/skeletons/ConversationSkeleton';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -412,14 +413,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading conversation...</p>
-        </div>
-      </div>
-    );
+    return <ConversationSkeleton />;
   }
 
   // Error state

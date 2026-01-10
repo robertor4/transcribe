@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { TrialCountdownBanner } from '@/components/trial/TrialCountdownBanner';
+import { SubscriptionSkeleton } from '@/components/skeletons/SettingsSkeleton';
 
 interface SubscriptionData {
   subscription: {
@@ -159,11 +160,7 @@ export default function SubscriptionPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
-      </div>
-    );
+    return <SubscriptionSkeleton />;
   }
 
   const tier = subscription?.tier || usageStats?.tier || 'free';

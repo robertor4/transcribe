@@ -6,7 +6,6 @@ import {
   Mic,
   Monitor,
   Upload,
-  Loader2,
 } from 'lucide-react';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
@@ -15,6 +14,7 @@ import { MilestoneToast } from '@/components/MilestoneToast';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
 import { DashboardDndProvider } from '@/components/dashboard/DashboardDndProvider';
 import { RecentAssetsSection } from '@/components/dashboard/RecentAssetsSection';
+import { DashboardSkeleton, DashboardInlineSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
@@ -202,14 +202,7 @@ export function DashboardClient() {
 
   // Show loading state while checking auth, or if user is unverified (redirect in progress)
   if (authLoading || (user && !user.emailVerified)) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto" />
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -297,9 +290,7 @@ export function DashboardClient() {
 
             {/* Loading State */}
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA]" />
-              </div>
+              <DashboardInlineSkeleton />
             ) : (
               <>
                 <TwoColumnDashboardLayout

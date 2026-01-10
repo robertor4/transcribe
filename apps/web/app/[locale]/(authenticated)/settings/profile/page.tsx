@@ -20,6 +20,7 @@ import {
   deleteProfilePhoto,
 } from '@/lib/user-preferences';
 import { ProfilePhotoUploader } from '@/components/ProfilePhotoUploader';
+import { SettingsSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { auth } from '@/lib/firebase';
 import {
   sendEmailVerification,
@@ -227,11 +228,7 @@ export default function ProfileSettingsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8D6AFA]" />
-      </div>
-    );
+    return <SettingsSkeleton />;
   }
 
   return (

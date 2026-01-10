@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
   Folder,
-  Loader2,
   AlertCircle,
   ArrowLeft,
   Trash2,
@@ -35,6 +34,7 @@ import { formatRelativeTime } from '@/lib/formatters';
 import { DraggableConversationCard } from '@/components/dashboard/DraggableConversationCard';
 import { AiIcon } from '@/components/icons/AiIcon';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
+import { FolderSkeleton } from '@/components/skeletons/FolderSkeleton';
 
 interface FolderClientProps {
   folderId: string;
@@ -188,22 +188,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="h-screen flex flex-col">
-        <ThreePaneLayout
-          leftSidebar={<LeftNavigation />}
-          showRightPanel={false}
-          mainContent={
-            <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin text-[#8D6AFA] mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">Loading folder...</p>
-              </div>
-            </div>
-          }
-        />
-      </div>
-    );
+    return <FolderSkeleton />;
   }
 
   // Error or not found state

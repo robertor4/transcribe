@@ -9,7 +9,6 @@ import {
   Clock,
   Calendar,
   Users as UsersIcon,
-  Loader2,
   MessageSquareText,
   FileText,
 } from 'lucide-react';
@@ -19,6 +18,7 @@ import { AssetSidebarCard } from '@/components/AssetSidebarCard';
 import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { AiIcon } from '@/components/icons/AiIcon';
+import { AssetListSkeleton } from '@/components/skeletons/AssetListSkeleton';
 
 interface ConversationMetadata {
   duration: number;
@@ -85,9 +85,7 @@ export function AssetSidebar({
       {/* Asset List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-subtle">
         {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-[#8D6AFA]" />
-          </div>
+          <AssetListSkeleton count={3} />
         ) : assets.length > 0 ? (
           assets.map((asset) => (
             <AssetSidebarCard

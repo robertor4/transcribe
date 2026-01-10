@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2, Users } from 'lucide-react';
+import { NavigationListSkeleton } from '@/components/skeletons/NavigationSkeleton';
 import { useTranslations } from 'next-intl';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -275,9 +276,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
           >
             <div className="overflow-hidden">
             {foldersLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-4 h-4 animate-spin text-white/50" />
-              </div>
+              <NavigationListSkeleton type="folders" count={3} />
             ) : folders.length === 0 && importedCount === 0 ? (
               <p className="text-xs text-white/50 px-3 py-2">{t('noFoldersYet')}</p>
             ) : (
@@ -366,9 +365,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             </div>
 
             {conversationsLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="w-4 h-4 animate-spin text-white/50" />
-              </div>
+              <NavigationListSkeleton type="conversations" count={5} />
             ) : recentConversations.length === 0 ? (
               <p className="text-xs text-white/50 px-3 py-2">{t('noConversationsYet')}</p>
             ) : (

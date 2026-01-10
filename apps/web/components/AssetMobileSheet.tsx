@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter, useParams } from 'next/navigation';
-import { X, Zap, Plus, Loader2 } from 'lucide-react';
+import { X, Zap, Plus } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
 import { QASidebarEntry } from '@/components/QASidebarEntry';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { useTranslations } from 'next-intl';
+import { AssetListSkeleton } from '@/components/skeletons/AssetListSkeleton';
 
 interface AssetMobileSheetProps {
   assets: GeneratedAnalysis[];
@@ -201,9 +202,7 @@ export function AssetMobileSheet({
                 style={{ WebkitOverflowScrolling: 'touch' }}
               >
                 {isLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-[#8D6AFA]" />
-                  </div>
+                  <AssetListSkeleton count={4} />
                 ) : assets.length > 0 ? (
                   assets.map((asset) => (
                     <AssetSidebarCard
