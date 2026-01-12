@@ -2,12 +2,14 @@
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
+import { ApiHealthProvider } from '@/contexts/ApiHealthContext';
 import { ConversationsProvider } from '@/contexts/ConversationsContext';
 import { FoldersProvider } from '@/contexts/FoldersContext';
 import { ImportedConversationsProvider } from '@/contexts/ImportedConversationsContext';
 import { UsageProvider } from '@/contexts/UsageContext';
 import { PageTracker } from '@/components/PageTracker';
 import { CookieConsent } from '@/components/CookieConsent';
+import { ApiUnavailableBanner } from '@/components/ApiUnavailableBanner';
 
 /**
  * Layout for authenticated pages that need full context providers.
@@ -25,17 +27,20 @@ export default function AuthenticatedLayout({
   return (
     <AuthProvider>
       <AnalyticsProvider>
-        <UsageProvider>
-          <ConversationsProvider>
-            <FoldersProvider>
-              <ImportedConversationsProvider>
-                <PageTracker />
-                {children}
-                <CookieConsent />
-              </ImportedConversationsProvider>
-            </FoldersProvider>
-          </ConversationsProvider>
-        </UsageProvider>
+        <ApiHealthProvider>
+          <UsageProvider>
+            <ConversationsProvider>
+              <FoldersProvider>
+                <ImportedConversationsProvider>
+                  <PageTracker />
+                  <ApiUnavailableBanner />
+                  {children}
+                  <CookieConsent />
+                </ImportedConversationsProvider>
+              </FoldersProvider>
+            </ConversationsProvider>
+          </UsageProvider>
+        </ApiHealthProvider>
       </AnalyticsProvider>
     </AuthProvider>
   );

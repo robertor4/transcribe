@@ -2352,5 +2352,13 @@
       "messageRequired": "El mensaje es obligatorio",
       "messageMinLength": "El mensaje debe tener al menos 10 caracteres"
     }
+  },
+  "apiHealth": {
+    "title": "Servicio temporalmente no disponible",
+    "message": "Estamos experimentando dificultades técnicas y trabajando para resolverlas.",
+    "contactSupport": "Contactar soporte",
+    "retry": "Reintentar",
+    "checking": "Verificando...",
+    "dismiss": "Cerrar"
   }
 }

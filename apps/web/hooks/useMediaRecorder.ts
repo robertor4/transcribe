@@ -980,9 +980,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         cloudUploadEnabled: isCloudEnabled,
         cloudSessionId: isCloudEnabled ? chunkUploaderRef.current?.currentSessionId : undefined,
       });
-      console.log(
-        `[useMediaRecorder] Auto-saved recording to IndexedDB (${currentDuration}s)${isCloudEnabled ? ' [rolling buffer]' : ''}`
-      );
+      if (process.env.NODE_ENV === 'development') {
+        console.log(
+          `[useMediaRecorder] Auto-saved recording to IndexedDB (${currentDuration}s)${isCloudEnabled ? ' [rolling buffer]' : ''}`
+        );
+      }
     } catch (err) {
       console.error('[useMediaRecorder] Failed to auto-save recording:', err);
       // Non-critical error, continue recording
@@ -1070,19 +1072,49 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   }, [state, audioBlob]);
 
   // Page Visibility API (auto-save when tab switches, re-acquire wake lock on return)
+  // This is critical for mobile where the browser may background the tab
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
-        // User switched tabs or minimized browser - immediate save
+        // User switched tabs, minimized browser, or locked screen (mobile)
+        // Save recording immediately to IndexedDB for recovery
         if ((state === 'recording' || state === 'paused') && recordingIdRef.current) {
           console.log('[useMediaRecorder] Tab hidden, saving recording immediately');
-          await saveRecordingToStorage();
+          try {
+            await saveRecordingToStorage();
+          } catch (err) {
+            // Don't let save failure affect recording - log and continue
+            // The recording chunks are still in memory and will be saved on next auto-save
+            console.warn('[useMediaRecorder] Failed to save on visibility change:', err);
+          }
         }
       } else if (document.visibilityState === 'visible') {
-        // Tab became visible again - re-acquire wake lock if recording
-        if (state === 'recording' && !wakeLockRef.current) {
+        // Tab became visible again (user returned to the app)
+        // Re-acquire wake lock if recording to prevent future screen lock
+        if ((state === 'recording' || state === 'paused') && !wakeLockRef.current) {
           console.log('[useMediaRecorder] Tab visible again, re-acquiring wake lock');
-          wakeLockRef.current = await requestWakeLock();
+          try {
+            wakeLockRef.current = await requestWakeLock();
+          } catch (err) {
+            // Wake lock may fail on some browsers/devices - not critical
+            console.debug('[useMediaRecorder] Failed to re-acquire wake lock:', err);
+          }
+        }
+
+        // Also refresh the auth token proactively when returning from background
+        // This helps prevent token expiration issues on long recordings
+        // The AuthContext handles the actual refresh, but we can trigger a check
+        try {
+          const { auth } = await import('@/lib/firebase');
+          const user = auth.currentUser;
+          if (user) {
+            // Force token refresh to ensure we have a valid token
+            await user.getIdToken(true);
+            console.debug('[useMediaRecorder] Refreshed auth token on visibility change');
+          }
+        } catch (err) {
+          // Token refresh failure is not critical here - AuthContext will handle it
+          console.debug('[useMediaRecorder] Token refresh on visibility change failed:', err);
         }
       }
     };

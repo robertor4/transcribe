@@ -2357,5 +2357,13 @@
       "messageRequired": "Bericht is verplicht",
       "messageMinLength": "Bericht moet minimaal 10 tekens bevatten"
     }
+  },
+  "apiHealth": {
+    "title": "Service tijdelijk niet beschikbaar",
+    "message": "We ondervinden technische problemen en werken aan een oplossing.",
+    "contactSupport": "Neem contact op met support",
+    "retry": "Opnieuw proberen",
+    "checking": "Controleren...",
+    "dismiss": "Sluiten"
   }
 }

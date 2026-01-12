@@ -2363,5 +2363,13 @@
       "messageRequired": "Message is required",
       "messageMinLength": "Message must be at least 10 characters"
     }
+  },
+  "apiHealth": {
+    "title": "Service temporarily unavailable",
+    "message": "We're experiencing technical difficulties and working to resolve them.",
+    "contactSupport": "Contact support",
+    "retry": "Retry",
+    "checking": "Checking...",
+    "dismiss": "Dismiss"
   }
 }

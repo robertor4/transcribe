@@ -12,12 +12,13 @@ class WebSocketService {
   private socket: Socket | null = null;
   private listeners: Map<string, Set<(data: unknown) => void>> = new Map();
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 3;
+  private maxReconnectAttempts = 5; // Increased from 3 to handle flaky mobile connections
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private isReconnecting = false;
   private connectionHealthy = false;
   private lastEventTime: Map<string, number> = new Map(); // Track last event time per transcription
   private subscribedTranscriptions: Set<string> = new Set(); // Track subscribed transcription IDs
+  private pendingResubscriptions: Set<string> = new Set(); // Track subscriptions to restore after reconnect
 
   async connect() {
     if (this.socket?.connected) return;
@@ -48,6 +49,16 @@ class WebSocketService {
       this.reconnectAttempts = 0;
       this.isReconnecting = false;
       this.connectionHealthy = true;
+
+      // Restore any pending subscriptions after reconnect
+      if (this.pendingResubscriptions.size > 0) {
+        console.log('[WebSocket] Restoring subscriptions after reconnect:', Array.from(this.pendingResubscriptions));
+        this.pendingResubscriptions.forEach(transcriptionId => {
+          this.socket?.emit(WEBSOCKET_EVENTS.SUBSCRIBE_TRANSCRIPTION, transcriptionId);
+          this.subscribedTranscriptions.add(transcriptionId);
+        });
+        this.pendingResubscriptions.clear();
+      }
 
       // Emit connection health change event
       this.emit('connection_health_changed', { healthy: true, connected: true });
@@ -94,9 +105,22 @@ class WebSocketService {
 
   private async handleTokenExpired() {
     if (this.isReconnecting) return;
+    await this.reconnectWithFreshToken();
+  }
+
+  /**
+   * Reconnect WebSocket with a fresh auth token.
+   * Called proactively by AuthContext before token expires,
+   * or reactively when token expiration is detected.
+   */
+  async reconnectWithFreshToken(): Promise<void> {
+    if (this.isReconnecting) {
+      console.debug('[WebSocket] Already reconnecting, skipping duplicate request');
+      return;
+    }
 
     this.isReconnecting = true;
-    console.log('Token expired, attempting to refresh and reconnect...');
+    console.log('[WebSocket] Reconnecting with fresh token...');
 
     try {
       const user = auth.currentUser;
@@ -107,49 +131,80 @@ class WebSocketService {
       // Force refresh the token
       await user.getIdToken(true);
 
-      // Disconnect old socket
-      this.disconnect();
+      // Save current subscriptions to restore after reconnect
+      this.pendingResubscriptions = new Set(this.subscribedTranscriptions);
+
+      // Disconnect old socket (but don't clear subscriptions - we'll restore them)
+      if (this.reconnectTimeout) {
+        clearTimeout(this.reconnectTimeout);
+        this.reconnectTimeout = null;
+      }
+      this.socket?.disconnect();
+      this.socket = null;
+      this.reconnectAttempts = 0;
+      this.connectionHealthy = false;
+      // Don't clear subscribedTranscriptions - pendingResubscriptions has them
 
       // Wait a bit before reconnecting
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Reconnect with fresh token
       await this.connect();
 
-      console.log('Successfully reconnected with fresh token');
+      console.log('[WebSocket] Successfully reconnected with fresh token');
     } catch (error) {
-      console.error('Failed to refresh token and reconnect:', error);
-      this.showAuthErrorNotification({
-        code: ERROR_CODES.AUTH_TOKEN_EXPIRED,
-        message: 'Session expired. Please refresh the page to continue.',
-      });
+      console.error('[WebSocket] Failed to refresh token and reconnect:', error);
+      // Don't show error notification for proactive refreshes - the connection may still work
+      // Only show if this was triggered by an actual token expiration error
       this.isReconnecting = false;
     }
   }
 
   private handleReconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached');
-      this.showAuthErrorNotification({
-        code: ERROR_CODES.INTERNAL_ERROR,
-        message: 'Connection lost. Please refresh the page to reconnect.',
+      console.error('[WebSocket] Max reconnection attempts reached');
+      // Emit a softer event instead of showing error notification immediately
+      // This allows the UI to handle it gracefully (e.g., show reconnecting state)
+      this.emit('connection_max_retries', {
+        attempts: this.reconnectAttempts,
+        message: 'Connection issues. Will keep trying in background.',
       });
+      // Don't give up completely - reset and try again after a longer delay
+      this.reconnectAttempts = 0;
+      this.reconnectTimeout = setTimeout(() => {
+        this.handleReconnect();
+      }, 30000); // Try again in 30 seconds
       return;
     }
 
     this.isReconnecting = true;
     this.reconnectAttempts++;
 
-    // Exponential backoff: 2s, 4s, 8s
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 8000);
+    // Save subscriptions before disconnect
+    if (this.subscribedTranscriptions.size > 0) {
+      this.pendingResubscriptions = new Set(this.subscribedTranscriptions);
+    }
 
-    console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+    // Exponential backoff: 2s, 4s, 8s, 16s, 32s (capped)
+    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 32000);
+
+    console.log(`[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
 
     this.reconnectTimeout = setTimeout(async () => {
       try {
+        // Try to refresh token before reconnecting (may have expired while disconnected)
+        const user = auth.currentUser;
+        if (user) {
+          try {
+            await user.getIdToken(true);
+          } catch {
+            // Token refresh failed, but still try to connect with cached token
+            console.debug('[WebSocket] Token refresh failed, trying with cached token');
+          }
+        }
         await this.connect();
       } catch (error) {
-        console.error('Reconnection failed:', error);
+        console.error('[WebSocket] Reconnection failed:', error);
         this.handleReconnect();
       }
     }, delay);

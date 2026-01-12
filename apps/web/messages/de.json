@@ -2357,5 +2357,13 @@
       "messageRequired": "Nachricht ist erforderlich",
       "messageMinLength": "Nachricht muss mindestens 10 Zeichen lang sein"
     }
+  },
+  "apiHealth": {
+    "title": "Dienst vorübergehend nicht verfügbar",
+    "message": "Wir haben technische Schwierigkeiten und arbeiten an einer Lösung.",
+    "contactSupport": "Support kontaktieren",
+    "retry": "Erneut versuchen",
+    "checking": "Überprüfe...",
+    "dismiss": "Schließen"
   }
 }

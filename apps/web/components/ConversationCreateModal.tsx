@@ -74,21 +74,32 @@ export function ConversationCreateModal({
   // Track which upload method to use after recovery
   const [recoveryUploadMethod, setRecoveryUploadMethod] = useState<'record-microphone' | 'record-tab-audio' | null>(null);
 
+  // Check if we're in a critical stage that should be protected from accidental close
+  // Preview (context) and processing stages are critical - user has recorded content at risk
+  const isInCriticalStage = currentStep === 'context' || currentStep === 'processing';
+
   // Reset state when modal closes
   const handleClose = useCallback(() => {
     // Only show confirmation when there's actual progress to lose:
     // - Actively recording or paused
+    // - In preview stage (context) - recording completed, ready for processing
     // - Processing in progress
     // - Files selected for upload
     // - Recording completed but not yet processed
     const hasProgress =
       isRecording ||
       currentStep === 'processing' ||
+      currentStep === 'context' || // Added: protect preview stage too
       uploadedFiles.length > 0 ||
       recordedBlob !== null;
 
     if (hasProgress) {
-      const confirmed = window.confirm(t('confirmCancel'));
+      // Use a more explicit confirmation message for critical stages
+      const message = isInCriticalStage
+        ? t('confirmCancelCritical', { defaultValue: t('confirmCancel') })
+        : t('confirmCancel');
+
+      const confirmed = window.confirm(message);
 
       if (!confirmed) {
         return; // User cancelled, keep modal open
@@ -110,7 +121,7 @@ export function ConversationCreateModal({
     setRecoveryUploadMethod(null);
     setPendingRecoveryDeletionId(null);
     onClose();
-  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose, t]);
+  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose, t, isInCriticalStage]);
 
   // Check for recoverable recordings when modal opens
   // Only show recordings belonging to the current user (privacy/security)
@@ -170,6 +181,22 @@ export function ConversationCreateModal({
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, handleClose, showRecoveryDialog]);
+
+  // Prevent browser navigation/close during critical stages (preview, processing)
+  // This protects against accidental tab close, back button, or page refresh
+  useEffect(() => {
+    if (!isOpen || !isInCriticalStage) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Show browser's native "Leave site?" confirmation
+      e.preventDefault();
+      // Note: returnValue is deprecated but Chrome still requires it for beforeunload to work
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isOpen, isInCriticalStage]);
 
   // Upload handlers
   const handleFileUpload = (files: File[], mode: 'individual' | 'merged') => {

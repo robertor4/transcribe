@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
   User,
   signInWithPopup,
@@ -16,6 +16,10 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import websocketService from '@/lib/websocket';
+
+// Firebase ID tokens expire after 1 hour. Refresh proactively at 45 minutes
+// to prevent token expiration during long recording sessions.
+const TOKEN_REFRESH_INTERVAL_MS = 45 * 60 * 1000; // 45 minutes
 
 interface AuthContextType {
   user: User | null;
@@ -49,6 +53,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const tokenRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Proactive token refresh to prevent expiration during long sessions (recordings, processing)
+  // This runs every 45 minutes while the user is authenticated
+  useEffect(() => {
+    const startTokenRefresh = () => {
+      // Clear any existing interval
+      if (tokenRefreshIntervalRef.current) {
+        clearInterval(tokenRefreshIntervalRef.current);
+      }
+
+      tokenRefreshIntervalRef.current = setInterval(async () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          try {
+            // Force refresh the token before it expires
+            await currentUser.getIdToken(true);
+            console.debug('[AuthContext] Proactively refreshed auth token');
+
+            // Reconnect WebSocket with fresh token if it was connected
+            if (websocketService.isConnected()) {
+              await websocketService.reconnectWithFreshToken();
+            }
+          } catch (error) {
+            console.warn('[AuthContext] Failed to refresh token:', error);
+            // Don't disconnect - let the normal error handling deal with it
+          }
+        }
+      }, TOKEN_REFRESH_INTERVAL_MS);
+    };
+
+    if (user && user.emailVerified) {
+      startTokenRefresh();
+    }
+
+    return () => {
+      if (tokenRefreshIntervalRef.current) {
+        clearInterval(tokenRefreshIntervalRef.current);
+        tokenRefreshIntervalRef.current = null;
+      }
+    };
+  }, [user]);
 
   useEffect(() => {
     setMounted(true);
