@@ -15,7 +15,6 @@ import {
   Trash2,
   Loader2,
   QrCode,
-  Share2,
   Clock,
   Shield,
   FileText,
@@ -26,7 +25,6 @@ import {
 } from 'lucide-react';
 import { AiIcon } from '@/components/icons/AiIcon';
 import QRCode from 'qrcode';
-import { Button } from '@/components/Button';
 
 interface ShareModalProps {
   transcription: Transcription;
@@ -116,7 +114,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       // Use current display language
       const url = `${window.location.origin}/${locale}/shared/${transcription.shareToken}`;
       setShareUrl(url);
-      generateQRCode(url);
+      // Don't generate QR code here - do it lazily when user clicks to show it
 
       // Load existing content options if available (map to simplified V2)
       if (transcription.shareSettings?.contentOptions) {
@@ -135,6 +133,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       setEmailError('');
       setPassword('');
       setEnablePassword(false);
+      setQrCodeUrl(''); // Clear QR code when closing
       setLocalShareToken(transcription.shareToken);
     }
   }, [transcription, isOpen, locale]);
@@ -214,48 +213,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     } catch (error) {
       console.error('Error creating share link:', error);
       alert('Failed to create share link. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateShareSettings = async () => {
-    setLoading(true);
-    try {
-      const settings: Record<string, unknown> = {
-        contentOptions: buildContentOptions(),
-      };
-      
-      // Calculate expiration date based on selected option
-      const now = new Date();
-      if (expirationOption === '24hours') {
-        settings.expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-      } else if (expirationOption === '7days') {
-        settings.expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-      }
-      
-      if (enablePassword && password) {
-        settings.password = password;
-      }
-
-      await transcriptionApi.updateShareSettings(transcription.id, settings);
-      
-      // Update the transcription object
-      const updatedTranscription = {
-        ...transcription,
-        shareSettings: {
-          enabled: true,
-          ...transcription.shareSettings,
-          ...settings,
-        },
-      };
-      onShareUpdate(updatedTranscription);
-      
-      // Show success feedback
-      alert('Share settings updated successfully.');
-    } catch (error) {
-      console.error('Error updating share settings:', error);
-      alert('Failed to update share settings. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -439,19 +396,16 @@ export const ShareModal: React.FC<ShareModalProps> = ({
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
           {/* Header */}
-          <div className="p-4 sm:p-6 border-b border-gray-300 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#8D6AFA]" />
-                <Dialog.Title className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
-                  {t('title')}
-                </Dialog.Title>
-              </div>
+              <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Share
+              </Dialog.Title>
               <Dialog.Close asChild>
-                <button className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
-                  <X className="w-5 h-5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100" />
+                <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors -mr-1">
+                  <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
               </Dialog.Close>
             </div>
@@ -462,7 +416,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             <>
               {/* Content Selection - Simplified V2 */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-[#8D6AFA]" />
                   {t('contentSelection')}
                 </h3>
@@ -505,7 +459,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
               {/* Share Settings */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-[#8D6AFA]" />
                   {t('shareSettings')}
                 </h3>
@@ -516,10 +470,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     <Clock className="inline w-4 h-4 mr-1" />
                     {t('expiration')}
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setExpirationOption('24hours')}
-                      className={`p-2 text-sm rounded-lg border ${
+                      className={`flex-1 min-w-[80px] p-2 text-xs sm:text-sm rounded-lg border ${
                         expirationOption === '24hours'
                           ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
                           : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
@@ -529,7 +483,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </button>
                     <button
                       onClick={() => setExpirationOption('7days')}
-                      className={`p-2 text-sm rounded-lg border ${
+                      className={`flex-1 min-w-[80px] p-2 text-xs sm:text-sm rounded-lg border ${
                         expirationOption === '7days'
                           ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
                           : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
@@ -539,7 +493,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </button>
                     <button
                       onClick={() => setExpirationOption('never')}
-                      className={`p-2 text-sm rounded-lg border ${
+                      className={`flex-1 min-w-[80px] p-2 text-xs sm:text-sm rounded-lg border ${
                         expirationOption === 'never'
                           ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
                           : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
@@ -612,29 +566,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           ) : (
             <>
               {/* Existing Share Link */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                  {t('linkCreated')}
-                </h3>
-
+              <div>
                 {/* Share URL */}
-                <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-pink-100 dark:border-purple-900/50">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="mb-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-900/50">
+                  <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={shareUrl}
                       readOnly
-                      className="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-800 dark:text-gray-200"
+                      className="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 min-w-0"
                     />
                     <button
                       onClick={handleCopyLink}
-                      className="p-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2"
+                      className="w-9 h-9 flex items-center justify-center bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 flex-shrink-0"
                     >
                       {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                     </button>
                   </div>
                   {copied && (
-                    <p className="text-sm text-green-600 dark:text-green-400">{t('linkCopied')}</p>
+                    <p className="text-sm text-green-600 dark:text-green-400 mt-2">{t('linkCopied')}</p>
                   )}
                 </div>
 
@@ -642,9 +592,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {transcription.shareSettings && (
                   <div className="mb-4 space-y-2">
                     {/* Shared Content */}
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">{t('sharedContent')}</span>
-                      <span className="text-gray-900 dark:text-gray-100 font-medium text-right">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-sm">
+                      <span className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('sharedContent')}</span>
+                      <span className="text-gray-900 dark:text-gray-100 font-medium sm:text-right break-words">
                         {getSelectedContentSummary()}
                       </span>
                     </div>
@@ -653,7 +603,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     {transcription.shareSettings.expiresAt && formatDate(transcription.shareSettings.expiresAt) !== 'Date unavailable' && (
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600 dark:text-gray-400">{t('expires')}</span>
-                        <span className="text-gray-900 dark:text-gray-100 font-medium">
+                        <span className="text-gray-900 dark:text-gray-100 font-medium text-right">
                           {formatDate(transcription.shareSettings.expiresAt)}
                         </span>
                       </div>
@@ -682,28 +632,33 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 {/* Action Buttons */}
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <button
-                    onClick={() => setShowQrCode(!showQrCode)}
-                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
+                    onClick={() => {
+                      if (!showQrCode && !qrCodeUrl && shareUrl) {
+                        generateQRCode(shareUrl);
+                      }
+                      setShowQrCode(!showQrCode);
+                    }}
+                    className="p-2 sm:p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
                   >
                     <QrCode className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                    <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{t('qrCode')}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-300 font-medium">{t('qrCode')}</span>
                   </button>
 
                   <button
                     onClick={() => setShowEmailSection(!showEmailSection)}
-                    className="p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
+                    className="p-2 sm:p-3 border border-gray-400 dark:border-gray-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex flex-col items-center gap-1 transition-colors"
                   >
                     <Mail className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                    <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">{t('sendEmail')}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-700 dark:text-gray-300 font-medium">{t('sendEmail')}</span>
                   </button>
 
                   <button
                     onClick={handleRevokeShareLink}
                     disabled={loading}
-                    className="p-3 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex flex-col items-center gap-1 text-red-600 dark:text-red-400"
+                    className="p-2 sm:p-3 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 flex flex-col items-center gap-1 text-red-600 dark:text-red-400"
                   >
                     <Trash2 className="w-5 h-5" />
-                    <span className="text-xs font-medium">{t('revoke')}</span>
+                    <span className="text-[10px] sm:text-xs font-medium">{t('revoke')}</span>
                   </button>
                 </div>
 
@@ -730,12 +685,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         {emailChips.map((chip) => (
                           <div
                             key={chip.id}
-                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-purple-50 dark:bg-purple-900/30 border border-[#8D6AFA]/30 dark:border-[#8D6AFA]/50 rounded-full"
+                            className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-purple-50 dark:bg-purple-900/30 border border-[#8D6AFA]/30 dark:border-[#8D6AFA]/50 rounded-full max-w-full"
                           >
-                            <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">{chip.email}</span>
+                            <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 truncate max-w-[180px] sm:max-w-[250px]">{chip.email}</span>
                             <button
                               onClick={() => removeEmailChip(chip.id)}
-                              className="ml-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                              className="ml-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 flex-shrink-0"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -809,175 +764,38 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
                 {/* Previously Shared With Section */}
                 {transcription.sharedWith && transcription.sharedWith.length > 0 && (
-                  <div className="mb-4 p-4 border border-gray-400 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
+                  <div className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                        <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        Previously Shared With ({transcription.sharedWith.length})
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2 text-sm">
+                        <Check className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                        <span>Sent to {transcription.sharedWith.length} {transcription.sharedWith.length === 1 ? 'recipient' : 'recipients'}</span>
                       </h4>
                       <button
                         onClick={handleResendToAll}
-                        className="text-sm text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0] font-medium flex items-center gap-1"
+                        className="text-xs text-[#8D6AFA] hover:text-[#7A5AE0] font-medium"
                       >
-                        <Mail className="w-4 h-4" />
-                        Re-send to All
+                        Re-send All
                       </button>
                     </div>
 
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
                       {transcription.sharedWith.map((record, index) => (
                         <div
                           key={`${record.email}-${index}`}
-                          className="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-600 hover:border-[#8D6AFA]/30 transition-colors"
+                          className="flex items-center justify-between gap-2 text-sm"
                         >
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <Mail className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                              <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{record.email}</span>
-                            </div>
-                            <div className="flex items-center gap-1 ml-5 mt-1">
-                              <Clock className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-                              <span className="text-xs text-gray-600 dark:text-gray-400">
-                                Sent {formatDate(record.sentAt)}
-                              </span>
-                            </div>
-                          </div>
+                          <span className="text-gray-700 dark:text-gray-300 truncate">{record.email}</span>
                           <button
                             onClick={() => handleResendToEmail(record.email)}
-                            className="ml-2 px-2 py-1 text-xs text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded border border-[#8D6AFA]/30 hover:border-[#8D6AFA] transition-colors"
+                            className="text-xs text-[#8D6AFA] hover:text-[#7A5AE0] flex-shrink-0"
                           >
                             Re-send
                           </button>
                         </div>
                       ))}
                     </div>
-
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-3">
-                      These email addresses will be cleared when you revoke the share link.
-                    </p>
                   </div>
                 )}
-
-                {/* Update Settings Section */}
-                <div className="border-t border-gray-300 dark:border-gray-600 pt-4 mt-6">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-4">{t('updateSettings')}</h4>
-
-                  {/* Content Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('sharedContent')}
-                    </label>
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={includeSummary}
-                          onChange={() => setIncludeSummary(!includeSummary)}
-                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeSummary')}</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={includeTranscript}
-                          onChange={() => setIncludeTranscript(!includeTranscript)}
-                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('fullTranscript')}</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={includeAIAssets}
-                          onChange={() => setIncludeAIAssets(!includeAIAssets)}
-                          className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('includeAIAssets')}</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Expiration */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('expiration')}
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        onClick={() => setExpirationOption('24hours')}
-                        className={`p-2 text-sm rounded-lg border ${
-                          expirationOption === '24hours'
-                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
-                        }`}
-                      >
-                        {t('24hours')}
-                      </button>
-                      <button
-                        onClick={() => setExpirationOption('7days')}
-                        className={`p-2 text-sm rounded-lg border ${
-                          expirationOption === '7days'
-                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
-                        }`}
-                      >
-                        {t('7days')}
-                      </button>
-                      <button
-                        onClick={() => setExpirationOption('never')}
-                        className={`p-2 text-sm rounded-lg border ${
-                          expirationOption === 'never'
-                            ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:border-[#8D6AFA]/30'
-                        }`}
-                      >
-                        {t('never')}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div className="mb-4">
-                    <label className="flex items-center gap-2 cursor-pointer mb-2">
-                      <input
-                        type="checkbox"
-                        checked={enablePassword}
-                        onChange={() => setEnablePassword(!enablePassword)}
-                        className="w-4 h-4 text-[#8D6AFA] rounded border-gray-300 focus:ring-[#8D6AFA]"
-                      />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('passwordProtect')}</span>
-                    </label>
-                    {enablePassword && (
-                      <div className="relative">
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder={t('enterPassword')}
-                          className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <Button
-                    variant="secondary"
-                    onClick={handleUpdateShareSettings}
-                    disabled={loading}
-                    icon={loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
-                    fullWidth
-                  >
-                    {loading ? t('updating') : t('updateShareSettings')}
-                  </Button>
-                </div>
               </div>
             </>
           )}

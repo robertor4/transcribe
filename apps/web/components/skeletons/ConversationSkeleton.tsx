@@ -148,13 +148,18 @@ function ConversationContentSkeleton() {
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700">
-        <Skeleton variant="rounded" className="h-10 w-24" />
-        <Skeleton variant="rounded" className="h-10 w-28" />
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
+        <div className="flex items-center gap-1 py-1">
+          <Skeleton variant="rounded" className="h-10 w-24" />
+          <Skeleton variant="rounded" className="h-10 w-28" />
+        </div>
       </div>
 
       {/* Summary content */}
-      <div className="space-y-6">
+      <div className="space-y-8">
+        {/* Intro paragraph */}
+        <SkeletonText lines={3} lastLineWidth="60%" gap="gap-2" />
+
         {/* Key Insights section */}
         <div>
           <Skeleton variant="text" className="h-5 w-28 mb-4" />

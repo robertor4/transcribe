@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Disable caching in development for faster iteration
+  ...(process.env.NODE_ENV === 'development' && {
+    experimental: {
+      staleTimes: {
+        dynamic: 0,
+        static: 0,
+      },
+    },
+  }),
   // Allow external images from Google and Firebase
   images: {
     remotePatterns: [
