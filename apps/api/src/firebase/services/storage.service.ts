@@ -119,6 +119,53 @@ export class StorageService {
     return result.url;
   }
 
+  /**
+   * Upload a file to a public path (no signed URL needed).
+   * Public access is controlled via Firebase Storage rules, not object-level ACLs.
+   * Use for non-sensitive content like AI-generated blog images.
+   *
+   * NOTE: Path must be under a publicly readable rule (e.g., public/blog-images/)
+   * @returns Object with public URL and storage path
+   */
+  async uploadPublicFile(
+    buffer: Buffer,
+    path: string,
+    contentType: string,
+  ): Promise<{ url: string; path: string }> {
+    const bucket = this.storage.bucket();
+    const file = bucket.file(path);
+
+    this.logger.log(
+      `Uploading public file to storage: ${path}, size: ${buffer.length} bytes`,
+    );
+
+    // Upload without public: true - bucket uses uniform access, so public read
+    // is controlled by Firebase Storage rules, not object-level ACLs
+    await file.save(buffer, {
+      metadata: {
+        contentType,
+      },
+    });
+
+    this.logger.log(`Public file saved successfully: ${path}`);
+
+    // Verify the file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new Error(`File upload verification failed: ${path}`);
+    }
+
+    // Construct public URL using Firebase Storage CDN format
+    // This format respects Firebase Storage rules (unlike storage.googleapis.com which needs IAM)
+    const bucketName = this.configService.get<string>('FIREBASE_STORAGE_BUCKET');
+    const encodedPath = encodeURIComponent(path);
+    const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodedPath}?alt=media`;
+
+    this.logger.log(`Generated public URL for ${path}`);
+
+    return { url: publicUrl, path };
+  }
+
   async getPublicUrl(url: string): Promise<string> {
     try {
       const filePath = this.extractFilePathFromUrl(url);
@@ -217,6 +264,39 @@ export class StorageService {
     } catch (error) {
       this.logger.error(`Error checking file existence: ${path}`, error);
       return false;
+    }
+  }
+
+  /**
+   * Generate a fresh signed URL for a file at the given path.
+   * Used to regenerate expired signed URLs.
+   * @param path - Firebase Storage path (e.g., "users/123/blog-images/456.webp")
+   * @param expirationMs - Expiration time in milliseconds (default: 7 days)
+   * @returns Fresh signed URL or null if file doesn't exist
+   */
+  async generateSignedUrl(
+    path: string,
+    expirationMs: number = 7 * 24 * 60 * 60 * 1000,
+  ): Promise<string | null> {
+    try {
+      const bucket = this.storage.bucket();
+      const file = bucket.file(path);
+      const [exists] = await file.exists();
+
+      if (!exists) {
+        this.logger.warn(`File not found for signed URL generation: ${path}`);
+        return null;
+      }
+
+      const [signedUrl] = await file.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + expirationMs,
+      });
+
+      return signedUrl;
+    } catch (error) {
+      this.logger.error(`Error generating signed URL for ${path}:`, error);
+      return null;
     }
   }
 

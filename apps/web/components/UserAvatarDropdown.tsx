@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, ChevronDown, Home } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface UserAvatarDropdownProps {
   /** Compact mode shows only avatar without dropdown arrow */
@@ -32,22 +33,6 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
 
   if (!user) return null;
 
-  // Get user initials for avatar fallback
-  const getInitials = () => {
-    if (user.displayName) {
-      return user.displayName
-        .split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (user.email) {
-      return user.email.slice(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -59,19 +44,7 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
           }`}
           aria-label="User menu"
         >
-          {user.photoURL ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={user.photoURL}
-              alt={user.displayName || user.email || 'User'}
-              className="h-8 w-8 rounded-full object-cover border border-gray-200"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="h-8 w-8 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-sm font-semibold">
-              {getInitials()}
-            </div>
-          )}
+          <UserAvatar size="sm" />
           {!compact && (
             <ChevronDown className="h-4 w-4 text-gray-500 transition-transform data-[state=open]:rotate-180" />
           )}
@@ -87,19 +60,7 @@ export function UserAvatarDropdown({ compact = false }: UserAvatarDropdownProps)
           {/* User Info */}
           <div className="px-4 py-3 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              {user.photoURL ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName || user.email || 'User'}
-                  className="h-10 w-10 rounded-full object-cover border border-gray-200"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-base font-semibold">
-                  {getInitials()}
-                </div>
-              )}
+              <UserAvatar size="md" />
               <div className="flex-1 min-w-0">
                 {user.displayName && (
                   <p className="text-sm font-semibold text-gray-900 truncate">

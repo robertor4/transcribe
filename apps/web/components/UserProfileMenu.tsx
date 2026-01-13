@@ -7,6 +7,7 @@ import { useUsage } from '@/contexts/UsageContext';
 import { useTranslations } from 'next-intl';
 import { LogOut, Settings, User as UserIcon, ChevronDown, Shield } from 'lucide-react';
 import { UsageIndicator } from '@/components/paywall/UsageIndicator';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface UserProfileMenuProps {
   collapsed?: boolean;
@@ -14,7 +15,7 @@ interface UserProfileMenuProps {
 
 export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
   const { user, logout } = useAuth();
-  const { usageStats, isAdmin } = useUsage();
+  const { usageStats, isAdmin, profilePhotoUrl } = useUsage();
   const router = useRouter();
   const tAuth = useTranslations('auth');
   const tSettings = useTranslations('settings');
@@ -90,22 +91,6 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
 
   if (!user) return null;
 
-  // Get user initials for avatar fallback
-  const getInitials = () => {
-    if (user.displayName) {
-      return user.displayName
-        .split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (user.email) {
-      return user.email.slice(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Profile Button */}
@@ -122,23 +107,11 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
         aria-label={tCommon('userMenu')}
       >
         {/* Profile Picture or Initials Avatar */}
-        {user.photoURL ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={user.photoURL}
-            alt={user.displayName || user.email || 'User'}
-            className={`rounded-full object-cover border border-white/20 flex-shrink-0 ${
-              collapsed ? 'h-8 w-8' : 'h-10 w-10'
-            }`}
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className={`rounded-full bg-[#8D6AFA] text-white flex items-center justify-center font-semibold flex-shrink-0 ${
-            collapsed ? 'h-8 w-8 text-sm' : 'h-10 w-10 text-base'
-          }`}>
-            {getInitials()}
-          </div>
-        )}
+        <UserAvatar
+          size={collapsed ? 'sm' : 'md'}
+          freshPhotoUrl={profilePhotoUrl}
+          borderClass="border-white/20"
+        />
 
         {/* User Name/Email and Chevron - hidden when collapsed */}
         {!collapsed && (
@@ -162,19 +135,10 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
           {/* User Info Section */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              {user.photoURL ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName || user.email || 'User'}
-                  className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-[#8D6AFA] text-white flex items-center justify-center text-base font-semibold">
-                  {getInitials()}
-                </div>
-              )}
+              <UserAvatar
+                size="md"
+                freshPhotoUrl={profilePhotoUrl}
+              />
               <div className="flex-1 min-w-0">
                 {user.displayName && (
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">

@@ -35,6 +35,10 @@ interface UsageContextType {
   refreshUsage: () => Promise<void>;
   userRole: UserRole | null;
   isAdmin: boolean;
+  /** Fresh profile photo URL from API (regenerated signed URL) */
+  profilePhotoUrl: string | null;
+  /** Refresh user profile (including photo URL) */
+  refreshProfile: () => Promise<void>;
 }
 
 const UsageContext = createContext<UsageContextType | undefined>(undefined);
@@ -45,6 +49,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
 
   // Track if we've already fetched for this user to prevent duplicate calls
   const hasFetchedRef = useRef(false);
@@ -53,6 +58,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   const fetchUserProfile = async () => {
     if (!user) {
       setUserRole(null);
+      setProfilePhotoUrl(null);
       return;
     }
 
@@ -71,6 +77,10 @@ export function UsageProvider({ children }: { children: ReactNode }) {
         const data = await response.json();
         const role = data.data?.role || UserRole.USER;
         setUserRole(role);
+        // Store fresh photo URL from API (regenerated signed URL)
+        if (data.data?.photoURL) {
+          setProfilePhotoUrl(data.data.photoURL);
+        }
       } else {
         setUserRole(UserRole.USER);
       }
@@ -205,7 +215,9 @@ export function UsageProvider({ children }: { children: ReactNode }) {
         error,
         refreshUsage: fetchUsage,
         userRole,
-        isAdmin
+        isAdmin,
+        profilePhotoUrl,
+        refreshProfile: fetchUserProfile,
       }}
     >
       {children}

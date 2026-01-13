@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import type { LinkedInOutput } from '@transcribe/shared';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
+import { UserAvatar } from '@/components/UserAvatar';
 
 interface LinkedInTemplateProps {
   data: LinkedInOutput;
@@ -19,25 +21,10 @@ interface LinkedInTemplateProps {
 
 export function LinkedInTemplate({ data }: LinkedInTemplateProps) {
   const { user } = useAuth();
+  const { profilePhotoUrl } = useUsage();
 
   // Split content by newlines for rendering
   const contentParagraphs = data.content.split('\n').filter((p) => p.trim());
-
-  // Get user initials for avatar fallback
-  const getInitials = () => {
-    if (user?.displayName) {
-      return user.displayName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (user?.email) {
-      return user.email.slice(0, 2).toUpperCase();
-    }
-    return 'Y';
-  };
 
   // Generate stable fake engagement metrics based on content hash
   // Exaggerated ranges to show users what success could look like!
@@ -95,19 +82,7 @@ export function LinkedInTemplate({ data }: LinkedInTemplateProps) {
         {/* Post Header - LinkedIn Style */}
         <div className="px-4 py-3 flex items-start gap-3 border-b border-gray-100 dark:border-gray-700/50">
           {/* Profile Picture */}
-          {user?.photoURL ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={user.photoURL}
-              alt={displayName}
-              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-[#8D6AFA] flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-lg">{getInitials()}</span>
-            </div>
-          )}
+          <UserAvatar size="lg" freshPhotoUrl={profilePhotoUrl} showBorder={false} />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">

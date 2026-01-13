@@ -26,10 +26,79 @@ export class UserService {
         return userData;
       }
 
+      // If user has a profilePhotoPath, generate a fresh signed URL
+      if (user.profilePhotoPath) {
+        const freshPhotoUrl = await this.generateProfilePhotoUrl(
+          user.profilePhotoPath,
+        );
+        if (freshPhotoUrl) {
+          user.photoURL = freshPhotoUrl;
+        }
+      } else if (
+        user.photoURL &&
+        (user.photoURL.includes('profiles/') ||
+          user.photoURL.includes('profile-photos/'))
+      ) {
+        // Migration: Extract path from existing signed URL and store it
+        const extractedPath = this.extractPathFromUrl(user.photoURL);
+        if (extractedPath) {
+          const freshPhotoUrl =
+            await this.generateProfilePhotoUrl(extractedPath);
+          if (freshPhotoUrl) {
+            // Save the extracted path for future use (async, don't wait)
+            this.userRepository
+              .updateUser(userId, { profilePhotoPath: extractedPath })
+              .catch((err) =>
+                this.logger.warn(
+                  `Failed to save profilePhotoPath for ${userId}:`,
+                  err,
+                ),
+              );
+            user.photoURL = freshPhotoUrl;
+            user.profilePhotoPath = extractedPath;
+          }
+        }
+      }
+
       return user;
     } catch (error) {
       this.logger.error(`Error getting user profile for ${userId}:`, error);
       throw error;
+    }
+  }
+
+  /**
+   * Generate a fresh signed URL for a profile photo path
+   * @param storagePath - The storage path (e.g., 'profiles/userId/timestamp.jpg')
+   * @returns Fresh signed URL valid for 7 days, or null if generation fails
+   */
+  private async generateProfilePhotoUrl(
+    storagePath: string,
+  ): Promise<string | null> {
+    try {
+      const bucket = this.firebaseService.storageService.bucket();
+      const fileRef = bucket.file(storagePath);
+
+      // Check if file exists
+      const [exists] = await fileRef.exists();
+      if (!exists) {
+        this.logger.warn(`Profile photo not found at path: ${storagePath}`);
+        return null;
+      }
+
+      // Generate fresh signed URL (7 days max for V4)
+      const [signedUrl] = await fileRef.getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      return signedUrl;
+    } catch (error) {
+      this.logger.error(
+        `Error generating signed URL for ${storagePath}:`,
+        error,
+      );
+      return null;
     }
   }
 
@@ -48,6 +117,51 @@ export class UserService {
       return user;
     } catch (error) {
       this.logger.error(`Error creating user profile for ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update user profile with photo path (internal method for photo uploads)
+   * Stores both the photoURL (for display) and profilePhotoPath (for URL regeneration)
+   */
+  private async updateUserProfileWithPath(
+    userId: string,
+    profile: {
+      photoURL: string;
+      profilePhotoPath: string;
+    },
+  ): Promise<User> {
+    try {
+      let user = await this.userRepository.getUser(userId);
+      if (!user) {
+        user = await this.createUserProfile(userId);
+      }
+
+      const updatedAt = new Date();
+      const updates = {
+        photoURL: profile.photoURL,
+        profilePhotoPath: profile.profilePhotoPath,
+        updatedAt,
+      };
+
+      // Update Firebase Auth with the signed URL (for display in other Firebase services)
+      await Promise.all([
+        this.userRepository.updateUser(userId, updates),
+        this.firebaseService.auth.updateUser(userId, {
+          photoURL: profile.photoURL,
+        }),
+      ]);
+
+      return {
+        ...user,
+        ...updates,
+      } as User;
+    } catch (error) {
+      this.logger.error(
+        `Error updating profile with path for user ${userId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -154,18 +268,18 @@ export class UserService {
         },
       });
 
-      // Generate a signed URL with maximum expiration (7 days is the max for V4 signatures)
-      // For profile photos, we'll regenerate the URL when it's close to expiring
-      // or use a public bucket policy
+      // Generate a fresh signed URL for immediate use
       const [signedUrl] = await fileRef.getSignedUrl({
         action: 'read',
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days (max for V4)
       });
 
-      const publicUrl = signedUrl;
-
-      // Update user profile with new photo URL
-      await this.updateUserProfile(userId, { photoURL: publicUrl });
+      // Store the storage path (not the signed URL) so we can regenerate URLs on demand
+      // This prevents 400 errors when signed URLs expire after 7 days
+      await this.updateUserProfileWithPath(userId, {
+        photoURL: signedUrl, // For immediate display and Firebase Auth sync
+        profilePhotoPath: filePath, // Permanent storage path for URL regeneration
+      });
 
       // Delete old profile photo if it was a custom upload
       if (oldPhotoPath) {
@@ -181,9 +295,9 @@ export class UserService {
       }
 
       this.logger.log(
-        `Profile photo uploaded for user ${userId}: ${publicUrl}`,
+        `Profile photo uploaded for user ${userId}: ${signedUrl}`,
       );
-      return publicUrl;
+      return signedUrl;
     } catch (error) {
       this.logger.error(`Error uploading profile photo for ${userId}:`, error);
       throw error;
@@ -195,26 +309,35 @@ export class UserService {
    */
   async deleteProfilePhoto(userId: string): Promise<void> {
     try {
-      const user = await this.getUserProfile(userId);
+      const user = await this.userRepository.getUser(userId);
 
-      if (
-        user?.photoURL?.includes('profiles/') ||
+      // Use profilePhotoPath if available, otherwise try to extract from URL
+      const filePath =
+        user?.profilePhotoPath ||
+        (user?.photoURL?.includes('profiles/') ||
         user?.photoURL?.includes('profile-photos/')
-      ) {
-        const filePath = this.extractPathFromUrl(user.photoURL);
-        if (filePath) {
-          const bucket = this.firebaseService.storageService.bucket();
-          try {
-            await bucket.file(filePath).delete();
-            this.logger.log(`Deleted profile photo: ${filePath}`);
-          } catch {
-            this.logger.warn(`Failed to delete profile photo: ${filePath}`);
-          }
+          ? this.extractPathFromUrl(user.photoURL)
+          : null);
+
+      if (filePath) {
+        const bucket = this.firebaseService.storageService.bucket();
+        try {
+          await bucket.file(filePath).delete();
+          this.logger.log(`Deleted profile photo: ${filePath}`);
+        } catch {
+          this.logger.warn(`Failed to delete profile photo: ${filePath}`);
         }
       }
 
-      // Clear the photoURL in user profile
-      await this.updateUserProfile(userId, { photoURL: '' });
+      // Clear both photoURL and profilePhotoPath
+      await Promise.all([
+        this.userRepository.updateUser(userId, {
+          photoURL: '',
+          profilePhotoPath: '',
+        }),
+        this.firebaseService.auth.updateUser(userId, { photoURL: null }),
+      ]);
+
       this.logger.log(`Profile photo cleared for user ${userId}`);
     } catch (error) {
       this.logger.error(`Error deleting profile photo for ${userId}:`, error);

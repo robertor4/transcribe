@@ -45,10 +45,18 @@ service firebase.storage {
     // User profile images
     match /profiles/{userId}/{fileName} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(userId) && 
+      allow write: if isOwner(userId) &&
         request.resource.size < 5 * 1024 * 1024 && // Max 5MB
         request.resource.contentType.matches('image/.*');
       allow delete: if isOwner(userId);
+    }
+
+    // Public blog images (AI-generated, no authentication required)
+    // These are decorative images with no privacy concerns
+    match /public/blog-images/{userId}/{fileName} {
+      allow read: if true; // Public read access
+      allow write: if false; // Only backend can write via Admin SDK
+      allow delete: if false; // Only backend can delete
     }
   }
 }

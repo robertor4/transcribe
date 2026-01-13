@@ -29,6 +29,7 @@ export interface User {
   emailVerified?: boolean;
   displayName?: string;
   photoURL?: string;
+  profilePhotoPath?: string; // Firebase Storage path for regenerating signed URLs
   role: UserRole;
   preferredLanguage?: string; // User's preferred language for the UI
   createdAt: Date;
@@ -264,7 +265,7 @@ export interface BlogSection {
   quotes?: { text: string; attribution: string }[];
 }
 
-/** Hero image for blog posts (AI-generated) */
+/** Hero image for blog posts (AI-generated, publicly accessible) */
 export interface BlogHeroImage {
   url: string;
   alt: string;

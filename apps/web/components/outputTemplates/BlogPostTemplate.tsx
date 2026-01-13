@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import { Quote } from 'lucide-react';
 import type { BlogPostOutput } from '@transcribe/shared';
 import { BulletList } from './shared';
@@ -7,6 +10,8 @@ interface BlogPostTemplateProps {
 }
 
 export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <article className="prose prose-gray dark:prose-invert max-w-none overflow-x-hidden">
         {/* Headline */}
@@ -22,13 +27,14 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
         )}
 
         {/* Hero Image - Magazine-style float right, positioned early so hook wraps around it */}
-        {data.heroImage && (
+        {data.heroImage && !imageError && (
           <figure className="sm:float-right sm:ml-6 sm:mb-4 mb-6 w-full sm:w-56 md:w-64 lg:w-72">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={data.heroImage.url}
               alt={data.heroImage.alt}
               className="w-full rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+              onError={() => setImageError(true)}
             />
             <figcaption className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center italic">
               AI-generated

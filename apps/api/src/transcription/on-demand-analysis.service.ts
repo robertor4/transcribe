@@ -447,14 +447,15 @@ export class OnDemandAnalysisService {
         return;
       }
 
-      const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
-      const uploadResult = await this.storageService.uploadFile(
+      // Use public path for blog images (no auth needed, never expires)
+      const storagePath = `public/blog-images/${userId}/${Date.now()}.webp`;
+      const uploadResult = await this.storageService.uploadPublicFile(
         imageBuffer,
         storagePath,
         'image/webp',
       );
 
-      // 4. Add hero image to blog content
+      // 4. Add hero image to blog content (public URL, no expiration)
       blogContent.heroImage = {
         url: uploadResult.url,
         alt: promptResult.alt,
@@ -584,14 +585,15 @@ export class OnDemandAnalysisService {
       );
     }
 
-    const storagePath = `users/${userId}/blog-images/${Date.now()}.webp`;
-    const uploadResult = await this.storageService.uploadFile(
+    // Use public path for blog images (no auth needed, never expires)
+    const storagePath = `public/blog-images/${userId}/${Date.now()}.webp`;
+    const uploadResult = await this.storageService.uploadPublicFile(
       imageBuffer,
       storagePath,
       'image/webp',
     );
 
-    // 8. Create hero image object
+    // 8. Create hero image object (public URL, no expiration)
     const heroImage: BlogHeroImage = {
       url: uploadResult.url,
       alt: promptResult.alt,

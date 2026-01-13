@@ -22,8 +22,10 @@ import type {
   EmailActionItem,
 } from '@transcribe/shared';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { transcriptionApi } from '@/lib/api';
 import { Button } from '@/components/Button';
+import { UserAvatar } from '@/components/UserAvatar';
 
 // Union type for all email outputs
 type EmailData =
@@ -188,12 +190,12 @@ function EmailClosing({
   closing,
   userName,
   userEmail,
-  userPhoto,
+  freshPhotoUrl,
 }: {
   closing: string;
   userName?: string | null;
   userEmail?: string | null;
-  userPhoto?: string | null;
+  freshPhotoUrl?: string | null;
 }) {
   return (
     <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700/50">
@@ -204,18 +206,13 @@ function EmailClosing({
         {/* Signature with photo and name - always from user data */}
         {userName && (
           <div className="flex items-center gap-3">
-            {userPhoto ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={userPhoto}
-                alt={userName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-[#8D6AFA] flex items-center justify-center text-white font-semibold text-sm">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <UserAvatar
+              size="md"
+              freshPhotoUrl={freshPhotoUrl}
+              displayName={userName}
+              email={userEmail}
+              showBorder={false}
+            />
             <div>
               <p className="font-semibold text-gray-900 dark:text-gray-100">{userName}</p>
               {userEmail && (
@@ -497,6 +494,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
 // Main EmailTemplate component
 export function EmailTemplate({ data, analysisId }: EmailTemplateProps) {
   const { user } = useAuth();
+  const { profilePhotoUrl } = useUsage();
   const [sendState, setSendState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -557,7 +555,7 @@ export function EmailTemplate({ data, analysisId }: EmailTemplateProps) {
           closing={data.closing}
           userName={user?.displayName}
           userEmail={user?.email}
-          userPhoto={user?.photoURL}
+          freshPhotoUrl={profilePhotoUrl}
         />
       </EmailBody>
     </div>
