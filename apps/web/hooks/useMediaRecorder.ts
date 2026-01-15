@@ -50,6 +50,8 @@ export interface UseMediaRecorderOptions {
   onDurationWarning?: () => void; // Called when approaching max duration
   onMaxDurationReached?: () => void; // Called when auto-stopped at max duration
   onDeviceSwapped?: (deviceId: string) => void; // Called when microphone is swapped mid-recording
+  onAudioInterrupted?: () => void; // Called when iOS audio session is interrupted (alarm, call, etc.)
+  onAudioRecovered?: () => void; // Called when audio stream is recovered after interruption
   enableAutoSave?: boolean; // Default: true
   userId?: string; // Firebase user ID for scoping recordings (privacy/security)
   maxDurationSeconds?: number; // Tier-specific limit (undefined = 3 hours default)
@@ -73,6 +75,7 @@ export interface UseMediaRecorderReturn {
   currentDeviceId: string | null; // Currently active microphone device ID
   isSwappingDevice: boolean; // True while swapping microphone
   isStopping: boolean; // True while stop is in progress (prevents double-click)
+  isAudioInterrupted: boolean; // True when iOS audio session is interrupted (alarm, call, etc.)
   // Cloud upload state
   uploadProgress: UploadProgress | null; // Current upload progress (if cloud upload enabled)
   cloudSessionId: string | null; // Firebase session ID for backend processing
@@ -109,6 +112,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     onDurationWarning,
     onMaxDurationReached,
     onDeviceSwapped,
+    onAudioInterrupted,
+    onAudioRecovered,
     enableAutoSave = true,
     userId,
     maxDurationSeconds,
@@ -135,6 +140,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
   const [isSwappingDevice, setIsSwappingDevice] = useState(false);
   const [isStopping, setIsStopping] = useState(false); // Prevents double-click on stop button
+  const [isAudioInterrupted, setIsAudioInterrupted] = useState(false); // iOS audio session interrupted
   // Cloud upload state
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [cloudSessionId, setCloudSessionId] = useState<string | null>(null);
@@ -178,6 +184,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   // Store a copy of recovered chunks for merging in onstop (separate from chunksRef which gets new chunks appended)
   const recoveredChunksCopyRef = useRef<StoredChunk[]>([]);
 
+  // Track listener cleanup ref (for iOS audio interruption detection)
+  const trackListenerCleanupRef = useRef<(() => void) | null>(null);
+
   // Capabilities
   const isSupported = isRecordingSupported();
   const canUseTabAudio = isTabAudioSupported();
@@ -196,6 +205,63 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       onStateChange?.(newState);
     },
     [onStateChange]
+  );
+
+  // Setup track event listeners for iOS audio session interruption detection
+  // iOS Safari can end or mute tracks when alarms, calls, or notifications interrupt
+  const setupTrackListeners = useCallback(
+    (stream: MediaStream) => {
+      // Clean up any existing listeners first
+      if (trackListenerCleanupRef.current) {
+        trackListenerCleanupRef.current();
+        trackListenerCleanupRef.current = null;
+      }
+
+      const audioTracks = stream.getAudioTracks();
+      if (audioTracks.length === 0) return;
+
+      const cleanupFunctions: (() => void)[] = [];
+
+      audioTracks.forEach((track) => {
+        // Handle track ended (iOS Safari ends tracks on audio session interruption)
+        const handleEnded = () => {
+          console.warn('[useMediaRecorder] Audio track ended unexpectedly (iOS audio interruption?)');
+          console.log(`  - Track state: ${track.readyState}, muted: ${track.muted}, enabled: ${track.enabled}`);
+          setIsAudioInterrupted(true);
+          onAudioInterrupted?.();
+        };
+
+        // Handle track muted (some browsers mute instead of ending)
+        const handleMute = () => {
+          console.warn('[useMediaRecorder] Audio track muted (iOS audio interruption?)');
+          setIsAudioInterrupted(true);
+          onAudioInterrupted?.();
+        };
+
+        // Handle track unmuted (recovery)
+        const handleUnmute = () => {
+          console.log('[useMediaRecorder] Audio track unmuted (audio recovered)');
+          setIsAudioInterrupted(false);
+          onAudioRecovered?.();
+        };
+
+        track.addEventListener('ended', handleEnded);
+        track.addEventListener('mute', handleMute);
+        track.addEventListener('unmute', handleUnmute);
+
+        cleanupFunctions.push(() => {
+          track.removeEventListener('ended', handleEnded);
+          track.removeEventListener('mute', handleMute);
+          track.removeEventListener('unmute', handleUnmute);
+        });
+      });
+
+      // Store cleanup function
+      trackListenerCleanupRef.current = () => {
+        cleanupFunctions.forEach((cleanup) => cleanup());
+      };
+    },
+    [onAudioInterrupted, onAudioRecovered]
   );
 
   // Start duration timer (reset: true on initial start, false on resume)
@@ -502,6 +568,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           if (outputStream) {
             streamRef.current = outputStream;
             setAudioStream(outputStream);
+            // Setup track listeners for iOS audio interruption detection
+            setupTrackListeners(outputStream);
           }
 
           // Track the current device
@@ -519,6 +587,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           const stream = await getMediaStream(source, deviceId);
           streamRef.current = stream;
           setAudioStream(stream);
+          // Setup track listeners for iOS audio interruption detection
+          setupTrackListeners(stream);
 
           // Create MediaRecorder
           mediaRecorder = new MediaRecorder(stream, {
@@ -649,6 +719,12 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
             hotSwapRecorderRef.current = null;
           }
 
+          // Clean up track listeners
+          if (trackListenerCleanupRef.current) {
+            trackListenerCleanupRef.current();
+            trackListenerCleanupRef.current = null;
+          }
+
           // Stop all tracks
           if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());
@@ -656,8 +732,9 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           }
           setAudioStream(null);
 
-          // Reset device tracking
+          // Reset device tracking and interruption state
           setCurrentDeviceId(null);
+          setIsAudioInterrupted(false);
 
           // Clean up audio mixer resources (if used for tab audio + mic mixing)
           cleanupMixer();
@@ -727,6 +804,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       userId,
       onUploadProgress,
       onUploadError,
+      setupTrackListeners,
     ]
   );
 
@@ -874,6 +952,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     setCurrentDeviceId(null);
     setIsSwappingDevice(false);
     setIsStopping(false);
+    setIsAudioInterrupted(false);
+
+    // Clean up track listeners
+    if (trackListenerCleanupRef.current) {
+      trackListenerCleanupRef.current();
+      trackListenerCleanupRef.current = null;
+    }
 
     // Reset cloud upload state
     setUploadProgress(null);
@@ -1091,13 +1176,60 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       } else if (document.visibilityState === 'visible') {
         // Tab became visible again (user returned to the app)
         // Re-acquire wake lock if recording to prevent future screen lock
-        if ((state === 'recording' || state === 'paused') && !wakeLockRef.current) {
+        // IMPORTANT: Check sentinel.released property - the object may still exist but be released
+        // iOS Safari automatically releases wake lock when page loses visibility
+        const needsWakeLock =
+          (state === 'recording' || state === 'paused') &&
+          (!wakeLockRef.current || wakeLockRef.current.released);
+        if (needsWakeLock) {
           console.log('[useMediaRecorder] Tab visible again, re-acquiring wake lock');
           try {
             wakeLockRef.current = await requestWakeLock();
           } catch (err) {
             // Wake lock may fail on some browsers/devices - not critical
             console.debug('[useMediaRecorder] Failed to re-acquire wake lock:', err);
+          }
+        }
+
+        // Check if audio track was interrupted (iOS Safari audio session interruption)
+        // This can happen when an alarm, phone call, or notification plays audio
+        if ((state === 'recording' || state === 'paused') && streamRef.current) {
+          const audioTracks = streamRef.current.getAudioTracks();
+          const hasEndedTrack = audioTracks.some(
+            (track) => track.readyState === 'ended' || track.muted
+          );
+
+          if (hasEndedTrack) {
+            console.warn('[useMediaRecorder] Audio track ended/muted during background, attempting recovery...');
+            setIsAudioInterrupted(true);
+
+            // For microphone recordings with HotSwapRecorder, try to recover the stream
+            if (recordingSourceRef.current === 'microphone' && hotSwapRecorderRef.current) {
+              try {
+                // Re-initialize with the same device (or default if not set)
+                const deviceId = currentDeviceId || undefined;
+                console.log('[useMediaRecorder] Attempting to recover microphone stream...');
+
+                // Swap to the same device triggers stream re-acquisition
+                await hotSwapRecorderRef.current.swapMicrophone(deviceId || 'default');
+
+                // Update the audio stream for visualization
+                const newStream = hotSwapRecorderRef.current.outputStream;
+                if (newStream) {
+                  streamRef.current = newStream;
+                  setAudioStream(newStream);
+                  setupTrackListeners(newStream);
+                }
+
+                setIsAudioInterrupted(false);
+                onAudioRecovered?.();
+                console.log('[useMediaRecorder] Audio stream recovered successfully');
+              } catch (err) {
+                console.error('[useMediaRecorder] Failed to recover audio stream:', err);
+                // Don't stop recording - chunks already recorded are still valid
+                // User will see the interrupted state in UI
+              }
+            }
           }
         }
 
@@ -1124,7 +1256,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [state, saveRecordingToStorage]);
+  }, [state, saveRecordingToStorage, currentDeviceId, setupTrackListeners, onAudioRecovered]);
 
   // Swap microphone mid-recording (microphone source only)
   const swapMicrophone = useCallback(
@@ -1197,6 +1329,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       if (mixerCleanupRef.current) {
         mixerCleanupRef.current();
       }
+      // Clean up track listeners
+      if (trackListenerCleanupRef.current) {
+        trackListenerCleanupRef.current();
+        trackListenerCleanupRef.current = null;
+      }
       originalStreamsRef.current.forEach((stream) => {
         stream.getTracks().forEach((track) => track.stop());
       });
@@ -1217,6 +1354,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     currentDeviceId,
     isSwappingDevice,
     isStopping,
+    isAudioInterrupted,
     // Cloud upload state
     uploadProgress,
     cloudSessionId,
