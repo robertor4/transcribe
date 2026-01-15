@@ -1217,13 +1217,24 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
                 const newStream = hotSwapRecorderRef.current.outputStream;
                 if (newStream) {
                   streamRef.current = newStream;
-                  setAudioStream(newStream);
-                  setupTrackListeners(newStream);
+                  // Force useAudioVisualization to reinitialize by temporarily clearing the stream
+                  // This is necessary because HotSwapRecorder.outputStream returns the same
+                  // MediaStream object reference (destination.stream) even after mic swap.
+                  // React's shallow comparison won't detect a change, so we toggle through null.
+                  setAudioStream(null);
+                  // Use setTimeout to ensure React processes the null state first
+                  setTimeout(() => {
+                    setAudioStream(newStream);
+                    setupTrackListeners(newStream);
+                    setIsAudioInterrupted(false);
+                    onAudioRecovered?.();
+                    console.log('[useMediaRecorder] Audio stream recovered successfully');
+                  }, 0);
+                } else {
+                  setIsAudioInterrupted(false);
+                  onAudioRecovered?.();
+                  console.log('[useMediaRecorder] Audio stream recovered (no stream to update)');
                 }
-
-                setIsAudioInterrupted(false);
-                onAudioRecovered?.();
-                console.log('[useMediaRecorder] Audio stream recovered successfully');
               } catch (err) {
                 console.error('[useMediaRecorder] Failed to recover audio stream:', err);
                 // Don't stop recording - chunks already recorded are still valid
