@@ -11,7 +11,7 @@ import { RecordingPreview } from './RecordingPreview';
 import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
 import { ensureAudioContextReady } from '@/hooks/useAudioWaveform';
-import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X } from 'lucide-react';
+import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X, Play } from 'lucide-react';
 import { estimateFileSize, formatFileSize } from '@/utils/audio';
 import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
 import type { ContinueRecordingData } from './ConversationCreateModal';
@@ -102,6 +102,8 @@ export function SimpleAudioRecorder({
     isSwappingDevice,
     isStopping,
     audioStream,
+    canResumeAfterInterruption,
+    resumeAfterInterruption,
   } = useMediaRecorder({
     enableAutoSave: true, // Auto-save to IndexedDB for crash recovery
     userId: user?.uid, // Scope recordings to user for privacy/security
@@ -696,13 +698,15 @@ export function SimpleAudioRecorder({
   // Show preview after recording stopped
   if (state === 'stopped' && audioBlob) {
     return (
-      <RecordingPreview
-        audioBlob={audioBlob}
-        duration={duration}
-        onConfirm={handleConfirm}
-        onReRecord={handleReRecord}
-        onCancel={handleCancelPreview}
-      />
+      <div className="space-y-4">
+        <RecordingPreview
+          audioBlob={audioBlob}
+          duration={duration}
+          onConfirm={handleConfirm}
+          onReRecord={handleReRecord}
+          onCancel={handleCancelPreview}
+        />
+      </div>
     );
   }
 
@@ -942,8 +946,21 @@ export function SimpleAudioRecorder({
             <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
               {warning || storageWarning}
             </p>
+            {/* Resume button when recording was interrupted by iOS */}
+            {canResumeAfterInterruption && (
+              <div className="mt-3">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={resumeAfterInterruption}
+                  icon={<Play className="w-4 h-4" />}
+                >
+                  {t('controls.resumeRecording')}
+                </Button>
+              </div>
+            )}
           </div>
-          {warning && (
+          {warning && !canResumeAfterInterruption && (
             <button
               type="button"
               onClick={clearWarning}

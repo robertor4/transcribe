@@ -76,6 +76,7 @@ export interface UseMediaRecorderReturn {
   isSwappingDevice: boolean; // True while swapping microphone
   isStopping: boolean; // True while stop is in progress (prevents double-click)
   isAudioInterrupted: boolean; // True when iOS audio session is interrupted (alarm, call, etc.)
+  canResumeAfterInterruption: boolean; // True when recording was stopped due to iOS interruption and can be resumed
   // Cloud upload state
   uploadProgress: UploadProgress | null; // Current upload progress (if cloud upload enabled)
   cloudSessionId: string | null; // Firebase session ID for backend processing
@@ -92,6 +93,7 @@ export interface UseMediaRecorderReturn {
   prepareForContinue: (chunks: Blob[], previousDuration: number, source: RecordingSource, recordingId: string) => Promise<void>; // Prepare to continue from a recovered recording (async to convert Blobs to ArrayBuffer for iOS Safari)
   clearWarning: () => void; // Clear the warning message
   swapMicrophone: (deviceId: string) => Promise<void>; // Swap microphone mid-recording (microphone source only)
+  resumeAfterInterruption: () => Promise<void>; // Resume recording after iOS audio interruption (starts new recording that will merge with previous chunks)
 
   // Audio stream (for visualization via useAudioVisualization)
   audioStream: MediaStream | null;
@@ -101,6 +103,7 @@ export interface UseMediaRecorderReturn {
 
   // Chunk count for tab audio visualization (increments on each ondataavailable)
   chunkCount: number;
+
 }
 
 export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMediaRecorderReturn {
@@ -141,6 +144,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   const [isSwappingDevice, setIsSwappingDevice] = useState(false);
   const [isStopping, setIsStopping] = useState(false); // Prevents double-click on stop button
   const [isAudioInterrupted, setIsAudioInterrupted] = useState(false); // iOS audio session interrupted
+  const [canResumeAfterInterruption, setCanResumeAfterInterruption] = useState(false); // Can resume after iOS interruption
   // Cloud upload state
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [cloudSessionId, setCloudSessionId] = useState<string | null>(null);
@@ -184,8 +188,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
   // Store a copy of recovered chunks for merging in onstop (separate from chunksRef which gets new chunks appended)
   const recoveredChunksCopyRef = useRef<StoredChunk[]>([]);
 
-  // Track listener cleanup ref (for iOS audio interruption detection)
-  const trackListenerCleanupRef = useRef<(() => void) | null>(null);
+  // iOS interruption recovery refs - stores chunks and metadata to allow resuming after interruption
+  const interruptedChunksRef = useRef<StoredChunk[]>([]);
+  const interruptedDurationRef = useRef<number>(0);
+  const interruptedSourceRef = useRef<RecordingSource | null>(null);
+  const interruptedDeviceIdRef = useRef<string | null>(null);
+
+  // Track if stop was user-initiated (vs unexpected stop from iOS interruption)
+  const isUserInitiatedStopRef = useRef<boolean>(false);
 
   // Capabilities
   const isSupported = isRecordingSupported();
@@ -205,63 +215,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       onStateChange?.(newState);
     },
     [onStateChange]
-  );
-
-  // Setup track event listeners for iOS audio session interruption detection
-  // iOS Safari can end or mute tracks when alarms, calls, or notifications interrupt
-  const setupTrackListeners = useCallback(
-    (stream: MediaStream) => {
-      // Clean up any existing listeners first
-      if (trackListenerCleanupRef.current) {
-        trackListenerCleanupRef.current();
-        trackListenerCleanupRef.current = null;
-      }
-
-      const audioTracks = stream.getAudioTracks();
-      if (audioTracks.length === 0) return;
-
-      const cleanupFunctions: (() => void)[] = [];
-
-      audioTracks.forEach((track) => {
-        // Handle track ended (iOS Safari ends tracks on audio session interruption)
-        const handleEnded = () => {
-          console.warn('[useMediaRecorder] Audio track ended unexpectedly (iOS audio interruption?)');
-          console.log(`  - Track state: ${track.readyState}, muted: ${track.muted}, enabled: ${track.enabled}`);
-          setIsAudioInterrupted(true);
-          onAudioInterrupted?.();
-        };
-
-        // Handle track muted (some browsers mute instead of ending)
-        const handleMute = () => {
-          console.warn('[useMediaRecorder] Audio track muted (iOS audio interruption?)');
-          setIsAudioInterrupted(true);
-          onAudioInterrupted?.();
-        };
-
-        // Handle track unmuted (recovery)
-        const handleUnmute = () => {
-          console.log('[useMediaRecorder] Audio track unmuted (audio recovered)');
-          setIsAudioInterrupted(false);
-          onAudioRecovered?.();
-        };
-
-        track.addEventListener('ended', handleEnded);
-        track.addEventListener('mute', handleMute);
-        track.addEventListener('unmute', handleUnmute);
-
-        cleanupFunctions.push(() => {
-          track.removeEventListener('ended', handleEnded);
-          track.removeEventListener('mute', handleMute);
-          track.removeEventListener('unmute', handleUnmute);
-        });
-      });
-
-      // Store cleanup function
-      trackListenerCleanupRef.current = () => {
-        cleanupFunctions.forEach((cleanup) => cleanup());
-      };
-    },
-    [onAudioInterrupted, onAudioRecovered]
   );
 
   // Start duration timer (reset: true on initial start, false on resume)
@@ -565,11 +518,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
           // Use the output stream for visualization
           const outputStream = hotSwapRecorder.outputStream;
+
           if (outputStream) {
             streamRef.current = outputStream;
             setAudioStream(outputStream);
-            // Setup track listeners for iOS audio interruption detection
-            setupTrackListeners(outputStream);
           }
 
           // Track the current device
@@ -587,8 +539,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           const stream = await getMediaStream(source, deviceId);
           streamRef.current = stream;
           setAudioStream(stream);
-          // Setup track listeners for iOS audio interruption detection
-          setupTrackListeners(stream);
 
           // Create MediaRecorder
           mediaRecorder = new MediaRecorder(stream, {
@@ -614,10 +564,64 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         mediaRecorder.onstop = async () => {
           let blob: Blob;
 
+          const wasUserInitiated = isUserInitiatedStopRef.current;
+          // Reset the flag for next recording
+          isUserInitiatedStopRef.current = false;
+
           console.log('[useMediaRecorder] onstop fired');
+          console.log(`  - wasUserInitiated: ${wasUserInitiated}`);
           console.log(`  - wasInContinueModeRef: ${wasInContinueModeRef.current}`);
           console.log(`  - recoveredChunksCopyRef: ${recoveredChunksCopyRef.current.length} chunks`);
           console.log(`  - chunksRef (new): ${chunksRef.current.length} chunks`);
+          console.log(`  - interruptedChunksRef: ${interruptedChunksRef.current.length} chunks`);
+
+          // If this was NOT a user-initiated stop and we have chunks, it's likely an iOS interruption
+          // Enable resume option so user can continue recording
+          if (!wasUserInitiated && chunksRef.current.length > 0) {
+            console.log('[useMediaRecorder] Unexpected stop detected (iOS interruption?) - enabling resume');
+
+            // Save chunks for potential resume
+            const chunksToSave: StoredChunk[] = [];
+            for (const chunk of chunksRef.current) {
+              const buffer = await chunk.arrayBuffer();
+              chunksToSave.push({ buffer, type: chunk.type });
+            }
+            interruptedChunksRef.current = chunksToSave;
+            interruptedDurationRef.current = durationRef.current;
+            interruptedSourceRef.current = recordingSourceRef.current;
+            interruptedDeviceIdRef.current = currentDeviceId;
+
+            // Clean up resources but DON'T create blob or transition to 'stopped'
+            // This keeps us on the recording screen where Resume button is shown
+            stopTimer();
+            releaseWakeLock(wakeLockRef.current);
+            wakeLockRef.current = null;
+
+            // Clean up HotSwapRecorder
+            if (hotSwapRecorderRef.current) {
+              hotSwapRecorderRef.current.dispose();
+              hotSwapRecorderRef.current = null;
+            }
+
+            // Stop all tracks
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach((track) => track.stop());
+              streamRef.current = null;
+            }
+            setAudioStream(null);
+            setCurrentDeviceId(null);
+            setIsAudioInterrupted(false);
+            cleanupMixer();
+            setIsStopping(false);
+
+            // Enable resume and show warning - but stay in 'idle' state so Resume button is visible
+            setCanResumeAfterInterruption(true);
+            setWarning('Recording stopped unexpectedly (device interruption). You can Resume to continue, or use what was captured.');
+            updateState('idle');
+
+            // Exit early - don't create blob or transition to 'stopped'
+            return;
+          }
 
           // Check if this was a continued recording (has recovered chunks to merge)
           if (wasInContinueModeRef.current && recoveredChunksCopyRef.current.length > 0) {
@@ -719,12 +723,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
             hotSwapRecorderRef.current = null;
           }
 
-          // Clean up track listeners
-          if (trackListenerCleanupRef.current) {
-            trackListenerCleanupRef.current();
-            trackListenerCleanupRef.current = null;
-          }
-
           // Stop all tracks
           if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => track.stop());
@@ -746,7 +744,8 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
         };
 
         // Handle errors
-        mediaRecorder.onerror = () => {
+        mediaRecorder.onerror = (event) => {
+          console.error('[useMediaRecorder] MediaRecorder onerror fired:', event);
           const error = new Error('Recording failed');
           setError(getPermissionErrorMessage(error));
           onError?.(error);
@@ -804,7 +803,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       userId,
       onUploadProgress,
       onUploadError,
-      setupTrackListeners,
     ]
   );
 
@@ -837,6 +835,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
     // Mark as stopping to prevent double-clicks
     setIsStopping(true);
+
+    // Mark this as a user-initiated stop (not an iOS interruption)
+    isUserInitiatedStopRef.current = true;
+    console.log('[useMediaRecorder] User-initiated stop');
 
     // Clear auto-save interval immediately - don't wait for state change
     // This prevents unnecessary saves during the async merge process
@@ -953,12 +955,13 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     setIsSwappingDevice(false);
     setIsStopping(false);
     setIsAudioInterrupted(false);
+    setCanResumeAfterInterruption(false);
 
-    // Clean up track listeners
-    if (trackListenerCleanupRef.current) {
-      trackListenerCleanupRef.current();
-      trackListenerCleanupRef.current = null;
-    }
+    // Clear interrupted recording state
+    interruptedChunksRef.current = [];
+    interruptedDurationRef.current = 0;
+    interruptedSourceRef.current = null;
+    interruptedDeviceIdRef.current = null;
 
     // Reset cloud upload state
     setUploadProgress(null);
@@ -1041,6 +1044,61 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     },
     []
   );
+
+  // Resume recording after iOS audio interruption
+  // This starts a new recording that will be merged with the interrupted chunks on stop
+  const resumeAfterInterruption = useCallback(async () => {
+    if (!canResumeAfterInterruption || interruptedChunksRef.current.length === 0) {
+      console.warn('[useMediaRecorder] Cannot resume: no interrupted recording available');
+      return;
+    }
+
+    const source = interruptedSourceRef.current;
+    const deviceId = interruptedDeviceIdRef.current;
+    const chunks = interruptedChunksRef.current;
+    const duration = interruptedDurationRef.current;
+
+    if (!source) {
+      console.warn('[useMediaRecorder] Cannot resume: no recording source saved');
+      return;
+    }
+
+    console.log(`[useMediaRecorder] Resuming after interruption: ${chunks.length} chunks, ${duration}s`);
+
+    // Set up continue mode with the interrupted chunks
+    recoveredChunksRef.current = chunks;
+    recoveredDurationRef.current = duration;
+    isContinueModeRef.current = true;
+    // Keep the same recording ID if we have one
+    if (recordingIdRef.current) {
+      recoveredRecordingIdRef.current = recordingIdRef.current;
+    }
+
+    // Clear the interrupted state
+    interruptedChunksRef.current = [];
+    interruptedDurationRef.current = 0;
+    interruptedSourceRef.current = null;
+    interruptedDeviceIdRef.current = null;
+    setCanResumeAfterInterruption(false);
+    setIsAudioInterrupted(false);
+    setWarning(null);
+    setAudioBlob(null); // Clear the preview blob so UI shows recording state
+
+    // Start new recording (will merge with interrupted chunks on stop)
+    try {
+      await startRecording(source, deviceId || undefined);
+      console.log('[useMediaRecorder] Resumed recording successfully - will merge on stop');
+    } catch (err) {
+      console.error('[useMediaRecorder] Failed to resume recording:', err);
+      // Restore the interrupted chunks so user can try again
+      interruptedChunksRef.current = chunks;
+      interruptedDurationRef.current = duration;
+      interruptedSourceRef.current = source;
+      interruptedDeviceIdRef.current = deviceId;
+      setCanResumeAfterInterruption(true);
+      throw err;
+    }
+  }, [canResumeAfterInterruption, startRecording]);
 
   // Auto-save recording chunks to IndexedDB
   const saveRecordingToStorage = useCallback(async () => {
@@ -1191,8 +1249,11 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           }
         }
 
-        // Check if audio track was interrupted (iOS Safari audio session interruption)
-        // This can happen when an alarm, phone call, or notification plays audio
+        // Check if audio track was interrupted while in background (iOS Safari)
+        // The track listeners should have already stopped the recording, but if the
+        // interruption happened while backgrounded, we need to catch it here.
+        // Note: iOS Safari audio interruptions are TERMINAL - we cannot recover.
+        // See: https://webrtchacks.com/guide-to-safari-webrtc/
         if ((state === 'recording' || state === 'paused') && streamRef.current) {
           const audioTracks = streamRef.current.getAudioTracks();
           const hasEndedTrack = audioTracks.some(
@@ -1200,45 +1261,17 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
           );
 
           if (hasEndedTrack) {
-            console.warn('[useMediaRecorder] Audio track ended/muted during background, attempting recovery...');
+            console.warn('[useMediaRecorder] Audio track ended/muted during background - stopping recording');
             setIsAudioInterrupted(true);
 
-            // For microphone recordings with HotSwapRecorder, try to recover the stream
-            if (recordingSourceRef.current === 'microphone' && hotSwapRecorderRef.current) {
+            // Stop the recorder if it's still running (track listener may not have fired in background)
+            const recorder = mediaRecorderRef.current;
+            if (recorder && (recorder.state === 'recording' || recorder.state === 'paused')) {
               try {
-                // Re-initialize with the same device (or default if not set)
-                const deviceId = currentDeviceId || undefined;
-                console.log('[useMediaRecorder] Attempting to recover microphone stream...');
-
-                // Swap to the same device triggers stream re-acquisition
-                await hotSwapRecorderRef.current.swapMicrophone(deviceId || 'default');
-
-                // Update the audio stream for visualization
-                const newStream = hotSwapRecorderRef.current.outputStream;
-                if (newStream) {
-                  streamRef.current = newStream;
-                  // Force useAudioVisualization to reinitialize by temporarily clearing the stream
-                  // This is necessary because HotSwapRecorder.outputStream returns the same
-                  // MediaStream object reference (destination.stream) even after mic swap.
-                  // React's shallow comparison won't detect a change, so we toggle through null.
-                  setAudioStream(null);
-                  // Use setTimeout to ensure React processes the null state first
-                  setTimeout(() => {
-                    setAudioStream(newStream);
-                    setupTrackListeners(newStream);
-                    setIsAudioInterrupted(false);
-                    onAudioRecovered?.();
-                    console.log('[useMediaRecorder] Audio stream recovered successfully');
-                  }, 0);
-                } else {
-                  setIsAudioInterrupted(false);
-                  onAudioRecovered?.();
-                  console.log('[useMediaRecorder] Audio stream recovered (no stream to update)');
-                }
+                recorder.stop();
+                setWarning('Recording stopped: Your device interrupted the audio while in the background. Your recording up to that point has been saved.');
               } catch (err) {
-                console.error('[useMediaRecorder] Failed to recover audio stream:', err);
-                // Don't stop recording - chunks already recorded are still valid
-                // User will see the interrupted state in UI
+                console.warn('[useMediaRecorder] Failed to stop MediaRecorder:', err);
               }
             }
           }
@@ -1267,7 +1300,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [state, saveRecordingToStorage, currentDeviceId, setupTrackListeners, onAudioRecovered]);
+  }, [state, saveRecordingToStorage]);
 
   // Swap microphone mid-recording (microphone source only)
   const swapMicrophone = useCallback(
@@ -1340,11 +1373,6 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
       if (mixerCleanupRef.current) {
         mixerCleanupRef.current();
       }
-      // Clean up track listeners
-      if (trackListenerCleanupRef.current) {
-        trackListenerCleanupRef.current();
-        trackListenerCleanupRef.current = null;
-      }
       originalStreamsRef.current.forEach((stream) => {
         stream.getTracks().forEach((track) => track.stop());
       });
@@ -1366,6 +1394,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     isSwappingDevice,
     isStopping,
     isAudioInterrupted,
+    canResumeAfterInterruption,
     // Cloud upload state
     uploadProgress,
     cloudSessionId,
@@ -1382,6 +1411,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
     prepareForContinue,
     clearWarning,
     swapMicrophone,
+    resumeAfterInterruption,
 
     // Audio stream (for visualization via useAudioVisualization)
     audioStream,
