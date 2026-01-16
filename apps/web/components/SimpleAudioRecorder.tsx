@@ -12,6 +12,7 @@ import { RecordingWaveform } from './RecordingWaveform';
 import { Button } from './Button';
 import { ensureAudioContextReady } from '@/hooks/useAudioWaveform';
 import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X, Play } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { estimateFileSize, formatFileSize } from '@/utils/audio';
 import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
 import type { ContinueRecordingData } from './ConversationCreateModal';
@@ -1006,14 +1007,13 @@ export function SimpleAudioRecorder({
               {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
             </span>
           </div>
-          <a
+          <Link
             href="/pricing"
             target="_blank"
-            rel="noopener noreferrer"
             className="text-sm font-medium text-[#8D6AFA] hover:text-[#7A5AE0] hover:underline transition-colors"
           >
             {t('limits.getPro')}
-          </a>
+          </Link>
         </div>
       )}
 
