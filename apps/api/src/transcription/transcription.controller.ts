@@ -150,6 +150,16 @@ export class TranscriptionController {
           file.buffer,
           file.mimetype,
         );
+      // Validate that we got a valid number from ffprobe
+      if (
+        typeof durationSeconds !== 'number' ||
+        isNaN(durationSeconds) ||
+        durationSeconds <= 0
+      ) {
+        throw new Error(
+          `Invalid duration returned: ${durationSeconds} (type: ${typeof durationSeconds})`,
+        );
+      }
       actualDurationMinutes = Math.ceil(durationSeconds / 60);
       this.logger.log(
         `Actual duration from ffprobe: ${actualDurationMinutes} minutes (${durationSeconds.toFixed(1)}s)`,
