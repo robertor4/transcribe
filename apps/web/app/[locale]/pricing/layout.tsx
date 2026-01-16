@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { getPricingMetadata, MetadataOverrides } from '@/utils/metadata';
+import { PricingProviders } from './providers';
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -118,5 +119,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function PricingLayout({ children }: Props) {
-  return <>{children}</>;
+  return <PricingProviders>{children}</PricingProviders>;
 }
