@@ -40,6 +40,8 @@ const nextConfig: NextConfig = {
   },
   // Fix COOP issues with OAuth popups + cache headers for static assets
   async headers() {
+    const isProd = process.env.NODE_ENV === 'production';
+
     return [
       {
         source: '/:path*',
@@ -54,36 +56,39 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Cache static assets for 30 days (images, logos, etc. may be updated)
-      {
-        source: '/assets/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      // Cache Next.js static chunks
-      {
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      // Cache images for 30 days
-      {
-        source: '/_next/image/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=2592000, stale-while-revalidate=86400',
-          },
-        ],
-      },
+      // Cache headers only in production - disable for easier local debugging
+      ...(isProd ? [
+        // Cache static assets for 30 days (images, logos, etc. may be updated)
+        {
+          source: '/assets/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=2592000, stale-while-revalidate=86400',
+            },
+          ],
+        },
+        // Cache Next.js static chunks
+        {
+          source: '/_next/static/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
+            },
+          ],
+        },
+        // Cache images for 30 days
+        {
+          source: '/_next/image/:path*',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=2592000, stale-while-revalidate=86400',
+            },
+          ],
+        },
+      ] : []),
     ];
   },
   // WebSocket proxy configuration for production

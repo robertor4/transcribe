@@ -631,6 +631,10 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
               (chunk) => new Blob([chunk.buffer], { type: chunk.type })
             );
 
+            // MEMORY OPTIMIZATION: Clear recovered chunks immediately after converting to Blobs
+            // This frees the ArrayBuffer copies which can be ~100MB+ for long recordings
+            recoveredChunksCopyRef.current = [];
+
             // Merge recovered chunks with new chunks using proper audio decoding/encoding
             // This creates a properly-formatted audio file that Web Audio API can decode fully
             const recoveredTotalSize = recoveredBlobs.reduce((s, c) => s + c.size, 0);
@@ -639,10 +643,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
               `[useMediaRecorder] Merging ${recoveredBlobs.length} recovered chunks (${recoveredTotalSize} bytes) with ${chunksRef.current.length} new chunks (${newTotalSize} bytes)`
             );
 
+            // MEMORY OPTIMIZATION: Capture chunks and clear ref before async merge
+            const newChunks = chunksRef.current;
+            chunksRef.current = [];
+
             try {
               const { blob: mergedBlob } = await mergeRecoveredWithNew(
                 recoveredBlobs,
-                chunksRef.current,
+                newChunks,
                 audioFormat.mimeType
               );
               blob = mergedBlob;
@@ -651,7 +659,7 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
               console.error('[useMediaRecorder] Audio merge failed, falling back to concatenation:', err);
               // Fallback: concatenate chunks (waveform may not work, but audio should play)
               const rawBlob = new Blob(
-                [...recoveredBlobs, ...chunksRef.current],
+                [...recoveredBlobs, ...newChunks],
                 { type: audioFormat.mimeType }
               );
               try {
@@ -666,10 +674,14 @@ export function useMediaRecorder(options: UseMediaRecorderOptions = {}): UseMedi
 
             // Clear continue mode state
             wasInContinueModeRef.current = false;
-            recoveredChunksCopyRef.current = [];
           } else {
             // Normal recording (not continued) - use standard WebM duration fix
             const rawBlob = new Blob(chunksRef.current, { type: audioFormat.mimeType });
+
+            // MEMORY OPTIMIZATION: Clear chunks array after creating blob
+            // This allows garbage collection of the individual chunk Blobs
+            // For a 1-hour recording, this can free ~100MB+ of memory
+            chunksRef.current = [];
 
             // Fix WebM duration metadata bug
             // MediaRecorder creates WebM files without duration metadata because the header
