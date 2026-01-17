@@ -851,19 +851,40 @@ Return JSON matching this schema:
     category: 'professional',
     icon: 'FileText',
     color: 'gray',
-    systemPrompt: `You are an expert executive assistant who creates comprehensive, well-structured meeting minutes. You capture the essence of discussions while maintaining professional formatting and clarity. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an expert executive assistant who creates comprehensive, professional meeting minutes. You capture decisions and accountability while filtering out tangential discussion. Quality over quantity. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create formal meeting minutes from this conversation.
 
-Extract and structure:
-1. Meeting title based on main topic
-2. Date if mentioned
-3. List of attendees/participants (use speaker labels if no names)
-4. Agenda items with discussion summaries
-5. All decisions made
-6. Action items with owners and deadlines
-7. Next meeting details if mentioned
+${PROMPT_INSTRUCTIONS.useContext}
 
-Be thorough but concise. Capture key points without unnecessary detail.
+STRUCTURE REQUIREMENTS:
+1. Meeting title - derived from primary topic (not "Team Meeting" or generic titles)
+2. Date - extract if mentioned, otherwise leave empty
+3. Attendees - list all participants; use speaker labels if no names given
+4. Agenda items - each with discussion summary and any decisions made
+5. Decisions - ALL decisions, even small ones, captured separately
+6. Action items - ONLY explicit commitments, not suggestions or ideas
+7. Next meeting - if scheduled or discussed
+
+WRITING STANDARDS:
+- Discussion summaries: 2-4 sentences per agenda item. Focus on conclusions, not the journey.
+- Decisions: Write as declarative statements. "The team will launch on March 1st" not "It was discussed that maybe March 1st could work."
+- Action items: Lead with verb. Include owner if stated. Include deadline if stated.
+
+BREVITY RULES:
+- Each discussion point: MAX 50 words
+- Each decision: MAX 20 words
+- Each action item: MAX 15 words
+
+BAD (too verbose):
+"After a long discussion about various options for the launch date, including considerations around resource availability and market timing, the team eventually decided that March 1st would be the best option."
+
+GOOD (concise):
+"Team evaluated launch date options considering resources and market timing. Decision: Launch March 1st."
+
+BAD action item: "John said he would try to look into the analytics dashboard situation and see if he could get some numbers together for the next meeting if possible."
+GOOD action item: "John: Pull analytics dashboard numbers before next meeting."
+
+IMPORTANT: Only record action items that were EXPLICITLY committed to. If someone said "maybe" or "we should think about" - that's not an action item.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
@@ -907,17 +928,46 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'Users',
     color: 'blue',
-    systemPrompt: `You are an expert in management practices who helps capture meaningful 1:1 conversations. You focus on topics discussed, feedback exchanged, and commitments made. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an expert in management practices who captures meaningful 1:1 conversations. You document topics, feedback, blockers, and commitments to enable continuity between meetings. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create structured 1:1 meeting notes from this conversation.
 
-Extract:
-1. Participants (identify manager and report if possible)
-2. Topics discussed with key notes
-3. Feedback given and received
-4. Action items and commitments
-5. Follow-up items for next meeting
+${PROMPT_INSTRUCTIONS.useContext}
 
-Focus on capturing insights, concerns, and development discussions.
+PARTICIPANT IDENTIFICATION:
+- Identify who is the manager and who is the direct report based on context clues
+- If unclear, use speaker labels and note uncertainty
+- Manager typically asks about projects, blockers, development; report provides updates
+
+TOPIC CAPTURE:
+For each topic discussed, capture:
+- topic: Brief title (e.g., "Q1 project status", "Career development")
+- notes: Key points discussed (2-4 sentences max)
+- followUp: If something needs to be revisited, note it here
+
+TOPIC CATEGORIES TO LISTEN FOR:
+- Work updates and project status
+- Blockers and challenges needing support
+- Feedback (both directions)
+- Career growth and development
+- Personal/wellbeing check-ins
+- Strategic alignment and priorities
+
+FEEDBACK CAPTURE:
+Separate feedback given (manager → report) from feedback received (report → manager):
+- Be specific: "Praised handling of customer escalation" not "positive feedback"
+- Capture constructive feedback without softening: "Documentation needs improvement" not "maybe could work on docs"
+
+ACTION ITEMS:
+Only capture EXPLICIT commitments with clear ownership:
+- task: What needs to be done
+- owner: Who committed (manager or report name)
+- deadline: When, if stated
+
+BAD action item: "Will think about career path"
+GOOD action item: "Sarah to draft 6-month development goals by Friday"
+
+CONTINUITY:
+Note items to revisit in next 1:1 to maintain accountability across meetings.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
@@ -973,19 +1023,51 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'UserCheck',
     color: 'green',
-    systemPrompt: `You are an experienced hiring manager who evaluates candidates objectively. You assess competencies with evidence-based scoring and provide clear hiring recommendations. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an experienced hiring manager trained in structured interviewing and behavioral assessment. You evaluate candidates using evidence-based scoring with zero inference beyond what was explicitly demonstrated. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a structured interview assessment from this conversation.
 
-Evaluate:
-1. Candidate name and role they're interviewing for
-2. Overall score (1-5) and hiring recommendation
-3. Competencies assessed with scores and evidence
-4. Key strengths demonstrated
-5. Concerns or areas to probe further
-6. Culture fit assessment
-7. Recommended next steps
+${PROMPT_INSTRUCTIONS.useContext}
 
-Be objective and base all assessments on evidence from the conversation.
+EVIDENCE-BASED SCORING (1-5 scale):
+5 = Exceptional - Multiple strong examples with measurable impact
+4 = Strong - Clear examples with positive outcomes demonstrated
+3 = Meets expectations - Adequate examples, some depth
+2 = Below expectations - Vague examples, lacks specifics or impact
+1 = Insufficient - No relevant examples or concerning responses
+
+SCORING RULES:
+- ONLY score competencies that were actually assessed in the interview
+- Each score MUST have specific evidence from what the candidate said
+- Use STAR format to capture evidence: Situation, Task, Action, Result
+- If candidate gave vague answers without specifics, that's a 2 or below
+- No inference - don't assume skills that weren't demonstrated
+
+EVIDENCE QUALITY EXAMPLES:
+
+BAD evidence (vague): "Candidate mentioned they led a team project."
+GOOD evidence (STAR): "Led 8-person team to deliver CRM migration 2 weeks early (Situation/Task). Instituted daily standups and blocker removal process (Action). Reduced customer churn 15% post-launch (Result)."
+
+BAD evidence: "Seems collaborative."
+GOOD evidence: "Described mediating conflict between engineering and sales by creating shared metrics dashboard; both teams now attend joint weekly reviews."
+
+COMPETENCIES TO ASSESS (only those discussed):
+- Technical/Functional Skills
+- Problem Solving
+- Leadership/Influence
+- Communication
+- Collaboration/Teamwork
+- Drive/Initiative
+- Adaptability
+- Domain Expertise
+
+RECOMMENDATION CRITERIA:
+- strong-hire: Multiple 4-5 scores, no 2s or below, clear culture fit
+- hire: Mostly 3-4 scores, no concerns below 2, adequate culture fit
+- no-hire: Multiple 2s or any 1s, or significant culture concerns
+- strong-no-hire: Pattern of 1-2 scores, red flags, or serious concerns
+
+CULTURE FIT ASSESSMENT:
+Focus on values alignment, working style compatibility, and team dynamics. Avoid bias - assess fit with the role requirements, not personal similarity.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -1033,21 +1115,50 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'ClipboardList',
     color: 'purple',
-    systemPrompt: `You are a senior product manager who creates clear, actionable PRDs. You excel at distilling conversations into structured requirements with proper prioritization. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are a senior product manager who creates clear, actionable PRDs. You prioritize problem clarity over solution specifics, and ensure requirements are testable. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a Product Requirements Document (PRD) from this conversation.
 
-Extract and structure:
-1. Product/feature title
-2. Problem statement - what problem are we solving?
-3. Goals - what does success look like?
-4. Non-goals - what are we explicitly NOT doing?
-5. User stories - who benefits and how?
-6. Requirements with MoSCoW prioritization
-7. Success metrics - how will we measure success?
-8. Open questions - what still needs to be decided?
-9. Timeline if mentioned
+${PROMPT_INSTRUCTIONS.useContext}
 
-Focus on clarity and actionability.
+PROBLEM STATEMENT QUALITY:
+The problem statement is the most important part. A good problem statement:
+- Describes WHO is affected
+- Explains WHAT pain or friction they experience
+- Quantifies the IMPACT (time wasted, revenue lost, errors caused)
+- Does NOT prescribe a solution
+
+BAD problem statement: "We need to add a dashboard."
+GOOD problem statement: "Sales managers spend 2+ hours weekly manually compiling rep performance data from 3 different systems. This delays coaching conversations and causes 15% of underperformance to go unaddressed until it's too late."
+
+GOALS vs NON-GOALS:
+- Goals: Outcomes we're trying to achieve (measurable when possible)
+- Non-goals: What we're explicitly NOT doing to prevent scope creep
+- If something is "out of scope for v1" that's a non-goal
+
+USER STORIES:
+Format: "As a [role], I want [capability], so that [benefit]"
+- Only include stories explicitly discussed
+- Each story should represent a distinct user need
+
+REQUIREMENTS WITH MoSCoW:
+- must-have: Required for launch, core value proposition
+- should-have: Important but launch possible without
+- could-have: Desirable if time permits
+- wont-have: Explicitly out of scope (move to non-goals or future consideration)
+
+For each requirement:
+- id: Unique identifier (REQ-001, REQ-002, etc.)
+- requirement: Clear, testable statement
+- priority: MoSCoW category
+- rationale: Why this priority? (especially for must-haves)
+
+SUCCESS METRICS:
+Quantifiable measures that indicate the feature is working:
+- Leading indicators: Early signals (adoption rate, usage frequency)
+- Lagging indicators: Business outcomes (revenue impact, churn reduction)
+
+OPEN QUESTIONS:
+Decisions that still need to be made. Flag these clearly - they're blockers.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -1211,27 +1322,65 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
   createStructuredTemplate({
     id: 'dealQualification',
     name: 'Deal Qualification',
-    description: 'BANT/MEDDIC scorecard for sales opportunities',
+    description: 'MEDDIC/BANT scorecard for sales opportunities',
     category: 'specialized',
     icon: 'Target',
     color: 'green',
-    systemPrompt: `You are a sales operations expert who evaluates deal qualification using established frameworks like BANT and MEDDIC. You provide objective assessments based on evidence from conversations. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Analyze this sales conversation and create a deal qualification scorecard.
+    systemPrompt: `You are a sales operations expert trained in MEDDIC qualification methodology. You provide rigorous, evidence-based deal assessments that help sales teams focus on winnable opportunities. Be direct about weak qualification - false optimism wastes resources. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this sales conversation using the MEDDIC qualification framework.
 
-Evaluate against standard criteria:
-- Budget: Do they have budget allocated?
-- Authority: Are we talking to decision makers?
-- Need: Is there a clear business need?
-- Timeline: Is there urgency or a deadline?
-- Decision Process: Do we understand how they decide?
-- Competition: Are there alternatives being considered?
+${PROMPT_INSTRUCTIONS.useContext}
 
-For each criterion, assess:
-1. Status: qualified, partially-qualified, not-qualified, or unknown
-2. Evidence: What was said that supports this assessment
-3. Notes: Additional context or follow-up needed
+MEDDIC CRITERIA (evaluate each):
 
-Provide overall qualification score (0-100) and recommendation.
+1. METRICS - Quantified business impact
+   - What specific metrics will improve? (revenue, cost, time, risk)
+   - Do they know their current baseline?
+   - Have they quantified the value of solving this problem?
+
+2. ECONOMIC BUYER - Person with budget authority
+   - Have we identified who controls the budget?
+   - Have we engaged with them directly?
+   - Do they have a compelling event driving the purchase?
+
+3. DECISION CRITERIA - How they'll evaluate solutions
+   - What are their must-haves vs nice-to-haves?
+   - How do we compare on their criteria?
+   - Are the criteria favorable or do we need to reshape them?
+
+4. DECISION PROCESS - How they'll make the decision
+   - What are the steps to get to a signed contract?
+   - Who else needs to approve?
+   - What's the typical procurement timeline?
+
+5. IDENTIFY PAIN - Business problem driving urgency
+   - What's the pain at the organization level?
+   - What's the pain for our contact personally?
+   - What happens if they do nothing?
+
+6. CHAMPION - Internal advocate
+   - Do we have someone actively selling internally for us?
+   - Do they have influence and access to power?
+   - What's in it for them personally?
+
+SCORING EACH CRITERION:
+- qualified: Clear evidence, strong position
+- partially-qualified: Some info but gaps or concerns
+- not-qualified: Evidence suggests weak position
+- unknown: Not yet discovered - needs investigation
+
+OVERALL QUALIFICATION:
+- 90-100 (highly-qualified): Strong on all 6 criteria
+- 70-89 (qualified): Strong on 4+, no critical gaps
+- 50-69 (needs-work): Gaps in 2+ criteria, but addressable
+- 0-49 (disqualified): Critical gaps unlikely to close
+
+RISK FACTORS TO FLAG:
+- No access to Economic Buyer
+- Competing against incumbent with switching costs
+- No clear compelling event or timeline
+- Champion lacks influence
+- Decision criteria favor competitor
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -1248,24 +1397,76 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         dealValue: { type: 'string' },
         overallScore: { type: 'number', minimum: 0, maximum: 100 },
         qualification: { type: 'string', enum: ['highly-qualified', 'qualified', 'needs-work', 'disqualified'] },
-        criteria: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              criterion: { type: 'string' },
-              status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
-              evidence: { type: 'string' },
-              notes: { type: 'string' },
+        meddic: {
+          type: 'object',
+          properties: {
+            metrics: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                quantifiedValue: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
             },
-            required: ['criterion', 'status', 'evidence'],
+            economicBuyer: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                identified: { type: 'string' },
+                engaged: { type: 'boolean' },
+              },
+              required: ['status', 'evidence'],
+            },
+            decisionCriteria: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                mustHaves: { type: 'array', items: { type: 'string' } },
+                ourPosition: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            decisionProcess: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                steps: { type: 'array', items: { type: 'string' } },
+                timeline: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            identifiedPain: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                organizationalPain: { type: 'string' },
+                personalPain: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            champion: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                name: { type: 'string' },
+                influence: { type: 'string', enum: ['high', 'medium', 'low', 'unknown'] },
+              },
+              required: ['status', 'evidence'],
+            },
           },
+          required: ['metrics', 'economicBuyer', 'decisionCriteria', 'decisionProcess', 'identifiedPain', 'champion'],
         },
         nextSteps: { type: 'array', items: { type: 'string' } },
         riskFactors: { type: 'array', items: { type: 'string' } },
-        timeline: { type: 'string' },
+        competitiveThreats: { type: 'array', items: { type: 'string' } },
       },
-      required: ['type', 'prospect', 'overallScore', 'qualification', 'criteria', 'nextSteps', 'riskFactors'],
+      required: ['type', 'prospect', 'overallScore', 'qualification', 'meddic', 'nextSteps', 'riskFactors'],
     },
   }),
 
@@ -2586,20 +2787,46 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'Star',
     color: 'yellow',
-    systemPrompt: `You are an HR professional who creates fair, developmental performance reviews. You balance recognition with growth opportunities. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an HR professional trained in fair, evidence-based performance evaluation. You document performance objectively, avoid common biases, and focus on development. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a performance review from this conversation.
 
-Include:
-1. Employee and reviewer names
-2. Review period
-3. Overall rating (1-5)
-4. Ratings by category with comments
-5. Key accomplishments
-6. Areas for growth
-7. Goals with timelines
-8. Additional comments
+${PROMPT_INSTRUCTIONS.useContext}
 
-Be specific and developmental, not just evaluative.
+RATING SCALE (1-5):
+5 = Exceptional - Consistently exceeds expectations, role model for others
+4 = Exceeds Expectations - Often surpasses requirements, strong contributor
+3 = Meets Expectations - Reliably delivers on requirements
+2 = Below Expectations - Inconsistent delivery, improvement needed
+1 = Unsatisfactory - Significant gaps, performance concern
+
+BIAS PREVENTION RULES:
+- Cover the FULL review period, not just recent events (avoid recency bias)
+- Assess against job requirements, not personality (avoid halo/horn effect)
+- Use specific examples, not general impressions
+- If conversation only discusses recent events, note this limitation
+
+EVIDENCE REQUIREMENTS:
+Each rating category MUST include:
+- Specific behavioral examples (what they did, not who they are)
+- Impact or outcome when possible
+- Time period the examples cover
+
+BAD comment (vague): "Great team player, always helpful."
+GOOD comment (specific): "Led 3 cross-functional projects in Q3-Q4. On the API integration project, proactively identified dependency conflict that would have delayed launch 2 weeks."
+
+BAD comment (personality): "Has a positive attitude."
+GOOD comment (behavioral): "During service outage in October, remained calm and coordinated 4-person response team. Post-incident survey showed 95% customer satisfaction with communication."
+
+CATEGORY STRUCTURE:
+For each rating category discussed:
+- category: Name of competency area
+- rating: 1-5 score
+- comments: 2-3 sentences with specific examples and impact
+
+DEVELOPMENT FOCUS:
+- Growth areas should be actionable, not character judgments
+- Goals should be SMART (Specific, Measurable, Achievable, Relevant, Time-bound)
+- Connect growth areas to career aspirations if discussed
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',

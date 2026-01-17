@@ -485,12 +485,55 @@ export interface DecisionDocumentOutput {
 // SALES OUTPUT TYPES
 // ============================================================
 
-/** BANT/MEDDIC qualification criteria */
-export interface QualificationCriterion {
-  criterion: string;
+/** MEDDIC criterion assessment base */
+export interface MEDDICCriterion {
   status: 'qualified' | 'partially-qualified' | 'not-qualified' | 'unknown';
   evidence: string;
-  notes?: string;
+}
+
+/** MEDDIC Metrics assessment */
+export interface MEDDICMetrics extends MEDDICCriterion {
+  quantifiedValue?: string;
+}
+
+/** MEDDIC Economic Buyer assessment */
+export interface MEDDICEconomicBuyer extends MEDDICCriterion {
+  identified?: string;
+  engaged?: boolean;
+}
+
+/** MEDDIC Decision Criteria assessment */
+export interface MEDDICDecisionCriteria extends MEDDICCriterion {
+  mustHaves?: string[];
+  ourPosition?: string;
+}
+
+/** MEDDIC Decision Process assessment */
+export interface MEDDICDecisionProcess extends MEDDICCriterion {
+  steps?: string[];
+  timeline?: string;
+}
+
+/** MEDDIC Identified Pain assessment */
+export interface MEDDICIdentifiedPain extends MEDDICCriterion {
+  organizationalPain?: string;
+  personalPain?: string;
+}
+
+/** MEDDIC Champion assessment */
+export interface MEDDICChampion extends MEDDICCriterion {
+  name?: string;
+  influence?: 'high' | 'medium' | 'low' | 'unknown';
+}
+
+/** Complete MEDDIC assessment */
+export interface MEDDICAssessment {
+  metrics: MEDDICMetrics;
+  economicBuyer: MEDDICEconomicBuyer;
+  decisionCriteria: MEDDICDecisionCriteria;
+  decisionProcess: MEDDICDecisionProcess;
+  identifiedPain: MEDDICIdentifiedPain;
+  champion: MEDDICChampion;
 }
 
 /** Structured deal qualification output */
@@ -500,10 +543,10 @@ export interface DealQualificationOutput {
   dealValue?: string;
   overallScore: number; // 0-100
   qualification: 'highly-qualified' | 'qualified' | 'needs-work' | 'disqualified';
-  criteria: QualificationCriterion[];
+  meddic: MEDDICAssessment;
   nextSteps: string[];
   riskFactors: string[];
-  timeline?: string;
+  competitiveThreats?: string[];
 }
 
 /** Structured CRM notes output */
