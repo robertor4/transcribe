@@ -138,7 +138,7 @@ export interface CoreAnalyses {
 
 // New: Analysis template definition
 export interface AnalysisTemplate {
-  id: string; // e.g., "system-emotional-iq"
+  id: string; // e.g., "actionItems", "meetingMinutes", "prd"
   name: string; // "Emotional Intelligence"
   description: string; // Short description for catalog
   category: string; // Dynamic category (e.g., 'professional', 'content', 'specialized')
@@ -352,6 +352,667 @@ export interface AgileBacklogOutput {
   standaloneStories: UserStory[];
 }
 
+// ============================================================
+// MEETING & DOCUMENTATION OUTPUT TYPES
+// ============================================================
+
+/** Agenda item with discussion points */
+export interface AgendaItem {
+  topic: string;
+  discussion: string[];
+  decisions?: string[];
+}
+
+/** Structured meeting minutes output */
+export interface MeetingMinutesOutput {
+  type: 'meetingMinutes';
+  title: string;
+  date?: string;
+  attendees: string[];
+  agendaItems: AgendaItem[];
+  decisions: string[];
+  actionItems: EmailActionItem[];
+  nextMeeting?: string;
+}
+
+/** 1:1 discussion topic */
+export interface OneOnOneTopic {
+  topic: string;
+  notes: string;
+  followUp?: string;
+}
+
+/** Structured 1:1 meeting notes output */
+export interface OneOnOneNotesOutput {
+  type: 'oneOnOneNotes';
+  participants: { manager: string; report: string };
+  date?: string;
+  topics: OneOnOneTopic[];
+  feedback: { given?: string[]; received?: string[] };
+  actionItems: EmailActionItem[];
+  nextMeeting?: string;
+}
+
+/** Interview competency assessment */
+export interface CompetencyAssessment {
+  competency: string;
+  score: number; // 1-5
+  evidence: string[];
+  notes?: string;
+}
+
+/** Structured interview assessment output */
+export interface InterviewAssessmentOutput {
+  type: 'interviewAssessment';
+  candidate: string;
+  role: string;
+  date?: string;
+  overallScore: number; // 1-5
+  recommendation: 'strong-hire' | 'hire' | 'no-hire' | 'strong-no-hire';
+  competencies: CompetencyAssessment[];
+  strengths: string[];
+  concerns: string[];
+  cultureFit: string;
+  nextSteps: string[];
+}
+
+/** PRD requirement item */
+export interface PRDRequirement {
+  id: string;
+  requirement: string;
+  priority: 'must-have' | 'should-have' | 'could-have' | 'wont-have';
+  rationale?: string;
+}
+
+/** Structured PRD output */
+export interface PRDOutput {
+  type: 'prd';
+  title: string;
+  owner?: string;
+  status: 'draft' | 'review' | 'approved';
+  problemStatement: string;
+  goals: string[];
+  nonGoals?: string[];
+  userStories: string[];
+  requirements: PRDRequirement[];
+  successMetrics: string[];
+  openQuestions?: string[];
+  timeline?: string;
+}
+
+/** Retrospective item with category */
+export interface RetroItem {
+  category: 'went-well' | 'to-improve' | 'action';
+  item: string;
+  votes?: number;
+}
+
+/** Structured retrospective output */
+export interface RetrospectiveOutput {
+  type: 'retrospective';
+  sprintOrPeriod: string;
+  team?: string;
+  wentWell: string[];
+  toImprove: string[];
+  actionItems: { action: string; owner?: string; dueDate?: string }[];
+  shoutouts?: string[];
+  teamMood?: string;
+}
+
+/** Option considered in a decision */
+export interface DecisionOption {
+  option: string;
+  pros: string[];
+  cons: string[];
+}
+
+/** Structured decision document output */
+export interface DecisionDocumentOutput {
+  type: 'decisionDocument';
+  title: string;
+  date?: string;
+  decisionMakers: string[];
+  status: 'proposed' | 'decided' | 'implemented' | 'deprecated';
+  context: string;
+  options: DecisionOption[];
+  decision: string;
+  rationale: string;
+  consequences: string[];
+  reviewDate?: string;
+}
+
+// ============================================================
+// SALES OUTPUT TYPES
+// ============================================================
+
+/** BANT/MEDDIC qualification criteria */
+export interface QualificationCriterion {
+  criterion: string;
+  status: 'qualified' | 'partially-qualified' | 'not-qualified' | 'unknown';
+  evidence: string;
+  notes?: string;
+}
+
+/** Structured deal qualification output */
+export interface DealQualificationOutput {
+  type: 'dealQualification';
+  prospect: string;
+  dealValue?: string;
+  overallScore: number; // 0-100
+  qualification: 'highly-qualified' | 'qualified' | 'needs-work' | 'disqualified';
+  criteria: QualificationCriterion[];
+  nextSteps: string[];
+  riskFactors: string[];
+  timeline?: string;
+}
+
+/** Structured CRM notes output */
+export interface CRMNotesOutput {
+  type: 'crmNotes';
+  contact: string;
+  company?: string;
+  callType: 'discovery' | 'demo' | 'follow-up' | 'negotiation' | 'other';
+  date?: string;
+  summary: string;
+  keyPoints: string[];
+  painPoints: string[];
+  nextSteps: string[];
+  dealStage?: string;
+  competitorsMentioned?: string[];
+}
+
+/** Objection with response strategy */
+export interface Objection {
+  objection: string;
+  category: 'price' | 'timing' | 'competition' | 'authority' | 'need' | 'trust' | 'other';
+  response: string;
+  proofPoints?: string[];
+}
+
+/** Structured objection handler output */
+export interface ObjectionHandlerOutput {
+  type: 'objectionHandler';
+  prospect?: string;
+  objections: Objection[];
+  overallStrategy: string;
+  followUpActions: string[];
+}
+
+/** Competitor insight */
+export interface CompetitorInsight {
+  competitor: string;
+  mentions: string[];
+  strengths?: string[];
+  weaknesses?: string[];
+  positioning: string;
+}
+
+/** Structured competitive intel output */
+export interface CompetitiveIntelOutput {
+  type: 'competitiveIntel';
+  source?: string;
+  competitors: CompetitorInsight[];
+  ourAdvantages: string[];
+  threatAssessment: string;
+  recommendedActions: string[];
+}
+
+// ============================================================
+// CONSULTING OUTPUT TYPES
+// ============================================================
+
+/** Workshop outcome section */
+export interface WorkshopOutcome {
+  topic: string;
+  insights: string[];
+  decisions?: string[];
+  openItems?: string[];
+}
+
+/** Structured workshop synthesis output */
+export interface WorkshopSynthesisOutput {
+  type: 'workshopSynthesis';
+  title: string;
+  date?: string;
+  facilitator?: string;
+  participants: string[];
+  objectives: string[];
+  outcomes: WorkshopOutcome[];
+  actionItems: { action: string; owner?: string; dueDate?: string }[];
+  parkingLot?: string[];
+  nextSteps: string[];
+}
+
+/** Project milestone or deliverable */
+export interface ProjectMilestone {
+  milestone: string;
+  status: 'completed' | 'on-track' | 'at-risk' | 'delayed';
+  date?: string;
+  notes?: string;
+}
+
+/** Structured project status report output */
+export interface ProjectStatusOutput {
+  type: 'projectStatus';
+  projectName: string;
+  reportingPeriod: string;
+  overallStatus: 'green' | 'yellow' | 'red';
+  summary: string;
+  accomplishments: string[];
+  milestones: ProjectMilestone[];
+  risks: { risk: string; mitigation: string; severity: 'high' | 'medium' | 'low' }[];
+  blockers?: string[];
+  nextPeriodGoals: string[];
+  budgetStatus?: string;
+}
+
+/** SOW deliverable */
+export interface SOWDeliverable {
+  deliverable: string;
+  description: string;
+  acceptanceCriteria?: string[];
+}
+
+/** Structured statement of work output */
+export interface SOWOutput {
+  type: 'sow';
+  projectTitle: string;
+  client?: string;
+  preparedBy?: string;
+  date?: string;
+  background: string;
+  objectives: string[];
+  scope: { inScope: string[]; outOfScope: string[] };
+  deliverables: SOWDeliverable[];
+  timeline?: string;
+  assumptions: string[];
+  dependencies?: string[];
+  terms?: string;
+}
+
+/** Recommendation with supporting evidence */
+export interface Recommendation {
+  recommendation: string;
+  priority: 'high' | 'medium' | 'low';
+  rationale: string;
+  impact: string;
+  effort?: 'high' | 'medium' | 'low';
+}
+
+/** Structured recommendations memo output */
+export interface RecommendationsMemoOutput {
+  type: 'recommendationsMemo';
+  title: string;
+  to?: string;
+  from?: string;
+  date?: string;
+  executiveSummary: string;
+  background: string;
+  findings: string[];
+  recommendations: Recommendation[];
+  nextSteps: string[];
+  appendix?: string[];
+}
+
+// ============================================================
+// EXECUTIVE OUTPUT TYPES
+// ============================================================
+
+/** Board update metric */
+export interface BoardMetric {
+  metric: string;
+  value: string;
+  trend: 'up' | 'down' | 'flat';
+  context?: string;
+}
+
+/** Structured board update output */
+export interface BoardUpdateOutput {
+  type: 'boardUpdate';
+  company?: string;
+  period: string;
+  executiveSummary: string;
+  highlights: string[];
+  metrics: BoardMetric[];
+  challenges: string[];
+  strategicUpdates: string[];
+  financialSummary?: string;
+  asks?: string[];
+  upcomingMilestones: string[];
+}
+
+/** Structured investor update output */
+export interface InvestorUpdateOutput {
+  type: 'investorUpdate';
+  company?: string;
+  period: string;
+  headline: string;
+  highlights: string[];
+  metrics: BoardMetric[];
+  productUpdates: string[];
+  teamUpdates?: string[];
+  financials?: { metric: string; value: string }[];
+  runway?: string;
+  asks?: string[];
+  nextMilestones: string[];
+}
+
+/** Structured all-hands talking points output */
+export interface AllHandsTalkingPointsOutput {
+  type: 'allHandsTalkingPoints';
+  title?: string;
+  date?: string;
+  openingRemarks: string;
+  companyUpdates: string[];
+  teamWins: string[];
+  announcements: string[];
+  upcomingPriorities: string[];
+  qaTopics?: string[];
+  closingRemarks: string;
+}
+
+// ============================================================
+// ENGINEERING OUTPUT TYPES
+// ============================================================
+
+/** Technical design alternative */
+export interface DesignAlternative {
+  approach: string;
+  pros: string[];
+  cons: string[];
+  rejected?: boolean;
+  rejectionReason?: string;
+}
+
+/** Structured technical design doc output */
+export interface TechnicalDesignDocOutput {
+  type: 'technicalDesignDoc';
+  title: string;
+  author?: string;
+  status: 'draft' | 'review' | 'approved' | 'implemented';
+  date?: string;
+  overview: string;
+  goals: string[];
+  nonGoals?: string[];
+  background?: string;
+  proposedSolution: string;
+  alternatives: DesignAlternative[];
+  technicalDetails: string[];
+  securityConsiderations?: string[];
+  testingStrategy?: string;
+  rolloutPlan?: string;
+  openQuestions?: string[];
+}
+
+/** Incident timeline entry */
+export interface IncidentTimelineEntry {
+  timestamp: string;
+  event: string;
+  actor?: string;
+}
+
+/** Structured incident postmortem output */
+export interface IncidentPostmortemOutput {
+  type: 'incidentPostmortem';
+  title: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  date: string;
+  duration?: string;
+  impactSummary: string;
+  timeline: IncidentTimelineEntry[];
+  rootCause: string;
+  contributingFactors: string[];
+  whatWentWell: string[];
+  whatWentPoorly: string[];
+  actionItems: { action: string; owner?: string; dueDate?: string; priority: 'high' | 'medium' | 'low' }[];
+  lessonsLearned: string[];
+}
+
+/** Structured bug report output */
+export interface BugReportOutput {
+  type: 'bugReport';
+  title: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  priority: 'urgent' | 'high' | 'medium' | 'low';
+  reportedBy?: string;
+  date?: string;
+  summary: string;
+  stepsToReproduce: string[];
+  expectedBehavior: string;
+  actualBehavior: string;
+  environment?: string;
+  possibleCause?: string;
+  suggestedFix?: string;
+  workaround?: string;
+  attachments?: string[];
+}
+
+/** Structured ADR (Architecture Decision Record) output */
+export interface ADROutput {
+  type: 'adr';
+  id?: string;
+  title: string;
+  status: 'proposed' | 'accepted' | 'deprecated' | 'superseded';
+  date?: string;
+  deciders?: string[];
+  context: string;
+  decision: string;
+  consequences: { type: 'positive' | 'negative' | 'neutral'; consequence: string }[];
+  alternatives: { alternative: string; reason: string }[];
+  relatedDecisions?: string[];
+}
+
+// ============================================================
+// CONTENT & MARKETING OUTPUT TYPES
+// ============================================================
+
+/** Newsletter section */
+export interface NewsletterSection {
+  heading: string;
+  content: string;
+  cta?: string;
+}
+
+/** Structured newsletter output */
+export interface NewsletterOutput {
+  type: 'newsletter';
+  subject: string;
+  preheader?: string;
+  greeting: string;
+  intro: string;
+  sections: NewsletterSection[];
+  closingCta: string;
+  closing: string;
+}
+
+/** Case study metric */
+export interface CaseStudyMetric {
+  metric: string;
+  before?: string;
+  after: string;
+  improvement?: string;
+}
+
+/** Structured case study output */
+export interface CaseStudyOutput {
+  type: 'caseStudy';
+  title: string;
+  customer: string;
+  industry?: string;
+  challenge: string;
+  solution: string;
+  implementation?: string;
+  results: CaseStudyMetric[];
+  testimonial?: { quote: string; attribution: string };
+  keyTakeaways: string[];
+}
+
+/** Podcast segment with timestamp */
+export interface PodcastSegment {
+  timestamp: string;
+  topic: string;
+  notes: string[];
+  quotes?: string[];
+}
+
+/** Structured podcast show notes output */
+export interface PodcastShowNotesOutput {
+  type: 'podcastShowNotes';
+  episodeTitle: string;
+  episodeNumber?: string;
+  date?: string;
+  hosts?: string[];
+  guests?: string[];
+  summary: string;
+  segments: PodcastSegment[];
+  keyTakeaways: string[];
+  resources?: { title: string; url?: string }[];
+  callToAction?: string;
+}
+
+/** Video script scene */
+export interface VideoScene {
+  sceneNumber: number;
+  duration?: string;
+  visual: string;
+  narration: string;
+  notes?: string;
+}
+
+/** Structured video script output */
+export interface VideoScriptOutput {
+  type: 'videoScript';
+  title: string;
+  duration?: string;
+  targetAudience?: string;
+  hook: string;
+  scenes: VideoScene[];
+  callToAction: string;
+  endScreen?: string;
+}
+
+/** Structured press release output */
+export interface PressReleaseOutput {
+  type: 'pressRelease';
+  headline: string;
+  subheadline?: string;
+  dateline: string;
+  lead: string;
+  body: string[];
+  quotes: { quote: string; attribution: string; title?: string }[];
+  boilerplate: string;
+  contactInfo?: string;
+}
+
+/** Twitter thread tweet */
+export interface ThreadTweet {
+  tweetNumber: number;
+  content: string;
+  characterCount: number;
+}
+
+/** Structured Twitter/X thread output */
+export interface TwitterThreadOutput {
+  type: 'twitterThread';
+  hook: string;
+  tweets: ThreadTweet[];
+  totalTweets: number;
+  callToAction?: string;
+}
+
+// ============================================================
+// HR & COACHING OUTPUT TYPES
+// ============================================================
+
+/** Coaching session insight */
+export interface CoachingInsight {
+  topic: string;
+  insight: string;
+  actionItem?: string;
+}
+
+/** Structured coaching session notes output */
+export interface CoachingNotesOutput {
+  type: 'coachingNotes';
+  client?: string;
+  coach?: string;
+  sessionNumber?: number;
+  date?: string;
+  focus: string;
+  insights: CoachingInsight[];
+  progressOnPreviousActions: string[];
+  newActionItems: { action: string; dueDate?: string }[];
+  nextSessionFocus?: string;
+}
+
+/** Performance review rating */
+export interface PerformanceRating {
+  category: string;
+  rating: number; // 1-5
+  comments: string;
+}
+
+/** Structured performance review output */
+export interface PerformanceReviewOutput {
+  type: 'performanceReview';
+  employeeName: string;
+  reviewerName?: string;
+  reviewPeriod: string;
+  overallRating: number; // 1-5
+  ratings: PerformanceRating[];
+  accomplishments: string[];
+  areasForGrowth: string[];
+  goals: { goal: string; timeline?: string }[];
+  additionalComments?: string;
+}
+
+/** Exit interview theme */
+export interface ExitTheme {
+  theme: string;
+  sentiment: 'positive' | 'negative' | 'neutral';
+  details: string[];
+}
+
+/** Structured exit interview analysis output */
+export interface ExitInterviewOutput {
+  type: 'exitInterview';
+  employee?: string;
+  department?: string;
+  tenure?: string;
+  date?: string;
+  reasonForLeaving: string;
+  themes: ExitTheme[];
+  whatWorkedWell: string[];
+  whatCouldImprove: string[];
+  suggestions: string[];
+  wouldRecommend: boolean | null;
+  wouldReturn: boolean | null;
+}
+
+/** SMART goal */
+export interface SmartGoal {
+  goal: string;
+  specific: string;
+  measurable: string;
+  achievable: string;
+  relevant: string;
+  timeBound: string;
+  milestones?: string[];
+}
+
+/** Structured goal setting document output */
+export interface GoalSettingOutput {
+  type: 'goalSetting';
+  participant?: string;
+  period?: string;
+  date?: string;
+  vision?: string;
+  goals: SmartGoal[];
+  potentialObstacles: string[];
+  supportNeeded: string[];
+  checkInSchedule?: string;
+}
+
 /** Union type for all structured outputs */
 export type StructuredOutput =
   | ActionItemsOutput
@@ -362,7 +1023,45 @@ export type StructuredOutput =
   | BlogPostOutput
   | LinkedInOutput
   | CommunicationAnalysisOutput
-  | AgileBacklogOutput;
+  | AgileBacklogOutput
+  // Priority 1: Meeting & Documentation
+  | MeetingMinutesOutput
+  | OneOnOneNotesOutput
+  | InterviewAssessmentOutput
+  | PRDOutput
+  | RetrospectiveOutput
+  | DecisionDocumentOutput
+  // Priority 2: Sales
+  | DealQualificationOutput
+  | CRMNotesOutput
+  | ObjectionHandlerOutput
+  | CompetitiveIntelOutput
+  // Priority 3: Consulting
+  | WorkshopSynthesisOutput
+  | ProjectStatusOutput
+  | SOWOutput
+  | RecommendationsMemoOutput
+  // Priority 4: Executive
+  | BoardUpdateOutput
+  | InvestorUpdateOutput
+  | AllHandsTalkingPointsOutput
+  // Priority 5: Engineering
+  | TechnicalDesignDocOutput
+  | IncidentPostmortemOutput
+  | BugReportOutput
+  | ADROutput
+  // Priority 6: Content & Marketing
+  | NewsletterOutput
+  | CaseStudyOutput
+  | PodcastShowNotesOutput
+  | VideoScriptOutput
+  | PressReleaseOutput
+  | TwitterThreadOutput
+  // Priority 7: HR & Coaching
+  | CoachingNotesOutput
+  | PerformanceReviewOutput
+  | ExitInterviewOutput
+  | GoalSettingOutput;
 
 /** Type guard to check if content is structured */
 export function isStructuredOutput(content: unknown): content is StructuredOutput {
