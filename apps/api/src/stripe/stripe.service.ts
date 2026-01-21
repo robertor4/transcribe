@@ -1,6 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { FieldValue } from 'firebase-admin/firestore';
 import { UserRepository } from '../firebase/repositories/user.repository';
 import { AnalyticsService } from '../analytics/analytics.service';
 
@@ -552,12 +553,13 @@ export class StripeService {
     this.logger.log(`Processing subscription deletion for user ${userId}`);
 
     // Downgrade to free tier
+    // Use FieldValue.delete() instead of undefined to remove fields from Firestore
     await this.userRepository.updateUser(userId, {
       subscriptionTier: 'free',
-      subscriptionStatus: undefined,
-      stripeSubscriptionId: undefined,
-      currentPeriodStart: undefined,
-      currentPeriodEnd: undefined,
+      subscriptionStatus: FieldValue.delete(),
+      stripeSubscriptionId: FieldValue.delete(),
+      currentPeriodStart: FieldValue.delete(),
+      currentPeriodEnd: FieldValue.delete(),
       cancelAtPeriodEnd: false,
       updatedAt: new Date(),
     });
