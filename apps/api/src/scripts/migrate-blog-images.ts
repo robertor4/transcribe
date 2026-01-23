@@ -113,10 +113,15 @@ async function migrateBlogImage(
     }
 
     // Check if using wrong public URL format (storage.googleapis.com) - needs URL fix only
-    if (heroImage.url.includes('storage.googleapis.com') && heroImage.url.includes('/public/blog-images/')) {
+    if (
+      heroImage.url.includes('storage.googleapis.com') &&
+      heroImage.url.includes('/public/blog-images/')
+    ) {
       // Extract path and convert to Firebase CDN format
       const urlObj = new URL(heroImage.url);
-      const pathMatch = urlObj.pathname.match(/\/[^/]+\.firebasestorage\.app\/(.+)/);
+      const pathMatch = urlObj.pathname.match(
+        /\/[^/]+\.firebasestorage\.app\/(.+)/,
+      );
       if (pathMatch) {
         const storagePath = decodeURIComponent(pathMatch[1]);
         const encodedPath = encodeURIComponent(storagePath);
@@ -142,7 +147,10 @@ async function migrateBlogImage(
     }
 
     // Skip if already a signed URL that's not for migration
-    if (!isSignedUrl(heroImage.url) && !heroImage.url.includes('storage.googleapis.com')) {
+    if (
+      !isSignedUrl(heroImage.url) &&
+      !heroImage.url.includes('storage.googleapis.com')
+    ) {
       result.success = true;
       result.newUrl = heroImage.url;
       result.error = 'Unknown URL format, skipping';
