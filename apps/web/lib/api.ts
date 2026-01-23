@@ -362,6 +362,39 @@ export const transcriptionApi = {
   getIndexingStatus: async (id: string): Promise<ApiResponse<{ indexed: boolean; chunkCount: number; indexedAt?: string }>> => {
     return api.get(`/transcriptions/${id}/indexing-status`);
   },
+
+  /**
+   * Process a file that was uploaded directly to Firebase Storage.
+   * This is called after uploadFileDirect() completes to start transcription processing.
+   */
+  processFromStorage: async (
+    storagePath: string,
+    fileName: string,
+    fileSize: number,
+    contentType: string,
+    options?: {
+      analysisType?: string;
+      context?: string;
+      contextId?: string;
+      selectedTemplates?: string[];
+    }
+  ): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
+    console.log('[TranscriptionAPI] Processing from storage:', {
+      storagePath,
+      fileName,
+      fileSize,
+      contentType,
+      ...options,
+    });
+
+    return api.post('/transcriptions/process-from-storage', {
+      storagePath,
+      fileName,
+      fileSize,
+      contentType,
+      ...options,
+    });
+  },
 };
 
 // Folder API

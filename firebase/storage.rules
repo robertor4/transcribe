@@ -11,14 +11,23 @@ service firebase.storage {
       return request.auth != null && request.auth.uid == userId;
     }
     
-    // Helper function to validate audio file
+    // Helper function to validate audio file (for direct browser uploads)
+    // Max 5GB to support enterprise tier users with long recordings
     function isValidAudioFile() {
-      return request.resource.size < 100 * 1024 * 1024 && // Max 100MB
-        request.resource.contentType.matches('audio/.*|video/mp4');
+      return request.resource.size < 5 * 1024 * 1024 * 1024 && // Max 5GB
+        request.resource.contentType.matches('audio/.*|video/.*');
     }
-    
-    // Audio files storage
+
+    // Audio files storage - supports direct browser uploads
     match /audio/{userId}/{allPaths=**} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidAudioFile();
+      allow delete: if isOwner(userId);
+    }
+
+    // Uploads folder - for direct browser uploads before processing
+    // Files here are moved to audio/ folder after validation by backend
+    match /uploads/{userId}/{allPaths=**} {
       allow read: if isOwner(userId);
       allow write: if isOwner(userId) && isValidAudioFile();
       allow delete: if isOwner(userId);

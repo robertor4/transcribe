@@ -8,6 +8,8 @@ import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { transcriptionApi } from '@/lib/api';
 import { websocketService } from '@/lib/websocket';
+import { uploadFileDirect } from '@/utils/directUpload';
+import { useAuth } from '@/contexts/AuthContext';
 import { WEBSOCKET_EVENTS } from '@transcribe/shared';
 
 interface RealProcessingViewProps {
@@ -53,6 +55,7 @@ export function RealProcessingView({
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string || 'en';
+  const { user } = useAuth();
 
   const [stage, setStage] = useState<ProcessingStage>('uploading');
   const [progress, setProgress] = useState(0);
@@ -164,6 +167,7 @@ export function RealProcessingView({
   // Upload file and setup WebSocket listeners
   useEffect(() => {
     if (uploadInitiated.current) return;
+    if (!user?.uid) return; // Wait for auth
     uploadInitiated.current = true;
     setIsRetrying(false);
 
@@ -172,34 +176,56 @@ export function RealProcessingView({
         // Connect WebSocket if not already connected
         await websocketService.connect();
 
-        // Start upload
+        // Start upload - using direct Firebase Storage upload
         setStage('uploading');
         setProgress(0);
         setStatusMessage('Uploading audio file...');
 
-        // Upload with progress tracking
-        // Reserve 0-25% for upload progress
-        const response = await transcriptionApi.upload(
-          file,
-          undefined,
-          context,
-          undefined,
-          selectedTemplates,
-          (loaded, total, percentage) => {
+        // Upload directly to Firebase Storage with progress tracking
+        // This bypasses the backend for the actual file transfer (much faster for large files)
+        const { promise: uploadPromise } = uploadFileDirect(file, user.uid, {
+          onProgress: (bytesTransferred, totalBytes, percentage, state) => {
             // Map upload progress (0-100) to 0-25% of overall progress
             const mappedProgress = Math.round(percentage * 0.25);
             setProgress(mappedProgress);
+
             // Update status message with upload progress for large files
-            if (total > 100 * 1024 * 1024) { // > 100MB
-              const loadedMB = (loaded / (1024 * 1024)).toFixed(0);
-              const totalMB = (total / (1024 * 1024)).toFixed(0);
+            if (totalBytes > 100 * 1024 * 1024) { // > 100MB
+              const loadedMB = (bytesTransferred / (1024 * 1024)).toFixed(0);
+              const totalMB = (totalBytes / (1024 * 1024)).toFixed(0);
               setStatusMessage(`Uploading audio file... ${loadedMB}MB / ${totalMB}MB`);
             }
+
+            // Handle paused state
+            if (state === 'paused') {
+              setStatusMessage('Upload paused');
+            }
+          },
+          onError: (error) => {
+            console.error('[RealProcessingView] Direct upload error:', error);
+          },
+        });
+
+        // Wait for upload to complete
+        const uploadResult = await uploadPromise;
+
+        console.log('[RealProcessingView] Direct upload complete:', uploadResult);
+
+        // Now notify backend to process the uploaded file
+        setStatusMessage('Starting transcription...');
+        const response = await transcriptionApi.processFromStorage(
+          uploadResult.storagePath,
+          uploadResult.fileName,
+          uploadResult.fileSize,
+          uploadResult.contentType,
+          {
+            context,
+            selectedTemplates,
           }
         );
 
         if (!response?.success || !response.data) {
-          throw new Error('Upload failed - no response data');
+          throw new Error('Failed to start processing - no response data');
         }
 
         // The API returns a Transcription object with 'id', not 'transcriptionId'
@@ -208,7 +234,7 @@ export function RealProcessingView({
         const newTranscriptionId = responseData.id || responseData.transcriptionId;
 
         if (!newTranscriptionId) {
-          throw new Error('Upload failed - no transcription ID in response');
+          throw new Error('Failed to start processing - no transcription ID in response');
         }
 
         setTranscriptionId(newTranscriptionId);
@@ -335,7 +361,7 @@ export function RealProcessingView({
 
     upload();
   // eslint-disable-next-line react-hooks/exhaustive-deps -- Upload runs on mount and on retry, selectedTemplates is captured at that time
-  }, [file, context, folderId, handleCompletion, handleError, retryCount]);
+  }, [file, context, folderId, handleCompletion, handleError, retryCount, user?.uid]);
 
   const getStageIcon = (stageName: ProcessingStage) => {
     switch (stageName) {

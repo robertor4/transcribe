@@ -38,6 +38,7 @@ import {
   UpdateShareSettingsDto,
   SendShareEmailDto,
 } from './dto/share-link.dto';
+import { ProcessFromStorageDto } from './dto/process-from-storage.dto';
 import {
   isValidAudioFile,
   validateFileSize,
@@ -367,6 +368,103 @@ export class TranscriptionController {
       success: true,
       data: transcription,
       message: 'Chunked recording queued for transcription',
+    };
+  }
+
+  /**
+   * Process a file that was uploaded directly to Firebase Storage by the browser.
+   * This endpoint is called after the browser completes a direct upload to storage,
+   * eliminating the need to proxy large files through the backend.
+   *
+   * Flow:
+   * 1. Browser uploads file directly to Firebase Storage (uploads/{userId}/...)
+   * 2. Browser calls this endpoint with the storage path
+   * 3. Backend validates, checks quota, and queues for processing
+   */
+  @Post('process-from-storage')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ short: { limit: 5, ttl: 60000 } }) // 5 per minute
+  async processFromStorage(
+    @Body() dto: ProcessFromStorageDto,
+    @Req() req: Request & { user: any },
+  ): Promise<ApiResponse<Transcription>> {
+    const { storagePath, fileName, fileSize, contentType } = dto;
+
+    // Validate storage path belongs to this user (prevent accessing other users' files)
+    const expectedPrefix = `uploads/${req.user.uid}/`;
+    if (!storagePath.startsWith(expectedPrefix)) {
+      throw new UnauthorizedException(
+        'Invalid storage path - file must be in your uploads folder',
+      );
+    }
+
+    this.logger.log(
+      `Processing direct upload for user ${req.user.uid}: ${storagePath}`,
+    );
+
+    // Get duration for quota check - download just enough to probe
+    let actualDurationMinutes: number;
+    try {
+      const durationSeconds =
+        await this.transcriptionService.getAudioDurationFromStoragePath(
+          storagePath,
+        );
+      if (
+        typeof durationSeconds !== 'number' ||
+        isNaN(durationSeconds) ||
+        durationSeconds <= 0
+      ) {
+        throw new Error(
+          `Invalid duration returned: ${durationSeconds} (type: ${typeof durationSeconds})`,
+        );
+      }
+      actualDurationMinutes = Math.ceil(durationSeconds / 60);
+      this.logger.log(
+        `Actual duration from ffprobe: ${actualDurationMinutes} minutes (${durationSeconds.toFixed(1)}s)`,
+      );
+    } catch (error) {
+      // Fallback to estimation if ffprobe fails
+      this.logger.warn(
+        'FFprobe failed for direct upload, falling back to file-size estimation:',
+        error,
+      );
+      actualDurationMinutes = this.estimateDuration(fileSize, contentType);
+    }
+
+    // Check quota before processing
+    await this.usageService.checkQuota(
+      req.user.uid,
+      fileSize,
+      actualDurationMinutes,
+    );
+
+    // Parse selectedTemplates if provided
+    let selectedTemplates: string[] | undefined;
+    if (dto.selectedTemplates?.length) {
+      selectedTemplates = dto.selectedTemplates;
+      this.logger.log(
+        `Selected templates: ${JSON.stringify(selectedTemplates)}`,
+      );
+    }
+
+    // Create transcription from storage path
+    const transcription =
+      await this.transcriptionService.createTranscriptionFromStorage(
+        req.user.uid,
+        storagePath,
+        fileName,
+        fileSize,
+        contentType,
+        dto.analysisType as AnalysisType,
+        dto.context,
+        dto.contextId,
+        selectedTemplates,
+      );
+
+    return {
+      success: true,
+      data: transcription,
+      message: 'File queued for transcription',
     };
   }
 

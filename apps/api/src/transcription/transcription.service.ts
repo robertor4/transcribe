@@ -2607,6 +2607,149 @@ CRITICAL INSTRUCTIONS:
   }
 
   /**
+   * Get audio duration from a file stored in Firebase Storage.
+   * Downloads the file to a temp location for ffprobe analysis.
+   * Used for quota checking when files are uploaded directly to storage by the browser.
+   * @param storagePath - Firebase Storage path (e.g., "uploads/userId/filename.mp4")
+   * @returns Duration in seconds
+   */
+  async getAudioDurationFromStoragePath(storagePath: string): Promise<number> {
+    // Extract extension from storage path
+    const ext = path.extname(storagePath).slice(1) || 'mp4';
+    const tempPath = `/tmp/duration_check_${Date.now()}.${ext}`;
+
+    try {
+      // Download file from storage
+      const buffer = await this.storageService.downloadFileByPath(storagePath);
+      await fs.promises.writeFile(tempPath, buffer);
+      return await this.audioSplitter.getAudioDuration(tempPath);
+    } finally {
+      try {
+        await fs.promises.unlink(tempPath);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  }
+
+  /**
+   * Create a transcription from a file already uploaded to Firebase Storage.
+   * Used for direct browser-to-storage uploads that bypass the backend proxy.
+   *
+   * Flow:
+   * 1. Validate storage path belongs to user
+   * 2. Move file from uploads/ to audio/ folder
+   * 3. Create transcription document
+   * 4. Queue transcription job
+   *
+   * @param userId - User ID
+   * @param storagePath - Path in Firebase Storage (uploads/{userId}/...)
+   * @param fileName - Original file name
+   * @param fileSize - File size in bytes
+   * @param contentType - MIME type
+   * @param analysisType - Optional analysis type
+   * @param context - Optional context
+   * @param contextId - Optional context ID
+   * @param selectedTemplates - Optional template selection for V2
+   */
+  async createTranscriptionFromStorage(
+    userId: string,
+    storagePath: string,
+    fileName: string,
+    fileSize: number,
+    contentType: string,
+    analysisType?: AnalysisType,
+    context?: string,
+    contextId?: string,
+    selectedTemplates?: string[],
+  ): Promise<Transcription> {
+    this.logger.log(
+      `Creating transcription from storage for user ${userId}: ${storagePath}`,
+    );
+
+    // Sanitize filename to prevent path traversal attacks
+    const safeFilename = path.basename(fileName);
+
+    // Move file from uploads/ to audio/ folder for permanent storage
+    const permanentPath = `audio/${userId}/${Date.now()}_${safeFilename}`;
+
+    // Get signed URL for the file (from uploads location)
+    // We'll use this URL for transcription processing
+    const signedUrl = await this.storageService.generateSignedUrl(storagePath);
+
+    if (!signedUrl) {
+      throw new BadRequestException(
+        'File not found in storage - upload may have failed',
+      );
+    }
+
+    // Create transcription document with uploads path
+    // The processor will use the signed URL, and we can clean up uploads/ later
+    const transcription: Omit<Transcription, 'id'> = {
+      userId,
+      fileName: safeFilename,
+      fileUrl: signedUrl,
+      storagePath: storagePath, // Keep original path for now
+      fileSize,
+      mimeType: contentType,
+      status: TranscriptionStatus.PENDING,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Only add optional fields if they have values
+    if (analysisType) {
+      transcription.analysisType = analysisType;
+    }
+    if (context) {
+      transcription.context = context;
+    }
+    if (contextId) {
+      transcription.contextId = contextId;
+    }
+    if (selectedTemplates?.length) {
+      transcription.selectedTemplates = selectedTemplates;
+    }
+
+    const transcriptionId =
+      await this.transcriptionRepository.createTranscription(transcription);
+
+    // Create job and add to queue
+    const job: TranscriptionJob = {
+      id: generateJobId(),
+      transcriptionId,
+      userId,
+      fileUrl: signedUrl,
+      analysisType,
+      context,
+      priority: 1,
+      retryCount: 0,
+      maxRetries: 3,
+      createdAt: new Date(),
+      selectedTemplates,
+    };
+
+    await this.transcriptionQueue.add('transcribe', job, {
+      priority: job.priority,
+      attempts: job.maxRetries,
+      removeOnComplete: {
+        age: 24 * 3600,
+        count: 1000,
+      },
+      removeOnFail: {
+        age: 7 * 24 * 3600,
+        count: 5000,
+      },
+    });
+
+    this.logger.log(
+      `Transcription ${transcriptionId} queued from direct storage upload`,
+    );
+
+    return { ...transcription, id: transcriptionId };
+  }
+
+  /**
    * Process a chunked recording from Firebase Storage
    * Downloads chunks, merges them with FFmpeg, and creates transcription job
    */
