@@ -122,8 +122,23 @@ api.interceptors.response.use(
   }
 );
 
+/**
+ * Progress callback for file uploads
+ * @param loaded - Bytes uploaded so far
+ * @param total - Total bytes to upload
+ * @param percentage - Upload percentage (0-100)
+ */
+export type UploadProgressCallback = (loaded: number, total: number, percentage: number) => void;
+
 export const transcriptionApi = {
-  upload: async (file: File, analysisType?: AnalysisType, context?: string, contextId?: string, selectedTemplates?: string[]): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
+  upload: async (
+    file: File,
+    analysisType?: AnalysisType,
+    context?: string,
+    contextId?: string,
+    selectedTemplates?: string[],
+    onProgress?: UploadProgressCallback
+  ): Promise<ApiResponse<{ jobId: string; transcriptionId: string }>> => {
     console.log('[TranscriptionAPI] Starting upload:', {
       fileName: file.name,
       fileSize: file.size,
@@ -143,6 +158,12 @@ export const transcriptionApi = {
       const response: ApiResponse<{ jobId: string; transcriptionId: string }> = await api.post('/transcriptions/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (onProgress && progressEvent.total) {
+            const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            onProgress(progressEvent.loaded, progressEvent.total, percentage);
+          }
         },
       });
       console.log('[TranscriptionAPI] Upload successful:', response);

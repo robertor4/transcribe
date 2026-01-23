@@ -174,10 +174,29 @@ export function RealProcessingView({
 
         // Start upload
         setStage('uploading');
-        setProgress(10);
+        setProgress(0);
         setStatusMessage('Uploading audio file...');
 
-        const response = await transcriptionApi.upload(file, undefined, context, undefined, selectedTemplates);
+        // Upload with progress tracking
+        // Reserve 0-25% for upload progress
+        const response = await transcriptionApi.upload(
+          file,
+          undefined,
+          context,
+          undefined,
+          selectedTemplates,
+          (loaded, total, percentage) => {
+            // Map upload progress (0-100) to 0-25% of overall progress
+            const mappedProgress = Math.round(percentage * 0.25);
+            setProgress(mappedProgress);
+            // Update status message with upload progress for large files
+            if (total > 100 * 1024 * 1024) { // > 100MB
+              const loadedMB = (loaded / (1024 * 1024)).toFixed(0);
+              const totalMB = (total / (1024 * 1024)).toFixed(0);
+              setStatusMessage(`Uploading audio file... ${loadedMB}MB / ${totalMB}MB`);
+            }
+          }
+        );
 
         if (!response?.success || !response.data) {
           throw new Error('Upload failed - no response data');
