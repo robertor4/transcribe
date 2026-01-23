@@ -11,6 +11,8 @@ const UPLOAD_RETRY_CONFIG = {
   initialDelayMs: 1000,
   maxDelayMs: 30000,
   backoffMultiplier: 2,
+  // Timeout for upload (15 minutes for very large files)
+  uploadTimeoutMs: 15 * 60 * 1000,
   // Errors that should trigger a retry
   retryableErrors: [
     'EPROTO',
@@ -25,6 +27,15 @@ const UPLOAD_RETRY_CONFIG = {
     'write EPROTO',
   ],
 };
+
+/**
+ * Progress callback type for upload progress tracking
+ */
+export type UploadProgressCallback = (
+  bytesUploaded: number,
+  totalBytes: number,
+  percentage: number,
+) => void;
 
 @Injectable()
 export class StorageService {
@@ -62,15 +73,22 @@ export class StorageService {
 
   /**
    * Upload a buffer using streaming with retry logic for large files
+   * @param file - Google Cloud Storage file reference
+   * @param buffer - File buffer to upload
+   * @param contentType - MIME type of the file
+   * @param path - Storage path for logging
+   * @param onProgress - Optional callback for progress updates
    */
   private async uploadWithRetry(
     file: File,
     buffer: Buffer,
     contentType: string,
     path: string,
+    onProgress?: UploadProgressCallback,
   ): Promise<void> {
     let lastError: Error | null = null;
     let delay = UPLOAD_RETRY_CONFIG.initialDelayMs;
+    const totalBytes = buffer.length;
 
     for (
       let attempt = 1;
@@ -80,7 +98,59 @@ export class StorageService {
       try {
         // Use streaming upload for better handling of large files
         await new Promise<void>((resolve, reject) => {
-          const stream = Readable.from(buffer);
+          let bytesUploaded = 0;
+          let lastProgressUpdate = 0;
+          const progressUpdateInterval = 5; // Update every 5% to avoid flooding
+
+          // Create a timeout to prevent hanging uploads
+          const timeoutId = setTimeout(() => {
+            reject(
+              new Error(
+                `Upload timeout after ${UPLOAD_RETRY_CONFIG.uploadTimeoutMs / 1000}s`,
+              ),
+            );
+          }, UPLOAD_RETRY_CONFIG.uploadTimeoutMs);
+
+          // Create readable stream that tracks progress
+          const readableStream = new Readable({
+            read() {
+              // This is called when the write stream needs more data
+            },
+          });
+
+          // Push data in chunks to track progress
+          const chunkSize = 1024 * 1024; // 1MB chunks for progress tracking
+          let offset = 0;
+
+          const pushNextChunk = () => {
+            while (offset < totalBytes) {
+              const end = Math.min(offset + chunkSize, totalBytes);
+              const chunk = buffer.subarray(offset, end);
+              const canContinue = readableStream.push(chunk);
+              offset = end;
+              bytesUploaded = offset;
+
+              // Calculate and emit progress
+              const percentage = Math.round((bytesUploaded / totalBytes) * 100);
+              if (
+                onProgress &&
+                percentage >= lastProgressUpdate + progressUpdateInterval
+              ) {
+                lastProgressUpdate = percentage;
+                onProgress(bytesUploaded, totalBytes, percentage);
+              }
+
+              if (!canContinue) {
+                // Backpressure - wait for drain event
+                return;
+              }
+            }
+            // Signal end of data
+            readableStream.push(null);
+          };
+
+          readableStream.on('drain', pushNextChunk);
+
           const writeStream = file.createWriteStream({
             metadata: { contentType },
             resumable: true,
@@ -89,14 +159,22 @@ export class StorageService {
           });
 
           writeStream.on('error', (err) => {
+            clearTimeout(timeoutId);
             reject(err);
           });
 
           writeStream.on('finish', () => {
+            clearTimeout(timeoutId);
+            // Final progress update
+            if (onProgress) {
+              onProgress(totalBytes, totalBytes, 100);
+            }
             resolve();
           });
 
-          stream.pipe(writeStream);
+          // Start pushing data
+          pushNextChunk();
+          readableStream.pipe(writeStream);
         });
 
         // Success - return without error
@@ -229,6 +307,55 @@ export class StorageService {
         },
       });
     }
+
+    this.logger.log(`File saved successfully: ${path}`);
+
+    // Verify the file exists
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new Error(`File upload verification failed: ${path}`);
+    }
+
+    // Generate signed URL with long expiration
+    const [url] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const transcriptionId = this.extractIdFromPath(path);
+    this.logger.log(
+      `Generated signed URL for transcription ${transcriptionId}`,
+    );
+
+    return { url, path };
+  }
+
+  /**
+   * Upload a file with progress tracking callback
+   * Used for large file uploads where UI feedback is needed
+   * @param buffer - File buffer to upload
+   * @param path - Storage path
+   * @param contentType - MIME type
+   * @param onProgress - Callback for progress updates (bytesUploaded, totalBytes, percentage)
+   * @returns Object with signed URL and storage path
+   */
+  async uploadFileWithProgress(
+    buffer: Buffer,
+    path: string,
+    contentType: string,
+    onProgress?: UploadProgressCallback,
+  ): Promise<{ url: string; path: string }> {
+    const bucket = this.storage.bucket();
+    const file = bucket.file(path);
+    const fileSizeMB = (buffer.length / (1024 * 1024)).toFixed(2);
+
+    this.logger.log(
+      `Uploading file with progress tracking: ${path}, size: ${fileSizeMB} MB`,
+    );
+
+    // Always use streaming upload with retry for files with progress tracking
+    // (typically large files that need progress feedback)
+    await this.uploadWithRetry(file, buffer, contentType, path, onProgress);
 
     this.logger.log(`File saved successfully: ${path}`);
 
