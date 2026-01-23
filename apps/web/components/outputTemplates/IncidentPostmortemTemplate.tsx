@@ -12,7 +12,7 @@ import {
   ListTodo,
 } from 'lucide-react';
 import type { IncidentPostmortemOutput, IncidentTimelineEntry } from '@transcribe/shared';
-import { SectionCard, BulletList, InfoBox, StatusBadge } from './shared';
+import { SectionCard, BulletList, InfoBox, StatusBadge, safeString } from './shared';
 
 interface IncidentPostmortemTemplateProps {
   data: IncidentPostmortemOutput;
@@ -50,12 +50,12 @@ function TimelineItem({ entry, index }: { entry: IncidentTimelineEntry; index: n
       </div>
       <div className="flex-1 pb-4">
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="font-mono text-sm text-[#8D6AFA]">{entry.timestamp}</span>
+          <span className="font-mono text-sm text-[#8D6AFA]">{safeString(entry.timestamp)}</span>
           {entry.actor && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">({entry.actor})</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">({safeString(entry.actor)})</span>
           )}
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mt-1">{entry.event}</p>
+        <p className="text-gray-700 dark:text-gray-300 mt-1">{safeString(entry.event)}</p>
       </div>
     </div>
   );
@@ -156,12 +156,12 @@ export function IncidentPostmortemTemplate({ data }: IncidentPostmortemTemplateP
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-gray-700 dark:text-gray-300 break-words">{item.action}</p>
+                    <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.action)}</p>
                     <StatusBadge status={item.priority} variant="priority" className="flex-shrink-0" />
                   </div>
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {item.owner}</span>}
-                    {item.dueDate && <span>Due: {item.dueDate}</span>}
+                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
+                    {item.dueDate && <span>Due: {safeString(item.dueDate)}</span>}
                   </div>
                 </div>
               </div>

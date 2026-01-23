@@ -10,7 +10,7 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import type { OneOnOneNotesOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface OneOnOneTemplateProps {
   data: OneOnOneNotesOutput;
@@ -44,11 +44,11 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">Manager:</span>
-            <span className="text-gray-900 dark:text-gray-100">{data.participants.manager}</span>
+            <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.manager)}</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
             <span className="text-sm text-purple-600 dark:text-purple-400 font-medium">Report:</span>
-            <span className="text-gray-900 dark:text-gray-100">{data.participants.report}</span>
+            <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.report)}</span>
           </div>
         </div>
       )}
@@ -63,15 +63,15 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
           {data.topics.map((topic, idx) => (
             <SectionCard key={idx} variant="outlined">
               <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {topic.topic}
+                {safeString(topic.topic)}
               </h4>
-              <p className="text-gray-600 dark:text-gray-400 break-words">{topic.notes}</p>
+              <p className="text-gray-600 dark:text-gray-400 break-words">{safeString(topic.notes)}</p>
               {topic.followUp && (
                 <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700/50">
                   <span className="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">
                     Follow-up
                   </span>
-                  <p className="mt-1 text-gray-700 dark:text-gray-300">{topic.followUp}</p>
+                  <p className="mt-1 text-gray-700 dark:text-gray-300">{safeString(topic.followUp)}</p>
                 </div>
               )}
             </SectionCard>
@@ -118,10 +118,10 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{item.task}</p>
+                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.task)}</p>
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {item.owner}</span>}
-                    {item.deadline && <span>Due: {item.deadline}</span>}
+                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
+                    {item.deadline && <span>Due: {safeString(item.deadline)}</span>}
                   </div>
                 </div>
               </div>

@@ -512,9 +512,13 @@
       "error": "KI-Asset konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
       "whatToCreate": "Was möchtest du erstellen?",
       "chooseOutputType": "Wähle den Ausgabetyp für dieses Gespräch",
-      "categoryAnalysis": "Analyse",
+      "categoryAnalysis": "Analyse & Berichte",
       "categoryContent": "Inhalt",
       "categoryEmails": "E-Mails",
+      "categoryProduct": "Produkt & Technik",
+      "categorySales": "Vertrieb",
+      "categoryHR": "HR & Personal",
+      "categoryLeadership": "Führung",
       "customInstructionsTitle": "Benutzerdefinierte Anweisungen hinzufügen (optional)",
       "customInstructionsDescription": "Gib spezifische Anweisungen, um die Ausgabe an deine Bedürfnisse anzupassen",
       "customInstructionsLabel": "Benutzerdefinierte Anweisungen",
@@ -593,6 +597,130 @@
         "noStoriesDescription": "Dieses Gespräch enthielt keine expliziten Produktfunktionen oder Anforderungen zum Extrahieren.",
         "copyStory": "Story kopieren",
         "copied": "Kopiert!"
+      },
+      "meetingMinutes": {
+        "name": "Protokoll",
+        "description": "Formelles Besprechungsprotokoll mit Agenda, Beschlüssen und Aufgaben"
+      },
+      "oneOnOneNotes": {
+        "name": "1:1 Gesprächsnotizen",
+        "description": "Strukturierte Notizen für Mitarbeitergespräche"
+      },
+      "interviewAssessment": {
+        "name": "Interview-Bewertung",
+        "description": "Strukturierte Kandidatenbewertung mit Kompetenzscores"
+      },
+      "prd": {
+        "name": "Product Requirements Document",
+        "description": "Strukturiertes PRD mit Problem, Zielen und Anforderungen"
+      },
+      "retrospective": {
+        "name": "Retrospektive",
+        "description": "Sprint- oder Projekt-Retrospektive mit Erkenntnissen und Maßnahmen"
+      },
+      "decisionDocument": {
+        "name": "Entscheidungsdokument",
+        "description": "Dokumentiere Entscheidungen mit Kontext, Optionen und Begründung"
+      },
+      "dealQualification": {
+        "name": "Deal-Qualifizierung",
+        "description": "MEDDIC/BANT-Scorecard für Vertriebschancen"
+      },
+      "crmNotes": {
+        "name": "CRM-Notizen",
+        "description": "Salesforce/HubSpot-fertige Gesprächsnotizen"
+      },
+      "objectionHandler": {
+        "name": "Einwandbehandlung",
+        "description": "Extrahiere Einwände mit Antwortstrategien"
+      },
+      "competitiveIntel": {
+        "name": "Wettbewerbsanalyse",
+        "description": "Extrahiere Wettbewerbererwähnungen und Positionierungserkenntnisse"
+      },
+      "workshopSynthesis": {
+        "name": "Workshop-Synthese",
+        "description": "Erfasse Workshop-Ergebnisse, Erkenntnisse und Aufgaben"
+      },
+      "projectStatus": {
+        "name": "Projektstatusbericht",
+        "description": "Formeller Projektstatus mit RAG-Bewertung und Meilensteinen"
+      },
+      "sow": {
+        "name": "Statement of Work",
+        "description": "SOW-Entwurf mit Umfang, Liefergegenständen und Annahmen"
+      },
+      "recommendationsMemo": {
+        "name": "Empfehlungsmemo",
+        "description": "Erkenntnisse und Empfehlungen mit Zusammenfassung"
+      },
+      "boardUpdate": {
+        "name": "Vorstandsupdate",
+        "description": "Vorstandsmeeting-Vorbereitung mit Kennzahlen und strategischen Updates"
+      },
+      "investorUpdate": {
+        "name": "Investoren-Update",
+        "description": "Monatlicher/quartalsweiser Investorenbericht mit Fortschritt und Anfragen"
+      },
+      "allHandsTalkingPoints": {
+        "name": "All-Hands Gesprächspunkte",
+        "description": "Unternehmensweite Meeting-Vorbereitung mit Ankündigungen und Q&A"
+      },
+      "technicalDesignDoc": {
+        "name": "Technisches Designdokument",
+        "description": "Architektur und Designentscheidungen mit Alternativen"
+      },
+      "incidentPostmortem": {
+        "name": "Incident Postmortem",
+        "description": "Blameless Vorfallsanalyse mit Zeitstrahl und Maßnahmen"
+      },
+      "bugReport": {
+        "name": "Bug-Report",
+        "description": "Strukturierte Fehlerdokumentation mit Reproduktionsschritten"
+      },
+      "adr": {
+        "name": "Architecture Decision Record",
+        "description": "Formelles ADR mit Kontext, Entscheidung und Konsequenzen"
+      },
+      "newsletter": {
+        "name": "Newsletter",
+        "description": "E-Mail-Newsletter mit Abschnitten und CTAs"
+      },
+      "caseStudy": {
+        "name": "Fallstudie",
+        "description": "Kundenerfolgsgeschichte mit Herausforderung, Lösung und Ergebnissen"
+      },
+      "podcastShowNotes": {
+        "name": "Podcast-Shownotes",
+        "description": "Episodennotizen mit Zeitstempeln und wichtigen Erkenntnissen"
+      },
+      "videoScript": {
+        "name": "Video-Skript",
+        "description": "Szene-für-Szene-Videoskript mit Visuals und Narration"
+      },
+      "pressRelease": {
+        "name": "Pressemitteilung",
+        "description": "Standard-Pressemitteilung mit Zitaten und Boilerplate"
+      },
+      "twitterThread": {
+        "name": "Twitter/X-Thread",
+        "description": "Multi-Tweet-Thread mit Hook und Engagement"
+      },
+      "coachingNotes": {
+        "name": "Coaching-Notizen",
+        "description": "Strukturierte Coaching-Dokumentation mit Erkenntnissen und Maßnahmen"
+      },
+      "performanceReview": {
+        "name": "Leistungsbeurteilung",
+        "description": "Strukturierte Beurteilung mit Bewertungen und Entwicklungszielen"
+      },
+      "exitInterview": {
+        "name": "Austrittsgespräch-Analyse",
+        "description": "Strukturierte Abgangserkenntnisse mit Themen und Vorschlägen"
+      },
+      "goalSetting": {
+        "name": "Zielvereinbarung",
+        "description": "SMART-Ziele mit Meilensteinen und benötigter Unterstützung"
       }
     },
     "sidebar": {

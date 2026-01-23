@@ -9,7 +9,7 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import type { MeetingMinutesOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface MeetingMinutesTemplateProps {
   data: MeetingMinutesOutput;
@@ -46,7 +46,7 @@ export function MeetingMinutesTemplate({ data }: MeetingMinutesTemplateProps) {
                 key={idx}
                 className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
               >
-                {attendee}
+                {safeString(attendee)}
               </span>
             ))}
           </div>
@@ -63,7 +63,7 @@ export function MeetingMinutesTemplate({ data }: MeetingMinutesTemplateProps) {
           {data.agendaItems.map((item, idx) => (
             <SectionCard key={idx} variant="outlined">
               <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {idx + 1}. {item.topic}
+                {idx + 1}. {safeString(item.topic)}
               </h4>
               {item.discussion && item.discussion.length > 0 && (
                 <div className="mb-3">
@@ -113,10 +113,10 @@ export function MeetingMinutesTemplate({ data }: MeetingMinutesTemplateProps) {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{item.task}</p>
+                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.task)}</p>
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {item.owner}</span>}
-                    {item.deadline && <span>Due: {item.deadline}</span>}
+                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
+                    {item.deadline && <span>Due: {safeString(item.deadline)}</span>}
                   </div>
                 </div>
               </div>

@@ -13,7 +13,7 @@ import {
   ParkingSquare,
 } from 'lucide-react';
 import type { WorkshopSynthesisOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface WorkshopSynthesisTemplateProps {
   data: WorkshopSynthesisOutput;
@@ -28,12 +28,12 @@ export function WorkshopSynthesisTemplate({ data }: WorkshopSynthesisTemplatePro
           <Presentation className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-              {data.title}
+              {safeString(data.title) || 'Workshop Synthesis'}
             </h2>
             <MetadataRow
               items={[
-                { label: 'Date', value: data.date, icon: Calendar },
-                { label: 'Facilitator', value: data.facilitator },
+                { label: 'Date', value: safeString(data.date), icon: Calendar },
+                { label: 'Facilitator', value: safeString(data.facilitator) },
                 { label: 'Participants', value: data.participants?.length, icon: Users },
               ]}
               className="mt-2"
@@ -50,7 +50,7 @@ export function WorkshopSynthesisTemplate({ data }: WorkshopSynthesisTemplatePro
               key={idx}
               className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300"
             >
-              {participant}
+              {safeString(participant)}
             </span>
           ))}
         </div>
@@ -73,7 +73,7 @@ export function WorkshopSynthesisTemplate({ data }: WorkshopSynthesisTemplatePro
           {data.outcomes.map((outcome, idx) => (
             <SectionCard key={idx} variant="outlined">
               <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                {outcome.topic}
+                {safeString(outcome.topic)}
               </h4>
 
               {/* Insights */}
@@ -138,10 +138,10 @@ export function WorkshopSynthesisTemplate({ data }: WorkshopSynthesisTemplatePro
                   <span className="text-xs font-bold text-[#8D6AFA]">{idx + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{item.action}</p>
+                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.action)}</p>
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {item.owner}</span>}
-                    {item.dueDate && <span>Due: {item.dueDate}</span>}
+                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
+                    {item.dueDate && <span>Due: {safeString(item.dueDate)}</span>}
                   </div>
                 </div>
               </div>

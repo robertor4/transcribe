@@ -366,23 +366,23 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
 
     case 'oneOnOneNotes': {
       const data = content as OneOnOneNotesOutput;
-      return data.summary?.slice(0, 100) || 'One-on-one notes';
+      return data.topics?.[0]?.topic || 'One-on-one notes';
     }
 
     case 'interviewAssessment': {
       const data = content as InterviewAssessmentOutput;
-      return `${data.candidateName} - ${data.recommendation}`;
+      return `${data.candidate} - ${data.recommendation}`;
     }
 
     case 'prd': {
       const data = content as PRDOutput;
-      return data.productName || 'Product Requirements';
+      return data.title || 'Product Requirements';
     }
 
     case 'retrospective': {
       const data = content as RetrospectiveOutput;
-      const wellCount = data.whatWentWell?.length || 0;
-      const improveCount = data.whatToImprove?.length || 0;
+      const wellCount = data.wentWell?.length || 0;
+      const improveCount = data.toImprove?.length || 0;
       return `${wellCount} positives, ${improveCount} improvements`;
     }
 
@@ -394,7 +394,7 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
     // Priority 2: Sales
     case 'dealQualification': {
       const data = content as DealQualificationOutput;
-      return `${data.accountName} - ${data.overallQualification}`;
+      return `${data.prospect} - ${data.qualification}`;
     }
 
     case 'crmNotes': {
@@ -410,13 +410,13 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
 
     case 'competitiveIntel': {
       const data = content as CompetitiveIntelOutput;
-      return `${data.competitorName} analysis`;
+      return `${data.competitors?.[0]?.competitor || 'Competitive'} analysis`;
     }
 
     // Priority 3: Consulting
     case 'workshopSynthesis': {
       const data = content as WorkshopSynthesisOutput;
-      return data.workshopTitle || 'Workshop synthesis';
+      return data.title || 'Workshop synthesis';
     }
 
     case 'projectStatus': {
@@ -431,23 +431,23 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
 
     case 'recommendationsMemo': {
       const data = content as RecommendationsMemoOutput;
-      return data.recommendation?.slice(0, 100) || 'Recommendations memo';
+      return data.title || 'Recommendations memo';
     }
 
     // Priority 4: Executive
     case 'boardUpdate': {
       const data = content as BoardUpdateOutput;
-      return `${data.companyName || 'Board'} Update - ${data.period || 'Current'}`;
+      return `${data.company || 'Board'} Update - ${data.period || 'Current'}`;
     }
 
     case 'investorUpdate': {
       const data = content as InvestorUpdateOutput;
-      return `${data.companyName || 'Investor'} Update - ${data.period || 'Current'}`;
+      return `${data.company || 'Investor'} Update - ${data.period || 'Current'}`;
     }
 
     case 'allHandsTalkingPoints': {
       const data = content as AllHandsTalkingPointsOutput;
-      const topicCount = data.topics?.length || 0;
+      const topicCount = data.announcements?.length || 0;
       return `${topicCount} topic${topicCount !== 1 ? 's' : ''} for all-hands`;
     }
 
@@ -459,7 +459,7 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
 
     case 'incidentPostmortem': {
       const data = content as IncidentPostmortemOutput;
-      return `${data.incidentTitle} - ${data.severity}`;
+      return `${data.title} - ${data.severity}`;
     }
 
     case 'bugReport': {

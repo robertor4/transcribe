@@ -11,7 +11,7 @@ import {
   Frown,
 } from 'lucide-react';
 import type { RetrospectiveOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow } from './shared';
+import { SectionCard, BulletList, MetadataRow, safeString } from './shared';
 
 interface RetrospectiveTemplateProps {
   data: RetrospectiveOutput;
@@ -110,10 +110,10 @@ export function RetrospectiveTemplate({ data }: RetrospectiveTemplateProps) {
                   <span className="text-xs font-bold text-[#8D6AFA]">{idx + 1}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{item.action}</p>
+                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.action)}</p>
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {item.owner}</span>}
-                    {item.dueDate && <span>Due: {item.dueDate}</span>}
+                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
+                    {item.dueDate && <span>Due: {safeString(item.dueDate)}</span>}
                   </div>
                 </div>
               </div>
@@ -131,7 +131,15 @@ export function RetrospectiveTemplate({ data }: RetrospectiveTemplateProps) {
           className="bg-yellow-50/50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800/30"
         >
           <BulletList
-            items={data.shoutouts}
+            items={data.shoutouts.map((shoutout) => {
+              // Handle both string and object formats from AI
+              if (typeof shoutout === 'string') return shoutout;
+              // AI sometimes returns {name, reason} objects
+              const obj = shoutout as unknown as { name?: string; reason?: string };
+              if (obj.name && obj.reason) return `${obj.name}: ${obj.reason}`;
+              if (obj.name) return obj.name;
+              return String(shoutout);
+            })}
             bulletColor="bg-yellow-500"
             className="text-gray-700 dark:text-gray-300"
           />

@@ -147,10 +147,10 @@ export function InvestorUpdateTemplate({ data }: InvestorUpdateTemplateProps) {
         </InfoBox>
       )}
 
-      {/* Upcoming */}
-      {data.upcoming && data.upcoming.length > 0 && (
+      {/* Upcoming Milestones */}
+      {data.nextMilestones && data.nextMilestones.length > 0 && (
         <SectionCard title="Coming Up" icon={ArrowRight} iconColor="text-[#14D0DC]">
-          <BulletList items={data.upcoming} bulletColor="bg-[#14D0DC]" />
+          <BulletList items={data.nextMilestones} bulletColor="bg-[#14D0DC]" />
         </SectionCard>
       )}
     </div>

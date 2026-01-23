@@ -11,6 +11,55 @@ interface InfoBoxProps {
   className?: string;
 }
 
+/**
+ * Safely converts any value to a displayable string or returns it as-is if already valid React.
+ * Handles objects that AI might return instead of strings.
+ */
+function toDisplayContent(value: unknown): ReactNode {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+
+  // If it's a React element, return as-is
+  if (typeof value === 'object' && value !== null && '$$typeof' in value) {
+    return value as unknown as ReactNode;
+  }
+
+  // Handle plain objects that AI might return
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    const obj = value as Record<string, unknown>;
+    // Handle common object patterns from AI
+    if (obj.text) return String(obj.text);
+    if (obj.content) return String(obj.content);
+    if (obj.summary) return String(obj.summary);
+    if (obj.description) return String(obj.description);
+    if (obj.value) return String(obj.value);
+    if (obj.message) return String(obj.message);
+    if (obj.name && obj.reason) return `${obj.name}: ${obj.reason}`;
+    if (obj.name && obj.role) return `${obj.name} (${obj.role})`;
+    if (obj.name) return String(obj.name);
+    if (obj.title) return String(obj.title);
+    // Fallback
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '[Object]';
+    }
+  }
+
+  // Arrays should be handled by the component passing children, but just in case
+  if (Array.isArray(value)) {
+    return value.map((item, idx) => (
+      <span key={idx}>
+        {idx > 0 && ', '}
+        {toDisplayContent(item)}
+      </span>
+    ));
+  }
+
+  return String(value);
+}
+
 const VARIANT_STYLES = {
   purple: {
     container: 'bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 border-[#8D6AFA]/20',
@@ -40,6 +89,7 @@ const VARIANT_STYLES = {
 
 /**
  * Shared info box component for callouts and highlights.
+ * Handles objects that AI might return instead of strings.
  */
 export function InfoBox({
   title,
@@ -49,6 +99,7 @@ export function InfoBox({
   className = '',
 }: InfoBoxProps) {
   const styles = VARIANT_STYLES[variant];
+  const displayContent = toDisplayContent(children);
 
   return (
     <div className={`border rounded-xl p-4 ${styles.container} ${className}`}>
@@ -58,7 +109,7 @@ export function InfoBox({
           {title && (
             <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{title}</h4>
           )}
-          <div className="text-gray-700 dark:text-gray-300 break-words">{children}</div>
+          <div className="text-gray-700 dark:text-gray-300 break-words">{displayContent}</div>
         </div>
       </div>
     </div>

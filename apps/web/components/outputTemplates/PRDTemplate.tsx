@@ -12,7 +12,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { PRDOutput, PRDRequirement } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, StatusBadge } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, StatusBadge, safeString } from './shared';
 
 interface PRDTemplateProps {
   data: PRDOutput;
@@ -32,12 +32,12 @@ function RequirementCard({ requirement, index }: { requirement: PRDRequirement; 
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-gray-700 dark:text-gray-300 break-words">{requirement.requirement}</p>
+          <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(requirement.requirement)}</p>
           <StatusBadge status={requirement.priority} variant="priority" className="flex-shrink-0" />
         </div>
         {requirement.rationale && (
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
-            {requirement.rationale}
+            {safeString(requirement.rationale)}
           </p>
         )}
       </div>
@@ -118,7 +118,7 @@ export function PRDTemplate({ data }: PRDTemplateProps) {
                 key={idx}
                 className="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg"
               >
-                <p className="text-gray-700 dark:text-gray-300 italic">&ldquo;{story}&rdquo;</p>
+                <p className="text-gray-700 dark:text-gray-300 italic">&ldquo;{safeString(story)}&rdquo;</p>
               </div>
             ))}
           </div>

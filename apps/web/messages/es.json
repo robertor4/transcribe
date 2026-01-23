@@ -512,9 +512,13 @@
       "error": "Error al crear. Por favor, inténtalo de nuevo.",
       "whatToCreate": "¿Qué te gustaría crear?",
       "chooseOutputType": "Elige el tipo de salida para esta conversación",
-      "categoryAnalysis": "Análisis",
+      "categoryAnalysis": "Análisis e informes",
       "categoryContent": "Contenido",
       "categoryEmails": "Correos",
+      "categoryProduct": "Producto e ingeniería",
+      "categorySales": "Ventas",
+      "categoryHR": "RRHH y personal",
+      "categoryLeadership": "Liderazgo",
       "customInstructionsTitle": "Añadir instrucciones personalizadas (opcional)",
       "customInstructionsDescription": "Proporciona instrucciones específicas para adaptar la salida a tus necesidades",
       "customInstructionsLabel": "Instrucciones personalizadas",
@@ -593,6 +597,130 @@
         "noStoriesDescription": "Esta conversación no contenía características o requisitos de producto explícitos para extraer.",
         "copyStory": "Copiar story",
         "copied": "¡Copiado!"
+      },
+      "meetingMinutes": {
+        "name": "Acta de reunión",
+        "description": "Registro formal con agenda, decisiones y acciones"
+      },
+      "oneOnOneNotes": {
+        "name": "Notas 1:1",
+        "description": "Notas estructuradas para conversaciones manager-empleado"
+      },
+      "interviewAssessment": {
+        "name": "Evaluación de entrevista",
+        "description": "Evaluación estructurada del candidato con puntuaciones"
+      },
+      "prd": {
+        "name": "Documento de requisitos",
+        "description": "PRD estructurado con problema, objetivos y requisitos"
+      },
+      "retrospective": {
+        "name": "Retrospectiva",
+        "description": "Retrospectiva de sprint o proyecto con insights y acciones"
+      },
+      "decisionDocument": {
+        "name": "Documento de decisión",
+        "description": "Documenta decisiones con contexto, opciones y justificación"
+      },
+      "dealQualification": {
+        "name": "Calificación de oportunidad",
+        "description": "Scorecard MEDDIC/BANT para oportunidades de venta"
+      },
+      "crmNotes": {
+        "name": "Notas CRM",
+        "description": "Notas de llamada para Salesforce/HubSpot"
+      },
+      "objectionHandler": {
+        "name": "Manejo de objeciones",
+        "description": "Extrae objeciones con estrategias de respuesta"
+      },
+      "competitiveIntel": {
+        "name": "Inteligencia competitiva",
+        "description": "Extrae menciones de competidores e insights de posicionamiento"
+      },
+      "workshopSynthesis": {
+        "name": "Síntesis de taller",
+        "description": "Captura resultados, insights y acciones del taller"
+      },
+      "projectStatus": {
+        "name": "Informe de estado",
+        "description": "Estado formal del proyecto con calificación RAG e hitos"
+      },
+      "sow": {
+        "name": "Statement of Work",
+        "description": "Borrador SOW con alcance, entregables y supuestos"
+      },
+      "recommendationsMemo": {
+        "name": "Memo de recomendaciones",
+        "description": "Hallazgos y recomendaciones con resumen ejecutivo"
+      },
+      "boardUpdate": {
+        "name": "Actualización de junta",
+        "description": "Preparación de junta con métricas y actualizaciones estratégicas"
+      },
+      "investorUpdate": {
+        "name": "Actualización de inversores",
+        "description": "Memo mensual/trimestral para inversores con tracción y solicitudes"
+      },
+      "allHandsTalkingPoints": {
+        "name": "Puntos all-hands",
+        "description": "Preparación de reunión general con anuncios y Q&A"
+      },
+      "technicalDesignDoc": {
+        "name": "Documento de diseño técnico",
+        "description": "Arquitectura y decisiones de diseño con alternativas"
+      },
+      "incidentPostmortem": {
+        "name": "Postmortem de incidente",
+        "description": "Análisis de incidente blameless con cronología y acciones"
+      },
+      "bugReport": {
+        "name": "Reporte de bug",
+        "description": "Documentación estructurada de bug con pasos de reproducción"
+      },
+      "adr": {
+        "name": "Architecture Decision Record",
+        "description": "ADR formal con contexto, decisión y consecuencias"
+      },
+      "newsletter": {
+        "name": "Newsletter",
+        "description": "Newsletter por email con secciones y CTAs"
+      },
+      "caseStudy": {
+        "name": "Caso de estudio",
+        "description": "Historia de éxito del cliente con desafío, solución y resultados"
+      },
+      "podcastShowNotes": {
+        "name": "Notas de podcast",
+        "description": "Notas del episodio con timestamps y puntos clave"
+      },
+      "videoScript": {
+        "name": "Guión de video",
+        "description": "Guión escena por escena con visuales y narración"
+      },
+      "pressRelease": {
+        "name": "Comunicado de prensa",
+        "description": "Formato estándar de comunicado con citas y boilerplate"
+      },
+      "twitterThread": {
+        "name": "Hilo de Twitter/X",
+        "description": "Hilo multi-tweet con gancho y engagement"
+      },
+      "coachingNotes": {
+        "name": "Notas de coaching",
+        "description": "Documentación de coaching estructurada con insights y acciones"
+      },
+      "performanceReview": {
+        "name": "Evaluación de desempeño",
+        "description": "Evaluación estructurada con calificaciones y objetivos de desarrollo"
+      },
+      "exitInterview": {
+        "name": "Análisis de entrevista de salida",
+        "description": "Insights de salida estructurados con temas y sugerencias"
+      },
+      "goalSetting": {
+        "name": "Documento de objetivos",
+        "description": "Objetivos SMART con hitos y apoyo necesario"
       }
     },
     "sidebar": {

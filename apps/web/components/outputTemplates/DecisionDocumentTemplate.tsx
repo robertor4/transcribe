@@ -12,7 +12,7 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import type { DecisionDocumentOutput, DecisionOption } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface DecisionDocumentTemplateProps {
   data: DecisionDocumentOutput;
@@ -37,7 +37,7 @@ function OptionCard({ option, index, isSelected }: { option: DecisionOption; ind
           <span className="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-400">
             {index + 1}
           </span>
-          {option.option}
+          {safeString(option.option)}
         </h4>
         {isSelected && (
           <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
@@ -138,7 +138,7 @@ export function DecisionDocumentTemplate({ data }: DecisionDocumentTemplateProps
       {/* Rationale */}
       {data.rationale && (
         <SectionCard title="Rationale" icon={FileText} iconColor="text-blue-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.rationale}</p>
+          <p className="text-gray-700 dark:text-gray-300">{safeString(data.rationale)}</p>
         </SectionCard>
       )}
 

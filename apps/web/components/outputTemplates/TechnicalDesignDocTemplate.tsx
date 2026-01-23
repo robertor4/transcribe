@@ -17,7 +17,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import type { TechnicalDesignDocOutput, DesignAlternative } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface TechnicalDesignDocTemplateProps {
   data: TechnicalDesignDocOutput;
@@ -48,7 +48,7 @@ function AlternativeCard({ alternative, index }: { alternative: DesignAlternativ
           }`}>
             {index + 1}
           </span>
-          {alternative.approach}
+          {safeString(alternative.approach)}
         </h4>
         {isRejected && (
           <span className="flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
@@ -89,7 +89,7 @@ function AlternativeCard({ alternative, index }: { alternative: DesignAlternativ
 
       {alternative.rejectionReason && (
         <div className="mt-3 p-2 bg-red-50 dark:bg-red-900/10 rounded text-sm text-red-700 dark:text-red-400">
-          <span className="font-medium">Rejection reason:</span> {alternative.rejectionReason}
+          <span className="font-medium">Rejection reason:</span> {safeString(alternative.rejectionReason)}
         </div>
       )}
     </div>
@@ -133,7 +133,7 @@ export function TechnicalDesignDocTemplate({ data }: TechnicalDesignDocTemplateP
       {/* Background */}
       {data.background && (
         <SectionCard title="Background" icon={FileText} iconColor="text-gray-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.background}</p>
+          <p className="text-gray-700 dark:text-gray-300">{safeString(data.background)}</p>
         </SectionCard>
       )}
 
@@ -200,14 +200,14 @@ export function TechnicalDesignDocTemplate({ data }: TechnicalDesignDocTemplateP
       {/* Testing Strategy */}
       {data.testingStrategy && (
         <SectionCard title="Testing Strategy" icon={TestTube2} iconColor="text-blue-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.testingStrategy}</p>
+          <p className="text-gray-700 dark:text-gray-300">{safeString(data.testingStrategy)}</p>
         </SectionCard>
       )}
 
       {/* Rollout Plan */}
       {data.rolloutPlan && (
         <SectionCard title="Rollout Plan" icon={Rocket} iconColor="text-amber-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.rolloutPlan}</p>
+          <p className="text-gray-700 dark:text-gray-300">{safeString(data.rolloutPlan)}</p>
         </SectionCard>
       )}
 

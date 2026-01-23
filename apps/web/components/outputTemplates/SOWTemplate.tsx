@@ -15,7 +15,7 @@ import {
   FileText,
 } from 'lucide-react';
 import type { SOWOutput, SOWDeliverable } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
 
 interface SOWTemplateProps {
   data: SOWOutput;
@@ -29,8 +29,8 @@ function DeliverableCard({ deliverable, index }: { deliverable: SOWDeliverable; 
           <span className="text-sm font-bold text-[#8D6AFA]">{index + 1}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-gray-900 dark:text-gray-100">{deliverable.deliverable}</h4>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{deliverable.description}</p>
+          <h4 className="font-semibold text-gray-900 dark:text-gray-100">{safeString(deliverable.deliverable)}</h4>
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{safeString(deliverable.description)}</p>
           {deliverable.acceptanceCriteria && deliverable.acceptanceCriteria.length > 0 && (
             <div className="mt-3">
               <span className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">
@@ -148,7 +148,7 @@ export function SOWTemplate({ data }: SOWTemplateProps) {
       {/* Terms */}
       {data.terms && (
         <SectionCard title="Terms & Conditions" icon={FileSignature} iconColor="text-gray-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.terms}</p>
+          <p className="text-gray-700 dark:text-gray-300">{safeString(data.terms)}</p>
         </SectionCard>
       )}
     </div>
