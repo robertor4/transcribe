@@ -35,4 +35,5 @@ Be specific and actionable. Only include genuine action items discussed in the c
     temperature: 0.3,
     maxTokens: 1000,
   },
+  status: 'reviewed',
 };

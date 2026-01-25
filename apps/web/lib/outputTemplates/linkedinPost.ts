@@ -32,4 +32,5 @@ Make it authentic and engaging for LinkedIn's professional audience.`,
     temperature: 0.8,
     maxTokens: 500,
   },
+  status: 'reviewed',
 };

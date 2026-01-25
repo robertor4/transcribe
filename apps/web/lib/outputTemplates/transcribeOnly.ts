@@ -21,4 +21,5 @@ export const transcribeOnlyTemplate: OutputTemplate = {
   prompt: null, // No custom AI generation
   category: 'quick',
   isQuickAction: true,
+  status: 'reviewed',
 };

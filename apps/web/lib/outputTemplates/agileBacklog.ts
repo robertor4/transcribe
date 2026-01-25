@@ -29,4 +29,5 @@ Group related stories (3+) under epics. Keep isolated features as standalone sto
     temperature: 0.3,
     maxTokens: 2000,
   },
+  status: 'reviewed',
 };

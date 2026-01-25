@@ -13,4 +13,5 @@ export const salesEmailTemplate: OutputTemplate = {
   example: 'Follow up on our discovery call with next steps',
   prompt: null, // Uses backend structured template
   category: 'output',
+  status: 'reviewed',
 };

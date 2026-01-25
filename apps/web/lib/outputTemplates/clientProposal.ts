@@ -13,4 +13,5 @@ export const clientProposalTemplate: OutputTemplate = {
   example: 'Draft a proposal based on client requirements',
   prompt: null, // Uses backend structured template
   category: 'output',
+  status: 'reviewed',
 };

@@ -1,7 +1,5 @@
-import { AnalysisTemplate, AnalysisType } from '@transcribe/shared';
-import * as prompts from './prompts';
+import { AnalysisTemplate } from '@transcribe/shared';
 import {
-  createTemplate,
   createStructuredTemplate,
   PROMPT_INSTRUCTIONS,
   SCHEMA_FRAGMENTS,
@@ -843,683 +841,2199 @@ Return JSON matching this schema:
   }),
 
   // ============================================================
-  // PROFESSIONAL ANALYSIS TEMPLATES
+  // PRIORITY 1: MEETING & DOCUMENTATION TEMPLATES
   // ============================================================
-  createTemplate({
-    id: 'system-emotional-iq',
-    name: 'Emotional Intelligence',
-    description: 'Analyze emotional tone, empathy, and interpersonal dynamics',
+
+  createStructuredTemplate({
+    id: 'meetingMinutes',
+    name: 'Meeting Minutes',
+    description: 'Formal meeting record with agenda, decisions, and action items',
     category: 'professional',
-    icon: 'Brain',
-    color: 'pink',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.EMOTIONAL_INTELLIGENCE,
-    ),
-    userPrompt: prompts.getPromptByType(AnalysisType.EMOTIONAL_INTELLIGENCE),
-    modelPreference: 'gpt-5-mini',
-    estimatedSeconds: 20,
-    featured: true,
-    order: 1,
-    tags: ['emotional-intelligence', 'empathy', 'interpersonal', 'psychology'],
-    targetRoles: ['manager', 'coach', 'hr', 'therapist'],
-    templateGroup: 'emotional-intelligence',
-  }),
-
-  createTemplate({
-    id: 'system-influence',
-    name: 'Influence & Persuasion',
-    description: 'Identify persuasion techniques and influence patterns',
-    category: 'professional',
-    icon: 'Target',
-    color: 'orange',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.INFLUENCE_PERSUASION,
-    ),
-    userPrompt: prompts.getPromptByType(AnalysisType.INFLUENCE_PERSUASION),
-    modelPreference: 'gpt-5-mini',
-    estimatedSeconds: 20,
-    featured: true,
-    order: 2,
-    tags: ['persuasion', 'influence', 'negotiation', 'sales'],
-    targetRoles: ['sales', 'founder', 'negotiator', 'consultant'],
-    templateGroup: 'influence',
-  }),
-
-  createTemplate({
-    id: 'system-development',
-    name: 'Personal Development',
-    description: 'Identify growth opportunities and skill development areas',
-    category: 'professional',
-    icon: 'TrendingUp',
-    color: 'teal',
-    systemPrompt: prompts.getSystemPromptByType(
-      AnalysisType.PERSONAL_DEVELOPMENT,
-    ),
-    userPrompt: prompts.getPromptByType(AnalysisType.PERSONAL_DEVELOPMENT),
-    modelPreference: 'gpt-5-mini',
-    estimatedSeconds: 20,
-    featured: true,
-    order: 3,
-    tags: ['personal-development', 'growth', 'coaching', 'feedback'],
-    targetRoles: ['coach', 'manager', 'hr', 'individual-contributor'],
-    templateGroup: 'personal-development',
-  }),
-
-  createTemplate({
-    id: 'system-risk-assessment',
-    name: 'Risk Assessment',
-    description: 'Identify risks and mitigation strategies',
-    category: 'professional',
-    icon: 'ShieldAlert',
-    color: 'red',
-    systemPrompt:
-      'You are a risk management expert who identifies potential risks, assesses their impact and likelihood, and recommends mitigation strategies based on conversation analysis.',
-    userPrompt: `Conduct a comprehensive risk assessment of this discussion.
-
-## Identified Risks
-
-For each risk, analyze:
-
-### [Risk Category]: [Specific Risk]
-- **Description:** What is the risk?
-- **Likelihood:** High / Medium / Low
-- **Impact:** Critical / High / Medium / Low
-- **Risk Score:** [Likelihood × Impact]
-- **Indicators:** Warning signs mentioned
-- **Mitigation:** Proposed or recommended strategies
-- **Owner:** Who should manage this risk
-
-Categories to consider:
-- Technical risks
-- Business risks
-- Timeline/schedule risks
-- Resource/budget risks
-- Market/competitive risks
-- Regulatory/compliance risks
-
-## Risk Matrix
-[Prioritize risks by score]
-
-## Immediate Actions Required
-[Critical risks needing immediate attention]
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
-    modelPreference: 'gpt-5',
-    estimatedSeconds: 30,
-    order: 11,
-    tags: ['risk-management', 'mitigation', 'project-management', 'strategy'],
-    targetRoles: ['project-manager', 'product-manager', 'founder', 'executive'],
-    templateGroup: 'risk-assessment',
-  }),
-
-  createTemplate({
-    id: 'system-conflict-analysis',
-    name: 'Conflict Analysis',
-    description: 'Identify disagreements and resolution paths',
-    category: 'professional',
-    icon: 'AlertTriangle',
-    color: 'orange',
-    systemPrompt:
-      'You are a conflict resolution expert who analyzes disagreements, identifies root causes, and recommends constructive resolution strategies.',
-    userPrompt: `Analyze all disagreements and conflicts in this conversation.
-
-## Conflicts Identified
-
-For each conflict:
-
-### Conflict [#]: [Topic of Disagreement]
-
-**Parties Involved:** [Speaker identifiers]
-
-**Positions:**
-- Party A's position: [What they argued for]
-- Party B's position: [What they argued for]
-
-**Root Cause:**
-What's the underlying disagreement? (values, priorities, information gap, etc.)
-
-**Arguments Presented:**
-- Key points raised by each side
-- Evidence or reasoning used
-
-**Emotional Tone:**
-- How heated did it get?
-- Signs of frustration or defensiveness
-
-**Resolution:**
-- Was it resolved? How?
-- Compromise reached?
-- Agreement to revisit later?
-
-**Remaining Tensions:**
-- Unresolved aspects
-- Lingering disagreements
-
-## Conflict Resolution Assessment
-- What worked in resolving conflicts?
-- What could have been handled better?
-- Recommendations for future disagreements
-
-## Action Items from Conflicts
-[Specific next steps to address unresolved issues]
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
-    modelPreference: 'gpt-5',
-    estimatedSeconds: 30,
-    order: 14,
-    tags: ['conflict-resolution', 'mediation', 'negotiation', 'team-dynamics'],
-    targetRoles: ['manager', 'hr', 'mediator', 'team-lead'],
-    templateGroup: 'conflict-analysis',
-  }),
-
-  // ============================================================
-  // CONTENT CREATION TEMPLATES
-  // ============================================================
-  createTemplate({
-    id: 'system-blog-post',
-    name: 'Blog Post Draft',
-    description: 'Transform conversation into an engaging blog post',
-    category: 'content',
-    icon: 'FileEdit',
-    color: 'purple',
-    systemPrompt:
-      'You are a skilled content writer who transforms conversations into engaging, well-structured blog posts suitable for professional audiences.',
-    userPrompt: `Convert this conversation into a well-structured blog post.
-
-Requirements:
-- Engaging headline that captures the main topic
-- Hook opening paragraph
-- 3-5 main sections with descriptive headings
-- Use conversational yet professional tone
-- Include specific examples and quotes from the discussion
-- Conclude with key takeaways
-- Add relevant subheadings for scannability
-
-Write in an accessible style suitable for a professional blog audience.
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
-    modelPreference: 'gpt-5',
-    estimatedSeconds: 30,
-    order: 4,
-    tags: ['blog', 'content-creation', 'writing', 'marketing'],
-    targetRoles: ['content-creator', 'marketing', 'founder', 'thought-leader'],
-    templateGroup: 'blog',
-  }),
-
-  createTemplate({
-    id: 'system-email-summary',
-    name: 'Executive Brief',
-    description:
-      'Transform conversations into executive-ready briefs that highlight decisions, risks, and business impact',
-    category: 'professional',
-    icon: 'Briefcase',
-    color: 'indigo',
-    systemPrompt:
-      'You are a senior executive communications advisor who has spent 15+ years crafting briefings for C-suite leaders at Fortune 500 companies. You understand what executives care about: decisions, risks, business impact, and clear next steps. You write with confidence and clarity, cutting through noise to deliver strategic intelligence. Your briefs are known for being crisp, insightful, and action-oriented.',
-    userPrompt: `You are transforming this conversation into a boardroom-ready brief for senior leadership.
-
-**Your Goal:**
-Write a strategic brief that respects the reader's time while providing complete context for decision-making. Senior leaders need to understand decisions, risks, and required actions - without meeting minutiae.
-
-**Tone & Style:**
-- Confident and authoritative, not tentative
-- Direct and concise - every word earns its place
-- Strategic focus - emphasize business impact, not process details
-- Professional polish - zero typos, perfect grammar, clear structure
-- Active voice - "The team decided" not "It was decided"
-
-**Structure:**
-
-**Subject:** [Action-oriented subject that signals priority and topic]
-Examples: "Decision Required: Q3 Budget Allocation" or "Update: Product Launch Timeline Shifted" or "Key Outcomes: Client Strategy Session"
-
-**Opening Line (BLUF - Bottom Line Up Front):**
-Immediately state the most important insight, decision, or outcome in 1-2 sentences.
-
-**Context (2-3 sentences):**
-Briefly explain why this conversation happened and who was involved.
-
-**Key Decisions & Outcomes:**
-List the most important decisions/outcomes with brief rationale.
-
-**Risks & Considerations (if applicable):**
-Flag anything that could derail success or requires leadership awareness.
-
-**Action Items:**
-Present as clear commitments, not vague intentions.
-Format: "[Name] will [specific action] by [date] to [outcome/goal]"
-
-**Next Milestone/Decision Point (if applicable):**
-When will the next update come? What's the next key decision point?
-
-**Closing (1 sentence, if needed):**
-Only include if there's a specific ask or important context.
-
-**Quality Checklist:**
-✓ BLUF captures the most important point immediately
-✓ Business impact is clear
-✓ Decisions include rationale
-✓ Numbers and dates are specific
-✓ Risks are flagged proactively
-✓ Actions have clear owners and deadlines
-✓ Length: 200-300 words
-
-**Critical Language Requirement:**
-${PROMPT_INSTRUCTIONS.languageConsistency}`,
-    modelPreference: 'gpt-5',
-    estimatedSeconds: 30,
-    featured: true,
-    order: 4,
-    tags: ['executive-brief', 'leadership', 'strategy', 'decision-making'],
-    targetRoles: ['executive', 'founder', 'chief-of-staff', 'board-member'],
-    templateGroup: 'executive-brief',
-  }),
-
-  createTemplate({
-    id: 'system-linkedin-post',
-    name: 'LinkedIn Post',
-    description: 'Create a LinkedIn post highlighting key insights',
-    category: 'content',
-    icon: 'Share2',
-    color: 'indigo',
-    systemPrompt:
-      'You are a social media content creator who transforms professional insights into engaging LinkedIn posts.',
-    userPrompt: `Transform this conversation into an engaging LinkedIn post.
-
-Requirements:
-- Hook opening (question or bold statement)
-- 3-5 key insights or takeaways
-- Use short paragraphs for mobile reading
-- Professional yet conversational tone
-- Include 3-5 relevant hashtags
-- Call to action or question for engagement
-- Keep under 200 words
-
-Focus on insights that would interest your professional network.
-
-${PROMPT_INSTRUCTIONS.languageConsistency}`,
-    modelPreference: 'gpt-5-mini',
-    estimatedSeconds: 20,
-    order: 6,
-    tags: ['linkedin', 'social-media', 'professional-networking'],
-    targetRoles: ['founder', 'content-creator', 'sales', 'marketing'],
-    templateGroup: 'linkedin',
-  }),
-
-  createTemplate({
-    id: 'system-meeting-minutes',
-    name: 'Meeting Minutes (Formal)',
-    description: 'Generate formal meeting minutes with sections',
-    category: 'content',
     icon: 'FileText',
     color: 'gray',
-    systemPrompt:
-      'You are a professional secretary who creates formal, well-structured meeting minutes.',
+    systemPrompt: `You are an expert executive assistant who creates comprehensive, professional meeting minutes. You capture decisions and accountability while filtering out tangential discussion. Quality over quantity. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create formal meeting minutes from this conversation.
 
-Structure:
-# Meeting Minutes - [Extract Topic]
+${PROMPT_INSTRUCTIONS.useContext}
 
-**Date:** [Extract or indicate unknown]
-**Attendees:** [List speakers/participants]
+CRITICAL: You MUST populate ALL sections. This is a structured meeting minutes document - empty sections make it useless.
 
-## Agenda Items
-[List topics discussed]
+REQUIRED OUTPUT STRUCTURE:
 
-## Discussion Summary
-For each agenda item:
-- Key points raised
-- Different viewpoints
-- Relevant details
+1. **title** (REQUIRED): Descriptive meeting title derived from main topics discussed. NOT generic titles like "Team Meeting" or "Weekly Sync". Example: "Q1 Product Roadmap Review" or "AI Investment Strategy Discussion"
 
-## Decisions Made
-[Bullet list of concrete decisions]
+2. **date** (REQUIRED if mentioned): Extract date from conversation. If not explicitly stated, leave as empty string.
 
-## Action Items
-| Task | Owner | Deadline |
-|------|-------|----------|
-[Table format]
+3. **attendees** (REQUIRED): List ALL participants mentioned. Use speaker labels (Speaker A, Speaker B) if no names given. NEVER leave empty - every meeting has attendees.
 
-## Next Meeting
-[Date/topics if mentioned]
+4. **agendaItems** (REQUIRED - THIS IS THE CORE CONTENT):
+   Group the conversation into logical topics. For EACH topic:
+   - topic: Clear topic title (e.g., "Budget Allocation", "Timeline Discussion")
+   - discussion: Array of 2-5 key discussion points as bullet strings. Capture WHAT was discussed, different viewpoints, and conclusions.
+   - decisions: Array of any decisions made on this topic (can be empty if no decisions)
 
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
-    modelPreference: 'gpt-5-mini',
-    estimatedSeconds: 25,
-    order: 7,
-    tags: ['meeting-minutes', 'documentation', 'formal', 'records'],
-    targetRoles: [
-      'executive-assistant',
-      'project-manager',
-      'secretary',
-      'team-lead',
-    ],
-    templateGroup: 'meeting-minutes',
-  }),
+   MINIMUM: Create at least 2-3 agenda items from any meaningful conversation. If the conversation is short, still identify the main topics discussed.
 
-  createTemplate({
-    id: 'system-faq',
-    name: 'FAQ Generator',
-    description: 'Extract common questions and answers',
-    category: 'content',
-    icon: 'HelpCircle',
-    color: 'yellow',
-    systemPrompt:
-      'You are a knowledge management expert who creates comprehensive FAQ documents from discussions.',
-    userPrompt: `Extract all questions discussed and create a comprehensive FAQ.
+5. **decisions** (REQUIRED): Consolidate ALL decisions from the meeting into this top-level array. Include decisions from agendaItems plus any general decisions. Write as declarative statements: "Launch date set for March 1st" not "It was discussed that March might work."
 
-Format each Q&A pair:
+6. **actionItems** (REQUIRED): Extract EXPLICIT commitments only. For each:
+   - task: What needs to be done (start with verb)
+   - owner: Who is responsible (use name or speaker label)
+   - deadline: When it's due (if mentioned, otherwise omit)
 
-## [Category Name]
+   If NO explicit action items exist, look for implied follow-ups like "I'll send that over" or "Let me check on that."
 
-**Q: [Question in user's words]**
-A: [Clear, concise answer based on discussion. Include specific details, examples, or caveats mentioned.]
+7. **nextMeeting** (optional): Include if a follow-up meeting was scheduled or discussed.
 
-Requirements:
-- Group related questions by category
-- Write questions as actual user questions
-- Keep answers clear and actionable
-- Include relevant context/examples
-- Note if question wasn't fully answered
+QUALITY STANDARDS:
+- Discussion points: 1-2 sentences each, focus on substance not filler
+- Decisions: Declarative statements, MAX 20 words each
+- Action items: Verb-first, MAX 15 words each
 
-Categories might include:
-- Getting Started
-- Features & Functionality
-- Troubleshooting
-- Pricing & Plans
-- Technical Details
-- Best Practices
+EXAMPLE OUTPUT STRUCTURE:
+{
+  "type": "meetingMinutes",
+  "title": "Q1 Investment Committee Review",
+  "date": "22 January 2026",
+  "attendees": ["Maurits", "Michael", "Ivo", "Jeroen"],
+  "agendaItems": [
+    {
+      "topic": "AI-FinTech Portfolio Review",
+      "discussion": [
+        "Reviewed current portfolio allocation across AI-FinTech investments",
+        "Discussed risk exposure in current market conditions",
+        "Evaluated performance metrics against Q4 benchmarks"
+      ],
+      "decisions": ["Maintain current allocation with quarterly review"]
+    },
+    {
+      "topic": "New Investment Opportunities",
+      "discussion": [
+        "Presented three new deal opportunities in the pipeline",
+        "Discussed due diligence requirements for each"
+      ],
+      "decisions": ["Proceed with due diligence on Telly investment"]
+    }
+  ],
+  "decisions": [
+    "Security/compliance priority confirmed for AI-FinTech mandate",
+    "Scorecard to be developed for business-critical criteria",
+    "Small investment in Telly approved"
+  ],
+  "actionItems": [
+    {"task": "Draft scorecard for business-critical evaluation", "owner": "Investment Team", "deadline": "Next meeting"},
+    {"task": "Finalize KPI addendum with NRG", "owner": "Maurits", "deadline": "Before tranche decision"}
+  ],
+  "nextMeeting": "Q4 reporting session to be scheduled"
+}
 
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 20,
+    featured: true,
+    order: 10,
+    tags: ['meeting-minutes', 'documentation', 'formal', 'records'],
+    targetRoles: ['executive-assistant', 'project-manager', 'team-lead'],
+    templateGroup: 'meeting-minutes',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'meetingMinutes' },
+        title: { type: 'string' },
+        date: { type: 'string' },
+        attendees: { type: 'array', items: { type: 'string' } },
+        agendaItems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              topic: { type: 'string' },
+              discussion: { type: 'array', items: { type: 'string' } },
+              decisions: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['topic', 'discussion'],
+          },
+        },
+        decisions: { type: 'array', items: { type: 'string' } },
+        actionItems: { type: 'array', items: SCHEMA_FRAGMENTS.emailActionItem },
+        nextMeeting: { type: 'string' },
+      },
+      required: ['type', 'title', 'attendees', 'agendaItems', 'decisions', 'actionItems'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'oneOnOneNotes',
+    name: '1:1 Meeting Notes',
+    description: 'Structured notes for manager-report conversations',
+    category: 'professional',
+    icon: 'Users',
+    color: 'blue',
+    systemPrompt: `You are an expert in management practices who captures meaningful 1:1 conversations. You document topics, feedback, blockers, and commitments to enable continuity between meetings. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create structured 1:1 meeting notes from this conversation.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+PARTICIPANT IDENTIFICATION:
+- Identify who is the manager and who is the direct report based on context clues
+- If unclear, use speaker labels and note uncertainty
+- Manager typically asks about projects, blockers, development; report provides updates
+
+TOPIC CAPTURE:
+For each topic discussed, capture:
+- topic: Brief title (e.g., "Q1 project status", "Career development")
+- notes: Key points discussed (2-4 sentences max)
+- followUp: If something needs to be revisited, note it here
+
+TOPIC CATEGORIES TO LISTEN FOR:
+- Work updates and project status
+- Blockers and challenges needing support
+- Feedback (both directions)
+- Career growth and development
+- Personal/wellbeing check-ins
+- Strategic alignment and priorities
+
+FEEDBACK CAPTURE:
+Separate feedback given (manager → report) from feedback received (report → manager):
+- Be specific: "Praised handling of customer escalation" not "positive feedback"
+- Capture constructive feedback without softening: "Documentation needs improvement" not "maybe could work on docs"
+
+ACTION ITEMS:
+Only capture EXPLICIT commitments with clear ownership:
+- task: What needs to be done
+- owner: Who committed (manager or report name)
+- deadline: When, if stated
+
+BAD action item: "Will think about career path"
+GOOD action item: "Sarah to draft 6-month development goals by Friday"
+
+CONTINUITY:
+Note items to revisit in next 1:1 to maintain accountability across meetings.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    featured: true,
+    order: 11,
+    tags: ['1-on-1', 'management', 'feedback', 'career-development'],
+    targetRoles: ['manager', 'team-lead', 'hr'],
+    templateGroup: 'one-on-one',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'oneOnOneNotes' },
+        participants: {
+          type: 'object',
+          properties: {
+            manager: { type: 'string' },
+            report: { type: 'string' },
+          },
+          required: ['manager', 'report'],
+        },
+        date: { type: 'string' },
+        topics: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              topic: { type: 'string' },
+              notes: { type: 'string' },
+              followUp: { type: 'string' },
+            },
+            required: ['topic', 'notes'],
+          },
+        },
+        feedback: {
+          type: 'object',
+          properties: {
+            given: { type: 'array', items: { type: 'string' } },
+            received: { type: 'array', items: { type: 'string' } },
+          },
+        },
+        actionItems: { type: 'array', items: SCHEMA_FRAGMENTS.emailActionItem },
+        nextMeeting: { type: 'string' },
+      },
+      required: ['type', 'participants', 'topics', 'actionItems'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'interviewAssessment',
+    name: 'Interview Assessment',
+    description: 'Structured candidate evaluation with competency scoring',
+    category: 'professional',
+    icon: 'UserCheck',
+    color: 'green',
+    systemPrompt: `You are an experienced hiring manager trained in structured interviewing and behavioral assessment. You evaluate candidates using evidence-based scoring with zero inference beyond what was explicitly demonstrated. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a structured interview assessment from this conversation.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+EVIDENCE-BASED SCORING (1-5 scale):
+5 = Exceptional - Multiple strong examples with measurable impact
+4 = Strong - Clear examples with positive outcomes demonstrated
+3 = Meets expectations - Adequate examples, some depth
+2 = Below expectations - Vague examples, lacks specifics or impact
+1 = Insufficient - No relevant examples or concerning responses
+
+SCORING RULES:
+- ONLY score competencies that were actually assessed in the interview
+- Each score MUST have specific evidence from what the candidate said
+- Use STAR format to capture evidence: Situation, Task, Action, Result
+- If candidate gave vague answers without specifics, that's a 2 or below
+- No inference - don't assume skills that weren't demonstrated
+
+EVIDENCE QUALITY EXAMPLES:
+
+BAD evidence (vague): "Candidate mentioned they led a team project."
+GOOD evidence (STAR): "Led 8-person team to deliver CRM migration 2 weeks early (Situation/Task). Instituted daily standups and blocker removal process (Action). Reduced customer churn 15% post-launch (Result)."
+
+BAD evidence: "Seems collaborative."
+GOOD evidence: "Described mediating conflict between engineering and sales by creating shared metrics dashboard; both teams now attend joint weekly reviews."
+
+COMPETENCIES TO ASSESS (only those discussed):
+- Technical/Functional Skills
+- Problem Solving
+- Leadership/Influence
+- Communication
+- Collaboration/Teamwork
+- Drive/Initiative
+- Adaptability
+- Domain Expertise
+
+RECOMMENDATION CRITERIA:
+- strong-hire: Multiple 4-5 scores, no 2s or below, clear culture fit
+- hire: Mostly 3-4 scores, no concerns below 2, adequate culture fit
+- no-hire: Multiple 2s or any 1s, or significant culture concerns
+- strong-no-hire: Pattern of 1-2 scores, red flags, or serious concerns
+
+CULTURE FIT ASSESSMENT:
+Focus on values alignment, working style compatibility, and team dynamics. Avoid bias - assess fit with the role requirements, not personal similarity.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    featured: true,
+    order: 12,
+    tags: ['interview', 'hiring', 'assessment', 'hr'],
+    targetRoles: ['hiring-manager', 'recruiter', 'hr'],
+    templateGroup: 'interview',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'interviewAssessment' },
+        candidate: { type: 'string' },
+        role: { type: 'string' },
+        date: { type: 'string' },
+        overallScore: { type: 'number', minimum: 1, maximum: 5 },
+        recommendation: { type: 'string', enum: ['strong-hire', 'hire', 'no-hire', 'strong-no-hire'] },
+        competencies: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              competency: { type: 'string' },
+              score: { type: 'number', minimum: 1, maximum: 5 },
+              evidence: { type: 'array', items: { type: 'string' } },
+              notes: { type: 'string' },
+            },
+            required: ['competency', 'score', 'evidence'],
+          },
+        },
+        strengths: { type: 'array', items: { type: 'string' } },
+        concerns: { type: 'array', items: { type: 'string' } },
+        cultureFit: { type: 'string' },
+        nextSteps: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'candidate', 'role', 'overallScore', 'recommendation', 'competencies', 'strengths', 'concerns', 'cultureFit', 'nextSteps'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'prd',
+    name: 'Product Requirements Document',
+    description: 'Structured PRD with problem, goals, and requirements',
+    category: 'professional',
+    icon: 'ClipboardList',
+    color: 'purple',
+    systemPrompt: `You are a senior product manager who creates clear, actionable PRDs. You prioritize problem clarity over solution specifics, and ensure requirements are testable. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a Product Requirements Document (PRD) from this conversation.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+PROBLEM STATEMENT QUALITY:
+The problem statement is the most important part. A good problem statement:
+- Describes WHO is affected
+- Explains WHAT pain or friction they experience
+- Quantifies the IMPACT (time wasted, revenue lost, errors caused)
+- Does NOT prescribe a solution
+
+BAD problem statement: "We need to add a dashboard."
+GOOD problem statement: "Sales managers spend 2+ hours weekly manually compiling rep performance data from 3 different systems. This delays coaching conversations and causes 15% of underperformance to go unaddressed until it's too late."
+
+GOALS vs NON-GOALS:
+- Goals: Outcomes we're trying to achieve (measurable when possible)
+- Non-goals: What we're explicitly NOT doing to prevent scope creep
+- If something is "out of scope for v1" that's a non-goal
+
+USER STORIES:
+Format: "As a [role], I want [capability], so that [benefit]"
+- Only include stories explicitly discussed
+- Each story should represent a distinct user need
+
+REQUIREMENTS WITH MoSCoW:
+- must-have: Required for launch, core value proposition
+- should-have: Important but launch possible without
+- could-have: Desirable if time permits
+- wont-have: Explicitly out of scope (move to non-goals or future consideration)
+
+For each requirement:
+- id: Unique identifier (REQ-001, REQ-002, etc.)
+- requirement: Clear, testable statement
+- priority: MoSCoW category
+- rationale: Why this priority? (especially for must-haves)
+
+SUCCESS METRICS:
+Quantifiable measures that indicate the feature is working:
+- Leading indicators: Early signals (adoption rate, usage frequency)
+- Lagging indicators: Business outcomes (revenue impact, churn reduction)
+
+OPEN QUESTIONS:
+Decisions that still need to be made. Flag these clearly - they're blockers.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    featured: true,
     order: 13,
-    tags: ['faq', 'knowledge-base', 'documentation', 'support'],
-    targetRoles: [
-      'product-manager',
-      'support',
-      'content-creator',
-      'knowledge-manager',
-    ],
-    templateGroup: 'faq',
+    tags: ['prd', 'product-management', 'requirements', 'specification'],
+    targetRoles: ['product-manager', 'founder', 'engineering-lead'],
+    templateGroup: 'prd',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'prd' },
+        title: { type: 'string' },
+        owner: { type: 'string' },
+        status: { type: 'string', enum: ['draft', 'review', 'approved'] },
+        problemStatement: { type: 'string' },
+        goals: { type: 'array', items: { type: 'string' } },
+        nonGoals: { type: 'array', items: { type: 'string' } },
+        userStories: { type: 'array', items: { type: 'string' } },
+        requirements: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              requirement: { type: 'string' },
+              priority: { type: 'string', enum: ['must-have', 'should-have', 'could-have', 'wont-have'] },
+              rationale: { type: 'string' },
+            },
+            required: ['id', 'requirement', 'priority'],
+          },
+        },
+        successMetrics: { type: 'array', items: { type: 'string' } },
+        openQuestions: { type: 'array', items: { type: 'string' } },
+        timeline: { type: 'string' },
+      },
+      required: ['type', 'title', 'status', 'problemStatement', 'goals', 'userStories', 'requirements', 'successMetrics'],
+    },
   }),
 
-  createTemplate({
-    id: 'system-training',
-    name: 'Training Material',
-    description: 'Convert conversation into training content',
-    category: 'content',
-    icon: 'GraduationCap',
-    color: 'teal',
-    systemPrompt:
-      'You are an instructional designer who creates effective training materials from expert discussions.',
-    userPrompt: `Convert this conversation into structured training material.
+  createStructuredTemplate({
+    id: 'retrospective',
+    name: 'Retrospective Summary',
+    description: 'Sprint or project retrospective with insights and actions',
+    category: 'professional',
+    icon: 'RotateCcw',
+    color: 'orange',
+    systemPrompt: `You are an agile coach who facilitates effective retrospectives. You help teams reflect on what went well, what could improve, and commit to actionable improvements. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a retrospective summary from this conversation.
 
-# Training Module: [Extract Topic]
+Capture:
+1. Sprint/period being reviewed
+2. What went well - successes and wins
+3. What could improve - challenges and frustrations
+4. Action items - specific improvements to implement
+5. Shoutouts - team member recognition
+6. Overall team mood/sentiment
 
-## Learning Objectives
-After completing this training, learners will be able to:
-- [Objective 1 - specific and measurable]
-- [Objective 2]
-- [Objective 3]
+Focus on actionable takeaways that will improve the next iteration.
 
-## Prerequisites
-- What learners should know before starting
-- Required skills or background
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    featured: true,
+    order: 14,
+    tags: ['retrospective', 'agile', 'scrum', 'team-improvement'],
+    targetRoles: ['scrum-master', 'team-lead', 'project-manager'],
+    templateGroup: 'retrospective',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'retrospective' },
+        sprintOrPeriod: { type: 'string' },
+        team: { type: 'string' },
+        wentWell: { type: 'array', items: { type: 'string' } },
+        toImprove: { type: 'array', items: { type: 'string' } },
+        actionItems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              owner: { type: 'string' },
+              dueDate: { type: 'string' },
+            },
+            required: ['action'],
+          },
+        },
+        shoutouts: { type: 'array', items: { type: 'string' } },
+        teamMood: { type: 'string' },
+      },
+      required: ['type', 'sprintOrPeriod', 'wentWell', 'toImprove', 'actionItems'],
+    },
+  }),
 
-## Key Concepts
+  createStructuredTemplate({
+    id: 'decisionDocument',
+    name: 'Decision Document',
+    description: 'Record decisions with context, options, and rationale',
+    category: 'professional',
+    icon: 'Scale',
+    color: 'indigo',
+    systemPrompt: `You are a strategic advisor who helps document important decisions. You capture the context, alternatives considered, and rationale to create a clear record for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a decision document from this conversation.
 
-### Concept 1: [Name]
-- **Definition:** Clear explanation
-- **Why It Matters:** Importance/context
-- **Example:** Real example from discussion
-- **Common Mistakes:** Pitfalls to avoid
+Document:
+1. Decision title - what was decided
+2. Decision makers involved
+3. Status of the decision
+4. Context - why this decision was needed
+5. Options considered with pros and cons
+6. The decision made
+7. Rationale - why this option was chosen
+8. Consequences and implications
+9. Review date if applicable
 
-[Repeat for each concept]
+Ensure the document provides enough context for someone reading it later.
 
-## Step-by-Step Guide
-1. [First step with details]
-2. [Second step with details]
-[Continue...]
-
-## Practice Exercises
-- Exercise 1: [Hands-on activity]
-- Exercise 2: [Scenario-based question]
-
-## Summary
-Key takeaways in bullet points
-
-## Additional Resources
-- [Resources mentioned in discussion]
-- [Recommended reading/tools]
-
-## Assessment
-- How will learners know they've mastered this?
-- Self-check questions
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
-    estimatedSeconds: 30,
+    estimatedSeconds: 25,
     order: 15,
-    tags: ['training', 'education', 'learning', 'instructional-design'],
-    targetRoles: ['trainer', 'hr', 'learning-designer', 'team-lead'],
-    templateGroup: 'training',
+    tags: ['decision-record', 'governance', 'documentation', 'strategy'],
+    targetRoles: ['executive', 'product-manager', 'team-lead', 'architect'],
+    templateGroup: 'decision-document',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'decisionDocument' },
+        title: { type: 'string' },
+        date: { type: 'string' },
+        decisionMakers: { type: 'array', items: { type: 'string' } },
+        status: { type: 'string', enum: ['proposed', 'decided', 'implemented', 'deprecated'] },
+        context: { type: 'string' },
+        options: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              option: { type: 'string' },
+              pros: { type: 'array', items: { type: 'string' } },
+              cons: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['option', 'pros', 'cons'],
+          },
+        },
+        decision: { type: 'string' },
+        rationale: { type: 'string' },
+        consequences: { type: 'array', items: { type: 'string' } },
+        reviewDate: { type: 'string' },
+      },
+      required: ['type', 'title', 'decisionMakers', 'status', 'context', 'options', 'decision', 'rationale', 'consequences'],
+    },
   }),
 
   // ============================================================
-  // SPECIALIZED TEMPLATES
+  // PRIORITY 2: SALES TEMPLATES
   // ============================================================
-  createTemplate({
-    id: 'system-executive-briefing',
-    name: 'Executive Briefing',
-    description: 'One-page executive summary for leadership',
+
+  createStructuredTemplate({
+    id: 'dealQualification',
+    name: 'Deal Qualification',
+    description: 'MEDDIC/BANT scorecard for sales opportunities',
     category: 'specialized',
-    icon: 'Briefcase',
-    color: 'slate',
-    systemPrompt:
-      'You are an executive communication specialist who creates concise, high-impact briefings for senior leadership.',
-    userPrompt: `Create a one-page executive briefing suitable for senior leadership.
+    icon: 'Target',
+    color: 'green',
+    systemPrompt: `You are a sales operations expert trained in MEDDIC qualification methodology. You provide rigorous, evidence-based deal assessments that help sales teams focus on winnable opportunities. Be direct about weak qualification - false optimism wastes resources. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this sales conversation using the MEDDIC qualification framework.
 
-Structure:
+${PROMPT_INSTRUCTIONS.useContext}
 
-# Executive Briefing: [Topic]
+MEDDIC CRITERIA (evaluate each):
 
-## Situation
-What's happening? (2-3 sentences)
+1. METRICS - Quantified business impact
+   - What specific metrics will improve? (revenue, cost, time, risk)
+   - Do they know their current baseline?
+   - Have they quantified the value of solving this problem?
 
-## Key Findings
-- Finding 1 with impact
-- Finding 2 with impact
-- Finding 3 with impact
+2. ECONOMIC BUYER - Person with budget authority
+   - Have we identified who controls the budget?
+   - Have we engaged with them directly?
+   - Do they have a compelling event driving the purchase?
 
-## Recommendations
-1. Primary recommendation with rationale
-2. Secondary recommendation
-3. Alternative if applicable
+3. DECISION CRITERIA - How they'll evaluate solutions
+   - What are their must-haves vs nice-to-haves?
+   - How do we compare on their criteria?
+   - Are the criteria favorable or do we need to reshape them?
 
-## Risk Assessment
-- Critical risks and likelihood
-- Mitigation strategies
+4. DECISION PROCESS - How they'll make the decision
+   - What are the steps to get to a signed contract?
+   - Who else needs to approve?
+   - What's the typical procurement timeline?
 
-## Resource Requirements
-Budget, timeline, personnel needed
+5. IDENTIFY PAIN - Business problem driving urgency
+   - What's the pain at the organization level?
+   - What's the pain for our contact personally?
+   - What happens if they do nothing?
 
-## Decision Required
-What leadership needs to decide
+6. CHAMPION - Internal advocate
+   - Do we have someone actively selling internally for us?
+   - Do they have influence and access to power?
+   - What's in it for them personally?
 
-Keep it scannable - use bold for key terms, limit to 1 page.
+SCORING EACH CRITERION:
+- qualified: Clear evidence, strong position
+- partially-qualified: Some info but gaps or concerns
+- not-qualified: Evidence suggests weak position
+- unknown: Not yet discovered - needs investigation
 
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+OVERALL QUALIFICATION:
+- 90-100 (highly-qualified): Strong on all 6 criteria
+- 70-89 (qualified): Strong on 4+, no critical gaps
+- 50-69 (needs-work): Gaps in 2+ criteria, but addressable
+- 0-49 (disqualified): Critical gaps unlikely to close
+
+RISK FACTORS TO FLAG:
+- No access to Economic Buyer
+- Competing against incumbent with switching costs
+- No clear compelling event or timeline
+- Champion lacks influence
+- Decision criteria favor competitor
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 20,
+    tags: ['sales', 'qualification', 'bant', 'meddic', 'pipeline'],
+    targetRoles: ['sales', 'account-executive', 'sales-manager'],
+    templateGroup: 'sales-qualification',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'dealQualification' },
+        prospect: { type: 'string' },
+        dealValue: { type: 'string' },
+        overallScore: { type: 'number', minimum: 0, maximum: 100 },
+        qualification: { type: 'string', enum: ['highly-qualified', 'qualified', 'needs-work', 'disqualified'] },
+        meddic: {
+          type: 'object',
+          properties: {
+            metrics: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                quantifiedValue: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            economicBuyer: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                identified: { type: 'string' },
+                engaged: { type: 'boolean' },
+              },
+              required: ['status', 'evidence'],
+            },
+            decisionCriteria: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                mustHaves: { type: 'array', items: { type: 'string' } },
+                ourPosition: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            decisionProcess: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                steps: { type: 'array', items: { type: 'string' } },
+                timeline: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            identifiedPain: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                organizationalPain: { type: 'string' },
+                personalPain: { type: 'string' },
+              },
+              required: ['status', 'evidence'],
+            },
+            champion: {
+              type: 'object',
+              properties: {
+                status: { type: 'string', enum: ['qualified', 'partially-qualified', 'not-qualified', 'unknown'] },
+                evidence: { type: 'string' },
+                name: { type: 'string' },
+                influence: { type: 'string', enum: ['high', 'medium', 'low', 'unknown'] },
+              },
+              required: ['status', 'evidence'],
+            },
+          },
+          required: ['metrics', 'economicBuyer', 'decisionCriteria', 'decisionProcess', 'identifiedPain', 'champion'],
+        },
+        nextSteps: { type: 'array', items: { type: 'string' } },
+        riskFactors: { type: 'array', items: { type: 'string' } },
+        competitiveThreats: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'prospect', 'overallScore', 'qualification', 'meddic', 'nextSteps', 'riskFactors'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'crmNotes',
+    name: 'CRM Notes',
+    description: 'Salesforce/HubSpot-ready call notes',
+    category: 'specialized',
+    icon: 'Database',
+    color: 'blue',
+    systemPrompt: `You are a sales enablement specialist who creates concise, CRM-ready call notes. Your notes are optimized for quick entry into Salesforce, HubSpot, or similar systems. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create CRM-ready notes from this sales conversation.
+
+Extract:
+1. Contact name and company
+2. Call type (discovery, demo, follow-up, negotiation, other)
+3. Brief summary (2-3 sentences)
+4. Key points discussed
+5. Pain points identified
+6. Next steps with dates if mentioned
+7. Deal stage recommendation
+8. Competitors mentioned
+
+Keep notes concise and actionable - these go directly into CRM.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 15,
+    order: 21,
+    tags: ['crm', 'sales', 'call-notes', 'salesforce', 'hubspot'],
+    targetRoles: ['sales', 'sdr', 'account-executive'],
+    templateGroup: 'crm-notes',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'crmNotes' },
+        contact: { type: 'string' },
+        company: { type: 'string' },
+        callType: { type: 'string', enum: ['discovery', 'demo', 'follow-up', 'negotiation', 'other'] },
+        date: { type: 'string' },
+        summary: { type: 'string' },
+        keyPoints: { type: 'array', items: { type: 'string' } },
+        painPoints: { type: 'array', items: { type: 'string' } },
+        nextSteps: { type: 'array', items: { type: 'string' } },
+        dealStage: { type: 'string' },
+        competitorsMentioned: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'contact', 'callType', 'summary', 'keyPoints', 'painPoints', 'nextSteps'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'objectionHandler',
+    name: 'Objection Handler',
+    description: 'Extract objections with response strategies',
+    category: 'specialized',
+    icon: 'Shield',
+    color: 'orange',
+    systemPrompt: `You are a sales trainer who helps reps handle objections effectively. You identify objections, categorize them, and provide proven response strategies. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this sales conversation for objections and create response strategies.
+
+For each objection identified:
+1. The exact objection raised
+2. Category (price, timing, competition, authority, need, trust, other)
+3. Recommended response strategy
+4. Proof points or evidence to support the response
+
+Also provide:
+- Overall strategy for handling this prospect's concerns
+- Follow-up actions to address unresolved objections
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 22,
+    tags: ['sales', 'objections', 'training', 'responses'],
+    targetRoles: ['sales', 'sales-manager', 'sales-enablement'],
+    templateGroup: 'objection-handler',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'objectionHandler' },
+        prospect: { type: 'string' },
+        objections: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              objection: { type: 'string' },
+              category: { type: 'string', enum: ['price', 'timing', 'competition', 'authority', 'need', 'trust', 'other'] },
+              response: { type: 'string' },
+              proofPoints: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['objection', 'category', 'response'],
+          },
+        },
+        overallStrategy: { type: 'string' },
+        followUpActions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'objections', 'overallStrategy', 'followUpActions'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'competitiveIntel',
+    name: 'Competitive Intelligence',
+    description: 'Extract competitor mentions and positioning insights',
+    category: 'specialized',
+    icon: 'Eye',
+    color: 'red',
+    systemPrompt: `You are a competitive intelligence analyst who extracts and analyzes competitor mentions from conversations. You identify positioning opportunities and competitive threats. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this conversation for competitive intelligence.
+
+For each competitor mentioned:
+1. Competitor name
+2. What was said about them (direct quotes if possible)
+3. Perceived strengths
+4. Perceived weaknesses
+5. How they're positioned against us
+
+Also provide:
+- Our key advantages based on this conversation
+- Threat assessment
+- Recommended actions to improve competitive position
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 23,
+    tags: ['competitive-intelligence', 'sales', 'strategy', 'positioning'],
+    targetRoles: ['product-manager', 'sales', 'marketing', 'strategy'],
+    templateGroup: 'competitive-intel',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'competitiveIntel' },
+        source: { type: 'string' },
+        competitors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              competitor: { type: 'string' },
+              mentions: { type: 'array', items: { type: 'string' } },
+              strengths: { type: 'array', items: { type: 'string' } },
+              weaknesses: { type: 'array', items: { type: 'string' } },
+              positioning: { type: 'string' },
+            },
+            required: ['competitor', 'mentions', 'positioning'],
+          },
+        },
+        ourAdvantages: { type: 'array', items: { type: 'string' } },
+        threatAssessment: { type: 'string' },
+        recommendedActions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'competitors', 'ourAdvantages', 'threatAssessment', 'recommendedActions'],
+    },
+  }),
+
+  // ============================================================
+  // PRIORITY 3: CONSULTING TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'workshopSynthesis',
+    name: 'Workshop Synthesis',
+    description: 'Capture workshop outcomes, insights, and action items',
+    category: 'professional',
+    icon: 'Lightbulb',
+    color: 'yellow',
+    systemPrompt: `You are an expert facilitator who synthesizes workshop outcomes into actionable documentation. You capture insights, decisions, and next steps clearly. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a workshop synthesis from this conversation.
+
+Capture:
+1. Workshop title and objectives
+2. Participants and facilitator
+3. Outcomes by topic with insights, decisions, and open items
+4. Action items with owners and due dates
+5. Parking lot items (topics deferred for later)
+6. Next steps
+
+Focus on capturing the value created during the workshop.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 30,
+    tags: ['workshop', 'facilitation', 'consulting', 'synthesis'],
+    targetRoles: ['consultant', 'facilitator', 'project-manager'],
+    templateGroup: 'workshop',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'workshopSynthesis' },
+        title: { type: 'string' },
+        date: { type: 'string' },
+        facilitator: { type: 'string' },
+        participants: { type: 'array', items: { type: 'string' } },
+        objectives: { type: 'array', items: { type: 'string' } },
+        outcomes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              topic: { type: 'string' },
+              insights: { type: 'array', items: { type: 'string' } },
+              decisions: { type: 'array', items: { type: 'string' } },
+              openItems: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['topic', 'insights'],
+          },
+        },
+        actionItems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              owner: { type: 'string' },
+              dueDate: { type: 'string' },
+            },
+            required: ['action'],
+          },
+        },
+        parkingLot: { type: 'array', items: { type: 'string' } },
+        nextSteps: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'participants', 'objectives', 'outcomes', 'actionItems', 'nextSteps'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'projectStatus',
+    name: 'Project Status Report',
+    description: 'Formal project status with RAG rating and milestones',
+    category: 'professional',
+    icon: 'BarChart3',
+    color: 'blue',
+    systemPrompt: `You are a project manager who creates clear, executive-ready status reports. You assess project health objectively and highlight risks and accomplishments. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a project status report from this conversation.
+
+Include:
+1. Project name and reporting period
+2. Overall status (green/yellow/red) with justification
+3. Summary of current state
+4. Accomplishments this period
+5. Milestones with status
+6. Risks with mitigation strategies and severity
+7. Blockers if any
+8. Goals for next period
+9. Budget status if discussed
+
+Be objective and highlight both progress and concerns.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 31,
+    tags: ['project-management', 'status-report', 'consulting', 'governance'],
+    targetRoles: ['project-manager', 'consultant', 'program-manager'],
+    templateGroup: 'project-status',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'projectStatus' },
+        projectName: { type: 'string' },
+        reportingPeriod: { type: 'string' },
+        overallStatus: { type: 'string', enum: ['green', 'yellow', 'red'] },
+        summary: { type: 'string' },
+        accomplishments: { type: 'array', items: { type: 'string' } },
+        milestones: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              milestone: { type: 'string' },
+              status: { type: 'string', enum: ['completed', 'on-track', 'at-risk', 'delayed'] },
+              date: { type: 'string' },
+              notes: { type: 'string' },
+            },
+            required: ['milestone', 'status'],
+          },
+        },
+        risks: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              risk: { type: 'string' },
+              mitigation: { type: 'string' },
+              severity: { type: 'string', enum: ['high', 'medium', 'low'] },
+            },
+            required: ['risk', 'mitigation', 'severity'],
+          },
+        },
+        blockers: { type: 'array', items: { type: 'string' } },
+        nextPeriodGoals: { type: 'array', items: { type: 'string' } },
+        budgetStatus: { type: 'string' },
+      },
+      required: ['type', 'projectName', 'reportingPeriod', 'overallStatus', 'summary', 'accomplishments', 'milestones', 'risks', 'nextPeriodGoals'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'sow',
+    name: 'Statement of Work',
+    description: 'Draft SOW with scope, deliverables, and assumptions',
+    category: 'professional',
+    icon: 'FileContract',
+    color: 'indigo',
+    systemPrompt: `You are a consulting engagement manager who creates clear, comprehensive Statements of Work. You define scope, deliverables, and assumptions precisely to set proper expectations. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a Statement of Work (SOW) from this conversation.
+
+Include:
+1. Project title and client
+2. Background and context
+3. Objectives
+4. Scope (in-scope and out-of-scope)
+5. Deliverables with descriptions and acceptance criteria
+6. Timeline if discussed
+7. Assumptions
+8. Dependencies
+9. Terms if mentioned
+
+Be precise about scope boundaries to prevent scope creep.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    order: 8,
-    tags: ['executive-briefing', 'leadership', 'strategy', 'summary'],
-    targetRoles: ['executive', 'founder', 'chief-of-staff', 'consultant'],
-    templateGroup: 'executive-brief',
+    order: 32,
+    tags: ['sow', 'consulting', 'contract', 'scope'],
+    targetRoles: ['consultant', 'sales', 'engagement-manager'],
+    templateGroup: 'sow',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'sow' },
+        projectTitle: { type: 'string' },
+        client: { type: 'string' },
+        preparedBy: { type: 'string' },
+        date: { type: 'string' },
+        background: { type: 'string' },
+        objectives: { type: 'array', items: { type: 'string' } },
+        scope: {
+          type: 'object',
+          properties: {
+            inScope: { type: 'array', items: { type: 'string' } },
+            outOfScope: { type: 'array', items: { type: 'string' } },
+          },
+          required: ['inScope', 'outOfScope'],
+        },
+        deliverables: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              deliverable: { type: 'string' },
+              description: { type: 'string' },
+              acceptanceCriteria: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['deliverable', 'description'],
+          },
+        },
+        timeline: { type: 'string' },
+        assumptions: { type: 'array', items: { type: 'string' } },
+        dependencies: { type: 'array', items: { type: 'string' } },
+        terms: { type: 'string' },
+      },
+      required: ['type', 'projectTitle', 'background', 'objectives', 'scope', 'deliverables', 'assumptions'],
+    },
   }),
 
-  createTemplate({
-    id: 'system-sales-analysis',
-    name: 'Sales Call Analysis',
-    description: 'Analyze sales calls for objections and opportunities',
+  createStructuredTemplate({
+    id: 'recommendationsMemo',
+    name: 'Recommendations Memo',
+    description: 'Findings and recommendations with executive summary',
+    category: 'professional',
+    icon: 'FileCheck',
+    color: 'teal',
+    systemPrompt: `You are a senior consultant who writes compelling recommendations memos. You structure findings logically and prioritize recommendations by impact. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a recommendations memo from this conversation.
+
+Include:
+1. Title and recipients
+2. Executive summary (key message in 2-3 sentences)
+3. Background and context
+4. Key findings
+5. Recommendations with priority, rationale, impact, and effort
+6. Next steps
+7. Appendix items if relevant
+
+Prioritize recommendations by business impact.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 33,
+    tags: ['recommendations', 'consulting', 'advisory', 'memo'],
+    targetRoles: ['consultant', 'analyst', 'advisor'],
+    templateGroup: 'recommendations',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'recommendationsMemo' },
+        title: { type: 'string' },
+        to: { type: 'string' },
+        from: { type: 'string' },
+        date: { type: 'string' },
+        executiveSummary: { type: 'string' },
+        background: { type: 'string' },
+        findings: { type: 'array', items: { type: 'string' } },
+        recommendations: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              recommendation: { type: 'string' },
+              priority: { type: 'string', enum: ['high', 'medium', 'low'] },
+              rationale: { type: 'string' },
+              impact: { type: 'string' },
+              effort: { type: 'string', enum: ['high', 'medium', 'low'] },
+            },
+            required: ['recommendation', 'priority', 'rationale', 'impact'],
+          },
+        },
+        nextSteps: { type: 'array', items: { type: 'string' } },
+        appendix: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'executiveSummary', 'background', 'findings', 'recommendations', 'nextSteps'],
+    },
+  }),
+
+  // ============================================================
+  // PRIORITY 4: EXECUTIVE TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'boardUpdate',
+    name: 'Board Update',
+    description: 'Board meeting prep with metrics and strategic updates',
+    category: 'specialized',
+    icon: 'Building2',
+    color: 'slate',
+    systemPrompt: `You are a chief of staff who prepares board-ready updates. You present information clearly with appropriate context for board-level discussions. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a board update from this conversation.
+
+Include:
+1. Period covered
+2. Executive summary (key message)
+3. Business highlights
+4. Key metrics with trends
+5. Challenges and how they're being addressed
+6. Strategic updates
+7. Financial summary if discussed
+8. Asks from the board
+9. Upcoming milestones
+
+Keep it high-level and focused on governance-relevant information.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 40,
+    tags: ['board', 'executive', 'governance', 'reporting'],
+    targetRoles: ['executive', 'founder', 'cfo', 'chief-of-staff'],
+    templateGroup: 'board-update',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'boardUpdate' },
+        company: { type: 'string' },
+        period: { type: 'string' },
+        executiveSummary: { type: 'string' },
+        highlights: { type: 'array', items: { type: 'string' } },
+        metrics: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              metric: { type: 'string' },
+              value: { type: 'string' },
+              trend: { type: 'string', enum: ['up', 'down', 'flat'] },
+              context: { type: 'string' },
+            },
+            required: ['metric', 'value', 'trend'],
+          },
+        },
+        challenges: { type: 'array', items: { type: 'string' } },
+        strategicUpdates: { type: 'array', items: { type: 'string' } },
+        financialSummary: { type: 'string' },
+        asks: { type: 'array', items: { type: 'string' } },
+        upcomingMilestones: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'period', 'executiveSummary', 'highlights', 'metrics', 'challenges', 'strategicUpdates', 'upcomingMilestones'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'investorUpdate',
+    name: 'Investor Update',
+    description: 'Monthly/quarterly investor memo with traction and asks',
     category: 'specialized',
     icon: 'TrendingUp',
     color: 'green',
-    systemPrompt:
-      'You are a sales enablement expert who analyzes sales conversations to identify opportunities, objections, and strategies for improvement.',
-    userPrompt: `Analyze this sales conversation comprehensively.
+    systemPrompt: `You are a founder who writes compelling investor updates. You balance transparency about challenges with enthusiasm about progress and opportunities. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create an investor update from this conversation.
 
-## Customer Profile
-- Key pain points mentioned
-- Current situation/challenges
-- Budget indicators
-- Decision-making authority
+Include:
+1. Period covered
+2. Headline (most important update)
+3. Highlights and wins
+4. Key metrics with trends
+5. Product updates
+6. Team updates
+7. Financials (revenue, burn, etc.)
+8. Runway
+9. Asks (introductions, advice, etc.)
+10. Next milestones
 
-## Objections Raised
-For each objection:
-- What was said
-- Underlying concern
-- How it was handled
-- Recommended response
+Be honest about challenges while maintaining investor confidence.
 
-## Buying Signals
-- Positive indicators
-- Questions about implementation
-- Timeline discussions
-
-## Competitor Mentions
-- Alternatives being considered
-- Comparison points raised
-
-## Next Steps
-- Agreed actions
-- Follow-up timeline
-- Documents to send
-
-## Win Probability
-- Assessment (high/medium/low)
-- Key factors influencing outcome
-- What could move the needle
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    order: 9,
-    tags: ['sales', 'call-analysis', 'objections', 'opportunity'],
-    targetRoles: ['sales', 'sales-manager', 'account-executive', 'founder'],
-    templateGroup: 'sales-analysis',
+    order: 41,
+    tags: ['investor', 'fundraising', 'startup', 'update'],
+    targetRoles: ['founder', 'ceo', 'cfo'],
+    templateGroup: 'investor-update',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'investorUpdate' },
+        company: { type: 'string' },
+        period: { type: 'string' },
+        headline: { type: 'string' },
+        highlights: { type: 'array', items: { type: 'string' } },
+        metrics: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              metric: { type: 'string' },
+              value: { type: 'string' },
+              trend: { type: 'string', enum: ['up', 'down', 'flat'] },
+              context: { type: 'string' },
+            },
+            required: ['metric', 'value', 'trend'],
+          },
+        },
+        productUpdates: { type: 'array', items: { type: 'string' } },
+        teamUpdates: { type: 'array', items: { type: 'string' } },
+        financials: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              metric: { type: 'string' },
+              value: { type: 'string' },
+            },
+            required: ['metric', 'value'],
+          },
+        },
+        runway: { type: 'string' },
+        asks: { type: 'array', items: { type: 'string' } },
+        nextMilestones: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'period', 'headline', 'highlights', 'metrics', 'productUpdates', 'nextMilestones'],
+    },
   }),
 
-  createTemplate({
-    id: 'system-customer-feedback',
-    name: 'Customer Feedback Extraction',
-    description: 'Extract product feedback and feature requests',
+  createStructuredTemplate({
+    id: 'allHandsTalkingPoints',
+    name: 'All-Hands Talking Points',
+    description: 'Company-wide meeting prep with announcements and Q&A',
     category: 'specialized',
-    icon: 'MessageCircle',
+    icon: 'Megaphone',
+    color: 'purple',
+    systemPrompt: `You are an internal communications expert who prepares executive talking points for all-hands meetings. You balance transparency with appropriate messaging. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create all-hands talking points from this conversation.
+
+Include:
+1. Opening remarks
+2. Company updates
+3. Team wins and recognition
+4. Announcements
+5. Upcoming priorities
+6. Q&A topics to address proactively
+7. Closing remarks
+
+Keep the tone motivating while being honest about challenges.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 42,
+    tags: ['all-hands', 'internal-comms', 'executive', 'meeting'],
+    targetRoles: ['executive', 'hr', 'chief-of-staff'],
+    templateGroup: 'all-hands',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'allHandsTalkingPoints' },
+        title: { type: 'string' },
+        date: { type: 'string' },
+        openingRemarks: { type: 'string' },
+        companyUpdates: { type: 'array', items: { type: 'string' } },
+        teamWins: { type: 'array', items: { type: 'string' } },
+        announcements: { type: 'array', items: { type: 'string' } },
+        upcomingPriorities: { type: 'array', items: { type: 'string' } },
+        qaTopics: { type: 'array', items: { type: 'string' } },
+        closingRemarks: { type: 'string' },
+      },
+      required: ['type', 'openingRemarks', 'companyUpdates', 'teamWins', 'announcements', 'upcomingPriorities', 'closingRemarks'],
+    },
+  }),
+
+  // ============================================================
+  // PRIORITY 5: ENGINEERING TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'technicalDesignDoc',
+    name: 'Technical Design Document',
+    description: 'Architecture and design decisions with alternatives',
+    category: 'specialized',
+    icon: 'Code2',
+    color: 'purple',
+    systemPrompt: `You are a senior software architect who creates clear, thorough technical design documents. You document decisions, alternatives, and trade-offs for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a technical design document from this conversation.
+
+Include:
+1. Title and status
+2. Overview of what's being built
+3. Goals and non-goals
+4. Background context
+5. Proposed solution
+6. Alternatives considered with pros/cons and rejection reasons
+7. Technical details
+8. Security considerations
+9. Testing strategy
+10. Rollout plan
+11. Open questions
+
+Be thorough enough that another engineer could implement from this doc.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 50,
+    tags: ['technical-design', 'architecture', 'engineering', 'documentation'],
+    targetRoles: ['engineer', 'architect', 'tech-lead'],
+    templateGroup: 'tech-design',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'technicalDesignDoc' },
+        title: { type: 'string' },
+        author: { type: 'string' },
+        status: { type: 'string', enum: ['draft', 'review', 'approved', 'implemented'] },
+        date: { type: 'string' },
+        overview: { type: 'string' },
+        goals: { type: 'array', items: { type: 'string' } },
+        nonGoals: { type: 'array', items: { type: 'string' } },
+        background: { type: 'string' },
+        proposedSolution: { type: 'string' },
+        alternatives: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              approach: { type: 'string' },
+              pros: { type: 'array', items: { type: 'string' } },
+              cons: { type: 'array', items: { type: 'string' } },
+              rejected: { type: 'boolean' },
+              rejectionReason: { type: 'string' },
+            },
+            required: ['approach', 'pros', 'cons'],
+          },
+        },
+        technicalDetails: { type: 'array', items: { type: 'string' } },
+        securityConsiderations: { type: 'array', items: { type: 'string' } },
+        testingStrategy: { type: 'string' },
+        rolloutPlan: { type: 'string' },
+        openQuestions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'status', 'overview', 'goals', 'proposedSolution', 'alternatives', 'technicalDetails'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'incidentPostmortem',
+    name: 'Incident Postmortem',
+    description: 'Blameless incident analysis with timeline and action items',
+    category: 'specialized',
+    icon: 'AlertTriangle',
+    color: 'red',
+    systemPrompt: `You are an SRE expert who conducts blameless postmortems. You focus on systemic issues rather than individuals, and drive meaningful improvements. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create an incident postmortem from this conversation.
+
+Include:
+1. Incident title and severity
+2. Date and duration
+3. Impact summary
+4. Timeline of events
+5. Root cause
+6. Contributing factors
+7. What went well
+8. What went poorly
+9. Action items with owners, due dates, and priority
+10. Lessons learned
+
+Be blameless - focus on systems and processes, not individuals.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 51,
+    tags: ['postmortem', 'incident', 'sre', 'reliability'],
+    targetRoles: ['sre', 'devops', 'engineering-manager'],
+    templateGroup: 'postmortem',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'incidentPostmortem' },
+        title: { type: 'string' },
+        severity: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
+        date: { type: 'string' },
+        duration: { type: 'string' },
+        impactSummary: { type: 'string' },
+        timeline: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              timestamp: { type: 'string' },
+              event: { type: 'string' },
+              actor: { type: 'string' },
+            },
+            required: ['timestamp', 'event'],
+          },
+        },
+        rootCause: { type: 'string' },
+        contributingFactors: { type: 'array', items: { type: 'string' } },
+        whatWentWell: { type: 'array', items: { type: 'string' } },
+        whatWentPoorly: { type: 'array', items: { type: 'string' } },
+        actionItems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              owner: { type: 'string' },
+              dueDate: { type: 'string' },
+              priority: { type: 'string', enum: ['high', 'medium', 'low'] },
+            },
+            required: ['action', 'priority'],
+          },
+        },
+        lessonsLearned: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'severity', 'date', 'impactSummary', 'timeline', 'rootCause', 'contributingFactors', 'whatWentWell', 'whatWentPoorly', 'actionItems', 'lessonsLearned'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'bugReport',
+    name: 'Bug Report',
+    description: 'Structured bug documentation with reproduction steps',
+    category: 'specialized',
+    icon: 'Bug',
+    color: 'red',
+    systemPrompt: `You are a QA engineer who writes clear, actionable bug reports. You capture all information needed to reproduce and fix issues. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a bug report from this conversation.
+
+Include:
+1. Title (descriptive but concise)
+2. Severity and priority
+3. Summary
+4. Steps to reproduce
+5. Expected behavior
+6. Actual behavior
+7. Environment details
+8. Possible cause if discussed
+9. Suggested fix if discussed
+10. Workaround if available
+
+Be specific enough that a developer can reproduce the issue.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 52,
+    tags: ['bug', 'qa', 'testing', 'issue'],
+    targetRoles: ['qa', 'engineer', 'support'],
+    templateGroup: 'bug-report',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'bugReport' },
+        title: { type: 'string' },
+        severity: { type: 'string', enum: ['critical', 'high', 'medium', 'low'] },
+        priority: { type: 'string', enum: ['urgent', 'high', 'medium', 'low'] },
+        reportedBy: { type: 'string' },
+        date: { type: 'string' },
+        summary: { type: 'string' },
+        stepsToReproduce: { type: 'array', items: { type: 'string' } },
+        expectedBehavior: { type: 'string' },
+        actualBehavior: { type: 'string' },
+        environment: { type: 'string' },
+        possibleCause: { type: 'string' },
+        suggestedFix: { type: 'string' },
+        workaround: { type: 'string' },
+        attachments: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'severity', 'priority', 'summary', 'stepsToReproduce', 'expectedBehavior', 'actualBehavior'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'adr',
+    name: 'Architecture Decision Record',
+    description: 'Formal ADR with context, decision, and consequences',
+    category: 'specialized',
+    icon: 'GitBranch',
+    color: 'indigo',
+    systemPrompt: `You are a software architect who creates clear Architecture Decision Records (ADRs). You document the context, decision, and consequences for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create an Architecture Decision Record (ADR) from this conversation.
+
+Include:
+1. Title (the decision in brief)
+2. Status (proposed, accepted, deprecated, superseded)
+3. Context (why is this decision needed?)
+4. Decision (what was decided)
+5. Consequences (positive, negative, and neutral)
+6. Alternatives considered with reasons for rejection
+7. Related decisions if any
+
+Follow the standard ADR format for consistency.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 53,
+    tags: ['adr', 'architecture', 'decision', 'documentation'],
+    targetRoles: ['architect', 'tech-lead', 'engineer'],
+    templateGroup: 'adr',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'adr' },
+        id: { type: 'string' },
+        title: { type: 'string' },
+        status: { type: 'string', enum: ['proposed', 'accepted', 'deprecated', 'superseded'] },
+        date: { type: 'string' },
+        deciders: { type: 'array', items: { type: 'string' } },
+        context: { type: 'string' },
+        decision: { type: 'string' },
+        consequences: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              type: { type: 'string', enum: ['positive', 'negative', 'neutral'] },
+              consequence: { type: 'string' },
+            },
+            required: ['type', 'consequence'],
+          },
+        },
+        alternatives: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              alternative: { type: 'string' },
+              reason: { type: 'string' },
+            },
+            required: ['alternative', 'reason'],
+          },
+        },
+        relatedDecisions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'status', 'context', 'decision', 'consequences', 'alternatives'],
+    },
+  }),
+
+  // ============================================================
+  // PRIORITY 6: CONTENT & MARKETING TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'newsletter',
+    name: 'Newsletter',
+    description: 'Email newsletter with sections and CTAs',
+    category: 'content',
+    icon: 'Mail',
     color: 'blue',
-    systemPrompt:
-      'You are a product manager who excels at extracting and organizing customer feedback from conversations.',
-    userPrompt: `Extract all product feedback from this customer conversation.
+    systemPrompt: `You are a content marketer who creates engaging email newsletters. You balance information with entertainment while driving action. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a newsletter from this conversation.
 
-## Feature Requests
-- [Feature]: Description, why they need it, priority indicated
+Include:
+1. Subject line (compelling and specific)
+2. Preheader text
+3. Greeting
+4. Introduction paragraph
+5. Content sections with headings and optional CTAs
+6. Closing CTA
+7. Sign-off
 
-## Reported Issues
-- [Issue]: What's broken, impact, workaround if mentioned
+Keep it scannable and value-focused.
 
-## Positive Feedback
-- What's working well
-- Favorite features
-- Praise quotes
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 60,
+    tags: ['newsletter', 'email', 'marketing', 'content'],
+    targetRoles: ['marketing', 'content-creator', 'founder'],
+    templateGroup: 'newsletter',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'newsletter' },
+        subject: { type: 'string' },
+        preheader: { type: 'string' },
+        greeting: { type: 'string' },
+        intro: { type: 'string' },
+        sections: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              heading: { type: 'string' },
+              content: { type: 'string' },
+              cta: { type: 'string' },
+            },
+            required: ['heading', 'content'],
+          },
+        },
+        closingCta: { type: 'string' },
+        closing: { type: 'string' },
+      },
+      required: ['type', 'subject', 'greeting', 'intro', 'sections', 'closingCta', 'closing'],
+    },
+  }),
 
-## Improvement Suggestions
-- What could be better
-- Usability concerns
-- Missing capabilities
+  createStructuredTemplate({
+    id: 'caseStudy',
+    name: 'Case Study',
+    description: 'Customer success story with challenge, solution, results',
+    category: 'content',
+    icon: 'Trophy',
+    color: 'gold',
+    systemPrompt: `You are a content strategist who creates compelling case studies. You tell customer success stories that demonstrate value and build trust. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a case study from this conversation.
 
-## Pain Points
-- Current frustrations
-- Workflow blockers
-- Competitor advantages mentioned
+Include:
+1. Title (customer name + key result)
+2. Customer and industry
+3. Challenge they faced
+4. Solution provided
+5. Implementation details
+6. Results with metrics (before/after when possible)
+7. Customer testimonial if available
+8. Key takeaways
 
-## Priority Assessment
-Rate each item: Critical / High / Medium / Low
+Focus on concrete results and quantifiable outcomes.
 
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 61,
+    tags: ['case-study', 'customer-success', 'marketing', 'social-proof'],
+    targetRoles: ['marketing', 'customer-success', 'sales'],
+    templateGroup: 'case-study',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'caseStudy' },
+        title: { type: 'string' },
+        customer: { type: 'string' },
+        industry: { type: 'string' },
+        challenge: { type: 'string' },
+        solution: { type: 'string' },
+        implementation: { type: 'string' },
+        results: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              metric: { type: 'string' },
+              before: { type: 'string' },
+              after: { type: 'string' },
+              improvement: { type: 'string' },
+            },
+            required: ['metric', 'after'],
+          },
+        },
+        testimonial: {
+          type: 'object',
+          properties: {
+            quote: { type: 'string' },
+            attribution: { type: 'string' },
+          },
+          required: ['quote', 'attribution'],
+        },
+        keyTakeaways: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'customer', 'challenge', 'solution', 'results', 'keyTakeaways'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'podcastShowNotes',
+    name: 'Podcast Show Notes',
+    description: 'Episode notes with timestamps and key takeaways',
+    category: 'content',
+    icon: 'Podcast',
+    color: 'purple',
+    systemPrompt: `You are a podcast producer who creates comprehensive show notes. You make episodes discoverable and provide value even for those who don't listen. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create podcast show notes from this conversation.
+
+Include:
+1. Episode title
+2. Episode number and date
+3. Hosts and guests
+4. Summary (what the episode is about)
+5. Segments with timestamps, topics, notes, and notable quotes
+6. Key takeaways
+7. Resources mentioned
+8. Call to action
+
+Make it useful for listeners and SEO-friendly.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
     estimatedSeconds: 25,
-    order: 10,
-    tags: [
-      'customer-feedback',
-      'product-feedback',
-      'feature-requests',
-      'voice-of-customer',
-    ],
-    targetRoles: [
-      'product-manager',
-      'customer-success',
-      'founder',
-      'ux-researcher',
-    ],
-    templateGroup: 'customer-feedback',
+    order: 62,
+    tags: ['podcast', 'show-notes', 'content', 'audio'],
+    targetRoles: ['content-creator', 'podcaster', 'marketing'],
+    templateGroup: 'podcast',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'podcastShowNotes' },
+        episodeTitle: { type: 'string' },
+        episodeNumber: { type: 'string' },
+        date: { type: 'string' },
+        hosts: { type: 'array', items: { type: 'string' } },
+        guests: { type: 'array', items: { type: 'string' } },
+        summary: { type: 'string' },
+        segments: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              timestamp: { type: 'string' },
+              topic: { type: 'string' },
+              notes: { type: 'array', items: { type: 'string' } },
+              quotes: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['timestamp', 'topic', 'notes'],
+          },
+        },
+        keyTakeaways: { type: 'array', items: { type: 'string' } },
+        resources: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              url: { type: 'string' },
+            },
+            required: ['title'],
+          },
+        },
+        callToAction: { type: 'string' },
+      },
+      required: ['type', 'episodeTitle', 'summary', 'segments', 'keyTakeaways'],
+    },
   }),
 
-  createTemplate({
-    id: 'system-tech-docs',
-    name: 'Technical Documentation',
-    description: 'Create technical documentation from discussions',
-    category: 'specialized',
-    icon: 'Code',
-    color: 'purple',
-    systemPrompt:
-      'You are a technical writer who creates clear, comprehensive documentation from engineering discussions.',
-    userPrompt: `Create technical documentation from this engineering discussion.
+  createStructuredTemplate({
+    id: 'videoScript',
+    name: 'Video Script',
+    description: 'Scene-by-scene video script with visuals and narration',
+    category: 'content',
+    icon: 'Video',
+    color: 'red',
+    systemPrompt: `You are a video producer who creates compelling video scripts. You structure content for visual storytelling with clear direction for production. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a video script from this conversation.
 
-# Technical Documentation: [Extract Topic]
+Include:
+1. Title
+2. Duration estimate
+3. Target audience
+4. Hook (opening that grabs attention)
+5. Scenes with scene number, visual description, narration, and notes
+6. Call to action
+7. End screen suggestions
 
-## Overview
-Brief description of what's being built/decided
+Make it production-ready with clear visual direction.
 
-## Architecture Decisions
-- **Decision:** What was chosen
-- **Rationale:** Why this approach
-- **Alternatives Considered:** Other options discussed
-- **Trade-offs:** Pros and cons
-
-## Technical Specifications
-- Technologies/frameworks mentioned
-- Key components
-- Data structures
-- APIs/integrations
-
-## Implementation Details
-- Setup requirements
-- Configuration needed
-- Dependencies
-- Code patterns to follow
-
-## Known Issues & Limitations
-- Current limitations
-- Technical debt incurred
-- Future improvements needed
-
-## Testing Strategy
-- How to test
-- Edge cases to cover
-
-## Deployment Notes
-- Deployment process
-- Environment requirements
-- Rollback procedures
-
-${PROMPT_INSTRUCTIONS.languageAndHeaders}`,
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
     estimatedSeconds: 30,
-    order: 12,
-    tags: ['technical-docs', 'engineering', 'architecture', 'documentation'],
-    targetRoles: ['engineer', 'technical-writer', 'architect', 'team-lead'],
-    templateGroup: 'technical-docs',
+    order: 63,
+    tags: ['video', 'script', 'content', 'production'],
+    targetRoles: ['content-creator', 'marketing', 'video-producer'],
+    templateGroup: 'video',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'videoScript' },
+        title: { type: 'string' },
+        duration: { type: 'string' },
+        targetAudience: { type: 'string' },
+        hook: { type: 'string' },
+        scenes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              sceneNumber: { type: 'number' },
+              duration: { type: 'string' },
+              visual: { type: 'string' },
+              narration: { type: 'string' },
+              notes: { type: 'string' },
+            },
+            required: ['sceneNumber', 'visual', 'narration'],
+          },
+        },
+        callToAction: { type: 'string' },
+        endScreen: { type: 'string' },
+      },
+      required: ['type', 'title', 'hook', 'scenes', 'callToAction'],
+    },
   }),
+
+  createStructuredTemplate({
+    id: 'pressRelease',
+    name: 'Press Release',
+    description: 'Standard press release format with quotes and boilerplate',
+    category: 'content',
+    icon: 'Newspaper',
+    color: 'gray',
+    systemPrompt: `You are a PR professional who writes effective press releases. You follow AP style and standard press release structure. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a press release from this conversation.
+
+Include:
+1. Headline (newsworthy and specific)
+2. Subheadline if needed
+3. Dateline (city, date)
+4. Lead paragraph (who, what, when, where, why)
+5. Body paragraphs
+6. Quotes from key stakeholders
+7. Boilerplate (about the company)
+8. Contact information
+
+Follow standard press release format and AP style.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 64,
+    tags: ['press-release', 'pr', 'media', 'announcement'],
+    targetRoles: ['pr', 'marketing', 'communications'],
+    templateGroup: 'press-release',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'pressRelease' },
+        headline: { type: 'string' },
+        subheadline: { type: 'string' },
+        dateline: { type: 'string' },
+        lead: { type: 'string' },
+        body: { type: 'array', items: { type: 'string' } },
+        quotes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              quote: { type: 'string' },
+              attribution: { type: 'string' },
+              title: { type: 'string' },
+            },
+            required: ['quote', 'attribution'],
+          },
+        },
+        boilerplate: { type: 'string' },
+        contactInfo: { type: 'string' },
+      },
+      required: ['type', 'headline', 'dateline', 'lead', 'body', 'quotes', 'boilerplate'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'twitterThread',
+    name: 'Twitter/X Thread',
+    description: 'Multi-tweet thread with hook and engagement',
+    category: 'content',
+    icon: 'Twitter',
+    color: 'sky',
+    systemPrompt: `You are a social media expert who creates engaging Twitter threads. You hook readers, deliver value, and drive engagement within character limits. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a Twitter/X thread from this conversation.
+
+Include:
+1. Hook tweet (first tweet that grabs attention)
+2. Individual tweets (each under 280 characters)
+3. Character count for each tweet
+4. Call to action (engagement driver)
+
+Make it valuable, engaging, and shareable.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 65,
+    tags: ['twitter', 'social-media', 'thread', 'content'],
+    targetRoles: ['content-creator', 'founder', 'marketing'],
+    templateGroup: 'twitter',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'twitterThread' },
+        hook: { type: 'string' },
+        tweets: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              tweetNumber: { type: 'number' },
+              content: { type: 'string' },
+              characterCount: { type: 'number' },
+            },
+            required: ['tweetNumber', 'content', 'characterCount'],
+          },
+        },
+        totalTweets: { type: 'number' },
+        callToAction: { type: 'string' },
+      },
+      required: ['type', 'hook', 'tweets', 'totalTweets'],
+    },
+  }),
+
+  // ============================================================
+  // PRIORITY 7: HR & COACHING TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'coachingNotes',
+    name: 'Coaching Session Notes',
+    description: 'Structured coaching documentation with insights and actions',
+    category: 'professional',
+    icon: 'Compass',
+    color: 'teal',
+    systemPrompt: `You are an executive coach who documents coaching sessions effectively. You capture insights, track progress, and maintain accountability. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create coaching session notes from this conversation.
+
+Include:
+1. Client and coach names
+2. Session focus
+3. Insights discussed (topic, insight, related action)
+4. Progress on previous actions
+5. New action items with due dates
+6. Focus for next session
+
+Capture the developmental journey and commitments made.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 70,
+    tags: ['coaching', 'development', 'executive', 'mentoring'],
+    targetRoles: ['coach', 'mentor', 'hr'],
+    templateGroup: 'coaching',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'coachingNotes' },
+        client: { type: 'string' },
+        coach: { type: 'string' },
+        sessionNumber: { type: 'number' },
+        date: { type: 'string' },
+        focus: { type: 'string' },
+        insights: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              topic: { type: 'string' },
+              insight: { type: 'string' },
+              actionItem: { type: 'string' },
+            },
+            required: ['topic', 'insight'],
+          },
+        },
+        progressOnPreviousActions: { type: 'array', items: { type: 'string' } },
+        newActionItems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              action: { type: 'string' },
+              dueDate: { type: 'string' },
+            },
+            required: ['action'],
+          },
+        },
+        nextSessionFocus: { type: 'string' },
+      },
+      required: ['type', 'focus', 'insights', 'progressOnPreviousActions', 'newActionItems'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'performanceReview',
+    name: 'Performance Review',
+    description: 'Structured review with ratings and development goals',
+    category: 'professional',
+    icon: 'Star',
+    color: 'yellow',
+    systemPrompt: `You are an HR professional trained in fair, evidence-based performance evaluation. You document performance objectively, avoid common biases, and focus on development. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a performance review from this conversation.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+RATING SCALE (1-5):
+5 = Exceptional - Consistently exceeds expectations, role model for others
+4 = Exceeds Expectations - Often surpasses requirements, strong contributor
+3 = Meets Expectations - Reliably delivers on requirements
+2 = Below Expectations - Inconsistent delivery, improvement needed
+1 = Unsatisfactory - Significant gaps, performance concern
+
+BIAS PREVENTION RULES:
+- Cover the FULL review period, not just recent events (avoid recency bias)
+- Assess against job requirements, not personality (avoid halo/horn effect)
+- Use specific examples, not general impressions
+- If conversation only discusses recent events, note this limitation
+
+EVIDENCE REQUIREMENTS:
+Each rating category MUST include:
+- Specific behavioral examples (what they did, not who they are)
+- Impact or outcome when possible
+- Time period the examples cover
+
+BAD comment (vague): "Great team player, always helpful."
+GOOD comment (specific): "Led 3 cross-functional projects in Q3-Q4. On the API integration project, proactively identified dependency conflict that would have delayed launch 2 weeks."
+
+BAD comment (personality): "Has a positive attitude."
+GOOD comment (behavioral): "During service outage in October, remained calm and coordinated 4-person response team. Post-incident survey showed 95% customer satisfaction with communication."
+
+CATEGORY STRUCTURE:
+For each rating category discussed:
+- category: Name of competency area
+- rating: 1-5 score
+- comments: 2-3 sentences with specific examples and impact
+
+DEVELOPMENT FOCUS:
+- Growth areas should be actionable, not character judgments
+- Goals should be SMART (Specific, Measurable, Achievable, Relevant, Time-bound)
+- Connect growth areas to career aspirations if discussed
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 71,
+    tags: ['performance', 'review', 'hr', 'development'],
+    targetRoles: ['manager', 'hr'],
+    templateGroup: 'performance-review',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'performanceReview' },
+        employeeName: { type: 'string' },
+        reviewerName: { type: 'string' },
+        reviewPeriod: { type: 'string' },
+        overallRating: { type: 'number', minimum: 1, maximum: 5 },
+        ratings: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              category: { type: 'string' },
+              rating: { type: 'number', minimum: 1, maximum: 5 },
+              comments: { type: 'string' },
+            },
+            required: ['category', 'rating', 'comments'],
+          },
+        },
+        accomplishments: { type: 'array', items: { type: 'string' } },
+        areasForGrowth: { type: 'array', items: { type: 'string' } },
+        goals: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              goal: { type: 'string' },
+              timeline: { type: 'string' },
+            },
+            required: ['goal'],
+          },
+        },
+        additionalComments: { type: 'string' },
+      },
+      required: ['type', 'employeeName', 'reviewPeriod', 'overallRating', 'ratings', 'accomplishments', 'areasForGrowth', 'goals'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'exitInterview',
+    name: 'Exit Interview Analysis',
+    description: 'Structured departure insights with themes and suggestions',
+    category: 'professional',
+    icon: 'DoorOpen',
+    color: 'gray',
+    systemPrompt: `You are an HR analyst who extracts actionable insights from exit interviews. You identify patterns and recommendations for improving retention. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze this exit interview conversation.
+
+Extract:
+1. Employee information (department, tenure)
+2. Primary reason for leaving
+3. Themes with sentiment and details
+4. What worked well
+5. What could improve
+6. Specific suggestions
+7. Would recommend/return indicators
+
+Be objective and focus on actionable insights for the organization.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 72,
+    tags: ['exit-interview', 'hr', 'retention', 'feedback'],
+    targetRoles: ['hr', 'people-ops'],
+    templateGroup: 'exit-interview',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'exitInterview' },
+        employee: { type: 'string' },
+        department: { type: 'string' },
+        tenure: { type: 'string' },
+        date: { type: 'string' },
+        reasonForLeaving: { type: 'string' },
+        themes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              theme: { type: 'string' },
+              sentiment: { type: 'string', enum: ['positive', 'negative', 'neutral'] },
+              details: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['theme', 'sentiment', 'details'],
+          },
+        },
+        whatWorkedWell: { type: 'array', items: { type: 'string' } },
+        whatCouldImprove: { type: 'array', items: { type: 'string' } },
+        suggestions: { type: 'array', items: { type: 'string' } },
+        wouldRecommend: { type: ['boolean', 'null'] },
+        wouldReturn: { type: ['boolean', 'null'] },
+      },
+      required: ['type', 'reasonForLeaving', 'themes', 'whatWorkedWell', 'whatCouldImprove', 'suggestions'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'goalSetting',
+    name: 'Goal Setting Document',
+    description: 'SMART goals with milestones and support needed',
+    category: 'professional',
+    icon: 'Target',
+    color: 'green',
+    systemPrompt: `You are a goal-setting facilitator who helps people create clear, achievable SMART goals. You ensure goals are specific, measurable, achievable, relevant, and time-bound. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a goal setting document from this conversation.
+
+Include:
+1. Participant and period
+2. Vision statement if discussed
+3. SMART goals with all components (specific, measurable, achievable, relevant, time-bound)
+4. Milestones for each goal
+5. Potential obstacles
+6. Support needed
+7. Check-in schedule
+
+Make goals actionable and trackable.
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5-mini',
+    estimatedSeconds: 20,
+    order: 73,
+    tags: ['goals', 'okr', 'development', 'planning'],
+    targetRoles: ['manager', 'coach', 'hr'],
+    templateGroup: 'goal-setting',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'goalSetting' },
+        participant: { type: 'string' },
+        period: { type: 'string' },
+        date: { type: 'string' },
+        vision: { type: 'string' },
+        goals: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              goal: { type: 'string' },
+              specific: { type: 'string' },
+              measurable: { type: 'string' },
+              achievable: { type: 'string' },
+              relevant: { type: 'string' },
+              timeBound: { type: 'string' },
+              milestones: { type: 'array', items: { type: 'string' } },
+            },
+            required: ['goal', 'specific', 'measurable', 'achievable', 'relevant', 'timeBound'],
+          },
+        },
+        potentialObstacles: { type: 'array', items: { type: 'string' } },
+        supportNeeded: { type: 'array', items: { type: 'string' } },
+        checkInSchedule: { type: 'string' },
+      },
+      required: ['type', 'goals', 'potentialObstacles', 'supportNeeded'],
+    },
+  }),
+
 ];
 
 // Helper to get template by ID

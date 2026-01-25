@@ -513,9 +513,13 @@
       "error": "Failed to create AI asset. Please try again.",
       "whatToCreate": "What would you like to create?",
       "chooseOutputType": "Choose the type of output to generate from this conversation",
-      "categoryAnalysis": "Analysis",
+      "categoryAnalysis": "Analysis & Reports",
       "categoryContent": "Content",
       "categoryEmails": "Emails",
+      "categoryProduct": "Product & Engineering",
+      "categorySales": "Sales",
+      "categoryHR": "HR & People",
+      "categoryLeadership": "Leadership",
       "customInstructionsTitle": "Add custom instructions (optional)",
       "customInstructionsDescription": "Provide specific guidance for the AI to tailor the output to your needs",
       "customInstructionsLabel": "Custom Instructions",
@@ -594,6 +598,130 @@
         "noStoriesDescription": "This conversation didn't contain any explicit product features or requirements to extract.",
         "copyStory": "Copy story",
         "copied": "Copied!"
+      },
+      "meetingMinutes": {
+        "name": "Meeting Minutes",
+        "description": "Formal meeting record with agenda, decisions, and action items"
+      },
+      "oneOnOneNotes": {
+        "name": "1:1 Meeting Notes",
+        "description": "Structured notes for manager-report conversations"
+      },
+      "interviewAssessment": {
+        "name": "Interview Assessment",
+        "description": "Structured candidate evaluation with competency scoring"
+      },
+      "prd": {
+        "name": "Product Requirements Document",
+        "description": "Structured PRD with problem, goals, and requirements"
+      },
+      "retrospective": {
+        "name": "Retrospective Summary",
+        "description": "Sprint or project retrospective with insights and actions"
+      },
+      "decisionDocument": {
+        "name": "Decision Document",
+        "description": "Record decisions with context, options, and rationale"
+      },
+      "dealQualification": {
+        "name": "Deal Qualification",
+        "description": "MEDDIC/BANT scorecard for sales opportunities"
+      },
+      "crmNotes": {
+        "name": "CRM Notes",
+        "description": "Salesforce/HubSpot-ready call notes"
+      },
+      "objectionHandler": {
+        "name": "Objection Handler",
+        "description": "Extract objections with response strategies"
+      },
+      "competitiveIntel": {
+        "name": "Competitive Intelligence",
+        "description": "Extract competitor mentions and positioning insights"
+      },
+      "workshopSynthesis": {
+        "name": "Workshop Synthesis",
+        "description": "Capture workshop outcomes, insights, and action items"
+      },
+      "projectStatus": {
+        "name": "Project Status Report",
+        "description": "Formal project status with RAG rating and milestones"
+      },
+      "sow": {
+        "name": "Statement of Work",
+        "description": "Draft SOW with scope, deliverables, and assumptions"
+      },
+      "recommendationsMemo": {
+        "name": "Recommendations Memo",
+        "description": "Findings and recommendations with executive summary"
+      },
+      "boardUpdate": {
+        "name": "Board Update",
+        "description": "Board meeting prep with metrics and strategic updates"
+      },
+      "investorUpdate": {
+        "name": "Investor Update",
+        "description": "Monthly/quarterly investor memo with traction and asks"
+      },
+      "allHandsTalkingPoints": {
+        "name": "All-Hands Talking Points",
+        "description": "Company-wide meeting prep with announcements and Q&A"
+      },
+      "technicalDesignDoc": {
+        "name": "Technical Design Document",
+        "description": "Architecture and design decisions with alternatives"
+      },
+      "incidentPostmortem": {
+        "name": "Incident Postmortem",
+        "description": "Blameless incident analysis with timeline and action items"
+      },
+      "bugReport": {
+        "name": "Bug Report",
+        "description": "Structured bug documentation with reproduction steps"
+      },
+      "adr": {
+        "name": "Architecture Decision Record",
+        "description": "Formal ADR with context, decision, and consequences"
+      },
+      "newsletter": {
+        "name": "Newsletter",
+        "description": "Email newsletter with sections and CTAs"
+      },
+      "caseStudy": {
+        "name": "Case Study",
+        "description": "Customer success story with challenge, solution, results"
+      },
+      "podcastShowNotes": {
+        "name": "Podcast Show Notes",
+        "description": "Episode notes with timestamps and key takeaways"
+      },
+      "videoScript": {
+        "name": "Video Script",
+        "description": "Scene-by-scene video script with visuals and narration"
+      },
+      "pressRelease": {
+        "name": "Press Release",
+        "description": "Standard press release format with quotes and boilerplate"
+      },
+      "twitterThread": {
+        "name": "Twitter/X Thread",
+        "description": "Multi-tweet thread with hook and engagement"
+      },
+      "coachingNotes": {
+        "name": "Coaching Session Notes",
+        "description": "Structured coaching documentation with insights and actions"
+      },
+      "performanceReview": {
+        "name": "Performance Review",
+        "description": "Structured review with ratings and development goals"
+      },
+      "exitInterview": {
+        "name": "Exit Interview Analysis",
+        "description": "Structured departure insights with themes and suggestions"
+      },
+      "goalSetting": {
+        "name": "Goal Setting Document",
+        "description": "SMART goals with milestones and support needed"
       }
     },
     "sidebar": {

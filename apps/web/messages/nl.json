@@ -512,9 +512,13 @@
       "error": "AI asset maken mislukt. Probeer het opnieuw.",
       "whatToCreate": "Wat wil je maken?",
       "chooseOutputType": "Kies het type uitvoer voor dit gesprek",
-      "categoryAnalysis": "Analyse",
+      "categoryAnalysis": "Analyse & rapporten",
       "categoryContent": "Inhoud",
       "categoryEmails": "E-mails",
+      "categoryProduct": "Product & engineering",
+      "categorySales": "Sales",
+      "categoryHR": "HR & personeel",
+      "categoryLeadership": "Leiderschap",
       "customInstructionsTitle": "Aangepaste instructies toevoegen (optioneel)",
       "customInstructionsDescription": "Geef specifieke instructies om de uitvoer aan te passen aan je behoeften",
       "customInstructionsLabel": "Aangepaste instructies",
@@ -593,6 +597,130 @@
         "noStoriesDescription": "Dit gesprek bevatte geen expliciete productfuncties of vereisten om te extraheren.",
         "copyStory": "Story kopiëren",
         "copied": "Gekopieerd!"
+      },
+      "meetingMinutes": {
+        "name": "Notulen",
+        "description": "Formeel vergaderverslag met agenda, beslissingen en actiepunten"
+      },
+      "oneOnOneNotes": {
+        "name": "1:1 Gespreksnotities",
+        "description": "Gestructureerde notities voor manager-medewerker gesprekken"
+      },
+      "interviewAssessment": {
+        "name": "Sollicitatiebeoordeling",
+        "description": "Gestructureerde kandidaatevaluatie met competentiescores"
+      },
+      "prd": {
+        "name": "Product Requirements Document",
+        "description": "Gestructureerd PRD met probleem, doelen en eisen"
+      },
+      "retrospective": {
+        "name": "Retrospective samenvatting",
+        "description": "Sprint of project retrospective met inzichten en acties"
+      },
+      "decisionDocument": {
+        "name": "Besluitdocument",
+        "description": "Leg beslissingen vast met context, opties en onderbouwing"
+      },
+      "dealQualification": {
+        "name": "Deal kwalificatie",
+        "description": "MEDDIC/BANT scorecard voor verkoopkansen"
+      },
+      "crmNotes": {
+        "name": "CRM-notities",
+        "description": "Salesforce/HubSpot-klare gespreksnotities"
+      },
+      "objectionHandler": {
+        "name": "Bezwaaranalyse",
+        "description": "Extraheer bezwaren met responsstrategieën"
+      },
+      "competitiveIntel": {
+        "name": "Concurrentie-analyse",
+        "description": "Extraheer concurrentvermeldingen en positioneringsinzichten"
+      },
+      "workshopSynthesis": {
+        "name": "Workshop synthese",
+        "description": "Leg workshopresultaten, inzichten en actiepunten vast"
+      },
+      "projectStatus": {
+        "name": "Projectstatusrapport",
+        "description": "Formeel projectstatus met RAG-beoordeling en mijlpalen"
+      },
+      "sow": {
+        "name": "Statement of Work",
+        "description": "Concept SOW met scope, deliverables en aannames"
+      },
+      "recommendationsMemo": {
+        "name": "Aanbevelingsmemo",
+        "description": "Bevindingen en aanbevelingen met managementsamenvatting"
+      },
+      "boardUpdate": {
+        "name": "Bestuurspresentatie",
+        "description": "Bestuursvergadering prep met metrics en strategische updates"
+      },
+      "investorUpdate": {
+        "name": "Investeerdersupdate",
+        "description": "Maandelijks/kwartaal investeerdersmemo met tractie en vragen"
+      },
+      "allHandsTalkingPoints": {
+        "name": "All-Hands gesprekspunten",
+        "description": "Bedrijfsbrede vergadering prep met aankondigingen en Q&A"
+      },
+      "technicalDesignDoc": {
+        "name": "Technisch ontwerpdocument",
+        "description": "Architectuur en ontwerpbeslissingen met alternatieven"
+      },
+      "incidentPostmortem": {
+        "name": "Incident postmortem",
+        "description": "Blameless incidentanalyse met tijdlijn en actiepunten"
+      },
+      "bugReport": {
+        "name": "Bugrapport",
+        "description": "Gestructureerde bugdocumentatie met reproductiestappen"
+      },
+      "adr": {
+        "name": "Architecture Decision Record",
+        "description": "Formeel ADR met context, besluit en gevolgen"
+      },
+      "newsletter": {
+        "name": "Nieuwsbrief",
+        "description": "E-mail nieuwsbrief met secties en CTAs"
+      },
+      "caseStudy": {
+        "name": "Case study",
+        "description": "Klantsuccesverhaal met uitdaging, oplossing en resultaten"
+      },
+      "podcastShowNotes": {
+        "name": "Podcast shownotes",
+        "description": "Afleveringsnotities met timestamps en belangrijke punten"
+      },
+      "videoScript": {
+        "name": "Videoscript",
+        "description": "Scène-voor-scène videoscript met visuals en voice-over"
+      },
+      "pressRelease": {
+        "name": "Persbericht",
+        "description": "Standaard persbericht formaat met quotes en boilerplate"
+      },
+      "twitterThread": {
+        "name": "Twitter/X-thread",
+        "description": "Multi-tweet thread met hook en engagement"
+      },
+      "coachingNotes": {
+        "name": "Coachingsnotities",
+        "description": "Gestructureerde coachingdocumentatie met inzichten en acties"
+      },
+      "performanceReview": {
+        "name": "Functioneringsgesprek",
+        "description": "Gestructureerde beoordeling met scores en ontwikkeldoelen"
+      },
+      "exitInterview": {
+        "name": "Exitgesprek analyse",
+        "description": "Gestructureerde vertrekinzichten met thema's en suggesties"
+      },
+      "goalSetting": {
+        "name": "Doelstellingen document",
+        "description": "SMART-doelen met mijlpalen en benodigde ondersteuning"
       }
     },
     "sidebar": {

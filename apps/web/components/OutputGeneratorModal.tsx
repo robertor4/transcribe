@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X, ArrowLeft, ArrowRight, AlertCircle, Mail, FileText, BarChart3, Lock } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, AlertCircle, Mail, FileText, BarChart3, Lock, Users, Briefcase, Code2, TrendingUp } from 'lucide-react';
 import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { GeneratingLoader } from './GeneratingLoader';
@@ -15,14 +15,22 @@ import type { GeneratedAnalysis } from '@transcribe/shared';
 // Filter out transcribe-only since we're already in a conversation with transcription
 const outputTemplates = allTemplates.filter(t => t.id !== 'transcribe-only');
 
-// Categorize templates
+// Categorize templates by use case
 const EMAIL_IDS = ['followUpEmail', 'salesEmail', 'internalUpdate', 'clientProposal'];
-const CONTENT_IDS = ['blogPost', 'linkedin'];
-const ANALYSIS_IDS = ['actionItems', 'communicationAnalysis', 'agileBacklog'];
+const CONTENT_IDS = ['blogPost', 'linkedin', 'newsletter', 'caseStudy', 'podcastShowNotes', 'videoScript', 'pressRelease', 'twitterThread'];
+const ANALYSIS_IDS = ['actionItems', 'communicationAnalysis', 'agileBacklog', 'meetingMinutes', 'retrospective', 'decisionDocument', 'workshopSynthesis', 'projectStatus', 'recommendationsMemo'];
+const HR_IDS = ['oneOnOneNotes', 'interviewAssessment', 'coachingNotes', 'performanceReview', 'exitInterview', 'goalSetting'];
+const PRODUCT_IDS = ['prd', 'technicalDesignDoc', 'adr', 'bugReport', 'incidentPostmortem', 'sow'];
+const SALES_IDS = ['dealQualification', 'crmNotes', 'objectionHandler', 'competitiveIntel'];
+const LEADERSHIP_IDS = ['boardUpdate', 'investorUpdate', 'allHandsTalkingPoints'];
 
 const emailTemplates = outputTemplates.filter(t => EMAIL_IDS.includes(t.id));
 const contentTemplates = outputTemplates.filter(t => CONTENT_IDS.includes(t.id));
 const analysisTemplates = outputTemplates.filter(t => ANALYSIS_IDS.includes(t.id));
+const hrTemplates = outputTemplates.filter(t => HR_IDS.includes(t.id));
+const productTemplates = outputTemplates.filter(t => PRODUCT_IDS.includes(t.id));
+const salesTemplates = outputTemplates.filter(t => SALES_IDS.includes(t.id));
+const leadershipTemplates = outputTemplates.filter(t => LEADERSHIP_IDS.includes(t.id));
 
 // Template list item component - compact row-based layout
 function TemplateListItem({
@@ -39,6 +47,8 @@ function TemplateListItem({
   description: string;
 }) {
   const Icon = template.icon;
+  const isBeta = template.status === 'beta';
+
   return (
     <button
       onClick={onSelect}
@@ -76,11 +86,19 @@ function TemplateListItem({
 
       {/* Text content */}
       <div className="flex-1 min-w-0">
-        <h4 className={`text-base font-semibold truncate ${
-          isSelected ? 'text-[#8D6AFA]' : 'text-gray-900 dark:text-gray-100'
-        }`}>
-          {name}
-        </h4>
+        <div className="flex items-center gap-2">
+          <h4 className={`text-base font-semibold truncate ${
+            isSelected ? 'text-[#8D6AFA]' : 'text-gray-900 dark:text-gray-100'
+          }`}>
+            {name}
+          </h4>
+          {/* Beta Badge */}
+          {isBeta && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-gray-400 dark:bg-gray-600 text-gray-50 dark:text-gray-200 flex-shrink-0">
+              Beta
+            </span>
+          )}
+        </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
           {description}
         </p>
@@ -354,6 +372,94 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
                 </div>
                 <div className="space-y-1">
                   {emailTemplates.map((template) => (
+                    <TemplateListItem
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Product & Engineering Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Code2 className="w-4 h-4 text-cyan-500" />
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t('categoryProduct')}
+                  </h4>
+                </div>
+                <div className="space-y-1">
+                  {productTemplates.map((template) => (
+                    <TemplateListItem
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Sales Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t('categorySales')}
+                  </h4>
+                </div>
+                <div className="space-y-1">
+                  {salesTemplates.map((template) => (
+                    <TemplateListItem
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* HR & People Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-orange-500" />
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t('categoryHR')}
+                  </h4>
+                </div>
+                <div className="space-y-1">
+                  {hrTemplates.map((template) => (
+                    <TemplateListItem
+                      key={template.id}
+                      template={template}
+                      isSelected={selectedType === template.id}
+                      onSelect={() => setSelectedType(template.id)}
+                      name={getTemplateName(template.id)}
+                      description={getTemplateDescription(template.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Leadership Templates */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Briefcase className="w-4 h-4 text-indigo-500" />
+                  <h4 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {t('categoryLeadership')}
+                  </h4>
+                </div>
+                <div className="space-y-1">
+                  {leadershipTemplates.map((template) => (
                     <TemplateListItem
                       key={template.id}
                       template={template}
