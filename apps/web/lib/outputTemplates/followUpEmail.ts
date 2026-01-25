@@ -13,4 +13,5 @@ export const followUpEmailTemplate: OutputTemplate = {
   example: 'Recap our meeting and assign action items',
   prompt: null, // Uses backend structured template
   category: 'output',
+  status: 'reviewed',
 };

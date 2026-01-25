@@ -13,4 +13,5 @@ export const adrTemplate: OutputTemplate = {
   example: 'Document architecture decisions',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

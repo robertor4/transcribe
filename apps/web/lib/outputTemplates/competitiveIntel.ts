@@ -13,4 +13,5 @@ export const competitiveIntelTemplate: OutputTemplate = {
   example: 'Gather competitive insights',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

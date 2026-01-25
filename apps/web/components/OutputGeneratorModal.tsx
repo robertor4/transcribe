@@ -47,6 +47,8 @@ function TemplateListItem({
   description: string;
 }) {
   const Icon = template.icon;
+  const isBeta = template.status === 'beta';
+
   return (
     <button
       onClick={onSelect}
@@ -84,11 +86,19 @@ function TemplateListItem({
 
       {/* Text content */}
       <div className="flex-1 min-w-0">
-        <h4 className={`text-base font-semibold truncate ${
-          isSelected ? 'text-[#8D6AFA]' : 'text-gray-900 dark:text-gray-100'
-        }`}>
-          {name}
-        </h4>
+        <div className="flex items-center gap-2">
+          <h4 className={`text-base font-semibold truncate ${
+            isSelected ? 'text-[#8D6AFA]' : 'text-gray-900 dark:text-gray-100'
+          }`}>
+            {name}
+          </h4>
+          {/* Beta Badge */}
+          {isBeta && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-gray-400 dark:bg-gray-600 text-gray-50 dark:text-gray-200 flex-shrink-0">
+              Beta
+            </span>
+          )}
+        </div>
         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
           {description}
         </p>

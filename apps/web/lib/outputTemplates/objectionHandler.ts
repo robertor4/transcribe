@@ -13,4 +13,5 @@ export const objectionHandlerTemplate: OutputTemplate = {
   example: 'Analyze sales objections',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

@@ -13,4 +13,5 @@ export const oneOnOneNotesTemplate: OutputTemplate = {
   example: 'Document 1:1 meeting discussions',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

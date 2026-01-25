@@ -13,4 +13,5 @@ export const exitInterviewTemplate: OutputTemplate = {
   example: 'Analyze exit interviews',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

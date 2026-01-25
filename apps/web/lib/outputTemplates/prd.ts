@@ -13,4 +13,5 @@ export const prdTemplate: OutputTemplate = {
   example: 'Document product requirements',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

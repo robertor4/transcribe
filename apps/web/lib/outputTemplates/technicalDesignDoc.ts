@@ -13,4 +13,5 @@ export const technicalDesignDocTemplate: OutputTemplate = {
   example: 'Document technical designs',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

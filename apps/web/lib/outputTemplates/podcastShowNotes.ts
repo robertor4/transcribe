@@ -13,4 +13,5 @@ export const podcastShowNotesTemplate: OutputTemplate = {
   example: 'Create podcast show notes',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

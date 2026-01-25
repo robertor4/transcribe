@@ -13,4 +13,5 @@ export const sowTemplate: OutputTemplate = {
   example: 'Draft a statement of work',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

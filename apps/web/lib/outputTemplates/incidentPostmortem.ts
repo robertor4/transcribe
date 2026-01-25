@@ -13,4 +13,5 @@ export const incidentPostmortemTemplate: OutputTemplate = {
   example: 'Document incident postmortems',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

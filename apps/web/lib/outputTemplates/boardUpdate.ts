@@ -13,4 +13,5 @@ export const boardUpdateTemplate: OutputTemplate = {
   example: 'Prepare board updates',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

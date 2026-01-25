@@ -13,4 +13,5 @@ export const newsletterTemplate: OutputTemplate = {
   example: 'Create newsletters',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

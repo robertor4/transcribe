@@ -13,4 +13,5 @@ export const internalUpdateTemplate: OutputTemplate = {
   example: 'Update stakeholders on project status',
   prompt: null, // Uses backend structured template
   category: 'output',
+  status: 'reviewed',
 };

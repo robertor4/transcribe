@@ -36,4 +36,5 @@ Include an overall assessment and key takeaway.`,
     temperature: 0.4,
     maxTokens: 1500,
   },
+  status: 'reviewed',
 };

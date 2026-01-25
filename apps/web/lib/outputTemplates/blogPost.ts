@@ -32,4 +32,5 @@ Make it publish-ready and engaging for readers.`,
     temperature: 0.8,
     maxTokens: 2000,
   },
+  status: 'reviewed',
 };

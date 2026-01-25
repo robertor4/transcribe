@@ -13,4 +13,5 @@ export const performanceReviewTemplate: OutputTemplate = {
   example: 'Write performance reviews',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

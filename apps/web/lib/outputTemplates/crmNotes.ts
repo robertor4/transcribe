@@ -13,4 +13,5 @@ export const crmNotesTemplate: OutputTemplate = {
   example: 'Create CRM call notes',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

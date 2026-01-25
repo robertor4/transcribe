@@ -856,35 +856,76 @@ Return JSON matching this schema:
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
-STRUCTURE REQUIREMENTS:
-1. Meeting title - derived from primary topic (not "Team Meeting" or generic titles)
-2. Date - extract if mentioned, otherwise leave empty
-3. Attendees - list all participants; use speaker labels if no names given
-4. Agenda items - each with discussion summary and any decisions made
-5. Decisions - ALL decisions, even small ones, captured separately
-6. Action items - ONLY explicit commitments, not suggestions or ideas
-7. Next meeting - if scheduled or discussed
+CRITICAL: You MUST populate ALL sections. This is a structured meeting minutes document - empty sections make it useless.
 
-WRITING STANDARDS:
-- Discussion summaries: 2-4 sentences per agenda item. Focus on conclusions, not the journey.
-- Decisions: Write as declarative statements. "The team will launch on March 1st" not "It was discussed that maybe March 1st could work."
-- Action items: Lead with verb. Include owner if stated. Include deadline if stated.
+REQUIRED OUTPUT STRUCTURE:
 
-BREVITY RULES:
-- Each discussion point: MAX 50 words
-- Each decision: MAX 20 words
-- Each action item: MAX 15 words
+1. **title** (REQUIRED): Descriptive meeting title derived from main topics discussed. NOT generic titles like "Team Meeting" or "Weekly Sync". Example: "Q1 Product Roadmap Review" or "AI Investment Strategy Discussion"
 
-BAD (too verbose):
-"After a long discussion about various options for the launch date, including considerations around resource availability and market timing, the team eventually decided that March 1st would be the best option."
+2. **date** (REQUIRED if mentioned): Extract date from conversation. If not explicitly stated, leave as empty string.
 
-GOOD (concise):
-"Team evaluated launch date options considering resources and market timing. Decision: Launch March 1st."
+3. **attendees** (REQUIRED): List ALL participants mentioned. Use speaker labels (Speaker A, Speaker B) if no names given. NEVER leave empty - every meeting has attendees.
 
-BAD action item: "John said he would try to look into the analytics dashboard situation and see if he could get some numbers together for the next meeting if possible."
-GOOD action item: "John: Pull analytics dashboard numbers before next meeting."
+4. **agendaItems** (REQUIRED - THIS IS THE CORE CONTENT):
+   Group the conversation into logical topics. For EACH topic:
+   - topic: Clear topic title (e.g., "Budget Allocation", "Timeline Discussion")
+   - discussion: Array of 2-5 key discussion points as bullet strings. Capture WHAT was discussed, different viewpoints, and conclusions.
+   - decisions: Array of any decisions made on this topic (can be empty if no decisions)
 
-IMPORTANT: Only record action items that were EXPLICITLY committed to. If someone said "maybe" or "we should think about" - that's not an action item.
+   MINIMUM: Create at least 2-3 agenda items from any meaningful conversation. If the conversation is short, still identify the main topics discussed.
+
+5. **decisions** (REQUIRED): Consolidate ALL decisions from the meeting into this top-level array. Include decisions from agendaItems plus any general decisions. Write as declarative statements: "Launch date set for March 1st" not "It was discussed that March might work."
+
+6. **actionItems** (REQUIRED): Extract EXPLICIT commitments only. For each:
+   - task: What needs to be done (start with verb)
+   - owner: Who is responsible (use name or speaker label)
+   - deadline: When it's due (if mentioned, otherwise omit)
+
+   If NO explicit action items exist, look for implied follow-ups like "I'll send that over" or "Let me check on that."
+
+7. **nextMeeting** (optional): Include if a follow-up meeting was scheduled or discussed.
+
+QUALITY STANDARDS:
+- Discussion points: 1-2 sentences each, focus on substance not filler
+- Decisions: Declarative statements, MAX 20 words each
+- Action items: Verb-first, MAX 15 words each
+
+EXAMPLE OUTPUT STRUCTURE:
+{
+  "type": "meetingMinutes",
+  "title": "Q1 Investment Committee Review",
+  "date": "22 January 2026",
+  "attendees": ["Maurits", "Michael", "Ivo", "Jeroen"],
+  "agendaItems": [
+    {
+      "topic": "AI-FinTech Portfolio Review",
+      "discussion": [
+        "Reviewed current portfolio allocation across AI-FinTech investments",
+        "Discussed risk exposure in current market conditions",
+        "Evaluated performance metrics against Q4 benchmarks"
+      ],
+      "decisions": ["Maintain current allocation with quarterly review"]
+    },
+    {
+      "topic": "New Investment Opportunities",
+      "discussion": [
+        "Presented three new deal opportunities in the pipeline",
+        "Discussed due diligence requirements for each"
+      ],
+      "decisions": ["Proceed with due diligence on Telly investment"]
+    }
+  ],
+  "decisions": [
+    "Security/compliance priority confirmed for AI-FinTech mandate",
+    "Scorecard to be developed for business-critical criteria",
+    "Small investment in Telly approved"
+  ],
+  "actionItems": [
+    {"task": "Draft scorecard for business-critical evaluation", "owner": "Investment Team", "deadline": "Next meeting"},
+    {"task": "Finalize KPI addendum with NRG", "owner": "Maurits", "deadline": "Before tranche decision"}
+  ],
+  "nextMeeting": "Q4 reporting session to be scheduled"
+}
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',

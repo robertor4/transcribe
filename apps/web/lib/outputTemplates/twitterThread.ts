@@ -13,4 +13,5 @@ export const twitterThreadTemplate: OutputTemplate = {
   example: 'Create Twitter threads',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

@@ -13,4 +13,5 @@ export const pressReleaseTemplate: OutputTemplate = {
   example: 'Write press releases',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

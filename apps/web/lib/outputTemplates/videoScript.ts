@@ -13,4 +13,5 @@ export const videoScriptTemplate: OutputTemplate = {
   example: 'Write video scripts',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

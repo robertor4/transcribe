@@ -13,4 +13,5 @@ export const caseStudyTemplate: OutputTemplate = {
   example: 'Create case studies',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

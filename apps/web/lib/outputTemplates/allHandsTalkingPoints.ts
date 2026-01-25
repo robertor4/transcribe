@@ -13,4 +13,5 @@ export const allHandsTalkingPointsTemplate: OutputTemplate = {
   example: 'Prepare all-hands meetings',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

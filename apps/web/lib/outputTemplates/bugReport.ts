@@ -13,4 +13,5 @@ export const bugReportTemplate: OutputTemplate = {
   example: 'Document bug reports',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

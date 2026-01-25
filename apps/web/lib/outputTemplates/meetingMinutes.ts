@@ -13,4 +13,5 @@ export const meetingMinutesTemplate: OutputTemplate = {
   example: 'Document formal meeting records',
   prompt: null, // Prompts handled by backend
   category: 'output',
+  status: 'beta',
 };

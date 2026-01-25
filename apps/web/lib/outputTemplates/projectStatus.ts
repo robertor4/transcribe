@@ -13,4 +13,5 @@ export const projectStatusTemplate: OutputTemplate = {
   example: 'Report project status',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

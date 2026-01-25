@@ -13,4 +13,5 @@ export const interviewAssessmentTemplate: OutputTemplate = {
   example: 'Evaluate interview candidates',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

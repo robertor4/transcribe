@@ -45,6 +45,13 @@ export interface OutputTemplate {
 
   /** Indicates if this is a quick action (simplified template) */
   isQuickAction?: boolean;
+
+  /**
+   * Review status of the template
+   * - 'reviewed': Verified by Neural Summary team, production-ready
+   * - 'beta': New template, still under review
+   */
+  status?: 'reviewed' | 'beta';
 }
 
 /**

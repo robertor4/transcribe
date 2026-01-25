@@ -13,4 +13,5 @@ export const dealQualificationTemplate: OutputTemplate = {
   example: 'Qualify sales deals',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

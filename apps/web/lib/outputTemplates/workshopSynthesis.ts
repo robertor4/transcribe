@@ -13,4 +13,5 @@ export const workshopSynthesisTemplate: OutputTemplate = {
   example: 'Synthesize workshop discussions',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

@@ -13,4 +13,5 @@ export const goalSettingTemplate: OutputTemplate = {
   example: 'Set structured goals',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

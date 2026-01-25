@@ -13,4 +13,5 @@ export const investorUpdateTemplate: OutputTemplate = {
   example: 'Update investors',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };

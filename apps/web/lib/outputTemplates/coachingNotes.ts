@@ -13,4 +13,5 @@ export const coachingNotesTemplate: OutputTemplate = {
   example: 'Document coaching sessions',
   prompt: null,
   category: 'output',
+  status: 'beta',
 };
