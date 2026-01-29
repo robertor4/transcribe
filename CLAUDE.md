@@ -636,6 +636,7 @@ GMAIL_AUTH_USER=roberto@dreamone.nl  # Primary Gmail account for authentication
 GMAIL_FROM_EMAIL=noreply@neuralsummary.com  # Email address shown in FROM field (domain alias)
 GMAIL_APP_PASSWORD=...  # Google App Password from primary account
 TRANSCRIPTION_CONCURRENCY=2  # Number of jobs processed simultaneously (default: 2)
+TURNSTILE_SECRET_KEY=...  # Cloudflare Turnstile secret key for contact form spam protection
 ```
 
 Frontend `.env.local`:
@@ -645,6 +646,7 @@ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
 NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=...  # Cloudflare Turnstile site key for contact form
 ```
 
 ### Scheduled Tasks (Cron Jobs)

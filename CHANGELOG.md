@@ -40,6 +40,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Files: [layout.tsx](apps/web/app/[locale]/layout.tsx), [(authenticated)/layout.tsx](apps/web/app/[locale]/(authenticated)/layout.tsx), [(auth)/layout.tsx](apps/web/app/[locale]/(auth)/layout.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx), [firebase-lazy.ts](apps/web/lib/firebase-lazy.ts), [next.config.ts](apps/web/next.config.ts)
 
 ### Added
+- **Cloudflare Turnstile Spam Protection**: Added CAPTCHA protection to contact form
+  - Integrated Cloudflare Turnstile for invisible bot detection
+  - Added honeypot field as additional spam layer
+  - Backend verification of Turnstile tokens before processing submissions
+  - Better UX than traditional CAPTCHA (no clicking required)
+  - Requires `TURNSTILE_SECRET_KEY` (backend) and `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (frontend)
+  - Added environment variables to [.env.example](.env.example), [.env.production.example](.env.production.example), and created [apps/web/.env.example](apps/web/.env.example)
+  - Files: [ContactForm.tsx](apps/web/components/ContactForm.tsx), [contact.controller.ts](apps/api/src/contact/contact.controller.ts)
 - **Free Tier Recording Limit Enforcement**: Proper 60-minute limit for live recordings
   - Frontend auto-stops at 59 minutes (1-min buffer before backend limit)
   - Backend accepts up to 65 minutes (buffer for timing edge cases)

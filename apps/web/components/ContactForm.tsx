@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/Button';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 interface ContactFormProps {
   locale: string;
@@ -16,6 +17,7 @@ interface FormData {
   email: string;
   subject: string;
   message: string;
+  website: string; // Honeypot field
 }
 
 interface FormErrors {
@@ -34,8 +36,10 @@ export function ContactForm({ locale }: ContactFormProps) {
     email: '',
     subject: '',
     message: '',
+    website: '', // Honeypot field
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const subjectOptions = [
     { value: 'general', label: t('form.subjects.general') },
@@ -78,6 +82,11 @@ export function ContactForm({ locale }: ContactFormProps) {
       return;
     }
 
+    if (!turnstileToken) {
+      setFormState('error');
+      return;
+    }
+
     setFormState('submitting');
 
     try {
@@ -88,6 +97,7 @@ export function ContactForm({ locale }: ContactFormProps) {
         },
         body: JSON.stringify({
           ...formData,
+          turnstileToken,
           locale,
         }),
       });
@@ -97,7 +107,8 @@ export function ContactForm({ locale }: ContactFormProps) {
       }
 
       setFormState('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+      setTurnstileToken('');
     } catch (error) {
       console.error('Contact form error:', error);
       setFormState('error');
@@ -248,6 +259,28 @@ export function ContactForm({ locale }: ContactFormProps) {
         {errors.message && (
           <p className="mt-1 text-sm text-red-600">{errors.message}</p>
         )}
+      </div>
+
+      {/* Honeypot field - hidden from users, catches bots */}
+      <input
+        type="text"
+        name="website"
+        value={formData.website}
+        onChange={handleChange}
+        style={{ display: 'none' }}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+      />
+
+      {/* Turnstile CAPTCHA */}
+      <div className="flex justify-center">
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+          onSuccess={setTurnstileToken}
+          onError={() => setTurnstileToken('')}
+          onExpire={() => setTurnstileToken('')}
+        />
       </div>
 
       {/* Submit */}
