@@ -24,6 +24,7 @@ export class EmailService {
   private transporter: nodemailer.Transporter | null = null;
   private fromEmail: string;
   private frontendUrl: string;
+  private appUrl: string;
 
   constructor(private configService: ConfigService) {
     // Separate auth user from FROM email for domain alias support
@@ -37,6 +38,7 @@ export class EmailService {
     this.fromEmail = gmailFromEmail;
     this.frontendUrl =
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
+    this.appUrl = this.configService.get<string>('APP_URL') || this.frontendUrl;
 
     if (gmailAuthUser && gmailAppPassword) {
       // PRODUCTION FIX: Use explicit SMTP config for Hetzner/data center compatibility
@@ -119,7 +121,7 @@ export class EmailService {
     }
 
     try {
-      const transcriptionUrl = `${this.frontendUrl}/${user.preferredLanguage || 'en'}/conversation/${transcription.id}`;
+      const transcriptionUrl = `${this.appUrl}/${user.preferredLanguage || 'en'}/conversation/${transcription.id}`;
       const recipientName = user.displayName || 'there';
       const transcriptionTitle = transcription.title || transcription.fileName;
 
@@ -789,7 +791,7 @@ export class EmailService {
               <div class="footer" style="text-align: center; margin-top: 40px; padding-top: 25px; border-top: 1px solid #e5e7eb;">
                 <p class="footer-text" style="font-size: 13px; color: #9ca3af; margin: 5px 0;">${getLocalizedContent('footer1')}</p>
                 <p class="unsubscribe" style="font-size: 12px; color: #9ca3af; margin-top: 15px;">
-                  <a href="${this.frontendUrl}/${locale}/settings" style="color: #8D6AFA; text-decoration: none;">${getLocalizedContent('unsubscribe')}</a>
+                  <a href="${this.appUrl}/${locale}/settings" style="color: #8D6AFA; text-decoration: none;">${getLocalizedContent('unsubscribe')}</a>
                 </p>
               </div>
             </td>

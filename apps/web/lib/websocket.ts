@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { auth } from './firebase';
 import { WEBSOCKET_EVENTS, ERROR_CODES } from '@transcribe/shared';
-import { getWebSocketUrl } from './config';
+import { getWebSocketUrl, isProduction as checkIsProduction } from './config';
 
 interface AuthError {
   code: string;
@@ -34,9 +34,7 @@ class WebSocketService {
     const socketUrl = getWebSocketUrl();
 
     // In production, WebSocket connects through the /api proxy
-    const isProduction = typeof window !== 'undefined' &&
-      (window.location.hostname === 'neuralsummary.com' ||
-       window.location.hostname === 'www.neuralsummary.com');
+    const isProduction = checkIsProduction();
 
     this.socket = io(socketUrl, {
       auth: { token },

@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export default async function HomePage({
   params,
@@ -6,7 +7,14 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale = 'en' } = await params;
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
 
-  // Server-side redirect ensures crawlers and users land on the localized landing page instantly.
+  // On app domain, go straight to dashboard
+  if (host.startsWith('app.')) {
+    redirect(`/${locale}/dashboard`);
+  }
+
+  // On marketing domain (or dev), go to landing page
   redirect(`/${locale}/landing`);
 }

@@ -275,6 +275,12 @@ ssh $SERVER << 'EOF'
     else
         echo "⚠️  https://neuralsummary.com returned HTTP $SITE_STATUS"
     fi
+    APP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://app.neuralsummary.com 2>/dev/null || echo "000")
+    if [ "$APP_STATUS" = "200" ] || [ "$APP_STATUS" = "302" ] || [ "$APP_STATUS" = "307" ]; then
+        echo "✅ https://app.neuralsummary.com is accessible (HTTP $APP_STATUS)"
+    else
+        echo "⚠️  https://app.neuralsummary.com returned HTTP $APP_STATUS"
+    fi
 EOF
 
 # Show recent logs

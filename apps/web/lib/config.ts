@@ -3,12 +3,18 @@
 export function isProduction(): boolean {
   // Check if we're running in the browser
   if (typeof window !== 'undefined') {
-    // In production, we're running on neuralsummary.com
-    return window.location.hostname === 'neuralsummary.com' || 
-           window.location.hostname === 'www.neuralsummary.com';
+    const h = window.location.hostname;
+    return h === 'neuralsummary.com' ||
+           h === 'www.neuralsummary.com' ||
+           h === 'app.neuralsummary.com';
   }
   // Server-side: check NODE_ENV
   return process.env.NODE_ENV === 'production';
+}
+
+/** App domain base URL (empty string in dev for relative links) */
+export function getAppUrl(): string {
+  return process.env.NEXT_PUBLIC_APP_URL || '';
 }
 
 export function getApiUrl(): string {

@@ -36,13 +36,17 @@ export class StripeController {
     @Body() dto: CreateCheckoutSessionDto,
   ) {
     const user = req.user;
-    const frontendUrl =
+    const appUrl =
+      this.configService.get<string>('APP_URL') ||
+      this.configService.get<string>('FRONTEND_URL') ||
+      'http://localhost:3000';
+    const marketingUrl =
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
     const successUrl =
       dto.successUrl ||
-      `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = dto.cancelUrl || `${frontendUrl}/pricing`;
+      `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = dto.cancelUrl || `${marketingUrl}/pricing`;
 
     try {
       // Get full user record from Firestore to include displayName
@@ -334,11 +338,15 @@ export class StripeController {
   @UseGuards(FirebaseAuthGuard)
   async createTrialSession(@Req() req: any) {
     const user = req.user;
-    const frontendUrl =
+    const appUrl =
+      this.configService.get<string>('APP_URL') ||
+      this.configService.get<string>('FRONTEND_URL') ||
+      'http://localhost:3000';
+    const marketingUrl =
       this.configService.get<string>('FRONTEND_URL') || 'http://localhost:3000';
 
-    const successUrl = `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&trial=true`;
-    const cancelUrl = `${frontendUrl}/pricing`;
+    const successUrl = `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&trial=true`;
+    const cancelUrl = `${marketingUrl}/pricing`;
 
     try {
       // Get full user record from Firestore

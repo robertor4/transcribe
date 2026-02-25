@@ -262,18 +262,35 @@ jobs:
 
       - name: Verify site accessibility
         run: |
-          echo "🌐 Checking site accessibility..."
+          echo "🌐 Checking marketing site..."
           for i in {1..5}; do
             SITE_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" https://neuralsummary.com 2>/dev/null || echo "000")
             if [ "$SITE_STATUS" = "200" ]; then
               echo "✅ https://neuralsummary.com is accessible (HTTP $SITE_STATUS)"
-              exit 0
+              break
             fi
             echo "⏳ Attempt $i/5: HTTP $SITE_STATUS, retrying..."
             sleep 5
           done
-          echo "❌ Site not accessible after 5 attempts"
-          exit 1
+          if [ "$SITE_STATUS" != "200" ]; then
+            echo "❌ Marketing site not accessible after 5 attempts"
+            exit 1
+          fi
+
+          echo "🌐 Checking app site..."
+          for i in {1..5}; do
+            APP_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" https://app.neuralsummary.com 2>/dev/null || echo "000")
+            if [ "$APP_STATUS" = "200" ] || [ "$APP_STATUS" = "302" ] || [ "$APP_STATUS" = "307" ]; then
+              echo "✅ https://app.neuralsummary.com is accessible (HTTP $APP_STATUS)"
+              break
+            fi
+            echo "⏳ Attempt $i/5: HTTP $APP_STATUS, retrying..."
+            sleep 5
+          done
+          if [ "$APP_STATUS" != "200" ] && [ "$APP_STATUS" != "302" ] && [ "$APP_STATUS" != "307" ]; then
+            echo "❌ App site not accessible after 5 attempts"
+            exit 1
+          fi
 
       - name: Show recent logs
         if: always()

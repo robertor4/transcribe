@@ -22,7 +22,10 @@ import { FirebaseService } from '../firebase/firebase.service';
   cors: {
     origin:
       process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
+        ? [
+            process.env.FRONTEND_URL || 'https://neuralsummary.com',
+            process.env.APP_URL || 'https://app.neuralsummary.com',
+          ]
         : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     credentials: true,
   },

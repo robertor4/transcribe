@@ -9,22 +9,22 @@ Disallow: /dashboard/
 Disallow: /admin/
 Disallow: /_next/
 Disallow: /static/
+Disallow: /*/conversation/
+Disallow: /*/folder/
+Disallow: /*/settings
+Disallow: /*/login
+Disallow: /*/signup
 
 # Allow search engines to crawl public pages
 Allow: /en/
 Allow: /es/
 Allow: /fr/
 Allow: /de/
-Allow: /ja/
-Allow: /zh/
+Allow: /nl/
 Allow: /landing
-Allow: /login
-Allow: /features
 Allow: /pricing
-Allow: /about
-Allow: /blog
+Allow: /examples
 Allow: /contact
-Allow: /help
 
 # Specific crawler instructions
 User-agent: Googlebot

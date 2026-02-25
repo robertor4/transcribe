@@ -73,6 +73,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - FRONTEND_URL=https://neuralsummary.com
+      - APP_URL=https://app.neuralsummary.com
     env_file:
       - .env.production
     depends_on:
@@ -92,8 +93,8 @@ services:
     labels:
       - "traefik.enable=true"
 
-      # WebSocket routing (highest priority for socket.io)
-      - "traefik.http.routers.websocket.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && PathPrefix(`/api/socket.io`)"
+      # WebSocket routing (highest priority for socket.io) - app domain only
+      - "traefik.http.routers.websocket.rule=Host(`app.neuralsummary.com`) && PathPrefix(`/api/socket.io`)"
       - "traefik.http.routers.websocket.entrypoints=websecure"
       - "traefik.http.routers.websocket.tls=true"
       - "traefik.http.routers.websocket.tls.certresolver=letsencrypt"
@@ -107,8 +108,8 @@ services:
       # Service configuration for WebSocket
       - "traefik.http.services.api-websocket.loadbalancer.server.port=3001"
 
-      # Stripe webhook routing (high priority, NO buffering to preserve raw body for signature verification)
-      - "traefik.http.routers.stripe-webhook.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && Path(`/api/stripe/webhook`)"
+      # Stripe webhook routing (high priority, NO buffering to preserve raw body for signature verification) - app domain only
+      - "traefik.http.routers.stripe-webhook.rule=Host(`app.neuralsummary.com`) && Path(`/api/stripe/webhook`)"
       - "traefik.http.routers.stripe-webhook.entrypoints=websecure"
       - "traefik.http.routers.stripe-webhook.tls=true"
       - "traefik.http.routers.stripe-webhook.tls.certresolver=letsencrypt"
@@ -119,8 +120,9 @@ services:
       # Increase max request body size for file uploads (5GB)
       - "traefik.http.middlewares.api-buffering.buffering.maxRequestBodyBytes=5368709120"
 
-      # API routing for regular HTTP requests
-      - "traefik.http.routers.api.rule=(Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)) && PathPrefix(`/api`)"
+      # API routing for regular HTTP requests - app domain only
+      # On marketing domain, /api/* falls through to Next.js proxy (apps/web/app/api/[...path]/route.ts)
+      - "traefik.http.routers.api.rule=Host(`app.neuralsummary.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
@@ -164,8 +166,8 @@ services:
     labels:
       - "traefik.enable=true"
       
-      # Frontend routing (lower priority, catches everything else)
-      - "traefik.http.routers.web.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      # Frontend routing (lower priority, catches everything else) - both domains
+      - "traefik.http.routers.web.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`) || Host(`app.neuralsummary.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
@@ -173,8 +175,8 @@ services:
       - "traefik.http.routers.web.service=web-service"
       - "traefik.http.services.web-service.loadbalancer.server.port=3000"
       
-      # HTTP to HTTPS redirect
-      - "traefik.http.routers.web-redirect.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`)"
+      # HTTP to HTTPS redirect - both domains
+      - "traefik.http.routers.web-redirect.rule=Host(`neuralsummary.com`) || Host(`www.neuralsummary.com`) || Host(`app.neuralsummary.com`)"
       - "traefik.http.routers.web-redirect.entrypoints=web"
       - "traefik.http.routers.web-redirect.middlewares=https-redirect@docker"
       

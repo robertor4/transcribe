@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
+import { getAppUrl } from '@/lib/config';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { MobileNav } from '@/components/MobileNav';
 
@@ -13,6 +14,7 @@ interface PublicHeaderProps {
 export function PublicHeader({ locale }: PublicHeaderProps) {
   const tLanding = useTranslations('landing');
   const { user } = useAuth();
+  const appUrl = getAppUrl();
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-[#23194B]/95 backdrop-blur-md z-50 border-b border-white/10 overflow-x-hidden">
@@ -54,29 +56,29 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             </Link>
             <LanguageSwitcher variant="dark" />
             {user ? (
-              <Link
-                href={`/${locale}/dashboard`}
+              <a
+                href={`${appUrl}/${locale}/dashboard`}
                 className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
                 aria-label="Go to Dashboard"
               >
                 {tLanding('nav.dashboard')}
-              </Link>
+              </a>
             ) : (
               <>
-                <Link
-                  href={`/${locale}/login`}
+                <a
+                  href={`${appUrl}/${locale}/login`}
                   className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
                   aria-label="Log in to Neural Summary"
                 >
                   {tLanding('nav.login')}
-                </Link>
-                <Link
-                  href={`/${locale}/signup`}
+                </a>
+                <a
+                  href={`${appUrl}/${locale}/signup`}
                   className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
                   {tLanding('nav.getStarted')}
-                </Link>
+                </a>
               </>
             )}
           </div>

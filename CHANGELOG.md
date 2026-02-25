@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Domain Split**: Marketing site on `neuralsummary.com`, app on `app.neuralsummary.com`
+  - Next.js middleware routes requests to the correct domain based on hostname
+  - Traefik API routes serve `app.neuralsummary.com` only; marketing `/api/*` handled by Next.js proxy
+  - Cross-domain navigation links in PublicHeader and MobileNav
+  - `APP_URL` environment variable for backend app-specific links (Stripe, email, conversations)
+  - Separate Stripe success/cancel URLs (app domain vs marketing domain)
+  - WebSocket CORS updated to support both origins
+  - GitHub Actions health checks verify both domains
+  - Files: [middleware.ts](apps/web/middleware.ts), [docker-compose.prod.yml](docker-compose.prod.yml), [config.ts](apps/web/lib/config.ts), [websocket.ts](apps/web/lib/websocket.ts), [PublicHeader.tsx](apps/web/components/PublicHeader.tsx), [MobileNav.tsx](apps/web/components/MobileNav.tsx), [websocket.gateway.ts](apps/api/src/websocket/websocket.gateway.ts), [stripe.controller.ts](apps/api/src/stripe/stripe.controller.ts), [email.service.ts](apps/api/src/email/email.service.ts)
+
+### Fixed
+- **Sitemap**: Fixed stale `neuralnotes.ai` domain (now uses `neuralsummary.com`), corrected locale list (removed `ja`/`zh`, added `nl`), removed non-existent pages
+  - File: [sitemap.ts](apps/web/app/sitemap.ts)
+- **robots.txt**: Fixed locale list (removed `ja`/`zh`, added `nl`), removed references to non-existent pages, added disallow rules for app routes
+  - File: [robots.txt](apps/web/public/robots.txt)
+- **WebSocket**: Eliminated duplicate production hostname check, now uses shared `isProduction()` from config
+  - File: [websocket.ts](apps/web/lib/websocket.ts)
+
 ### Changed
 - **Font Loading Optimization**: Switched from Google Fonts external request to `next/font`
   - Fonts are now self-hosted and auto-subsetted (zero external requests)

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/contexts/AuthContext';
+import { getAppUrl } from '@/lib/config';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MobileNavProps {
@@ -17,6 +18,7 @@ export function MobileNav({ locale }: MobileNavProps) {
   const [mounted, setMounted] = useState(false);
   const t = useTranslations('landing');
   const { user } = useAuth();
+  const appUrl = getAppUrl();
 
   useEffect(() => {
     setMounted(true);
@@ -87,30 +89,30 @@ export function MobileNav({ locale }: MobileNavProps) {
             {/* Authentication Actions */}
             <div className="py-4 border-t border-b border-white/10 space-y-3">
               {user ? (
-                <Link
-                  href={`/${locale}/dashboard`}
+                <a
+                  href={`${appUrl}/${locale}/dashboard`}
                   onClick={() => setIsOpen(false)}
                   className="block px-4 py-3 text-base font-medium text-center text-white border border-white/30 hover:border-white/60 hover:bg-white/10 rounded-full transition-colors"
                 >
                   {t('nav.dashboard')}
-                </Link>
+                </a>
               ) : (
                 <>
-                  <Link
-                    href={`/${locale}/login`}
+                  <a
+                    href={`${appUrl}/${locale}/login`}
                     onClick={() => setIsOpen(false)}
                     className="block px-4 py-3 text-base font-medium text-center bg-transparent border-2 border-white/30 text-white hover:border-white/60 hover:bg-white/10 rounded-full transition-colors"
                   >
                     {t('nav.login')}
-                  </Link>
+                  </a>
 
-                  <Link
-                    href={`/${locale}/signup`}
+                  <a
+                    href={`${appUrl}/${locale}/signup`}
                     onClick={() => setIsOpen(false)}
                     className="block px-4 py-3 text-base font-medium text-center text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] rounded-full transition-colors"
                   >
                     {t('nav.getStarted')}
-                  </Link>
+                  </a>
                 </>
               )}
             </div>
