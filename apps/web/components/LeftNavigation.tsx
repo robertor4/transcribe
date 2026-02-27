@@ -36,9 +36,9 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const { count: importedCount } = useImportedConversations();
   // Simplified toggle state - works on both touch and pointer devices
-  const [isFoldersExpanded, setIsFoldersExpanded] = useState(false);
+  const [isFoldersExpanded, setIsFoldersExpanded] = useState(true);
   // Delayed state for staggered folder item animations
-  const [foldersAnimateIn, setFoldersAnimateIn] = useState(false);
+  const [foldersAnimateIn, setFoldersAnimateIn] = useState(true);
   const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
   const [isClearing, setIsClearing] = useState(false);
 
