@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Pagination persistence**: Conversations table now remembers the current page and page size across navigation via sessionStorage — navigating to a conversation and back no longer resets to page 1; clicking "Dashboard" in the sidebar resets to page 1 ([ConversationsTable.tsx](apps/web/components/dashboard/conversations-table/ConversationsTable.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx))
+
 ### Changed
 - **Conversations Data Table**: Replaced flat conversation card list on dashboard with a shadcn data table
   - New columns: Checkbox (bulk select), Title (with inline status badges), Status (colored dot badges), AI Assets count, Duration, Shared (public/private/shared with N people), Date (sortable), Actions dropdown

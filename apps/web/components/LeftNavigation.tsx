@@ -224,6 +224,10 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
           <div className="space-y-1">
             <Link
               href={`/${locale}/dashboard`}
+              onClick={() => {
+                try { sessionStorage.removeItem('neural-summary-conversations-pagination'); } catch {}
+                window.dispatchEvent(new CustomEvent('reset-conversations-pagination'));
+              }}
               className="group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               <Home className="w-4 h-4 text-white/60 flex-shrink-0 group-hover:text-white transition-colors" />

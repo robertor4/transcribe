@@ -27,6 +27,32 @@ interface ConversationsTableProps {
 
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
+const PAGINATION_STORAGE_KEY = 'neural-summary-conversations-pagination';
+
+function loadPaginationState(): { page: number; pageSize: number } {
+  if (typeof window === 'undefined') return { page: 1, pageSize: DEFAULT_PAGE_SIZE };
+  try {
+    const stored = sessionStorage.getItem(PAGINATION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        page: typeof parsed.page === 'number' && parsed.page >= 1 ? parsed.page : 1,
+        pageSize: (PAGE_SIZE_OPTIONS as readonly number[]).includes(parsed.pageSize) ? parsed.pageSize : DEFAULT_PAGE_SIZE,
+      };
+    }
+  } catch {
+    // Ignore invalid stored state
+  }
+  return { page: 1, pageSize: DEFAULT_PAGE_SIZE };
+}
+
+function savePaginationState(page: number, pageSize: number) {
+  try {
+    sessionStorage.setItem(PAGINATION_STORAGE_KEY, JSON.stringify({ page, pageSize }));
+  } catch {
+    // Ignore storage errors
+  }
+}
 
 export function ConversationsTable({
   conversations,
@@ -35,8 +61,8 @@ export function ConversationsTable({
   onNewConversation,
 }: ConversationsTableProps) {
   const t = useTranslations('dashboard');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(() => loadPaginationState().page);
+  const [pageSize, setPageSize] = useState(() => loadPaginationState().pageSize);
 
   const {
     displayedConversations,
@@ -77,10 +103,17 @@ export function ConversationsTable({
     });
   }, [visibleIds, setSelectedIds]);
 
-  // Reset to page 1 when filters/search/pageSize change
+  // Persist pagination state to sessionStorage
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, statusFilter, pageSize]);
+    savePaginationState(currentPage, pageSize);
+  }, [currentPage, pageSize]);
+
+  // Listen for explicit reset from sidebar Dashboard link
+  useEffect(() => {
+    const reset = () => setCurrentPage(1);
+    window.addEventListener('reset-conversations-pagination', reset);
+    return () => window.removeEventListener('reset-conversations-pagination', reset);
+  }, []);
 
   // Clamp page when data changes (e.g. after deletion)
   useEffect(() => {
@@ -93,8 +126,20 @@ export function ConversationsTable({
     setCurrentPage(page);
   }, []);
 
+  // Reset to page 1 when search/filter/pageSize change (explicit, not effect-based)
+  const handleSearchChange = useCallback((query: string) => {
+    onSearchChange(query);
+    setCurrentPage(1);
+  }, [onSearchChange]);
+
+  const handleStatusFilterChange = useCallback((filter: typeof statusFilter) => {
+    onStatusFilterChange(filter);
+    setCurrentPage(1);
+  }, [onStatusFilterChange]);
+
   const handlePageSizeChange = useCallback((size: number) => {
     setPageSize(size);
+    setCurrentPage(1);
   }, []);
 
   const handleDeleteSelected = useCallback(async () => {
@@ -162,9 +207,9 @@ export function ConversationsTable({
 
       <ConversationsTableToolbar
         searchQuery={searchQuery}
-        onSearchChange={onSearchChange}
+        onSearchChange={handleSearchChange}
         statusFilter={statusFilter}
-        onStatusFilterChange={onStatusFilterChange}
+        onStatusFilterChange={handleStatusFilterChange}
         selectedIds={selectedIds}
         clearSelection={clearSelection}
         onDeleteSelected={handleDeleteSelected}
