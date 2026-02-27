@@ -34,6 +34,8 @@ export function useTheme() {
 
     if (mode === 'dark') {
       root.classList.add('dark');
+    } else if (mode === 'light') {
+      root.classList.add('light');
     } else if (mode === 'system') {
       // System mode - respect OS preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -41,7 +43,6 @@ export function useTheme() {
         root.classList.add('dark');
       }
     }
-    // Light mode - no dark class needed
   };
 
   const setTheme = (newTheme: ThemeMode) => {

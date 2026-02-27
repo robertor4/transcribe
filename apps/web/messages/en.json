@@ -214,6 +214,47 @@
       "name-desc": "Z-A",
       "date-desc": "Newest",
       "date-asc": "Oldest"
+    },
+    "table": {
+      "title": "Title",
+      "aiAssets": "AI Assets",
+      "duration": "Duration",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions",
+      "searchPlaceholder": "Search conversations...",
+      "statusAll": "All statuses",
+      "statusPending": "Pending",
+      "statusReady": "Ready",
+      "statusProcessing": "Processing",
+      "statusFailed": "Failed",
+      "selected": "{count} selected",
+      "openSummary": "Open summary",
+      "openTranscript": "Open transcript",
+      "moveToFolder": "Move to folder",
+      "delete": "Delete",
+      "deleteTitle": "Delete conversation?",
+      "deleteMessage": "This action cannot be undone. The conversation and all its AI assets will be permanently deleted.",
+      "deleteSuccess": "Conversation deleted",
+      "deleteError": "Failed to delete conversation",
+      "clearSelection": "Clear",
+      "showingOf": "{count} of {total}",
+      "loadMore": "Show more ({count} remaining)",
+      "showingRange": "Showing {start}-{end} of {total}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "noResults": "No conversations match your search",
+      "noDuration": "--",
+      "deleteMultipleTitle": "Delete {count} conversations?",
+      "deleteMultipleMessage": "This action cannot be undone. All selected conversations and their AI assets will be permanently deleted.",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "cancel": "Cancel",
+      "rowsPerPage": "Rows per page",
+      "shared": "Shared",
+      "public": "Public",
+      "private": "Private",
+      "sharedWith": "{count, plural, one {# person} other {# people}}"
     }
   },
   "upload": {
@@ -2372,10 +2413,26 @@
       "productLaunch": {
         "actionItems": {
           "items": [
-            { "task": "Finalize Q1 launch timeline and share with stakeholders", "owner": "Sarah", "deadline": "Jan 8" },
-            { "task": "Review beta feedback and prioritize bug fixes", "owner": "Dev Team", "deadline": "Jan 10" },
-            { "task": "Prepare press release and media kit", "owner": "Marketing", "deadline": "Jan 20" },
-            { "task": "Schedule customer webinar for launch week", "owner": "CS Team", "deadline": "Jan 25" }
+            {
+              "task": "Finalize Q1 launch timeline and share with stakeholders",
+              "owner": "Sarah",
+              "deadline": "Jan 8"
+            },
+            {
+              "task": "Review beta feedback and prioritize bug fixes",
+              "owner": "Dev Team",
+              "deadline": "Jan 10"
+            },
+            {
+              "task": "Prepare press release and media kit",
+              "owner": "Marketing",
+              "deadline": "Jan 20"
+            },
+            {
+              "task": "Schedule customer webinar for launch week",
+              "owner": "CS Team",
+              "deadline": "Jan 25"
+            }
           ]
         },
         "email": {
@@ -2389,14 +2446,21 @@
             "Marketing budget approved for influencer campaign"
           ],
           "closing": "Thanks everyone.",
-          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+          "signature": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager",
+            "initials": "SM"
+          }
         },
         "blogPost": {
           "headline": "What We Learned Shipping in January",
           "subheading": "Lessons from our team on building momentum before day one",
           "hook": "The old playbook says wait until perfect. We tried something different.",
           "body": "Our beta testers weren't just finding bugs. They were shaping the product direction. Their feedback led us to pivot our onboarding flow entirely. The result: a 40% improvement in activation rates before we even launched.",
-          "quote": { "text": "The product felt like it was built for us, not just sold to us.", "attribution": "Beta User" },
+          "quote": {
+            "text": "The product felt like it was built for us, not just sold to us.",
+            "attribution": "Beta User"
+          },
           "imageAlt": "Abstract geometric shapes representing innovation"
         },
         "linkedin": {
@@ -2408,16 +2472,36 @@
           ],
           "result": "2,000 signups in the first week. Not because we were perfect. Because we were present.",
           "callToAction": "What's the biggest lesson from your last launch?",
-          "author": { "name": "Sarah Mitchell", "title": "Product Manager at TechFlow", "initials": "SM" }
+          "author": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager at TechFlow",
+            "initials": "SM"
+          }
         }
       },
       "clientDiscovery": {
         "actionItems": {
           "items": [
-            { "task": "Send proposal with three package options", "owner": "Marcus", "deadline": "Jan 15" },
-            { "task": "Schedule technical deep-dive with their CTO", "owner": "Marcus", "deadline": "Jan 12" },
-            { "task": "Prepare case study from similar fintech project", "owner": "Team", "deadline": "Jan 14" },
-            { "task": "Draft timeline for Q2 implementation", "owner": "Marcus", "deadline": "Jan 18" }
+            {
+              "task": "Send proposal with three package options",
+              "owner": "Marcus",
+              "deadline": "Jan 15"
+            },
+            {
+              "task": "Schedule technical deep-dive with their CTO",
+              "owner": "Marcus",
+              "deadline": "Jan 12"
+            },
+            {
+              "task": "Prepare case study from similar fintech project",
+              "owner": "Team",
+              "deadline": "Jan 14"
+            },
+            {
+              "task": "Draft timeline for Q2 implementation",
+              "owner": "Marcus",
+              "deadline": "Jan 18"
+            }
           ]
         },
         "email": {
@@ -2431,21 +2515,36 @@
             "Integration with your existing Salesforce instance"
           ],
           "closing": "Looking forward to the possibility of working together.",
-          "signature": { "name": "Marcus Chen", "title": "Senior Consultant", "initials": "MC" }
+          "signature": {
+            "name": "Marcus Chen",
+            "title": "Senior Consultant",
+            "initials": "MC"
+          }
         },
         "blogPost": {
           "headline": "The Discovery Call That Changed How I Sell",
           "subheading": "Why listening beats pitching every time",
           "hook": "I used to walk into discovery calls with a deck. Now I walk in with questions.",
           "body": "The client mentioned their real problem 47 minutes in. If I had been pitching, I would have missed it entirely. Their team wasn't struggling with technology. They were drowning in manual processes that nobody had time to fix.",
-          "quote": { "text": "You understood our problem before we finished explaining it.", "attribution": "Client Feedback" },
+          "quote": {
+            "text": "You understood our problem before we finished explaining it.",
+            "attribution": "Client Feedback"
+          },
           "imageAlt": "Abstract shapes representing conversation and connection"
         },
         "communicationAnalysis": {
           "overallAssessment": "Strong discovery skills with room to deepen client understanding. You ask good questions but could let answers breathe more.",
           "dimensions": {
-            "clarity": { "name": "Clarity", "strength": "Questions were specific and actionable", "improvement": "Summarize key points before moving on" },
-            "activeListening": { "name": "Active Listening", "strength": "Built on client responses naturally", "improvement": "Pause longer after complex answers" }
+            "clarity": {
+              "name": "Clarity",
+              "strength": "Questions were specific and actionable",
+              "improvement": "Summarize key points before moving on"
+            },
+            "activeListening": {
+              "name": "Active Listening",
+              "strength": "Built on client responses naturally",
+              "improvement": "Pause longer after complex answers"
+            }
           }
         }
       }

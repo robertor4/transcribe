@@ -5,6 +5,7 @@
  *
  * Provides a single source of truth for conversations data,
  * preventing duplicate API calls when multiple components need the same data.
+ * All conversations are fetched in a single call; pagination is handled client-side.
  */
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo, ReactNode } from 'react';
@@ -22,10 +23,7 @@ interface ConversationsContextType {
   recentlyOpenedCleared: boolean;
   isLoading: boolean;
   error: Error | null;
-  hasMore: boolean;
-  total: number;
   progressMap: Map<string, TranscriptionProgress>;
-  loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   refreshRecentlyOpened: () => Promise<void>;
   clearRecentlyOpened: () => Promise<void>;
@@ -35,19 +33,14 @@ const ConversationsContext = createContext<ConversationsContextType | undefined>
 
 interface ConversationsProviderProps {
   children: ReactNode;
-  pageSize?: number;
 }
 
-export function ConversationsProvider({ children, pageSize = 20 }: ConversationsProviderProps) {
+export function ConversationsProvider({ children }: ConversationsProviderProps) {
   const { user } = useAuth();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [progressMap, setProgressMap] = useState<Map<string, TranscriptionProgress>>(
     new Map()
   );
@@ -58,38 +51,23 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
   const hasFetchedRef = useRef(false);
   const hasFetchedRecentlyOpenedRef = useRef(false);
 
-  // Fetch conversations
+  // Fetch all conversations in a single call
   const fetchConversations = useCallback(
-    async (pageNum: number, append: boolean = false) => {
+    async () => {
       if (!user) return;
 
       try {
-        if (append) {
-          setIsLoadingMore(true);
-        } else {
-          setIsLoading(true);
-        }
+        setIsLoading(true);
         setError(null);
-
-        const result = await listConversations(pageNum, pageSize);
-
-        if (append) {
-          setConversations((prev) => [...prev, ...result.conversations]);
-        } else {
-          setConversations(result.conversations);
-        }
-
-        setTotal(result.total);
-        setHasMore(result.hasMore);
-        setPage(pageNum);
+        const result = await listConversations();
+        setConversations(result);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch conversations'));
       } finally {
         setIsLoading(false);
-        setIsLoadingMore(false);
       }
     },
-    [user, pageSize]
+    [user]
   );
 
   // Fetch recently opened conversations
@@ -112,7 +90,7 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
   useEffect(() => {
     if (user && user.emailVerified && !hasFetchedRef.current) {
       hasFetchedRef.current = true;
-      fetchConversations(1);
+      fetchConversations();
     } else if (!user) {
       hasFetchedRef.current = false;
       setConversations([]);
@@ -159,7 +137,7 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
           next.delete(transcriptionId);
           return next;
         });
-        fetchConversations(1);
+        fetchConversations();
       }
     );
 
@@ -172,7 +150,7 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
           next.delete(transcriptionId);
           return next;
         });
-        fetchConversations(1);
+        fetchConversations();
       }
     );
 
@@ -197,15 +175,15 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     });
   }, [user, conversations]);
 
-  const loadMore = useCallback(async () => {
-    if (hasMore && !isLoadingMore) {
-      await fetchConversations(page + 1, true);
-    }
-  }, [hasMore, isLoadingMore, page, fetchConversations]);
-
   const refresh = useCallback(async () => {
-    await fetchConversations(1);
-  }, [fetchConversations]);
+    if (!user) return;
+    try {
+      const result = await listConversations();
+      setConversations(result);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch conversations'));
+    }
+  }, [user]);
 
   const refreshRecentlyOpened = useCallback(async () => {
     await fetchRecentlyOpened();
@@ -230,14 +208,11 @@ export function ConversationsProvider({ children, pageSize = 20 }: Conversations
     recentlyOpenedCleared,
     isLoading,
     error,
-    hasMore,
-    total,
     progressMap,
-    loadMore,
     refresh,
     refreshRecentlyOpened,
     clearRecentlyOpened,
-  }), [conversations, recentlyOpened, recentlyOpenedCleared, isLoading, error, hasMore, total, progressMap, loadMore, refresh, refreshRecentlyOpened, clearRecentlyOpened]);
+  }), [conversations, recentlyOpened, recentlyOpenedCleared, isLoading, error, progressMap, refresh, refreshRecentlyOpened, clearRecentlyOpened]);
 
   return (
     <ConversationsContext.Provider value={contextValue}>

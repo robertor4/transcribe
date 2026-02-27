@@ -63,7 +63,7 @@ export function CollapsibleSidebar({
         </div>
       ) : (
         /* Expanded State - Show full content */
-        <div className="h-full overflow-hidden">
+        <div className="h-full overflow-y-auto scrollbar-subtle">
           {children}
         </div>
       )}

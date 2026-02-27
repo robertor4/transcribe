@@ -214,6 +214,47 @@
       "name-desc": "Z-A",
       "date-desc": "Neueste",
       "date-asc": "Älteste"
+    },
+    "table": {
+      "title": "Titel",
+      "aiAssets": "AI Assets",
+      "duration": "Dauer",
+      "date": "Datum",
+      "status": "Status",
+      "actions": "Aktionen",
+      "searchPlaceholder": "Gespräche suchen...",
+      "statusAll": "Alle Status",
+      "statusPending": "Ausstehend",
+      "statusReady": "Bereit",
+      "statusProcessing": "Verarbeitung",
+      "statusFailed": "Fehlgeschlagen",
+      "selected": "{count} ausgewählt",
+      "openSummary": "Zusammenfassung öffnen",
+      "openTranscript": "Transkript öffnen",
+      "moveToFolder": "In Ordner verschieben",
+      "delete": "Löschen",
+      "deleteTitle": "Gespräch löschen?",
+      "deleteMessage": "Dies kann nicht rückgängig gemacht werden. Das Gespräch und alle AI Assets werden dauerhaft gelöscht.",
+      "deleteSuccess": "Gespräch gelöscht",
+      "deleteError": "Löschen fehlgeschlagen",
+      "clearSelection": "Auswahl aufheben",
+      "showingOf": "{count} von {total}",
+      "loadMore": "Mehr anzeigen ({count} verbleibend)",
+      "showingRange": "{start}-{end} von {total}",
+      "previousPage": "Vorherige Seite",
+      "nextPage": "Nächste Seite",
+      "noResults": "Keine Gespräche gefunden",
+      "noDuration": "--",
+      "deleteMultipleTitle": "{count} Gespräche löschen?",
+      "deleteMultipleMessage": "Dies kann nicht rückgängig gemacht werden. Alle ausgewählten Gespräche und ihre AI Assets werden dauerhaft gelöscht.",
+      "selectAll": "Alle auswählen",
+      "selectRow": "Zeile auswählen",
+      "cancel": "Abbrechen",
+      "rowsPerPage": "Zeilen pro Seite",
+      "shared": "Geteilt",
+      "public": "Öffentlich",
+      "private": "Privat",
+      "sharedWith": "{count, plural, one {# Person} other {# Personen}}"
     }
   },
   "upload": {
@@ -2365,10 +2406,26 @@
       "productLaunch": {
         "actionItems": {
           "items": [
-            { "task": "Q1-Zeitplan finalisieren und mit Stakeholdern teilen", "owner": "Sarah", "deadline": "8. Jan" },
-            { "task": "Beta-Feedback prüfen und Bugfixes priorisieren", "owner": "Dev Team", "deadline": "10. Jan" },
-            { "task": "Pressemitteilung und Medienkit vorbereiten", "owner": "Marketing", "deadline": "20. Jan" },
-            { "task": "Kunden-Webinar für Launch-Woche planen", "owner": "CS Team", "deadline": "25. Jan" }
+            {
+              "task": "Q1-Zeitplan finalisieren und mit Stakeholdern teilen",
+              "owner": "Sarah",
+              "deadline": "8. Jan"
+            },
+            {
+              "task": "Beta-Feedback prüfen und Bugfixes priorisieren",
+              "owner": "Dev Team",
+              "deadline": "10. Jan"
+            },
+            {
+              "task": "Pressemitteilung und Medienkit vorbereiten",
+              "owner": "Marketing",
+              "deadline": "20. Jan"
+            },
+            {
+              "task": "Kunden-Webinar für Launch-Woche planen",
+              "owner": "CS Team",
+              "deadline": "25. Jan"
+            }
           ]
         },
         "email": {
@@ -2382,14 +2439,21 @@
             "Marketing-Budget für Influencer-Kampagne genehmigt"
           ],
           "closing": "Danke an alle.",
-          "signature": { "name": "Sarah Mitchell", "title": "Produktmanagerin", "initials": "SM" }
+          "signature": {
+            "name": "Sarah Mitchell",
+            "title": "Produktmanagerin",
+            "initials": "SM"
+          }
         },
         "blogPost": {
           "headline": "Was wir beim Januar-Launch gelernt haben",
           "subheading": "Erkenntnisse unseres Teams zum Aufbau von Momentum vor dem Start",
           "hook": "Das alte Handbuch sagt: warte bis alles perfekt ist. Wir haben etwas anderes versucht.",
           "body": "Unsere Beta-Tester haben nicht nur Bugs gefunden. Sie haben die Produktrichtung mitgestaltet. Ihr Feedback führte zu einer kompletten Überarbeitung unseres Onboarding-Flows. Das Ergebnis: 40% bessere Aktivierungsraten noch vor dem Launch.",
-          "quote": { "text": "Das Produkt fühlte sich an, als wäre es für uns gebaut, nicht nur an uns verkauft.", "attribution": "Beta-Nutzer" },
+          "quote": {
+            "text": "Das Produkt fühlte sich an, als wäre es für uns gebaut, nicht nur an uns verkauft.",
+            "attribution": "Beta-Nutzer"
+          },
           "imageAlt": "Abstrakte geometrische Formen für Innovation"
         },
         "linkedin": {
@@ -2401,16 +2465,36 @@
           ],
           "result": "2.000 Anmeldungen in der ersten Woche. Nicht weil wir perfekt waren. Weil wir präsent waren.",
           "callToAction": "Was ist die größte Erkenntnis aus deinem letzten Launch?",
-          "author": { "name": "Sarah Mitchell", "title": "Produktmanagerin bei TechFlow", "initials": "SM" }
+          "author": {
+            "name": "Sarah Mitchell",
+            "title": "Produktmanagerin bei TechFlow",
+            "initials": "SM"
+          }
         }
       },
       "clientDiscovery": {
         "actionItems": {
           "items": [
-            { "task": "Angebot mit drei Paketoptionen senden", "owner": "Marcus", "deadline": "15. Jan" },
-            { "task": "Technisches Deep-Dive mit deren CTO planen", "owner": "Marcus", "deadline": "12. Jan" },
-            { "task": "Fallstudie von ähnlichem Fintech-Projekt vorbereiten", "owner": "Team", "deadline": "14. Jan" },
-            { "task": "Zeitplan für Q2-Implementierung entwerfen", "owner": "Marcus", "deadline": "18. Jan" }
+            {
+              "task": "Angebot mit drei Paketoptionen senden",
+              "owner": "Marcus",
+              "deadline": "15. Jan"
+            },
+            {
+              "task": "Technisches Deep-Dive mit deren CTO planen",
+              "owner": "Marcus",
+              "deadline": "12. Jan"
+            },
+            {
+              "task": "Fallstudie von ähnlichem Fintech-Projekt vorbereiten",
+              "owner": "Team",
+              "deadline": "14. Jan"
+            },
+            {
+              "task": "Zeitplan für Q2-Implementierung entwerfen",
+              "owner": "Marcus",
+              "deadline": "18. Jan"
+            }
           ]
         },
         "email": {
@@ -2424,21 +2508,36 @@
             "Integration mit Ihrer bestehenden Salesforce-Instanz"
           ],
           "closing": "Ich freue mich auf die Möglichkeit einer Zusammenarbeit.",
-          "signature": { "name": "Marcus Chen", "title": "Senior Berater", "initials": "MC" }
+          "signature": {
+            "name": "Marcus Chen",
+            "title": "Senior Berater",
+            "initials": "MC"
+          }
         },
         "blogPost": {
           "headline": "Das Erstgespräch, das meine Verkaufsweise veränderte",
           "subheading": "Warum Zuhören Präsentieren immer schlägt",
           "hook": "Früher bin ich mit einem Deck in Erstgespräche gegangen. Jetzt gehe ich mit Fragen.",
           "body": "Der Kunde erwähnte sein eigentliches Problem nach 47 Minuten. Hätte ich präsentiert, hätte ich es komplett verpasst. Sein Team kämpfte nicht mit der Technik. Sie erstickten in manuellen Prozessen, für die niemand Zeit hatte.",
-          "quote": { "text": "Sie haben unser Problem verstanden, bevor wir es zu Ende erklärt hatten.", "attribution": "Kundenfeedback" },
+          "quote": {
+            "text": "Sie haben unser Problem verstanden, bevor wir es zu Ende erklärt hatten.",
+            "attribution": "Kundenfeedback"
+          },
           "imageAlt": "Abstrakte Formen für Gespräch und Verbindung"
         },
         "communicationAnalysis": {
           "overallAssessment": "Starke Entdeckungsfähigkeiten mit Raum zur Vertiefung des Kundenverständnisses. Sie stellen gute Fragen, könnten aber Antworten mehr wirken lassen.",
           "dimensions": {
-            "clarity": { "name": "Klarheit", "strength": "Fragen waren spezifisch und umsetzbar", "improvement": "Kernpunkte zusammenfassen bevor Sie weitergehen" },
-            "activeListening": { "name": "Aktives Zuhören", "strength": "Natürlich auf Kundenantworten aufgebaut", "improvement": "Nach komplexen Antworten länger pausieren" }
+            "clarity": {
+              "name": "Klarheit",
+              "strength": "Fragen waren spezifisch und umsetzbar",
+              "improvement": "Kernpunkte zusammenfassen bevor Sie weitergehen"
+            },
+            "activeListening": {
+              "name": "Aktives Zuhören",
+              "strength": "Natürlich auf Kundenantworten aufgebaut",
+              "improvement": "Nach komplexen Antworten länger pausieren"
+            }
           }
         }
       }

@@ -213,10 +213,8 @@ export const transcriptionApi = {
    * Returns only fields needed for rendering conversation cards,
    * reducing payload size by 80-95%.
    */
-  listSummaries: async (page = 1, pageSize = 20): Promise<ApiResponse<{ items: unknown[]; total: number; page: number; pageSize: number; hasMore: boolean }>> => {
-    return api.get('/transcriptions/summaries', {
-      params: { page, pageSize },
-    });
+  listSummaries: async (): Promise<ApiResponse<unknown[]>> => {
+    return api.get('/transcriptions/summaries');
   },
 
   search: async (query: string, limit = 20): Promise<ApiResponse<{ items: unknown[]; total: number }>> => {

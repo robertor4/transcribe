@@ -32,6 +32,8 @@ const themeScript = `
       (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (isDark) {
       document.documentElement.classList.add('dark');
+    } else if (theme === 'light') {
+      document.documentElement.classList.add('light');
     }
   } catch (e) {}
 })();

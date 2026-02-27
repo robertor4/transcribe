@@ -129,7 +129,7 @@ export function FolderPickerModal({
                 />
               </div>
               <Button
-                variant="primary"
+                variant="brand"
                 size="sm"
                 onClick={handleCreateFolder}
                 disabled={!newFolderName.trim() || isCreatingFolder}
@@ -223,7 +223,7 @@ export function FolderPickerModal({
             {t('cancel')}
           </Button>
           <Button
-            variant="primary"
+            variant="brand"
             onClick={handleMove}
             disabled={isMoving || selectedFolderId === currentFolderId}
           >

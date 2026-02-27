@@ -488,24 +488,21 @@ export class TranscriptionController {
 
   /**
    * Get lightweight transcription summaries for dashboard list view.
-   * Returns only the fields needed for rendering conversation cards,
-   * reducing payload size by 80-95% compared to full transcriptions.
+   * Returns all summaries (pagination is handled client-side).
+   * Uses select() projection to reduce payload by 80-95%.
    */
   @Get('summaries')
   @UseGuards(FirebaseAuthGuard)
   async getTranscriptionSummaries(
     @Req() req: Request & { user: any },
-    @Query() paginationDto: PaginationDto,
-  ): Promise<ApiResponse<PaginatedResponse<TranscriptionSummary>>> {
-    const result = await this.transcriptionService.getTranscriptionSummaries(
+  ): Promise<ApiResponse<TranscriptionSummary[]>> {
+    const items = await this.transcriptionService.getTranscriptionSummaries(
       req.user.uid,
-      paginationDto.page,
-      paginationDto.pageSize,
     );
 
     return {
       success: true,
-      data: result,
+      data: items,
     };
   }
 

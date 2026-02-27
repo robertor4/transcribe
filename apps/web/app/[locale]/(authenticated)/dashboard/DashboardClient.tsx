@@ -7,13 +7,12 @@ import {
   Monitor,
   Upload,
 } from 'lucide-react';
+import { Button as ShadcnButton } from '@/components/ui/button';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { toast } from 'sonner';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
-import { DashboardDndProvider } from '@/components/dashboard/DashboardDndProvider';
-import { RecentAssetsSection } from '@/components/dashboard/RecentAssetsSection';
 import { DashboardSkeleton, DashboardInlineSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -66,8 +65,8 @@ export function DashboardClient() {
   const { user, loading: authLoading } = useAuth();
   const t = useTranslations('dashboard');
 
-  const { conversations, isLoading: conversationsLoading, total, refresh: refreshConversations } = useConversationsContext();
-  const { folders, isLoading: foldersLoading, createFolder, moveToFolder } = useFoldersContext();
+  const { conversations, isLoading: conversationsLoading, refresh: refreshConversations } = useConversationsContext();
+  const { isLoading: foldersLoading } = useFoldersContext();
 
   // Memoize filtered ungrouped conversations
   const ungroupedConversations = useMemo(
@@ -117,8 +116,8 @@ export function DashboardClient() {
 
   // Check for milestone on mount
   useEffect(() => {
-    if (!conversationsLoading && total > 0 && !milestoneShownRef.current) {
-      const message = getMilestoneMessage(total);
+    if (!conversationsLoading && conversations.length > 0 && !milestoneShownRef.current) {
+      const message = getMilestoneMessage(conversations.length);
       if (message) {
         milestoneShownRef.current = true;
         toast(message, {
@@ -127,36 +126,24 @@ export function DashboardClient() {
         });
       }
     }
-  }, [conversationsLoading, total]);
+  }, [conversationsLoading, conversations.length]);
 
   const handleCreateComplete = useCallback((conversationId: string) => {
     router.push(`/${locale}/conversation/${conversationId}`);
   }, [router, locale]);
 
-  // Handle moving conversation to folder with refresh
-  const handleMoveToFolder = useCallback(
-    async (conversationId: string, folderId: string, previousFolderId?: string | null) => {
-      await moveToFolder(conversationId, folderId, previousFolderId);
-      await refreshConversations();
-    },
-    [moveToFolder, refreshConversations]
-  );
-
-  // Handle creating folder
-  const handleCreateFolder = useCallback(
-    async (name: string) => {
-      await createFolder(name);
-    },
-    [createFolder]
-  );
-
   // Handle deleting conversation
   const handleDeleteConversation = useCallback(
     async (conversationId: string) => {
-      await deleteConversation(conversationId);
-      await refreshConversations();
+      try {
+        await deleteConversation(conversationId);
+        await refreshConversations();
+        toast.success(t('table.deleteSuccess'));
+      } catch {
+        toast.error(t('table.deleteError'));
+      }
     },
-    [refreshConversations]
+    [refreshConversations, t]
   );
 
   // Context-aware button handlers - memoized to prevent re-renders
@@ -208,7 +195,6 @@ export function DashboardClient() {
   }
 
   return (
-    <DashboardDndProvider onMoveToFolder={handleMoveToFolder}>
       <div className="h-screen flex flex-col">
         <ThreePaneLayout
           leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
@@ -265,27 +251,18 @@ export function DashboardClient() {
                 </div>
               </div>
 
-              {/* Desktop: 3-column grid */}
-              <div className="hidden sm:grid sm:grid-cols-3 gap-4 max-w-4xl">
+              {/* Desktop: Inline action buttons */}
+              <div className="hidden sm:flex gap-3">
                 {QUICK_CREATE_BUTTONS.map((type) => (
-                  <button
+                  <ShadcnButton
                     key={type.action}
+                    variant="outline"
                     onClick={getButtonHandler(type.action)}
-                    aria-label={`Create ${t(type.labelKey)}: ${t(type.descKey)}`}
-                    className="group relative flex items-center gap-4 p-5 min-h-[88px] bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+                    className="h-10 px-4 gap-2 bg-white dark:bg-gray-800/40 border-gray-200 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800/40 hover:text-[#8D6AFA] hover:border-[#8D6AFA] transition-colors"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                      <type.Icon className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
-                        {t(type.labelKey)}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 h-10 line-clamp-2">
-                        {t(type.descKey)}
-                      </div>
-                    </div>
-                  </button>
+                    <type.Icon className="w-4 h-4" />
+                    {t(type.labelKey)}
+                  </ShadcnButton>
                 ))}
               </div>
             </section>
@@ -296,16 +273,12 @@ export function DashboardClient() {
             ) : (
               <>
                 <TwoColumnDashboardLayout
-                  folders={folders}
                   ungroupedConversations={ungroupedConversations}
                   locale={locale}
-                  onCreateFolder={handleCreateFolder}
                   onNewConversation={handleMoreTemplates}
                   onDeleteConversation={handleDeleteConversation}
                 />
 
-                {/* Recent AI Outputs Section */}
-                <RecentAssetsSection locale={locale} />
               </>
             )}
           </div>
@@ -321,6 +294,5 @@ export function DashboardClient() {
         uploadMethod={createModalConfig.uploadMethod}
       />
       </div>
-    </DashboardDndProvider>
   );
 }

@@ -20,9 +20,9 @@ const buttonVariants = cva(
         // Brand purple outline - secondary brand actions
         'brand-outline': 'bg-transparent text-[#8D6AFA] border-2 border-[#8D6AFA] hover:bg-[#8D6AFA] hover:text-white hover:scale-105',
         // Transparent with hover - subtle actions
-        ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-transparent',
+        ghost: 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700',
         // Danger red - destructive actions
-        danger: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 border-2 border-transparent',
+        danger: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-800',
       },
       size: {
         sm: 'px-4 py-2 text-sm',

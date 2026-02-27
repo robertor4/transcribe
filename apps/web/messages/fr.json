@@ -214,6 +214,47 @@
       "name-desc": "Z-A",
       "date-desc": "Plus récent",
       "date-asc": "Plus ancien"
+    },
+    "table": {
+      "title": "Titre",
+      "aiAssets": "AI Assets",
+      "duration": "Durée",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions",
+      "searchPlaceholder": "Rechercher des conversations...",
+      "statusAll": "Tous les statuts",
+      "statusPending": "En attente",
+      "statusReady": "Prêt",
+      "statusProcessing": "En cours",
+      "statusFailed": "Échoué",
+      "selected": "{count} sélectionné(s)",
+      "openSummary": "Ouvrir le résumé",
+      "openTranscript": "Ouvrir la transcription",
+      "moveToFolder": "Déplacer vers un dossier",
+      "delete": "Supprimer",
+      "deleteTitle": "Supprimer la conversation ?",
+      "deleteMessage": "Cette action est irréversible. La conversation et tous ses AI assets seront définitivement supprimés.",
+      "deleteSuccess": "Conversation supprimée",
+      "deleteError": "Échec de la suppression",
+      "clearSelection": "Effacer",
+      "showingOf": "{count} sur {total}",
+      "loadMore": "Afficher plus ({count} restants)",
+      "showingRange": "{start}-{end} sur {total}",
+      "previousPage": "Page précédente",
+      "nextPage": "Page suivante",
+      "noResults": "Aucune conversation trouvée",
+      "noDuration": "--",
+      "deleteMultipleTitle": "Supprimer {count} conversations ?",
+      "deleteMultipleMessage": "Cette action est irréversible. Toutes les conversations sélectionnées et leurs AI assets seront définitivement supprimés.",
+      "selectAll": "Tout sélectionner",
+      "selectRow": "Sélectionner la ligne",
+      "cancel": "Annuler",
+      "rowsPerPage": "Lignes par page",
+      "shared": "Partagé",
+      "public": "Public",
+      "private": "Privé",
+      "sharedWith": "{count, plural, one {# personne} other {# personnes}}"
     }
   },
   "upload": {
@@ -2360,10 +2401,26 @@
       "productLaunch": {
         "actionItems": {
           "items": [
-            { "task": "Finaliser le calendrier Q1 et partager avec les parties prenantes", "owner": "Sarah", "deadline": "8 jan" },
-            { "task": "Examiner les retours beta et prioriser les corrections", "owner": "Dev Team", "deadline": "10 jan" },
-            { "task": "Préparer le communiqué de presse et le kit média", "owner": "Marketing", "deadline": "20 jan" },
-            { "task": "Planifier le webinaire client pour la semaine de lancement", "owner": "CS Team", "deadline": "25 jan" }
+            {
+              "task": "Finaliser le calendrier Q1 et partager avec les parties prenantes",
+              "owner": "Sarah",
+              "deadline": "8 jan"
+            },
+            {
+              "task": "Examiner les retours beta et prioriser les corrections",
+              "owner": "Dev Team",
+              "deadline": "10 jan"
+            },
+            {
+              "task": "Préparer le communiqué de presse et le kit média",
+              "owner": "Marketing",
+              "deadline": "20 jan"
+            },
+            {
+              "task": "Planifier le webinaire client pour la semaine de lancement",
+              "owner": "CS Team",
+              "deadline": "25 jan"
+            }
           ]
         },
         "email": {
@@ -2377,14 +2434,21 @@
             "Budget marketing approuvé pour la campagne influenceurs"
           ],
           "closing": "Merci à tous.",
-          "signature": { "name": "Sarah Mitchell", "title": "Chef de produit", "initials": "SM" }
+          "signature": {
+            "name": "Sarah Mitchell",
+            "title": "Chef de produit",
+            "initials": "SM"
+          }
         },
         "blogPost": {
           "headline": "Ce que nous avons appris en lançant en janvier",
           "subheading": "Les leçons de notre équipe sur la création d'élan avant le jour J",
           "hook": "L'ancien manuel dit d'attendre la perfection. Nous avons essayé autre chose.",
           "body": "Nos beta testeurs ne trouvaient pas que des bugs. Ils façonnaient la direction du produit. Leurs retours nous ont amenés à revoir entièrement notre flux d'onboarding. Le résultat : 40% d'amélioration des taux d'activation avant même le lancement.",
-          "quote": { "text": "Le produit semblait construit pour nous, pas simplement vendu.", "attribution": "Utilisateur Beta" },
+          "quote": {
+            "text": "Le produit semblait construit pour nous, pas simplement vendu.",
+            "attribution": "Utilisateur Beta"
+          },
           "imageAlt": "Formes géométriques abstraites représentant l'innovation"
         },
         "linkedin": {
@@ -2396,16 +2460,36 @@
           ],
           "result": "2 000 inscriptions la première semaine. Pas parce que nous étions parfaits. Parce que nous étions présents.",
           "callToAction": "Quelle est la plus grande leçon de votre dernier lancement ?",
-          "author": { "name": "Sarah Mitchell", "title": "Chef de produit chez TechFlow", "initials": "SM" }
+          "author": {
+            "name": "Sarah Mitchell",
+            "title": "Chef de produit chez TechFlow",
+            "initials": "SM"
+          }
         }
       },
       "clientDiscovery": {
         "actionItems": {
           "items": [
-            { "task": "Envoyer la proposition avec trois options de forfait", "owner": "Marcus", "deadline": "15 jan" },
-            { "task": "Planifier une session technique avec leur CTO", "owner": "Marcus", "deadline": "12 jan" },
-            { "task": "Préparer une étude de cas d'un projet fintech similaire", "owner": "Team", "deadline": "14 jan" },
-            { "task": "Rédiger le calendrier pour l'implémentation Q2", "owner": "Marcus", "deadline": "18 jan" }
+            {
+              "task": "Envoyer la proposition avec trois options de forfait",
+              "owner": "Marcus",
+              "deadline": "15 jan"
+            },
+            {
+              "task": "Planifier une session technique avec leur CTO",
+              "owner": "Marcus",
+              "deadline": "12 jan"
+            },
+            {
+              "task": "Préparer une étude de cas d'un projet fintech similaire",
+              "owner": "Team",
+              "deadline": "14 jan"
+            },
+            {
+              "task": "Rédiger le calendrier pour l'implémentation Q2",
+              "owner": "Marcus",
+              "deadline": "18 jan"
+            }
           ]
         },
         "email": {
@@ -2419,21 +2503,36 @@
             "Intégration avec votre instance Salesforce existante"
           ],
           "closing": "J'espère avoir l'opportunité de travailler ensemble.",
-          "signature": { "name": "Marcus Chen", "title": "Consultant Senior", "initials": "MC" }
+          "signature": {
+            "name": "Marcus Chen",
+            "title": "Consultant Senior",
+            "initials": "MC"
+          }
         },
         "blogPost": {
           "headline": "L'appel découverte qui a changé ma façon de vendre",
           "subheading": "Pourquoi écouter bat toujours présenter",
           "hook": "Avant, j'entrais en appel découverte avec un deck. Maintenant, j'entre avec des questions.",
           "body": "Le client a mentionné son vrai problème au bout de 47 minutes. Si j'avais été en train de présenter, je l'aurais complètement manqué. Son équipe ne luttait pas avec la technologie. Elle se noyait dans des processus manuels que personne n'avait le temps de corriger.",
-          "quote": { "text": "Vous avez compris notre problème avant qu'on ait fini de l'expliquer.", "attribution": "Retour client" },
+          "quote": {
+            "text": "Vous avez compris notre problème avant qu'on ait fini de l'expliquer.",
+            "attribution": "Retour client"
+          },
           "imageAlt": "Formes abstraites représentant conversation et connexion"
         },
         "communicationAnalysis": {
           "overallAssessment": "Solides compétences de découverte avec une marge pour approfondir la compréhension client. Vous posez de bonnes questions mais pourriez laisser les réponses respirer davantage.",
           "dimensions": {
-            "clarity": { "name": "Clarté", "strength": "Les questions étaient spécifiques et actionnables", "improvement": "Résumer les points clés avant de passer à la suite" },
-            "activeListening": { "name": "Écoute active", "strength": "A naturellement construit sur les réponses du client", "improvement": "Faire des pauses plus longues après les réponses complexes" }
+            "clarity": {
+              "name": "Clarté",
+              "strength": "Les questions étaient spécifiques et actionnables",
+              "improvement": "Résumer les points clés avant de passer à la suite"
+            },
+            "activeListening": {
+              "name": "Écoute active",
+              "strength": "A naturellement construit sur les réponses du client",
+              "improvement": "Faire des pauses plus longues après les réponses complexes"
+            }
           }
         }
       }

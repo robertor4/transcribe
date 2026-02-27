@@ -40,8 +40,8 @@ export function structuredOutputToHtml(content: StructuredOutput): string {
     case 'agileBacklog':
       return agileBacklogToHtml(content as AgileBacklogOutput);
     default:
-      // Fallback to pre-formatted JSON for unknown types
-      return `<pre>${JSON.stringify(content, null, 2)}</pre>`;
+      // Generic fallback for all new template types
+      return genericToHtml(content as unknown as Record<string, unknown>);
   }
 }
 
@@ -70,8 +70,8 @@ export function structuredOutputToMarkdown(content: StructuredOutput): string {
     case 'agileBacklog':
       return agileBacklogToMarkdown(content as AgileBacklogOutput);
     default:
-      // Fallback to formatted JSON for unknown types
-      return JSON.stringify(content, null, 2);
+      // Generic fallback for all new template types
+      return genericToMarkdown(content as unknown as Record<string, unknown>);
   }
 }
 
@@ -964,6 +964,140 @@ function agileBacklogToHtml(data: AgileBacklogOutput): string {
     standaloneStories.forEach(story => {
       parts.push(userStoryToHtml(story));
     });
+  }
+
+  return parts.join('');
+}
+
+// ============================================================
+// GENERIC RECURSIVE CONVERTER (fallback for new templates)
+// ============================================================
+
+const SKIP_FIELDS = ['type', 'id', 'version'];
+const TITLE_FIELDS = ['title', 'headline', 'subject', 'name', 'episodeTitle', 'projectTitle', 'projectName'];
+
+/**
+ * Convert camelCase to Title Case for display
+ * e.g., "actionItems" -> "Action Items"
+ */
+function camelToTitleCase(str: string): string {
+  return str
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, s => s.toUpperCase())
+    .trim();
+}
+
+/**
+ * Generic converter to markdown - handles any structured output
+ * Recursively traverses the object and generates readable markdown
+ */
+function genericToMarkdown(data: Record<string, unknown>, depth = 1): string {
+  const lines: string[] = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (SKIP_FIELDS.includes(key)) continue;
+    if (value === null || value === undefined) continue;
+
+    const label = camelToTitleCase(key);
+    const headingLevel = '#'.repeat(Math.min(depth, 3));
+
+    if (TITLE_FIELDS.includes(key) && depth === 1 && typeof value === 'string') {
+      // Title fields become H1 headings
+      lines.push(`# ${value}`);
+      lines.push('');
+    } else if (typeof value === 'string') {
+      // String values as labeled paragraphs
+      if (value.length > 100) {
+        // Long strings get their own section
+        lines.push(`${headingLevel} ${label}`);
+        lines.push('');
+        lines.push(value);
+        lines.push('');
+      } else {
+        lines.push(`**${label}:** ${value}`);
+        lines.push('');
+      }
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      lines.push(`**${label}:** ${value}`);
+      lines.push('');
+    } else if (Array.isArray(value)) {
+      if (value.length === 0) continue;
+
+      lines.push(`${headingLevel} ${label}`);
+      lines.push('');
+
+      value.forEach((item, index) => {
+        if (typeof item === 'string') {
+          lines.push(`- ${item}`);
+        } else if (typeof item === 'object' && item !== null) {
+          // For complex objects, add a separator between items
+          if (index > 0) lines.push('');
+          const nested = genericToMarkdown(item as Record<string, unknown>, depth + 1);
+          // Indent nested content for list items
+          const indented = nested.split('\n').map(line => line ? `  ${line}` : '').join('\n');
+          lines.push(`- ${indented.trim()}`);
+        }
+      });
+      lines.push('');
+    } else if (typeof value === 'object') {
+      lines.push(`${headingLevel} ${label}`);
+      lines.push('');
+      lines.push(genericToMarkdown(value as Record<string, unknown>, depth + 1));
+      lines.push('');
+    }
+  }
+
+  return lines.join('\n').trim();
+}
+
+/**
+ * Generic converter to HTML - handles any structured output
+ * Recursively traverses the object and generates HTML for rich text copy
+ */
+function genericToHtml(data: Record<string, unknown>, depth = 1): string {
+  const parts: string[] = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (SKIP_FIELDS.includes(key)) continue;
+    if (value === null || value === undefined) continue;
+
+    const label = camelToTitleCase(key);
+    const headingLevel = Math.min(depth + 1, 4);
+    const HeadingTag = `h${headingLevel}`;
+
+    if (TITLE_FIELDS.includes(key) && depth === 1 && typeof value === 'string') {
+      // Title fields become H1 headings
+      parts.push(`<h1>${escapeHtml(value)}</h1>`);
+    } else if (typeof value === 'string') {
+      // String values as labeled paragraphs
+      if (value.length > 100) {
+        // Long strings get their own section
+        parts.push(`<${HeadingTag}>${escapeHtml(label)}</${HeadingTag}>`);
+        parts.push(`<p>${escapeHtml(value)}</p>`);
+      } else {
+        parts.push(`<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`);
+      }
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      parts.push(`<p><strong>${escapeHtml(label)}:</strong> ${value}</p>`);
+    } else if (Array.isArray(value)) {
+      if (value.length === 0) continue;
+
+      parts.push(`<${HeadingTag}>${escapeHtml(label)}</${HeadingTag}>`);
+      parts.push('<ul>');
+
+      value.forEach(item => {
+        if (typeof item === 'string') {
+          parts.push(`<li>${escapeHtml(item)}</li>`);
+        } else if (typeof item === 'object' && item !== null) {
+          parts.push(`<li>${genericToHtml(item as Record<string, unknown>, depth + 1)}</li>`);
+        }
+      });
+
+      parts.push('</ul>');
+    } else if (typeof value === 'object') {
+      parts.push(`<${HeadingTag}>${escapeHtml(label)}</${HeadingTag}>`);
+      parts.push(genericToHtml(value as Record<string, unknown>, depth + 1));
+    }
   }
 
   return parts.join('');

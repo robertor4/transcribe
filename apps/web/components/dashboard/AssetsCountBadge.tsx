@@ -11,7 +11,7 @@ export function AssetsCountBadge({ count }: AssetsCountBadgeProps) {
   if (!count || count <= 0) return null;
 
   return (
-    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-medium">
+    <div className="inline-flex items-center justify-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-medium">
       <AiIcon size={12} />
       <span>{count}</span>
     </div>

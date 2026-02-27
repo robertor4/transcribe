@@ -14,44 +14,20 @@ import {
   transcriptionSummariesToConversations,
 } from '../types/conversation';
 
-export interface ConversationListResult {
-  conversations: Conversation[];
-  total: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
-}
-
 /**
- * List conversations with pagination.
+ * List all conversations.
  * Uses the lightweight summaries endpoint for better performance,
- * reducing payload size by 80-95%.
+ * reducing payload size by 80-95%. Pagination is handled client-side.
  */
-export async function listConversations(
-  page = 1,
-  pageSize = 20
-): Promise<ConversationListResult> {
-  const response = await transcriptionApi.listSummaries(page, pageSize);
+export async function listConversations(): Promise<Conversation[]> {
+  const response = await transcriptionApi.listSummaries();
 
   if (!response.success || !response.data) {
     throw new Error(response.error || 'Failed to fetch conversations');
   }
 
-  const data = response.data as {
-    items: TranscriptionSummary[];
-    total: number;
-    page: number;
-    pageSize: number;
-    hasMore: boolean;
-  };
-
-  return {
-    conversations: transcriptionSummariesToConversations(data.items),
-    total: data.total,
-    page: data.page,
-    pageSize: data.pageSize,
-    hasMore: data.hasMore,
-  };
+  const items = response.data as TranscriptionSummary[];
+  return transcriptionSummariesToConversations(items);
 }
 
 /**

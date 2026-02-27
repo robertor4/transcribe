@@ -37,7 +37,7 @@ export default function AuthenticatedLayout({
                   <ApiUnavailableBanner />
                   {children}
                   <CookieConsent />
-                  <Toaster position="bottom-left" />
+                  <Toaster position="top-center" />
                 </ImportedConversationsProvider>
               </FoldersProvider>
             </ConversationsProvider>

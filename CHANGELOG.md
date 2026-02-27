@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Conversations Data Table**: Replaced flat conversation card list on dashboard with a shadcn data table
+  - New columns: Checkbox (bulk select), Title (with inline status badges), Status (colored dot badges), AI Assets count, Duration, Shared (public/private/shared with N people), Date (sortable), Actions dropdown
+  - **Search & Filter**: Real-time search by title with clear button, status filter dropdown (All/Ready/Processing/Failed)
+  - **Sorting**: Click column headers to sort by title, status, AI assets, duration, shared, or date (persisted to localStorage)
+  - **Bulk Actions**: Select multiple conversations via checkboxes for bulk move-to-folder or bulk delete
+  - **Responsive**: Status, AI Assets, Duration, and Shared columns hidden below `lg` breakpoint; table remains usable on mobile
+  - **Row Actions**: Always-visible action menu with shadcn DropdownMenu — Open summary, Open transcript, Move to folder, Delete
+  - **Pagination**: Standard page-based pagination with shadcn Pagination component (Previous/Next, page numbers with ellipsis, "Showing X-Y of Z" counter, rows per page selector: 10/25/50)
+  - **Table Header**: Subtle shaded background (`bg-gray-50`/`bg-gray-800/60`) for contrast
+  - New components: [ConversationsTable.tsx](apps/web/components/dashboard/conversations-table/ConversationsTable.tsx), [ConversationsTableRow.tsx](apps/web/components/dashboard/conversations-table/ConversationsTableRow.tsx), [ConversationsTableToolbar.tsx](apps/web/components/dashboard/conversations-table/ConversationsTableToolbar.tsx), [ConversationsTablePagination.tsx](apps/web/components/dashboard/conversations-table/ConversationsTablePagination.tsx), [useConversationsTable.ts](apps/web/components/dashboard/conversations-table/useConversationsTable.ts)
+  - New shadcn components: `checkbox.tsx`, `tooltip.tsx`, `pagination.tsx`
+  - i18n: Added `dashboard.table.*` keys in all 5 locales (en, nl, de, fr, es)
+
 ### Added
 - **shadcn/ui Component Library**: Full-scale integration of shadcn/ui across the authenticated app
   - **Foundation**: Installed `clsx`, `tailwind-merge`, `class-variance-authority`, `tw-animate-css`; upgraded `cn()` utility; added shadcn CSS custom properties mapped to Neural Summary brand colors; created [components.json](apps/web/components.json)

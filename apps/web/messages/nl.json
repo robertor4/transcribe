@@ -214,6 +214,47 @@
       "name-desc": "Z-A",
       "date-desc": "Nieuwste",
       "date-asc": "Oudste"
+    },
+    "table": {
+      "title": "Titel",
+      "aiAssets": "AI Assets",
+      "duration": "Duur",
+      "date": "Datum",
+      "status": "Status",
+      "actions": "Acties",
+      "searchPlaceholder": "Gesprekken zoeken...",
+      "statusAll": "Alle statussen",
+      "statusPending": "In afwachting",
+      "statusReady": "Gereed",
+      "statusProcessing": "Verwerken",
+      "statusFailed": "Mislukt",
+      "selected": "{count} geselecteerd",
+      "openSummary": "Samenvatting openen",
+      "openTranscript": "Transcript openen",
+      "moveToFolder": "Verplaats naar map",
+      "delete": "Verwijderen",
+      "deleteTitle": "Gesprek verwijderen?",
+      "deleteMessage": "Dit kan niet ongedaan worden gemaakt. Het gesprek en alle AI assets worden permanent verwijderd.",
+      "deleteSuccess": "Gesprek verwijderd",
+      "deleteError": "Verwijderen mislukt",
+      "clearSelection": "Wissen",
+      "showingOf": "{count} van {total}",
+      "loadMore": "Meer tonen ({count} resterend)",
+      "showingRange": "{start}-{end} van {total}",
+      "previousPage": "Vorige pagina",
+      "nextPage": "Volgende pagina",
+      "noResults": "Geen gesprekken gevonden",
+      "noDuration": "--",
+      "deleteMultipleTitle": "{count} gesprekken verwijderen?",
+      "deleteMultipleMessage": "Dit kan niet ongedaan worden gemaakt. Alle geselecteerde gesprekken en hun AI assets worden permanent verwijderd.",
+      "selectAll": "Alles selecteren",
+      "selectRow": "Rij selecteren",
+      "cancel": "Annuleren",
+      "rowsPerPage": "Rijen per pagina",
+      "shared": "Gedeeld",
+      "public": "Openbaar",
+      "private": "Privé",
+      "sharedWith": "{count, plural, one {# persoon} other {# personen}}"
     }
   },
   "upload": {
@@ -2365,10 +2406,26 @@
       "productLaunch": {
         "actionItems": {
           "items": [
-            { "task": "Q1-tijdlijn afronden en delen met stakeholders", "owner": "Sarah", "deadline": "8 jan" },
-            { "task": "Beta feedback bekijken en bugfixes prioriteren", "owner": "Dev Team", "deadline": "10 jan" },
-            { "task": "Persbericht en mediakit voorbereiden", "owner": "Marketing", "deadline": "20 jan" },
-            { "task": "Klantwebinar plannen voor lanceringweek", "owner": "CS Team", "deadline": "25 jan" }
+            {
+              "task": "Q1-tijdlijn afronden en delen met stakeholders",
+              "owner": "Sarah",
+              "deadline": "8 jan"
+            },
+            {
+              "task": "Beta feedback bekijken en bugfixes prioriteren",
+              "owner": "Dev Team",
+              "deadline": "10 jan"
+            },
+            {
+              "task": "Persbericht en mediakit voorbereiden",
+              "owner": "Marketing",
+              "deadline": "20 jan"
+            },
+            {
+              "task": "Klantwebinar plannen voor lanceringweek",
+              "owner": "CS Team",
+              "deadline": "25 jan"
+            }
           ]
         },
         "email": {
@@ -2382,14 +2439,21 @@
             "Marketing budget goedgekeurd voor influencer campagne"
           ],
           "closing": "Bedankt allemaal.",
-          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+          "signature": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager",
+            "initials": "SM"
+          }
         },
         "blogPost": {
           "headline": "Wat we leerden bij de lancering in januari",
           "subheading": "Lessen van ons team over momentum opbouwen vóór dag één",
           "hook": "Het oude draaiboek zegt: wacht tot het perfect is. Wij probeerden iets anders.",
           "body": "Onze beta testers vonden niet alleen bugs. Ze vormden de productrichting. Hun feedback leidde tot een complete herziening van onze onboarding flow. Het resultaat: 40% betere activatiecijfers nog vóór de lancering.",
-          "quote": { "text": "Het product voelde alsof het voor ons gebouwd was, niet alleen aan ons verkocht.", "attribution": "Beta Gebruiker" },
+          "quote": {
+            "text": "Het product voelde alsof het voor ons gebouwd was, niet alleen aan ons verkocht.",
+            "attribution": "Beta Gebruiker"
+          },
           "imageAlt": "Abstracte geometrische vormen voor innovatie"
         },
         "linkedin": {
@@ -2401,16 +2465,36 @@
           ],
           "result": "2.000 aanmeldingen in de eerste week. Niet omdat we perfect waren. Omdat we aanwezig waren.",
           "callToAction": "Wat is de grootste les van je laatste lancering?",
-          "author": { "name": "Sarah Mitchell", "title": "Product Manager bij TechFlow", "initials": "SM" }
+          "author": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager bij TechFlow",
+            "initials": "SM"
+          }
         }
       },
       "clientDiscovery": {
         "actionItems": {
           "items": [
-            { "task": "Voorstel sturen met drie pakketopties", "owner": "Marcus", "deadline": "15 jan" },
-            { "task": "Technische deep-dive plannen met hun CTO", "owner": "Marcus", "deadline": "12 jan" },
-            { "task": "Case study voorbereiden van vergelijkbaar fintech project", "owner": "Team", "deadline": "14 jan" },
-            { "task": "Tijdlijn opstellen voor Q2 implementatie", "owner": "Marcus", "deadline": "18 jan" }
+            {
+              "task": "Voorstel sturen met drie pakketopties",
+              "owner": "Marcus",
+              "deadline": "15 jan"
+            },
+            {
+              "task": "Technische deep-dive plannen met hun CTO",
+              "owner": "Marcus",
+              "deadline": "12 jan"
+            },
+            {
+              "task": "Case study voorbereiden van vergelijkbaar fintech project",
+              "owner": "Team",
+              "deadline": "14 jan"
+            },
+            {
+              "task": "Tijdlijn opstellen voor Q2 implementatie",
+              "owner": "Marcus",
+              "deadline": "18 jan"
+            }
           ]
         },
         "email": {
@@ -2424,21 +2508,36 @@
             "Integratie met jullie bestaande Salesforce instantie"
           ],
           "closing": "Ik kijk uit naar de mogelijkheid om samen te werken.",
-          "signature": { "name": "Marcus Chen", "title": "Senior Consultant", "initials": "MC" }
+          "signature": {
+            "name": "Marcus Chen",
+            "title": "Senior Consultant",
+            "initials": "MC"
+          }
         },
         "blogPost": {
           "headline": "Het kennismakingsgesprek dat mijn manier van verkopen veranderde",
           "subheading": "Waarom luisteren altijd beter is dan presenteren",
           "hook": "Vroeger ging ik kennismakingsgesprekken in met een deck. Nu ga ik binnen met vragen.",
           "body": "De klant noemde zijn echte probleem na 47 minuten. Als ik had gepresenteerd, had ik het helemaal gemist. Zijn team worstelde niet met technologie. Ze verdronken in handmatige processen waar niemand tijd voor had.",
-          "quote": { "text": "Je begreep ons probleem voordat we klaar waren met uitleggen.", "attribution": "Klantfeedback" },
+          "quote": {
+            "text": "Je begreep ons probleem voordat we klaar waren met uitleggen.",
+            "attribution": "Klantfeedback"
+          },
           "imageAlt": "Abstracte vormen voor gesprek en verbinding"
         },
         "communicationAnalysis": {
           "overallAssessment": "Sterke discovery-vaardigheden met ruimte om het klantbegrip te verdiepen. Je stelt goede vragen maar zou antwoorden meer kunnen laten ademen.",
           "dimensions": {
-            "clarity": { "name": "Helderheid", "strength": "Vragen waren specifiek en uitvoerbaar", "improvement": "Kernpunten samenvatten voordat je verdergaat" },
-            "activeListening": { "name": "Actief luisteren", "strength": "Bouwde natuurlijk voort op klantantwoorden", "improvement": "Langer pauzeren na complexe antwoorden" }
+            "clarity": {
+              "name": "Helderheid",
+              "strength": "Vragen waren specifiek en uitvoerbaar",
+              "improvement": "Kernpunten samenvatten voordat je verdergaat"
+            },
+            "activeListening": {
+              "name": "Actief luisteren",
+              "strength": "Bouwde natuurlijk voort op klantantwoorden",
+              "improvement": "Langer pauzeren na complexe antwoorden"
+            }
           }
         }
       }

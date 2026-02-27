@@ -174,11 +174,7 @@ export class TranscriptionRepository {
    */
   async getTranscriptionSummaries(
     userId: string,
-    page = 1,
-    pageSize = 20,
-  ): Promise<PaginatedResponse<TranscriptionSummary>> {
-    const offset = (page - 1) * pageSize;
-
+  ): Promise<TranscriptionSummary[]> {
     // Fields needed for dashboard cards
     const selectedFields = [
       'userId',
@@ -194,57 +190,19 @@ export class TranscriptionRepository {
       'deletedAt', // Needed for filtering
     ];
 
-    // Firestore can't efficiently filter for "field doesn't exist OR field is null"
-    // So we fetch more records than needed and filter in memory
-    const fetchLimit = page === 1 ? pageSize * 2 : offset + pageSize * 2;
-
+    // Fetch all docs with a lightweight select projection.
+    // Firestore can't filter "field doesn't exist OR field is null",
+    // so we filter soft-deleted items in memory.
     const snapshot = await this.db
       .collection('transcriptions')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
       .select(...selectedFields)
-      .limit(fetchLimit)
       .get();
 
-    // Filter out soft-deleted items
-    const allDocs = snapshot.docs.filter((doc) => {
-      const data = doc.data();
-      return !data.deletedAt;
-    });
-
-    // If we didn't get enough non-deleted docs, fetch all
-    let finalDocs = allDocs;
-    if (
-      allDocs.length < offset + pageSize &&
-      snapshot.docs.length === fetchLimit
-    ) {
-      const fullSnapshot = await this.db
-        .collection('transcriptions')
-        .where('userId', '==', userId)
-        .orderBy('createdAt', 'desc')
-        .select(...selectedFields)
-        .get();
-
-      finalDocs = fullSnapshot.docs.filter((doc) => {
-        const data = doc.data();
-        return !data.deletedAt;
-      });
-    }
-
-    const total = finalDocs.length;
-    const paginatedDocs = finalDocs.slice(offset, offset + pageSize);
-
-    const items = paginatedDocs.map((doc) =>
-      this.mapTranscriptionSummaryData(doc.id, doc.data()),
-    );
-
-    return {
-      items,
-      total,
-      page,
-      pageSize,
-      hasMore: offset + items.length < total,
-    };
+    return snapshot.docs
+      .filter((doc) => !doc.data().deletedAt)
+      .map((doc) => this.mapTranscriptionSummaryData(doc.id, doc.data()));
   }
 
   /**

@@ -214,6 +214,47 @@
       "name-desc": "Z-A",
       "date-desc": "Más reciente",
       "date-asc": "Más antiguo"
+    },
+    "table": {
+      "title": "Título",
+      "aiAssets": "AI Assets",
+      "duration": "Duración",
+      "date": "Fecha",
+      "status": "Estado",
+      "actions": "Acciones",
+      "searchPlaceholder": "Buscar conversaciones...",
+      "statusAll": "Todos los estados",
+      "statusPending": "Pendiente",
+      "statusReady": "Listo",
+      "statusProcessing": "Procesando",
+      "statusFailed": "Fallido",
+      "selected": "{count} seleccionado(s)",
+      "openSummary": "Abrir resumen",
+      "openTranscript": "Abrir transcripción",
+      "moveToFolder": "Mover a carpeta",
+      "delete": "Eliminar",
+      "deleteTitle": "¿Eliminar conversación?",
+      "deleteMessage": "Esta acción no se puede deshacer. La conversación y todos sus AI assets se eliminarán permanentemente.",
+      "deleteSuccess": "Conversación eliminada",
+      "deleteError": "Error al eliminar",
+      "clearSelection": "Limpiar",
+      "showingOf": "{count} de {total}",
+      "loadMore": "Mostrar más ({count} restantes)",
+      "showingRange": "{start}-{end} de {total}",
+      "previousPage": "Página anterior",
+      "nextPage": "Página siguiente",
+      "noResults": "No se encontraron conversaciones",
+      "noDuration": "--",
+      "deleteMultipleTitle": "¿Eliminar {count} conversaciones?",
+      "deleteMultipleMessage": "Esta acción no se puede deshacer. Todas las conversaciones seleccionadas y sus AI assets se eliminarán permanentemente.",
+      "selectAll": "Seleccionar todo",
+      "selectRow": "Seleccionar fila",
+      "cancel": "Cancelar",
+      "rowsPerPage": "Filas por página",
+      "shared": "Compartido",
+      "public": "Público",
+      "private": "Privado",
+      "sharedWith": "{count, plural, one {# persona} other {# personas}}"
     }
   },
   "upload": {
@@ -2360,10 +2401,26 @@
       "productLaunch": {
         "actionItems": {
           "items": [
-            { "task": "Finalizar cronograma Q1 y compartir con stakeholders", "owner": "Sarah", "deadline": "8 ene" },
-            { "task": "Revisar feedback beta y priorizar correcciones", "owner": "Dev Team", "deadline": "10 ene" },
-            { "task": "Preparar nota de prensa y kit de medios", "owner": "Marketing", "deadline": "20 ene" },
-            { "task": "Programar webinar de clientes para semana de lanzamiento", "owner": "CS Team", "deadline": "25 ene" }
+            {
+              "task": "Finalizar cronograma Q1 y compartir con stakeholders",
+              "owner": "Sarah",
+              "deadline": "8 ene"
+            },
+            {
+              "task": "Revisar feedback beta y priorizar correcciones",
+              "owner": "Dev Team",
+              "deadline": "10 ene"
+            },
+            {
+              "task": "Preparar nota de prensa y kit de medios",
+              "owner": "Marketing",
+              "deadline": "20 ene"
+            },
+            {
+              "task": "Programar webinar de clientes para semana de lanzamiento",
+              "owner": "CS Team",
+              "deadline": "25 ene"
+            }
           ]
         },
         "email": {
@@ -2377,14 +2434,21 @@
             "Presupuesto de marketing aprobado para campaña con influencers"
           ],
           "closing": "Gracias a todos.",
-          "signature": { "name": "Sarah Mitchell", "title": "Product Manager", "initials": "SM" }
+          "signature": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager",
+            "initials": "SM"
+          }
         },
         "blogPost": {
           "headline": "Lo que aprendimos lanzando en enero",
           "subheading": "Lecciones de nuestro equipo sobre generar impulso antes del día uno",
           "hook": "El viejo manual dice esperar hasta que sea perfecto. Nosotros intentamos algo diferente.",
           "body": "Nuestros beta testers no solo encontraban bugs. Estaban moldeando la dirección del producto. Su feedback nos llevó a cambiar completamente el flujo de onboarding. El resultado: 40% de mejora en tasas de activación antes del lanzamiento.",
-          "quote": { "text": "El producto se sentía como si estuviera hecho para nosotros, no solo vendido a nosotros.", "attribution": "Usuario Beta" },
+          "quote": {
+            "text": "El producto se sentía como si estuviera hecho para nosotros, no solo vendido a nosotros.",
+            "attribution": "Usuario Beta"
+          },
           "imageAlt": "Formas geométricas abstractas representando innovación"
         },
         "linkedin": {
@@ -2396,16 +2460,36 @@
           ],
           "result": "2.000 registros en la primera semana. No porque fuéramos perfectos. Porque estábamos presentes.",
           "callToAction": "¿Cuál es la mayor lección de tu último lanzamiento?",
-          "author": { "name": "Sarah Mitchell", "title": "Product Manager en TechFlow", "initials": "SM" }
+          "author": {
+            "name": "Sarah Mitchell",
+            "title": "Product Manager en TechFlow",
+            "initials": "SM"
+          }
         }
       },
       "clientDiscovery": {
         "actionItems": {
           "items": [
-            { "task": "Enviar propuesta con tres opciones de paquete", "owner": "Marcus", "deadline": "15 ene" },
-            { "task": "Agendar reunión técnica con su CTO", "owner": "Marcus", "deadline": "12 ene" },
-            { "task": "Preparar caso de estudio de proyecto fintech similar", "owner": "Team", "deadline": "14 ene" },
-            { "task": "Elaborar cronograma para implementación Q2", "owner": "Marcus", "deadline": "18 ene" }
+            {
+              "task": "Enviar propuesta con tres opciones de paquete",
+              "owner": "Marcus",
+              "deadline": "15 ene"
+            },
+            {
+              "task": "Agendar reunión técnica con su CTO",
+              "owner": "Marcus",
+              "deadline": "12 ene"
+            },
+            {
+              "task": "Preparar caso de estudio de proyecto fintech similar",
+              "owner": "Team",
+              "deadline": "14 ene"
+            },
+            {
+              "task": "Elaborar cronograma para implementación Q2",
+              "owner": "Marcus",
+              "deadline": "18 ene"
+            }
           ]
         },
         "email": {
@@ -2419,21 +2503,36 @@
             "Integración con su instancia existente de Salesforce"
           ],
           "closing": "Espero con interés la posibilidad de trabajar juntos.",
-          "signature": { "name": "Marcus Chen", "title": "Consultor Senior", "initials": "MC" }
+          "signature": {
+            "name": "Marcus Chen",
+            "title": "Consultor Senior",
+            "initials": "MC"
+          }
         },
         "blogPost": {
           "headline": "La llamada de descubrimiento que cambió mi forma de vender",
           "subheading": "Por qué escuchar siempre supera a presentar",
           "hook": "Antes entraba a las llamadas de descubrimiento con un deck. Ahora entro con preguntas.",
           "body": "El cliente mencionó su problema real a los 47 minutos. Si hubiera estado presentando, lo habría perdido por completo. Su equipo no luchaba con la tecnología. Se ahogaban en procesos manuales que nadie tenía tiempo de arreglar.",
-          "quote": { "text": "Entendiste nuestro problema antes de que termináramos de explicarlo.", "attribution": "Feedback del cliente" },
+          "quote": {
+            "text": "Entendiste nuestro problema antes de que termináramos de explicarlo.",
+            "attribution": "Feedback del cliente"
+          },
           "imageAlt": "Formas abstractas representando conversación y conexión"
         },
         "communicationAnalysis": {
           "overallAssessment": "Fuertes habilidades de descubrimiento con espacio para profundizar la comprensión del cliente. Haces buenas preguntas pero podrías dejar respirar más las respuestas.",
           "dimensions": {
-            "clarity": { "name": "Claridad", "strength": "Las preguntas fueron específicas y accionables", "improvement": "Resumir puntos clave antes de continuar" },
-            "activeListening": { "name": "Escucha activa", "strength": "Construyó naturalmente sobre las respuestas del cliente", "improvement": "Pausar más después de respuestas complejas" }
+            "clarity": {
+              "name": "Claridad",
+              "strength": "Las preguntas fueron específicas y accionables",
+              "improvement": "Resumir puntos clave antes de continuar"
+            },
+            "activeListening": {
+              "name": "Escucha activa",
+              "strength": "Construyó naturalmente sobre las respuestas del cliente",
+              "improvement": "Pausar más después de respuestas complejas"
+            }
           }
         }
       }

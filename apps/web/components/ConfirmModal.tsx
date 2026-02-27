@@ -1,7 +1,5 @@
 'use client';
 
-import { AlertTriangle, Trash2 } from 'lucide-react';
-import { Button } from '@/components/Button';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,6 +7,8 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
 export type ConfirmModalVariant = 'danger' | 'warning' | 'info';
@@ -26,7 +26,8 @@ interface ConfirmModalProps {
 }
 
 /**
- * Reusable confirmation modal for destructive or important actions
+ * Reusable confirmation modal for destructive or important actions.
+ * Uses standard shadcn AlertDialog components for a clean, compact look.
  */
 export function ConfirmModal({
   isOpen,
@@ -39,61 +40,39 @@ export function ConfirmModal({
   variant = 'danger',
   isLoading = false,
 }: ConfirmModalProps) {
-  const variantStyles = {
-    danger: {
-      icon: <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />,
-      iconBg: 'bg-red-100 dark:bg-red-900/30',
-      buttonVariant: 'danger' as const,
-    },
-    warning: {
-      icon: <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400" />,
-      iconBg: 'bg-amber-100 dark:bg-amber-900/30',
-      buttonVariant: 'danger' as const,
-    },
-    info: {
-      icon: <AlertTriangle className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
-      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-      buttonVariant: 'primary' as const,
-    },
-  };
-
-  const styles = variantStyles[variant];
+  const actionVariant = variant === 'info' ? 'default' : 'destructive';
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
-      <AlertDialogContent className="bg-white dark:bg-gray-800 rounded-xl max-w-md">
-        <AlertDialogHeader>
-          {/* Icon */}
-          <div className={`w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center mb-2`}>
-            {styles.icon}
-          </div>
-
+      <AlertDialogContent className="bg-white dark:bg-gray-800 gap-0 p-0 max-w-md">
+        <AlertDialogHeader className="p-6 pb-4">
           <AlertDialogTitle className="text-gray-900 dark:text-gray-100">
             {title}
           </AlertDialogTitle>
-
-          <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+          <AlertDialogDescription className="text-gray-500 dark:text-gray-400">
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="flex-row gap-3">
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={onClose}
+        <AlertDialogFooter className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 px-6 py-3 rounded-b-lg">
+          <AlertDialogCancel
+            variant="outline"
+            size="sm"
             disabled={isLoading}
+            onClick={onClose}
+            className="text-gray-700 dark:text-gray-300 border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700"
           >
             {cancelLabel}
-          </Button>
-          <Button
-            variant={styles.buttonVariant}
-            fullWidth
-            onClick={onConfirm}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            variant={actionVariant}
+            size="sm"
             disabled={isLoading}
+            onClick={onConfirm}
+            className={variant !== 'info' ? 'bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700' : undefined}
           >
             {isLoading ? 'Deleting...' : confirmLabel}
-          </Button>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

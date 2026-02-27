@@ -12,14 +12,18 @@ import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme } = useTheme()
-  // Map custom theme to Sonner-compatible value
-  const resolvedTheme = theme === "system"
-    ? (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : theme
+
+  // Resolve to explicit light/dark so Sonner never checks OS preference directly
+  // (OS dark + app light would cause dark toasts otherwise)
+  const effectiveTheme: ToasterProps["theme"] =
+    theme === "dark" ? "dark"
+    : theme === "light" ? "light"
+    : typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "dark"
+    : "light"
 
   return (
     <Sonner
-      theme={resolvedTheme as ToasterProps["theme"]}
+      theme={effectiveTheme}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -28,14 +32,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
         error: <OctagonXIcon className="size-4" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
       }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
       {...props}
     />
   )
