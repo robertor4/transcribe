@@ -1,8 +1,15 @@
 'use client';
 
-import * as Dialog from '@radix-ui/react-dialog';
-import { AlertTriangle, Trash2, X } from 'lucide-react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Button } from '@/components/Button';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from '@/components/ui/alert-dialog';
 
 export type ConfirmModalVariant = 'danger' | 'warning' | 'info';
 
@@ -53,59 +60,42 @@ export function ConfirmModal({
   const styles = variantStyles[variant];
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-4 right-4 top-1/2 z-50 -translate-y-1/2 mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-          {/* Close button */}
-          <Dialog.Close asChild>
-            <button
-              disabled={isLoading}
-              className="absolute top-4 right-4 p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </Dialog.Close>
-
-          <div className="p-6">
-            {/* Icon */}
-            <div className={`w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center mb-4`}>
-              {styles.icon}
-            </div>
-
-            {/* Title */}
-            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              {title}
-            </Dialog.Title>
-
-            {/* Message */}
-            <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              {message}
-            </Dialog.Description>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                fullWidth
-                onClick={onClose}
-                disabled={isLoading}
-              >
-                {cancelLabel}
-              </Button>
-              <Button
-                variant={styles.buttonVariant}
-                fullWidth
-                onClick={onConfirm}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Deleting...' : confirmLabel}
-              </Button>
-            </div>
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
+      <AlertDialogContent className="bg-white dark:bg-gray-800 rounded-xl max-w-md">
+        <AlertDialogHeader>
+          {/* Icon */}
+          <div className={`w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center mb-2`}>
+            {styles.icon}
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+
+          <AlertDialogTitle className="text-gray-900 dark:text-gray-100">
+            {title}
+          </AlertDialogTitle>
+
+          <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <AlertDialogFooter className="flex-row gap-3">
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={onClose}
+            disabled={isLoading}
+          >
+            {cancelLabel}
+          </Button>
+          <Button
+            variant={styles.buttonVariant}
+            fullWidth
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Deleting...' : confirmLabel}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

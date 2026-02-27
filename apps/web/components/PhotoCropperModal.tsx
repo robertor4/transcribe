@@ -4,9 +4,14 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
-import { X, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Button } from './Button';
 import { cropImage, createImageUrl } from '@/lib/cropImage';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface PhotoCropperModalProps {
   isOpen: boolean;
@@ -46,17 +51,6 @@ export function PhotoCropperModal({
     };
   }, [imageFile]);
 
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen && !isSaving) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, isSaving, onClose]);
-
   const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
@@ -83,30 +77,14 @@ export function PhotoCropperModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={handleClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 rounded-xl max-w-md p-0 gap-0">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+          <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
             {t('cropPhoto')}
-          </h2>
-          <button
-            onClick={handleClose}
-            disabled={isSaving}
-            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-          >
-            <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-          </button>
+          </DialogTitle>
         </div>
 
         {/* Cropper */}
@@ -168,7 +146,7 @@ export function PhotoCropperModal({
             {isSaving ? t('processingImage') : t('saveCrop')}
           </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

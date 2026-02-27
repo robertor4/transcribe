@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { X, ArrowLeft, ArrowRight, AlertCircle, Mail, FileText, BarChart3, Lock, Users, Briefcase, Code2, TrendingUp } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
 import { GeneratingLoader } from './GeneratingLoader';
@@ -201,21 +206,14 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
   const canProceedFromStep1 = selectedType !== null && !quotaExceeded;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
-        onClick={handleClose}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 flex flex-col">
+    <Dialog open={true} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-900 rounded-2xl sm:max-w-2xl max-h-[85vh] overflow-hidden p-0 gap-0 flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 flex items-center justify-between px-8 py-5 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               {t('title')}
-            </h2>
+            </DialogTitle>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
               {conversationTitle}
             </p>
@@ -657,7 +655,7 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

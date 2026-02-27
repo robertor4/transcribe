@@ -9,6 +9,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { TrialCountdownBanner } from '@/components/trial/TrialCountdownBanner';
 import { SubscriptionSkeleton } from '@/components/skeletons/SettingsSkeleton';
+import { Button } from '@/components/Button';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 interface SubscriptionData {
   subscription: {
@@ -180,28 +183,25 @@ export default function SubscriptionPage() {
         <div className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('currentPlan.title')}
-              </label>
+              </Label>
             </div>
             <div className="sm:w-2/3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-[#8D6AFA]" />
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                <Badge className={`px-3 py-1 text-sm ${
                   isFree ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
                   isProfessional ? 'bg-purple-100 dark:bg-purple-900/30 text-pink-700 dark:text-pink-300' :
                   'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                 }`}>
                   {tier.charAt(0).toUpperCase() + tier.slice(1)}
-                </span>
+                </Badge>
               </div>
               {isFree && (
-                <Link
-                  href={`/${locale}/pricing`}
-                  className="px-6 py-2 bg-[#8D6AFA] text-white rounded-full hover:bg-[#7A5AE0] transition-colors text-sm font-medium"
-                >
+                <Button variant="brand" href={`/${locale}/pricing`}>
                   {t('upgrade')}
-                </Link>
+                </Button>
               )}
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function SubscriptionPage() {
             {subscription.subscription.status && (
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">{t('status')}:</span>
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                <Badge className={`${
                   subscription.subscription.status === 'active'
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                     : subscription.subscription.status === 'trialing'
@@ -221,7 +221,7 @@ export default function SubscriptionPage() {
                     : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                 }`}>
                   {subscription.subscription.status.charAt(0).toUpperCase() + subscription.subscription.status.slice(1)}
-                </span>
+                </Badge>
               </div>
             )}
 
@@ -267,9 +267,9 @@ export default function SubscriptionPage() {
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="h-4 w-4 text-[#8D6AFA]" />
-              <label className="text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('usageThisMonth')}
-              </label>
+              </Label>
             </div>
 
           {/* Hours (Professional/Business) */}
@@ -377,9 +377,9 @@ export default function SubscriptionPage() {
         <div className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <CreditCard className="h-4 w-4 text-[#8D6AFA]" />
-            <label className="text-base font-medium text-gray-900 dark:text-gray-100">
+            <Label className="text-base text-gray-900 dark:text-gray-100">
               {t('billingHistory.title')}
-            </label>
+            </Label>
           </div>
           {billingHistory.length === 0 ? (
             <p className="text-sm text-gray-600 dark:text-gray-400">{t('noBillingHistory')}</p>
@@ -399,15 +399,14 @@ export default function SubscriptionPage() {
                     </p>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    <Badge className={`${
                         invoice.status === 'paid'
                           ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
                           : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
                       }`}
                     >
                       {invoice.status}
-                    </span>
+                    </Badge>
                     {invoice.invoicePdf && (
                       <a
                         href={invoice.invoicePdf}
@@ -432,22 +431,22 @@ export default function SubscriptionPage() {
           <div className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
               <div className="sm:w-1/3">
-                <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                <Label className="text-gray-900 dark:text-gray-100">
                   {t('cancelSubscription')}
-                </label>
+                </Label>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {t('cancelDescription')}
                 </p>
               </div>
               <div className="sm:w-2/3">
-                <button
+                <Button
+                  variant="danger"
                   onClick={handleCancelSubscription}
                   disabled={cancelling}
-                  className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm font-medium"
+                  icon={cancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
                 >
-                  {cancelling && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                   {t('cancelButton')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>

@@ -1,7 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { X, Trash2, FolderMinus, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/Button';
 
@@ -36,10 +42,8 @@ export function DeleteFolderModal({
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-900 rounded-2xl max-w-md p-0 gap-0">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">
@@ -47,22 +51,22 @@ export function DeleteFolderModal({
                 <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+                <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                   Delete Folder
-                </Dialog.Title>
-                <Dialog.Description className="text-sm text-gray-600 dark:text-gray-400">
+                </DialogTitle>
+                <DialogDescription className="text-gray-600 dark:text-gray-400">
                   {folderName}
-                </Dialog.Description>
+                </DialogDescription>
               </div>
             </div>
-            <Dialog.Close asChild>
+            <DialogClose asChild>
               <button
                 disabled={isDeleting}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
-            </Dialog.Close>
+            </DialogClose>
           </div>
 
           {/* Content */}
@@ -179,8 +183,7 @@ export function DeleteFolderModal({
               )}
             </Button>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

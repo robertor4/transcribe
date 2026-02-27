@@ -10,7 +10,7 @@ import {
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
-import { MilestoneToast } from '@/components/MilestoneToast';
+import { toast } from 'sonner';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
 import { DashboardDndProvider } from '@/components/dashboard/DashboardDndProvider';
 import { RecentAssetsSection } from '@/components/dashboard/RecentAssetsSection';
@@ -78,8 +78,7 @@ export function DashboardClient() {
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
     isOpen: false,
   });
-  const [showMilestone, setShowMilestone] = useState(false);
-  const [milestoneMessage, setMilestoneMessage] = useState('');
+  const milestoneShownRef = useRef(false);
 
   // Refresh user on mount to get latest email verification status
   // This handles the case where user returns from email verification link
@@ -118,11 +117,14 @@ export function DashboardClient() {
 
   // Check for milestone on mount
   useEffect(() => {
-    if (!conversationsLoading && total > 0) {
+    if (!conversationsLoading && total > 0 && !milestoneShownRef.current) {
       const message = getMilestoneMessage(total);
       if (message) {
-        setMilestoneMessage(message);
-        setShowMilestone(true);
+        milestoneShownRef.current = true;
+        toast(message, {
+          duration: 5000,
+          className: 'border-2 border-[#8D6AFA]',
+        });
       }
     }
   }, [conversationsLoading, total]);
@@ -308,13 +310,6 @@ export function DashboardClient() {
             )}
           </div>
         }
-      />
-
-      {/* Milestone Toast */}
-      <MilestoneToast
-        message={milestoneMessage}
-        isVisible={showMilestone}
-        onDismiss={() => setShowMilestone(false)}
       />
 
       {/* Conversation Create Modal */}

@@ -17,7 +17,14 @@
  */
 
 import { Globe, Check, Loader2, ChevronDown, Plus, Lock } from 'lucide-react';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 import { SUPPORTED_LOCALES } from '@transcribe/shared';
 import type { ConversationTranslations, LocaleTranslationStatus } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
@@ -135,8 +142,8 @@ export function TranslationDropdown({
   };
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <button
           disabled={isTranslating}
           className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
@@ -150,111 +157,105 @@ export function TranslationDropdown({
           <span className="hidden sm:inline">{getCurrentLabel()}</span>
           <ChevronDown className="w-3 h-3" />
         </button>
-      </DropdownMenu.Trigger>
+      </DropdownMenuTrigger>
 
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          align="end"
-          sideOffset={8}
-          className="w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden animate-in fade-in-0 zoom-in-95"
+      <DropdownMenuContent align="end" sideOffset={8} className="w-64">
+        {/* Original Language Option */}
+        <DropdownMenuItem
+          onSelect={() => handleSelect('original')}
+          className={`justify-between font-medium cursor-pointer ${
+            currentLocale === 'original'
+              ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA] focus:bg-purple-100 dark:focus:bg-purple-900/40 focus:text-[#8D6AFA]'
+              : ''
+          }`}
         >
-          {/* Original Language Option */}
-          <DropdownMenu.Item
-            onSelect={() => handleSelect('original')}
-            className={`w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium transition-colors outline-none cursor-pointer ${
-              currentLocale === 'original'
-                ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700'
-            }`}
-          >
-            <span>{getOriginalLabel()}</span>
-            {currentLocale === 'original' && <Check className="w-4 h-4" />}
-          </DropdownMenu.Item>
+          <span>{getOriginalLabel()}</span>
+          {currentLocale === 'original' && <Check className="w-4 h-4" />}
+        </DropdownMenuItem>
 
-          {/* Available Translations (if any) */}
-          {status?.availableLocales && status.availableLocales.length > 0 && (
-            <>
-              <DropdownMenu.Separator className="border-t border-gray-200 dark:border-gray-700" />
-              <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                {t('availableTranslations')}
-              </DropdownMenu.Label>
-              {status.availableLocales.map((locale) => (
-                <DropdownMenu.Item
-                  key={locale.code}
-                  onSelect={() => handleSelect(locale.code)}
-                  className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors outline-none cursor-pointer ${
-                    currentLocale === locale.code
-                      ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700'
-                  }`}
-                >
-                  <div className="flex flex-col items-start">
-                    <span>{locale.nativeName}</span>
-                    {locale.translatedAssetCount > 0 && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {locale.translatedAssetCount} {t('assetsTranslated')}
-                      </span>
-                    )}
-                  </div>
-                  {currentLocale === locale.code && <Check className="w-4 h-4" />}
-                </DropdownMenu.Item>
-              ))}
-            </>
-          )}
-
-          {/* Translate To Section (only if not read-only and there are untranslated locales) */}
-          {!readOnly && getUntranslatedLocales().length > 0 && (
-            <>
-              <DropdownMenu.Separator className="border-t border-gray-200 dark:border-gray-700" />
-              {canTranslate ? (
-                <>
-                  <DropdownMenu.Label className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    {t('translateTo')}
-                  </DropdownMenu.Label>
-                  <div className="max-h-48 overflow-y-auto">
-                    {getUntranslatedLocales().map((locale) => (
-                      <DropdownMenu.Item
-                        key={locale.code}
-                        onSelect={() => handleSelect(locale.code)}
-                        disabled={isTranslating}
-                        className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors outline-none cursor-pointer disabled:opacity-50"
-                      >
-                        <span>{locale.nativeName}</span>
-                        <Plus className="w-4 h-4 text-gray-400" />
-                      </DropdownMenu.Item>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="px-4 py-3">
-                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
-                    <Lock className="w-4 h-4" />
-                    <span className="text-xs font-semibold uppercase tracking-wide">
-                      {t('proFeature')}
+        {/* Available Translations (if any) */}
+        {status?.availableLocales && status.availableLocales.length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs font-semibold uppercase tracking-wide">
+              {t('availableTranslations')}
+            </DropdownMenuLabel>
+            {status.availableLocales.map((locale) => (
+              <DropdownMenuItem
+                key={locale.code}
+                onSelect={() => handleSelect(locale.code)}
+                className={`justify-between cursor-pointer ${
+                  currentLocale === locale.code
+                    ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA] focus:bg-purple-100 dark:focus:bg-purple-900/40 focus:text-[#8D6AFA]'
+                    : ''
+                }`}
+              >
+                <div className="flex flex-col items-start">
+                  <span>{locale.nativeName}</span>
+                  {locale.translatedAssetCount > 0 && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {locale.translatedAssetCount} {t('assetsTranslated')}
                     </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {t('upgradeToTranslate')}
-                  </p>
-                  <Link
-                    href="/pricing"
-                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
-                  >
-                    {t('upgradeToPro')}
-                  </Link>
+                  )}
                 </div>
-              )}
-            </>
-          )}
+                {currentLocale === locale.code && <Check className="w-4 h-4" />}
+              </DropdownMenuItem>
+            ))}
+          </>
+        )}
 
-          {/* Empty state for read-only with no translations */}
-          {readOnly && (!status?.availableLocales || status.availableLocales.length === 0) && (
-            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
-              {t('noTranslationsAvailable')}
-            </div>
-          )}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+        {/* Translate To Section (only if not read-only and there are untranslated locales) */}
+        {!readOnly && getUntranslatedLocales().length > 0 && (
+          <>
+            <DropdownMenuSeparator />
+            {canTranslate ? (
+              <>
+                <DropdownMenuLabel className="text-xs font-semibold uppercase tracking-wide">
+                  {t('translateTo')}
+                </DropdownMenuLabel>
+                <div className="max-h-48 overflow-y-auto">
+                  {getUntranslatedLocales().map((locale) => (
+                    <DropdownMenuItem
+                      key={locale.code}
+                      onSelect={() => handleSelect(locale.code)}
+                      disabled={isTranslating}
+                      className="justify-between cursor-pointer"
+                    >
+                      <span>{locale.nativeName}</span>
+                      <Plus className="w-4 h-4 text-gray-400" />
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="px-4 py-3">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                  <Lock className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase tracking-wide">
+                    {t('proFeature')}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  {t('upgradeToTranslate')}
+                </p>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center justify-center w-full px-4 py-2 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {t('upgradeToPro')}
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Empty state for read-only with no translations */}
+        {readOnly && (!status?.availableLocales || status.availableLocales.length === 0) && (
+          <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+            {t('noTranslationsAvailable')}
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

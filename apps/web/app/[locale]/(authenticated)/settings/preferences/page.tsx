@@ -8,6 +8,15 @@ import { getUserProfile, updateUserLanguagePreference } from '@/lib/user-prefere
 import { SettingsSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { useRouter } from '@/i18n/navigation';
 import { useTheme } from '@/hooks/useTheme';
+import { Button } from '@/components/Button';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -79,24 +88,20 @@ export default function PreferencesSettingsPage() {
     <div className="space-y-8">
       {/* Success/Error Messages */}
       {success && (
-        <div className="rounded-lg bg-green-50 dark:bg-green-900/30 p-4">
-          <div className="flex items-center">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <p className="ml-3 text-sm font-medium text-green-800 dark:text-green-300">
-              {t('saveSuccess')}
-            </p>
-          </div>
+        <div className="flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-900/30 p-4" role="alert">
+          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <p className="text-sm font-medium text-green-800 dark:text-green-300">
+            {t('saveSuccess')}
+          </p>
         </div>
       )}
 
       {error && (
-        <div className="rounded-lg bg-red-50 dark:bg-red-900/30 p-4">
-          <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <p className="ml-3 text-sm font-medium text-red-800 dark:text-red-300">
-              {error}
-            </p>
-          </div>
+        <div className="flex items-center gap-3 rounded-lg bg-red-50 dark:bg-red-900/30 p-4" role="alert">
+          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          <p className="text-sm font-medium text-red-800 dark:text-red-300">
+            {error}
+          </p>
         </div>
       )}
 
@@ -105,9 +110,9 @@ export default function PreferencesSettingsPage() {
         <div className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 Theme
-              </label>
+              </Label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Choose your preferred color scheme
               </p>
@@ -178,43 +183,40 @@ export default function PreferencesSettingsPage() {
         <div className="p-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label
-                htmlFor="language"
-                className="block text-base font-medium text-gray-900 dark:text-gray-100"
-              >
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('interfaceLanguage')}
-              </label>
+              </Label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {t('interfaceLanguageDescription')}
               </p>
             </div>
             <div className="sm:w-2/3">
-              <select
-                id="language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full max-w-xs rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
-              >
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name}
-                  </option>
-                ))}
-              </select>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="w-full max-w-xs rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-700">
+                  {SUPPORTED_LANGUAGES.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.flag} {lang.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
         {/* Save Button */}
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-          <button
+          <Button
+            variant="brand"
             onClick={handleSaveLanguage}
             disabled={saving || language === locale}
-            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            icon={saving ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
           >
-            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('saveChanges')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

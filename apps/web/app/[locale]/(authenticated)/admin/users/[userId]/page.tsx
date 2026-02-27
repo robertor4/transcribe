@@ -18,6 +18,16 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { AiIcon } from '@/components/icons/AiIcon';
+import { Button } from '@/components/Button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default function UserActivityPage() {
   const { user, loading: authLoading } = useAuth();
@@ -206,12 +216,12 @@ export default function UserActivityPage() {
         <div className="max-w-md w-full mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Error</h2>
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <button
+          <Button
+            variant="brand"
             onClick={() => router.push('/admin')}
-            className="w-full bg-[#8D6AFA] text-white py-2 rounded-lg hover:bg-[#7A5AE0] transition-colors"
           >
             Back to Admin Panel
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -227,13 +237,16 @@ export default function UserActivityPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <button
-              onClick={() => router.push('/admin')}
-              className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">Back to Admin Panel</span>
-            </button>
+            <div className="mb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/admin')}
+                icon={<ArrowLeft className="w-4 h-4" />}
+              >
+                Back to Admin Panel
+              </Button>
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <Shield className="w-8 h-8 text-[#8D6AFA]" />
               User Activity Audit
@@ -242,13 +255,14 @@ export default function UserActivityPage() {
               Detailed activity history for {activity.user.displayName || activity.user.email}
             </p>
           </div>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={fetchActivity}
-            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
+            icon={<RefreshCw className="w-4 h-4" />}
           >
-            <RefreshCw className="w-4 h-4" />
             Refresh
-          </button>
+          </Button>
         </div>
 
         {/* User Profile Card */}
@@ -263,8 +277,7 @@ export default function UserActivityPage() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300">{activity.user.email}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span
-                  className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                <Badge className={`${
                     activity.user.subscriptionTier === 'free'
                       ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                       : activity.user.subscriptionTier === 'professional'
@@ -273,16 +286,16 @@ export default function UserActivityPage() {
                   }`}
                 >
                   {activity.user.subscriptionTier}
-                </span>
+                </Badge>
                 {activity.user.role === 'admin' && (
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                  <Badge className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
                     Admin
-                  </span>
+                  </Badge>
                 )}
                 {activity.user.isDeleted && (
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                  <Badge className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
                     Deleted
-                  </span>
+                  </Badge>
                 )}
               </div>
             </div>
@@ -415,63 +428,46 @@ export default function UserActivityPage() {
               Recent Transcriptions (Last 50)
             </h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    File Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Duration
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Created
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {activity.recentTranscriptions.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-6 py-4 text-center text-gray-700 dark:text-gray-400"
-                    >
-                      No transcriptions found
-                    </td>
-                  </tr>
-                ) : (
-                  activity.recentTranscriptions.map((transcription) => (
-                    <tr key={transcription.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {transcription.title || transcription.fileName}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(
-                            transcription.status
-                          )}`}
-                        >
-                          {transcription.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {formatDuration(transcription.duration)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {formatDate(transcription.createdAt)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader className="bg-gray-50 dark:bg-gray-700">
+              <TableRow>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">File Name</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Status</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Duration</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activity.recentTranscriptions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="px-6 py-4 text-center text-gray-700 dark:text-gray-400">
+                    No transcriptions found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                activity.recentTranscriptions.map((transcription) => (
+                  <TableRow key={transcription.id}>
+                    <TableCell className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {transcription.title || transcription.fileName}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <Badge className={getStatusColor(transcription.status)}>
+                        {transcription.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                      {formatDuration(transcription.duration)}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                      {formatDate(transcription.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
 
         {/* Recent Analyses */}
@@ -481,53 +477,42 @@ export default function UserActivityPage() {
               Recent On-Demand Analyses (Last 50)
             </h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Template Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Model
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Generated
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {activity.recentAnalyses.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="px-6 py-4 text-center text-gray-700 dark:text-gray-400"
-                    >
-                      No analyses found
-                    </td>
-                  </tr>
-                ) : (
-                  activity.recentAnalyses.map((analysis) => (
-                    <tr key={analysis.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {analysis.templateName}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-                          {analysis.model}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {formatDate(analysis.generatedAt)}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader className="bg-gray-50 dark:bg-gray-700">
+              <TableRow>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Template Name</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Model</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Generated</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activity.recentAnalyses.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="px-6 py-4 text-center text-gray-700 dark:text-gray-400">
+                    No analyses found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                activity.recentAnalyses.map((analysis) => (
+                  <TableRow key={analysis.id}>
+                    <TableCell className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {analysis.templateName}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
+                      <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                        {analysis.model}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                      {formatDate(analysis.generatedAt)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

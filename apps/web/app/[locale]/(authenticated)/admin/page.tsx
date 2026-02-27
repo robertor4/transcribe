@@ -5,6 +5,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { User, UserRole } from '@transcribe/shared';
 import { Trash2, UserX, Shield, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/Button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 export default function AdminPanel() {
   const { user, loading: authLoading } = useAuth();
@@ -159,12 +169,12 @@ export default function AdminPanel() {
         <div className="max-w-md w-full mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Error</h2>
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <button
+          <Button
+            variant="brand"
             onClick={() => router.push('/dashboard')}
-            className="w-full bg-[#8D6AFA] text-white py-2 rounded-lg hover:bg-[#7A5AE0] transition-colors"
           >
             Back to Dashboard
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -183,21 +193,22 @@ export default function AdminPanel() {
             <p className="mt-2 text-gray-700 dark:text-gray-300">Manage users and system settings</p>
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
-              title="Back to Dashboard"
+              icon={<ArrowLeft className="w-4 h-4" />}
             >
-              <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Dashboard</span>
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={fetchUsers}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
+              icon={<RefreshCw className="w-4 h-4" />}
             >
-              <RefreshCw className="w-4 h-4" />
               <span className="hidden sm:inline">Refresh</span>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -229,122 +240,102 @@ export default function AdminPanel() {
 
         {/* User Table */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-100 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Tier
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Last Login
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {users.map((u) => (
-                  <tr
-                    key={u.uid}
-                    className={`${u.isDeleted ? 'bg-red-50 dark:bg-red-900/20' : ''} hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors`}
-                    onClick={() => router.push(`/admin/users/${u.uid}`)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {u.displayName || 'No name'}
-                          </div>
-                          <div className="text-sm text-gray-700 dark:text-gray-400">{u.email}</div>
-                        </div>
+          <Table>
+            <TableHeader className="bg-gray-100 dark:bg-gray-700">
+              <TableRow>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">User</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Tier</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Role</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Created</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Last Login</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Status</TableHead>
+                <TableHead className="px-6 text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((u) => (
+                <TableRow
+                  key={u.uid}
+                  className={`${u.isDeleted ? 'bg-red-50 dark:bg-red-900/20' : ''} cursor-pointer`}
+                  onClick={() => router.push(`/admin/users/${u.uid}`)}
+                >
+                  <TableCell className="px-6 py-4">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {u.displayName || 'No name'}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          u.subscriptionTier === 'free'
-                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
-                            : u.subscriptionTier === 'professional'
-                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-pink-300'
-                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
-                        }`}
-                      >
-                        {u.subscriptionTier}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                      {u.role === UserRole.ADMIN ? (
-                        <span className="text-[#8D6AFA] font-medium">Admin</span>
-                      ) : (
-                        'User'
+                      <div className="text-sm text-gray-700 dark:text-gray-400">{u.email}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    <Badge className={`${
+                      u.subscriptionTier === 'free'
+                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                        : u.subscriptionTier === 'professional'
+                          ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-pink-300'
+                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                    }`}>
+                      {u.subscriptionTier}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                    {u.role === UserRole.ADMIN ? (
+                      <span className="text-[#8D6AFA] font-medium">Admin</span>
+                    ) : (
+                      'User'
+                    )}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">
+                    {new Date(u.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-sm">
+                    {formatLastLogin(u.lastLogin)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    {u.isDeleted ? (
+                      <Badge className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                        Deleted
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                        Active
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      {u.role !== UserRole.ADMIN && !u.isDeleted && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteUser(u.uid, false);
+                            }}
+                            disabled={deletingUserId === u.uid}
+                            className="text-orange-600 hover:text-orange-900 disabled:opacity-50"
+                            title="Soft delete (preserve data)"
+                          >
+                            <UserX className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteUser(u.uid, true);
+                            }}
+                            disabled={deletingUserId === u.uid}
+                            className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                            title="Hard delete (permanent)"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </>
                       )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                      {new Date(u.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      {formatLastLogin(u.lastLogin)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {u.isDeleted ? (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
-                          Deleted
-                        </span>
-                      ) : (
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                          Active
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        {u.role !== UserRole.ADMIN && !u.isDeleted && (
-                          <>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteUser(u.uid, false);
-                              }}
-                              disabled={deletingUserId === u.uid}
-                              className="text-orange-600 hover:text-orange-900 disabled:opacity-50"
-                              title="Soft delete (preserve data)"
-                            >
-                              <UserX className="w-5 h-5" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteUser(u.uid, true);
-                              }}
-                              disabled={deletingUserId === u.uid}
-                              className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                              title="Hard delete (permanent)"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

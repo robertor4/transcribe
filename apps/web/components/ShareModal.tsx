@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import * as Dialog from '@radix-ui/react-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { transcriptionApi } from '@/lib/api';
 import { Transcription, ShareContentOptions } from '@transcribe/shared';
 import {
@@ -393,21 +398,19 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl w-[calc(100%-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 sm:max-w-2xl max-h-[90vh] overflow-y-auto p-0">
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
             <div className="flex items-center justify-between">
-              <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <DialogTitle className="text-gray-900 dark:text-gray-100">
                 Share
-              </Dialog.Title>
-              <Dialog.Close asChild>
+              </DialogTitle>
+              <DialogClose asChild>
                 <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors -mr-1">
                   <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
-              </Dialog.Close>
+              </DialogClose>
             </div>
           </div>
 
@@ -800,8 +803,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </>
           )}
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };

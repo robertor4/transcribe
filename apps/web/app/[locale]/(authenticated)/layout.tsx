@@ -10,6 +10,7 @@ import { UsageProvider } from '@/contexts/UsageContext';
 import { PageTracker } from '@/components/PageTracker';
 import { CookieConsent } from '@/components/CookieConsent';
 import { ApiUnavailableBanner } from '@/components/ApiUnavailableBanner';
+import { Toaster } from '@/components/ui/sonner';
 
 /**
  * Layout for authenticated pages that need full context providers.
@@ -36,6 +37,7 @@ export default function AuthenticatedLayout({
                   <ApiUnavailableBanner />
                   {children}
                   <CookieConsent />
+                  <Toaster position="bottom-left" />
                 </ImportedConversationsProvider>
               </FoldersProvider>
             </ConversationsProvider>

@@ -21,6 +21,10 @@ import {
 } from '@/lib/user-preferences';
 import { ProfilePhotoUploader } from '@/components/ProfilePhotoUploader';
 import { SettingsSkeleton } from '@/components/skeletons/SettingsSkeleton';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { auth } from '@/lib/firebase';
 import {
   sendEmailVerification,
@@ -235,24 +239,20 @@ export default function ProfileSettingsPage() {
     <div className="space-y-8">
       {/* Success/Error Messages */}
       {success && (
-        <div className="rounded-lg bg-green-50 dark:bg-green-900/30 p-4">
-          <div className="flex items-center">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <p className="ml-3 text-sm font-medium text-green-800 dark:text-green-300">
-              {success}
-            </p>
-          </div>
+        <div className="flex items-center gap-3 rounded-lg bg-green-50 dark:bg-green-900/30 p-4" role="alert">
+          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <p className="text-sm font-medium text-green-800 dark:text-green-300">
+            {success}
+          </p>
         </div>
       )}
 
       {error && (
-        <div className="rounded-lg bg-red-50 dark:bg-red-900/30 p-4">
-          <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <p className="ml-3 text-sm font-medium text-red-800 dark:text-red-300">
-              {error}
-            </p>
-          </div>
+        <div className="flex items-center gap-3 rounded-lg bg-red-50 dark:bg-red-900/30 p-4" role="alert">
+          <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+          <p className="text-sm font-medium text-red-800 dark:text-red-300">
+            {error}
+          </p>
         </div>
       )}
 
@@ -262,9 +262,9 @@ export default function ProfileSettingsPage() {
           {/* Profile Photo Row */}
           <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('profilePhoto')}
-              </label>
+              </Label>
             </div>
             <div className="sm:w-2/3">
               <ProfilePhotoUploader
@@ -309,21 +309,21 @@ export default function ProfileSettingsPage() {
           {/* Display Name Row */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label
+              <Label
                 htmlFor="displayName"
-                className="block text-base font-medium text-gray-900 dark:text-gray-100"
+                className="text-base text-gray-900 dark:text-gray-100"
               >
                 {t('displayName')}
-              </label>
+              </Label>
             </div>
             <div className="sm:w-2/3">
-              <input
+              <Input
                 type="text"
                 id="displayName"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={t('displayNamePlaceholder')}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -331,9 +331,9 @@ export default function ProfileSettingsPage() {
           {/* Email Row */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('email')}
-              </label>
+              </Label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {t('emailHelp')}
               </p>
@@ -343,23 +343,27 @@ export default function ProfileSettingsPage() {
                 {authUser?.email}
               </span>
               {authUser?.emailVerified ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                  <CheckCircle className="h-3 w-3 mr-1" />
+                <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                  <CheckCircle className="h-3 w-3" />
                   {t('verified')}
-                </span>
+                </Badge>
               ) : (
-                <button
-                  onClick={handleResendVerification}
-                  disabled={sendingVerification}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 transition-colors"
+                <Badge
+                  asChild
+                  className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50 cursor-pointer transition-colors"
                 >
-                  {sendingVerification ? (
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  ) : (
-                    <AlertCircle className="h-3 w-3 mr-1" />
-                  )}
-                  {t('notVerified')}
-                </button>
+                  <button
+                    onClick={handleResendVerification}
+                    disabled={sendingVerification}
+                  >
+                    {sendingVerification ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <AlertCircle className="h-3 w-3" />
+                    )}
+                    {t('notVerified')}
+                  </button>
+                </Badge>
               )}
             </div>
           </div>
@@ -367,9 +371,9 @@ export default function ProfileSettingsPage() {
           {/* Account Created Row */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {t('accountCreated')}
-              </label>
+              </Label>
             </div>
             <div className="sm:w-2/3">
               <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -383,21 +387,22 @@ export default function ProfileSettingsPage() {
           {/* Connected Accounts Row */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
             <div className="sm:w-1/3">
-              <label className="block text-base font-medium text-gray-900 dark:text-gray-100">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
                 {tAccount('connectedAccounts')}
-              </label>
+              </Label>
             </div>
             <div className="sm:w-2/3 flex flex-wrap gap-2">
               {authUser?.providerData?.map((provider) => (
-                <span
+                <Badge
                   key={provider?.providerId}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                  variant="secondary"
+                  className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1"
                 >
                   {provider?.providerId === 'password' &&
                     tAccount('emailPassword')}
                   {provider?.providerId === 'google.com' &&
                     tAccount('googleAccount')}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
@@ -405,14 +410,14 @@ export default function ProfileSettingsPage() {
 
         {/* Save Button */}
         <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-          <button
+          <Button
+            variant="brand"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            icon={saving ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
           >
-            {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {t('saveChanges')}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -427,19 +432,19 @@ export default function ProfileSettingsPage() {
             <div className="space-y-4 max-w-md">
               {/* Current Password */}
               <div>
-                <label
+                <Label
                   htmlFor="current-password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="text-gray-700 dark:text-gray-300 mb-1"
                 >
                   {tAccount('currentPassword')}
-                </label>
+                </Label>
                 <div className="relative">
-                  <input
+                  <Input
                     type={showCurrentPassword ? 'text' : 'password'}
                     id="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                    className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
                   />
                   <button
                     type="button"
@@ -457,19 +462,19 @@ export default function ProfileSettingsPage() {
 
               {/* New Password */}
               <div>
-                <label
+                <Label
                   htmlFor="new-password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="text-gray-700 dark:text-gray-300 mb-1"
                 >
                   {tAccount('newPassword')}
-                </label>
+                </Label>
                 <div className="relative">
-                  <input
+                  <Input
                     type={showNewPassword ? 'text' : 'password'}
                     id="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                    className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
                   />
                   <button
                     type="button"
@@ -487,19 +492,19 @@ export default function ProfileSettingsPage() {
 
               {/* Confirm Password */}
               <div>
-                <label
+                <Label
                   htmlFor="confirm-password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  className="text-gray-700 dark:text-gray-300 mb-1"
                 >
                   {tAccount('confirmPassword')}
-                </label>
+                </Label>
                 <div className="relative">
-                  <input
+                  <Input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirm-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent"
+                    className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
                   />
                   <button
                     type="button"
@@ -515,7 +520,8 @@ export default function ProfileSettingsPage() {
                 </div>
               </div>
 
-              <button
+              <Button
+                variant="brand"
                 onClick={handlePasswordChange}
                 disabled={
                   changingPassword ||
@@ -523,13 +529,10 @@ export default function ProfileSettingsPage() {
                   !newPassword ||
                   !confirmPassword
                 }
-                className="inline-flex items-center px-6 py-2 rounded-full text-sm font-medium text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                icon={changingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
               >
-                {changingPassword && (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                )}
                 {tAccount('updatePassword')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -546,13 +549,13 @@ export default function ProfileSettingsPage() {
           </p>
 
           {!showDeleteConfirm ? (
-            <button
+            <Button
+              variant="danger"
               onClick={() => setShowDeleteConfirm(true)}
-              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-red-600 border border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              icon={<Trash2 className="h-4 w-4" />}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
               {tAccount('deleteAccount')}
-            </button>
+            </Button>
           ) : (
             <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <div className="flex items-start mb-4">
@@ -569,19 +572,19 @@ export default function ProfileSettingsPage() {
 
               {hasPasswordProvider && (
                 <div className="mb-4">
-                  <label
+                  <Label
                     htmlFor="delete-password"
-                    className="block text-sm font-medium text-red-700 dark:text-red-400 mb-1"
+                    className="text-red-700 dark:text-red-400 mb-1"
                   >
                     {tAccount('enterPasswordToConfirm')}
-                  </label>
+                  </Label>
                   <div className="relative max-w-sm">
-                    <input
+                    <Input
                       type={showDeletePassword ? 'text' : 'password'}
                       id="delete-password"
                       value={deletePassword}
                       onChange={(e) => setDeletePassword(e.target.value)}
-                      className="w-full rounded-lg border border-red-300 dark:border-red-700 px-3 py-2 pr-10 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="rounded-lg border-red-300 dark:border-red-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10 focus-visible:ring-red-500/50 focus-visible:border-red-500"
                     />
                     <button
                       type="button"
@@ -599,27 +602,27 @@ export default function ProfileSettingsPage() {
               )}
 
               <div className="flex gap-3">
-                <button
+                <Button
+                  variant="danger"
+                  size="sm"
                   onClick={handleDeleteAccount}
                   disabled={
                     deletingAccount || (hasPasswordProvider && !deletePassword)
                   }
-                  className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  icon={deletingAccount ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
                 >
-                  {deletingAccount && (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  )}
                   {tAccount('confirmDelete')}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     setShowDeleteConfirm(false);
                     setDeletePassword('');
                   }}
-                  className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   {tAccount('cancel')}
-                </button>
+                </Button>
               </div>
             </div>
           )}

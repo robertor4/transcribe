@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **shadcn/ui Component Library**: Full-scale integration of shadcn/ui across the authenticated app
+  - **Foundation**: Installed `clsx`, `tailwind-merge`, `class-variance-authority`, `tw-animate-css`; upgraded `cn()` utility; added shadcn CSS custom properties mapped to Neural Summary brand colors; created [components.json](apps/web/components.json)
+  - **Phase 1 - Quick Wins**: Added shadcn Switch, DropdownMenu, AlertDialog; migrated [DropdownMenu.tsx](apps/web/components/DropdownMenu.tsx) (4 consumers), [ConfirmModal.tsx](apps/web/components/ConfirmModal.tsx) (4 consumers), [LanguageSwitcher.tsx](apps/web/components/LanguageSwitcher.tsx), [UserAvatarDropdown.tsx](apps/web/components/UserAvatarDropdown.tsx), [TranslationDropdown.tsx](apps/web/components/TranslationDropdown.tsx) to shadcn internals while preserving public APIs
+  - **Phase 2 - Modals/Sheet**: Added shadcn Dialog and Sheet; migrated ShareModal, DeleteFolderModal, FolderPickerModal, OutputGeneratorModal, PhotoCropperModal to shadcn Dialog; migrated [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx) from `createPortal` to shadcn Sheet (gains focus trap, accessible animations, body scroll locking)
+  - **Phase 3 - Form Primitives**: Added shadcn Input, Label, Select, Badge, Progress, Table, Separator, Alert, Sonner; refactored settings/profile, settings/preferences, settings/subscription, and admin pages to use shadcn components; migrated MilestoneToast to Sonner toast system with `<Toaster>` in authenticated layout
+  - **Phase 4 - Button Enhancement**: Refactored [Button.tsx](apps/web/components/Button.tsx) to use CVA (class-variance-authority) for cleaner variant management
+  - New UI components in [components/ui/](apps/web/components/ui/): `switch.tsx`, `dropdown-menu.tsx`, `alert-dialog.tsx`, `button.tsx`, `dialog.tsx`, `sheet.tsx`, `input.tsx`, `label.tsx`, `select.tsx`, `badge.tsx`, `progress.tsx`, `table.tsx`, `separator.tsx`, `alert.tsx`, `sonner.tsx`
+
+### Removed
+- **Dead Code**: Removed unused [Toggle.tsx](apps/web/components/Toggle.tsx) (zero consumers)
+- **Unused Dependencies**: Removed `@radix-ui/react-toast`, `@radix-ui/react-progress`, `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-switch` (now provided by shadcn's unified `radix-ui` package)
+
+### Added
 - **Domain Split**: Marketing site on `neuralsummary.com`, app on `app.neuralsummary.com`
   - Next.js middleware routes requests to the correct domain based on hostname
   - Traefik API routes serve `app.neuralsummary.com` only; marketing `/api/*` handled by Next.js proxy

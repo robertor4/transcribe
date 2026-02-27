@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { createPortal } from 'react-dom';
 import {
   X,
   Home,
@@ -21,6 +19,11 @@ import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useImportedConversations } from '@/contexts/ImportedConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { useSearch } from '@/hooks/useSearch';
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 interface MobileAppDrawerProps {
   isOpen: boolean;
@@ -63,29 +66,6 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
     return conversations.slice(0, 5);
   })();
 
-  // Lock body scroll when drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  // Close on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
-
   const handleNewConversation = () => {
     if (onNewConversation) {
       onNewConversation();
@@ -101,31 +81,16 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
     router.push(`/${locale}/conversation/${conversationId}`);
   };
 
-  // Don't render anything if not open (prevents unnecessary DOM)
-  if (!isOpen && typeof window !== 'undefined') {
-    return null;
-  }
-
-  const drawerContent = (
-    <>
-      {/* Backdrop overlay */}
-      <div
-        className={`fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm lg:hidden ${
-          isOpen ? 'animate-backdropFadeIn' : 'animate-backdropFadeOut pointer-events-none'
-        }`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Drawer panel */}
-      <div
-        className={`fixed top-0 left-0 z-[70] h-full w-[280px] max-w-[85vw] bg-[#3F38A0] dark:bg-[#0f1320] shadow-2xl lg:hidden flex flex-col ${
-          isOpen ? 'animate-slideInFromLeft' : 'animate-slideOutToLeft'
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
+  return (
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="w-[280px] max-w-[85vw] bg-[#3F38A0] dark:bg-[#0f1320] shadow-2xl p-0 gap-0 border-none flex flex-col"
       >
+        {/* Accessible title (visually hidden) */}
+        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+
         {/* Header with logo and close button */}
         <div
           className="flex items-center justify-between px-4 pb-4"
@@ -343,7 +308,7 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
                         {conversation.title}
                       </span>
                       {conversation.status === 'processing' && (
-                        <span className="flex-shrink-0 text-xs text-yellow-400">⏳</span>
+                        <span className="flex-shrink-0 text-xs text-yellow-400">&#x23F3;</span>
                       )}
                     </div>
                   </Link>
@@ -357,14 +322,7 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
         <div className="p-4 border-t border-white/10 mt-auto safe-area-bottom">
           <UserProfileMenu />
         </div>
-      </div>
-    </>
+      </SheetContent>
+    </Sheet>
   );
-
-  // Render in portal to ensure proper stacking context
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return createPortal(drawerContent, document.body);
 }
