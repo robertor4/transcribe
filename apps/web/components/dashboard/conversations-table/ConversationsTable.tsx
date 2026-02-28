@@ -238,7 +238,7 @@ export function ConversationsTable({
         <div className="border border-gray-200 dark:border-gray-700/50 rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-50 dark:hover:bg-gray-800/60">
+              <TableRow className="bg-gray-100 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800/60">
                 {/* Checkbox */}
                 <TableHead className="w-[40px] pr-0">
                   <div className="flex items-center pl-5 lg:pl-0">
