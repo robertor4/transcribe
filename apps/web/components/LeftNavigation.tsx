@@ -37,8 +37,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const { count: importedCount } = useImportedConversations();
   // Simplified toggle state - works on both touch and pointer devices
   const [isFoldersExpanded, setIsFoldersExpanded] = useState(true);
-  // Delayed state for staggered folder item animations
-  const [foldersAnimateIn, setFoldersAnimateIn] = useState(true);
   const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
   const [isClearing, setIsClearing] = useState(false);
 
@@ -54,16 +52,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
     }
   }, [focusSearch, onSearchFocused]);
 
-  // Trigger staggered animation after folders expand
-  useEffect(() => {
-    if (isFoldersExpanded) {
-      // Wait for container height animation to complete before showing items
-      const timer = setTimeout(() => setFoldersAnimateIn(true), 300);
-      return () => clearTimeout(timer);
-    } else {
-      setFoldersAnimateIn(false);
-    }
-  }, [isFoldersExpanded]);
 
   // Search state
   const {
@@ -285,18 +273,11 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               <p className="text-xs text-white/50 px-3 py-2">{t('noFoldersYet')}</p>
             ) : (
               <div className="space-y-1">
-                {folders.map((folder, index) => (
+                {folders.map((folder) => (
                   <Link
                     key={folder.id}
                     href={`/${locale}/folder/${folder.id}`}
-                    className={`group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 ${
-                      foldersAnimateIn
-                        ? 'animate-[fadeSlideIn_200ms_ease-out_both]'
-                        : 'opacity-0'
-                    }`}
-                    style={{
-                      animationDelay: `${index * 100}ms`,
-                    }}
+                    className="group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <Folder
@@ -316,14 +297,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                 {importedCount > 0 && (
                   <Link
                     href={`/${locale}/shared-with-me`}
-                    className={`group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10 ${
-                      foldersAnimateIn
-                        ? 'animate-[fadeSlideIn_200ms_ease-out_both]'
-                        : 'opacity-0'
-                    }`}
-                    style={{
-                      animationDelay: `${folders.length * 100}ms`,
-                    }}
+                    className="group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <Users className="w-4 h-4 text-white/50 flex-shrink-0 group-hover:text-white/70 transition-colors" />

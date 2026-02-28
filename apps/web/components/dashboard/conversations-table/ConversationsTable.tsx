@@ -17,22 +17,26 @@ import { ConversationsTableToolbar } from './ConversationsTableToolbar';
 import { ConversationsTablePagination } from './ConversationsTablePagination';
 import { useConversationsTable, type SortColumn } from './useConversationsTable';
 import type { Conversation } from '@/lib/types/conversation';
+import type { FolderContext } from './types';
 
 interface ConversationsTableProps {
   conversations: Conversation[];
   locale: string;
   onDeleteConversation?: (conversationId: string) => Promise<void>;
   onNewConversation: () => void;
+  folderContext?: FolderContext;
+  paginationStorageKey?: string;
+  emptyState?: React.ReactNode;
 }
 
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
-const PAGINATION_STORAGE_KEY = 'neural-summary-conversations-pagination';
+const DEFAULT_PAGINATION_KEY = 'neural-summary-conversations-pagination';
 
-function loadPaginationState(): { page: number; pageSize: number } {
+function loadPaginationState(storageKey: string): { page: number; pageSize: number } {
   if (typeof window === 'undefined') return { page: 1, pageSize: DEFAULT_PAGE_SIZE };
   try {
-    const stored = sessionStorage.getItem(PAGINATION_STORAGE_KEY);
+    const stored = sessionStorage.getItem(storageKey);
     if (stored) {
       const parsed = JSON.parse(stored);
       return {
@@ -46,9 +50,9 @@ function loadPaginationState(): { page: number; pageSize: number } {
   return { page: 1, pageSize: DEFAULT_PAGE_SIZE };
 }
 
-function savePaginationState(page: number, pageSize: number) {
+function savePaginationState(storageKey: string, page: number, pageSize: number) {
   try {
-    sessionStorage.setItem(PAGINATION_STORAGE_KEY, JSON.stringify({ page, pageSize }));
+    sessionStorage.setItem(storageKey, JSON.stringify({ page, pageSize }));
   } catch {
     // Ignore storage errors
   }
@@ -59,10 +63,13 @@ export function ConversationsTable({
   locale,
   onDeleteConversation,
   onNewConversation,
+  folderContext,
+  paginationStorageKey = DEFAULT_PAGINATION_KEY,
+  emptyState,
 }: ConversationsTableProps) {
   const t = useTranslations('dashboard');
-  const [currentPage, setCurrentPage] = useState(() => loadPaginationState().page);
-  const [pageSize, setPageSize] = useState(() => loadPaginationState().pageSize);
+  const [currentPage, setCurrentPage] = useState(() => loadPaginationState(paginationStorageKey).page);
+  const [pageSize, setPageSize] = useState(() => loadPaginationState(paginationStorageKey).pageSize);
 
   const {
     displayedConversations,
@@ -105,8 +112,8 @@ export function ConversationsTable({
 
   // Persist pagination state to sessionStorage
   useEffect(() => {
-    savePaginationState(currentPage, pageSize);
-  }, [currentPage, pageSize]);
+    savePaginationState(paginationStorageKey, currentPage, pageSize);
+  }, [paginationStorageKey, currentPage, pageSize]);
 
   // Listen for explicit reset from sidebar Dashboard link
   useEffect(() => {
@@ -173,6 +180,9 @@ export function ConversationsTable({
 
   // Empty state
   if (conversations.length === 0) {
+    if (emptyState) {
+      return <div>{emptyState}</div>;
+    }
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
@@ -214,6 +224,7 @@ export function ConversationsTable({
         clearSelection={clearSelection}
         onDeleteSelected={handleDeleteSelected}
         onNewConversation={onNewConversation}
+        folderContext={folderContext}
       />
 
       {displayedConversations.length === 0 ? (
@@ -283,6 +294,7 @@ export function ConversationsTable({
                   isSelected={selectedIds.has(conversation.id)}
                   onSelect={onSelectRow}
                   onDelete={onDeleteConversation}
+                  folderContext={folderContext}
                 />
               ))}
             </TableBody>

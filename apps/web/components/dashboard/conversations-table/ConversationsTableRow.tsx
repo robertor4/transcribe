@@ -6,6 +6,7 @@ import {
   Trash2,
   MoreVertical,
   FolderInput,
+  FolderMinus,
   Link2,
   FileText,
   AlignLeft,
@@ -26,6 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TableRow, TableCell } from '@/components/ui/table';
 import type { Conversation, ConversationStatus } from '@/lib/types/conversation';
+import type { FolderContext } from './types';
 
 const statusConfig: Record<ConversationStatus, { dot: string; badge: string; label: string }> = {
   ready: {
@@ -66,6 +68,7 @@ interface ConversationsTableRowProps {
   isSelected: boolean;
   onSelect: (id: string) => void;
   onDelete?: (conversationId: string) => Promise<void>;
+  folderContext?: FolderContext;
 }
 
 export const ConversationsTableRow = memo(function ConversationsTableRow({
@@ -74,6 +77,7 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
   isSelected,
   onSelect,
   onDelete,
+  folderContext,
 }: ConversationsTableRowProps) {
   const router = useRouter();
   const t = useTranslations('dashboard');
@@ -221,6 +225,15 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
                   <FolderInput className="w-4 h-4" />
                   {t('table.moveToFolder')}
                 </DropdownMenuItem>
+                {folderContext && (
+                  <DropdownMenuItem
+                    onSelect={() => folderContext.onRemoveFromFolder([conversation.id])}
+                    className="gap-3 cursor-pointer text-gray-700 dark:text-gray-300 focus:bg-gray-100 dark:focus:bg-gray-700 focus:text-gray-900 dark:focus:text-gray-100"
+                  >
+                    <FolderMinus className="w-4 h-4" />
+                    {t('table.removeFromFolder')}
+                  </DropdownMenuItem>
+                )}
                 {onDelete && (
                   <>
                     <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />

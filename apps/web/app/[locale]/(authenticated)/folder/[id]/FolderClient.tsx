@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   Trash2,
   MoreVertical,
-  FolderMinus,
   Zap,
   ChevronDown,
   ChevronUp,
@@ -20,10 +19,11 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
-import { ConfirmModal } from '@/components/ConfirmModal';
 import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { FolderAssetCard } from '@/components/FolderAssetCard';
 import { QASlidePanel } from '@/components/QASlidePanel';
+import { ConversationsTable } from '@/components/dashboard/conversations-table/ConversationsTable';
+import type { FolderContext } from '@/components/dashboard/conversations-table/types';
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
 import { useUsage } from '@/contexts/UsageContext';
@@ -31,10 +31,10 @@ import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
-import { DraggableConversationCard } from '@/components/dashboard/DraggableConversationCard';
 import { AiIcon } from '@/components/icons/AiIcon';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 import { FolderSkeleton } from '@/components/skeletons/FolderSkeleton';
+import { AssetListSkeleton } from '@/components/skeletons/AssetListSkeleton';
 
 interface FolderClientProps {
   folderId: string;
@@ -48,9 +48,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [removeFromFolderConversation, setRemoveFromFolderConversation] = useState<{ id: string; title: string } | null>(null);
-  const [isRemoving, setIsRemoving] = useState(false);
-
   const { folder, conversations, isLoading, error, updateFolderLocally, refresh } = useFolderConversations(folderId);
   const { deleteFolder, updateFolder, moveToFolder } = useFolders();
   const { usageStats, isAdmin } = useUsage();
@@ -136,19 +133,39 @@ export function FolderClient({ folderId }: FolderClientProps) {
     }
   };
 
-  // Handle removing a conversation from this folder
-  const handleRemoveFromFolder = async () => {
-    if (!removeFromFolderConversation) return;
-    setIsRemoving(true);
-    try {
-      await moveToFolder(removeFromFolderConversation.id, null);
-      await refresh();
-      setRemoveFromFolderConversation(null);
-    } catch (err) {
-      console.error('Failed to remove conversation from folder:', err);
-    } finally {
-      setIsRemoving(false);
+  // Handle removing conversations from this folder
+  const handleRemoveFromFolder = async (conversationIds: string[]) => {
+    for (const id of conversationIds) {
+      await moveToFolder(id, null);
     }
+    await refresh();
+  };
+
+  const folderTableContext: FolderContext = {
+    folderId,
+    onRefresh: refresh,
+    onRemoveFromFolder: handleRemoveFromFolder,
+    extraToolbarActions: (
+      <>
+        <div className="hidden sm:block">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<AnimatedAiIcon size={16} />}
+            onClick={() => setIsQAPanelOpen(true)}
+          >
+            Ask Questions
+          </Button>
+        </div>
+        <button
+          onClick={() => setIsQAPanelOpen(true)}
+          className="sm:hidden p-2 rounded-lg text-gray-500 hover:text-[#8D6AFA] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Ask Questions"
+        >
+          <AnimatedAiIcon size={18} />
+        </button>
+      </>
+    ),
   };
 
   // Fetch assets for this folder
@@ -249,24 +266,7 @@ export function FolderClient({ folderId }: FolderClientProps) {
             {/* Asset List - Scrollable */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2 scrollbar-subtle">
               {isLoadingAssets ? (
-                // Loading skeleton
-                <div className="space-y-2">
-                  {[...Array(3)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg animate-pulse"
-                    >
-                      <div className="flex gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                        <div className="flex-1">
-                          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-                          <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-                          <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <AssetListSkeleton count={3} />
               ) : assets.length > 0 ? (
                 assets.map((asset) => (
                   <FolderAssetCard
@@ -424,45 +424,14 @@ export function FolderClient({ folderId }: FolderClientProps) {
             </div>
 
             {/* Conversations in Folder */}
-            <div>
-              <div className="flex items-center justify-between gap-2 mb-4">
-                <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider flex-shrink-0">
-                  Conversations ({conversations.length})
-                </h2>
-                {conversations.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    {/* Desktop: Full buttons */}
-                    <div className="hidden sm:flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="md"
-                        icon={<AnimatedAiIcon size={16} />}
-                        onClick={() => setIsQAPanelOpen(true)}
-                      >
-                        Ask Questions
-                      </Button>
-                      <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
-                        + New Conversation
-                      </Button>
-                    </div>
-                    {/* Mobile: Compact button + icon */}
-                    <div className="flex sm:hidden items-center gap-1">
-                      <button
-                        onClick={() => setIsQAPanelOpen(true)}
-                        className="p-2 rounded-lg text-gray-500 hover:text-[#8D6AFA] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                        aria-label="Ask Questions"
-                      >
-                        <AnimatedAiIcon size={18} />
-                      </button>
-                      <Button variant="brand" size="sm" onClick={() => setIsCreateModalOpen(true)}>
-                        + New
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {conversations.length === 0 ? (
+            <ConversationsTable
+              conversations={conversations}
+              locale={locale}
+              onDeleteConversation={handleDeleteConversation}
+              onNewConversation={() => setIsCreateModalOpen(true)}
+              folderContext={folderTableContext}
+              paginationStorageKey="neural-summary-folder-pagination"
+              emptyState={
                 <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
                   <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
                     <Folder className="w-10 h-10 text-gray-400" />
@@ -477,27 +446,8 @@ export function FolderClient({ folderId }: FolderClientProps) {
                     + New Conversation
                   </Button>
                 </div>
-              ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700/50">
-                  {conversations.map((conversation) => (
-                    <DraggableConversationCard
-                      key={conversation.id}
-                      conversation={conversation}
-                      locale={locale}
-                      onDelete={handleDeleteConversation}
-                      showDragHandle={false}
-                      customMenuItems={[
-                        {
-                          icon: FolderMinus,
-                          label: 'Remove from folder',
-                          onClick: () => setRemoveFromFolderConversation({ id: conversation.id, title: conversation.title }),
-                        },
-                      ]}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+              }
+            />
           </div>
         }
       />
@@ -545,18 +495,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
         onDelete={handleDeleteFolder}
       />
 
-      {/* Remove from Folder Confirmation Modal */}
-      <ConfirmModal
-        isOpen={!!removeFromFolderConversation}
-        onClose={() => setRemoveFromFolderConversation(null)}
-        onConfirm={handleRemoveFromFolder}
-        title="Remove from folder?"
-        message={`"${removeFromFolderConversation?.title}" will be moved back to All Conversations.`}
-        confirmLabel="Remove"
-        cancelLabel="Cancel"
-        variant="warning"
-        isLoading={isRemoving}
-      />
     </>
   );
 }

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Skeleton loading states: shadcn migration + data table layout**: Replaced the custom `Skeleton.tsx` component (variant/width/height props) with the standard shadcn `Skeleton` (className-based), and redesigned dashboard + folder skeletons to match the new data table layout instead of the old card grid
+  - Installed shadcn `skeleton` component, deleted old custom `Skeleton.tsx`
+  - New reusable [TableSkeleton.tsx](apps/web/components/skeletons/TableSkeleton.tsx) — toolbar + header row + body rows matching real table column widths + pagination
+  - Rewrote [DashboardSkeleton.tsx](apps/web/components/skeletons/DashboardSkeleton.tsx) — greeting → quick-create buttons → data table skeleton
+  - Rewrote [FolderSkeleton.tsx](apps/web/components/skeletons/FolderSkeleton.tsx) — back button → folder header → data table skeleton
+  - Migrated to shadcn API: [NavigationSkeleton.tsx](apps/web/components/skeletons/NavigationSkeleton.tsx), [ConversationSkeleton.tsx](apps/web/components/skeletons/ConversationSkeleton.tsx), [AssetListSkeleton.tsx](apps/web/components/skeletons/AssetListSkeleton.tsx), [SettingsSkeleton.tsx](apps/web/components/skeletons/SettingsSkeleton.tsx)
+  - Replaced inline `animate-pulse` divs in [FolderClient.tsx](apps/web/app/[locale]/(authenticated)/folder/[id]/FolderClient.tsx) with `AssetListSkeleton`
+
+- **Folder page: conversations data table**: Replaced the card-based conversation list on the Folder page with the same `ConversationsTable` used on the dashboard — folders now have search, sorting, pagination, bulk select, bulk move/delete, and a new "Remove from folder" action (single + bulk)
+  - Extended `ConversationsTable` with optional `folderContext` prop for folder-specific behavior (zero changes to dashboard path)
+  - Added "Remove from folder" to row dropdown menu and bulk actions toolbar
+  - "Ask Questions" button rendered via `extraToolbarActions` in the table toolbar
+  - Custom empty state with folder icon preserved
+  - Separate pagination storage key to avoid clashing with dashboard
+  - New type: [types.ts](apps/web/components/dashboard/conversations-table/types.ts)
+  - Modified: [ConversationsTable.tsx](apps/web/components/dashboard/conversations-table/ConversationsTable.tsx), [ConversationsTableRow.tsx](apps/web/components/dashboard/conversations-table/ConversationsTableRow.tsx), [ConversationsTableToolbar.tsx](apps/web/components/dashboard/conversations-table/ConversationsTableToolbar.tsx), [FolderClient.tsx](apps/web/app/[locale]/(authenticated)/folder/[id]/FolderClient.tsx)
+  - i18n: Added `dashboard.table.removeFromFolder*` keys in all 5 locales
+
 ### Fixed
 - **Pagination persistence**: Conversations table now remembers the current page and page size across navigation via sessionStorage — navigating to a conversation and back no longer resets to page 1; clicking "Dashboard" in the sidebar resets to page 1 ([ConversationsTable.tsx](apps/web/components/dashboard/conversations-table/ConversationsTable.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx))
 

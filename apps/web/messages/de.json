@@ -254,7 +254,10 @@
       "shared": "Geteilt",
       "public": "Öffentlich",
       "private": "Privat",
-      "sharedWith": "{count, plural, one {# Person} other {# Personen}}"
+      "sharedWith": "{count, plural, one {# Person} other {# Personen}}",
+      "removeFromFolder": "Aus Ordner entfernen",
+      "removeFromFolderTitle": "Aus Ordner entfernen?",
+      "removeFromFolderMessage": "Ausgewählte Gespräche werden zurück zu Alle Gespräche verschoben."
     }
   },
   "upload": {

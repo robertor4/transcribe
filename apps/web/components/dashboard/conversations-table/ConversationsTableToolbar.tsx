@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, FolderInput, Trash2, X, Mic } from 'lucide-react';
+import { Search, FolderInput, FolderMinus, Trash2, X, Mic } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,6 +16,7 @@ import { FolderPickerModal } from '@/components/FolderPickerModal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { moveConversationToFolder } from '@/lib/services/conversationService';
 import type { StatusFilter } from './useConversationsTable';
+import type { FolderContext } from './types';
 
 interface ConversationsTableToolbarProps {
   searchQuery: string;
@@ -26,6 +27,7 @@ interface ConversationsTableToolbarProps {
   clearSelection: () => void;
   onDeleteSelected: () => Promise<void>;
   onNewConversation: () => void;
+  folderContext?: FolderContext;
 }
 
 export function ConversationsTableToolbar({
@@ -37,12 +39,15 @@ export function ConversationsTableToolbar({
   clearSelection,
   onDeleteSelected,
   onNewConversation,
+  folderContext,
 }: ConversationsTableToolbarProps) {
   const t = useTranslations('dashboard');
   const [showBulkFolderPicker, setShowBulkFolderPicker] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [showBulkRemoveConfirm, setShowBulkRemoveConfirm] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [isBulkMoving, setIsBulkMoving] = useState(false);
+  const [isBulkRemoving, setIsBulkRemoving] = useState(false);
 
   const selectedCount = selectedIds.size;
   const hasSelection = selectedCount > 0;
@@ -53,6 +58,7 @@ export function ConversationsTableToolbar({
       await onDeleteSelected();
       setShowBulkDeleteConfirm(false);
       clearSelection();
+      await folderContext?.onRefresh();
     } catch (error) {
       console.error('Failed to delete conversations:', error);
     } finally {
@@ -69,10 +75,25 @@ export function ConversationsTableToolbar({
       );
       await Promise.all(promises);
       clearSelection();
+      await folderContext?.onRefresh();
     } catch (error) {
       console.error('Failed to move conversations:', error);
     } finally {
       setIsBulkMoving(false);
+    }
+  };
+
+  const handleBulkRemoveFromFolder = async () => {
+    if (!folderContext) return;
+    setIsBulkRemoving(true);
+    try {
+      await folderContext.onRemoveFromFolder(Array.from(selectedIds));
+      setShowBulkRemoveConfirm(false);
+      clearSelection();
+    } catch (error) {
+      console.error('Failed to remove conversations from folder:', error);
+    } finally {
+      setIsBulkRemoving(false);
     }
   };
 
@@ -84,6 +105,17 @@ export function ConversationsTableToolbar({
           <span className="text-sm font-medium text-purple-700 dark:text-purple-300 whitespace-nowrap">
             {t('table.selected', { count: selectedCount })}
           </span>
+          {folderContext && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowBulkRemoveConfirm(true)}
+              disabled={isBulkRemoving}
+              icon={<FolderMinus className="w-4 h-4" />}
+            >
+              {t('table.removeFromFolder')}
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -134,6 +166,21 @@ export function ConversationsTableToolbar({
           variant="danger"
           isLoading={isBulkDeleting}
         />
+
+        {/* Bulk remove from folder confirmation */}
+        {folderContext && (
+          <ConfirmModal
+            isOpen={showBulkRemoveConfirm}
+            onClose={() => setShowBulkRemoveConfirm(false)}
+            onConfirm={handleBulkRemoveFromFolder}
+            title={t('table.removeFromFolderTitle')}
+            message={t('table.removeFromFolderMessage')}
+            confirmLabel={t('table.removeFromFolder')}
+            cancelLabel={t('table.cancel')}
+            variant="warning"
+            isLoading={isBulkRemoving}
+          />
+        )}
       </div>
     );
   }
@@ -178,6 +225,7 @@ export function ConversationsTableToolbar({
       </div>
 
       <div className="flex items-center gap-2">
+        {folderContext?.extraToolbarActions}
         <Button
           variant="brand"
           size="sm"

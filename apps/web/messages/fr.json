@@ -254,7 +254,10 @@
       "shared": "Partagé",
       "public": "Public",
       "private": "Privé",
-      "sharedWith": "{count, plural, one {# personne} other {# personnes}}"
+      "sharedWith": "{count, plural, one {# personne} other {# personnes}}",
+      "removeFromFolder": "Retirer du dossier",
+      "removeFromFolderTitle": "Retirer du dossier ?",
+      "removeFromFolderMessage": "Les conversations sélectionnées seront déplacées vers Toutes les conversations."
     }
   },
   "upload": {

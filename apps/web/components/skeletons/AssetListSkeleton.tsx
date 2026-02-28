@@ -1,6 +1,6 @@
 'use client';
 
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * Skeleton for asset list items in sidebars.
@@ -12,14 +12,14 @@ export function AssetListSkeleton({ count = 3 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg animate-pulse"
+          className="p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg"
         >
           <div className="flex gap-3">
-            <Skeleton variant="rounded" className="w-9 h-9 rounded-lg flex-shrink-0" />
+            <Skeleton className="w-9 h-9 rounded-lg flex-shrink-0" />
             <div className="flex-1">
-              <Skeleton variant="text" className="h-3 w-20 mb-1" />
-              <Skeleton variant="text" className="h-4 w-24 mb-1" />
-              <Skeleton variant="text" className="h-3 w-full" />
+              <Skeleton className="h-3 w-20 mb-1.5" />
+              <Skeleton className="h-4 w-24 mb-1.5" />
+              <Skeleton className="h-3 w-full" />
             </div>
           </div>
         </div>
@@ -37,13 +37,13 @@ export function AssetListSkeletonCompact({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="p-2 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg animate-pulse"
+          className="p-2 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg"
         >
           <div className="flex gap-2 items-center">
-            <Skeleton variant="rounded" className="w-7 h-7 rounded-lg flex-shrink-0" />
+            <Skeleton className="w-7 h-7 rounded-lg flex-shrink-0" />
             <div className="flex-1">
-              <Skeleton variant="text" className="h-3 w-16 mb-1" />
-              <Skeleton variant="text" className="h-3 w-24" />
+              <Skeleton className="h-3 w-16 mb-1" />
+              <Skeleton className="h-3 w-24" />
             </div>
           </div>
         </div>

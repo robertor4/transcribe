@@ -254,7 +254,10 @@
       "shared": "Gedeeld",
       "public": "Openbaar",
       "private": "Privé",
-      "sharedWith": "{count, plural, one {# persoon} other {# personen}}"
+      "sharedWith": "{count, plural, one {# persoon} other {# personen}}",
+      "removeFromFolder": "Verwijderen uit map",
+      "removeFromFolderTitle": "Verwijderen uit map?",
+      "removeFromFolderMessage": "Geselecteerde gesprekken worden teruggeplaatst naar Alle gesprekken."
     }
   },
   "upload": {
