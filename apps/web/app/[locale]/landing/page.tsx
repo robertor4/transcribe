@@ -3,37 +3,22 @@ import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
-import { CTAButton } from '@/components/landing/CTAButton';
-import { SecondaryLink } from '@/components/landing/hero/SecondaryLink';
+import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
+import { WaveDivider } from '@/components/landing/shared/WaveDivider';
+import { SocialProofBar } from '@/components/landing/sections/SocialProofBar';
+import { CompatibilitySection } from '@/components/landing/sections/CompatibilitySection';
+import { OutputsSection } from '@/components/landing/sections/OutputsSection';
+import { AskAnythingSection } from '@/components/landing/sections/AskAnythingSection';
+import { InfrastructureSection } from '@/components/landing/sections/InfrastructureSection';
+import { IntegrationsSection } from '@/components/landing/sections/IntegrationsSection';
+import { TestimonialsSection } from '@/components/landing/sections/TestimonialsSection';
+import { SecuritySection } from '@/components/landing/sections/SecuritySection';
+import { PricingSection } from '@/components/landing/sections/PricingSection';
+import { FinalCtaSection } from '@/components/landing/sections/FinalCtaSection';
 
-// Dynamic imports for heavy client components (framer-motion)
-// This significantly reduces the initial bundle size for the landing page
-const ScrollAnimation = dynamic(() => import('@/components/ScrollAnimation'), {
-  ssr: true,
-});
-
-const TransformationSection = dynamic(
-  () => import('@/components/landing/TransformationSection').then(mod => ({ default: mod.TransformationSection })),
-  { ssr: true }
-);
-
-const DottedBackgroundDrift = dynamic(
-  () => import('@/components/landing/hero/DottedBackgroundDrift').then(mod => ({ default: mod.DottedBackgroundDrift })),
-  { ssr: true }
-);
-
-const HeroHeadline = dynamic(
-  () => import('@/components/landing/hero/HeroHeadline').then(mod => ({ default: mod.HeroHeadline })),
-  { ssr: true }
-);
-
-const HeroCTAs = dynamic(
-  () => import('@/components/landing/hero/HeroCTAs').then(mod => ({ default: mod.HeroCTAs })),
-  { ssr: true }
-);
-
-const DocumentStack = dynamic(
-  () => import('@/components/landing/hero/DocumentStack').then(mod => ({ default: mod.DocumentStack })),
+// Dynamic import for the hero (client component with framer-motion animations)
+const HeroSection = dynamic(
+  () => import('@/components/landing/sections/HeroSection').then(mod => ({ default: mod.HeroSection })),
   { ssr: true }
 );
 
@@ -49,235 +34,285 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="min-h-screen bg-[#22184C] text-white overflow-x-hidden relative landing-page">
+        <AmbientGradient />
 
-        {/* 1. Hero Section — deep purple background with animated dot pattern */}
-        <section
-          className="min-h-screen flex items-center pt-24 pb-16 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden"
-          aria-label="Hero section"
-        >
-          {/* Animated dot pattern with ultra-slow drift */}
-          <DottedBackgroundDrift />
+        {/* 1. Hero */}
+        <HeroSection
+          locale={locale}
+          translations={{
+            eyebrow: t('hero.eyebrow'),
+            headline1: t('hero.headline1'),
+            headline2: t('hero.headline2'),
+            headlineEm: t('hero.headlineEm'),
+            body: t('hero.body'),
+            bodyStrong: t('hero.bodyStrong'),
+            bodyEnd: t('hero.bodyEnd'),
+            ctaPrimary: t('hero.ctaPrimary'),
+            ctaSecondary: t('hero.ctaSecondary'),
+            socialProof: t('hero.socialProof'),
+            lionPlaceholder: t('hero.lionPlaceholder'),
+            card: {
+              tabSummary: t('hero.card.tabSummary'),
+              tabTranscript: t('hero.card.tabTranscript'),
+              duration: t('hero.card.duration'),
+              durationValue: t('hero.card.durationValue'),
+              segments: t('hero.card.segments'),
+              segmentsValue: t('hero.card.segmentsValue'),
+              speakers: t('hero.card.speakers'),
+              speakersValue: t('hero.card.speakersValue'),
+              confidence: t('hero.card.confidence'),
+              confidenceValue: t('hero.card.confidenceValue'),
+              speakerA: t('hero.card.speakerA'),
+              speakerAText: t('hero.card.speakerAText'),
+              speakerB: t('hero.card.speakerB'),
+              speakerBText: t('hero.card.speakerBText'),
+            },
+          }}
+        />
 
-          <div className="max-w-7xl mx-auto w-full relative z-10">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              {/* Left column — headline, subtitle, CTAs with entrance animations */}
-              <div className="text-center lg:text-left">
-                <HeroHeadline>
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-none tracking-tight mb-8">
-                    {t('hero.headline')}
-                  </h1>
-                </HeroHeadline>
+        <WaveDivider />
 
-                <HeroHeadline delay={120}>
-                  <p className="text-xl sm:text-2xl text-gray-300 font-normal max-w-xl mx-auto lg:mx-0 mb-10">
-                    {t('hero.subtitlePart1')}<span className="text-[#14D0DC]">{t('hero.subtitlePart2')}</span>
-                  </p>
-                </HeroHeadline>
+        {/* 2. Social Proof Bar */}
+        <SocialProofBar
+          translations={{
+            stars: t('proofBar.stars'),
+            quote1: t('proofBar.quote1'),
+            quoteStrong: t('proofBar.quoteStrong'),
+            quote2: t('proofBar.quote2'),
+            name: t('proofBar.name'),
+            title: t('proofBar.title'),
+          }}
+        />
 
-                <HeroCTAs delay={240}>
-                  <CTAButton href={`/${locale}/examples`} variant="light">
-                    {t('hero.ctaPrimary')}
-                  </CTAButton>
-                  <SecondaryLink href="#how-it-works">
-                    {t('hero.ctaSecondary')}
-                  </SecondaryLink>
-                </HeroCTAs>
-              </div>
+        <WaveDivider />
 
-              {/* Right column — document stack with breathing motion + progressive reveal */}
-              <DocumentStack translations={{
-                backTitle: t('hero.document.backTitle'),
-                backGreeting: t('hero.document.backGreeting'),
-                backIntro: t('hero.document.backIntro'),
-                backPointsIntro: t('hero.document.backPointsIntro'),
-                backPoint1: t('hero.document.backPoint1'),
-                backPoint2: t('hero.document.backPoint2'),
-                backPoint3: t('hero.document.backPoint3'),
-                frontTitle: t('hero.document.frontTitle'),
-                frontBullet1: t('hero.document.frontBullet1'),
-                frontBullet2: t('hero.document.frontBullet2'),
-                frontBullet3: t('hero.document.frontBullet3'),
-                frontBullet4: t('hero.document.frontBullet4'),
-                decisionsTitle: t('hero.document.decisionsTitle'),
-                decision1: t('hero.document.decision1'),
-                decision2: t('hero.document.decision2'),
-              }} />
-            </div>
-          </div>
-        </section>
+        {/* 3. Compatibility — platforms */}
+        <CompatibilitySection
+          translations={{
+            tag: t('compatibility.tag'),
+            headline1: t('compatibility.headline1'),
+            headline2: t('compatibility.headline2'),
+            headlineEm: t('compatibility.headlineEm'),
+            body: t('compatibility.body'),
+            platforms: {
+              meet: { name: t('compatibility.platforms.meet.name'), desc: t('compatibility.platforms.meet.desc') },
+              teams: { name: t('compatibility.platforms.teams.name'), desc: t('compatibility.platforms.teams.desc') },
+              zoom: { name: t('compatibility.platforms.zoom.name'), desc: t('compatibility.platforms.zoom.desc') },
+              anyAudio: { name: t('compatibility.platforms.anyAudio.name'), desc: t('compatibility.platforms.anyAudio.desc') },
+            },
+            noBotCallout: t('compatibility.noBotCallout'),
+            noBotCalloutBody: t('compatibility.noBotCalloutBody'),
+          }}
+        />
 
-        {/* 2. Proof by Transformation — animated recording → document */}
-        <TransformationSection translations={{
-          recording: t('transformation.recording'),
-          quote1: t('transformation.quote1'),
-          quote2: t('transformation.quote2'),
-          quote3: t('transformation.quote3'),
-          quote4: t('transformation.quote4'),
-          quote5: t('transformation.quote5'),
-          quote6: t('transformation.quote6'),
-          documentTitle: t('transformation.documentTitle'),
-          greeting: t('transformation.greeting'),
-          intro: t('transformation.intro'),
-          point1: t('transformation.point1'),
-          point2: t('transformation.point2'),
-          point3: t('transformation.point3'),
-          nextStepLabel: t('transformation.nextStepLabel'),
-          nextStepText: t('transformation.nextStepText'),
-        }} />
+        <WaveDivider />
 
-        {/* 3. How It Works — with brand-colored icons */}
-        <section id="how-it-works" className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="how-heading">
-          <div className="max-w-4xl mx-auto">
-            <ScrollAnimation>
-              <h2 id="how-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 text-center mb-16">
-                {t('how.headline')}
-              </h2>
-            </ScrollAnimation>
+        {/* 4. Output categories */}
+        <OutputsSection
+          translations={{
+            tag: t('outputs.tag'),
+            headline1: t('outputs.headline1'),
+            headline2: t('outputs.headline2'),
+            headlineEm: t('outputs.headlineEm'),
+            headline3: t('outputs.headline3'),
+            body: t('outputs.body'),
+            categories: {
+              sales: { title: t('outputs.categories.sales.title'), subtitle: t('outputs.categories.sales.subtitle'), chips: t('outputs.categories.sales.chips') },
+              marketing: { title: t('outputs.categories.marketing.title'), subtitle: t('outputs.categories.marketing.subtitle'), chips: t('outputs.categories.marketing.chips') },
+              product: { title: t('outputs.categories.product.title'), subtitle: t('outputs.categories.product.subtitle'), chips: t('outputs.categories.product.chips') },
+              tech: { title: t('outputs.categories.tech.title'), subtitle: t('outputs.categories.tech.subtitle'), chips: t('outputs.categories.tech.chips') },
+            },
+          }}
+        />
 
-            <div className="grid md:grid-cols-3 gap-12 items-center">
-              {/* Step 1 — cyan accent */}
-              <ScrollAnimation delay={200}>
-                <div className="text-center">
-                  {/* Waveform icon — cyan */}
-                  <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center gap-1 bg-[#14D0DC]/10 rounded-2xl p-3">
-                    <div className="w-1 h-3 bg-[#14D0DC] rounded-full"></div>
-                    <div className="w-1 h-6 bg-[#14D0DC]/70 rounded-full"></div>
-                    <div className="w-1 h-4 bg-[#14D0DC] rounded-full"></div>
-                    <div className="w-1 h-7 bg-[#14D0DC]/70 rounded-full"></div>
-                    <div className="w-1 h-4 bg-[#14D0DC] rounded-full"></div>
-                  </div>
-                  <h3 className="text-base font-medium text-gray-900 mb-2">{t('how.step1.title')}</h3>
-                  <p className="text-sm text-gray-600">{t('how.step1.description')}</p>
-                </div>
-              </ScrollAnimation>
+        <WaveDivider />
 
-              {/* Step 2 — emphasized as the hero */}
-              <ScrollAnimation delay={400}>
-                <div className="text-center relative">
-                  {/* Subtle background highlight */}
-                  <div className="absolute inset-0 -mx-6 -my-6 bg-[#8D6AFA]/5 rounded-2xl" aria-hidden="true"></div>
-                  <div className="relative">
-                    {/* Grid icon — brand purple, larger */}
-                    <div className="w-20 h-20 mx-auto mb-6 bg-[#8D6AFA]/15 rounded-2xl p-4 flex items-center justify-center">
-                      <div className="grid grid-cols-3 gap-1.5">
-                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA]/50 rounded-sm"></div>
-                        <div className="w-4 h-4 bg-[#8D6AFA] rounded-sm"></div>
-                      </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('how.step2.title')}</h3>
-                    <p className="text-gray-600">{t('how.step2.description')}</p>
-                  </div>
-                </div>
-              </ScrollAnimation>
+        {/* 5. Ask Anything — AI chat */}
+        <AskAnythingSection
+          translations={{
+            tag: t('ask.tag'),
+            headline1: t('ask.headline1'),
+            headline2: t('ask.headline2'),
+            headlineEm: t('ask.headlineEm'),
+            body: t('ask.body'),
+            features: {
+              timestamps: { title: t('ask.features.timestamps.title'), desc: t('ask.features.timestamps.desc') },
+              search: { title: t('ask.features.search.title'), desc: t('ask.features.search.desc') },
+              languages: { title: t('ask.features.languages.title'), desc: t('ask.features.languages.desc') },
+            },
+            chat: {
+              header: t('ask.chat.header'),
+              headerSub: t('ask.chat.headerSub'),
+              userMsg1: t('ask.chat.userMsg1'),
+              aiReply1a: t('ask.chat.aiReply1a'),
+              aiReply1chip1: t('ask.chat.aiReply1chip1'),
+              aiReply1b: t('ask.chat.aiReply1b'),
+              aiReply1chip2: t('ask.chat.aiReply1chip2'),
+              aiReply1c: t('ask.chat.aiReply1c'),
+              aiReply1chip3: t('ask.chat.aiReply1chip3'),
+              userMsg2: t('ask.chat.userMsg2'),
+              aiReply2a: t('ask.chat.aiReply2a'),
+              aiReply2chip1: t('ask.chat.aiReply2chip1'),
+              aiReply2b: t('ask.chat.aiReply2b'),
+              aiReply2chip2: t('ask.chat.aiReply2chip2'),
+              inputPlaceholder: t('ask.chat.inputPlaceholder'),
+            },
+          }}
+        />
 
-              {/* Step 3 — deep purple accent */}
-              <ScrollAnimation delay={600}>
-                <div className="text-center">
-                  {/* Document icon — deep purple */}
-                  <div className="w-14 h-14 mx-auto mb-6 bg-[#3F38A0]/10 rounded-2xl p-3 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-[#3F38A0] rounded p-1.5 flex flex-col justify-center gap-0.5">
-                      <div className="w-full h-0.5 bg-[#3F38A0]"></div>
-                      <div className="w-3/4 h-0.5 bg-[#3F38A0]/50"></div>
-                      <div className="w-full h-0.5 bg-[#3F38A0]"></div>
-                      <div className="w-1/2 h-0.5 bg-[#3F38A0]/50"></div>
-                    </div>
-                  </div>
-                  <h3 className="text-base font-medium text-gray-900 mb-2">{t('how.step3.title')}</h3>
-                  <p className="text-sm text-gray-600">{t('how.step3.description')}</p>
-                </div>
-              </ScrollAnimation>
-            </div>
-          </div>
-        </section>
+        <WaveDivider />
 
-        {/* 4. FAQ Section */}
-        <section id="faq" className="py-32 px-6 sm:px-8 lg:px-12 bg-white" aria-labelledby="faq-heading">
-          <div className="max-w-3xl mx-auto">
-            <ScrollAnimation>
-              <h2 id="faq-heading" className="text-4xl sm:text-5xl font-bold text-gray-900 text-center mb-16">
-                {t('faq.title')}
-              </h2>
-            </ScrollAnimation>
+        {/* 6. Infrastructure — stats */}
+        <InfrastructureSection
+          translations={{
+            tag: t('infrastructure.tag'),
+            headline1: t('infrastructure.headline1'),
+            headlineEm: t('infrastructure.headlineEm'),
+            body: t('infrastructure.body'),
+            stats: {
+              languages: { number: t('infrastructure.stats.languages.number'), label: t('infrastructure.stats.languages.label'), desc: t('infrastructure.stats.languages.desc') },
+              accuracy: { number: t('infrastructure.stats.accuracy.number'), label: t('infrastructure.stats.accuracy.label'), desc: t('infrastructure.stats.accuracy.desc') },
+              speed: { number: t('infrastructure.stats.speed.number'), label: t('infrastructure.stats.speed.label'), desc: t('infrastructure.stats.speed.desc') },
+            },
+          }}
+        />
 
-            <div className="space-y-8">
-              <ScrollAnimation delay={200}>
-                <div className="border-b border-gray-200 pb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t('faq.q1.question')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('faq.q1.answer')}
-                  </p>
-                </div>
-              </ScrollAnimation>
+        <WaveDivider />
 
-              <ScrollAnimation delay={300}>
-                <div className="border-b border-gray-200 pb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t('faq.q2.question')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('faq.q2.answer')}
-                  </p>
-                </div>
-              </ScrollAnimation>
+        {/* 7. Integrations */}
+        <IntegrationsSection
+          translations={{
+            tag: t('integrations.tag'),
+            headline1: t('integrations.headline1'),
+            headline2: t('integrations.headline2'),
+            headlineEm: t('integrations.headlineEm'),
+            body: t('integrations.body'),
+            logos: t('integrations.logos'),
+          }}
+        />
 
-              <ScrollAnimation delay={400}>
-                <div className="border-b border-gray-200 pb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t('faq.q3.question')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('faq.q3.answer')}
-                  </p>
-                </div>
-              </ScrollAnimation>
+        <WaveDivider />
 
-              <ScrollAnimation delay={500}>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t('faq.q4.question')}
-                  </h3>
-                  <p className="text-gray-600">
-                    {t('faq.q4.answer')}
-                  </p>
-                </div>
-              </ScrollAnimation>
-            </div>
-          </div>
-        </section>
+        {/* 8. Testimonials */}
+        <TestimonialsSection
+          translations={{
+            tag: t('testimonials.tag'),
+            headline1: t('testimonials.headline1'),
+            headline2: t('testimonials.headline2'),
+            headlineEm: t('testimonials.headlineEm'),
+            cards: {
+              t1: {
+                quote1: t('testimonials.cards.t1.quote1'),
+                quoteStrong: t('testimonials.cards.t1.quoteStrong'),
+                quote2: t('testimonials.cards.t1.quote2'),
+                name: t('testimonials.cards.t1.name'),
+                role: t('testimonials.cards.t1.role'),
+                initials: t('testimonials.cards.t1.initials'),
+              },
+              t2: {
+                quote1: t('testimonials.cards.t2.quote1'),
+                quoteStrong: t('testimonials.cards.t2.quoteStrong'),
+                quote2: t('testimonials.cards.t2.quote2'),
+                name: t('testimonials.cards.t2.name'),
+                role: t('testimonials.cards.t2.role'),
+                initials: t('testimonials.cards.t2.initials'),
+              },
+              t3: {
+                quote1: t('testimonials.cards.t3.quote1'),
+                quoteStrong: t('testimonials.cards.t3.quoteStrong'),
+                quote2: t('testimonials.cards.t3.quote2'),
+                name: t('testimonials.cards.t3.name'),
+                role: t('testimonials.cards.t3.role'),
+                initials: t('testimonials.cards.t3.initials'),
+              },
+            },
+          }}
+        />
 
-        {/* 5. Closing CTA — bold brand section */}
-        <section className="py-32 px-6 sm:px-8 lg:px-12 bg-[#3F38A0]" aria-label="Get started">
-          <div className="max-w-3xl mx-auto text-center">
-            <ScrollAnimation>
-              <h2 className="text-4xl sm:text-5xl font-bold text-white mb-12">
-                {t('closingCta.headline')}
-              </h2>
-            </ScrollAnimation>
+        <WaveDivider />
 
-            <ScrollAnimation delay={200}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <CTAButton href={`/${locale}/signup`} variant="light">
-                  {t('closingCta.ctaPrimary')}
-                </CTAButton>
-                <SecondaryLink href={`/${locale}/examples`}>
-                  {t('closingCta.ctaSecondary')}
-                </SecondaryLink>
-              </div>
-            </ScrollAnimation>
-          </div>
-        </section>
+        {/* 9. Security */}
+        <SecuritySection
+          translations={{
+            tag: t('security.tag'),
+            headline1: t('security.headline1'),
+            headlineEm: t('security.headlineEm'),
+            headline2: t('security.headline2'),
+            body: t('security.body'),
+            badges: {
+              gdpr: { title: t('security.badges.gdpr.title'), desc: t('security.badges.gdpr.desc') },
+              encrypted: { title: t('security.badges.encrypted.title'), desc: t('security.badges.encrypted.desc') },
+              autoDelete: { title: t('security.badges.autoDelete.title'), desc: t('security.badges.autoDelete.desc') },
+              ownership: { title: t('security.badges.ownership.title'), desc: t('security.badges.ownership.desc') },
+            },
+          }}
+        />
 
-        {/* 6. Footer — dark brand footer */}
+        <WaveDivider />
+
+        {/* 10. Pricing */}
+        <PricingSection
+          locale={locale}
+          translations={{
+            tag: t('pricing.tag'),
+            headline1: t('pricing.headline1'),
+            headline2: t('pricing.headline2'),
+            headlineEm: t('pricing.headlineEm'),
+            body: t('pricing.body'),
+            starter: {
+              tier: t('pricing.starter.tier'),
+              price: t('pricing.starter.price'),
+              period: t('pricing.starter.period'),
+              periodSub: t('pricing.starter.periodSub'),
+              features: t('pricing.starter.features'),
+              cta: t('pricing.starter.cta'),
+            },
+            pro: {
+              tier: t('pricing.pro.tier'),
+              price: t('pricing.pro.price'),
+              period: t('pricing.pro.period'),
+              periodSub: t('pricing.pro.periodSub'),
+              badge: t('pricing.pro.badge'),
+              features: t('pricing.pro.features'),
+              cta: t('pricing.pro.cta'),
+            },
+            team: {
+              tier: t('pricing.team.tier'),
+              price: t('pricing.team.price'),
+              period: t('pricing.team.period'),
+              periodSub: t('pricing.team.periodSub'),
+              features: t('pricing.team.features'),
+              cta: t('pricing.team.cta'),
+            },
+            note: t('pricing.note'),
+            noteCta: t('pricing.noteCta'),
+          }}
+        />
+
+        <WaveDivider />
+
+        {/* 11. Final CTA */}
+        <FinalCtaSection
+          locale={locale}
+          translations={{
+            tag: t('finalCta.tag'),
+            headline1: t('finalCta.headline1'),
+            headline2: t('finalCta.headline2'),
+            headlineEm: t('finalCta.headlineEm'),
+            body: t('finalCta.body'),
+            ctaPrimary: t('finalCta.ctaPrimary'),
+            ctaSecondary: t('finalCta.ctaSecondary'),
+            meta: {
+              trial: t('finalCta.meta.trial'),
+              noCard: t('finalCta.meta.noCard'),
+              noBot: t('finalCta.meta.noBot'),
+              cancel: t('finalCta.meta.cancel'),
+            },
+          }}
+        />
+
+        {/* Footer */}
         <PublicFooter locale={locale} />
 
         {/* JSON-LD Structured Data for SEO */}
@@ -296,31 +331,31 @@ export default async function LandingPage({
                     '@type': 'ImageObject',
                     url: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
                   },
-                  description: 'AI workspace that turns spoken thinking into structured, professional output.',
+                  description: 'The meeting intelligence platform. Turn every conversation into searchable transcripts, summaries, and ready-to-use documents.',
                 },
                 {
                   '@type': 'SoftwareApplication',
                   '@id': 'https://neuralsummary.com/#software',
                   name: 'Neural Summary',
                   applicationCategory: 'BusinessApplication',
-                  applicationSubCategory: 'Speech-to-Structure Workspace',
+                  applicationSubCategory: 'Meeting Intelligence Platform',
                   operatingSystem: 'Web',
                   offers: {
                     '@type': 'Offer',
                     price: '0',
-                    priceCurrency: 'USD',
-                    description: 'Free tier available',
+                    priceCurrency: 'EUR',
+                    description: 'Free tier available with 5 recordings per month',
                   },
                   featureList: [
-                    'Speech-to-structure transformation',
-                    'Decision summaries',
-                    'Feature specifications',
-                    'Structured notes',
-                    'Client-ready reports',
-                    'Speaker identification',
-                    '50+ languages supported',
+                    'Meeting transcription with speaker identification',
+                    'AI-generated summaries and action items',
+                    'Template library for professional document outputs',
+                    'AI chat to query meeting content',
+                    'Multi-language support (99+ languages)',
+                    'Platform integrations (Notion, Slack, Google Drive)',
+                    'GDPR compliance with EU data residency',
                   ],
-                  description: 'Neural Summary turns spoken thinking into structured, professional output. Speak once. Get something you can use.',
+                  description: 'Neural Summary turns every meeting into searchable transcripts, summaries, and ready-to-use documents. Nothing gets lost. Nothing needs to be rewritten.',
                 },
               ],
             }),

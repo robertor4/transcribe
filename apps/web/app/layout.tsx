@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Geist, Montserrat } from 'next/font/google';
+import { Geist, Montserrat, Merriweather, DM_Mono } from 'next/font/google';
 import "./globals.css";
 import { ThemeColor } from "@/components/ThemeColor";
 
@@ -17,6 +17,22 @@ const montserrat = Montserrat({
   display: 'swap',
   variable: '--font-montserrat',
   weight: ['500', '600', '700', '800'], // For headings
+});
+
+// Landing page fonts: Merriweather for serif headings, DM Mono for monospace accents
+const merriweather = Merriweather({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-merriweather',
+  weight: ['300', '400', '700', '900'],
+  style: ['normal', 'italic'],
+});
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-dm-mono',
+  weight: ['400', '500'],
 });
 
 type Props = {
@@ -42,7 +58,7 @@ const themeScript = `
 // Root layout required for error pages (404, 500, etc.)
 export default function RootLayout({ children }: Props) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${montserrat.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${montserrat.variable} ${merriweather.variable} ${dmMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <ThemeColor />

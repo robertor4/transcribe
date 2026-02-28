@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Landing page V3 redesign**: Complete redesign of the landing page from a 5-section light theme to an 11-section dark navy theme matching the new brand direction
+  - **New sections**: Social Proof Bar, Compatibility/Platforms, Output Categories, Ask Anything (AI Chat mock), Infrastructure Stats, Integrations, Testimonials, Security, Pricing, Final CTA
+  - **New fonts**: Added Merriweather (serif, landing headings) and DM Mono (monospace accents) — scoped to landing page only, app fonts unchanged
+  - **Dark theme**: Full navy (`#22184C`) background with ambient purple/magenta gradient overlay and gradient wave dividers between sections
+  - **Hero redesign**: Floating transcript UI card, lion mascot placeholder, social proof avatar stack, pulsing eyebrow indicator
+  - **New shared components**: [WaveDivider.tsx](apps/web/components/landing/shared/WaveDivider.tsx), [SectionTag.tsx](apps/web/components/landing/shared/SectionTag.tsx), [AmbientGradient.tsx](apps/web/components/landing/shared/AmbientGradient.tsx)
+  - **16 new section components** in `apps/web/components/landing/sections/`
+  - Updated English translations with all new section content (~250 keys); stubbed other 4 locales with English text
+  - Landing-specific CSS: ambient gradient, wave divider, tag pills, card hover states, output category borders, pricing featured card
+
 ### Changed
 - **Skeleton loading states: shadcn migration + data table layout**: Replaced the custom `Skeleton.tsx` component (variant/width/height props) with the standard shadcn `Skeleton` (className-based), and redesigned dashboard + folder skeletons to match the new data table layout instead of the old card grid
   - Installed shadcn `skeleton` component, deleted old custom `Skeleton.tsx`

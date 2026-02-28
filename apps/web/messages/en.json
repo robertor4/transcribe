@@ -1193,66 +1193,273 @@
   },
   "landing": {
     "hero": {
-      "headline": "You speak. It creates.",
-      "subtitlePart1": "Neural Summary turns spoken thinking into structured, professional output. ",
-      "subtitlePart2": "So decisions stick and work moves forward.",
-      "ctaPrimary": "View examples",
-      "ctaSecondary": "See how it works",
-      "byline": "You speak. It creates.",
-      "document": {
-        "backTitle": "Client Follow-up Email",
-        "backGreeting": "Hi Sarah,",
-        "backIntro": "Following up on our call regarding the Q4 timeline...",
-        "backPointsIntro": "Key points we discussed:",
-        "backPoint1": "Enterprise onboarding priority confirmed",
-        "backPoint2": "Mobile app postponed to Q1",
-        "backPoint3": "API v2 on track for November",
-        "frontTitle": "Q4 Product Strategy",
-        "frontBullet1": "Focus on enterprise onboarding flow redesign",
-        "frontBullet2": "Defer mobile app to Q1 based on resource constraints",
-        "frontBullet3": "API v2 launch targeting November release",
-        "frontBullet4": "Hire two senior engineers for platform team",
-        "decisionsTitle": "Decisions",
-        "decision1": "Proceed with Stripe integration over PayPal",
-        "decision2": "Delay internationalization until Q2"
+      "eyebrow": "The meeting intelligence platform",
+      "headline1": "Every conversation,",
+      "headline2": "a ",
+      "headlineEm": "strategic asset.",
+      "body": "You make the calls — literally. Neural Summary turns every meeting into searchable transcripts, summaries, and ",
+      "bodyStrong": "ready-to-use documents",
+      "bodyEnd": ". Nothing gets lost. Nothing needs to be rewritten.",
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "See it in action",
+      "socialProof": "Trusted by 2,400+ founders, team leads & consultants",
+      "card": {
+        "tabSummary": "Summary",
+        "tabTranscript": "Transcript",
+        "duration": "Duration",
+        "durationValue": "38:12",
+        "segments": "Segments",
+        "segmentsValue": "147",
+        "speakers": "Speakers",
+        "speakersValue": "4",
+        "confidence": "Confidence",
+        "confidenceValue": "96%",
+        "speakerA": "Sarah · Product Lead",
+        "speakerAText": "If we skip recording this, we lose all the context around why we chose this direction.",
+        "speakerB": "Marcus · Engineering",
+        "speakerBText": "Neural Summary turns every recording into a searchable record automatically."
+      },
+      "lionPlaceholder": "Lion mascot image here"
+    },
+    "proofBar": {
+      "stars": "★★★★★",
+      "quote1": "We used to spend 30 minutes after every client call writing up notes. Now Neural Summary does it ",
+      "quoteStrong": "before I've closed my laptop.",
+      "quote2": " It's changed how our whole team operates.",
+      "name": "Elena Varga",
+      "title": "Managing Partner · Varga Consulting"
+    },
+    "compatibility": {
+      "tag": "No bots. No friction.",
+      "headline1": "Works with every platform",
+      "headline2": "you already ",
+      "headlineEm": "use.",
+      "body": "No bots sitting awkwardly in your meetings. No installs. No permissions popups. Neural Summary works with any recording — live or uploaded — from any platform.",
+      "platforms": {
+        "meet": {
+          "name": "Google Meet",
+          "desc": "Record and auto-upload directly from Meet"
+        },
+        "teams": {
+          "name": "Microsoft Teams",
+          "desc": "Full transcript support for Teams recordings"
+        },
+        "zoom": {
+          "name": "Zoom",
+          "desc": "Auto-process recordings from Zoom cloud"
+        },
+        "anyAudio": {
+          "name": "Any audio file",
+          "desc": "Upload MP3, MP4, WAV — we handle the rest"
+        }
+      },
+      "noBotCallout": "No meeting bot required.",
+      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom — Neural Summary never joins your call as a participant. Your meetings stay yours."
+    },
+    "outputs": {
+      "tag": "Template library",
+      "headline1": "One recording.",
+      "headline2": "Dozens of ",
+      "headlineEm": "ready-to-use",
+      "headline3": " outputs.",
+      "body": "Every meeting is full of ideas, decisions, and content waiting to be used. Neural Summary's template library turns any recording into professional assets — for every team, every use case.",
+      "categories": {
+        "sales": {
+          "title": "Sales",
+          "subtitle": "Close faster, follow up smarter",
+          "chips": "Price quote,Follow-up email,Discovery summary,Objection log,Proposal brief"
+        },
+        "marketing": {
+          "title": "Marketing",
+          "subtitle": "Turn conversations into content",
+          "chips": "Blog post,LinkedIn post,Newsletter section,Case study draft,Social snippets"
+        },
+        "product": {
+          "title": "Product",
+          "subtitle": "Ship faster, document better",
+          "chips": "Feature brief,PRD draft,User insight report,Decision log,Sprint notes"
+        },
+        "tech": {
+          "title": "Tech & Engineering",
+          "subtitle": "Keep the team aligned",
+          "chips": "Architecture notes,Action items,Tech spec draft,Incident debrief,Standup summary"
+        }
       }
     },
-    "transformation": {
-      "recording": "Recording...",
-      "quote1": "\"...so yeah, the demo went really well, they seemed excited about the analytics dashboard...\"",
-      "quote2": "\"...right, and Sarah mentioned they need it integrated with Salesforce, that's a must-have...\"",
-      "quote3": "\"...budget-wise she said they're looking at Q1, probably around 50 seats to start...\"",
-      "quote4": "\"...oh and they want a pilot program first, maybe two weeks...\"",
-      "quote5": "\"...I should probably send them the case study we did with Acme...\"",
-      "quote6": "\"...wait, did she say they also need SSO? I think she mentioned that...\"",
-      "documentTitle": "Follow-up Email",
-      "greeting": "Hi Sarah,",
-      "intro": "Great speaking with you today about the analytics dashboard. A few key points from our call:",
-      "point1": "Salesforce integration: confirmed as must-have",
-      "point2": "50 seats, targeting Q1 rollout",
-      "point3": "2-week pilot program to start",
-      "nextStepLabel": "Next step:",
-      "nextStepText": "Sending case study by EOD Friday."
-    },
-    "how": {
-      "headline": "How it works",
-      "step1": {
-        "title": "Speak freely",
-        "description": "Record a conversation, meeting, or voice memo."
+    "ask": {
+      "tag": "Institutional memory, on demand",
+      "headline1": "Ask anything about",
+      "headline2": "any ",
+      "headlineEm": "meeting.",
+      "body": "What was decided in last Tuesday's board call? What did the client say about pricing? Who owns the launch timeline? Stop digging through notes. Just ask.",
+      "features": {
+        "timestamps": {
+          "title": "Answers with timestamps",
+          "desc": "Every response cites the exact moment in the recording — so you can verify, share, or jump straight to the context."
+        },
+        "search": {
+          "title": "Search across all meetings",
+          "desc": "Query a single call or your entire meeting history. Find any decision, any commitment, any name — instantly."
+        },
+        "languages": {
+          "title": "Works in 99+ languages",
+          "desc": "Ask in English. Your meeting was in French. Neural Summary handles both — and everything in between."
+        }
       },
-      "step2": {
-        "title": "We extract what matters",
-        "description": "Decisions, priorities, and next steps. Structured automatically."
-      },
-      "step3": {
-        "title": "You move forward",
-        "description": "Share, send, or act on work that's already clear."
+      "chat": {
+        "header": "Ask about this meeting",
+        "headerSub": "Q2 Board Review · 52 min",
+        "userMsg1": "What were the main action items from this call?",
+        "aiReply1a": "Three action items: Sarah to finalize the Q3 hiring plan ",
+        "aiReply1chip1": "⏱ 12:04 · Sarah",
+        "aiReply1b": ", Marcus to complete the infrastructure audit ",
+        "aiReply1chip2": "⏱ 23:18 · Marcus",
+        "aiReply1c": ", and Priya to send the revised deck to investors by Friday. ",
+        "aiReply1chip3": "⏱ 41:55 · Priya",
+        "userMsg2": "What objections did the investors raise?",
+        "aiReply2a": "Two main objections: concerns about CAC in the enterprise segment ",
+        "aiReply2chip1": "⏱ 33:47 · Investor A",
+        "aiReply2b": " and a question about the competitive moat against Otter and Fireflies. ",
+        "aiReply2chip2": "⏱ 38:12 · Investor B",
+        "inputPlaceholder": "Ask a question about this meeting..."
       }
     },
-    "closingCta": {
-      "headline": "Ready to try it?",
-      "ctaPrimary": "Start free",
-      "ctaSecondary": "View examples first"
+    "infrastructure": {
+      "tag": "Built for accuracy",
+      "headline1": "Enterprise-grade accuracy.",
+      "headlineEm": "Out of the box.",
+      "body": "Neural Summary is built on best-in-class speech recognition infrastructure — the same technology trusted by thousands of enterprise teams worldwide. You get production-grade accuracy from day one, with no tuning, no setup, and no compromises.",
+      "stats": {
+        "languages": {
+          "number": "99+",
+          "label": "Languages supported",
+          "desc": "From English and Mandarin to Arabic and Dutch — your global meetings are covered, without any setup."
+        },
+        "accuracy": {
+          "number": "96%",
+          "label": "Transcription accuracy",
+          "desc": "Industry-leading word error rate. Names, jargon, and domain-specific terms handled correctly, first time."
+        },
+        "speed": {
+          "number": "4×",
+          "label": "Faster than real-time",
+          "desc": "A 60-minute meeting is fully transcribed, summarized, and ready to act on in under 15 minutes."
+        }
+      }
+    },
+    "integrations": {
+      "tag": "Fits your workflow",
+      "headline1": "Your summaries go exactly",
+      "headline2": "where your team ",
+      "headlineEm": "already works.",
+      "body": "No new tools to adopt. Neural Summary pushes your transcripts, summaries, and AI-generated assets directly into the platforms your team lives in.",
+      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
+    },
+    "testimonials": {
+      "tag": "Trusted by people who run things",
+      "headline1": "Leaders talk.",
+      "headline2": "Neural Summary ",
+      "headlineEm": "handles the rest.",
+      "cards": {
+        "t1": {
+          "quote1": "I run 12 client calls a week. Before Neural Summary, I was losing ",
+          "quoteStrong": "3–4 hours just on post-call writeups.",
+          "quote2": " Now that time goes back into actual client work.",
+          "name": "Elena Varga",
+          "role": "Managing Partner · Varga Consulting",
+          "initials": "EV"
+        },
+        "t2": {
+          "quote1": "The AI chat is what sold me. I can ask 'what did we decide about the pricing model in March' and ",
+          "quoteStrong": "get the answer with a timestamp in 3 seconds.",
+          "quote2": " That's institutional memory.",
+          "name": "Marcus Reinholt",
+          "role": "Co-founder & CEO · Stackfield",
+          "initials": "MR"
+        },
+        "t3": {
+          "quote1": "Our product team records every discovery call and turns them into feature briefs automatically. ",
+          "quoteStrong": "We shipped 40% faster last quarter",
+          "quote2": " because nobody's playing telephone anymore.",
+          "name": "Priya Chandra",
+          "role": "Head of Product · Lumen Labs",
+          "initials": "PC"
+        }
+      }
+    },
+    "security": {
+      "tag": "Your data stays yours",
+      "headline1": "Client-grade security.",
+      "headlineEm": "Built in,",
+      "headline2": " not bolted on.",
+      "body": "Your meetings contain sensitive client information, strategic decisions, and confidential discussions. We treat your data with the same seriousness you do — with enterprise-grade security, GDPR compliance, and full data ownership from day one.",
+      "badges": {
+        "gdpr": {
+          "title": "GDPR Compliant",
+          "desc": "EU data residency available. Full compliance with European privacy law."
+        },
+        "encrypted": {
+          "title": "Encrypted at rest",
+          "desc": "All recordings and transcripts encrypted with AES-256."
+        },
+        "autoDelete": {
+          "title": "Auto-delete policy",
+          "desc": "Set data retention rules. Recordings deleted automatically on your schedule."
+        },
+        "ownership": {
+          "title": "You own your data",
+          "desc": "Your recordings are never used to train AI models. Full export available anytime."
+        }
+      }
+    },
+    "pricing": {
+      "tag": "Simple, transparent pricing",
+      "headline1": "Start free.",
+      "headline2": "Scale as you ",
+      "headlineEm": "grow.",
+      "body": "No surprise fees. No per-seat traps. Choose the plan that fits how you work.",
+      "starter": {
+        "tier": "Starter",
+        "price": "€0",
+        "period": "/mo",
+        "periodSub": "Free forever",
+        "features": "5 recordings / month,Transcripts & summaries,3 asset templates,AI chat (10 queries/mo)",
+        "cta": "Get started free"
+      },
+      "pro": {
+        "tier": "Pro",
+        "price": "€29",
+        "period": "/mo",
+        "periodSub": "Billed monthly · cancel anytime",
+        "badge": "Most popular",
+        "features": "Unlimited recordings,All asset templates,Unlimited AI chat,All integrations,Priority support",
+        "cta": "Start Pro free for 14 days"
+      },
+      "team": {
+        "tier": "Team",
+        "price": "€79",
+        "period": "/mo",
+        "periodSub": "Up to 10 seats",
+        "features": "Everything in Pro,Shared meeting library,Team folders & permissions,GDPR data residency,Dedicated onboarding",
+        "cta": "Start team trial"
+      },
+      "note": "Enterprise or custom volume?",
+      "noteCta": "Talk to us →"
+    },
+    "finalCta": {
+      "tag": "The decision is easy",
+      "headline1": "Start turning conversations",
+      "headline2": "into ",
+      "headlineEm": "assets.",
+      "body": "Stop losing what gets said in meetings. Start turning every conversation into something your business can actually use.",
+      "ctaPrimary": "Start for free",
+      "ctaSecondary": "Book a demo",
+      "meta": {
+        "trial": "Free 14-day trial",
+        "noCard": "No credit card needed",
+        "noBot": "No meeting bot",
+        "cancel": "Cancel anytime"
+      }
     },
     "nav": {
       "login": "Log in",
@@ -1283,25 +1490,6 @@
       },
       "tagline": "You speak. It creates.",
       "copyright": "© 2026 Neural Summary. All rights reserved."
-    },
-    "faq": {
-      "title": "Frequently Asked Questions",
-      "q1": {
-        "question": "What types of documents can I create?",
-        "answer": "Neural Summary transforms your conversations into professional documents like meeting summaries, product specs, blog posts, action items, email drafts, and more. Choose from 15+ templates or create custom outputs."
-      },
-      "q2": {
-        "question": "How accurate is the transcription?",
-        "answer": "We use state-of-the-art AI models that achieve over 95% accuracy. The system automatically identifies speakers and handles multiple languages, accents, and industry terminology."
-      },
-      "q3": {
-        "question": "Is my data secure?",
-        "answer": "Yes. All audio files are encrypted in transit and at rest. We never use your data to train AI models. Files are automatically deleted after processing, and you can delete your data anytime."
-      },
-      "q4": {
-        "question": "Can I try it for free?",
-        "answer": "Absolutely. Start with our free plan that includes 3 audio files per month (up to 30 minutes each). No credit card required. Upgrade anytime for more capacity and features."
-      }
     }
   },
   "share": {
