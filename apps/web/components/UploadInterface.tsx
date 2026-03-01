@@ -240,17 +240,17 @@ export function UploadInterface({
       {/* Method Selection (if no method selected yet) */}
       {!selectedMethod && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 gap-3">
             {/* Record the room (microphone) */}
             <button
               onClick={() => setSelectedMethod('record-microphone')}
-              className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+              className="group relative flex items-center gap-3.5 p-4 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/10 rounded-lg hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA]/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 transition-all duration-150 text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                <Mic className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] transition-all duration-150">
+                <Mic className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-150" />
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-150">
                   {t('recordRoom')}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -262,13 +262,13 @@ export function UploadInterface({
             {/* Record browser tab */}
             <button
               onClick={() => setSelectedMethod('record-tab-audio')}
-              className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+              className="group relative flex items-center gap-3.5 p-4 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/10 rounded-lg hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA]/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 transition-all duration-150 text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                <Monitor className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] transition-all duration-150">
+                <Monitor className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-150" />
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-150">
                   {t('recordTab')}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -280,13 +280,13 @@ export function UploadInterface({
             {/* Upload file */}
             <button
               onClick={() => setSelectedMethod('upload')}
-              className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-xl hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left"
+              className="group relative flex items-center gap-3.5 p-4 bg-white dark:bg-white/[0.04] border border-gray-200 dark:border-white/10 rounded-lg hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA]/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 transition-all duration-150 text-left"
             >
-              <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                <Upload className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] transition-all duration-150">
+                <Upload className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-150" />
               </div>
               <div className="flex-1">
-                <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
+                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-150">
                   {t('uploadFileLabel')}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -314,14 +314,14 @@ export function UploadInterface({
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             onClick={handleUploadClick}
-            className={`relative border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all duration-200 ${
+            className={`relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200 ${
               isDragging
                 ? 'border-[#8D6AFA] bg-purple-50 dark:bg-purple-900/10 scale-105'
                 : 'border-gray-300 dark:border-gray-700 hover:border-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
             }`}
           >
-            <Upload className="w-16 h-16 mx-auto mb-6 text-gray-400" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
+            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {isDragging ? 'Drop your files here' : 'Drop your files here'}
             </h3>
             <p className="text-sm text-gray-700 dark:text-gray-400 mb-4">

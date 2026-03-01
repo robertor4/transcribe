@@ -1,12 +1,18 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from './Button';
 import { UploadInterface } from './UploadInterface';
 import { RealProcessingView } from './RealProcessingView';
 import { RecordingRecoveryDialog } from './RecordingRecoveryDialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   getRecordingStorage,
   type RecoverableRecording,
@@ -170,18 +176,6 @@ export function ConversationCreateModal({
     }
   }, [isOpen, uploadMethod]);
 
-  // Handle Escape key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      // Don't handle Escape if recovery dialog is open (it has its own handler)
-      if (e.key === 'Escape' && isOpen && !showRecoveryDialog) {
-        handleClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, handleClose, showRecoveryDialog]);
-
   // Prevent browser navigation/close during critical stages (preview, processing)
   // This protects against accidental tab close, back button, or page refresh
   useEffect(() => {
@@ -329,16 +323,21 @@ export function ConversationCreateModal({
     // But we won't show the dialog again in this session
   };
 
-  if (!isOpen) return null;
-
   // Determine the effective upload method
   // Priority: recoveryUploadMethod (from continue recording) > uploadMethod (from props)
   const effectiveUploadMethod = recoveryUploadMethod || uploadMethod;
 
+  // Handle Dialog open/close — runs our confirmation logic on any close attempt
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open) {
+      handleClose();
+    }
+  }, [handleClose]);
+
   return (
     <>
       {/* Recovery Dialog - shown before main content when recordings found */}
-      {showRecoveryDialog && recoverableRecordings.length > 0 && (
+      {isOpen && showRecoveryDialog && recoverableRecordings.length > 0 && (
         <RecordingRecoveryDialog
           recordings={recoverableRecordings}
           onProcessImmediately={handleProcessImmediately}
@@ -348,37 +347,43 @@ export function ConversationCreateModal({
         />
       )}
 
-      {/* Main Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+      {/* Main Modal — shadcn Dialog */}
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        <DialogContent
+          className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col gap-0 p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700/50"
+          showCloseButton={!isInCriticalStage}
+          onInteractOutside={(e) => {
+            // Prevent overlay click from closing during recording or critical stages
+            if (isRecording || isInCriticalStage) {
+              e.preventDefault();
+            }
+          }}
+          onEscapeKeyDown={(e) => {
+            // Prevent escape during recovery dialog (it has its own handler)
+            if (showRecoveryDialog) {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="min-w-0 flex-1 mr-4">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide truncate">
-                {currentStep === 'capture' && t('steps.capture.title')}
-                {currentStep === 'context' && t('steps.context.title')}
-                {currentStep === 'processing' && t('steps.processing.title')}
-              </h2>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {currentStep === 'capture' && t('steps.capture.description')}
-                {currentStep === 'context' && t('steps.context.description')}
-                {currentStep === 'processing' && t('steps.processing.description')}
-              </p>
-            </div>
-            <button
-              onClick={handleClose}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              aria-label={t('closeModal')}
-            >
-              <X className="w-5 h-5 text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors" />
-            </button>
-          </div>
+          <DialogHeader className="px-6 pt-5 pb-0 gap-0.5">
+            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
+              {currentStep === 'capture' && t('steps.capture.title')}
+              {currentStep === 'context' && t('steps.context.title')}
+              {currentStep === 'processing' && t('steps.processing.title')}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
+              {currentStep === 'capture' && t('steps.capture.description')}
+              {currentStep === 'context' && t('steps.context.description')}
+              {currentStep === 'processing' && t('steps.processing.description')}
+            </DialogDescription>
+          </DialogHeader>
 
           {/* Content */}
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto">
             {/* Step 1: Capture Audio */}
             {currentStep === 'capture' && (
-              <div className="flex-1 overflow-y-auto p-8">
+              <div className="px-6 py-5">
                 <UploadInterface
                   onFileUpload={handleFileUpload}
                   onRecordingComplete={handleRecordingComplete}
@@ -395,8 +400,8 @@ export function ConversationCreateModal({
 
             {/* Step 2: Context Input */}
             {currentStep === 'context' && (
-              <div className="flex-1 overflow-y-auto p-8">
-                <div className="max-w-2xl mx-auto space-y-6">
+              <div className="px-6 py-5">
+                <div className="space-y-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       {t('contextLabel')}
@@ -405,12 +410,12 @@ export function ConversationCreateModal({
                       value={overallContext}
                       onChange={(e) => setOverallContext(e.target.value)}
                       placeholder={t('contextPlaceholder')}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
-                      rows={4}
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
+                      rows={3}
                     />
                   </div>
 
-                  <div className="flex justify-between gap-4 pt-6">
+                  <div className="flex justify-between gap-4 pt-4 mt-1 -mx-6 px-6 pb-1 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                     <Button variant="ghost" onClick={() => setCurrentStep('capture')}>
                       {t('back')}
                     </Button>
@@ -429,7 +434,7 @@ export function ConversationCreateModal({
 
             {/* Step 3: Processing */}
             {currentStep === 'processing' && uploadedFiles.length > 0 && (
-              <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+              <div className="px-6 py-5">
                 <RealProcessingView
                   file={uploadedFiles[0]}
                   context={overallContext || undefined}
@@ -440,8 +445,8 @@ export function ConversationCreateModal({
               </div>
             )}
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

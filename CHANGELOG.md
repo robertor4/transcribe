@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Create Conversation modal redesign (Variant B)**: Redesigned the conversation creation modal with a compact, focused layout inspired by Variant B
+  - Migrated from custom overlay to shadcn `Dialog` component with controlled open/close and confirmation logic
+  - Narrowed modal from `max-w-4xl` to `sm:max-w-lg` (~480px) for a cleaner, less cluttered feel
+  - New [LevelBarsRow.tsx](apps/web/components/LevelBarsRow.tsx) component — 12 animated vertical bars with inline "Level" label and monospace timer, replacing the large `RecordingWaveform` SVG
+  - Replaced all custom gradient `<button>` elements with the reusable `Button` component (`variant="brand"`, `variant="ghost"`, `variant="secondary"`)
+  - Added darker footer background (`bg-gray-50 dark:bg-gray-800/50`) matching the Delete modal pattern for visual separation of controls
+  - Compacted source selection cards to single-column layout with smaller icons
+  - Reduced upload dropzone padding (`p-16` → `p-10`) and method selection grid for narrower modal
+  - Full dark mode support using standard Tailwind `dark:` classes
+
 ### Added
 - **Landing page V3 redesign**: Complete redesign of the landing page from a 5-section light theme to an 11-section dark navy theme matching the new brand direction
   - **New sections**: Social Proof Bar, Compatibility/Platforms, Output Categories, Ask Anything (AI Chat mock), Infrastructure Stats, Integrations, Testimonials, Security, Pricing, Final CTA

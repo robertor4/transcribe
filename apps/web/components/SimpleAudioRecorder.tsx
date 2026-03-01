@@ -8,7 +8,7 @@ import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
 import { RecordingPreview } from './RecordingPreview';
-import { RecordingWaveform } from './RecordingWaveform';
+import { LevelBarsRow } from './LevelBarsRow';
 import { Button } from './Button';
 import { ensureAudioContextReady } from '@/hooks/useAudioWaveform';
 import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X, Play } from 'lucide-react';
@@ -176,11 +176,11 @@ export function SimpleAudioRecorder({
   }, []);
 
   // Audio visualization for preview (before recording starts)
-  const { audioLevel: previewAudioLevel } = useAudioVisualization(previewStream);
+  const { audioLevel: previewAudioLevel, frequencyBands: previewBands } = useAudioVisualization(previewStream);
 
   // Audio visualization during recording (both microphone and tab audio)
   // Web Audio API analyzes the audio stream in real-time for reactive waveform
-  const { audioLevel: recordingAudioLevel } = useAudioVisualization(audioStream);
+  const { audioLevel: recordingAudioLevel, frequencyBands: recordingBands } = useAudioVisualization(audioStream);
 
   // Use raw audio level directly (no decay/smoothing)
   const displayedAudioLevel = isTestingMic ? previewAudioLevel : 0;
@@ -526,7 +526,7 @@ export function SimpleAudioRecorder({
     const hasDevices = audioDevices.length > 0;
 
     const shouldAutoStart =
-      (showSourceSelector || initialSource === 'microphone') &&
+      (showSourceSelector || initialSource === 'microphone' || selectedSource === 'microphone') &&
       state === 'idle' &&
       selectedDeviceId &&
       hasDevices &&  // Don't start until devices are loaded
@@ -551,7 +551,7 @@ export function SimpleAudioRecorder({
       }
       startMicPreview(realDeviceId);
     }
-  }, [showSourceSelector, initialSource, state, selectedDeviceId, isTestingMic, startMicPreview, audioDevices]);
+  }, [showSourceSelector, initialSource, selectedSource, state, selectedDeviceId, isTestingMic, startMicPreview, audioDevices]);
 
   // Cleanup preview stream and notification timeout on unmount
   useEffect(() => {
@@ -711,52 +711,43 @@ export function SimpleAudioRecorder({
     );
   }
 
-  // Source selection screen
+  // Source selection screen — compact for narrower modal
   if (showSourceSelector && state === 'idle') {
     return (
-      <div className="space-y-6">
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-            {t('source.chooseSource')}
-          </h3>
-          <p className="text-sm text-gray-700 dark:text-gray-400">
-            {t('source.chooseSourceDescription')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Microphone */}
-          <div className="group flex flex-col p-8 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg transition-all duration-200">
-            <div className="w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200">
-              <Mic className="w-7 h-7 text-gray-600 dark:text-gray-400 group-hover:text-white" />
+      <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-3">
+          {/* Microphone option */}
+          <div className="group flex flex-col gap-3 p-4 rounded-lg border border-gray-200 dark:border-white/10 hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA]/50 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] transition-colors">
+                <Mic className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors">
+                  {t('source.microphone')}
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {t('source.microphoneDescription')}
+                </p>
+              </div>
             </div>
-            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center group-hover:text-[#8D6AFA] uppercase tracking-wide">
-              {t('source.microphone')}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
-              {t('source.microphoneDescription')}
-            </p>
 
             {/* Microphone selector dropdown */}
             {audioDevices.length > 1 && (
-              <div className="mb-4">
-                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
+              <div>
+                <label className="block text-[11px] font-medium text-gray-500 dark:text-white/40 uppercase tracking-wider mb-1">
                   {t('source.selectMicrophone')}
                 </label>
                 <div className="relative">
                   <select
                     value={selectedDeviceId}
                     onChange={(e) => {
-                      // Stop current preview - it will auto-restart with new device
-                      if (isTestingMic) {
-                        stopMicPreview();
-                      }
+                      if (isTestingMic) stopMicPreview();
                       setSelectedDeviceId(e.target.value);
-                      // Reset audio detection for new microphone
                       setHasDetectedAudio(false);
                       setShowNoAudioWarning(false);
                     }}
-                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer"
+                    className="w-full appearance-none bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 pr-8 text-[13px] text-gray-900 dark:text-white/85 focus:outline-none focus:border-[#8D6AFA] cursor-pointer transition-colors"
                   >
                     {audioDevices.map((device) => (
                       <option key={device.deviceId} value={device.deviceId}>
@@ -764,107 +755,82 @@ export function SimpleAudioRecorder({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/30 pointer-events-none" />
                 </div>
               </div>
             )}
 
             {isLoadingDevices && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                {t('source.loadingMicrophones')}
-              </p>
+              <p className="text-xs text-gray-400">{t('source.loadingMicrophones')}</p>
             )}
 
-            {/* Audio level indicator - macOS style segmented meter */}
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Volume2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                <span className="text-xs text-gray-600 dark:text-gray-400">
+            {/* Audio level indicator */}
+            <div>
+              <div className="flex items-center gap-2 mb-1.5">
+                <Volume2 className="w-3.5 h-3.5 text-gray-400 dark:text-white/30" />
+                <span className="text-[11px] text-gray-500 dark:text-white/40">
                   {isTestingMic ? t('source.inputLevel') : t('source.initializing')}
                 </span>
               </div>
               <div className="flex items-center gap-[3px]">
                 {Array.from({ length: 12 }).map((_, index) => {
-                  // Each segment represents ~8.33% of the level
                   const threshold = (index + 1) * 8.33;
                   const isActive = isTestingMic && displayedAudioLevel >= threshold;
-
                   return (
                     <div
                       key={index}
-                      className={`h-3 flex-1 rounded-sm transition-colors duration-75 ${
-                        isActive
-                          ? 'bg-[#8D6AFA]'
-                          : 'bg-gray-300 dark:bg-gray-600'
+                      className={`h-2.5 flex-1 rounded-sm transition-colors duration-75 ${
+                        isActive ? 'bg-[#8D6AFA]' : 'bg-gray-200 dark:bg-white/10'
                       }`}
                     />
                   );
                 })}
               </div>
-
-              {/* No audio detected warning */}
               {showNoAudioWarning && !hasDetectedAudio && (
-                <div className="flex items-center gap-2 mt-2 text-amber-600 dark:text-amber-400">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-xs">
-                    {t('source.noAudioDetected')}
-                  </span>
+                <div className="flex items-center gap-1.5 mt-1.5 text-amber-600 dark:text-amber-400">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="text-xs">{t('source.noAudioDetected')}</span>
                 </div>
               )}
             </div>
 
-            {/* Spacer to push button to bottom */}
-            <div className="flex-1" />
-
-            <button
-              onClick={() => {
-                stopMicPreview();
-                handleSourceSelect('microphone');
-              }}
-              className="w-full py-2.5 px-4 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-full transition-colors"
+            <Button
+              variant="brand"
+              size="sm"
+              fullWidth
+              onClick={() => handleSourceSelect('microphone')}
             >
               {t('source.useThisMicrophone')}
-            </button>
+            </Button>
           </div>
 
-          {/* Tab Audio */}
+          {/* Tab Audio option */}
           <div
-            className={`group flex flex-col p-8 rounded-xl border-2 transition-all duration-200 ${
+            className={`group flex flex-col gap-3 p-4 rounded-lg border transition-colors ${
               canUseTabAudio
-                ? 'border-gray-200 dark:border-gray-700 hover:border-[#8D6AFA] hover:shadow-lg'
-                : 'border-gray-200 dark:border-gray-700 opacity-50'
+                ? 'border-gray-200 dark:border-white/10 hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA]/50'
+                : 'border-gray-200 dark:border-white/10 opacity-50'
             }`}
           >
-            <div
-              className={`w-14 h-14 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4 ${
-                canUseTabAudio
-                  ? 'group-hover:bg-[#8D6AFA] group-hover:scale-110 transition-all duration-200'
-                  : ''
-              }`}
-            >
-              <Monitor
-                className={`w-7 h-7 text-gray-600 dark:text-gray-400 ${
-                  canUseTabAudio ? 'group-hover:text-white' : ''
-                }`}
-              />
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/[0.06] flex items-center justify-center flex-shrink-0 ${
+                canUseTabAudio ? 'group-hover:bg-[#8D6AFA] transition-colors' : ''
+              }`}>
+                <Monitor className={`w-5 h-5 text-gray-600 dark:text-gray-400 ${canUseTabAudio ? 'group-hover:text-white' : ''}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className={`text-sm font-semibold text-gray-900 dark:text-gray-100 ${canUseTabAudio ? 'group-hover:text-[#8D6AFA]' : ''} transition-colors`}>
+                  {t('source.tabAudio')}
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {canUseTabAudio ? t('source.tabAudioDescription') : t('source.tabAudioNotSupported')}
+                </p>
+              </div>
             </div>
-            <h3
-              className={`font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 text-center uppercase tracking-wide ${
-                canUseTabAudio ? 'group-hover:text-[#8D6AFA]' : ''
-              }`}
-            >
-              {t('source.tabAudio')}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-400 mb-4 text-center">
-              {canUseTabAudio
-                ? t('source.tabAudioDescription')
-                : t('source.tabAudioNotSupported')}
-            </p>
 
             {canUseTabAudio && (
               <>
-                {/* Include microphone toggle */}
-                <label className="flex items-start gap-3 cursor-pointer mb-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <label className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded-lg bg-gray-50 dark:bg-white/[0.04] hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors">
                   <input
                     type="checkbox"
                     checked={includeMicWithTabAudio}
@@ -872,18 +838,13 @@ export function SimpleAudioRecorder({
                     className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#8D6AFA] focus:ring-[#8D6AFA] cursor-pointer"
                   />
                   <div className="flex-1">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 block">
-                      {t('source.includeMicrophone')}
-                    </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {t('source.recommendedForCalls')}
-                    </span>
+                    <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100 block">{t('source.includeMicrophone')}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{t('source.recommendedForCalls')}</span>
                   </div>
                 </label>
 
-                {/* Show selected microphone when toggle is on */}
                 {includeMicWithTabAudio && selectedDeviceId && (
-                  <div className="flex items-center gap-2 mb-4 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                     <Mic className="w-3.5 h-3.5" />
                     <span className="truncate">
                       {t('source.usingMicrophone')} {audioDevices.find(d => d.deviceId === selectedDeviceId)?.label || t('source.microphone')}
@@ -891,364 +852,241 @@ export function SimpleAudioRecorder({
                   </div>
                 )}
 
-                {/* Spacer to push button to bottom */}
-                <div className="flex-1" />
-
-                <button
+                <Button
+                  variant="brand"
+                  size="sm"
+                  fullWidth
                   onClick={() => handleSourceSelect('tab-audio')}
-                  className="w-full py-2.5 px-4 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-full transition-colors"
                 >
                   {t('source.recordTabAudio')}
-                </button>
+                </Button>
               </>
             )}
           </div>
         </div>
 
-        <div className="flex justify-start">
-          <Button variant="ghost" onClick={onCancel}>
-            ← {t('source.changeMethod')}
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" onClick={onCancel}>
+          ← {t('source.changeMethod')}
+        </Button>
       </div>
     );
   }
 
-  // Recording interface
+  // Determine the audio level and frequency bands to show in the level bars
+  // Use preview data when idle/testing mic, recording data when recording
+  const displayLevel = (state === 'idle' && isTestingMic)
+    ? displayedAudioLevel
+    : recordingAudioLevel;
+  const displayBands = (state === 'idle' && isTestingMic)
+    ? previewBands
+    : recordingBands;
+
+  // Shared microphone selector component to avoid duplication
+  const micSelector = selectedSource === 'microphone' && audioDevices.length > 1 && (
+    <div>
+      <label className="block text-[11px] font-medium text-gray-500 dark:text-white/40 uppercase tracking-wider mb-1.5">
+        {t('source.selectMicrophone')}
+      </label>
+      <div className="relative">
+        <select
+          value={selectedDeviceId}
+          onChange={(e) => {
+            if (state === 'idle') {
+              if (isTestingMic) stopMicPreview();
+              setSelectedDeviceId(e.target.value);
+              setHasDetectedAudio(false);
+              setShowNoAudioWarning(false);
+            } else {
+              handleDeviceSwap(e.target.value);
+            }
+          }}
+          disabled={isSwappingDevice}
+          className="w-full appearance-none bg-gray-50 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2.5 pr-8 text-[13px] text-gray-900 dark:text-white/85 focus:outline-none focus:border-[#8D6AFA] dark:focus:border-[#8D6AFA]/60 focus:ring-1 focus:ring-[#8D6AFA]/20 cursor-pointer disabled:opacity-50 disabled:cursor-wait transition-colors"
+        >
+          {audioDevices.map((device) => (
+            <option key={device.deviceId} value={device.deviceId}>
+              {device.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/30 pointer-events-none" />
+      </div>
+      {isSwappingDevice && (
+        <div className="flex items-center gap-2 mt-1.5">
+          <div className="animate-spin rounded-full h-3 w-3 border-2 border-[#8D6AFA] border-t-transparent" />
+          <span className="text-xs text-gray-500 dark:text-white/40">Switching...</span>
+        </div>
+      )}
+      {/* No audio detected warning */}
+      {state === 'idle' && showNoAudioWarning && !hasDetectedAudio && (
+        <div className="flex items-center gap-2 mt-1.5 text-amber-600 dark:text-amber-400">
+          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="text-xs">{t('source.noAudioDetected')}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  // Recording interface — Variant B compact layout
   return (
-    <div className="space-y-4">
-      {/* Error message with dismiss option */}
+    <div className="flex flex-col gap-3.5">
+      {/* Error message */}
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-red-700 dark:text-red-400 flex-1">{error}</p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                reset();
-                onCancel();
-              }}
-            >
-              {t('controls.cancel')}
-            </Button>
-          </div>
+        <div className="flex items-center justify-between gap-3 px-3 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-xs text-red-700 dark:text-red-400 flex-1">{error}</p>
+          <Button variant="ghost" size="sm" onClick={() => { reset(); onCancel(); }}>
+            {t('controls.cancel')}
+          </Button>
         </div>
       )}
 
-      {/* Warning Display (recording warnings or storage warnings) */}
+      {/* Warning display */}
       {(warning || storageWarning) && (
-        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5 px-3 py-2.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
-              {t('warnings.title')}
-            </p>
-            <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+            <p className="text-xs text-amber-700 dark:text-amber-300">
               {warning || storageWarning}
             </p>
-            {/* Resume button when recording was interrupted by iOS */}
             {canResumeAfterInterruption && (
-              <div className="mt-3">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={resumeAfterInterruption}
-                  icon={<Play className="w-4 h-4" />}
-                >
+              <div className="mt-2">
+                <Button variant="primary" size="sm" onClick={resumeAfterInterruption} icon={<Play className="w-3.5 h-3.5" />}>
                   {t('controls.resumeRecording')}
                 </Button>
               </div>
             )}
           </div>
           {warning && !canResumeAfterInterruption && (
-            <button
-              type="button"
-              onClick={clearWarning}
-              className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 p-1 -mr-1 -mt-1"
-              aria-label={t('controls.dismissWarning')}
-            >
-              <X className="w-4 h-4" />
+            <button type="button" onClick={clearWarning} className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-200 p-0.5" aria-label={t('controls.dismissWarning')}>
+              <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
-      )}
-
-      {/* Recording indicator */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {state === 'recording' && (
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-          )}
-          {state === 'paused' && (
-            <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-          )}
-          <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {state === 'recording' && t('status.recording')}
-            {state === 'paused' && t('status.paused')}
-            {state === 'requesting-permission' && t('status.requesting')}
-            {state === 'idle' && t('status.ready')}
-          </span>
-        </div>
-        <div className="text-2xl font-mono font-bold text-gray-900 dark:text-gray-100">
-          {formatTime(duration)}
-        </div>
-      </div>
-
-      {/* Free tier countdown timer */}
-      {isFreeUser && (state === 'recording' || state === 'paused') && (
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className={`text-sm font-medium ${
-              maxDuration - duration < 5 * 60
-                ? 'text-amber-600 dark:text-amber-400'
-                : 'text-gray-600 dark:text-gray-400'
-            }`}>
-              {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
-            </span>
-          </div>
-          <Link
-            href="/pricing"
-            target="_blank"
-            className="text-sm font-medium text-[#8D6AFA] hover:text-[#7A5AE0] hover:underline transition-colors"
-          >
-            {t('limits.getPro')}
-          </Link>
         </div>
       )}
 
       {/* Device switch notification */}
       {deviceSwitchNotification && (
         <div className="flex items-center gap-2 px-3 py-2 bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 border border-[#8D6AFA]/30 rounded-lg animate-in fade-in slide-in-from-top-2 duration-200">
-          <Mic className="w-4 h-4 text-[#8D6AFA] flex-shrink-0" />
-          <span className="text-sm text-[#8D6AFA] dark:text-[#a78bfa]">
+          <Mic className="w-3.5 h-3.5 text-[#8D6AFA] flex-shrink-0" />
+          <span className="text-xs text-[#8D6AFA] dark:text-[#a78bfa]">
             {t('source.switchedToDevice', { device: deviceSwitchNotification })}
           </span>
         </div>
       )}
 
-      {/* Inline microphone selector (shown when coming from direct microphone action) */}
-      {initialSource === 'microphone' && state === 'idle' && audioDevices.length > 1 && (
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Volume2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {isTestingMic ? t('source.inputLevel') : t('source.initializing')}
-            </span>
-          </div>
-          <div className="flex items-center gap-[3px] mb-4">
-            {Array.from({ length: 12 }).map((_, index) => {
-              const threshold = (index + 1) * 8.33;
-              const isActive = isTestingMic && displayedAudioLevel >= threshold;
-              return (
-                <div
-                  key={index}
-                  className={`h-3 flex-1 rounded-sm transition-colors duration-75 ${
-                    isActive
-                      ? 'bg-[#8D6AFA]'
-                      : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
-                />
-              );
-            })}
-          </div>
-          <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1.5">
-            {t('source.selectMicrophone')}
-          </label>
-          <div className="relative">
-            <select
-              value={selectedDeviceId}
-              onChange={(e) => {
-                if (isTestingMic) {
-                  stopMicPreview();
-                }
-                setSelectedDeviceId(e.target.value);
-                setHasDetectedAudio(false);
-                setShowNoAudioWarning(false);
-              }}
-              className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer"
-            >
-              {audioDevices.map((device) => (
-                <option key={device.deviceId} value={device.deviceId}>
-                  {device.label}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-          </div>
-          {/* No audio detected warning */}
-          {showNoAudioWarning && !hasDetectedAudio && (
-            <div className="flex items-center gap-2 mt-2 text-amber-600 dark:text-amber-400">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span className="text-xs">
-                {t('source.noAudioDetected')}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Microphone selector — shown in idle when coming from direct action, or during recording/paused */}
+      {(state === 'idle' || state === 'recording' || state === 'paused') && micSelector}
 
-      {/* Waveform area */}
+      {/* Level bars row — replaces waveform with compact Variant B visualization */}
       {(state === 'idle' || state === 'recording' || state === 'paused') && (
-        <RecordingWaveform
+        <LevelBarsRow
+          audioLevel={displayLevel}
+          frequencyBands={displayBands}
+          duration={duration}
           isRecording={state === 'recording'}
           isPaused={state === 'paused'}
-          audioLevel={recordingAudioLevel}
         />
       )}
 
-      {/* Controls */}
-      <div className="flex flex-col gap-3">
-        {/* Idle state - start button */}
+      {/* Status badge + free tier countdown — below level bars/timer */}
+      <div className="flex items-center justify-between">
+        <div className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10">
+          <div className={`w-1.5 h-1.5 rounded-full ${
+            state === 'recording' ? 'bg-red-500 animate-pulse' :
+            state === 'paused' ? 'bg-yellow-500' :
+            'bg-emerald-500 animate-pulse'
+          }`} />
+          <span className="text-gray-600 dark:text-gray-300">
+            {state === 'recording' && t('status.recording')}
+            {state === 'paused' && t('status.paused')}
+            {state === 'requesting-permission' && t('status.requesting')}
+            {state === 'idle' && t('status.ready')}
+          </span>
+        </div>
+
+        {/* Free tier remaining time */}
+        {isFreeUser && (state === 'recording' || state === 'paused') && (
+          <Link
+            href="/pricing"
+            target="_blank"
+            className={`text-xs font-mono ${
+              maxDuration - duration < 5 * 60
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-gray-500 dark:text-gray-400'
+            } hover:text-[#8D6AFA] transition-colors`}
+          >
+            {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
+          </Link>
+        )}
+
+        {/* File size estimate during recording */}
+        {!isFreeUser && duration > 0 && (state === 'recording' || state === 'paused') && (
+          <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
+            {formatFileSize(estimateFileSize(duration))}
+          </span>
+        )}
+      </div>
+
+      {/* Controls — footer area with darker background */}
+      <div className="flex items-center gap-2 pt-3 pb-3 -mx-6 px-6 -mb-5 mt-1 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
+        {/* Idle state */}
         {state === 'idle' && (
           <>
-            <Button variant="brand" onClick={handleStart} fullWidth icon={<Mic />}>
+            <Button variant="ghost" size="sm" onClick={handleBackToSourceSelection}>
+              {t('controls.cancel')}
+            </Button>
+            <div className="flex-1" />
+            <Button variant="brand" size="sm" onClick={handleStart} icon={<Mic className="w-4 h-4" />}>
               {t('controls.start')}
             </Button>
-            <Button variant="ghost" onClick={handleBackToSourceSelection} fullWidth>
-              ← {initialSource ? t('controls.cancel') : t('source.changeSource')}
-            </Button>
           </>
         )}
 
-        {/* Recording state - pause and stop buttons */}
+        {/* Recording state */}
         {state === 'recording' && (
           <>
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button
-                variant="secondary"
-                onClick={pauseRecording}
-                fullWidth
-                icon={<Pause className="w-5 h-5" />}
-              >
-                {t('controls.pause')}
-              </Button>
-              <Button
-                variant="brand"
-                onClick={handleStopRecording}
-                fullWidth
-                disabled={isStopping}
-                icon={isStopping ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Square className="w-5 h-5" />
-                )}
-              >
-                {isStopping ? t('controls.finishing') : t('controls.stop')}
-              </Button>
-            </div>
-            {/* Microphone switcher during recording */}
-            {selectedSource === 'microphone' && audioDevices.length > 1 && (
-              <div className="flex items-center gap-2">
-                <Mic className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                <div className="relative flex-1">
-                  <select
-                    value={selectedDeviceId}
-                    onChange={(e) => handleDeviceSwap(e.target.value)}
-                    disabled={isSwappingDevice}
-                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 pr-8 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-wait"
-                  >
-                    {audioDevices.map((device) => (
-                      <option key={device.deviceId} value={device.deviceId}>
-                        {device.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
-                </div>
-                {isSwappingDevice && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#8D6AFA] border-t-transparent" />
-                )}
-              </div>
-            )}
-            {/* File size estimate and source indicator */}
-            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-              <span>
-                {t('source.recordingFrom')}{' '}
-                <span className="font-medium text-gray-800 dark:text-gray-300">
-                  {selectedSource === 'microphone' ? t('source.microphone') : t('source.tabAudio')}
-                </span>
-              </span>
-              {duration > 0 && (
-                <span>{t('fileSize', { size: formatFileSize(estimateFileSize(duration)) })}</span>
-              )}
-            </div>
-            <Button variant="ghost" onClick={handleCancelRecording} fullWidth>
+            <Button variant="ghost" size="sm" onClick={handleCancelRecording}>
               {t('controls.cancel')}
+            </Button>
+            <div className="flex-1" />
+            <Button variant="secondary" size="sm" onClick={pauseRecording} icon={<Pause className="w-4 h-4" />}>
+              {t('controls.pause')}
+            </Button>
+            <Button variant="brand" size="sm" onClick={handleStopRecording} disabled={isStopping} icon={
+              isStopping
+                ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <Square className="w-4 h-4" />
+            }>
+              {isStopping ? t('controls.finishing') : t('controls.stop')}
             </Button>
           </>
         )}
 
-        {/* Paused state - resume and stop buttons */}
+        {/* Paused state */}
         {state === 'paused' && (
           <>
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-              <Button variant="brand" onClick={resumeRecording} fullWidth icon={<Mic />}>
-                {t('controls.resume')}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleStopRecording}
-                fullWidth
-                disabled={isStopping}
-                icon={isStopping ? (
-                  <div className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Square className="w-5 h-5" />
-                )}
-              >
-                {isStopping ? t('controls.finishing') : t('controls.stop')}
-              </Button>
-            </div>
-            {/* Microphone switcher during paused state */}
-            {selectedSource === 'microphone' && audioDevices.length > 1 && (
-              <div className="flex items-center gap-2">
-                <Mic className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                <div className="relative flex-1">
-                  <select
-                    value={selectedDeviceId}
-                    onChange={(e) => handleDeviceSwap(e.target.value)}
-                    disabled={isSwappingDevice}
-                    className="w-full appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 pr-8 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-wait"
-                  >
-                    {audioDevices.map((device) => (
-                      <option key={device.deviceId} value={device.deviceId}>
-                        {device.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
-                </div>
-                {isSwappingDevice && (
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#8D6AFA] border-t-transparent" />
-                )}
-              </div>
-            )}
-            {/* File size estimate and source indicator */}
-            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-              <span>
-                {t('source.recordingFrom')}{' '}
-                <span className="font-medium text-gray-800 dark:text-gray-300">
-                  {selectedSource === 'microphone' ? t('source.microphone') : t('source.tabAudio')}
-                </span>
-              </span>
-              {duration > 0 && (
-                <span>{t('fileSize', { size: formatFileSize(estimateFileSize(duration)) })}</span>
-              )}
-            </div>
-            <Button variant="ghost" onClick={handleCancelRecording} fullWidth>
+            <Button variant="ghost" size="sm" onClick={handleCancelRecording}>
               {t('controls.cancel')}
+            </Button>
+            <div className="flex-1" />
+            <Button variant="secondary" size="sm" onClick={handleStopRecording} disabled={isStopping} icon={
+              isStopping
+                ? <div className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
+                : <Square className="w-4 h-4" />
+            }>
+              {isStopping ? t('controls.finishing') : t('controls.stop')}
+            </Button>
+            <Button variant="brand" size="sm" onClick={resumeRecording} icon={<Mic className="w-4 h-4" />}>
+              {t('controls.resume')}
             </Button>
           </>
         )}
 
-        {/* Requesting permission state */}
+        {/* Requesting permission */}
         {state === 'requesting-permission' && (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8D6AFA] mx-auto mb-3" />
-            <p className="text-sm text-gray-700 dark:text-gray-400">
-              {t('status.requesting')}
-            </p>
+          <div className="flex items-center gap-3 w-full justify-center py-2">
+            <div className="animate-spin rounded-full h-5 w-5 border-2 border-[#8D6AFA] border-t-transparent" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('status.requesting')}</p>
           </div>
         )}
       </div>

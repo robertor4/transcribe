@@ -18,6 +18,7 @@ export interface UseAudioVisualizationOptions {
 export interface UseAudioVisualizationReturn {
   audioLevel: number; // 0-100 normalized audio level
   frequencyData: Uint8Array | null; // Raw frequency data (if needed)
+  frequencyBands: number[]; // 12-band frequency spectrum (0-100 each), low-to-high
   isAnalyzing: boolean;
 }
 
@@ -35,6 +36,9 @@ export function useAudioVisualization(
   const [audioLevel, setAudioLevel] = useState(0);
   const [frequencyData, setFrequencyData] = useState<Uint8Array | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Use ref for frequency bands to avoid 60 state updates/sec
+  const frequencyBandsRef = useRef<number[]>(new Array(12).fill(0));
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyzerRef = useRef<AnalyserNode | null>(null);
@@ -91,6 +95,34 @@ export function useAudioVisualization(
       const normalized = Math.min(100, Math.max(0, scaledLevel));
 
       setAudioLevel(normalized);
+
+      // Compute 12 frequency bands from the frequency data (low → high)
+      // dataArray has bufferLength values (128 with fftSize=256), each 0-255
+      // Voice energy is concentrated in low frequencies, so we use exponential
+      // band edges: lower bands are narrow (precise), upper bands are wider
+      // (aggregate more bins to pick up weaker high-frequency energy)
+      const bandCount = 12;
+      const bands = frequencyBandsRef.current;
+      const usableBins = Math.floor(bufferLength * 0.5); // ~0-11kHz
+      for (let b = 0; b < bandCount; b++) {
+        // Exponential spacing: band edges grow exponentially
+        // This gives narrow low-freq bands and wide high-freq bands
+        const startFrac = (Math.pow(2, b / bandCount) - 1);
+        const endFrac = (Math.pow(2, (b + 1) / bandCount) - 1);
+        const start = Math.floor(startFrac * usableBins);
+        const end = Math.max(start + 1, Math.floor(endFrac * usableBins));
+        let maxVal = 0;
+        let sum = 0;
+        for (let j = start; j < end; j++) {
+          sum += dataArray[j];
+          if (dataArray[j] > maxVal) maxVal = dataArray[j];
+        }
+        const avg = sum / (end - start);
+        // Blend average and peak for more responsive visualization
+        const blended = avg * 0.6 + maxVal * 0.4;
+        // Normalize 0-255 → 0-100 with a boost for visibility
+        bands[b] = Math.min(100, Math.pow(blended / 140, 0.7) * 100);
+      }
 
       // Always use time domain data for visualization - it's more reliable
       setFrequencyData(timeDomainData);
@@ -223,6 +255,7 @@ export function useAudioVisualization(
   return {
     audioLevel,
     frequencyData,
+    frequencyBands: frequencyBandsRef.current,
     isAnalyzing,
   };
 }
