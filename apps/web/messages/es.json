@@ -1179,7 +1179,7 @@
       "bodyEnd": ". Nada se pierde. Nada necesita reescribirse.",
       "ctaPrimary": "Empieza gratis",
       "ctaSecondary": "Míralo en acción",
-      "socialProof": "Más de 2.400 fundadores, líderes de equipo y consultores confían en nosotros",
+      "socialProof": "Fundadores, líderes de equipo y consultores confían en nosotros",
       "card": {
         "tabSummary": "Resumen",
         "tabTranscript": "Transcripción",
@@ -1203,35 +1203,35 @@
       "quote1": "Solíamos pasar 30 minutos después de cada llamada con clientes redactando notas. Ahora Neural Summary lo hace ",
       "quoteStrong": "antes de que haya cerrado mi portátil.",
       "quote2": " Ha cambiado la forma en que opera todo nuestro equipo.",
-      "name": "Elena Varga",
-      "title": "Managing Partner · Varga Consulting"
+      "name": "Wouter Chompff",
+      "title": "Founder · One Man Agency"
     },
     "compatibility": {
       "tag": "Sin bots. Sin fricciones.",
       "headline1": "Funciona con todas las plataformas",
       "headline2": "que ya ",
       "headlineEm": "usas.",
-      "body": "Sin bots incómodos en tus reuniones. Sin instalaciones. Sin ventanas de permisos. Neural Summary funciona con cualquier grabación — en vivo o subida — desde cualquier plataforma.",
+      "body": "Sin bots incómodos en tus reuniones. Sin instalaciones. Sin ventanas de permisos. Neural Summary funciona con cualquier grabación, en vivo o subida, desde cualquier plataforma.",
       "platforms": {
         "meet": {
           "name": "Google Meet",
-          "desc": "Graba y sube automáticamente desde Meet"
+          "desc": "Sube tus grabaciones de Meet y obtén transcripciones al instante"
         },
         "teams": {
-          "name": "Microsoft Teams",
-          "desc": "Soporte completo de transcripción para grabaciones de Teams"
+          "name": "Microsoft Teams (Web)",
+          "desc": "Graba desde el cliente web de Teams y sube para procesar"
         },
         "zoom": {
           "name": "Zoom",
-          "desc": "Procesa automáticamente grabaciones desde la nube de Zoom"
+          "desc": "Sube tus grabaciones de Zoom o exportaciones de la nube"
         },
         "anyAudio": {
           "name": "Cualquier archivo de audio",
-          "desc": "Sube MP3, MP4, WAV — nosotros nos encargamos del resto"
+          "desc": "Sube MP3, MP4, WAV. Nosotros nos encargamos del resto."
         }
       },
       "noBotCallout": "No meeting bot required.",
-      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom — Neural Summary never joins your call as a participant. Your meetings stay yours."
+      "noBotCalloutBody": "A diferencia de Otter, Fireflies o Fathom, Neural Summary nunca se une a tu llamada como participante. Tus reuniones siguen siendo tuyas."
     },
     "outputs": {
       "tag": "Biblioteca de plantillas",
@@ -1239,7 +1239,7 @@
       "headline2": "Docenas de ",
       "headlineEm": "resultados",
       "headline3": " listos para usar.",
-      "body": "Cada reunión está llena de ideas, decisiones y contenido esperando ser utilizado. La biblioteca de plantillas de Neural Summary convierte cualquier grabación en recursos profesionales — para cada equipo, cada caso de uso.",
+      "body": "Cada reunión está llena de ideas, decisiones y contenido esperando ser utilizado. La biblioteca de plantillas de Neural Summary convierte cualquier grabación en recursos profesionales para cada equipo y cada caso de uso.",
       "categories": {
         "sales": {
           "title": "Ventas",
@@ -1272,15 +1272,15 @@
       "features": {
         "timestamps": {
           "title": "Respuestas con marcas de tiempo",
-          "desc": "Cada respuesta cita el momento exacto en la grabación — para que puedas verificar, compartir o ir directamente al contexto."
+          "desc": "Cada respuesta cita el momento exacto en la grabación, para que puedas verificar, compartir o ir directamente al contexto."
         },
         "search": {
           "title": "Busca en todas las reuniones",
-          "desc": "Consulta una sola llamada o todo tu historial de reuniones. Encuentra cualquier decisión, cualquier compromiso, cualquier nombre — al instante."
+          "desc": "Consulta una sola llamada o todo tu historial de reuniones. Encuentra cualquier decisión, cualquier compromiso, cualquier nombre. Al instante."
         },
         "languages": {
           "title": "Funciona en más de 99 idiomas",
-          "desc": "Pregunta en inglés. Tu reunión fue en francés. Neural Summary maneja ambos — y todo lo que hay entre medio."
+          "desc": "Pregunta en inglés. Tu reunión fue en francés. Neural Summary maneja ambos, y todo lo que hay entre medio."
         }
       },
       "chat": {
@@ -1305,12 +1305,12 @@
       "tag": "Diseñado para la precisión",
       "headline1": "Precisión de nivel empresarial.",
       "headlineEm": "Desde el primer momento.",
-      "body": "Neural Summary está construido sobre infraestructura de reconocimiento de voz de primera clase — la misma tecnología en la que confían miles de equipos empresariales en todo el mundo. Obtienes precisión de nivel profesional desde el primer día, sin ajustes, sin configuración y sin compromisos.",
+      "body": "Neural Summary está construido sobre infraestructura de reconocimiento de voz de primera clase. La misma tecnología en la que confían miles de equipos empresariales en todo el mundo. Obtienes precisión de nivel profesional desde el primer día, sin ajustes, sin configuración y sin compromisos.",
       "stats": {
         "languages": {
           "number": "99+",
           "label": "Idiomas soportados",
-          "desc": "Desde inglés y mandarín hasta árabe y neerlandés — tus reuniones globales están cubiertas, sin ninguna configuración."
+          "desc": "Desde inglés y mandarín hasta árabe y neerlandés. Tus reuniones globales están cubiertas, sin ninguna configuración."
         },
         "accuracy": {
           "number": "96%",
@@ -1342,25 +1342,25 @@
           "quote1": "Hago 12 llamadas con clientes a la semana. Antes de Neural Summary, perdía ",
           "quoteStrong": "3-4 horas solo en redactar informes post-llamada.",
           "quote2": " Ahora ese tiempo vuelve al trabajo real con clientes.",
-          "name": "Elena Varga",
-          "role": "Managing Partner · Varga Consulting",
-          "initials": "EV"
+          "name": "Wouter Chompff",
+          "role": "Founder · One Man Agency",
+          "initials": "WC"
         },
         "t2": {
           "quote1": "El chat de IA es lo que me convenció. Puedo preguntar 'qué decidimos sobre el modelo de precios en marzo' y ",
           "quoteStrong": "obtener la respuesta con marca de tiempo en 3 segundos.",
           "quote2": " Eso es memoria institucional.",
-          "name": "Marcus Reinholt",
-          "role": "Co-founder & CEO · Stackfield",
-          "initials": "MR"
+          "name": "Jurriaan Besorak",
+          "role": "Managing Director · NBM Finance",
+          "initials": "JB"
         },
         "t3": {
           "quote1": "Nuestro equipo de producto graba cada llamada de descubrimiento y las convierte en resúmenes de funcionalidad automáticamente. ",
           "quoteStrong": "Lanzamos un 40% más rápido el último trimestre",
           "quote2": " porque nadie está jugando al teléfono roto.",
-          "name": "Priya Chandra",
-          "role": "Head of Product · Lumen Labs",
-          "initials": "PC"
+          "name": "Sarah Martinez",
+          "role": "Head of Product · Xili Group",
+          "initials": "SM"
         }
       }
     },
@@ -1369,7 +1369,7 @@
       "headline1": "Seguridad de nivel empresarial.",
       "headlineEm": "Integrada,",
       "headline2": " no añadida después.",
-      "body": "Tus reuniones contienen información sensible de clientes, decisiones estratégicas y discusiones confidenciales. Tratamos tus datos con la misma seriedad que tú — con seguridad de nivel empresarial, cumplimiento del RGPD y propiedad total de los datos desde el primer día.",
+      "body": "Tus reuniones contienen información sensible de clientes, decisiones estratégicas y discusiones confidenciales. Tratamos tus datos con la misma seriedad que tú. Seguridad de nivel empresarial, cumplimiento del RGPD y propiedad total de los datos desde el primer día.",
       "badges": {
         "gdpr": {
           "title": "Cumple con el RGPD",

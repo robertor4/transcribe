@@ -75,6 +75,7 @@ export default async function LandingPage({
 
         {/* 2. Social Proof Bar */}
         <SocialProofBar
+          avatar="/assets/images/avatars/wouter-chompff.webp"
           translations={{
             stars: t('proofBar.stars'),
             quote1: t('proofBar.quote1'),
@@ -207,6 +208,7 @@ export default async function LandingPage({
                 name: t('testimonials.cards.t1.name'),
                 role: t('testimonials.cards.t1.role'),
                 initials: t('testimonials.cards.t1.initials'),
+                avatar: '/assets/images/avatars/wouter-chompff.webp',
               },
               t2: {
                 quote1: t('testimonials.cards.t2.quote1'),
@@ -215,6 +217,7 @@ export default async function LandingPage({
                 name: t('testimonials.cards.t2.name'),
                 role: t('testimonials.cards.t2.role'),
                 initials: t('testimonials.cards.t2.initials'),
+                avatar: '/assets/images/avatars/jurriaan-besorak.webp',
               },
               t3: {
                 quote1: t('testimonials.cards.t3.quote1'),
@@ -223,6 +226,7 @@ export default async function LandingPage({
                 name: t('testimonials.cards.t3.name'),
                 role: t('testimonials.cards.t3.role'),
                 initials: t('testimonials.cards.t3.initials'),
+                avatar: '/assets/images/avatars/avatar-sarah-martinez.webp',
               },
             },
           }}

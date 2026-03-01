@@ -1202,7 +1202,7 @@
       "bodyEnd": ". Nothing gets lost. Nothing needs to be rewritten.",
       "ctaPrimary": "Start for free",
       "ctaSecondary": "See it in action",
-      "socialProof": "Trusted by 2,400+ founders, team leads & consultants",
+      "socialProof": "Trusted by founders, team leads & consultants",
       "card": {
         "tabSummary": "Summary",
         "tabTranscript": "Transcript",
@@ -1226,35 +1226,35 @@
       "quote1": "We used to spend 30 minutes after every client call writing up notes. Now Neural Summary does it ",
       "quoteStrong": "before I've closed my laptop.",
       "quote2": " It's changed how our whole team operates.",
-      "name": "Elena Varga",
-      "title": "Managing Partner · Varga Consulting"
+      "name": "Wouter Chompff",
+      "title": "Founder · One Man Agency"
     },
     "compatibility": {
       "tag": "No bots. No friction.",
       "headline1": "Works with every platform",
       "headline2": "you already ",
       "headlineEm": "use.",
-      "body": "No bots sitting awkwardly in your meetings. No installs. No permissions popups. Neural Summary works with any recording — live or uploaded — from any platform.",
+      "body": "No bots sitting awkwardly in your meetings. No installs. No permissions popups. Neural Summary works with any recording, live or uploaded, from any platform.",
       "platforms": {
         "meet": {
           "name": "Google Meet",
-          "desc": "Record and auto-upload directly from Meet"
+          "desc": "Upload your Meet recordings and get instant transcripts"
         },
         "teams": {
-          "name": "Microsoft Teams",
-          "desc": "Full transcript support for Teams recordings"
+          "name": "Microsoft Teams (Web)",
+          "desc": "Record from the Teams web client and upload for processing"
         },
         "zoom": {
           "name": "Zoom",
-          "desc": "Auto-process recordings from Zoom cloud"
+          "desc": "Upload your Zoom recordings or cloud exports"
         },
         "anyAudio": {
           "name": "Any audio file",
-          "desc": "Upload MP3, MP4, WAV — we handle the rest"
+          "desc": "Upload MP3, MP4, WAV. We handle the rest."
         }
       },
       "noBotCallout": "No meeting bot required.",
-      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom — Neural Summary never joins your call as a participant. Your meetings stay yours."
+      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom, Neural Summary never joins your call as a participant. Your meetings stay yours."
     },
     "outputs": {
       "tag": "Template library",
@@ -1262,7 +1262,7 @@
       "headline2": "Dozens of ",
       "headlineEm": "ready-to-use",
       "headline3": " outputs.",
-      "body": "Every meeting is full of ideas, decisions, and content waiting to be used. Neural Summary's template library turns any recording into professional assets — for every team, every use case.",
+      "body": "Every meeting is full of ideas, decisions, and content waiting to be used. Neural Summary's template library turns any recording into professional assets for every team and every use case.",
       "categories": {
         "sales": {
           "title": "Sales",
@@ -1295,15 +1295,15 @@
       "features": {
         "timestamps": {
           "title": "Answers with timestamps",
-          "desc": "Every response cites the exact moment in the recording — so you can verify, share, or jump straight to the context."
+          "desc": "Every response cites the exact moment in the recording, so you can verify, share, or jump straight to the context."
         },
         "search": {
           "title": "Search across all meetings",
-          "desc": "Query a single call or your entire meeting history. Find any decision, any commitment, any name — instantly."
+          "desc": "Query a single call or your entire meeting history. Find any decision, any commitment, any name. Instantly."
         },
         "languages": {
           "title": "Works in 99+ languages",
-          "desc": "Ask in English. Your meeting was in French. Neural Summary handles both — and everything in between."
+          "desc": "Ask in English. Your meeting was in French. Neural Summary handles both, and everything in between."
         }
       },
       "chat": {
@@ -1328,12 +1328,12 @@
       "tag": "Built for accuracy",
       "headline1": "Enterprise-grade accuracy.",
       "headlineEm": "Out of the box.",
-      "body": "Neural Summary is built on best-in-class speech recognition infrastructure — the same technology trusted by thousands of enterprise teams worldwide. You get production-grade accuracy from day one, with no tuning, no setup, and no compromises.",
+      "body": "Neural Summary is built on best-in-class speech recognition infrastructure. The same technology trusted by thousands of enterprise teams worldwide. You get production-grade accuracy from day one, with no tuning, no setup, and no compromises.",
       "stats": {
         "languages": {
           "number": "99+",
           "label": "Languages supported",
-          "desc": "From English and Mandarin to Arabic and Dutch — your global meetings are covered, without any setup."
+          "desc": "From English and Mandarin to Arabic and Dutch. Your global meetings are covered, without any setup."
         },
         "accuracy": {
           "number": "96%",
@@ -1365,25 +1365,25 @@
           "quote1": "I run 12 client calls a week. Before Neural Summary, I was losing ",
           "quoteStrong": "3–4 hours just on post-call writeups.",
           "quote2": " Now that time goes back into actual client work.",
-          "name": "Elena Varga",
-          "role": "Managing Partner · Varga Consulting",
-          "initials": "EV"
+          "name": "Wouter Chompff",
+          "role": "Founder · One Man Agency",
+          "initials": "WC"
         },
         "t2": {
           "quote1": "The AI chat is what sold me. I can ask 'what did we decide about the pricing model in March' and ",
           "quoteStrong": "get the answer with a timestamp in 3 seconds.",
           "quote2": " That's institutional memory.",
-          "name": "Marcus Reinholt",
-          "role": "Co-founder & CEO · Stackfield",
-          "initials": "MR"
+          "name": "Jurriaan Besorak",
+          "role": "Managing Director · NBM Finance",
+          "initials": "JB"
         },
         "t3": {
           "quote1": "Our product team records every discovery call and turns them into feature briefs automatically. ",
           "quoteStrong": "We shipped 40% faster last quarter",
           "quote2": " because nobody's playing telephone anymore.",
-          "name": "Priya Chandra",
-          "role": "Head of Product · Lumen Labs",
-          "initials": "PC"
+          "name": "Sarah Martinez",
+          "role": "Head of Product · Xili Group",
+          "initials": "SM"
         }
       }
     },
@@ -1392,7 +1392,7 @@
       "headline1": "Client-grade security.",
       "headlineEm": "Built in,",
       "headline2": " not bolted on.",
-      "body": "Your meetings contain sensitive client information, strategic decisions, and confidential discussions. We treat your data with the same seriousness you do — with enterprise-grade security, GDPR compliance, and full data ownership from day one.",
+      "body": "Your meetings contain sensitive client information, strategic decisions, and confidential discussions. We treat your data with the same seriousness you do. Enterprise-grade security, GDPR compliance, and full data ownership from day one.",
       "badges": {
         "gdpr": {
           "title": "GDPR Compliant",

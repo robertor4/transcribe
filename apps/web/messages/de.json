@@ -1179,7 +1179,7 @@
       "bodyEnd": ". Nichts geht verloren. Nichts muss neu geschrieben werden.",
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "In Aktion sehen",
-      "socialProof": "Vertraut von 2.400+ Gründern, Teamleitern & Beratern",
+      "socialProof": "Vertraut von Gründern, Teamleitern & Beratern",
       "card": {
         "tabSummary": "Zusammenfassung",
         "tabTranscript": "Transkript",
@@ -1203,35 +1203,35 @@
       "quote1": "Wir haben nach jedem Kundengespräch 30 Minuten mit Notizen verbracht. Jetzt erledigt Neural Summary das ",
       "quoteStrong": "bevor ich meinen Laptop zugeklappt habe.",
       "quote2": " Es hat die Arbeitsweise unseres gesamten Teams verändert.",
-      "name": "Elena Varga",
-      "title": "Managing Partner · Varga Consulting"
+      "name": "Wouter Chompff",
+      "title": "Founder · One Man Agency"
     },
     "compatibility": {
       "tag": "Keine Bots. Keine Reibung.",
       "headline1": "Funktioniert mit jeder Plattform,",
       "headline2": "die du bereits ",
       "headlineEm": "nutzt.",
-      "body": "Keine Bots, die unangenehm in deinen Meetings sitzen. Keine Installationen. Keine Berechtigungs-Popups. Neural Summary funktioniert mit jeder Aufnahme — live oder hochgeladen — von jeder Plattform.",
+      "body": "Keine Bots, die unangenehm in deinen Meetings sitzen. Keine Installationen. Keine Berechtigungs-Popups. Neural Summary funktioniert mit jeder Aufnahme, live oder hochgeladen, von jeder Plattform.",
       "platforms": {
         "meet": {
           "name": "Google Meet",
-          "desc": "Direkt aus Meet aufnehmen und automatisch hochladen"
+          "desc": "Lade deine Meet-Aufnahmen hoch und erhalte sofort Transkripte"
         },
         "teams": {
-          "name": "Microsoft Teams",
-          "desc": "Vollständige Transkript-Unterstützung für Teams-Aufnahmen"
+          "name": "Microsoft Teams (Web)",
+          "desc": "Nimm über den Teams-Webclient auf und lade zur Verarbeitung hoch"
         },
         "zoom": {
           "name": "Zoom",
-          "desc": "Aufnahmen aus der Zoom-Cloud automatisch verarbeiten"
+          "desc": "Lade deine Zoom-Aufnahmen oder Cloud-Exporte hoch"
         },
         "anyAudio": {
           "name": "Jede Audiodatei",
-          "desc": "MP3, MP4, WAV hochladen — wir erledigen den Rest"
+          "desc": "MP3, MP4, WAV hochladen. Wir erledigen den Rest."
         }
       },
       "noBotCallout": "No meeting bot required.",
-      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom — Neural Summary never joins your call as a participant. Your meetings stay yours."
+      "noBotCalloutBody": "Anders als Otter, Fireflies oder Fathom nimmt Neural Summary nie als Teilnehmer an deinem Call teil. Deine Meetings bleiben deine."
     },
     "outputs": {
       "tag": "Vorlagen-Bibliothek",
@@ -1239,7 +1239,7 @@
       "headline2": "Dutzende ",
       "headlineEm": "sofort einsetzbare",
       "headline3": " Ergebnisse.",
-      "body": "Jedes Meeting steckt voller Ideen, Entscheidungen und Inhalte, die darauf warten, genutzt zu werden. Die Vorlagen-Bibliothek von Neural Summary verwandelt jede Aufnahme in professionelle Assets — für jedes Team, jeden Anwendungsfall.",
+      "body": "Jedes Meeting steckt voller Ideen, Entscheidungen und Inhalte, die darauf warten, genutzt zu werden. Die Vorlagen-Bibliothek von Neural Summary verwandelt jede Aufnahme in professionelle Assets für jedes Team und jeden Anwendungsfall.",
       "categories": {
         "sales": {
           "title": "Vertrieb",
@@ -1272,15 +1272,15 @@
       "features": {
         "timestamps": {
           "title": "Antworten mit Zeitstempeln",
-          "desc": "Jede Antwort verweist auf den exakten Moment in der Aufnahme — zum Überprüfen, Teilen oder direkten Einsteigen in den Kontext."
+          "desc": "Jede Antwort verweist auf den exakten Moment in der Aufnahme, zum Überprüfen, Teilen oder direkten Einsteigen in den Kontext."
         },
         "search": {
           "title": "Über alle Meetings hinweg suchen",
-          "desc": "Durchsuche ein einzelnes Gespräch oder deine gesamte Meeting-Historie. Finde jede Entscheidung, jede Zusage, jeden Namen — sofort."
+          "desc": "Durchsuche ein einzelnes Gespräch oder deine gesamte Meeting-Historie. Finde jede Entscheidung, jede Zusage, jeden Namen. Sofort."
         },
         "languages": {
           "title": "Funktioniert in 99+ Sprachen",
-          "desc": "Frag auf Englisch. Dein Meeting war auf Französisch. Neural Summary beherrscht beides — und alles dazwischen."
+          "desc": "Frag auf Englisch. Dein Meeting war auf Französisch. Neural Summary beherrscht beides, und alles dazwischen."
         }
       },
       "chat": {
@@ -1305,12 +1305,12 @@
       "tag": "Für Genauigkeit gebaut",
       "headline1": "Enterprise-Genauigkeit.",
       "headlineEm": "Sofort einsatzbereit.",
-      "body": "Neural Summary basiert auf erstklassiger Spracherkennungs-Infrastruktur — dieselbe Technologie, der tausende Enterprise-Teams weltweit vertrauen. Du bekommst produktionsreife Genauigkeit vom ersten Tag an, ohne Tuning, ohne Setup, ohne Kompromisse.",
+      "body": "Neural Summary basiert auf erstklassiger Spracherkennungs-Infrastruktur. Dieselbe Technologie, der tausende Enterprise-Teams weltweit vertrauen. Du bekommst produktionsreife Genauigkeit vom ersten Tag an, ohne Tuning, ohne Setup, ohne Kompromisse.",
       "stats": {
         "languages": {
           "number": "99+",
           "label": "Unterstützte Sprachen",
-          "desc": "Von Englisch und Mandarin bis Arabisch und Niederländisch — deine globalen Meetings sind abgedeckt, ohne jegliches Setup."
+          "desc": "Von Englisch und Mandarin bis Arabisch und Niederländisch. Deine globalen Meetings sind abgedeckt, ohne jegliches Setup."
         },
         "accuracy": {
           "number": "96%",
@@ -1342,25 +1342,25 @@
           "quote1": "Ich führe 12 Kundengespräche pro Woche. Vor Neural Summary habe ich ",
           "quoteStrong": "3–4 Stunden nur mit Nachbereitungen verloren.",
           "quote2": " Jetzt fließt diese Zeit in echte Kundenarbeit zurück.",
-          "name": "Elena Varga",
-          "role": "Managing Partner · Varga Consulting",
-          "initials": "EV"
+          "name": "Wouter Chompff",
+          "role": "Founder · One Man Agency",
+          "initials": "WC"
         },
         "t2": {
           "quote1": "Der KI-Chat hat mich überzeugt. Ich kann fragen ‚was haben wir im März zum Preismodell entschieden' und ",
           "quoteStrong": "bekomme die Antwort mit Zeitstempel in 3 Sekunden.",
           "quote2": " Das ist institutionelles Wissen.",
-          "name": "Marcus Reinholt",
-          "role": "Co-founder & CEO · Stackfield",
-          "initials": "MR"
+          "name": "Jurriaan Besorak",
+          "role": "Managing Director · NBM Finance",
+          "initials": "JB"
         },
         "t3": {
           "quote1": "Unser Produktteam nimmt jedes Discovery-Gespräch auf und verwandelt es automatisch in Feature-Briefs. ",
           "quoteStrong": "Wir haben letztes Quartal 40 % schneller geliefert,",
           "quote2": " weil niemand mehr Stille Post spielt.",
-          "name": "Priya Chandra",
-          "role": "Head of Product · Lumen Labs",
-          "initials": "PC"
+          "name": "Sarah Martinez",
+          "role": "Head of Product · Xili Group",
+          "initials": "SM"
         }
       }
     },
@@ -1369,7 +1369,7 @@
       "headline1": "Sicherheit auf Kundenniveau.",
       "headlineEm": "Eingebaut,",
       "headline2": " nicht nachgerüstet.",
-      "body": "Deine Meetings enthalten sensible Kundeninformationen, strategische Entscheidungen und vertrauliche Gespräche. Wir behandeln deine Daten mit derselben Ernsthaftigkeit wie du — mit Enterprise-Sicherheit, DSGVO-Konformität und voller Datenhoheit vom ersten Tag an.",
+      "body": "Deine Meetings enthalten sensible Kundeninformationen, strategische Entscheidungen und vertrauliche Gespräche. Wir behandeln deine Daten mit derselben Ernsthaftigkeit wie du. Enterprise-Sicherheit, DSGVO-Konformität und volle Datenhoheit vom ersten Tag an.",
       "badges": {
         "gdpr": {
           "title": "DSGVO-konform",

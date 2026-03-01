@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
 
 interface TestimonialCard {
@@ -7,6 +8,7 @@ interface TestimonialCard {
   name: string;
   role: string;
   initials: string;
+  avatar?: string;
 }
 
 interface TestimonialsSectionTranslations {
@@ -54,9 +56,19 @@ export function TestimonialsSection({ translations: t }: TestimonialsSectionProp
                 &ldquo;{card.quote1}<strong className="text-white not-italic">{card.quoteStrong}</strong>{card.quote2}&rdquo;
               </p>
               <div className="flex items-center gap-3">
-                <div className={`w-[38px] h-[38px] rounded-full flex items-center justify-center text-sm font-bold border shrink-0 ${avatarColors[i]}`}>
-                  {card.initials}
-                </div>
+                {card.avatar ? (
+                  <Image
+                    src={card.avatar}
+                    alt={card.name}
+                    width={38}
+                    height={38}
+                    className="rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className={`w-[38px] h-[38px] rounded-full flex items-center justify-center text-sm font-bold border shrink-0 ${avatarColors[i]}`}>
+                    {card.initials}
+                  </div>
+                )}
                 <div>
                   <div className="text-sm font-semibold text-white">{card.name}</div>
                   <div className="text-[11px] text-white/30 font-[family-name:var(--font-dm-mono)]">{card.role}</div>

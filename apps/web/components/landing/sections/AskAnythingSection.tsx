@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Target, Search, Globe } from 'lucide-react';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
 import { ChatMock } from './ChatMock';
@@ -75,7 +76,21 @@ export function AskAnythingSection({ translations: t }: AskAnythingSectionProps)
           </div>
 
           {/* Right column — chat mock */}
-          <div>
+          <div className="relative">
+            <Image
+              src="/assets/symbols/ai-icon-brand-color.svg"
+              alt=""
+              width={40}
+              height={40}
+              className="absolute -top-5 -right-3 opacity-80 z-10"
+            />
+            <Image
+              src="/assets/symbols/ai-icon-white.svg"
+              alt=""
+              width={24}
+              height={24}
+              className="absolute -bottom-3 -left-3 opacity-60 z-10"
+            />
             <ChatMock translations={t.chat} />
           </div>
         </div>

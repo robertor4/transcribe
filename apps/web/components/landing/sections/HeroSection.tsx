@@ -3,6 +3,7 @@
 import { HeroHeadline } from '@/components/landing/hero/HeroHeadline';
 import { HeroCTAs } from '@/components/landing/hero/HeroCTAs';
 import { HeroTranscriptCard } from './HeroTranscriptCard';
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface HeroSectionTranslations {
@@ -89,13 +90,20 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
             <HeroHeadline delay={480}>
               <div className="flex items-center gap-4 mt-12 text-[13px] text-white/30">
                 <div className="flex">
-                  {['bg-[#5b84ff]', 'bg-[#48c78e]', 'bg-[#e86cff]', 'bg-[#ff9f43]'].map((bg, i) => (
-                    <div
+                  {[
+                    '/assets/images/avatars/roberto-ramadhin.webp',
+                    '/assets/images/avatars/avatar-emily-chen.webp',
+                    '/assets/images/avatars/wouter-chompff.webp',
+                    '/assets/images/avatars/jurriaan-besorak.webp',
+                  ].map((src, i) => (
+                    <Image
                       key={i}
-                      className={`w-7 h-7 rounded-full border-2 border-[#22184C] ${bg} text-[10px] flex items-center justify-center font-semibold ${i > 0 ? '-ml-2' : ''}`}
-                    >
-                      {['S', 'M', 'P', 'R'][i]}
-                    </div>
+                      src={src}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className={`w-7 h-7 rounded-full border-2 border-[#22184C] object-cover ${i > 0 ? '-ml-2' : ''}`}
+                    />
                   ))}
                 </div>
                 {t.socialProof}

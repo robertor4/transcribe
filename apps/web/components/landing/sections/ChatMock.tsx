@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 interface ChatMockTranslations {
   header: string;
   headerSub: string;
@@ -49,7 +51,9 @@ export function ChatMock({ translations: t }: ChatMockProps) {
 
       {/* AI reply 1 */}
       <div className="flex gap-2 mb-2.5">
-        <div className="w-[22px] h-[22px] bg-gradient-to-br from-[#8D6AFA] to-[#14D0DC] rounded-full shrink-0 mt-0.5" />
+        <div className="w-[22px] h-[22px] bg-gradient-to-br from-[#8D6AFA] to-[#14D0DC] rounded-full shrink-0 mt-0.5 flex items-center justify-center">
+              <Image src="/assets/symbols/ai-icon-white.svg" alt="" width={13} height={13} />
+            </div>
         <div className="bg-white/5 border border-white/[0.08] rounded-sm rounded-tr-xl rounded-br-xl rounded-bl-xl px-3 py-2 text-xs text-white/65 leading-relaxed flex-1">
           {t.aiReply1a}<TimestampChip>{t.aiReply1chip1}</TimestampChip>
           {t.aiReply1b}<TimestampChip>{t.aiReply1chip2}</TimestampChip>
@@ -66,7 +70,9 @@ export function ChatMock({ translations: t }: ChatMockProps) {
 
       {/* AI reply 2 */}
       <div className="flex gap-2 mb-2.5">
-        <div className="w-[22px] h-[22px] bg-gradient-to-br from-[#8D6AFA] to-[#14D0DC] rounded-full shrink-0 mt-0.5" />
+        <div className="w-[22px] h-[22px] bg-gradient-to-br from-[#8D6AFA] to-[#14D0DC] rounded-full shrink-0 mt-0.5 flex items-center justify-center">
+              <Image src="/assets/symbols/ai-icon-white.svg" alt="" width={13} height={13} />
+            </div>
         <div className="bg-white/5 border border-white/[0.08] rounded-sm rounded-tr-xl rounded-br-xl rounded-bl-xl px-3 py-2 text-xs text-white/65 leading-relaxed flex-1">
           {t.aiReply2a}<TimestampChip>{t.aiReply2chip1}</TimestampChip>
           {t.aiReply2b}<TimestampChip>{t.aiReply2chip2}</TimestampChip>

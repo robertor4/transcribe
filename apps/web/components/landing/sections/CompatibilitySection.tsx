@@ -1,4 +1,5 @@
-import { Video, Monitor, CircleDot, Mic } from 'lucide-react';
+import Image from 'next/image';
+import { Mic } from 'lucide-react';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
 
 interface CompatibilitySectionTranslations {
@@ -19,12 +20,12 @@ interface CompatibilitySectionProps {
   translations: CompatibilitySectionTranslations;
 }
 
-const platformIcons = [
-  { key: 'meet' as const, Icon: Video, color: 'text-[#14D0DC]' },
-  { key: 'teams' as const, Icon: Monitor, color: 'text-[#8D6AFA]' },
-  { key: 'zoom' as const, Icon: CircleDot, color: 'text-[#5b84ff]' },
-  { key: 'anyAudio' as const, Icon: Mic, color: 'text-[#48c78e]' },
-];
+const platforms = [
+  { key: 'meet' as const, logo: '/assets/images/logos/platforms/google-meet.svg' },
+  { key: 'teams' as const, logo: '/assets/images/logos/platforms/microsoft-teams.svg' },
+  { key: 'zoom' as const, logo: '/assets/images/logos/platforms/zoom.svg' },
+  { key: 'anyAudio' as const, logo: null },
+] as const;
 
 export function CompatibilitySection({ translations: t }: CompatibilitySectionProps) {
   return (
@@ -41,12 +42,16 @@ export function CompatibilitySection({ translations: t }: CompatibilitySectionPr
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {platformIcons.map(({ key, Icon, color }) => (
+          {platforms.map(({ key, logo }) => (
             <div
               key={key}
               className="bg-white/[0.08] border border-white/[0.08] rounded-[14px] px-5 py-7 flex flex-col items-center gap-3 landing-card-hover"
             >
-              <Icon className={`w-8 h-8 ${color}`} strokeWidth={1.5} />
+              {logo ? (
+                <Image src={logo} alt={t.platforms[key].name} width={32} height={32} />
+              ) : (
+                <Mic className="w-8 h-8 text-[#48c78e]" strokeWidth={1.5} />
+              )}
               <div className="text-[13px] font-medium text-white">{t.platforms[key].name}</div>
               <div className="text-[11px] text-white/30 text-center leading-snug">{t.platforms[key].desc}</div>
             </div>

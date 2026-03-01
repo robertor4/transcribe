@@ -1201,7 +1201,7 @@
       "bodyEnd": ". Niets gaat verloren. Niets hoeft herschreven te worden.",
       "ctaPrimary": "Gratis beginnen",
       "ctaSecondary": "Bekijk het in actie",
-      "socialProof": "Vertrouwd door 2.400+ oprichters, teamleiders & consultants",
+      "socialProof": "Vertrouwd door oprichters, teamleiders & consultants",
       "card": {
         "tabSummary": "Samenvatting",
         "tabTranscript": "Transcript",
@@ -1225,35 +1225,35 @@
       "quote1": "We besteedden 30 minuten na elk klantgesprek aan het uitschrijven van notities. Nu doet Neural Summary het ",
       "quoteStrong": "voordat ik mijn laptop heb dichtgeklapt.",
       "quote2": " Het heeft de manier waarop ons hele team werkt veranderd.",
-      "name": "Elena Varga",
-      "title": "Managing Partner · Varga Consulting"
+      "name": "Wouter Chompff",
+      "title": "Founder · One Man Agency"
     },
     "compatibility": {
       "tag": "Geen bots. Geen gedoe.",
       "headline1": "Werkt met elk platform",
       "headline2": "dat je al ",
       "headlineEm": "gebruikt.",
-      "body": "Geen bots die ongemakkelijk in je meetings zitten. Geen installaties. Geen toestemmingspopups. Neural Summary werkt met elke opname — live of geüpload — van elk platform.",
+      "body": "Geen bots die ongemakkelijk in je meetings zitten. Geen installaties. Geen toestemmingspopups. Neural Summary werkt met elke opname, live of geüpload, van elk platform.",
       "platforms": {
         "meet": {
           "name": "Google Meet",
-          "desc": "Neem op en upload automatisch vanuit Meet"
+          "desc": "Upload je Meet-opnames en krijg direct transcripten"
         },
         "teams": {
-          "name": "Microsoft Teams",
-          "desc": "Volledige transcriptondersteuning voor Teams-opnames"
+          "name": "Microsoft Teams (Web)",
+          "desc": "Neem op via de Teams-webclient en upload voor verwerking"
         },
         "zoom": {
           "name": "Zoom",
-          "desc": "Verwerk opnames automatisch vanuit Zoom cloud"
+          "desc": "Upload je Zoom-opnames of cloud-exports"
         },
         "anyAudio": {
           "name": "Elk audiobestand",
-          "desc": "Upload MP3, MP4, WAV — wij doen de rest"
+          "desc": "Upload MP3, MP4, WAV. Wij doen de rest."
         }
       },
       "noBotCallout": "No meeting bot required.",
-      "noBotCalloutBody": "Unlike Otter, Fireflies, or Fathom — Neural Summary never joins your call as a participant. Your meetings stay yours."
+      "noBotCalloutBody": "Anders dan Otter, Fireflies of Fathom neemt Neural Summary nooit deel aan je call als deelnemer. Je meetings blijven van jou."
     },
     "outputs": {
       "tag": "Templatebibliotheek",
@@ -1261,7 +1261,7 @@
       "headline2": "Tientallen ",
       "headlineEm": "kant-en-klare",
       "headline3": " resultaten.",
-      "body": "Elke meeting zit vol ideeën, beslissingen en content die wachten om gebruikt te worden. De templatebibliotheek van Neural Summary maakt van elke opname professionele documenten — voor elk team, elke toepassing.",
+      "body": "Elke meeting zit vol ideeën, beslissingen en content die wachten om gebruikt te worden. De templatebibliotheek van Neural Summary maakt van elke opname professionele documenten voor elk team en elke toepassing.",
       "categories": {
         "sales": {
           "title": "Sales",
@@ -1294,15 +1294,15 @@
       "features": {
         "timestamps": {
           "title": "Antwoorden met tijdstempels",
-          "desc": "Elk antwoord verwijst naar het exacte moment in de opname — zodat je kunt verifiëren, delen of direct naar de context kunt springen."
+          "desc": "Elk antwoord verwijst naar het exacte moment in de opname, zodat je kunt verifiëren, delen of direct naar de context kunt springen."
         },
         "search": {
           "title": "Zoek door alle meetings",
-          "desc": "Doorzoek één gesprek of je volledige meetinggeschiedenis. Vind elke beslissing, elke toezegging, elke naam — direct."
+          "desc": "Doorzoek één gesprek of je volledige meetinggeschiedenis. Vind elke beslissing, elke toezegging, elke naam. Direct."
         },
         "languages": {
           "title": "Werkt in 99+ talen",
-          "desc": "Vraag in het Engels. Je meeting was in het Frans. Neural Summary verwerkt beide — en alles daartussenin."
+          "desc": "Vraag in het Engels. Je meeting was in het Frans. Neural Summary verwerkt beide, en alles daartussenin."
         }
       },
       "chat": {
@@ -1327,12 +1327,12 @@
       "tag": "Gebouwd voor nauwkeurigheid",
       "headline1": "Enterprise-niveau nauwkeurigheid.",
       "headlineEm": "Standaard inbegrepen.",
-      "body": "Neural Summary is gebouwd op de beste spraakherkenningstechnologie — dezelfde technologie die wordt vertrouwd door duizenden enterprise-teams wereldwijd. Je krijgt productiekwaliteit vanaf dag één, zonder afstemming, zonder configuratie en zonder compromissen.",
+      "body": "Neural Summary is gebouwd op de beste spraakherkenningstechnologie. Dezelfde technologie die wordt vertrouwd door duizenden enterprise-teams wereldwijd. Je krijgt productiekwaliteit vanaf dag één, zonder afstemming, zonder configuratie en zonder compromissen.",
       "stats": {
         "languages": {
           "number": "99+",
           "label": "Ondersteunde talen",
-          "desc": "Van Engels en Mandarijn tot Arabisch en Nederlands — je internationale meetings zijn gedekt, zonder enige configuratie."
+          "desc": "Van Engels en Mandarijn tot Arabisch en Nederlands. Je internationale meetings zijn gedekt, zonder enige configuratie."
         },
         "accuracy": {
           "number": "96%",
@@ -1364,25 +1364,25 @@
           "quote1": "Ik heb 12 klantgesprekken per week. Vóór Neural Summary was ik ",
           "quoteStrong": "3–4 uur kwijt aan alleen het uitschrijven na gesprekken.",
           "quote2": " Nu gaat die tijd terug naar echt klantwerk.",
-          "name": "Elena Varga",
-          "role": "Managing Partner · Varga Consulting",
-          "initials": "EV"
+          "name": "Wouter Chompff",
+          "role": "Founder · One Man Agency",
+          "initials": "WC"
         },
         "t2": {
           "quote1": "De AI-chat overtuigde me. Ik kan vragen 'wat hebben we in maart besloten over het prijsmodel' en ",
           "quoteStrong": "krijg het antwoord met een tijdstempel in 3 seconden.",
           "quote2": " Dat is institutioneel geheugen.",
-          "name": "Marcus Reinholt",
-          "role": "Co-founder & CEO · Stackfield",
-          "initials": "MR"
+          "name": "Jurriaan Besorak",
+          "role": "Managing Director · NBM Finance",
+          "initials": "JB"
         },
         "t3": {
           "quote1": "Ons productteam neemt elk discovery-gesprek op en maakt er automatisch feature-briefs van. ",
           "quoteStrong": "We leverden vorig kwartaal 40% sneller",
           "quote2": " omdat niemand meer over-de-muur-communicatie doet.",
-          "name": "Priya Chandra",
-          "role": "Head of Product · Lumen Labs",
-          "initials": "PC"
+          "name": "Sarah Martinez",
+          "role": "Head of Product · Xili Group",
+          "initials": "SM"
         }
       }
     },
@@ -1391,7 +1391,7 @@
       "headline1": "Beveiliging op klantniveau.",
       "headlineEm": "Standaard ingebouwd,",
       "headline2": " niet achteraf toegevoegd.",
-      "body": "Je meetings bevatten gevoelige klantinformatie, strategische beslissingen en vertrouwelijke gesprekken. Wij behandelen je data met dezelfde zorgvuldigheid als jij — met enterprise-niveau beveiliging, AVG-compliance en volledig data-eigenaarschap vanaf dag één.",
+      "body": "Je meetings bevatten gevoelige klantinformatie, strategische beslissingen en vertrouwelijke gesprekken. Wij behandelen je data met dezelfde zorgvuldigheid als jij. Enterprise-niveau beveiliging, AVG-compliance en volledig data-eigenaarschap vanaf dag één.",
       "badges": {
         "gdpr": {
           "title": "AVG-conform",

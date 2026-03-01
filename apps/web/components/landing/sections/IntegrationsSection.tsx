@@ -1,4 +1,4 @@
-import { StickyNote, MessageSquare, FolderOpen, Hexagon, Mail, FileText, Database, Link2 } from 'lucide-react';
+import Image from 'next/image';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
 
 interface IntegrationsSectionTranslations {
@@ -14,16 +14,28 @@ interface IntegrationsSectionProps {
   translations: IntegrationsSectionTranslations;
 }
 
-const iconMap: Record<string, typeof StickyNote> = {
-  'Notion': StickyNote,
-  'Slack': MessageSquare,
-  'Google Drive': FolderOpen,
-  'HubSpot': Hexagon,
-  'Gmail': Mail,
-  'Google Docs': FileText,
-  'Salesforce': Database,
-  'Zapier': Link2,
+const logoMap: Record<string, string> = {
+  'Notion': '/assets/images/logos/integrations/notion.svg',
+  'Slack': '/assets/images/logos/integrations/slack.svg',
+  'Google Drive': '/assets/images/logos/integrations/google-drive.svg',
+  'HubSpot': '/assets/images/logos/integrations/hubspot.svg',
+  'Gmail': '/assets/images/logos/integrations/gmail.svg',
+  'Google Docs': '/assets/images/logos/integrations/google-docs.svg',
+  'Salesforce': '/assets/images/logos/integrations/salesforce.svg',
+  'Zapier': '/assets/images/logos/integrations/zapier.svg',
 };
+
+function LogoCard({ name }: { name: string }) {
+  const logo = logoMap[name];
+  return (
+    <div className="bg-white/[0.08] border border-white/[0.08] rounded-xl px-6 py-4 flex items-center gap-2.5 text-[13px] font-medium text-white shrink-0 landing-card-hover">
+      {logo && (
+        <Image src={logo} alt={name} width={20} height={20} />
+      )}
+      {name}
+    </div>
+  );
+}
 
 export function IntegrationsSection({ translations: t }: IntegrationsSectionProps) {
   const logos = t.logos.split(',');
@@ -37,23 +49,25 @@ export function IntegrationsSection({ translations: t }: IntegrationsSectionProp
           {t.headline1}<br />{t.headline2}<em>{t.headlineEm}</em>
         </h2>
 
-        <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-12">
+        <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto">
           {t.body}
         </p>
+      </div>
 
-        <div className="flex flex-wrap justify-center gap-3">
-          {logos.map((name) => {
-            const Icon = iconMap[name] || Link2;
-            return (
-              <div
-                key={name}
-                className="bg-white/[0.08] border border-white/[0.08] rounded-xl px-6 py-4 flex items-center gap-2.5 text-[13px] font-medium text-white landing-card-hover"
-              >
-                <Icon className="w-5 h-5 text-white/60" strokeWidth={1.5} />
-                {name}
-              </div>
-            );
-          })}
+      {/* Marquee carousel */}
+      <div className="relative overflow-hidden mt-12">
+        {/* Edge fades */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#1a1440] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#1a1440] to-transparent z-10 pointer-events-none" />
+
+        <div className="flex gap-3 w-max animate-marquee-snap">
+          {logos.map((name) => (
+            <LogoCard key={name} name={name} />
+          ))}
+          {/* Duplicate for seamless loop */}
+          {logos.map((name) => (
+            <LogoCard key={`dup-${name}`} name={name} />
+          ))}
         </div>
       </div>
     </section>

@@ -1082,6 +1082,16 @@ h1, h2, h3, h4, h5, h6 {
   animation: landingPulse 2s infinite;
 }
 
+/* Landing integrations marquee — snappy one-by-one scroll */
+@keyframes marquee-snap {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee-snap {
+  animation: marquee-snap 20s steps(8) infinite;
+}
+
 /* Landing card hover lift */
 .landing-card-hover {
   transition: all 0.25s ease;
@@ -1133,7 +1143,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Disable landing animations when reduced motion is preferred */
 @media (prefers-reduced-motion: reduce) {
-  .animate-landing-pulse {
+  .animate-landing-pulse,
+  .animate-marquee-snap {
     animation: none !important;
   }
   .landing-card-hover,
