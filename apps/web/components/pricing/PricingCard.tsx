@@ -98,11 +98,11 @@ export function PricingCard({
   return (
     <div
       className={`
-        relative bg-white rounded-2xl p-8 transition-all duration-300
+        relative rounded-2xl p-8 transition-all duration-300
         ${
           featured
-            ? 'border-2 border-[#8D6AFA] shadow-2xl md:scale-105 ring-2 ring-[#8D6AFA]/10'
-            : 'border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
+            ? 'border-2 border-[rgba(141,106,250,0.5)] bg-white/[0.12] shadow-[0_8px_32px_rgba(141,106,250,0.15)] md:scale-105'
+            : 'border border-white/[0.08] bg-white/[0.08] hover:bg-white/[0.12]'
         }
       `}
     >
@@ -122,35 +122,35 @@ export function PricingCard({
       )}
 
       <div className="mb-8 space-y-3">
-        <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+        <h3 className="text-2xl font-bold text-white tracking-tight">
           {title}
         </h3>
-        <p className="text-gray-700 leading-relaxed">{description}</p>
+        <p className="text-white/60 leading-relaxed">{description}</p>
       </div>
 
       <div className="mb-8">
         {customPriceLabel ? (
           // Custom price label for enterprise
           <div className="flex items-baseline">
-            <span className="text-3xl font-semibold text-gray-900 tracking-tight">
+            <span className="text-3xl font-semibold text-white tracking-tight">
               {customPriceLabel}
             </span>
           </div>
         ) : (
           // Regular price display
           <div className="flex items-baseline">
-            <span className="text-5xl font-light text-gray-900 tracking-tight">
+            <span className="text-5xl font-light text-white tracking-tight">
               {formattedPrice}
             </span>
             {priceUnit && (
-              <span className="text-gray-700 ml-2 font-light">
+              <span className="text-white/40 ml-2 font-light">
                 {priceUnit}
               </span>
             )}
           </div>
         )}
         {billingNote && (
-          <p className="text-sm text-gray-600 mt-2 font-light">
+          <p className="text-sm text-white/40 mt-2 font-light">
             {billingNote}
           </p>
         )}
@@ -167,10 +167,10 @@ export function PricingCard({
             group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 disabled:opacity-50 disabled:cursor-not-allowed
             ${
               featured
-                ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
+                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] shadow-lg'
                 : tier === 'free'
                 ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
-                : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
+                : 'border border-white/20 text-white hover:bg-white/10 hover:border-white/40'
             }
           `}
         >
@@ -191,10 +191,10 @@ export function PricingCard({
             group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6
             ${
               featured
-                ? 'bg-[#23194B] text-white hover:bg-[#3c3c3c] shadow-lg'
+                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] shadow-lg'
                 : tier === 'free'
                 ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
-                : 'border border-gray-300 text-gray-800 hover:bg-gray-50 hover:border-gray-400'
+                : 'border border-white/20 text-white hover:bg-white/10 hover:border-white/40'
             }
           `}
         >
@@ -204,8 +204,8 @@ export function PricingCard({
       )}
 
       {showGuarantee && guaranteeText && (
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-700 mb-8 pb-8 border-b border-gray-200 font-light">
-          <Shield className="h-4 w-4 text-green-600" />
+        <div className="flex items-center justify-center gap-2 text-sm text-white/50 mb-8 pb-8 border-b border-white/10 font-light">
+          <Shield className="h-4 w-4 text-green-400" />
           <span>{guaranteeText}</span>
         </div>
       )}
@@ -216,7 +216,7 @@ export function PricingCard({
           return (
             <div key={index}>
               {isNewCategory && feature.category && (
-                <li className="text-xs font-medium text-gray-500 uppercase tracking-wider mt-6 mb-3">
+                <li className="text-xs font-medium text-white/30 uppercase tracking-wider mt-6 mb-3">
                   {feature.category}
                 </li>
               )}
@@ -226,15 +226,15 @@ export function PricingCard({
                 )}
                 {!feature.icon && (
                   feature.included ? (
-                    <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-[#14D0DC] mt-0.5 flex-shrink-0" />
                   ) : (
-                    <X className="h-5 w-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <X className="h-5 w-5 text-white/20 mt-0.5 flex-shrink-0" />
                   )
                 )}
-                <span className={`font-light ${feature.included ? 'text-gray-800' : 'text-gray-500 line-through'}`}>
+                <span className={`font-light ${feature.included ? 'text-white/70' : 'text-white/30 line-through'}`}>
                   {feature.text}
                   {feature.note && (
-                    <span className="text-sm text-gray-600 ml-2">
+                    <span className="text-sm text-white/40 ml-2">
                       ({feature.note})
                     </span>
                   )}

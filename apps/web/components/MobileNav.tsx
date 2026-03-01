@@ -46,7 +46,7 @@ export function MobileNav({ locale }: MobileNavProps) {
           <img
             src="/assets/logos/neural-summary-logo-altBlue.svg"
             alt="Neural Summary"
-            className="h-8 w-auto"
+            className="h-9 w-auto"
             width={160}
             height={32}
           />
@@ -64,25 +64,32 @@ export function MobileNav({ locale }: MobileNavProps) {
             {/* Navigation Links - Primary Focus */}
             <div className="space-y-3 pb-4">
               <Link
-                href={`/${locale}/examples`}
+                href={`/${locale}/landing#pricing`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
-                {t('nav.examples')}
+                {t('nav.pricing')}
               </Link>
               <Link
-                href={`/${locale}/landing#how-it-works`}
+                href={`/${locale}/landing#outputs`}
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                {t('nav.features')}
+              </Link>
+              <Link
+                href={`/${locale}/landing#compatibility`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
                 {t('nav.howItWorks')}
               </Link>
               <Link
-                href={`/${locale}/pricing`}
+                href={`/${locale}/contact`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               >
-                {t('nav.pricing')}
+                {t('nav.contact')}
               </Link>
             </div>
 

@@ -29,7 +29,7 @@ const categories = [
 
 export function OutputsSection({ translations: t }: OutputsSectionProps) {
   return (
-    <section className="landing-section" aria-labelledby="outputs-heading">
+    <section id="outputs" className="landing-section" aria-labelledby="outputs-heading">
       <div className="max-w-[1100px] mx-auto px-10 text-center">
         <SectionTag>{t.tag}</SectionTag>
 

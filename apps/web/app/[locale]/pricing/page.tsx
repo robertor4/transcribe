@@ -222,7 +222,7 @@ export default function PricingPage() {
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="min-h-screen bg-[#22184C] overflow-x-hidden">
         {/* Hero Section — deep purple background with animated dot pattern */}
         <section
           className="pt-32 pb-20 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden"
@@ -248,7 +248,7 @@ export default function PricingPage() {
         </section>
 
         {/* Pricing Cards */}
-        <section className="py-20 px-6 sm:px-8 lg:px-12 bg-gray-50">
+        <section className="py-20 px-6 sm:px-8 lg:px-12">
           <div className="max-w-7xl mx-auto">
             <div className="grid md:grid-cols-3 gap-8 items-start">
               {/* Free Tier */}
@@ -305,9 +305,9 @@ export default function PricingPage() {
         </section>
 
         {/* Feature Comparison Table */}
-        <section id="comparison" className="py-20 px-6 sm:px-8 lg:px-12 bg-white">
+        <section id="comparison" className="py-20 px-6 sm:px-8 lg:px-12 border-t border-white/[0.08]">
           <div className="max-w-7xl mx-auto space-y-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 text-center tracking-tight">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white text-center tracking-tight">
               {t('comparison.title')}
             </h2>
             <FeatureComparisonTable />
@@ -315,9 +315,9 @@ export default function PricingPage() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-20 px-6 sm:px-8 lg:px-12 bg-gray-50">
+        <section id="faq" className="py-20 px-6 sm:px-8 lg:px-12 border-t border-white/[0.08]">
           <div className="max-w-4xl mx-auto space-y-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 text-center tracking-tight">
+            <h2 className="text-4xl sm:text-5xl font-bold text-white text-center tracking-tight">
               {t('faq.title')}
             </h2>
             <PricingFAQ />

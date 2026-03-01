@@ -101,8 +101,6 @@ export default async function LandingPage({
               zoom: { name: t('compatibility.platforms.zoom.name'), desc: t('compatibility.platforms.zoom.desc') },
               anyAudio: { name: t('compatibility.platforms.anyAudio.name'), desc: t('compatibility.platforms.anyAudio.desc') },
             },
-            noBotCallout: t('compatibility.noBotCallout'),
-            noBotCalloutBody: t('compatibility.noBotCalloutBody'),
           }}
         />
 

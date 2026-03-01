@@ -25,7 +25,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             <img
               src="/assets/logos/neural-summary-logo-altBlue.svg"
               alt="Neural Summary - You speak. It creates."
-              className="h-8 sm:h-9 w-auto -mb-1"
+              className="h-9 sm:h-10 w-auto -mb-1"
               width={180}
               height={48}
             />
@@ -34,31 +34,38 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-5">
             <Link
-              href={`/${locale}/examples`}
+              href={`/${locale}/landing#pricing`}
               className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
-              aria-label="View examples"
+              aria-label="View pricing plans"
             >
-              {tLanding('nav.examples')}
+              {tLanding('nav.pricing')}
             </Link>
             <Link
-              href={`/${locale}/landing#how-it-works`}
+              href={`/${locale}/landing#outputs`}
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
+              aria-label="View features"
+            >
+              {tLanding('nav.features')}
+            </Link>
+            <Link
+              href={`/${locale}/landing#compatibility`}
               className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
               aria-label="See how it works"
             >
               {tLanding('nav.howItWorks')}
             </Link>
             <Link
-              href={`/${locale}/pricing`}
+              href={`/${locale}/contact`}
               className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
-              aria-label="View pricing plans"
+              aria-label="Contact us"
             >
-              {tLanding('nav.pricing')}
+              {tLanding('nav.contact')}
             </Link>
             <LanguageSwitcher variant="dark" />
             {user ? (
               <a
                 href={`${appUrl}/${locale}/dashboard`}
-                className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 text-sm text-white font-medium rounded-full bg-[#8D6AFA] hover:bg-[#7A5AE0] transition-colors"
                 aria-label="Go to Dashboard"
               >
                 {tLanding('nav.dashboard')}
@@ -74,7 +81,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
                 </a>
                 <a
                   href={`${appUrl}/${locale}/signup`}
-                  className="px-3 py-1.5 text-sm text-white font-medium rounded-full border border-white/30 hover:border-white/60 hover:bg-white/10 transition-colors"
+                  className="px-3 py-1.5 text-sm text-white font-medium rounded-full bg-[#8D6AFA] hover:bg-[#7A5AE0] transition-colors"
                   aria-label="Get started with Neural Summary"
                 >
                   {tLanding('nav.getStarted')}

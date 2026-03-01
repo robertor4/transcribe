@@ -1197,7 +1197,7 @@
       "headline1": "Every conversation,",
       "headline2": "a ",
       "headlineEm": "strategic asset.",
-      "body": "You make the calls — literally. Neural Summary turns every meeting into searchable transcripts, summaries, and ",
+      "body": "Neural Summary turns every meeting into searchable transcripts, summaries, and ",
       "bodyStrong": "ready-to-use documents",
       "bodyEnd": ". Nothing gets lost. Nothing needs to be rewritten.",
       "ctaPrimary": "Start for free",
@@ -1467,9 +1467,10 @@
       "dashboard": "Go to Dashboard",
       "menu": "Menu",
       "language": "Language",
-      "examples": "Examples",
+      "features": "Features",
       "howItWorks": "How it works",
-      "pricing": "Pricing"
+      "pricing": "Pricing",
+      "contact": "Contact"
     },
     "footer": {
       "sections": {

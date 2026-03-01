@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/Button';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 
@@ -129,18 +128,18 @@ export function ContactForm({ locale }: ContactFormProps) {
   if (formState === 'success') {
     return (
       <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-          <CheckCircle className="w-8 h-8 text-green-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 mb-4">
+          <CheckCircle className="w-8 h-8 text-green-400" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-white mb-2">
           {t('success.title')}
         </h3>
-        <p className="text-gray-600">
+        <p className="text-white/60">
           {t('success.description')}
         </p>
         <button
           onClick={() => setFormState('idle')}
-          className="mt-6 text-[#23194B] hover:underline text-sm font-medium"
+          className="mt-6 text-[#14D0DC] hover:underline text-sm font-medium"
         >
           Send another message
         </button>
@@ -151,18 +150,18 @@ export function ContactForm({ locale }: ContactFormProps) {
   if (formState === 'error') {
     return (
       <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-          <AlertCircle className="w-8 h-8 text-red-600" />
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+          <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <h3 className="text-xl font-semibold text-white mb-2">
           {t('error.title')}
         </h3>
-        <p className="text-gray-600">
+        <p className="text-white/60">
           {t('error.description')}
         </p>
         <button
           onClick={() => setFormState('idle')}
-          className="mt-6 text-[#23194B] hover:underline text-sm font-medium"
+          className="mt-6 text-[#14D0DC] hover:underline text-sm font-medium"
         >
           Try again
         </button>
@@ -174,7 +173,7 @@ export function ContactForm({ locale }: ContactFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="name" className="block text-sm font-medium text-white/70 mb-2">
           {t('form.name')}
         </label>
         <input
@@ -184,18 +183,18 @@ export function ContactForm({ locale }: ContactFormProps) {
           value={formData.name}
           onChange={handleChange}
           placeholder={t('form.namePlaceholder')}
-          className={`w-full px-4 py-3 rounded-lg border ${
-            errors.name ? 'border-red-500' : 'border-gray-200'
-          } focus:ring-2 focus:ring-[#23194B]/20 focus:border-[#23194B] outline-none transition-colors text-gray-900`}
+          className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
+            errors.name ? 'border-red-500' : 'border-white/10'
+          } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors text-white placeholder:text-white/30`}
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.name}</p>
         )}
       </div>
 
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-white/70 mb-2">
           {t('form.email')}
         </label>
         <input
@@ -205,18 +204,18 @@ export function ContactForm({ locale }: ContactFormProps) {
           value={formData.email}
           onChange={handleChange}
           placeholder={t('form.emailPlaceholder')}
-          className={`w-full px-4 py-3 rounded-lg border ${
-            errors.email ? 'border-red-500' : 'border-gray-200'
-          } focus:ring-2 focus:ring-[#23194B]/20 focus:border-[#23194B] outline-none transition-colors text-gray-900`}
+          className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
+            errors.email ? 'border-red-500' : 'border-white/10'
+          } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors text-white placeholder:text-white/30`}
         />
         {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.email}</p>
         )}
       </div>
 
       {/* Subject */}
       <div>
-        <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="subject" className="block text-sm font-medium text-white/70 mb-2">
           {t('form.subject')}
         </label>
         <select
@@ -224,11 +223,11 @@ export function ContactForm({ locale }: ContactFormProps) {
           name="subject"
           value={formData.subject}
           onChange={handleChange}
-          className={`w-full px-4 py-3 rounded-lg border ${
-            errors.subject ? 'border-red-500' : 'border-gray-200'
-          } focus:ring-2 focus:ring-[#23194B]/20 focus:border-[#23194B] outline-none transition-colors text-gray-900 bg-white`}
+          className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
+            errors.subject ? 'border-red-500' : 'border-white/10'
+          } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors text-white [&>option]:bg-[#23194B] [&>option]:text-white`}
         >
-          <option value="">{t('form.subjectPlaceholder')}</option>
+          <option value="" className="text-white/30">{t('form.subjectPlaceholder')}</option>
           {subjectOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -236,13 +235,13 @@ export function ContactForm({ locale }: ContactFormProps) {
           ))}
         </select>
         {errors.subject && (
-          <p className="mt-1 text-sm text-red-600">{errors.subject}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.subject}</p>
         )}
       </div>
 
       {/* Message */}
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="message" className="block text-sm font-medium text-white/70 mb-2">
           {t('form.message')}
         </label>
         <textarea
@@ -252,12 +251,12 @@ export function ContactForm({ locale }: ContactFormProps) {
           onChange={handleChange}
           placeholder={t('form.messagePlaceholder')}
           rows={5}
-          className={`w-full px-4 py-3 rounded-lg border ${
-            errors.message ? 'border-red-500' : 'border-gray-200'
-          } focus:ring-2 focus:ring-[#23194B]/20 focus:border-[#23194B] outline-none transition-colors resize-none text-gray-900`}
+          className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
+            errors.message ? 'border-red-500' : 'border-white/10'
+          } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors resize-none text-white placeholder:text-white/30`}
         />
         {errors.message && (
-          <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+          <p className="mt-1 text-sm text-red-400">{errors.message}</p>
         )}
       </div>
 
@@ -280,16 +279,15 @@ export function ContactForm({ locale }: ContactFormProps) {
           onSuccess={setTurnstileToken}
           onError={() => setTurnstileToken('')}
           onExpire={() => setTurnstileToken('')}
+          options={{ theme: 'dark' }}
         />
       </div>
 
       {/* Submit */}
-      <Button
+      <button
         type="submit"
-        variant="primary"
-        size="lg"
-        fullWidth
         disabled={formState === 'submitting'}
+        className="w-full py-3.5 px-6 rounded-full text-center font-medium bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {formState === 'submitting' ? (
           <>
@@ -299,7 +297,7 @@ export function ContactForm({ locale }: ContactFormProps) {
         ) : (
           t('form.submit')
         )}
-      </Button>
+      </button>
     </form>
   );
 }

@@ -106,16 +106,19 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
           {/* Right column — transcript card + lion placeholder */}
           <div className="relative flex justify-center items-end min-h-[520px] hidden lg:flex">
             {/* Floating transcript card */}
-            <div className="absolute top-5 -left-5 z-[3]">
+            <div className="absolute top-5 -left-5 z-[2]">
               <HeroTranscriptCard translations={t.card} />
             </div>
 
-            {/* Lion mascot placeholder */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-[45%] w-[340px] h-[480px] bg-gradient-to-b from-[rgba(141,106,250,0.1)] to-transparent rounded-t-[50%] flex items-start justify-center pt-10 z-[2]">
-              <span className="font-[family-name:var(--font-dm-mono)] text-[10px] tracking-[2px] text-white/20 uppercase text-center bg-[rgba(13,11,38,0.8)] px-3.5 py-1.5 rounded-full border border-white/[0.08]">
-                ← {t.lionPlaceholder}
-              </span>
-            </div>
+            {/* Lion mascot */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/images/lionel-hero.webp"
+              alt="Lionel — Neural Summary mascot"
+              className="absolute bottom-0 left-1/2 -translate-x-[40%] w-[320px] z-[3] drop-shadow-[0_0_60px_rgba(141,106,250,0.25)]"
+              width={320}
+              height={450}
+            />
           </div>
         </div>
       </div>

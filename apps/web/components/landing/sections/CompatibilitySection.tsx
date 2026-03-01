@@ -13,8 +13,6 @@ interface CompatibilitySectionTranslations {
     zoom: { name: string; desc: string };
     anyAudio: { name: string; desc: string };
   };
-  noBotCallout: string;
-  noBotCalloutBody: string;
 }
 
 interface CompatibilitySectionProps {
@@ -30,7 +28,7 @@ const platformIcons = [
 
 export function CompatibilitySection({ translations: t }: CompatibilitySectionProps) {
   return (
-    <section className="landing-section" aria-labelledby="compatibility-heading">
+    <section id="compatibility" className="landing-section" aria-labelledby="compatibility-heading">
       <div className="max-w-[1100px] mx-auto px-10 text-center">
         <SectionTag>{t.tag}</SectionTag>
 
@@ -53,14 +51,6 @@ export function CompatibilitySection({ translations: t }: CompatibilitySectionPr
               <div className="text-[11px] text-white/30 text-center leading-snug">{t.platforms[key].desc}</div>
             </div>
           ))}
-        </div>
-
-        <div className="inline-flex items-center gap-3 bg-gradient-to-br from-[rgba(20,208,220,0.1)] to-[rgba(141,106,250,0.1)] border border-[rgba(20,208,220,0.25)] rounded-xl px-7 py-4 text-[15px] text-white/60 text-left">
-          <span className="text-xl shrink-0">🚫</span>
-          <div>
-            <strong className="text-white">{t.noBotCallout}</strong>{' '}
-            {t.noBotCalloutBody}
-          </div>
         </div>
       </div>
     </section>

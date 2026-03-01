@@ -52,24 +52,24 @@ export function PricingFAQ() {
       {faqs.map((faq, index) => (
         <div
           key={index}
-          className="border border-gray-200 rounded-xl overflow-hidden transition-all hover:border-gray-300"
+          className="border border-white/[0.08] rounded-xl overflow-hidden transition-all hover:border-white/[0.15]"
         >
           <button
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
-            className="w-full flex items-center justify-between p-5 text-left bg-white hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-5 text-left bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
           >
-            <span className="font-semibold text-gray-900 pr-4">
+            <span className="font-semibold text-white pr-4">
               {faq.question}
             </span>
             <ChevronDown
-              className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform ${
+              className={`h-5 w-5 text-white/40 flex-shrink-0 transition-transform ${
                 openIndex === index ? 'transform rotate-180' : ''
               }`}
             />
           </button>
           {openIndex === index && (
-            <div className="px-5 pb-5 bg-white">
-              <p className="text-gray-700 leading-relaxed">
+            <div className="px-5 pb-5 bg-white/[0.04]">
+              <p className="text-white/60 leading-relaxed">
                 {faq.answer}
               </p>
             </div>

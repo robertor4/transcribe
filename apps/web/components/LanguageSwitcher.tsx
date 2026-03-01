@@ -72,7 +72,11 @@ export function LanguageSwitcher({ enableDarkMode = false, variant = 'light' }: 
         align="end"
         sideOffset={8}
         collisionPadding={{ right: 16 }}
-        className={`w-48 z-[80] ${enableDarkMode ? 'dark:bg-gray-800 dark:border-gray-700' : ''}`}
+        className={`w-48 z-[80] ${
+          isDark
+            ? 'bg-[#1e1540] border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
+            : enableDarkMode ? 'dark:bg-gray-800 dark:border-gray-700' : ''
+        }`}
       >
         {locales.map((loc) => {
           const isActive = loc === locale;
@@ -84,7 +88,9 @@ export function LanguageSwitcher({ enableDarkMode = false, variant = 'light' }: 
                 cursor-pointer
                 ${isActive
                   ? 'bg-[#8D6AFA] text-white focus:bg-[#7A5AE0] focus:text-white'
-                  : `${enableDarkMode ? 'dark:text-gray-300 dark:focus:bg-gray-700' : ''}`
+                  : isDark
+                    ? 'text-white/70 focus:bg-white/10 focus:text-white'
+                    : `${enableDarkMode ? 'dark:text-gray-300 dark:focus:bg-gray-700' : ''}`
                 }
               `}
             >

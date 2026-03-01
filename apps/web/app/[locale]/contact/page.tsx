@@ -34,20 +34,20 @@ export default async function ContactPage({
   const t = await getTranslations({ locale, namespace: 'contact' });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#22184C]">
       <PublicHeader locale={locale} />
 
-      <main className="flex-grow bg-gradient-to-b from-gray-50 to-white">
+      <main className="flex-grow">
         {/* Hero Section */}
         <section className="pt-32 pb-16 px-6 sm:px-8 lg:px-12">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#23194B]/10 mb-6">
-              <MessageSquare className="w-8 h-8 text-[#23194B]" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/[0.08] mb-6">
+              <MessageSquare className="w-8 h-8 text-[#14D0DC]" />
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
               {t('title')}
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-white/60 max-w-2xl mx-auto">
               {t('description')}
             </p>
           </div>
@@ -56,7 +56,7 @@ export default async function ContactPage({
         {/* Contact Form Section */}
         <section className="pb-24 px-6 sm:px-8 lg:px-12">
           <div className="max-w-xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="bg-white/[0.08] rounded-2xl border border-white/[0.08] p-8">
               <ContactForm locale={locale} />
             </div>
 
@@ -64,7 +64,7 @@ export default async function ContactPage({
             <div className="mt-8 text-center">
               <a
                 href="mailto:hello@neuralsummary.com"
-                className="text-sm text-gray-500 hover:text-[#23194B] inline-flex items-center gap-1 transition-colors"
+                className="text-sm text-white/40 hover:text-white inline-flex items-center gap-1 transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 hello@neuralsummary.com

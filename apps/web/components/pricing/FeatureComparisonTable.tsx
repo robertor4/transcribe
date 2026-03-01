@@ -49,28 +49,28 @@ export function FeatureComparisonTable() {
     if (typeof value === 'boolean') {
       return value ? (
         <div className="flex items-center justify-center">
-          <div className={`rounded-full p-1 ${isPro ? 'bg-[#8D6AFA]/10' : 'bg-green-100'}`}>
-            <Check className={`h-5 w-5 ${isPro ? 'text-[#8D6AFA]' : 'text-green-600'}`} />
+          <div className={`rounded-full p-1 ${isPro ? 'bg-[#8D6AFA]/20' : 'bg-[#14D0DC]/10'}`}>
+            <Check className={`h-5 w-5 ${isPro ? 'text-[#8D6AFA]' : 'text-[#14D0DC]'}`} />
           </div>
         </div>
       ) : (
         <div className="flex items-center justify-center">
-          <X className="h-5 w-5 text-gray-300" />
+          <X className="h-5 w-5 text-white/20" />
         </div>
       );
     }
     if (value === '-') {
       return (
         <div className="flex items-center justify-center">
-          <Minus className="h-5 w-5 text-gray-300" />
+          <Minus className="h-5 w-5 text-white/20" />
         </div>
       );
     }
     if (value === unlimitedText) {
       return (
         <div className="flex items-center justify-center gap-1">
-          <AiIcon size={16} className={isPro ? 'text-[#8D6AFA]' : 'text-purple-500'} />
-          <span className={`font-semibold ${isPro ? 'text-[#8D6AFA]' : 'text-purple-600'}`}>
+          <AiIcon size={16} className={isPro ? 'text-[#8D6AFA]' : 'text-[#14D0DC]'} />
+          <span className={`font-semibold ${isPro ? 'text-[#8D6AFA]' : 'text-[#14D0DC]'}`}>
             {value}
           </span>
         </div>
@@ -78,27 +78,27 @@ export function FeatureComparisonTable() {
     }
     if (value === comingSoonText || value.toLowerCase().includes('coming soon') || value.toLowerCase().includes('binnenkort') || value.toLowerCase().includes('prochainement') || value.toLowerCase().includes('próximamente') || value.toLowerCase().includes('demnächst')) {
       return (
-        <span className="text-sm italic text-gray-500">
+        <span className="text-sm italic text-white/30">
           {value}
         </span>
       );
     }
     return (
-      <span className={`font-medium ${isPro ? 'text-gray-800' : 'text-gray-700'}`}>
+      <span className={`font-medium ${isPro ? 'text-white/80' : 'text-white/60'}`}>
         {value}
       </span>
     );
   };
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-200 shadow-lg">
+    <div className="overflow-x-auto rounded-2xl border border-white/[0.08]">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-gray-50">
-            <th className="text-left py-3 px-2 sm:py-5 sm:px-6 text-gray-900 font-bold text-sm sm:text-base md:text-lg w-2/5">
+          <tr className="bg-white/[0.06]">
+            <th className="text-left py-3 px-2 sm:py-5 sm:px-6 text-white font-bold text-sm sm:text-base md:text-lg w-2/5">
               {t('feature')}
             </th>
-            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 font-bold text-sm sm:text-base md:text-lg w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.free')}
             </th>
             <th className="text-center py-3 px-2 sm:py-5 sm:px-6 bg-[#8D6AFA]/10 w-1/5">
@@ -108,7 +108,7 @@ export function FeatureComparisonTable() {
                 </span>
               </div>
             </th>
-            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-gray-900 font-bold text-sm sm:text-base md:text-lg w-1/5">
+            <th className="text-center py-3 px-2 sm:py-5 sm:px-6 text-white font-bold text-sm sm:text-base md:text-lg w-1/5">
               {t('tiers.enterprise')}
             </th>
           </tr>
@@ -119,7 +119,7 @@ export function FeatureComparisonTable() {
               <tr>
                 <td
                   colSpan={4}
-                  className="py-3 px-2 sm:py-4 sm:px-6 bg-gray-100 font-bold text-gray-900 text-xs sm:text-sm uppercase tracking-wider border-t-2 border-gray-200"
+                  className="py-3 px-2 sm:py-4 sm:px-6 bg-white/[0.04] font-bold text-white/60 text-xs sm:text-sm uppercase tracking-wider border-t-2 border-white/[0.08]"
                 >
                   {category.category}
                 </td>
@@ -127,18 +127,18 @@ export function FeatureComparisonTable() {
               {category.items.map((item, itemIndex) => (
                 <tr
                   key={`item-${categoryIndex}-${itemIndex}`}
-                  className="hover:bg-gray-50/50 transition-colors"
+                  className="hover:bg-white/[0.04] transition-colors"
                 >
-                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-gray-800 font-medium text-sm sm:text-base border-b border-gray-100">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-white/70 font-medium text-sm sm:text-base border-b border-white/[0.06]">
                     {item.name}
                   </td>
-                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-white/[0.06]">
                     {renderCell(item.free, false)}
                   </td>
                   <td className="py-3 px-2 sm:py-4 sm:px-6 text-center bg-[#8D6AFA]/5 border-b border-[#8D6AFA]/10">
                     {renderCell(item.pro, true)}
                   </td>
-                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-gray-100">
+                  <td className="py-3 px-2 sm:py-4 sm:px-6 text-center border-b border-white/[0.06]">
                     {renderCell(item.enterprise, false)}
                   </td>
                 </tr>
