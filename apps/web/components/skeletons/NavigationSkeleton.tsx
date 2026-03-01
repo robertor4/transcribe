@@ -27,7 +27,7 @@ export function NavigationListSkeleton({
           />
           <Skeleton
             className="h-4 flex-1 bg-white/20"
-            style={{ width: `${60 + Math.random() * 30}%` }}
+            style={{ width: `${60 + ((i * 17 + 7) % 30)}%` }}
           />
           {type === 'folders' && (
             <Skeleton className="h-3 w-4 bg-white/15 rounded" />
