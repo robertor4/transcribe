@@ -11,7 +11,7 @@ export default async function SignupPage({
   const tAuth = await getTranslations({ locale, namespace: 'auth' });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link href={`/${locale}/landing`} className="flex justify-center mb-8">
@@ -19,13 +19,19 @@ export default async function SignupPage({
             <img
               src="/assets/logos/neural-summary-logo.svg"
               alt="Neural Summary Logo"
-              className="h-12 w-auto"
+              className="h-12 w-auto dark:hidden"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/logos/neural-summary-logo-white-wTagLine.svg"
+              alt="Neural Summary Logo"
+              className="h-16 w-auto hidden dark:block"
             />
           </Link>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
+          <h2 className="text-center text-3xl font-extrabold text-gray-900 dark:text-white uppercase tracking-wide">
             {tAuth('createYourAccount')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             {tAuth('joinThousandsOfUsers')}
           </p>
         </div>
