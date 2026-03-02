@@ -18,7 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { deleteConversation } from '@/lib/services/conversationService';
-import { getCreativeGreeting, getMilestoneMessage } from '@/lib/userHelpers';
+import { getCreativeGreeting } from '@/lib/userHelpers';
 import { useTranslations } from 'next-intl';
 import type { LucideIcon } from 'lucide-react';
 
@@ -77,7 +77,6 @@ export function DashboardClient() {
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
     isOpen: false,
   });
-  const milestoneShownRef = useRef(false);
 
   // Refresh user on mount to get latest email verification status
   // This handles the case where user returns from email verification link
@@ -114,19 +113,6 @@ export function DashboardClient() {
     }
   }, [searchParams, router, locale]);
 
-  // Check for milestone on mount
-  useEffect(() => {
-    if (!conversationsLoading && conversations.length > 0 && !milestoneShownRef.current) {
-      const message = getMilestoneMessage(conversations.length);
-      if (message) {
-        milestoneShownRef.current = true;
-        toast(message, {
-          duration: 5000,
-          className: 'border-2 border-[#8D6AFA]',
-        });
-      }
-    }
-  }, [conversationsLoading, conversations.length]);
 
   const handleCreateComplete = useCallback((conversationId: string) => {
     router.push(`/${locale}/conversation/${conversationId}`);

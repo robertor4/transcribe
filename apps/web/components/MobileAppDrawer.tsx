@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ import {
   Loader2,
   Users,
   ChevronRight,
+  Trash2,
 } from 'lucide-react';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -43,7 +45,8 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
   const { count: importedCount } = useImportedConversations();
-  const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading } = useConversationsContext();
+  const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
+  const [isClearing, setIsClearing] = useState(false);
 
   // Search state
   const {
@@ -73,6 +76,16 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
       router.push(`/${locale}/dashboard?newConversation=true`);
     }
     onClose();
+  };
+
+  const handleClearRecentlyOpened = async () => {
+    if (isClearing || recentConversations.length === 0) return;
+    setIsClearing(true);
+    try {
+      await clearRecentlyOpened();
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   const handleSearchResultClick = (conversationId: string) => {
@@ -283,9 +296,25 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
 
           {/* Recent Conversations */}
           <div className="px-4 py-4">
-            <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-3 px-3">
-              Recently opened
-            </h3>
+            <div className="flex items-center justify-between mb-3 px-3">
+              <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+                Recently opened
+              </h3>
+              {recentConversations.length > 0 && (
+                <button
+                  onClick={handleClearRecentlyOpened}
+                  disabled={isClearing}
+                  className="p-1 rounded text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors disabled:opacity-50"
+                  aria-label="Clear recently opened"
+                >
+                  {isClearing ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3 h-3" />
+                  )}
+                </button>
+              )}
+            </div>
 
             {conversationsLoading ? (
               <div className="flex items-center justify-center py-4">

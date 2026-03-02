@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Mobile: missing clear button for recently opened conversations**: Added trash icon button to `MobileAppDrawer` to allow clearing the recently opened list, matching the existing desktop `LeftNavigation` behavior
+  - Modified: [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx)
+
+### Removed
+- **Milestone toast notifications**: Removed the "Your first conversation!" (and 10th, 50th, etc.) toast that fired on every dashboard visit. The `useRef` guard only prevented duplicates within a single render — navigating away and back triggered it again every time
+  - Modified: [DashboardClient.tsx](apps/web/app/[locale]/(authenticated)/dashboard/DashboardClient.tsx)
+
 ### Changed
 - **Dev server performance optimizations**: Enabled Turbopack (`next dev --turbo`) for faster local compilation, removed `staleTimes: { dynamic: 0, static: 0 }` that was disabling dev caching entirely, and added explicit `@source` directives to Tailwind CSS v4 to avoid full-project class scanning
   - Modified: [package.json](apps/web/package.json), [next.config.ts](apps/web/next.config.ts), [globals.css](apps/web/app/globals.css)
