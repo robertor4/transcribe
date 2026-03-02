@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Loader2,
   Globe,
-  FileText,
+  ScrollText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { transcriptionApi } from '@/lib/api';
@@ -30,6 +30,8 @@ import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { SummaryRenderer } from '@/components/SummaryRenderer';
 import { InlineTranscript } from '@/components/InlineTranscript';
+import { computeSpeakerStats } from '@/components/TranscriptTimeline';
+import { formatDuration } from '@/lib/formatters';
 import { ShareModal } from '@/components/ShareModal';
 import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -56,7 +58,6 @@ import { AssetRecommendations } from '@/components/AssetRecommendations';
 import { getAssetRecommendations } from '@/lib/assetRecommendations';
 import type { ConversationCategory } from '@transcribe/shared';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -633,6 +634,28 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </div>
                 </TooltipProvider>
                 <span className="text-gray-300 dark:text-gray-600">|</span>
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
+                        className={`p-1.5 rounded-lg transition-colors ${
+                          activeTab === 'transcript'
+                            ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
+                            : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        <ScrollText className="w-4 h-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={6}>
+                      {activeTab === 'summary'
+                        ? tConversation('tabs.transcript')
+                        : tConversation('tabs.summary')}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
                 <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -640,15 +663,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       </button>
                     }
                     items={[
-                      // Toggle between Summary and Transcript views
-                      {
-                        icon: FileText,
-                        label: activeTab === 'summary'
-                          ? tConversation('tabs.transcript')
-                          : tConversation('tabs.summary'),
-                        onClick: () => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary'),
-                      },
-                      { type: 'divider' },
                       // Ask Questions and Copy available in menu for all devices
                       {
                         icon: Zap,
@@ -719,26 +733,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               </div>
             </div>
 
-            {/* Editorial rule — desktop only */}
-            <hr className="hidden lg:block border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
-
-            {/* Mobile transcript toggle */}
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentTab)} className="lg:hidden mt-4">
-              <TabsList className="bg-gray-100 dark:bg-gray-800 h-7 p-0.5 rounded-full">
-                <TabsTrigger
-                  value="summary"
-                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white dark:data-[state=active]:bg-gray-100 dark:data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
-                >
-                  Summary
-                </TabsTrigger>
-                <TabsTrigger
-                  value="transcript"
-                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white dark:data-[state=active]:bg-gray-100 dark:data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
-                >
-                  Transcript
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {/* Editorial rule */}
+            <hr className="border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
 
             {/* Content area — two-column: main + key points sidebar */}
             <div className="lg:flex pt-6 lg:pt-10">
@@ -829,36 +825,112 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
               </div>{/* end flex-1 main content */}
 
-              {/* Key Points sidebar — desktop only */}
-              {activeTab === 'summary' && (() => {
-                const summaryTranslation = currentLocale !== 'original'
-                  ? getTranslatedContent('summary', conversationId)
-                  : null;
-                const kp = summaryTranslation?.content.type === 'summaryV2'
-                  ? summaryTranslation.content.keyPoints
-                  : conversation.source.summary.summaryV2?.keyPoints;
-                if (!kp || kp.length === 0) return null;
-                return (
-                  <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
-                    <div className="sticky top-8 px-6 pt-10 pb-6">
-                      <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
-                        Key Points
-                      </h3>
-                      <ol className="divide-y divide-gray-200 dark:divide-gray-700">
-                        {kp.map((point: { topic: string; description: string }, idx: number) => (
-                          <li key={idx} className={`py-4 ${idx === 0 ? 'pt-0' : ''}`}>
-                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug block">
-                              {point.topic}
-                            </span>
-                            <span className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed block mt-1">
-                              {point.description}
-                            </span>
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                  </aside>
-                );
+              {/* Contextual sidebar — desktop only */}
+              {(() => {
+                if (activeTab === 'summary') {
+                  // Key Points sidebar
+                  const summaryTranslation = currentLocale !== 'original'
+                    ? getTranslatedContent('summary', conversationId)
+                    : null;
+                  const kp = summaryTranslation?.content.type === 'summaryV2'
+                    ? summaryTranslation.content.keyPoints
+                    : conversation.source.summary.summaryV2?.keyPoints;
+                  if (!kp || kp.length === 0) return null;
+                  return (
+                    <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
+                      <div className="sticky top-8 px-6 pt-10 pb-6">
+                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
+                          Key Points
+                        </h3>
+                        <ol className="divide-y divide-gray-200 dark:divide-gray-700">
+                          {kp.map((point: { topic: string; description: string }, idx: number) => (
+                            <li key={idx} className={`py-4 ${idx === 0 ? 'pt-0' : ''}`}>
+                              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug block">
+                                {point.topic}
+                              </span>
+                              <span className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed block mt-1">
+                                {point.description}
+                              </span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </aside>
+                  );
+                }
+
+                if (activeTab === 'transcript') {
+                  // Transcript stats + speaker breakdown sidebar
+                  const segs = conversation.source.transcript.speakerSegments;
+                  if (!segs || segs.length === 0) return null;
+                  const speakerStats = computeSpeakerStats(segs);
+                  const totalDur = segs[segs.length - 1].endTime;
+                  const uniqueSpeakers = new Set(segs.map(s => s.speakerTag)).size;
+                  const totalWords = segs.reduce((sum, s) => sum + s.text.split(' ').length, 0);
+
+                  return (
+                    <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
+                      <div className="sticky top-8 px-6 pt-10 pb-6">
+                        {/* Overview stats */}
+                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
+                          Overview
+                        </h3>
+                        <dl className="space-y-3 mb-8">
+                          <div>
+                            <dt className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Duration</dt>
+                            <dd className="text-sm font-semibold text-gray-900 dark:text-gray-100">{formatDuration(totalDur)}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Segments</dt>
+                            <dd className="text-sm font-semibold text-gray-900 dark:text-gray-100">{segs.length}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Speakers</dt>
+                            <dd className="text-sm font-semibold text-gray-900 dark:text-gray-100">{uniqueSpeakers}</dd>
+                          </div>
+                          <div>
+                            <dt className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wide">Total words</dt>
+                            <dd className="text-sm font-semibold text-gray-900 dark:text-gray-100">{totalWords.toLocaleString()}</dd>
+                          </div>
+                        </dl>
+
+                        {/* Speaker breakdown */}
+                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
+                          Speakers
+                        </h3>
+                        <ol className="space-y-3">
+                          {speakerStats.map((speaker, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5">
+                              <div
+                                className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0 mt-0.5"
+                                style={{ backgroundColor: speaker.color }}
+                              >
+                                {speaker.initial}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 block leading-snug">
+                                  {speaker.speakerTag}
+                                </span>
+                                <span className="text-[12px] text-gray-500 dark:text-gray-400 block mt-0.5">
+                                  {formatDuration(speaker.totalDuration)} · {speaker.percentage}%
+                                </span>
+                                {/* Mini bar */}
+                                <div className="mt-1.5 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full"
+                                    style={{ width: `${speaker.percentage}%`, backgroundColor: speaker.color }}
+                                  />
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </aside>
+                  );
+                }
+
+                return null;
               })()}
             </div>{/* end lg:flex */}
           </div>

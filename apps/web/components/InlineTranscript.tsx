@@ -2,7 +2,6 @@
 
 import TranscriptTimeline from '@/components/TranscriptTimeline';
 import type { Conversation } from '@/lib/types/conversation';
-import { formatDuration } from '@/lib/formatters';
 import { TextHighlighter, type HighlightOptions } from './TextHighlighter';
 
 export interface InlineTranscriptProps {
@@ -19,13 +18,6 @@ export function InlineTranscript({ conversation, highlightOptions }: InlineTrans
 
   return (
     <section className="scroll-mt-16">
-      {/* Metadata */}
-      <div className="mb-6">
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {transcript.speakers} speaker{transcript.speakers !== 1 ? 's' : ''} · {Math.floor(transcript.confidence * 100)}% confidence · {formatDuration(conversation.source.audioDuration)}
-        </p>
-      </div>
-
       {/* Transcript Content */}
       {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
         <div>
