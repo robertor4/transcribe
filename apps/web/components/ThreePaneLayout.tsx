@@ -98,7 +98,7 @@ export function ThreePaneLayout({
         <div className="flex items-center gap-3 px-4 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/60 dark:border-gray-700/40">
           <button
             onClick={() => setIsMobileDrawerOpen(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#1a1540] text-white shadow-sm hover:bg-[#4a42b5] dark:hover:bg-[#241f4d] transition-colors flex-shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5" />

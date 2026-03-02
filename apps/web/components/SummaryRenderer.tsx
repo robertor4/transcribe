@@ -69,11 +69,11 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
   };
 
   return (
-    <div className="max-w-[680px] space-y-10">
-      {/* Intro paragraph with drop cap */}
+    <div className="max-w-[680px] space-y-6 lg:space-y-10">
+      {/* Intro paragraph — drop cap on desktop only */}
       {summary.intro && (
         <p
-          className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed first-letter:text-4xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-[1] first-letter:text-gray-900 dark:first-letter:text-gray-100"
+          className="text-base lg:text-lg text-gray-700 dark:text-gray-300 leading-relaxed lg:first-letter:text-4xl lg:first-letter:font-bold lg:first-letter:float-left lg:first-letter:mr-2 lg:first-letter:leading-[1] lg:first-letter:text-gray-900 dark:lg:first-letter:text-gray-100"
           style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
         >
           <TextHighlighter text={summary.intro} highlight={highlightOptions} />
@@ -82,17 +82,17 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
 
       {/* Key Points — shown inline on mobile, hidden on desktop (sidebar takes over) */}
       {summary.keyPoints.length > 0 && (
-        <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 pt-6">
-          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
+        <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 pt-4">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-3 uppercase tracking-widest">
             Key Points
           </h3>
-          <ol className="space-y-4">
+          <ol className="space-y-3">
             {summary.keyPoints.map((point, idx) => (
-              <li key={idx} className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
+              <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <span className="font-semibold text-gray-900 dark:text-gray-100 block">
                   <TextHighlighter text={point.topic} highlight={highlightOptions} />
                 </span>
-                <span className="ml-1.5 text-[15px]">
+                <span className="text-[13px] block mt-0.5">
                   <TextHighlighter text={point.description} highlight={highlightOptions} />
                 </span>
               </li>
@@ -146,11 +146,16 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
           <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
             Decisions Made
           </h3>
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-4">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-3">
             {summary.decisions.map((decision, idx) => (
-              <p key={idx} className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.8]">
-                <TextHighlighter text={decision} highlight={highlightOptions} />
-              </p>
+              <div key={idx} className="flex gap-3">
+                <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-6 flex-shrink-0 pt-1">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+                <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
+                  <TextHighlighter text={decision} highlight={highlightOptions} />
+                </p>
+              </div>
             ))}
           </div>
         </div>
@@ -162,11 +167,16 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
           <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
             Next Steps
           </h3>
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-4">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-3">
             {summary.nextSteps.map((step, idx) => (
-              <p key={idx} className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.8]">
-                <TextHighlighter text={step} highlight={highlightOptions} />
-              </p>
+              <div key={idx} className="flex gap-3">
+                <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-6 flex-shrink-0 pt-1">
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+                <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
+                  <TextHighlighter text={step} highlight={highlightOptions} />
+                </p>
+              </div>
             ))}
           </div>
         </div>
