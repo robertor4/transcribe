@@ -10,6 +10,13 @@ import {
   TableHead,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyDescription,
+  EmptyContent,
+} from '@/components/ui/empty';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/Button';
 import { ConversationsTableRow } from './ConversationsTableRow';
@@ -190,18 +197,24 @@ export function ConversationsTable({
             {t('conversations')}
           </h2>
         </div>
-        <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-          <MessageSquare className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {t('emptyConversationsHint')}
-          </p>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onNewConversation}
-          >
-            {t('startFirstConversation')}
-          </Button>
+        <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+          <Empty className="py-8">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <MessageSquare className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+              </EmptyMedia>
+              <EmptyDescription>{t('emptyConversationsHint')}</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onNewConversation}
+              >
+                {t('startFirstConversation')}
+              </Button>
+            </EmptyContent>
+          </Empty>
         </div>
       </div>
     );
@@ -228,10 +241,12 @@ export function ConversationsTable({
       />
 
       {displayedConversations.length === 0 ? (
-        <div className="text-center py-8 border border-gray-200 dark:border-gray-700 rounded-xl">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('table.noResults')}
-          </p>
+        <div className="border border-gray-200 dark:border-gray-700 rounded-xl">
+          <Empty className="py-8">
+            <EmptyHeader>
+              <EmptyDescription>{t('table.noResults')}</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </div>
       ) : (
         <>

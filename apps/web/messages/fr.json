@@ -100,7 +100,7 @@
     "dontHaveAccount": "Vous n'avez pas de compte ?",
     "createAccount": "Créer un compte",
     "createYourAccount": "Créez votre compte",
-    "joinThousandsOfUsers": "Rejoignez des milliers d'utilisateurs transformant leur audio",
+    "joinThousandsOfUsers": "Transformez vos conversations en documents structurés, prêts à l'emploi.",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Connectez-vous pour continuer vers Neural Summary",
     "invalidCredentials": "E-mail ou mot de passe invalide",
@@ -1424,6 +1424,7 @@
         "price": "",
         "period": "/mois",
         "periodSub": "Facturation mensuelle · résiliable à tout moment",
+        "billedAnnuallyNote": "Facturé annuellement ({amount}/an)",
         "badge": "Le plus populaire",
         "features": "Conversations illimitées,60 heures/mois incluses,Tous les types de sorties IA,Traduction et questions IA,Support prioritaire",
         "cta": "Essayer Pro gratuitement pendant 14 jours"
@@ -1988,7 +1989,11 @@
       "description": "Tarifs premium simples. Essayez Pro gratuitement pendant 14 jours. Transformez vos conversations en documents professionnels."
     },
     "hero": {
+      "tag": "14 jours d'essai gratuit",
       "title": "Des tarifs pour un travail qui compte",
+      "headline1": "Des tarifs pour un travail",
+      "headline2": "qui ",
+      "headlineEm": "compte.",
       "subtitle": "Commencez gratuitement. Passez à Pro quand votre travail compte.",
       "trialMessage": "Essayez Pro gratuitement pendant 14 jours. Aucune carte de crédit requise.",
       "currencyNotice": "Prix affichés en USD. Automatiquement convertis dans votre devise locale lors du paiement.",
@@ -2002,8 +2007,8 @@
     },
     "tiers": {
       "free": {
-        "name": "Gratuit",
-        "title": "Gratuit",
+        "name": "Starter",
+        "title": "Starter",
         "price": "Gratuit",
         "description": "Découvrez les possibilités. Essayez quelques conversations, sans engagement.",
         "cta": "Commencer",
@@ -2077,10 +2082,19 @@
         }
       }
     },
+    "sections": {
+      "comparisonTag": "Comparer les plans",
+      "faqTag": "Questions fréquentes",
+      "ctaTag": "La décision est facile"
+    },
     "finalCta": {
       "title": "Commencez à créer plus intelligemment",
-      "subtitle": "Transformez vos conversations en documents professionnels",
+      "headline1": "Commencez à créer",
+      "headline2": "plus ",
+      "headlineEm": "intelligemment.",
+      "subtitle": "Transformez vos conversations en documents professionnels.",
       "button": "Commencer l'essai gratuit",
+      "contactSales": "Contacter les ventes",
       "noCreditCard": "Aucune carte de crédit requise"
     },
     "comparison": {
@@ -2113,6 +2127,8 @@
         "api": "Accès API"
       },
       "title": "Comparer les plans",
+      "headline1": "Comparer les ",
+      "headlineEm": "plans.",
       "subtitle": "Trouvez le plan parfait pour vos besoins",
       "values": {
         "unlimited": "Illimité",
@@ -2130,6 +2146,8 @@
     },
     "faq": {
       "title": "Questions fréquemment posées",
+      "headline1": "Questions fréquemment ",
+      "headlineEm": "posées.",
       "questions": {
         "trial": {
           "question": "Comment fonctionne l'essai gratuit de 14 jours ?",
@@ -2336,7 +2354,29 @@
     "hours": "heures",
     "nextBilling": "Renouvelle le",
     "status": "Statut",
-    "billingPeriodStart": "Période de facturation commencée"
+    "billingPeriodStart": "Période de facturation commencée",
+    "onDemandAnalyses": "Sorties IA à la demande",
+    "upsell": {
+      "title": "Passer à Pro",
+      "subtitle": "Libérez toute la puissance de Neural Summary",
+      "description": "Transformez chaque conversation en documents professionnels prêts à l'emploi, sans limites.",
+      "features": {
+        "unlimited": "Conversations illimitées",
+        "hours": "60 heures d'audio par mois",
+        "fileSize": "Téléchargez des fichiers jusqu'à 5 Go",
+        "allOutputs": "Tous les types de sorties IA",
+        "onDemand": "Sorties IA à la demande illimitées",
+        "translation": "Traduction dans plus de 50 langues",
+        "askQuestions": "Posez des questions avec des réponses IA",
+        "sharing": "Partage et collaboration avancés",
+        "priority": "Traitement prioritaire",
+        "support": "Support par e-mail prioritaire"
+      },
+      "startingAt": "À partir de",
+      "perMonth": "/mois",
+      "cta": "Passer à Pro",
+      "guarantee": "Garantie de remboursement de 30 jours"
+    }
   },
   "paywall": {
     "quotaExceeded": {

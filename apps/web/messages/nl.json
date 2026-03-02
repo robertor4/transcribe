@@ -100,7 +100,7 @@
     "dontHaveAccount": "Heb je nog geen account?",
     "createAccount": "Account aanmaken",
     "createYourAccount": "Maak je account aan",
-    "joinThousandsOfUsers": "Sluit je aan bij duizenden gebruikers die hun audio transformeren",
+    "joinThousandsOfUsers": "Zet gesprekken om in gestructureerde, kant-en-klare documenten.",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Log in om door te gaan naar Neural Summary",
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
@@ -1446,6 +1446,7 @@
         "price": "",
         "period": "/mnd",
         "periodSub": "Maandelijks gefactureerd · altijd opzegbaar",
+        "billedAnnuallyNote": "Jaarlijks gefactureerd ({amount}/jaar)",
         "badge": "Meest populair",
         "features": "Onbeperkte gesprekken,60 uur/maand inbegrepen,Alle AI-outputtypen,Vertaling & AI-vragen,Prioriteitsondersteuning",
         "cta": "Start Pro 14 dagen gratis"
@@ -2022,7 +2023,11 @@
       "description": "Eenvoudige premium prijzen. Probeer Pro 14 dagen gratis. Transformeer je gesprekken naar professionele documenten."
     },
     "hero": {
+      "tag": "14 dagen gratis proberen",
       "title": "Prijzen voor werk dat telt",
+      "headline1": "Prijzen voor werk",
+      "headline2": "dat ",
+      "headlineEm": "telt.",
       "subtitle": "Start gratis. Upgrade wanneer je output ertoe doet.",
       "trialMessage": "Probeer Pro 14 dagen gratis. Geen creditcard vereist.",
       "currencyNotice": "Prijzen weergegeven in USD. Automatisch omgerekend naar je lokale valuta bij afrekenen.",
@@ -2036,8 +2041,8 @@
     },
     "tiers": {
       "free": {
-        "name": "Gratis",
-        "title": "Gratis",
+        "name": "Starter",
+        "title": "Starter",
         "price": "Gratis",
         "description": "Ontdek de mogelijkheden. Probeer een paar gesprekken, vrijblijvend.",
         "cta": "Aan de slag",
@@ -2111,10 +2116,19 @@
         }
       }
     },
+    "sections": {
+      "comparisonTag": "Plannen vergelijken",
+      "faqTag": "Veelgestelde vragen",
+      "ctaTag": "De keuze is eenvoudig"
+    },
     "finalCta": {
       "title": "Begin slimmer te creëren",
-      "subtitle": "Transformeer je gesprekken naar professionele documenten",
+      "headline1": "Begin slimmer",
+      "headline2": "te ",
+      "headlineEm": "creëren.",
+      "subtitle": "Transformeer je gesprekken naar professionele documenten.",
       "button": "Start gratis proefperiode",
+      "contactSales": "Neem contact op",
       "noCreditCard": "Geen creditcard vereist"
     },
     "comparison": {
@@ -2147,6 +2161,8 @@
         "api": "API-toegang"
       },
       "title": "Vergelijk abonnementen",
+      "headline1": "Vergelijk ",
+      "headlineEm": "abonnementen.",
       "subtitle": "Vind het perfecte abonnement voor je behoeften",
       "values": {
         "unlimited": "Onbeperkt",
@@ -2164,6 +2180,8 @@
     },
     "faq": {
       "title": "Veelgestelde vragen",
+      "headline1": "Veelgestelde ",
+      "headlineEm": "vragen.",
       "questions": {
         "trial": {
           "question": "Hoe werkt de 14-daagse gratis proefperiode?",
@@ -2375,7 +2393,29 @@
     "hours": "uren",
     "nextBilling": "Verlengt op",
     "status": "Status",
-    "billingPeriodStart": "Factureringsperiode gestart"
+    "billingPeriodStart": "Factureringsperiode gestart",
+    "onDemandAnalyses": "On-demand AI-uitvoer",
+    "upsell": {
+      "title": "Upgraden naar Pro",
+      "subtitle": "Ontgrendel de volledige kracht van Neural Summary",
+      "description": "Verander elk gesprek in professionele, werkklare documenten zonder beperkingen.",
+      "features": {
+        "unlimited": "Onbeperkte gesprekken",
+        "hours": "60 uur audio per maand",
+        "fileSize": "Upload bestanden tot 5 GB",
+        "allOutputs": "Alle AI-uitvoertypen",
+        "onDemand": "Onbeperkte on-demand AI-uitvoer",
+        "translation": "Vertaling naar 50+ talen",
+        "askQuestions": "Stel vragen met AI-antwoorden",
+        "sharing": "Geavanceerd delen & samenwerken",
+        "priority": "Prioriteitsverwerking",
+        "support": "Prioriteits-e-mailondersteuning"
+      },
+      "startingAt": "Vanaf",
+      "perMonth": "/maand",
+      "cta": "Upgraden naar Pro",
+      "guarantee": "30 dagen geld-terug-garantie"
+    }
   },
   "paywall": {
     "quotaExceeded": {

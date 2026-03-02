@@ -1,9 +1,8 @@
 'use client';
 
-import { Check, X, Shield, ArrowRight, Loader2 } from 'lucide-react';
+import { Check, X, Shield, Loader2 } from 'lucide-react';
 import { AiIcon } from '@/components/icons/AiIcon';
 import Link from 'next/link';
-import { LucideIcon } from 'lucide-react';
 import { formatPriceLocale } from '@transcribe/shared';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { useEffect } from 'react';
@@ -13,8 +12,6 @@ interface Feature {
   text: string;
   included: boolean;
   note?: string;
-  icon?: LucideIcon;
-  category?: string;
 }
 
 interface PricingCardProps {
@@ -29,7 +26,6 @@ interface PricingCardProps {
   ctaLink: string;
   locale: string;
   currency?: string;
-  currencySymbol?: string;
   showGuarantee?: boolean;
   guaranteeText?: string;
   billingNote?: string;
@@ -98,63 +94,52 @@ export function PricingCard({
   return (
     <div
       className={`
-        relative rounded-2xl p-8 transition-all duration-300
+        relative border rounded-2xl p-7 text-left transition-all duration-300
         ${
           featured
-            ? 'border-2 border-[rgba(141,106,250,0.5)] bg-white/[0.12] shadow-[0_8px_32px_rgba(141,106,250,0.15)] md:scale-105'
-            : 'border border-white/[0.08] bg-white/[0.08] hover:bg-white/[0.12]'
+            ? 'landing-pricing-featured border-[rgba(141,106,250,0.5)]'
+            : 'bg-white/[0.08] border-white/[0.08] hover:bg-white/[0.12]'
         }
       `}
     >
       {/* Featured badge */}
       {featured && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8D6AFA] text-white px-4 py-1 rounded-full text-sm font-medium shadow-lg">
+        <div className="absolute -top-[11px] left-1/2 -translate-x-1/2 bg-[#8D6AFA] text-white text-[10px] font-[family-name:var(--font-dm-mono)] tracking-wider uppercase px-3 py-0.5 rounded-full whitespace-nowrap">
           Most Popular
         </div>
       )}
 
+      {/* Tier name (monospace label) */}
+      <div className="text-xs font-[family-name:var(--font-dm-mono)] text-white/30 tracking-[2px] uppercase mb-2">
+        {title}
+      </div>
+
+      {/* Price */}
+      <div className="mb-1">
+        {customPriceLabel ? (
+          <div className="font-[family-name:var(--font-merriweather)] text-[38px] font-black leading-none">
+            {customPriceLabel}
+          </div>
+        ) : (
+          <div className="font-[family-name:var(--font-merriweather)] text-[38px] font-black leading-none">
+            {formattedPrice}<span className="text-base font-normal text-white/30">{priceUnit}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="text-xs text-white/30 mb-1">
+        {billingNote || description}
+      </div>
+
       {/* Trial badge for Pro tier */}
       {trialBadge && (
-        <div className="flex items-center gap-1.5 text-[#14D0DC] text-sm font-medium mb-4">
-          <AiIcon size={16} />
+        <div className="flex items-center gap-1.5 text-[#14D0DC] text-xs font-medium mb-1">
+          <AiIcon size={14} />
           <span>{trialBadge}</span>
         </div>
       )}
 
-      <div className="mb-8 space-y-3">
-        <h3 className="text-2xl font-bold text-white tracking-tight">
-          {title}
-        </h3>
-        <p className="text-white/60 leading-relaxed">{description}</p>
-      </div>
-
-      <div className="mb-8">
-        {customPriceLabel ? (
-          // Custom price label for enterprise
-          <div className="flex items-baseline">
-            <span className="text-3xl font-semibold text-white tracking-tight">
-              {customPriceLabel}
-            </span>
-          </div>
-        ) : (
-          // Regular price display
-          <div className="flex items-baseline">
-            <span className="text-5xl font-light text-white tracking-tight">
-              {formattedPrice}
-            </span>
-            {priceUnit && (
-              <span className="text-white/40 ml-2 font-light">
-                {priceUnit}
-              </span>
-            )}
-          </div>
-        )}
-        {billingNote && (
-          <p className="text-sm text-white/40 mt-2 font-light">
-            {billingNote}
-          </p>
-        )}
-      </div>
+      <div className="h-4" />
 
       {onCtaClick ? (
         <button
@@ -164,23 +149,18 @@ export function PricingCard({
           }}
           disabled={ctaLoading}
           className={`
-            group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6 disabled:opacity-50 disabled:cursor-not-allowed
+            block w-full text-center py-2.5 rounded-lg text-sm font-medium transition-all mb-6 disabled:opacity-50 disabled:cursor-not-allowed
             ${
               featured
-                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] shadow-lg'
-                : tier === 'free'
                 ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
-                : 'border border-white/20 text-white hover:bg-white/10 hover:border-white/40'
+                : 'bg-transparent text-white border border-white/20 hover:border-white/40'
             }
           `}
         >
           {ctaLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin mx-auto" />
           ) : (
-            <>
-              {ctaText}
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </>
+            ctaText
           )}
         </button>
       ) : (
@@ -188,62 +168,42 @@ export function PricingCard({
           href={ctaLink}
           onClick={handleCtaClick}
           className={`
-            group flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full text-center font-medium transition-all mb-6
+            block w-full text-center py-2.5 rounded-lg text-sm font-medium transition-all mb-6
             ${
               featured
-                ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0] shadow-lg'
-                : tier === 'free'
                 ? 'bg-[#8D6AFA] text-white hover:bg-[#7A5AE0]'
-                : 'border border-white/20 text-white hover:bg-white/10 hover:border-white/40'
+                : 'bg-transparent text-white border border-white/20 hover:border-white/40'
             }
           `}
         >
           {ctaText}
-          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       )}
 
       {showGuarantee && guaranteeText && (
-        <div className="flex items-center justify-center gap-2 text-sm text-white/50 mb-8 pb-8 border-b border-white/10 font-light">
-          <Shield className="h-4 w-4 text-green-400" />
+        <div className="flex items-center justify-center gap-2 text-[11px] text-white/30 mb-5">
+          <Shield className="h-3.5 w-3.5 text-green-400" />
           <span>{guaranteeText}</span>
         </div>
       )}
 
-      <ul className="space-y-4">
-        {features.map((feature, index) => {
-          const isNewCategory = index === 0 || feature.category !== features[index - 1]?.category;
-          return (
-            <div key={index}>
-              {isNewCategory && feature.category && (
-                <li className="text-xs font-medium text-white/30 uppercase tracking-wider mt-6 mb-3">
-                  {feature.category}
-                </li>
+      <div className="flex flex-col gap-2.5">
+        {features.map((feature, index) => (
+          <div key={index} className="flex gap-2 text-[13px] text-white/60 items-start">
+            {feature.included ? (
+              <Check className="w-3.5 h-3.5 text-[#14D0DC] shrink-0 mt-0.5" strokeWidth={2.5} />
+            ) : (
+              <X className="w-3.5 h-3.5 text-white/20 shrink-0 mt-0.5" strokeWidth={2.5} />
+            )}
+            <span className={feature.included ? '' : 'text-white/30 line-through'}>
+              {feature.text}
+              {feature.note && (
+                <span className="text-white/30 ml-1">({feature.note})</span>
               )}
-              <li className="flex items-start gap-3">
-                {feature.icon && (
-                  <feature.icon className="h-5 w-5 text-[#8D6AFA] mt-0.5 flex-shrink-0" />
-                )}
-                {!feature.icon && (
-                  feature.included ? (
-                    <Check className="h-5 w-5 text-[#14D0DC] mt-0.5 flex-shrink-0" />
-                  ) : (
-                    <X className="h-5 w-5 text-white/20 mt-0.5 flex-shrink-0" />
-                  )
-                )}
-                <span className={`font-light ${feature.included ? 'text-white/70' : 'text-white/30 line-through'}`}>
-                  {feature.text}
-                  {feature.note && (
-                    <span className="text-sm text-white/40 ml-2">
-                      ({feature.note})
-                    </span>
-                  )}
-                </span>
-              </li>
-            </div>
-          );
-        })}
-      </ul>
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

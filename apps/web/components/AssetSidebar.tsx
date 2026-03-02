@@ -14,6 +14,13 @@ import {
   PanelRightClose,
 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyContent,
+} from '@/components/ui/empty';
 import { Button } from '@/components/Button';
 import { AssetSidebarCard } from '@/components/AssetSidebarCard';
 import { formatDuration } from '@/lib/formatters';
@@ -115,22 +122,27 @@ export function AssetSidebar({
             />
           ))
         ) : (
-          <div className="text-center py-6 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-            <AiIcon
-              size={36}
-              className="mx-auto mb-3 text-[#8D6AFA] opacity-40"
-            />
-            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('sidebar.emptyTitle')}
-            </h3>
-            <Button
-              variant="brand"
-              size="sm"
-              icon={<Plus className="w-4 h-4" />}
-              onClick={onGenerateNew}
-            >
-              {t('sidebar.generateNew')}
-            </Button>
+          <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+            <Empty className="py-6 px-4">
+              <EmptyHeader>
+                <EmptyMedia>
+                  <AiIcon size={36} className="text-[#8D6AFA] opacity-40" />
+                </EmptyMedia>
+                <EmptyTitle className="text-base font-semibold">
+                  {t('sidebar.emptyTitle')}
+                </EmptyTitle>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button
+                  variant="brand"
+                  size="sm"
+                  icon={<Plus className="w-4 h-4" />}
+                  onClick={onGenerateNew}
+                >
+                  {t('sidebar.generateNew')}
+                </Button>
+              </EmptyContent>
+            </Empty>
           </div>
         )}
 

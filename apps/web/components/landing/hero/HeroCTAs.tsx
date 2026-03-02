@@ -38,7 +38,7 @@ export function HeroCTAs({ children, delay = 0 }: HeroCTAsProps) {
       variants={variants}
       initial="hidden"
       animate="visible"
-      className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6"
+      className="flex flex-row items-center gap-3 sm:gap-6"
     >
       {children}
     </motion.div>

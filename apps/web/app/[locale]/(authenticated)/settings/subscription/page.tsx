@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
-import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award } from 'lucide-react';
+import { Loader2, CreditCard, Calendar, AlertCircle, TrendingUp, Award, Check, Zap, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
 import { TrialCountdownBanner } from '@/components/trial/TrialCountdownBanner';
 import { SubscriptionSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { Button } from '@/components/Button';
@@ -55,6 +55,77 @@ interface Invoice {
   created: number;
   invoicePdf: string;
   hostedInvoiceUrl: string;
+}
+
+function ProUpsellSection({ locale }: { locale: string }) {
+  const t = useTranslations('subscription.upsell');
+  const pricing = getPricingForLocale(locale);
+  const formattedPrice = formatPriceLocale(pricing.professional.annualMonthly, locale, { decimals: 2 });
+
+  const features = [
+    'unlimited', 'hours', 'fileSize', 'allOutputs', 'onDemand',
+    'translation', 'askQuestions', 'sharing', 'priority', 'support',
+  ] as const;
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-purple-200 dark:border-purple-800/50 bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-purple-950/30 dark:via-gray-800 dark:to-indigo-950/20">
+      {/* Decorative accent */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8D6AFA] to-[#14D0DC]" />
+
+      <div className="p-6 sm:p-8">
+        {/* Header */}
+        <div className="flex items-start gap-3 mb-2">
+          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#8D6AFA]/10 flex items-center justify-center">
+            <Zap className="w-5 h-5 text-[#8D6AFA]" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              {t('title')}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t('subtitle')}
+            </p>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-700 dark:text-gray-300 mb-6 ml-[52px]">
+          {t('description')}
+        </p>
+
+        {/* Features grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 mb-6">
+          {features.map((key) => (
+            <div key={key} className="flex items-center gap-2.5">
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#8D6AFA]/10 flex items-center justify-center">
+                <Check className="w-3 h-3 text-[#8D6AFA]" />
+              </div>
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {t(`features.${key}`)}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Price + CTA */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-5 border-t border-purple-100 dark:border-purple-800/30">
+          <div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t('startingAt')}</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{formattedPrice}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('perMonth')}</span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t('guarantee')}</span>
+            </div>
+          </div>
+          <Button variant="brand" href={`/${locale}/pricing`}>
+            {t('cta')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function SubscriptionPage() {
@@ -260,6 +331,9 @@ export default function SubscriptionPage() {
 
         </div>
       </div>
+
+      {/* Pro Upsell — shown to free tier users who aren't trialing */}
+      {isFree && !isTrialing && <ProUpsellSection locale={locale} />}
 
       {/* Usage Stats - Hidden for admins */}
       {usageStats && !isAdmin && (

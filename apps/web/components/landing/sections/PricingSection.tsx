@@ -1,6 +1,10 @@
+'use client';
+
+import { useState } from 'react';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import { BillingToggle } from '@/components/pricing/BillingToggle';
 
 interface PricingTier {
   tier: string;
@@ -27,14 +31,21 @@ interface PricingSectionTranslations {
 
 interface PricingSectionProps {
   translations: PricingSectionTranslations;
-  proPrice: string;
+  proMonthlyPrice: string;
+  proAnnualPrice: string;
+  proBilledAnnuallyNote: string;
   locale: string;
 }
 
-export function PricingSection({ translations: t, proPrice, locale }: PricingSectionProps) {
+export function PricingSection({ translations: t, proMonthlyPrice, proAnnualPrice, proBilledAnnuallyNote, locale }: PricingSectionProps) {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+
+  const proPrice = billingCycle === 'annual' ? proAnnualPrice : proMonthlyPrice;
+  const proPeriodSub = billingCycle === 'annual' ? proBilledAnnuallyNote : t.pro.periodSub;
+
   const tiers = [
     { data: t.free, featured: false },
-    { data: { ...t.pro, price: proPrice }, featured: true },
+    { data: { ...t.pro, price: proPrice, periodSub: proPeriodSub }, featured: true },
     { data: t.enterprise, featured: false },
   ];
 
@@ -47,9 +58,13 @@ export function PricingSection({ translations: t, proPrice, locale }: PricingSec
           {t.headline1}<br />{t.headline2}<em>{t.headlineEm}</em>
         </h2>
 
-        <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-14">
+        <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-10">
           {t.body}
         </p>
+
+        <div className="mb-14">
+          <BillingToggle billingCycle={billingCycle} onToggle={setBillingCycle} />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {tiers.map(({ data, featured }) => (

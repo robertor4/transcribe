@@ -100,7 +100,7 @@
     "dontHaveAccount": "Don't have an account?",
     "createAccount": "Create Account",
     "createYourAccount": "Create your account",
-    "joinThousandsOfUsers": "Join thousands of users transforming their audio",
+    "joinThousandsOfUsers": "Turn conversations into structured, ready-to-use documents.",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Sign in to continue to Neural Summary",
     "invalidCredentials": "Invalid email or password",
@@ -1447,6 +1447,7 @@
         "price": "",
         "period": "/mo",
         "periodSub": "Billed monthly · cancel anytime",
+        "billedAnnuallyNote": "Billed annually ({amount}/year)",
         "badge": "Most popular",
         "features": "Unlimited conversations,60 hours/month included,All AI output types,Translation & Ask Questions,Priority support",
         "cta": "Start Pro free for 14 days"
@@ -1791,7 +1792,11 @@
       "description": "Simple, premium pricing. Try Pro free for 14 days. Transform your conversations into professional documents."
     },
     "hero": {
+      "tag": "14-day free trial",
       "title": "Pricing for work that ships",
+      "headline1": "Pricing for work",
+      "headline2": "that ",
+      "headlineEm": "ships.",
       "subtitle": "Start free. Upgrade when your output matters.",
       "trialMessage": "Try Pro free for 14 days. No credit card required.",
       "currencyNotice": "Prices shown in USD. Automatically converted to your local currency at checkout.",
@@ -1805,8 +1810,8 @@
     },
     "tiers": {
       "free": {
-        "name": "Free",
-        "title": "Free",
+        "name": "Starter",
+        "title": "Starter",
         "price": "Free",
         "description": "See what's possible. Try a few conversations, no commitment.",
         "cta": "Get Started",
@@ -1880,10 +1885,19 @@
         }
       }
     },
+    "sections": {
+      "comparisonTag": "Compare plans",
+      "faqTag": "Common questions",
+      "ctaTag": "The decision is easy"
+    },
     "finalCta": {
       "title": "Start creating smarter",
-      "subtitle": "Transform your conversations into professional documents",
+      "headline1": "Start creating",
+      "headline2": "",
+      "headlineEm": "smarter.",
+      "subtitle": "Transform your conversations into professional documents.",
       "button": "Start Free Trial",
+      "contactSales": "Contact sales",
       "noCreditCard": "No credit card required"
     },
     "comparison": {
@@ -1916,6 +1930,8 @@
         "api": "API access"
       },
       "title": "Compare plans",
+      "headline1": "Compare ",
+      "headlineEm": "plans.",
       "subtitle": "Find the perfect plan for your needs",
       "values": {
         "unlimited": "Unlimited",
@@ -1933,6 +1949,8 @@
     },
     "faq": {
       "title": "Frequently asked questions",
+      "headline1": "Frequently asked ",
+      "headlineEm": "questions.",
       "questions": {
         "trial": {
           "question": "How does the 14-day free trial work?",
@@ -2145,7 +2163,29 @@
     "hours": "hours",
     "nextBilling": "Renews on",
     "status": "Status",
-    "billingPeriodStart": "Billing period started"
+    "billingPeriodStart": "Billing period started",
+    "onDemandAnalyses": "On-demand AI outputs",
+    "upsell": {
+      "title": "Upgrade to Pro",
+      "subtitle": "Unlock the full power of Neural Summary",
+      "description": "Turn every conversation into polished, work-ready documents with no limits.",
+      "features": {
+        "unlimited": "Unlimited conversations",
+        "hours": "60 hours of audio per month",
+        "fileSize": "Upload files up to 5GB",
+        "allOutputs": "All AI output types",
+        "onDemand": "Unlimited on-demand AI outputs",
+        "translation": "Translation to 50+ languages",
+        "askQuestions": "Ask Questions with AI answers",
+        "sharing": "Advanced sharing & collaboration",
+        "priority": "Priority processing",
+        "support": "Priority email support"
+      },
+      "startingAt": "Starting at",
+      "perMonth": "/month",
+      "cta": "Upgrade to Pro",
+      "guarantee": "30-day money-back guarantee"
+    }
   },
   "paywall": {
     "quotaExceeded": {

@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Dev server performance optimizations**: Enabled Turbopack (`next dev --turbo`) for faster local compilation, removed `staleTimes: { dynamic: 0, static: 0 }` that was disabling dev caching entirely, and added explicit `@source` directives to Tailwind CSS v4 to avoid full-project class scanning
+  - Modified: [package.json](apps/web/package.json), [next.config.ts](apps/web/next.config.ts), [globals.css](apps/web/app/globals.css)
+- **Pricing page redesign**: Aligned `/pricing` page with the landing page design system — `landing-section` padding, `SectionTag` eyebrows, `clamp()` responsive typography with `<em>` cyan italic keyword emphasis, `max-w-[1100px]` content width, Merriweather price display, DM Mono tier labels, landing-style CTA buttons (`rounded-lg`), and `landing-pricing-featured` card effect. Simplified feature lists (removed per-feature icons/categories in favor of compact checkmark rows). Redesigned Final CTA to match landing page's dual-button + meta-checkmarks pattern. Replaced dotted background with `AmbientGradient`. Billing toggle now uses shadcn Switch (`size="lg"`). Renamed Free tier to Starter across all locales
+  - Modified: [page.tsx](apps/web/app/[locale]/pricing/page.tsx), [PricingCard.tsx](apps/web/components/pricing/PricingCard.tsx), [BillingToggle.tsx](apps/web/components/pricing/BillingToggle.tsx), [switch.tsx](apps/web/components/ui/switch.tsx)
+  - Translations: Added `pricing.sections` tags, `pricing.finalCta.contactSales`, and split headlines into `headline1`/`headlineEm` pattern across all 5 locale files. Renamed Free tier to Starter
+- **Landing page billing toggle**: Added monthly/annual billing toggle with dynamic Pro pricing to the landing page pricing section. Defaults to annual. Pro card price and period sub-text update when toggled
+  - Modified: [PricingSection.tsx](apps/web/components/landing/sections/PricingSection.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx)
+  - Translations: Added `billedAnnuallyNote` to landing pricing pro tier in all 5 locale files
+
+- **Admin panel redesign**: Integrated admin pages with `ThreePaneLayout` and `LeftNavigation` sidebar, matching the dashboard layout. Replaced standalone header/back buttons with consistent sidebar navigation. Added sortable "Last Login" column (click header to toggle asc/desc). Replaced `window.confirm()` with inline confirmation pattern for delete actions. Updated card styling to use `rounded-xl` with border accents
+  - New: [AdminClient.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminClient.tsx), [AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx)
+  - Modified: [admin/page.tsx](apps/web/app/[locale]/(authenticated)/admin/page.tsx)
+- **Admin user detail page redesign**: Same ThreePaneLayout integration with inline confirmation for usage reset. Removed standalone layout wrappers
+  - New: [UserActivityClient.tsx](apps/web/app/[locale]/(authenticated)/admin/users/[userId]/UserActivityClient.tsx), [UserActivityPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/users/[userId]/UserActivityPanel.tsx)
+  - Modified: [admin/users/[userId]/page.tsx](apps/web/app/[locale]/(authenticated)/admin/users/[userId]/page.tsx)
+- **Settings pages redesign**: Replaced standalone settings layout (separate header, sidebar, mobile menu) with `ThreePaneLayout` integration. Settings sub-navigation now uses horizontal tab bar with underline-style active indicator instead of vertical sidebar. Removed duplicate `UsageProvider` wrapper (already provided by parent layout)
+  - New: [SettingsNavigation.tsx](apps/web/app/[locale]/(authenticated)/settings/SettingsNavigation.tsx)
+  - Rewritten: [settings/layout.tsx](apps/web/app/[locale]/(authenticated)/settings/layout.tsx)
+
 ### Added
+- **Pro upsell section on subscription page**: When a free-tier user (trial expired or never subscribed) visits Settings > Subscription, a styled upsell card appears with a gradient accent, 10 Pro benefits with checkmarks in a two-column grid, locale-aware pricing, money-back guarantee, and a CTA linking to the pricing page. Fully translated in all 5 locales
+  - Modified: [subscription/page.tsx](apps/web/app/[locale]/(authenticated)/settings/subscription/page.tsx)
+  - Translations: Added `subscription.upsell` keys to all locale files
 - **Reading time indicator**: Shows estimated reading time (based on 238 wpm) as a pill badge in the conversation header metadata, updating when switching between Summary and Transcript tabs
   - Files: [ReadingTimeIndicator.tsx](apps/web/components/ReadingTimeIndicator.tsx), [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx)
 - **Auto-categorize conversation type**: AI-detected category (sales-call, business-meeting, one-on-one, interview, brainstorm, solo-recording, presentation, workshop, support-call, general) is now extracted during transcription processing and displayed as a badge in the conversation header
@@ -23,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Translation strings added to all 5 locale files
 
 ### Changed
+- **Migrated empty states to shadcn/ui Empty component**: Replaced custom inline empty state JSX across 7 locations with composable shadcn `Empty` sub-components (`EmptyMedia`, `EmptyTitle`, `EmptyDescription`, `EmptyContent`). Ensures consistent internal padding so text never touches container edges. Rewrote `EmptyState.tsx` wrapper to use shadcn Empty internally
+  - Files: [empty.tsx](apps/web/components/ui/empty.tsx), [EmptyState.tsx](apps/web/components/EmptyState.tsx), [ConversationsTable.tsx](apps/web/components/dashboard/conversations-table/ConversationsTable.tsx), [FolderClient.tsx](apps/web/app/[locale]/(authenticated)/folder/[id]/FolderClient.tsx), [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx), [QASlidePanel.tsx](apps/web/components/QASlidePanel.tsx), [outputTemplates/index.tsx](apps/web/components/outputTemplates/index.tsx)
 - **Editorial transcript redesign with speaker stats sidebar**: Redesigned the Transcript tab to match the Summary tab's editorial aesthetic. Removed dashboard-style stats grid, heavy bordered speaker cards, and interactive timeline. New design features: ghost search input (borderless, subtle background), thin left-accent speaker segments with clean dividers, and generous editorial spacing. Stats (duration, segments, speakers, total words) moved to a sticky right sidebar — matching the Key Points sidebar pattern — with a speaker breakdown showing colored avatars, speaking time, percentage, and mini progress bars
   - Files: [TranscriptTimeline.tsx](apps/web/components/TranscriptTimeline.tsx), [InlineTranscript.tsx](apps/web/components/InlineTranscript.tsx), [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx)
 - **Unified slim tab bar for Summary/Transcript switching**: Replaced three separate tab-switching mechanisms (mobile pill toggle, desktop toolbar icon, dropdown menu item) with a single underline-style shadcn Tabs bar with icons (BookOpen for Summary, ScrollText for Transcript). Visible on all screen sizes with bottom-border active indicator

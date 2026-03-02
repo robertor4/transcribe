@@ -257,7 +257,9 @@ export default async function LandingPage({
         {/* 10. Pricing */}
         <PricingSection
           locale={locale}
-          proPrice={formatPriceLocale(getPricingForLocale(locale).professional.monthly, locale)}
+          proMonthlyPrice={formatPriceLocale(getPricingForLocale(locale).professional.monthly, locale)}
+          proAnnualPrice={formatPriceLocale(getPricingForLocale(locale).professional.annualMonthly, locale, { decimals: 2 })}
+          proBilledAnnuallyNote={t('pricing.pro.billedAnnuallyNote', { amount: formatPriceLocale(getPricingForLocale(locale).professional.annual, locale) })}
           translations={{
             tag: t('pricing.tag'),
             headline1: t('pricing.headline1'),

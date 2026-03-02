@@ -5,6 +5,12 @@ import { createPortal } from 'react-dom';
 import { X, Send, MessageSquareText, Lock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AskResponse, QAHistoryItem } from '@transcribe/shared';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyDescription,
+} from '@/components/ui/empty';
 import { QAMessage } from './QAMessage';
 import { Button } from './Button';
 import { Link } from '@/i18n/navigation';
@@ -281,14 +287,14 @@ export function QASlidePanel({
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-subtle">
           {exchanges.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center px-6">
-              <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-                <MessageSquareText className="w-7 h-7 text-gray-400 dark:text-gray-500" />
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {t('emptyState')}
-              </p>
-            </div>
+            <Empty className="h-full justify-center px-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon" className="size-14 rounded-full">
+                  <MessageSquareText className="w-7 h-7 text-gray-400 dark:text-gray-500" />
+                </EmptyMedia>
+                <EmptyDescription>{t('emptyState')}</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <>
               {exchanges.map((exchange, index) => (

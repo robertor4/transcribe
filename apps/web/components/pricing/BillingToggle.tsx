@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Switch } from '@/components/ui/switch';
 
 interface BillingToggleProps {
   billingCycle: 'monthly' | 'annual';
@@ -11,33 +12,24 @@ export function BillingToggle({ billingCycle, onToggle }: BillingToggleProps) {
   const t = useTranslations('pricing.hero');
 
   return (
-    <div className="flex items-center justify-center gap-4">
-      {/* Monthly Label */}
-      <span className={`text-sm font-light transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-gray-400'}`}>
+    <div className="flex items-center justify-center gap-3">
+      <span className={`text-[11px] font-[family-name:var(--font-dm-mono)] tracking-[1px] uppercase transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-white/30'}`}>
         {t('monthly')}
       </span>
 
-      {/* Toggle Switch */}
-      <button
-        onClick={() => onToggle(billingCycle === 'monthly' ? 'annual' : 'monthly')}
-        className="relative inline-flex h-8 w-16 items-center rounded-full bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:ring-offset-2 focus:ring-offset-[#23194B]"
-        role="switch"
-        aria-checked={billingCycle === 'annual'}
+      <Switch
+        checked={billingCycle === 'annual'}
+        onCheckedChange={(checked) => onToggle(checked ? 'annual' : 'monthly')}
+        size="lg"
         aria-label="Toggle between monthly and annual billing"
-      >
-        <span
-          className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform ${
-            billingCycle === 'annual' ? 'translate-x-9' : 'translate-x-1'
-          }`}
-        />
-      </button>
+        className="data-[state=checked]:bg-[#8D6AFA] data-[state=unchecked]:bg-white/[0.12]"
+      />
 
-      {/* Annual Label with Save Badge */}
-      <div className="flex items-center gap-2">
-        <span className={`text-sm font-light transition-colors ${billingCycle === 'annual' ? 'text-white' : 'text-gray-400'}`}>
+      <div className="flex items-center gap-1.5">
+        <span className={`text-[11px] font-[family-name:var(--font-dm-mono)] tracking-[1px] uppercase transition-colors ${billingCycle === 'annual' ? 'text-white' : 'text-white/30'}`}>
           {t('annual')}
         </span>
-        <span className="bg-[#14D0DC] text-[#23194B] text-xs font-medium px-2.5 py-0.5 rounded-full">
+        <span className="bg-[#14D0DC] text-[#23194B] text-[10px] font-[family-name:var(--font-dm-mono)] tracking-wider uppercase px-2 py-0.5 rounded-full">
           {t('save25')}
         </span>
       </div>

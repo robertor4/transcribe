@@ -58,6 +58,7 @@ import { AssetRecommendations } from '@/components/AssetRecommendations';
 import { getAssetRecommendations } from '@/lib/assetRecommendations';
 import type { ConversationCategory } from '@transcribe/shared';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -633,13 +634,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     </Tooltip>
                   </div>
                 </TooltipProvider>
-                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
                         onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
-                        className={`p-1.5 rounded-lg transition-colors ${
+                        className={`hidden lg:block p-1.5 rounded-lg transition-colors ${
                           activeTab === 'transcript'
                             ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
                             : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -655,7 +656,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                 <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -673,6 +674,11 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         icon: Copy,
                         label: copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy'),
                         onClick: handleCopy,
+                      },
+                      {
+                        icon: Globe,
+                        label: tConversation('translation.dialogTitle'),
+                        onClick: () => setTranslationDialogOpen(true),
                       },
                       // Regenerate summary - only for V2 conversations and Pro+ users
                       ...(!isLegacyConversation && (isAdmin || userTier !== 'free')
@@ -733,8 +739,26 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               </div>
             </div>
 
-            {/* Editorial rule */}
-            <hr className="border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
+            {/* Editorial rule — desktop only */}
+            <hr className="hidden lg:block border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
+
+            {/* Mobile transcript toggle */}
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentTab)} className="lg:hidden mt-4">
+              <TabsList className="bg-gray-100 dark:bg-gray-800 h-7 p-0.5 rounded-full">
+                <TabsTrigger
+                  value="summary"
+                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white dark:data-[state=active]:bg-gray-100 dark:data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
+                >
+                  Summary
+                </TabsTrigger>
+                <TabsTrigger
+                  value="transcript"
+                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white dark:data-[state=active]:bg-gray-100 dark:data-[state=active]:text-gray-900 data-[state=active]:shadow-none"
+                >
+                  Transcript
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Content area — two-column: main + key points sidebar */}
             <div className="lg:flex pt-6 lg:pt-10">

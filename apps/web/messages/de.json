@@ -100,7 +100,7 @@
     "dontHaveAccount": "Haben Sie noch kein Konto?",
     "createAccount": "Konto erstellen",
     "createYourAccount": "Erstellen Sie Ihr Konto",
-    "joinThousandsOfUsers": "Schließen Sie sich Tausenden von Nutzern an, die ihr Audio transformieren",
+    "joinThousandsOfUsers": "Verwandeln Sie Gespräche in strukturierte, sofort nutzbare Dokumente.",
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Melden Sie sich an, um zu Neural Summary fortzufahren",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
@@ -1424,6 +1424,7 @@
         "price": "",
         "period": "/Mo.",
         "periodSub": "Monatliche Abrechnung · jederzeit kündbar",
+        "billedAnnuallyNote": "Jährlich abgerechnet ({amount}/Jahr)",
         "badge": "Beliebteste Wahl",
         "features": "Unbegrenzte Gespräche,60 Stunden/Monat inklusive,Alle KI-Ausgabetypen,Übersetzung & Fragen stellen,Prioritäts-Support",
         "cta": "Pro 14 Tage kostenlos testen"
@@ -1982,7 +1983,11 @@
       "description": "Einfache Premium-Preise. 14 Tage Pro kostenlos testen. Verwandeln Sie Ihre Gespräche in professionelle Dokumente."
     },
     "hero": {
+      "tag": "14 Tage kostenlos testen",
       "title": "Preise für Arbeit, die ankommt",
+      "headline1": "Preise für Arbeit,",
+      "headline2": "die ",
+      "headlineEm": "ankommt.",
       "subtitle": "Starte kostenlos. Upgrade, wenn dein Output zählt.",
       "trialMessage": "14 Tage Pro kostenlos testen. Keine Kreditkarte erforderlich.",
       "currencyNotice": "Preise in USD angezeigt. Automatische Umrechnung in Ihre lokale Währung beim Checkout.",
@@ -1996,8 +2001,8 @@
     },
     "tiers": {
       "free": {
-        "name": "Kostenlos",
-        "title": "Kostenlos",
+        "name": "Starter",
+        "title": "Starter",
         "price": "Kostenlos",
         "description": "Entdecke die Möglichkeiten. Teste ein paar Gespräche, ohne Verpflichtung.",
         "cta": "Loslegen",
@@ -2071,10 +2076,19 @@
         }
       }
     },
+    "sections": {
+      "comparisonTag": "Pläne vergleichen",
+      "faqTag": "Häufige Fragen",
+      "ctaTag": "Die Entscheidung ist einfach"
+    },
     "finalCta": {
       "title": "Intelligenter erstellen",
-      "subtitle": "Verwandeln Sie Ihre Gespräche in professionelle Dokumente",
+      "headline1": "Intelligenter",
+      "headline2": "",
+      "headlineEm": "erstellen.",
+      "subtitle": "Verwandeln Sie Ihre Gespräche in professionelle Dokumente.",
       "button": "Kostenlose Testversion starten",
+      "contactSales": "Vertrieb kontaktieren",
       "noCreditCard": "Keine Kreditkarte erforderlich"
     },
     "comparison": {
@@ -2107,6 +2121,8 @@
         "api": "API-Zugang"
       },
       "title": "Pläne vergleichen",
+      "headline1": "Pläne ",
+      "headlineEm": "vergleichen.",
       "subtitle": "Finden Sie den perfekten Plan für Ihre Bedürfnisse",
       "values": {
         "unlimited": "Unbegrenzt",
@@ -2124,6 +2140,8 @@
     },
     "faq": {
       "title": "Häufig gestellte Fragen",
+      "headline1": "Häufig gestellte ",
+      "headlineEm": "Fragen.",
       "questions": {
         "trial": {
           "question": "Wie funktioniert die 14-tägige kostenlose Testversion?",
@@ -2330,7 +2348,29 @@
     "hours": "Stunden",
     "nextBilling": "Verlängert am",
     "status": "Status",
-    "billingPeriodStart": "Abrechnungszeitraum begonnen"
+    "billingPeriodStart": "Abrechnungszeitraum begonnen",
+    "onDemandAnalyses": "On-Demand KI-Ausgaben",
+    "upsell": {
+      "title": "Auf Pro upgraden",
+      "subtitle": "Die volle Leistung von Neural Summary nutzen",
+      "description": "Verwandle jedes Gespräch in professionelle, einsatzbereite Dokumente ohne Grenzen.",
+      "features": {
+        "unlimited": "Unbegrenzte Gespräche",
+        "hours": "60 Stunden Audio pro Monat",
+        "fileSize": "Dateien bis zu 5 GB hochladen",
+        "allOutputs": "Alle KI-Ausgabetypen",
+        "onDemand": "Unbegrenzte On-Demand KI-Ausgaben",
+        "translation": "Übersetzung in 50+ Sprachen",
+        "askQuestions": "Fragen stellen mit KI-Antworten",
+        "sharing": "Erweiterte Freigabe & Zusammenarbeit",
+        "priority": "Prioritätsverarbeitung",
+        "support": "Prioritäts-E-Mail-Support"
+      },
+      "startingAt": "Ab",
+      "perMonth": "/Monat",
+      "cta": "Auf Pro upgraden",
+      "guarantee": "30-Tage-Geld-zurück-Garantie"
+    }
   },
   "paywall": {
     "quotaExceeded": {

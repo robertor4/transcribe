@@ -107,6 +107,13 @@ import { GoalSettingTemplate } from './GoalSettingTemplate';
 
 import { FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from '@/components/ui/empty';
 
 // Re-export individual templates - Legacy
 export { ActionItemsTemplate } from './ActionItemsTemplate';
@@ -245,15 +252,17 @@ export function OutputRenderer({ content, contentType, analysisId }: OutputRende
   // Handle empty content - show error state
   if (!content || (typeof content === 'string' && content.trim().length === 0)) {
     return (
-      <div className="text-center py-12">
-        <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          Content unavailable
-        </h3>
-        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          This output couldn&apos;t be generated properly. Please try regenerating it.
-        </p>
-      </div>
+      <Empty className="py-12">
+        <EmptyHeader>
+          <EmptyMedia>
+            <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+          </EmptyMedia>
+          <EmptyTitle>Content unavailable</EmptyTitle>
+          <EmptyDescription>
+            This output couldn&apos;t be generated properly. Please try regenerating it.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 

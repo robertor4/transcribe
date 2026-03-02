@@ -1,3 +1,11 @@
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from '@/components/ui/empty';
 import { Button } from './Button';
 
 interface EmptyStateProps {
@@ -8,12 +16,13 @@ interface EmptyStateProps {
   onAction?: () => void;
   actionVariant?: 'primary' | 'secondary' | 'brand' | 'ghost' | 'danger';
   actionIcon?: React.ReactNode;
+  /** Wrap in a dashed border container */
+  bordered?: boolean;
 }
 
 /**
- * Reusable empty state component
+ * Reusable empty state component (convenience wrapper around shadcn Empty)
  * Used across dashboard, folders, and search results
- * Following 2025 design patterns for friendly, helpful empty states
  */
 export function EmptyState({
   icon,
@@ -23,28 +32,37 @@ export function EmptyState({
   onAction,
   actionVariant = 'brand',
   actionIcon,
+  bordered = false,
 }: EmptyStateProps) {
-  return (
-    <div className="text-center py-24">
-      <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
-        {icon}
-      </div>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 uppercase tracking-wide">
-        {title}
-      </h2>
-      <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
-        {description}
-      </p>
+  const content = (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">{icon}</EmptyMedia>
+        <EmptyTitle className="text-2xl font-bold uppercase tracking-wide">{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
       {actionLabel && onAction && (
-        <Button
-          variant={actionVariant}
-          size="lg"
-          onClick={onAction}
-          icon={actionIcon}
-        >
-          {actionLabel}
-        </Button>
+        <EmptyContent>
+          <Button
+            variant={actionVariant}
+            size="lg"
+            onClick={onAction}
+            icon={actionIcon}
+          >
+            {actionLabel}
+          </Button>
+        </EmptyContent>
       )}
-    </div>
+    </Empty>
   );
+
+  if (bordered) {
+    return (
+      <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+        {content}
+      </div>
+    );
+  }
+
+  return content;
 }

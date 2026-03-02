@@ -8,19 +8,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // Only use standalone output for production Docker builds
+  ...(process.env.NODE_ENV === 'production' && { output: 'standalone' as const }),
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Disable caching in development for faster iteration
-  ...(process.env.NODE_ENV === 'development' && {
-    experimental: {
-      staleTimes: {
-        dynamic: 0,
-        static: 0,
-      },
-    },
-  }),
   // Allow external images from Google and Firebase
   images: {
     remotePatterns: [

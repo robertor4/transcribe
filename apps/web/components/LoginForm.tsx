@@ -209,7 +209,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center z-20"
                 aria-label={showPassword ? tAuth('hidePassword') : tAuth('showPassword')}
               >
                 {showPassword ? (
@@ -260,7 +260,7 @@ export default function LoginForm() {
             <div className="w-full border-t border-gray-300 dark:border-gray-600" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">{tAuth('orContinueWith')}</span>
+            <span className="px-2 bg-gray-50 dark:bg-[#0f0b2e] text-gray-500 dark:text-gray-400">{tAuth('orContinueWith')}</span>
           </div>
         </div>
 

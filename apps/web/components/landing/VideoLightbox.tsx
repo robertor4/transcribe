@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useCallback } from 'react';
+import { Play } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -25,9 +26,9 @@ export function VideoLightbox({ label }: VideoLightboxProps) {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="inline-flex items-center gap-2 bg-transparent text-white/60 border border-white/20 px-6 py-3.5 rounded-[10px] text-[15px] transition-all hover:border-white/40 hover:text-white cursor-pointer">
-          <span className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-[9px]">
-            ▶
+        <button className="inline-flex items-center gap-2 bg-transparent text-white/60 border border-white/20 px-4 py-2.5 sm:px-6 sm:py-3.5 rounded-[10px] text-[13px] sm:text-[15px] transition-all hover:border-white/40 hover:text-white cursor-pointer">
+          <span className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center">
+            <Play className="w-3 h-3 fill-current stroke-none" />
           </span>
           {label}
         </button>

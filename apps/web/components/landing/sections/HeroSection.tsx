@@ -46,7 +46,7 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
   return (
     <section
       id="hero"
-      className="landing-section min-h-screen !pt-[120px] flex items-center overflow-hidden"
+      className="landing-section min-h-screen !pt-[100px] sm:!pt-[120px] flex items-center overflow-hidden"
       aria-label="Hero section"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -76,7 +76,7 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
             <HeroCTAs delay={360}>
               <Link
                 href={`/${locale}/signup`}
-                className="inline-flex items-center bg-[#8D6AFA] text-white border-none px-7 py-3.5 rounded-[10px] text-[15px] font-semibold transition-all hover:bg-[#7A5AE0] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(141,106,250,0.35)] whitespace-nowrap"
+                className="inline-flex items-center bg-[#8D6AFA] text-white border-none px-5 py-3 sm:px-7 sm:py-3.5 rounded-[10px] text-[15px] font-semibold transition-all hover:bg-[#7A5AE0] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(141,106,250,0.35)] whitespace-nowrap"
               >
                 {t.ctaPrimary}
               </Link>
@@ -84,7 +84,7 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
             </HeroCTAs>
 
             <HeroHeadline delay={480}>
-              <div className="flex items-center gap-4 mt-12 text-[13px] text-white/30">
+              <div className="flex items-center gap-4 mt-6 sm:mt-12 text-[13px] text-white/30">
                 <div className="flex">
                   {[
                     '/assets/images/avatars/roberto-ramadhin.webp',

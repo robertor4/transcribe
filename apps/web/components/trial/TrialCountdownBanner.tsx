@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Clock, Sparkles } from 'lucide-react';
 
 interface TrialCountdownBannerProps {
-  trialEndsAt: Date | string;
+  trialEndsAt: Date | string | { seconds: number; nanoseconds: number };
 }
 
 export function TrialCountdownBanner({ trialEndsAt }: TrialCountdownBannerProps) {
@@ -14,8 +14,19 @@ export function TrialCountdownBanner({ trialEndsAt }: TrialCountdownBannerProps)
   const params = useParams();
   const locale = params.locale as string;
 
-  // Calculate days remaining
-  const endDate = new Date(trialEndsAt);
+  // Calculate days remaining — handle Firestore Timestamp objects
+  let endDate: Date;
+  if (trialEndsAt && typeof trialEndsAt === 'object' && 'seconds' in trialEndsAt) {
+    endDate = new Date((trialEndsAt as { seconds: number }).seconds * 1000);
+  } else {
+    endDate = new Date(trialEndsAt as Date | string);
+  }
+
+  // Bail out if date is invalid
+  if (isNaN(endDate.getTime())) {
+    return null;
+  }
+
   const now = new Date();
   const diffTime = endDate.getTime() - now.getTime();
   const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));

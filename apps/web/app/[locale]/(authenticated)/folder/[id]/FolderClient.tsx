@@ -13,6 +13,14 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from '@/components/ui/empty';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { Button } from '@/components/Button';
@@ -278,17 +286,18 @@ export function FolderClient({ folderId }: FolderClientProps) {
                 ))
               ) : (
                 // Empty state
-                <div className="text-center py-6 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-                  <AiIcon
-                    size={48}
-                    className="mx-auto mb-3 text-[#8D6AFA] opacity-50"
-                  />
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                    No AI Assets yet
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-500">
-                    Generate assets from your conversations
-                  </p>
+                <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
+                  <Empty className="py-6 px-4">
+                    <EmptyHeader>
+                      <EmptyMedia>
+                        <AiIcon size={48} className="text-[#8D6AFA] opacity-50" />
+                      </EmptyMedia>
+                      <EmptyTitle className="text-sm font-medium">No AI Assets yet</EmptyTitle>
+                      <EmptyDescription className="text-xs">
+                        Generate assets from your conversations
+                      </EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
                 </div>
               )}
             </div>
@@ -432,19 +441,25 @@ export function FolderClient({ folderId }: FolderClientProps) {
               folderContext={folderTableContext}
               paginationStorageKey="neural-summary-folder-pagination"
               emptyState={
-                <div className="text-center py-16 bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
-                  <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-6">
-                    <Folder className="w-10 h-10 text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 uppercase tracking-wide">
-                    No conversations yet
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-6">
-                    Create your first conversation in this folder
-                  </p>
-                  <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
-                    + New Conversation
-                  </Button>
+                <div className="bg-white dark:bg-gray-800/40 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700/50">
+                  <Empty className="py-16">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon" className="size-20">
+                        <Folder className="w-10 h-10 text-gray-400" />
+                      </EmptyMedia>
+                      <EmptyTitle className="text-xl font-bold uppercase tracking-wide">
+                        No conversations yet
+                      </EmptyTitle>
+                      <EmptyDescription>
+                        Create your first conversation in this folder
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <Button variant="brand" size="md" onClick={() => setIsCreateModalOpen(true)}>
+                        + New Conversation
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
                 </div>
               }
             />

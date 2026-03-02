@@ -12,8 +12,8 @@ import { PricingFAQ } from '@/components/pricing/PricingFAQ';
 import { BillingToggle } from '@/components/pricing/BillingToggle';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
-import { DottedBackgroundDrift } from '@/components/landing/hero/DottedBackgroundDrift';
-import { Globe, Clock, FileText, Share2, Headphones, Zap, Package, Building2, Users, Shield, MessageSquareText } from 'lucide-react';
+import { SectionTag } from '@/components/landing/shared/SectionTag';
+import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
 import { formatPricingTierItem } from '@/utils/analytics-helpers';
 
@@ -90,7 +90,7 @@ export default function PricingPage() {
 
   // Get pricing and currency info from centralized utility
   const pricing = getPricingForLocale(locale);
-  const { code: currency, symbol: currencySymbol } = getCurrencyForLocale(locale);
+  const { code: currency } = getCurrencyForLocale(locale);
 
   // Track page view with all pricing tiers on mount
   useEffect(() => {
@@ -181,76 +181,74 @@ export default function PricingPage() {
 
   // Free tier features
   const freeFeatures = [
-    { text: t('tiers.free.features.transcriptions'), included: true, icon: FileText, category: t('featureCategories.transcription') },
-    { text: t('tiers.free.features.duration'), included: true, icon: Clock, category: t('featureCategories.transcription') },
-    { text: t('tiers.free.features.fileSize'), included: true, icon: Package, category: t('featureCategories.transcription') },
-    { text: t('tiers.free.features.coreAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.onDemand'), included: true, note: '2/month', category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.translation'), included: false, icon: Globe, category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.askQuestions'), included: false, icon: MessageSquareText, category: t('featureCategories.analysis') },
-    { text: t('tiers.free.features.sharing'), included: true, note: t('comparison.values.basic'), icon: Share2, category: t('featureCategories.collaboration') },
-    { text: t('tiers.free.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
+    { text: t('tiers.free.features.transcriptions'), included: true },
+    { text: t('tiers.free.features.duration'), included: true },
+    { text: t('tiers.free.features.fileSize'), included: true },
+    { text: t('tiers.free.features.coreAnalyses'), included: true },
+    { text: t('tiers.free.features.onDemand'), included: true, note: '2/month' },
+    { text: t('tiers.free.features.translation'), included: false },
+    { text: t('tiers.free.features.askQuestions'), included: false },
+    { text: t('tiers.free.features.sharing'), included: true, note: t('comparison.values.basic') },
+    { text: t('tiers.free.features.support'), included: true },
   ];
 
   // Pro tier features
   const professionalFeatures = [
-    { text: t('tiers.professional.features.unlimited'), included: true, icon: FileText, category: t('featureCategories.transcription') },
-    { text: t('tiers.professional.features.hours'), included: true, icon: Clock, category: t('featureCategories.transcription') },
-    { text: t('tiers.professional.features.fileSize'), included: true, icon: Package, category: t('featureCategories.transcription') },
-    { text: t('tiers.professional.features.allAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
-    { text: t('tiers.professional.features.onDemandAnalyses'), included: true, category: t('featureCategories.analysis') },
-    { text: t('tiers.professional.features.translation'), included: true, icon: Globe, category: t('featureCategories.analysis') },
-    { text: t('tiers.professional.features.askQuestions'), included: true, icon: MessageSquareText, category: t('featureCategories.analysis') },
-    { text: t('tiers.professional.features.advancedSharing'), included: true, icon: Share2, category: t('featureCategories.collaboration') },
-    { text: t('tiers.professional.features.priority'), included: true, icon: Zap, category: t('featureCategories.collaboration') },
-    { text: t('tiers.professional.features.support'), included: true, icon: Headphones, category: t('featureCategories.support') },
+    { text: t('tiers.professional.features.unlimited'), included: true },
+    { text: t('tiers.professional.features.hours'), included: true },
+    { text: t('tiers.professional.features.fileSize'), included: true },
+    { text: t('tiers.professional.features.allAnalyses'), included: true },
+    { text: t('tiers.professional.features.onDemandAnalyses'), included: true },
+    { text: t('tiers.professional.features.translation'), included: true },
+    { text: t('tiers.professional.features.askQuestions'), included: true },
+    { text: t('tiers.professional.features.advancedSharing'), included: true },
+    { text: t('tiers.professional.features.priority'), included: true },
+    { text: t('tiers.professional.features.support'), included: true },
   ];
 
   // Enterprise tier features
   const enterpriseFeatures = [
-    { text: t('tiers.enterprise.features.unlimited'), included: true, icon: FileText, category: t('featureCategories.transcription') },
-    { text: t('tiers.enterprise.features.unlimitedHours'), included: true, icon: Clock, category: t('featureCategories.transcription') },
-    { text: t('tiers.enterprise.features.largeFiles'), included: true, icon: Package, category: t('featureCategories.transcription') },
-    { text: t('tiers.enterprise.features.allAnalyses'), included: true, icon: Zap, category: t('featureCategories.analysis') },
-    { text: t('tiers.enterprise.features.customIntegrations'), included: true, icon: Building2, category: t('featureCategories.analysis') },
-    { text: t('tiers.enterprise.features.sso'), included: true, icon: Shield, category: t('featureCategories.collaboration') },
-    { text: t('tiers.enterprise.features.teamManagement'), included: true, icon: Users, category: t('featureCategories.collaboration') },
-    { text: t('tiers.enterprise.features.dedicatedSupport'), included: true, icon: Headphones, category: t('featureCategories.support') },
+    { text: t('tiers.enterprise.features.unlimited'), included: true },
+    { text: t('tiers.enterprise.features.unlimitedHours'), included: true },
+    { text: t('tiers.enterprise.features.largeFiles'), included: true },
+    { text: t('tiers.enterprise.features.allAnalyses'), included: true },
+    { text: t('tiers.enterprise.features.customIntegrations'), included: true },
+    { text: t('tiers.enterprise.features.sso'), included: true },
+    { text: t('tiers.enterprise.features.teamManagement'), included: true },
+    { text: t('tiers.enterprise.features.dedicatedSupport'), included: true },
   ];
 
   return (
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-[#22184C] overflow-x-hidden">
-        {/* Hero Section — deep purple background with animated dot pattern */}
+      <div className="min-h-screen bg-[#22184C] text-white overflow-x-hidden landing-page relative">
+        <AmbientGradient />
+
+        {/* Hero Section */}
         <section
-          className="pt-32 pb-20 px-6 sm:px-8 lg:px-12 bg-[#23194B] relative overflow-hidden"
+          className="landing-section min-h-[60vh] !pt-[140px] flex items-center relative overflow-hidden"
           aria-label="Pricing hero"
         >
-          {/* Animated dot pattern */}
-          <DottedBackgroundDrift />
 
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              {t('hero.title')}
+          <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 text-center relative z-10">
+            <SectionTag>{t('hero.tag')}</SectionTag>
+
+            <h1 className="text-[clamp(36px,5vw,60px)] font-bold leading-[1.1] tracking-tight mb-6">
+              {t('hero.headline1')}<br />{t('hero.headline2')}<em>{t('hero.headlineEm')}</em>
             </h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-4">
+            <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-10">
               {t('hero.subtitle')}
             </p>
-            <p className="text-lg text-[#14D0DC] font-medium mb-10">
-              {t('hero.trialMessage')}
-            </p>
 
-            {/* Billing Toggle */}
             <BillingToggle billingCycle={billingCycle} onToggle={handleBillingToggle} />
           </div>
         </section>
 
         {/* Pricing Cards */}
-        <section className="py-20 px-6 sm:px-8 lg:px-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-8 items-start">
+        <section className="landing-section !pt-0">
+          <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10">
+            <div className="grid md:grid-cols-3 gap-4 items-start">
               {/* Free Tier */}
               <PricingCard
                 tier="free"
@@ -280,7 +278,6 @@ export default function PricingPage() {
                 guaranteeText={t('tiers.professional.guarantee')}
                 trialBadge={t('tiers.professional.trialBadge')}
                 locale={locale}
-                currencySymbol={currencySymbol}
                 currency={currency}
                 billingCycle={billingCycle}
                 onCtaClick={isTrialEligible ? handleStartTrial : undefined}
@@ -305,43 +302,63 @@ export default function PricingPage() {
         </section>
 
         {/* Feature Comparison Table */}
-        <section id="comparison" className="py-20 px-6 sm:px-8 lg:px-12 border-t border-white/[0.08]">
-          <div className="max-w-7xl mx-auto space-y-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white text-center tracking-tight">
-              {t('comparison.title')}
+        <section id="comparison" className="landing-section border-t border-white/[0.08]">
+          <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 text-center">
+            <SectionTag>{t('sections.comparisonTag')}</SectionTag>
+
+            <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-14">
+              {t('comparison.headline1')}<em>{t('comparison.headlineEm')}</em>
             </h2>
             <FeatureComparisonTable />
           </div>
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-20 px-6 sm:px-8 lg:px-12 border-t border-white/[0.08]">
-          <div className="max-w-4xl mx-auto space-y-12">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white text-center tracking-tight">
-              {t('faq.title')}
+        <section id="faq" className="landing-section border-t border-white/[0.08]">
+          <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10 text-center">
+            <SectionTag>{t('sections.faqTag')}</SectionTag>
+
+            <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-14">
+              {t('faq.headline1')}<em>{t('faq.headlineEm')}</em>
             </h2>
-            <PricingFAQ />
+            <div className="max-w-[800px] mx-auto">
+              <PricingFAQ />
+            </div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="py-24 px-6 sm:px-8 lg:px-12 bg-[#3F38A0]">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
-              {t('finalCta.title')}
+        <section className="landing-section !py-[120px] text-center border-t border-white/[0.08]">
+          <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-10">
+            <SectionTag>{t('sections.ctaTag')}</SectionTag>
+
+            <h2 className="text-[clamp(36px,5vw,64px)] font-bold leading-[1.15] tracking-tight mb-4">
+              {t('finalCta.headline1')}<br />{t('finalCta.headline2')}<em>{t('finalCta.headlineEm')}</em>
             </h2>
-            <p className="text-xl text-white/90">
+
+            <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-10">
               {t('finalCta.subtitle')}
             </p>
-            <Link
-              href={`/${locale}/signup`}
-              className="inline-flex items-center justify-center px-8 py-4 font-semibold text-lg rounded-full bg-white text-[#3F38A0] hover:bg-gray-100 transition-all shadow-lg hover:scale-105"
-            >
-              {t('finalCta.button')}
-            </Link>
-            <p className="text-sm text-white/70">
-              {t('finalCta.noCreditCard')}
-            </p>
+
+            <div className="flex gap-3 justify-center items-center mb-8 flex-wrap">
+              <Link
+                href={`/${locale}/signup`}
+                className="inline-flex items-center bg-[#8D6AFA] text-white border-none px-9 py-4 rounded-[10px] text-base font-semibold transition-all hover:bg-[#7A5AE0] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(141,106,250,0.35)]"
+              >
+                {t('finalCta.button')}
+              </Link>
+              <Link
+                href={`/${locale}/contact`}
+                className="inline-flex items-center bg-transparent text-white/60 border border-white/20 px-6 py-4 rounded-[10px] text-[15px] transition-all hover:border-white/40 hover:text-white"
+              >
+                {t('finalCta.contactSales')}
+              </Link>
+            </div>
+
+            <div className="flex gap-6 justify-center text-[13px] text-white/30 flex-wrap">
+              <span className="before:content-['✓_'] before:text-[#14D0DC]">{t('finalCta.noCreditCard')}</span>
+              <span className="before:content-['✓_'] before:text-[#14D0DC]">{t('hero.freeTrial')}</span>
+            </div>
           </div>
         </section>
       </div>
