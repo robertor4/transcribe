@@ -23,44 +23,27 @@ export function ConversationSkeleton() {
   );
 }
 
+/** Nav skeleton uses white/opacity blocks to blend with the purple sidebar background */
 function NavigationSkeleton() {
+  const bar = (cls: string) => <div className={`rounded-lg bg-white/10 animate-pulse ${cls}`} />;
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900 p-4">
-      {/* Logo area */}
+    <div className="h-full flex flex-col p-4">
+      <div className="mb-6">{bar('h-8 w-32')}</div>
+      {bar('h-10 w-full mb-6')}
       <div className="mb-6">
-        <Skeleton className="h-8 w-32 rounded-lg" />
+        {bar('h-3 w-16 mb-3')}
+        <div className="space-y-2">{[1, 2, 3].map(i => <div key={i}>{bar('h-9 w-full')}</div>)}</div>
       </div>
-
-      {/* Search */}
-      <Skeleton className="h-10 w-full rounded-lg mb-6" />
-
-      {/* Folders section */}
-      <div className="mb-6">
-        <Skeleton className="h-3 w-16 mb-3" />
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-9 w-full rounded-lg" />
-          ))}
-        </div>
-      </div>
-
-      {/* Recent section */}
       <div className="flex-1">
-        <Skeleton className="h-3 w-20 mb-3" />
-        <div className="space-y-2">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-9 w-full rounded-lg" />
-          ))}
-        </div>
+        {bar('h-3 w-20 mb-3')}
+        <div className="space-y-2">{[1, 2, 3, 4, 5].map(i => <div key={i}>{bar('h-9 w-full')}</div>)}</div>
       </div>
-
-      {/* User profile */}
-      <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="mt-auto pt-4 border-t border-white/10">
         <div className="flex items-center gap-3">
-          <Skeleton className="w-9 h-9 rounded-full" />
+          {bar('w-9 h-9 rounded-full')}
           <div className="flex-1">
-            <Skeleton className="h-4 w-24 mb-1" />
-            <Skeleton className="h-3 w-16" />
+            {bar('h-4 w-24 mb-1')}
+            {bar('h-3 w-16')}
           </div>
         </div>
       </div>
@@ -70,7 +53,7 @@ function NavigationSkeleton() {
 
 function AssetSidebarSkeleton() {
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-800">
+    <div className="h-full flex flex-col border-l border-gray-200 dark:border-gray-800">
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700/50">
         <div className="flex items-center justify-between mb-3">
@@ -94,7 +77,7 @@ function AssetSidebarSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg"
+            className="p-3 border border-gray-200 dark:border-gray-700/50 rounded-lg"
           >
             <div className="flex gap-3">
               <Skeleton className="w-9 h-9 rounded-lg flex-shrink-0" />
@@ -113,9 +96,9 @@ function AssetSidebarSkeleton() {
 
 function ConversationContentSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
       {/* Header */}
-      <div className="mb-6 lg:mb-8">
+      <div className="max-w-[680px] mb-6 lg:mb-8">
         {/* Back link */}
         <Skeleton className="h-4 w-24 mb-4 lg:mb-6" />
 
@@ -123,73 +106,59 @@ function ConversationContentSkeleton() {
         <Skeleton className="h-8 lg:h-10 w-3/4 mb-3" />
 
         {/* Metadata row */}
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-4" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-8 w-28 rounded-lg" />
-            <Skeleton className="h-8 w-20 rounded-lg" />
-            <Skeleton className="h-8 w-8 rounded-lg" />
-          </div>
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-1" />
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-4 w-1" />
+          <Skeleton className="h-5 w-5 rounded" />
+          <Skeleton className="h-5 w-5 rounded" />
+          <Skeleton className="h-5 w-5 rounded" />
+          <Skeleton className="h-5 w-5 rounded" />
         </div>
       </div>
 
-      {/* Tab navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
-        <div className="flex items-center gap-1 py-1">
-          <Skeleton className="h-10 w-24 rounded-lg" />
-          <Skeleton className="h-10 w-28 rounded-lg" />
-        </div>
-      </div>
+      {/* Thick editorial rule */}
+      <Skeleton className="h-0.5 w-full mb-8 lg:mb-10" />
 
-      {/* Summary content */}
-      <div className="space-y-8">
-        {/* Intro paragraph */}
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/5" />
-        </div>
+      {/* Two-column: main content + key points sidebar */}
+      <div className="lg:flex">
+        <div className="flex-1 min-w-0 lg:pr-10">
+          {/* Intro paragraph */}
+          <div className="space-y-2 mb-10">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/5" />
+          </div>
 
-        {/* Key Insights section */}
-        <div>
-          <Skeleton className="h-5 w-28 mb-4" />
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-3">
-                <Skeleton className="w-6 h-6 rounded-full flex-shrink-0 mt-0.5" />
-                <div className="flex-1 space-y-1.5">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-4/5" />
-                </div>
+          {/* Deep Dives header */}
+          <Skeleton className="h-3 w-20 mb-5" />
+
+          {/* Deep dive items */}
+          <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-800 border-y border-gray-100 dark:border-gray-800">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 py-4">
+                <Skeleton className="h-3 w-5" />
+                <Skeleton className="h-4 flex-1" />
+                <Skeleton className="h-3 w-3" />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Topics section */}
-        <div>
-          <Skeleton className="h-5 w-32 mb-4" />
-          <div className="flex flex-wrap gap-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-7 w-20 rounded-full" />
-            ))}
-          </div>
-        </div>
-
-        {/* Full Summary section */}
-        <div>
-          <Skeleton className="h-5 w-28 mb-4" />
-          <div className="space-y-3">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
+        {/* Key points sidebar skeleton */}
+        <div className="hidden lg:block w-60 flex-shrink-0 bg-gray-50/50 dark:bg-gray-800/30 rounded-sm">
+          <div className="px-6 py-6">
+            <Skeleton className="h-3 w-20 mb-5" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="pb-4 border-b border-gray-200/60 dark:border-gray-700/40 last:border-0 last:pb-0">
+                  <Skeleton className="h-3.5 w-28 mb-1.5" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-3/4 mt-1" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

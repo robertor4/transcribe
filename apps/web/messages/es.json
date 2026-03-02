@@ -28,7 +28,11 @@
     "open": "Abrir",
     "language": "Idioma",
     "userMenu": "Menú de usuario",
-    "allRightsReserved": "Todos los derechos reservados"
+    "allRightsReserved": "Todos los derechos reservados",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema"
   },
   "search": {
     "placeholder": "Buscar conversaciones...",

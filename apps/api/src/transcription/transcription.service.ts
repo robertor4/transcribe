@@ -34,7 +34,11 @@ import {
   SummaryV2,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
-import { parseSummaryV2, summaryV2ToMarkdown, type ParsedSummaryResult } from './parsers/summary-parser';
+import {
+  parseSummaryV2,
+  summaryV2ToMarkdown,
+  type ParsedSummaryResult,
+} from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
 import { StorageService } from '../firebase/services/storage.service';
 import { UserRepository } from '../firebase/repositories/user.repository';
@@ -880,7 +884,10 @@ ${fullCustomPrompt}`;
       }
 
       // Parse and validate the JSON response, extracting metadata
-      const { summary: summaryV2, conversationCategory } = parseSummaryV2(aiResponse, true);
+      const { summary: summaryV2, conversationCategory } = parseSummaryV2(
+        aiResponse,
+        true,
+      );
 
       this.logger.log(
         `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections, category: ${conversationCategory || 'none'}`,
@@ -1605,11 +1612,12 @@ ${fullCustomPrompt}`;
     );
 
     // Generate new V2 structured summary
-    const { summary: summaryV2, conversationCategory } = await this.generateSummaryV2(
-      transcription.transcriptText,
-      transcription.context,
-      transcription.detectedLanguage,
-    );
+    const { summary: summaryV2, conversationCategory } =
+      await this.generateSummaryV2(
+        transcription.transcriptText,
+        transcription.context,
+        transcription.detectedLanguage,
+      );
 
     // Update transcription with new V2 summary and category
     const updates: Record<string, unknown> = {

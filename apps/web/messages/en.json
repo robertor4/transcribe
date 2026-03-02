@@ -28,7 +28,11 @@
     "import": "Import",
     "language": "Language",
     "userMenu": "User menu",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
   },
   "search": {
     "placeholder": "Search conversations...",

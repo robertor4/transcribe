@@ -30,8 +30,16 @@ export interface ParsedSummaryResult {
 }
 
 const VALID_CATEGORIES: ConversationCategory[] = [
-  'sales-call', 'business-meeting', 'one-on-one', 'interview', 'brainstorm',
-  'solo-recording', 'presentation', 'workshop', 'support-call', 'general',
+  'sales-call',
+  'business-meeting',
+  'one-on-one',
+  'interview',
+  'brainstorm',
+  'solo-recording',
+  'presentation',
+  'workshop',
+  'support-call',
+  'general',
 ];
 
 /**
@@ -47,8 +55,14 @@ const VALID_CATEGORIES: ConversationCategory[] = [
  * @throws Error if JSON parsing fails completely
  */
 export function parseSummaryV2(aiResponse: string): SummaryV2;
-export function parseSummaryV2(aiResponse: string, extractMetadata: true): ParsedSummaryResult;
-export function parseSummaryV2(aiResponse: string, extractMetadata?: boolean): SummaryV2 | ParsedSummaryResult {
+export function parseSummaryV2(
+  aiResponse: string,
+  extractMetadata: true,
+): ParsedSummaryResult;
+export function parseSummaryV2(
+  aiResponse: string,
+  extractMetadata?: boolean,
+): SummaryV2 | ParsedSummaryResult {
   // Clean up the response - remove markdown code blocks if present
   let jsonString = aiResponse.trim();
 
@@ -116,11 +130,15 @@ export function parseSummaryV2(aiResponse: string, extractMetadata?: boolean): S
   // Extract conversation category if present
   let conversationCategory: ConversationCategory | undefined;
   if (typeof raw.conversationCategory === 'string') {
-    const cat = raw.conversationCategory.trim().toLowerCase() as ConversationCategory;
+    const cat = raw.conversationCategory
+      .trim()
+      .toLowerCase() as ConversationCategory;
     if (VALID_CATEGORIES.includes(cat)) {
       conversationCategory = cat;
     } else {
-      logger.warn(`Invalid conversationCategory "${raw.conversationCategory}", defaulting to undefined`);
+      logger.warn(
+        `Invalid conversationCategory "${raw.conversationCategory}", defaulting to undefined`,
+      );
     }
   }
 

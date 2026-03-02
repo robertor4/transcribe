@@ -1,9 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import type { SummaryV2 } from '@transcribe/shared';
 import { SummaryV1Renderer } from './SummaryV1Renderer';
 import { TextHighlighter, type HighlightOptions } from './TextHighlighter';
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible';
 
 /**
  * SummaryRenderer - V2 Design with Version Detection
@@ -38,8 +44,8 @@ export const SummaryRenderer: React.FC<SummaryRendererProps> = ({ content, summa
 /**
  * SummaryV2Renderer - Renders structured V2 summary data
  *
- * This component renders directly from the SummaryV2 JSON structure
- * without needing to parse markdown. This is the preferred rendering path.
+ * Drop-cap intro, compact key points strip, collapsible "Deep Dives"
+ * sections, and styled decision/next-step boxes.
  */
 interface SummaryV2RendererProps {
   summary: SummaryV2;
@@ -47,79 +53,122 @@ interface SummaryV2RendererProps {
 }
 
 const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highlightOptions }) => {
+  // All deep dives collapsed by default
+  const [openSections, setOpenSections] = useState<Set<number>>(() => new Set());
+
+  const toggleSection = (idx: number) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(idx)) {
+        next.delete(idx);
+      } else {
+        next.add(idx);
+      }
+      return next;
+    });
+  };
+
   return (
-    <div className="max-w-[680px] mx-auto space-y-10">
-      {/* Intro Paragraph */}
+    <div className="max-w-[680px] space-y-10">
+      {/* Intro paragraph with drop cap */}
       {summary.intro && (
-        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p
+          className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed first-letter:text-4xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-[1] first-letter:text-gray-900 dark:first-letter:text-gray-100"
+          style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
+        >
           <TextHighlighter text={summary.intro} highlight={highlightOptions} />
         </p>
       )}
 
-      {/* Key Points Box */}
+      {/* Key Points — shown inline on mobile, hidden on desktop (sidebar takes over) */}
       {summary.keyPoints.length > 0 && (
-        <div className="px-8 py-8 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg shadow-sm">
-          <h3 className="text-lg font-bold text-[#8D6AFA] mb-5 uppercase tracking-wide">
+        <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 pt-6">
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
             Key Points
           </h3>
-          <ol className="mx-4 list-decimal list-inside divide-y divide-gray-200 dark:divide-gray-700">
+          <ol className="space-y-4">
             {summary.keyPoints.map((point, idx) => (
-              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8] py-4 first:pt-0 last:pb-0">
+              <li key={idx} className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  <TextHighlighter text={point.topic} highlight={highlightOptions} />:
-                </span>{' '}
-                <TextHighlighter text={point.description} highlight={highlightOptions} />
+                  <TextHighlighter text={point.topic} highlight={highlightOptions} />
+                </span>
+                <span className="ml-1.5 text-[15px]">
+                  <TextHighlighter text={point.description} highlight={highlightOptions} />
+                </span>
               </li>
             ))}
           </ol>
         </div>
       )}
 
-      {/* Detailed Discussion Sections */}
+      {/* Collapsible Deep Dives */}
       {summary.detailedSections.length > 0 && (
-        <div className="space-y-8 mt-2">
-          {summary.detailedSections.map((section, idx) => (
-            <div key={idx}>
-              <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <TextHighlighter text={section.topic} highlight={highlightOptions} />
-              </h4>
-              <p className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
-                <TextHighlighter text={section.content} highlight={highlightOptions} />
-              </p>
-            </div>
-          ))}
+        <div>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
+            Deep Dives
+          </h3>
+          <div className="divide-y divide-gray-200 dark:divide-gray-700 border-y border-gray-200 dark:border-gray-700">
+            {summary.detailedSections.map((section, idx) => (
+              <Collapsible
+                key={idx}
+                open={openSections.has(idx)}
+                onOpenChange={() => toggleSection(idx)}
+              >
+                <CollapsibleTrigger className="flex items-center gap-3 w-full py-4 text-left group cursor-pointer">
+                  <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-6 flex-shrink-0">
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 flex-1">
+                    <TextHighlighter text={section.topic} highlight={highlightOptions} />
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 flex-shrink-0 ${
+                      openSections.has(idx) ? 'rotate-90' : ''
+                    }`}
+                  />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="pb-5 pl-9">
+                    <p className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.8]">
+                      <TextHighlighter text={section.content} highlight={highlightOptions} />
+                    </p>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Decisions (only shown if present) */}
+      {/* Decisions */}
       {summary.decisions && summary.decisions.length > 0 && (
-        <div className="px-8 py-8 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg shadow-sm">
-          <h3 className="text-lg font-bold text-[#14D0DC] mb-5 uppercase tracking-wide">
+        <div>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
             Decisions Made
           </h3>
-          <ol className="space-y-5 mx-4 list-decimal list-inside">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-4">
             {summary.decisions.map((decision, idx) => (
-              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
+              <p key={idx} className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.8]">
                 <TextHighlighter text={decision} highlight={highlightOptions} />
-              </li>
+              </p>
             ))}
-          </ol>
+          </div>
         </div>
       )}
 
-      {/* Next Steps (only shown if present) */}
+      {/* Next Steps */}
       {summary.nextSteps && summary.nextSteps.length > 0 && (
-        <div className="px-8 py-8 bg-[#3F38A0]/10 dark:bg-[#3F38A0]/20 border-l-4 border-[#3F38A0] rounded-r-lg shadow-sm">
-          <h3 className="text-lg font-bold text-[#3F38A0] dark:text-[#7b74d4] mb-5 uppercase tracking-wide">
+        <div>
+          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-5 uppercase tracking-widest">
             Next Steps
           </h3>
-          <ol className="space-y-5 mx-4 list-decimal list-inside">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-5 space-y-4">
             {summary.nextSteps.map((step, idx) => (
-              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
+              <p key={idx} className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.8]">
                 <TextHighlighter text={step} highlight={highlightOptions} />
-              </li>
+              </p>
             ))}
-          </ol>
+          </div>
         </div>
       )}
     </div>

@@ -28,7 +28,11 @@
     "import": "Importeren",
     "language": "Taal",
     "userMenu": "Gebruikersmenu",
-    "allRightsReserved": "Alle rechten voorbehouden"
+    "allRightsReserved": "Alle rechten voorbehouden",
+    "theme": "Thema",
+    "themeLight": "Licht",
+    "themeDark": "Donker",
+    "themeSystem": "Systeem"
   },
   "search": {
     "placeholder": "Zoek gesprekken...",

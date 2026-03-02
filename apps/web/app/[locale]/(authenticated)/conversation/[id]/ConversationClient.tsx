@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Loader2,
   Globe,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { transcriptionApi } from '@/lib/api';
@@ -526,9 +527,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           />
         }
         mainContent={
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8 lg:pr-28">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
             {/* Header */}
-            <div className="max-w-[680px] mx-auto mb-6 lg:mb-8">
+            <div className="max-w-[680px] mb-6 lg:mb-8">
               <Link
                 href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
                 className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
@@ -637,6 +638,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       </button>
                     }
                     items={[
+                      // Toggle between Summary and Transcript views
+                      {
+                        icon: FileText,
+                        label: activeTab === 'summary'
+                          ? tConversation('tabs.transcript')
+                          : tConversation('tabs.summary'),
+                        onClick: () => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary'),
+                      },
+                      { type: 'divider' },
                       // Ask Questions and Copy available in menu for all devices
                       {
                         icon: Zap,
@@ -705,57 +715,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     ]}
                   />
               </div>
-              {/* Mobile tab toggle */}
-              <div className="flex lg:hidden gap-1 mt-3">
-                <button
-                  onClick={() => setActiveTab('summary')}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
-                    activeTab === 'summary'
-                      ? 'bg-[#8D6AFA] text-white'
-                      : 'text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400'
-                  }`}
-                >
-                  {tConversation('tabs.summary')}
-                </button>
-                <button
-                  onClick={() => setActiveTab('transcript')}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
-                    activeTab === 'transcript'
-                      ? 'bg-[#8D6AFA] text-white'
-                      : 'text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400'
-                  }`}
-                >
-                  {tConversation('tabs.transcript')}
-                </button>
-              </div>
             </div>
 
-            {/* Content area with side tabs */}
-            <div className="relative">
-              {/* Vertical tab nav - positioned in right margin */}
-              <nav className="hidden lg:flex flex-col absolute right-[-7rem] top-0">
-                <button
-                  onClick={() => setActiveTab('summary')}
-                  className={`text-sm font-medium pl-4 pr-3 py-2 text-left transition-colors border-l-2 ${
-                    activeTab === 'summary'
-                      ? 'border-[#8D6AFA] text-[#8D6AFA]'
-                      : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                  }`}
-                >
-                  {tConversation('tabs.summary')}
-                </button>
-                <button
-                  onClick={() => setActiveTab('transcript')}
-                  className={`text-sm font-medium pl-4 pr-3 py-2 text-left transition-colors border-l-2 ${
-                    activeTab === 'transcript'
-                      ? 'border-[#8D6AFA] text-[#8D6AFA]'
-                      : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
-                  }`}
-                >
-                  {tConversation('tabs.transcript')}
-                </button>
-              </nav>
+            {/* Editorial rule — thick black line spanning full width */}
+            <hr className="border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
 
+            {/* Content area — two-column: main + key points sidebar */}
+            <div className="lg:flex pt-8 lg:pt-10">
+              <div className="flex-1 min-w-0 lg:pr-10">
               {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
               <div className={activeTab === 'summary' ? '' : 'hidden'}>
               <section id="summary" className="scroll-mt-16">
@@ -833,14 +800,47 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
 
             <div className={activeTab === 'transcript' ? '' : 'hidden'}>
-              <div className="max-w-[680px] mx-auto">
+              <div className="max-w-[680px]">
                 <InlineTranscript
                   conversation={conversation}
                   highlightOptions={highlightOptions}
                 />
               </div>
             </div>
-            </div>
+              </div>{/* end flex-1 main content */}
+
+              {/* Key Points sidebar — desktop only */}
+              {activeTab === 'summary' && (() => {
+                const summaryTranslation = currentLocale !== 'original'
+                  ? getTranslatedContent('summary', conversationId)
+                  : null;
+                const kp = summaryTranslation?.content.type === 'summaryV2'
+                  ? summaryTranslation.content.keyPoints
+                  : conversation.source.summary.summaryV2?.keyPoints;
+                if (!kp || kp.length === 0) return null;
+                return (
+                  <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
+                    <div className="sticky top-8 px-6 pt-10 pb-6">
+                      <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
+                        Key Points
+                      </h3>
+                      <ol className="divide-y divide-gray-200 dark:divide-gray-700">
+                        {kp.map((point: { topic: string; description: string }, idx: number) => (
+                          <li key={idx} className={`py-4 ${idx === 0 ? 'pt-0' : ''}`}>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug block">
+                              {point.topic}
+                            </span>
+                            <span className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed block mt-1">
+                              {point.description}
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  </aside>
+                );
+              })()}
+            </div>{/* end lg:flex */}
           </div>
         }
       />
