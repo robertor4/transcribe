@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Translation strings added to all 5 locale files
 
 ### Changed
+- **Conversation page header redesign**: Switched from horizontal tabs to vertical tabs on the right of the metadata row, swapped reading time before date for blog-like feel, removed full-width sticky tab bar in favor of inline vertical navigation with left-border active indicator. Mobile gets rounded pill toggles
+  - File: [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx)
 - **Improved summary reading quality**: Constrained reading width to 680px for optimal line length, upgraded intro to `text-2xl` with `leading-[1.75]`, body text to `text-[17px]` with `leading-[1.8]`, section headings to `text-lg font-bold` with bottom borders, colored "Decisions Made" heading cyan and "Next Steps" heading deep purple, increased spacing and padding with subtle shadows
   - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
 - **Brand-aligned transcript speaker colors**: Replaced generic blue/green/purple/orange palette with brand-derived colors (primary purple, cyan, deep purple, amber, accent dark, indigo). Stats grid values now use brand purple, timeline bar has a subtle purple-to-cyan gradient, connector lines use brand purple

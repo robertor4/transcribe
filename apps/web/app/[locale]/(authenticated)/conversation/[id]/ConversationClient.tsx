@@ -54,7 +54,6 @@ import { ConversationCategoryBadge } from '@/components/ConversationCategoryBadg
 import { AssetRecommendations } from '@/components/AssetRecommendations';
 import { getAssetRecommendations } from '@/lib/assetRecommendations';
 import type { ConversationCategory } from '@transcribe/shared';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface ConversationClientProps {
@@ -527,9 +526,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
           />
         }
         mainContent={
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8 lg:pr-28">
             {/* Header */}
-            <div className="mb-6 lg:mb-8">
+            <div className="max-w-[680px] mx-auto mb-6 lg:mb-8">
               <Link
                 href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
                 className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
@@ -560,6 +559,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 </h1>
               )}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+                {activeWordCount > 0 && (
+                  <>
+                    <ReadingTimeIndicator wordCount={activeWordCount} />
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                  </>
+                )}
                 <span>
                   {conversation.createdAt.toLocaleDateString('en-US', {
                     month: 'short',
@@ -567,12 +572,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     year: 'numeric',
                   })}
                 </span>
-                {activeWordCount > 0 && (
-                  <>
-                    <span className="text-gray-300 dark:text-gray-600">|</span>
-                    <ReadingTimeIndicator wordCount={activeWordCount} />
-                  </>
-                )}
                 {conversation.conversationCategory && (
                   <>
                     <span className="text-gray-300 dark:text-gray-600">|</span>
@@ -706,30 +705,59 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     ]}
                   />
               </div>
+              {/* Mobile tab toggle */}
+              <div className="flex lg:hidden gap-1 mt-3">
+                <button
+                  onClick={() => setActiveTab('summary')}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
+                    activeTab === 'summary'
+                      ? 'bg-[#8D6AFA] text-white'
+                      : 'text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400'
+                  }`}
+                >
+                  {tConversation('tabs.summary')}
+                </button>
+                <button
+                  onClick={() => setActiveTab('transcript')}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
+                    activeTab === 'transcript'
+                      ? 'bg-[#8D6AFA] text-white'
+                      : 'text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400'
+                  }`}
+                >
+                  {tConversation('tabs.transcript')}
+                </button>
+              </div>
             </div>
 
-            {/* Tab Navigation */}
-            <div className="lg:sticky lg:top-0 lg:z-10 bg-white dark:bg-gray-900 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-gray-200 dark:border-gray-700">
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'summary' | 'transcript')}>
-                <TabsList variant="line" className="w-full justify-start gap-0 -mb-px">
-                  <TabsTrigger
-                    value="summary"
-                    className="px-4 py-2.5 text-sm font-semibold rounded-none border-b-2 border-transparent data-[state=active]:border-b-[#8D6AFA] data-[state=active]:text-[#8D6AFA] after:hidden"
-                  >
-                    {tConversation('tabs.summary')}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="transcript"
-                    className="px-4 py-2.5 text-sm font-semibold rounded-none border-b-2 border-transparent data-[state=active]:border-b-[#8D6AFA] data-[state=active]:text-[#8D6AFA] after:hidden"
-                  >
-                    {tConversation('tabs.transcript')}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+            {/* Content area with side tabs */}
+            <div className="relative">
+              {/* Vertical tab nav - positioned in right margin */}
+              <nav className="hidden lg:flex flex-col absolute right-[-7rem] top-0">
+                <button
+                  onClick={() => setActiveTab('summary')}
+                  className={`text-sm font-medium pl-4 pr-3 py-2 text-left transition-colors border-l-2 ${
+                    activeTab === 'summary'
+                      ? 'border-[#8D6AFA] text-[#8D6AFA]'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                  }`}
+                >
+                  {tConversation('tabs.summary')}
+                </button>
+                <button
+                  onClick={() => setActiveTab('transcript')}
+                  className={`text-sm font-medium pl-4 pr-3 py-2 text-left transition-colors border-l-2 ${
+                    activeTab === 'transcript'
+                      ? 'border-[#8D6AFA] text-[#8D6AFA]'
+                      : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+                  }`}
+                >
+                  {tConversation('tabs.transcript')}
+                </button>
+              </nav>
 
-            {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
-            <div className={activeTab === 'summary' ? '' : 'hidden'}>
+              {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
+              <div className={activeTab === 'summary' ? '' : 'hidden'}>
               <section id="summary" className="scroll-mt-16">
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
                   (() => {
@@ -805,10 +833,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
 
             <div className={activeTab === 'transcript' ? '' : 'hidden'}>
-              <InlineTranscript
-                conversation={conversation}
-                highlightOptions={highlightOptions}
-              />
+              <div className="max-w-[680px] mx-auto">
+                <InlineTranscript
+                  conversation={conversation}
+                  highlightOptions={highlightOptions}
+                />
+              </div>
+            </div>
             </div>
           </div>
         }

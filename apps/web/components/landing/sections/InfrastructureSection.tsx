@@ -1,4 +1,5 @@
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import { AnimatedCounter } from '@/components/landing/AnimatedCounter';
 
 interface InfrastructureSectionTranslations {
   tag: string;
@@ -17,6 +18,12 @@ interface InfrastructureSectionProps {
 }
 
 const statKeys = ['languages', 'accuracy', 'speed'] as const;
+
+const statAnimations: Record<(typeof statKeys)[number], { value: number; suffix: string }> = {
+  languages: { value: 99, suffix: '+' },
+  accuracy: { value: 96, suffix: '%' },
+  speed: { value: 4, suffix: '×' },
+};
 
 export function InfrastructureSection({ translations: t }: InfrastructureSectionProps) {
   return (
@@ -39,7 +46,7 @@ export function InfrastructureSection({ translations: t }: InfrastructureSection
               className="bg-white/[0.08] border border-white/[0.08] rounded-[14px] p-7 text-left"
             >
               <div className="font-[family-name:var(--font-merriweather)] text-5xl font-black text-[#14D0DC] leading-none mb-2">
-                {t.stats[key].number}
+                <AnimatedCounter value={statAnimations[key].value} suffix={statAnimations[key].suffix} />
               </div>
               <div className="text-[15px] font-semibold text-white mb-2">{t.stats[key].label}</div>
               <div className="text-[13px] text-white/30 leading-relaxed">{t.stats[key].desc}</div>
