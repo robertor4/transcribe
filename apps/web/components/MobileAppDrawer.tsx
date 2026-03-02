@@ -348,7 +348,10 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
         </div>
 
         {/* Bottom Section - User Profile Menu */}
-        <div className="p-4 border-t border-white/10 mt-auto safe-area-bottom">
+        <div
+          className="p-4 border-t border-white/10 mt-auto"
+          style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
+        >
           <UserProfileMenu />
         </div>
       </SheetContent>
