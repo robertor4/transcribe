@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, memo } from 'react';
+import { useState, useRef, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Trash2,
@@ -85,6 +85,26 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFolderPicker, setShowFolderPicker] = useState(false);
 
+  // Track touch movement to distinguish scrolls from taps
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const wasDragRef = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    wasDragRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    if (dx > 10 || dy > 10) {
+      wasDragRef.current = true;
+    }
+  };
+
   const handleDelete = async () => {
     if (!onDelete) return;
     setIsDeleting(true);
@@ -100,6 +120,7 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
   };
 
   const handleRowClick = (e: React.MouseEvent) => {
+    if (wasDragRef.current) return;
     if (showDeleteConfirm) return;
     if ((e.target as HTMLElement).closest('[data-no-navigate]')) return;
 
@@ -112,6 +133,8 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
     <>
       <TableRow
         onClick={handleRowClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         data-state={isSelected ? 'selected' : undefined}
         className="group cursor-pointer"
       >

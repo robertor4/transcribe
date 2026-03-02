@@ -159,7 +159,12 @@
     "enterNewPassword": "Voer je nieuwe wachtwoord in",
     "passwordRequirements": "Wachtwoordvereisten:",
     "passwordSpecialChar": "Één speciaal teken",
-    "optional": "optioneel"
+    "optional": "optioneel",
+    "emailRegisteredWithGoogle": "Dit e-mailadres is geregistreerd met Google-inloggen. Gebruik de Google-knop op de inlogpagina.",
+    "emailExistsPasswordMismatch": "Dit e-mailadres is al geregistreerd, maar het wachtwoord komt niet overeen.",
+    "or": "of",
+    "resetYourPassword": "stel je wachtwoord opnieuw in",
+    "welcomeBackVerification": "Welkom terug! We hebben je een nieuwe verificatielink gestuurd. Controleer je inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1417,32 +1422,32 @@
       "headline2": "Schaal mee terwijl je ",
       "headlineEm": "groeit.",
       "body": "Geen verrassingskosten. Geen per-seat valkuilen. Kies het plan dat past bij hoe je werkt.",
-      "starter": {
+      "free": {
         "tier": "Starter",
         "price": "€0",
         "period": "/mnd",
         "periodSub": "Altijd gratis",
-        "features": "5 opnames / maand,Transcripten & samenvattingen,3 asset-templates,AI-chat (10 vragen/mnd)",
+        "features": "5 gesprekken/maand,60 min max per bestand,4 kern AI-outputs,2 on-demand outputs/maand,Community-ondersteuning",
         "cta": "Gratis beginnen"
       },
       "pro": {
         "tier": "Pro",
-        "price": "€29",
+        "price": "",
         "period": "/mnd",
         "periodSub": "Maandelijks gefactureerd · altijd opzegbaar",
         "badge": "Meest populair",
-        "features": "Onbeperkte opnames,Alle asset-templates,Onbeperkte AI-chat,Alle integraties,Prioriteitsondersteuning",
+        "features": "Onbeperkte gesprekken,60 uur/maand inbegrepen,Alle AI-outputtypen,Vertaling & AI-vragen,Prioriteitsondersteuning",
         "cta": "Start Pro 14 dagen gratis"
       },
-      "team": {
-        "tier": "Team",
-        "price": "€79",
-        "period": "/mnd",
-        "periodSub": "Tot 10 gebruikers",
-        "features": "Alles in Pro,Gedeelde meetingbibliotheek,Teammappen & rechten,AVG-dataopslag,Persoonlijke onboarding",
-        "cta": "Start teamproefperiode"
+      "enterprise": {
+        "tier": "Enterprise",
+        "price": "Neem contact op",
+        "period": "",
+        "periodSub": "Prijzen op maat",
+        "features": "Alles in Pro,Onbeperkte verwerkingsuren,Aangepaste integraties,SSO & teambeheer,Toegewijd support",
+        "cta": "Neem contact op"
       },
-      "note": "Enterprise of aangepast volume?",
+      "note": "Een aangepast plan nodig?",
       "noteCta": "Neem contact op →"
     },
     "finalCta": {

@@ -27,21 +27,20 @@ export function DashboardSkeleton() {
  */
 export function DashboardContentSkeleton() {
   return (
-    <div className="px-4 sm:px-6 lg:px-12 pt-8 sm:pt-4 lg:pt-[38px] pb-12">
-      {/* Greeting */}
-      <div className="mb-4">
+    <div className="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-4 lg:pt-[38px] pb-12">
+      {/* Greeting - hidden on mobile (shown in top bar) */}
+      <div className="mb-4 hidden sm:block">
         <Skeleton className="h-8 w-64" />
       </div>
 
       {/* Quick Create Buttons — Mobile */}
-      <section className="mb-8 sm:mb-10">
+      <section className="mb-6 sm:mb-10">
         <div className="sm:hidden space-y-2">
-          <div className="p-4 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl">
-            <div className="flex items-center gap-4">
-              <Skeleton className="w-14 h-14 rounded-2xl flex-shrink-0" />
+          <div className="p-3 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-xl flex-shrink-0" />
               <div className="flex-1">
-                <Skeleton className="h-5 w-28 mb-1.5" />
-                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-5 w-28" />
               </div>
             </div>
           </div>

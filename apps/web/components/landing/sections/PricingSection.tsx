@@ -18,23 +18,24 @@ interface PricingSectionTranslations {
   headline2: string;
   headlineEm: string;
   body: string;
-  starter: PricingTier;
+  free: PricingTier;
   pro: PricingTier;
-  team: PricingTier;
+  enterprise: PricingTier;
   note: string;
   noteCta: string;
 }
 
 interface PricingSectionProps {
   translations: PricingSectionTranslations;
+  proPrice: string;
   locale: string;
 }
 
-export function PricingSection({ translations: t, locale }: PricingSectionProps) {
+export function PricingSection({ translations: t, proPrice, locale }: PricingSectionProps) {
   const tiers = [
-    { data: t.starter, featured: false },
-    { data: t.pro, featured: true },
-    { data: t.team, featured: false },
+    { data: t.free, featured: false },
+    { data: { ...t.pro, price: proPrice }, featured: true },
+    { data: t.enterprise, featured: false },
   ];
 
   return (

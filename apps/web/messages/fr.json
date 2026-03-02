@@ -159,7 +159,12 @@
     "enterNewPassword": "Entrez votre nouveau mot de passe",
     "passwordRequirements": "Exigences du mot de passe :",
     "passwordSpecialChar": "Un caractère spécial",
-    "optional": "optionnel"
+    "optional": "optionnel",
+    "emailRegisteredWithGoogle": "Cet e-mail est enregistré avec la connexion Google. Veuillez utiliser le bouton Google sur la page de connexion.",
+    "emailExistsPasswordMismatch": "Cet e-mail est déjà enregistré mais le mot de passe ne correspond pas.",
+    "or": "ou",
+    "resetYourPassword": "réinitialisez votre mot de passe",
+    "welcomeBackVerification": "Bienvenue ! Nous vous avons envoyé un nouveau lien de vérification. Vérifiez votre boîte de réception."
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -1395,32 +1400,32 @@
       "headline2": "Évoluez à mesure que vous ",
       "headlineEm": "grandissez.",
       "body": "Pas de frais surprises. Pas de pièges par utilisateur. Choisissez le forfait qui correspond à votre façon de travailler.",
-      "starter": {
+      "free": {
         "tier": "Starter",
         "price": "€0",
         "period": "/mois",
         "periodSub": "Gratuit pour toujours",
-        "features": "5 enregistrements / mois,Transcriptions & résumés,3 modèles de documents,Chat IA (10 requêtes/mois)",
+        "features": "5 conversations/mois,60 min max par fichier,4 sorties IA principales,2 sorties à la demande/mois,Support communautaire",
         "cta": "Commencer gratuitement"
       },
       "pro": {
         "tier": "Pro",
-        "price": "€29",
+        "price": "",
         "period": "/mois",
         "periodSub": "Facturation mensuelle · résiliable à tout moment",
         "badge": "Le plus populaire",
-        "features": "Enregistrements illimités,Tous les modèles de documents,Chat IA illimité,Toutes les intégrations,Support prioritaire",
+        "features": "Conversations illimitées,60 heures/mois incluses,Tous les types de sorties IA,Traduction et questions IA,Support prioritaire",
         "cta": "Essayer Pro gratuitement pendant 14 jours"
       },
-      "team": {
-        "tier": "Team",
-        "price": "€79",
-        "period": "/mois",
-        "periodSub": "Jusqu'à 10 utilisateurs",
-        "features": "Tout ce qui est dans Pro,Bibliothèque de réunions partagée,Dossiers & permissions d'équipe,Hébergement des données RGPD,Onboarding dédié",
-        "cta": "Essayer le forfait équipe"
+      "enterprise": {
+        "tier": "Enterprise",
+        "price": "Contacter les ventes",
+        "period": "",
+        "periodSub": "Tarification personnalisée",
+        "features": "Tout ce qui est dans Pro,Heures de traitement illimitées,Intégrations personnalisées,SSO et gestion d'équipe,Support dédié",
+        "cta": "Contacter les ventes"
       },
-      "note": "Entreprise ou volume personnalisé ?",
+      "note": "Besoin d'un plan personnalisé ?",
       "noteCta": "Contactez-nous →"
     },
     "finalCta": {

@@ -15,6 +15,7 @@ import { TestimonialsSection } from '@/components/landing/sections/TestimonialsS
 import { SecuritySection } from '@/components/landing/sections/SecuritySection';
 import { PricingSection } from '@/components/landing/sections/PricingSection';
 import { FinalCtaSection } from '@/components/landing/sections/FinalCtaSection';
+import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
 
 // Dynamic import for the hero (client component with framer-motion animations)
 const HeroSection = dynamic(
@@ -256,36 +257,37 @@ export default async function LandingPage({
         {/* 10. Pricing */}
         <PricingSection
           locale={locale}
+          proPrice={formatPriceLocale(getPricingForLocale(locale).professional.monthly, locale)}
           translations={{
             tag: t('pricing.tag'),
             headline1: t('pricing.headline1'),
             headline2: t('pricing.headline2'),
             headlineEm: t('pricing.headlineEm'),
             body: t('pricing.body'),
-            starter: {
-              tier: t('pricing.starter.tier'),
-              price: t('pricing.starter.price'),
-              period: t('pricing.starter.period'),
-              periodSub: t('pricing.starter.periodSub'),
-              features: t('pricing.starter.features'),
-              cta: t('pricing.starter.cta'),
+            free: {
+              tier: t('pricing.free.tier'),
+              price: t('pricing.free.price'),
+              period: t('pricing.free.period'),
+              periodSub: t('pricing.free.periodSub'),
+              features: t('pricing.free.features'),
+              cta: t('pricing.free.cta'),
             },
             pro: {
               tier: t('pricing.pro.tier'),
-              price: t('pricing.pro.price'),
+              price: '',
               period: t('pricing.pro.period'),
               periodSub: t('pricing.pro.periodSub'),
               badge: t('pricing.pro.badge'),
               features: t('pricing.pro.features'),
               cta: t('pricing.pro.cta'),
             },
-            team: {
-              tier: t('pricing.team.tier'),
-              price: t('pricing.team.price'),
-              period: t('pricing.team.period'),
-              periodSub: t('pricing.team.periodSub'),
-              features: t('pricing.team.features'),
-              cta: t('pricing.team.cta'),
+            enterprise: {
+              tier: t('pricing.enterprise.tier'),
+              price: t('pricing.enterprise.price'),
+              period: '',
+              periodSub: t('pricing.enterprise.periodSub'),
+              features: t('pricing.enterprise.features'),
+              cta: t('pricing.enterprise.cta'),
             },
             note: t('pricing.note'),
             noteCta: t('pricing.noteCta'),

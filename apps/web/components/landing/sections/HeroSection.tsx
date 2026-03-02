@@ -3,6 +3,7 @@
 import { HeroHeadline } from '@/components/landing/hero/HeroHeadline';
 import { HeroCTAs } from '@/components/landing/hero/HeroCTAs';
 import { HeroTranscriptCard } from './HeroTranscriptCard';
+import { VideoLightbox } from '@/components/landing/VideoLightbox';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -79,12 +80,7 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
               >
                 {t.ctaPrimary}
               </Link>
-              <button className="inline-flex items-center gap-2 bg-transparent text-white/60 border border-white/20 px-6 py-3.5 rounded-[10px] text-[15px] transition-all hover:border-white/40 hover:text-white cursor-pointer">
-                <span className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-[9px]">
-                  ▶
-                </span>
-                {t.ctaSecondary}
-              </button>
+              <VideoLightbox label={t.ctaSecondary} />
             </HeroCTAs>
 
             <HeroHeadline delay={480}>

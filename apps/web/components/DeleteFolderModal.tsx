@@ -43,7 +43,7 @@ export function DeleteFolderModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
-      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-900 rounded-2xl max-w-md p-0 gap-0">
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-900 rounded-2xl sm:max-w-md p-0 gap-0">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-3">

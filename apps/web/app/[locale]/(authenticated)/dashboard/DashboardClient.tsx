@@ -199,34 +199,39 @@ export function DashboardClient() {
         <ThreePaneLayout
           leftSidebar={<LeftNavigation onNewConversation={handleMoreTemplates} />}
           showRightPanel={false}
+          mobileTitle={
+            <h1
+              className="text-lg font-bold text-[#8D6AFA] truncate"
+              style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
+            >
+              {getCreativeGreeting(user?.displayName || user?.email || 'there')}
+            </h1>
+          }
           mainContent={
-          <div className="px-4 sm:px-6 lg:px-12 pt-8 sm:pt-4 lg:pt-[38px] pb-12">
-            {/* Personalized Greeting - aligned with logo bottom */}
-            <div className="mb-4">
-              <h1 className="text-2xl font-bold text-[#8D6AFA]">
+          <div className="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-4 lg:pt-[38px] pb-12">
+            {/* Personalized Greeting - hidden on mobile (shown in top bar) */}
+            <div className="mb-4 hidden sm:block">
+              <h1 className="text-2xl font-bold text-[#8D6AFA]" style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}>
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
 
             {/* Quick Create Buttons */}
-            <section className="mb-8 sm:mb-10">
+            <section className="mb-6 sm:mb-10">
               {/* Mobile: Primary action + secondary row */}
               <div className="sm:hidden space-y-2">
                 {/* Primary: Record the room */}
                 <button
                   onClick={handleRecordMicrophone}
                   aria-label={`${t('recordRoom')}: ${t('recordRoomDesc')}`}
-                  className="group relative w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
+                  className="group relative w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                    <Mic className="w-7 h-7 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
+                    <Mic className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] mb-0.5 transition-colors duration-200">
+                    <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200">
                       {t('recordRoom')}
-                    </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {t('recordRoomDesc')}
                     </div>
                   </div>
                 </button>

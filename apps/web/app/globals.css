@@ -95,8 +95,8 @@
 
 /* Dark mode via manual toggle - this takes precedence */
 .dark {
-  --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
-  --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
+  --background: oklch(20% 0.070 283); /* deep purple — matches landing page #22184C */
+  --foreground: oklch(92% 0.022 285); /* soft lavender white */
 
   /* Theme Colors (Dark Mode) */
   --color-primary: #8D6AFA;
@@ -106,48 +106,61 @@
   --color-secondary-alt: #3F38A0;
   --color-accent-dark: #23194B;
 
-  /* Text Colors (Dark Mode) - softened for less contrast */
-  --color-text-primary: #e5e7eb; /* gray-200 */
-  --color-text-secondary: #d1d5db; /* gray-300 */
-  --color-text-muted: #9ca3af; /* gray-400 */
-  --color-text-light: #6b7280; /* gray-500 */
+  /* Text Colors (Dark Mode) - purple-tinted for brand consistency */
+  --color-text-primary: oklch(92% 0.022 285); /* lavender gray-200 */
+  --color-text-secondary: oklch(86% 0.030 283); /* lavender gray-300 */
+  --color-text-muted: oklch(70% 0.038 283); /* lavender gray-400 */
+  --color-text-light: oklch(54% 0.048 283); /* lavender gray-500 */
 
   /* Placeholder Colors (Dark Mode) */
-  --color-placeholder: #6b7280; /* gray-500 */
+  --color-placeholder: oklch(54% 0.048 283); /* lavender gray-500 */
 
-  /* shadcn/ui Dark Theme Variables */
-  --card: #1f2937;
-  --card-foreground: #e5e7eb;
-  --popover: #1f2937;
-  --popover-foreground: #e5e7eb;
+  /* shadcn/ui Dark Theme Variables — purple-tinted to match landing page */
+  --card: oklch(27% 0.065 283);
+  --card-foreground: oklch(92% 0.022 285);
+  --popover: oklch(27% 0.065 283);
+  --popover-foreground: oklch(92% 0.022 285);
   --primary: #8D6AFA;
   --primary-foreground: #ffffff;
-  --secondary: #374151;
-  --secondary-foreground: #e5e7eb;
-  --muted: #374151;
-  --muted-foreground: #9ca3af;
-  --accent: #374151;
-  --accent-foreground: #e5e7eb;
+  --secondary: oklch(36% 0.060 283);
+  --secondary-foreground: oklch(92% 0.022 285);
+  --muted: oklch(36% 0.060 283);
+  --muted-foreground: oklch(70% 0.038 283);
+  --accent: oklch(36% 0.060 283);
+  --accent-foreground: oklch(92% 0.022 285);
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #374151;
-  --input: #374151;
+  --border: oklch(36% 0.060 283);
+  --input: oklch(36% 0.060 283);
   --ring: #8D6AFA;
-  --sidebar: #0f1320;
-  --sidebar-foreground: #e5e7eb;
+  --sidebar: oklch(14% 0.065 283);
+  --sidebar-foreground: oklch(92% 0.022 285);
   --sidebar-primary: #8D6AFA;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: rgba(255, 255, 255, 0.1);
-  --sidebar-accent-foreground: #e5e7eb;
+  --sidebar-accent-foreground: oklch(92% 0.022 285);
   --sidebar-border: rgba(255, 255, 255, 0.1);
   --sidebar-ring: #8D6AFA;
+
+  /* Purple-tinted gray scale — overrides Tailwind grays in dark mode */
+  --color-gray-50: oklch(98% 0.008 285);
+  --color-gray-100: oklch(96% 0.015 285);
+  --color-gray-200: oklch(92% 0.022 285);
+  --color-gray-300: oklch(86% 0.030 283);
+  --color-gray-400: oklch(70% 0.038 283);
+  --color-gray-500: oklch(54% 0.048 283);
+  --color-gray-600: oklch(44% 0.055 283);
+  --color-gray-700: oklch(36% 0.060 283);
+  --color-gray-800: oklch(27% 0.065 283);
+  --color-gray-900: oklch(20% 0.070 283);
+  --color-gray-950: oklch(14% 0.065 283);
 }
 
 /* Dark mode via OS preference (only when no manual override) */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #111827; /* gray-900 - blue-tinted dark, matches sidebar */
-    --foreground: #e5e5e5; /* neutral-200 - softer than bright white */
+    --background: oklch(20% 0.070 283); /* deep purple — matches landing page #22184C */
+    --foreground: oklch(92% 0.022 285); /* soft lavender white */
 
     /* Theme Colors (Dark Mode) */
     --color-primary: #8D6AFA;
@@ -157,41 +170,54 @@
     --color-secondary-alt: #3F38A0;
     --color-accent-dark: #23194B;
 
-    /* Text Colors (Dark Mode) - softened for less contrast */
-    --color-text-primary: #e5e7eb; /* gray-200 */
-    --color-text-secondary: #d1d5db; /* gray-300 */
-    --color-text-muted: #9ca3af; /* gray-400 */
-    --color-text-light: #6b7280; /* gray-500 */
+    /* Text Colors (Dark Mode) - purple-tinted for brand consistency */
+    --color-text-primary: oklch(92% 0.022 285); /* lavender gray-200 */
+    --color-text-secondary: oklch(86% 0.030 283); /* lavender gray-300 */
+    --color-text-muted: oklch(70% 0.038 283); /* lavender gray-400 */
+    --color-text-light: oklch(54% 0.048 283); /* lavender gray-500 */
 
     /* Placeholder Colors (Dark Mode) */
-    --color-placeholder: #6b7280; /* gray-500 */
+    --color-placeholder: oklch(54% 0.048 283); /* lavender gray-500 */
 
-    /* shadcn/ui Dark Theme Variables */
-    --card: #1f2937;
-    --card-foreground: #e5e7eb;
-    --popover: #1f2937;
-    --popover-foreground: #e5e7eb;
+    /* shadcn/ui Dark Theme Variables — purple-tinted to match landing page */
+    --card: oklch(27% 0.065 283);
+    --card-foreground: oklch(92% 0.022 285);
+    --popover: oklch(27% 0.065 283);
+    --popover-foreground: oklch(92% 0.022 285);
     --primary: #8D6AFA;
     --primary-foreground: #ffffff;
-    --secondary: #374151;
-    --secondary-foreground: #e5e7eb;
-    --muted: #374151;
-    --muted-foreground: #9ca3af;
-    --accent: #374151;
-    --accent-foreground: #e5e7eb;
+    --secondary: oklch(36% 0.060 283);
+    --secondary-foreground: oklch(92% 0.022 285);
+    --muted: oklch(36% 0.060 283);
+    --muted-foreground: oklch(70% 0.038 283);
+    --accent: oklch(36% 0.060 283);
+    --accent-foreground: oklch(92% 0.022 285);
     --destructive: #dc2626;
     --destructive-foreground: #ffffff;
-    --border: #374151;
-    --input: #374151;
+    --border: oklch(36% 0.060 283);
+    --input: oklch(36% 0.060 283);
     --ring: #8D6AFA;
-    --sidebar: #0f1320;
-    --sidebar-foreground: #e5e7eb;
+    --sidebar: oklch(14% 0.065 283);
+    --sidebar-foreground: oklch(92% 0.022 285);
     --sidebar-primary: #8D6AFA;
     --sidebar-primary-foreground: #ffffff;
     --sidebar-accent: rgba(255, 255, 255, 0.1);
-    --sidebar-accent-foreground: #e5e7eb;
+    --sidebar-accent-foreground: oklch(92% 0.022 285);
     --sidebar-border: rgba(255, 255, 255, 0.1);
     --sidebar-ring: #8D6AFA;
+
+    /* Purple-tinted gray scale — overrides Tailwind grays in dark mode */
+    --color-gray-50: oklch(98% 0.008 285);
+    --color-gray-100: oklch(96% 0.015 285);
+    --color-gray-200: oklch(92% 0.022 285);
+    --color-gray-300: oklch(86% 0.030 283);
+    --color-gray-400: oklch(70% 0.038 283);
+    --color-gray-500: oklch(54% 0.048 283);
+    --color-gray-600: oklch(44% 0.055 283);
+    --color-gray-700: oklch(36% 0.060 283);
+    --color-gray-800: oklch(27% 0.065 283);
+    --color-gray-900: oklch(20% 0.070 283);
+    --color-gray-950: oklch(14% 0.065 283);
   }
 }
 
@@ -233,8 +259,8 @@ h1, h2, h3, h4, h5, h6 {
     display: none;  /* Chrome, Safari, Opera */
   }
 
-  /* Ensure minimum touch target sizes on mobile */
-  button,
+  /* Ensure minimum touch target sizes on mobile (exclude checkboxes/switches) */
+  button:not([data-slot="checkbox"]):not([data-slot="switch"]),
   a[role="button"] {
     min-height: 44px;
     min-width: 44px;
@@ -283,13 +309,13 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5em !important;
 }
 
-/* Dark mode prose styles - softened for less contrast */
+/* Dark mode prose styles - purple-tinted for brand consistency */
 .dark .prose {
-  color: #d1d5db !important; /* gray-300 */
+  color: oklch(86% 0.030 283) !important; /* lavender gray-300 */
 }
 
 .dark .prose p {
-  color: #d1d5db !important; /* gray-300 - softened */
+  color: oklch(86% 0.030 283) !important; /* lavender gray-300 */
 }
 
 .dark .prose h1,
@@ -298,20 +324,20 @@ h1, h2, h3, h4, h5, h6 {
 .dark .prose h4,
 .dark .prose h5,
 .dark .prose h6 {
-  color: #e5e7eb !important; /* gray-200 - softened from gray-50 */
+  color: oklch(92% 0.022 285) !important; /* lavender gray-200 */
 }
 
 .dark .prose strong {
-  color: #e5e7eb !important; /* gray-200 - softened */
+  color: oklch(92% 0.022 285) !important; /* lavender gray-200 */
 }
 
 .dark .prose li {
-  color: #d1d5db !important; /* gray-300 - softened */
+  color: oklch(86% 0.030 283) !important; /* lavender gray-300 */
 }
 
 .dark .prose code {
-  background-color: #374151 !important; /* gray-700 */
-  color: #f9fafb !important; /* gray-50 */
+  background-color: oklch(36% 0.060 283) !important; /* purple-tinted gray-700 */
+  color: oklch(98% 0.008 285) !important; /* lavender gray-50 */
 }
 
 .dark .prose a {
@@ -319,8 +345,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .prose blockquote {
-  color: #d1d5db !important; /* gray-300 */
-  border-left-color: #4b5563 !important; /* gray-600 */
+  color: oklch(86% 0.030 283) !important; /* lavender gray-300 */
+  border-left-color: oklch(44% 0.055 283) !important; /* purple-tinted gray-600 */
 }
 
 /* Mobile and tablet responsive improvements */
@@ -335,9 +361,9 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Ensure touch targets are at least 44px */
+/* Ensure touch targets are at least 44px (exclude checkboxes/switches) */
 @media (pointer: coarse) {
-  button {
+  button:not([data-slot="checkbox"]):not([data-slot="switch"]) {
     min-height: 44px;
     min-width: 44px;
   }
@@ -747,17 +773,17 @@ h1, h2, h3, h4, h5, h6 {
   background-color: rgba(156, 163, 175, 0.5);  /* gray-400 at 50% */
 }
 
-/* Dark mode scrollbar */
+/* Dark mode scrollbar — purple-tinted */
 .dark .scrollbar-subtle {
-  scrollbar-color: rgba(75, 85, 99, 0.4) transparent;  /* Firefox: gray-600 at 40% */
+  scrollbar-color: rgba(70, 63, 116, 0.4) transparent;  /* Firefox: purple-tinted gray-600 at 40% */
 }
 
 .dark .scrollbar-subtle::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.4);  /* gray-600 at 40% */
+  background-color: rgba(70, 63, 116, 0.4);  /* purple-tinted gray-600 at 40% */
 }
 
 .dark .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(75, 85, 99, 0.6);  /* gray-600 at 60% */
+  background-color: rgba(70, 63, 116, 0.6);  /* purple-tinted gray-600 at 60% */
 }
 
 /* ===== Slide Panel Animations ===== */
@@ -1082,14 +1108,15 @@ h1, h2, h3, h4, h5, h6 {
   animation: landingPulse 2s infinite;
 }
 
-/* Landing integrations marquee — snappy one-by-one scroll */
+/* Landing integrations marquee — smooth continuous scroll */
 @keyframes marquee-snap {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(-100% / 3), 0, 0); }
 }
 
 .animate-marquee-snap {
-  animation: marquee-snap 20s steps(8) infinite;
+  animation: marquee-snap 25s linear infinite;
+  will-change: transform;
 }
 
 /* Landing card hover lift */

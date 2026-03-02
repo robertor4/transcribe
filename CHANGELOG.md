@@ -8,6 +8,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Landing page pricing aligned with pricing page**: Renamed tiers from Starter/Pro/Team to Starter/Pro/Enterprise with matching features and locale-aware dynamic pricing from the shared pricing utility
+  - Pro tier price now uses `getPricingForLocale()` ($25 USD / €23 EUR) instead of hardcoded €29
+  - Enterprise tier replaces Team tier with "Contact sales" pricing
+  - Feature lists updated to match the dedicated pricing page (conversations, hours, AI outputs, etc.)
+  - Updated all 5 locale files (en, de, es, fr, nl)
+  - Files: [PricingSection.tsx](apps/web/components/landing/sections/PricingSection.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx)
+
+### Fixed
+- **Dark mode contrast for inputs and table headers**: Improved visibility of search inputs, select dropdowns, and table header text against the new purple-tinted dark backgrounds
+  - Input/Select: Changed from `dark:bg-input/30` to `dark:bg-white/[0.08]` with `dark:border-white/[0.12]` (glass-morphism style matching landing page)
+  - TableHead text: Bumped from `dark:text-gray-300` to `dark:text-gray-200` for better readability
+  - Files: [input.tsx](apps/web/components/ui/input.tsx), [select.tsx](apps/web/components/ui/select.tsx), [table.tsx](apps/web/components/ui/table.tsx)
+
+### Added
+- **Fool-proof sign-up flow**: Intelligent handling when a user tries to sign up with an already-registered email
+  - If password matches and email is unverified: auto sign-in, resend verification email, redirect to verify-email page with "welcome back" banner
+  - If password matches and email is verified: auto sign-in and redirect to dashboard (seamless experience)
+  - If password doesn't match: show helpful error with clickable links to Sign In and Reset Password
+  - Google-registered emails still show appropriate guidance
+  - New translation keys added to all 5 locales (en, nl, de, fr, es)
+  - Files: [SignupForm.tsx](apps/web/components/SignupForm.tsx), [verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx)
+
+### Changed
+- **Privacy & Terms pages restyled to match landing page**: Replaced custom white headers with shared `PublicHeader`, added dark hero sections with brand styling, restructured content area with gradient background for readability, and added `scroll-mt-20` for anchor link offset
+  - Files: [privacy/page.tsx](apps/web/app/[locale]/privacy/page.tsx), [terms/page.tsx](apps/web/app/[locale]/terms/page.tsx)
+- **Dark mode purple-tinted palette**: Updated all dark mode colors from standard grays to a purple-tinted scale matching the landing page's `#22184C` aesthetic
+  - Overrode Tailwind's `--color-gray-*` CSS variables in `.dark` scope with oklch purple-tinted equivalents, automatically shifting ~2,100 hardcoded `dark:` class usages
+  - Updated shadcn/ui CSS variables (`--background`, `--card`, `--border`, `--sidebar`, etc.) to purple-tinted values
+  - Updated prose, scrollbar, and structural component styles for brand consistency
+  - Files: [globals.css](apps/web/app/globals.css), [CollapsibleSidebar.tsx](apps/web/components/CollapsibleSidebar.tsx), [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx), [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx)
 - **Create Conversation modal redesign (Variant B)**: Redesigned the conversation creation modal with a compact, focused layout inspired by Variant B
   - Migrated from custom overlay to shadcn `Dialog` component with controlled open/close and confirmation logic
   - Narrowed modal from `max-w-4xl` to `sm:max-w-lg` (~480px) for a cleaner, less cluttered feel

@@ -44,7 +44,7 @@ export function ConfirmModal({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
-      <AlertDialogContent className="bg-white dark:bg-gray-800 gap-0 p-0 max-w-md">
+      <AlertDialogContent className="bg-white dark:bg-gray-800 gap-0 p-0 sm:max-w-md rounded-2xl">
         <AlertDialogHeader className="p-6 pb-4">
           <AlertDialogTitle className="text-gray-900 dark:text-gray-100">
             {title}

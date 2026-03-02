@@ -19,6 +19,8 @@
     "build:shared": "cd packages/shared && npm run build",
     "start": "turbo run start --parallel",
     "lint": "turbo run lint",
+    "video:studio": "cd apps/video && npm run studio",
+    "video:render": "cd apps/video && npm run render:promo",
     "clean": "turbo run clean && npm run redis:stop",
     "redis:start": "docker start redis-transcribe 2>/dev/null || docker run -d --name redis-transcribe -p 6379:6379 redis 2>/dev/null || echo 'Redis is already running on port 6379'",
     "redis:stop": "docker stop redis-transcribe 2>/dev/null || true",

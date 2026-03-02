@@ -100,8 +100,8 @@ export function ConversationsTableToolbar({
   // Bulk actions bar
   if (hasSelection) {
     return (
-      <div className="flex items-center justify-between gap-3 px-3 py-2 mb-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
-        <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 py-2 mb-2 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <span className="text-sm font-medium text-purple-700 dark:text-purple-300 whitespace-nowrap">
             {t('table.selected', { count: selectedCount })}
           </span>
@@ -113,7 +113,7 @@ export function ConversationsTableToolbar({
               disabled={isBulkRemoving}
               icon={<FolderMinus className="w-4 h-4" />}
             >
-              {t('table.removeFromFolder')}
+              <span className="hidden sm:inline">{t('table.removeFromFolder')}</span>
             </Button>
           )}
           <Button
@@ -123,7 +123,7 @@ export function ConversationsTableToolbar({
             disabled={isBulkMoving}
             icon={<FolderInput className="w-4 h-4" />}
           >
-            {t('table.moveToFolder')}
+            <span className="hidden sm:inline">{t('table.moveToFolder')}</span>
           </Button>
           <Button
             variant="danger"
@@ -131,7 +131,7 @@ export function ConversationsTableToolbar({
             onClick={() => setShowBulkDeleteConfirm(true)}
             icon={<Trash2 className="w-4 h-4" />}
           >
-            {t('table.delete')}
+            <span className="hidden sm:inline">{t('table.delete')}</span>
           </Button>
         </div>
         <Button
@@ -140,7 +140,7 @@ export function ConversationsTableToolbar({
           onClick={clearSelection}
           icon={<X className="w-4 h-4" />}
         >
-          {t('table.clearSelection')}
+          <span className="hidden sm:inline">{t('table.clearSelection')}</span>
         </Button>
 
         {/* Bulk folder picker - uses first selected ID as placeholder */}

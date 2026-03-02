@@ -87,7 +87,7 @@ export function FolderPickerModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 rounded-2xl max-w-md p-0 gap-0">
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 rounded-2xl sm:max-w-md p-0 gap-0">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
           <div>
@@ -100,7 +100,7 @@ export function FolderPickerModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label={t('close')}
           >
             <X className="w-5 h-5" />

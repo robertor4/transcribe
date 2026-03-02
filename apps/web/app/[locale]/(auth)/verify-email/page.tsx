@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -16,6 +17,8 @@ export default function VerifyEmailPage() {
 
   const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isResent = searchParams.get('resent') === 'true';
   const tAuth = useTranslations('auth');
 
   // Check verification status periodically
@@ -140,6 +143,13 @@ export default function VerifyEmailPage() {
               <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
                 {tAuth('verifyYourEmail')}
               </h2>
+              {isResent && (
+                <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                  <p className="text-sm text-green-800 dark:text-green-300 font-medium text-center">
+                    {tAuth('welcomeBackVerification')}
+                  </p>
+                </div>
+              )}
               <p className="mt-4 text-center text-sm text-gray-600">
                 {tAuth('verificationEmailSent')} <strong>{user.email}</strong>
               </p>

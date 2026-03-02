@@ -15,6 +15,8 @@ interface ThreePaneLayoutProps {
   showRightPanel?: boolean;
   leftSidebarWidth?: number;
   rightPanelWidth?: number;
+  /** Optional title content for the mobile top bar (shown next to hamburger) */
+  mobileTitle?: ReactNode;
   /** Callback for "New Conversation" action from mobile drawer */
   onNewConversation?: () => void;
 }
@@ -35,6 +37,7 @@ export function ThreePaneLayout({
   showRightPanel = true,
   leftSidebarWidth = 260,
   rightPanelWidth = 360,
+  mobileTitle,
   onNewConversation,
 }: ThreePaneLayoutProps) {
   const isMobile = useIsMobile(1024); // lg breakpoint
@@ -75,14 +78,23 @@ export function ThreePaneLayout({
 
   return (
     <div className="flex h-screen-safe w-full overflow-hidden bg-white dark:bg-gray-900">
-      {/* Mobile hamburger button - only visible on mobile */}
-      <button
-        onClick={() => setIsMobileDrawerOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-50 w-11 h-11 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#0f1320] text-white shadow-lg hover:bg-[#4a42b5] dark:hover:bg-[#1a1a3a] transition-colors safe-area-top"
-        aria-label="Open navigation menu"
-      >
-        <Menu className="w-5 h-5" />
-      </button>
+      {/* Mobile top bar - only visible on mobile */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 safe-area-top">
+        <div className="flex items-center gap-3 px-4 h-14 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/60 dark:border-gray-700/40">
+          <button
+            onClick={() => setIsMobileDrawerOpen(true)}
+            className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#3F38A0] dark:bg-[#1a1540] text-white shadow-sm hover:bg-[#4a42b5] dark:hover:bg-[#241f4d] transition-colors flex-shrink-0"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          {mobileTitle && (
+            <div className="flex-1 min-w-0 truncate">
+              {mobileTitle}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Mobile Navigation Drawer */}
       <MobileAppDrawer
@@ -107,7 +119,7 @@ export function ThreePaneLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 scrollbar-subtle">
-        {/* Add top padding on mobile to account for the hamburger button */}
+        {/* Add top padding on mobile to account for the top bar */}
         <div className="lg:pt-0 pt-14 min-h-full">
           {mainContent}
         </div>

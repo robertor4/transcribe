@@ -241,7 +241,7 @@ export function ConversationsTable({
               <TableRow className="bg-gray-100 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800/60">
                 {/* Checkbox */}
                 <TableHead className="w-[40px] pr-0">
-                  <div className="flex items-center pl-5 lg:pl-0">
+                  <div className="flex items-center">
                     <Checkbox
                       checked={isPartiallySelected ? 'indeterminate' : isAllSelected}
                       onCheckedChange={onSelectAll}

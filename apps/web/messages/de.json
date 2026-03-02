@@ -159,7 +159,12 @@
     "enterNewPassword": "Geben Sie Ihr neues Passwort ein",
     "passwordRequirements": "Passwortanforderungen:",
     "passwordSpecialChar": "Ein Sonderzeichen",
-    "optional": "optional"
+    "optional": "optional",
+    "emailRegisteredWithGoogle": "Diese E-Mail-Adresse ist mit Google-Anmeldung registriert. Bitte verwenden Sie die Google-Schaltfläche auf der Anmeldeseite.",
+    "emailExistsPasswordMismatch": "Diese E-Mail-Adresse ist bereits registriert, aber das Passwort stimmt nicht überein.",
+    "or": "oder",
+    "resetYourPassword": "setzen Sie Ihr Passwort zurück",
+    "welcomeBackVerification": "Willkommen zurück! Wir haben Ihnen einen neuen Bestätigungslink gesendet. Prüfen Sie Ihren Posteingang."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1395,32 +1400,32 @@
       "headline2": "Skaliere mit deinem ",
       "headlineEm": "Wachstum.",
       "body": "Keine versteckten Gebühren. Keine Pro-Nutzer-Fallen. Wähle den Plan, der zu deiner Arbeitsweise passt.",
-      "starter": {
+      "free": {
         "tier": "Starter",
         "price": "€0",
         "period": "/Mo.",
         "periodSub": "Für immer kostenlos",
-        "features": "5 Aufnahmen / Monat,Transkripte & Zusammenfassungen,3 Asset-Vorlagen,KI-Chat (10 Anfragen/Mo.)",
+        "features": "5 Gespräche/Monat,60 Min. max pro Datei,4 KI-Kernausgaben,2 On-Demand-Ausgaben/Monat,Community-Support",
         "cta": "Kostenlos starten"
       },
       "pro": {
         "tier": "Pro",
-        "price": "€29",
+        "price": "",
         "period": "/Mo.",
         "periodSub": "Monatliche Abrechnung · jederzeit kündbar",
         "badge": "Beliebteste Wahl",
-        "features": "Unbegrenzte Aufnahmen,Alle Asset-Vorlagen,Unbegrenzter KI-Chat,Alle Integrationen,Prioritäts-Support",
+        "features": "Unbegrenzte Gespräche,60 Stunden/Monat inklusive,Alle KI-Ausgabetypen,Übersetzung & Fragen stellen,Prioritäts-Support",
         "cta": "Pro 14 Tage kostenlos testen"
       },
-      "team": {
-        "tier": "Team",
-        "price": "€79",
-        "period": "/Mo.",
-        "periodSub": "Bis zu 10 Plätze",
-        "features": "Alles aus Pro,Geteilte Meeting-Bibliothek,Team-Ordner & Berechtigungen,DSGVO-Datenspeicherung,Persönliches Onboarding",
-        "cta": "Team-Testversion starten"
+      "enterprise": {
+        "tier": "Enterprise",
+        "price": "Vertrieb kontaktieren",
+        "period": "",
+        "periodSub": "Individuelle Preise",
+        "features": "Alles aus Pro,Unbegrenzte Verarbeitungsstunden,Individuelle Integrationen,SSO & Teamverwaltung,Dedizierter Support",
+        "cta": "Vertrieb kontaktieren"
       },
-      "note": "Enterprise oder individuelles Volumen?",
+      "note": "Individuellen Plan benötigt?",
       "noteCta": "Sprich mit uns →"
     },
     "finalCta": {

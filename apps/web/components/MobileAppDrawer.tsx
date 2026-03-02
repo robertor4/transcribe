@@ -86,7 +86,7 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
       <SheetContent
         side="left"
         showCloseButton={false}
-        className="w-[280px] max-w-[85vw] bg-[#3F38A0] dark:bg-[#0f1320] shadow-2xl p-0 gap-0 border-none flex flex-col"
+        className="w-[280px] max-w-[85vw] bg-[#3F38A0] dark:bg-[#1a1540] shadow-2xl p-0 gap-0 border-none flex flex-col"
       >
         {/* Accessible title (visually hidden) */}
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
@@ -107,7 +107,7 @@ export function MobileAppDrawer({ isOpen, onClose, onNewConversation }: MobileAp
           </Link>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />

@@ -17,13 +17,13 @@ export default function SignupForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<React.ReactNode>('');
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const { signUpWithEmail, signInWithGoogle } = useAuth();
+  const { signUpWithEmail, signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
   const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
@@ -106,13 +106,78 @@ export default function SignupForm() {
         try {
           const { fetchSignInMethodsForEmail } = await import('firebase/auth');
           const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-          
+
           if (signInMethods.includes('google.com')) {
-            setError('This email is already registered with Google sign-in. Please sign in using the Google button on the login page.');
-          } else if (signInMethods.includes('password')) {
-            setError('This email is already registered. Please sign in instead.');
-          } else {
-            setError(tAuth('emailAlreadyInUse'));
+            setError(tAuth('emailRegisteredWithGoogle'));
+            return;
+          }
+
+          // Password provider (or empty array if enumeration protection is on)
+          // Attempt silent sign-in with the password the user already entered
+          try {
+            await signInWithEmail(email, password);
+
+            // Sign-in succeeded — check verification status
+            if (auth.currentUser) {
+              await auth.currentUser.reload();
+
+              if (!auth.currentUser.emailVerified) {
+                // Unverified: resend verification email and redirect
+                try {
+                  await sendEmailVerification(auth.currentUser, {
+                    url: `${window.location.origin}/dashboard`,
+                  });
+                } catch (emailError) {
+                  console.error('Error resending verification email:', emailError);
+                }
+                router.push('/verify-email?resent=true');
+              } else {
+                // Already verified: auto sign-in, check for pending imports
+                trackEvent('login', { method: 'email', source: 'signup_auto_signin' });
+                const pendingImport = getPendingImport();
+                if (pendingImport) {
+                  try {
+                    await importedConversationApi.import(pendingImport.shareToken);
+                    clearPendingImport();
+                    router.push('/shared-with-me');
+                    return;
+                  } catch (importError) {
+                    console.error('Failed to auto-import:', importError);
+                    clearPendingImport();
+                  }
+                }
+                router.push('/dashboard');
+              }
+            }
+          } catch (signInError) {
+            const signInErrorObj = signInError as { code?: string; message?: string };
+            const signInCode = signInErrorObj.code || '';
+            const signInMsg = signInErrorObj.message || '';
+
+            if (signInCode === 'auth/too-many-requests') {
+              setError(tAuth('tooManyRequests'));
+            } else if (
+              signInCode === 'auth/wrong-password' ||
+              signInCode === 'auth/invalid-credential' ||
+              signInCode === 'auth/invalid-login-credentials' ||
+              signInMsg.includes('INVALID_LOGIN_CREDENTIALS')
+            ) {
+              // Password mismatch: show helpful error with links
+              setError(
+                <span>
+                  {tAuth('emailExistsPasswordMismatch')}{' '}
+                  <Link href="/login" className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0] underline">
+                    {tAuth('signIn')}
+                  </Link>
+                  {' '}{tAuth('or')}{' '}
+                  <Link href="/forgot-password" className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0] underline">
+                    {tAuth('resetYourPassword')}
+                  </Link>
+                </span>
+              );
+            } else {
+              setError(tAuth('emailAlreadyInUse'));
+            }
           }
         } catch {
           setError(tAuth('emailAlreadyInUse'));
@@ -171,7 +236,7 @@ export default function SignupForm() {
           <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2 flex-shrink-0" />
-              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
+              <div className="text-sm text-red-800 dark:text-red-300">{error}</div>
             </div>
           </div>
         )}

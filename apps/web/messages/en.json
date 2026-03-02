@@ -159,7 +159,12 @@
     "enterNewPassword": "Enter your new password",
     "passwordRequirements": "Password Requirements:",
     "passwordSpecialChar": "One special character",
-    "optional": "optional"
+    "optional": "optional",
+    "emailRegisteredWithGoogle": "This email is registered with Google sign-in. Please use the Google button on the login page.",
+    "emailExistsPasswordMismatch": "This email is already registered but the password doesn't match.",
+    "or": "or",
+    "resetYourPassword": "reset your password",
+    "welcomeBackVerification": "Welcome back! We've sent you a new verification link. Check your inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1418,32 +1423,32 @@
       "headline2": "Scale as you ",
       "headlineEm": "grow.",
       "body": "No surprise fees. No per-seat traps. Choose the plan that fits how you work.",
-      "starter": {
+      "free": {
         "tier": "Starter",
-        "price": "€0",
+        "price": "$0",
         "period": "/mo",
         "periodSub": "Free forever",
-        "features": "5 recordings / month,Transcripts & summaries,3 asset templates,AI chat (10 queries/mo)",
+        "features": "5 conversations/month,60 min max per file,4 core AI outputs,2 on-demand outputs/month,Community support",
         "cta": "Get started free"
       },
       "pro": {
         "tier": "Pro",
-        "price": "€29",
+        "price": "",
         "period": "/mo",
         "periodSub": "Billed monthly · cancel anytime",
         "badge": "Most popular",
-        "features": "Unlimited recordings,All asset templates,Unlimited AI chat,All integrations,Priority support",
+        "features": "Unlimited conversations,60 hours/month included,All AI output types,Translation & Ask Questions,Priority support",
         "cta": "Start Pro free for 14 days"
       },
-      "team": {
-        "tier": "Team",
-        "price": "€79",
-        "period": "/mo",
-        "periodSub": "Up to 10 seats",
-        "features": "Everything in Pro,Shared meeting library,Team folders & permissions,GDPR data residency,Dedicated onboarding",
-        "cta": "Start team trial"
+      "enterprise": {
+        "tier": "Enterprise",
+        "price": "Contact sales",
+        "period": "",
+        "periodSub": "Custom pricing",
+        "features": "Everything in Pro,Unlimited processing hours,Custom integrations,SSO & team management,Dedicated support",
+        "cta": "Contact sales"
       },
-      "note": "Enterprise or custom volume?",
+      "note": "Need a custom plan?",
       "noteCta": "Talk to us →"
     },
     "finalCta": {

@@ -159,7 +159,12 @@
     "enterNewPassword": "Ingrese su nueva contraseña",
     "passwordRequirements": "Requisitos de contraseña:",
     "passwordSpecialChar": "Un carácter especial",
-    "optional": "opcional"
+    "optional": "opcional",
+    "emailRegisteredWithGoogle": "Este correo electrónico está registrado con inicio de sesión de Google. Por favor, usa el botón de Google en la página de inicio de sesión.",
+    "emailExistsPasswordMismatch": "Este correo electrónico ya está registrado pero la contraseña no coincide.",
+    "or": "o",
+    "resetYourPassword": "restablece tu contraseña",
+    "welcomeBackVerification": "Bienvenido de nuevo. Te hemos enviado un nuevo enlace de verificación. Revisa tu bandeja de entrada."
   },
   "dashboard": {
     "title": "Panel de control",
@@ -1395,32 +1400,32 @@
       "headline2": "Escala a medida que ",
       "headlineEm": "creces.",
       "body": "Sin cargos sorpresa. Sin trampas por usuario. Elige el plan que se adapte a tu forma de trabajar.",
-      "starter": {
+      "free": {
         "tier": "Starter",
         "price": "€0",
         "period": "/mes",
         "periodSub": "Gratis para siempre",
-        "features": "5 grabaciones / mes,Transcripciones y resúmenes,3 plantillas de recursos,Chat IA (10 consultas/mes)",
+        "features": "5 conversaciones/mes,60 min máx. por archivo,4 salidas IA principales,2 salidas bajo demanda/mes,Soporte comunitario",
         "cta": "Empieza gratis"
       },
       "pro": {
         "tier": "Pro",
-        "price": "€29",
+        "price": "",
         "period": "/mes",
         "periodSub": "Facturación mensual · cancela en cualquier momento",
         "badge": "Más popular",
-        "features": "Grabaciones ilimitadas,Todas las plantillas de recursos,Chat IA ilimitado,Todas las integraciones,Soporte prioritario",
+        "features": "Conversaciones ilimitadas,60 horas/mes incluidas,Todos los tipos de salida IA,Traducción y preguntas IA,Soporte prioritario",
         "cta": "Prueba Pro gratis 14 días"
       },
-      "team": {
-        "tier": "Team",
-        "price": "€79",
-        "period": "/mes",
-        "periodSub": "Hasta 10 usuarios",
-        "features": "Todo lo de Pro,Biblioteca de reuniones compartida,Carpetas y permisos de equipo,Residencia de datos RGPD,Onboarding dedicado",
-        "cta": "Iniciar prueba de equipo"
+      "enterprise": {
+        "tier": "Enterprise",
+        "price": "Contactar ventas",
+        "period": "",
+        "periodSub": "Precios personalizados",
+        "features": "Todo lo de Pro,Horas de procesamiento ilimitadas,Integraciones personalizadas,SSO y gestión de equipos,Soporte dedicado",
+        "cta": "Contactar ventas"
       },
-      "note": "Empresa o volumen personalizado?",
+      "note": "¿Necesitas un plan personalizado?",
       "noteCta": "Habla con nosotros →"
     },
     "finalCta": {

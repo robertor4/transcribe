@@ -60,14 +60,12 @@ export function IntegrationsSection({ translations: t }: IntegrationsSectionProp
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#1a1440] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#1a1440] to-transparent z-10 pointer-events-none" />
 
-        <div className="flex gap-3 w-max animate-marquee-snap">
-          {logos.map((name) => (
-            <LogoCard key={name} name={name} />
-          ))}
-          {/* Duplicate for seamless loop */}
-          {logos.map((name) => (
-            <LogoCard key={`dup-${name}`} name={name} />
-          ))}
+        <div className="flex gap-3 w-max animate-marquee-snap" aria-hidden="true">
+          {[0, 1, 2].map((copy) =>
+            logos.map((name) => (
+              <LogoCard key={`${copy}-${name}`} name={name} />
+            ))
+          )}
         </div>
       </div>
     </section>

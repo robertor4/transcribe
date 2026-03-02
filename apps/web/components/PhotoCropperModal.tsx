@@ -79,7 +79,7 @@ export function PhotoCropperModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 rounded-xl max-w-md p-0 gap-0">
+      <DialogContent showCloseButton={false} className="bg-white dark:bg-gray-800 rounded-xl sm:max-w-md p-0 gap-0">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
           <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
