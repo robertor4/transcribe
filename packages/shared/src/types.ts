@@ -13,6 +13,22 @@ export enum UserRole {
   ADMIN = 'admin'
 }
 
+/**
+ * Conversation category auto-detected by AI during transcription processing.
+ * Used to recommend relevant AI Asset templates.
+ */
+export type ConversationCategory =
+  | 'sales-call'
+  | 'business-meeting'
+  | 'one-on-one'
+  | 'interview'
+  | 'brainstorm'
+  | 'solo-recording'
+  | 'presentation'
+  | 'workshop'
+  | 'support-call'
+  | 'general';
+
 export enum AnalysisType {
   SUMMARY = 'summary',
   COMMUNICATION_STYLES = 'communication_styles',
@@ -1236,6 +1252,8 @@ export interface Transcription {
   vectorIndexedAt?: Date;      // When last indexed in Qdrant
   vectorChunkCount?: number;   // Number of chunks stored in Qdrant
   vectorIndexVersion?: number; // Schema version for future migrations
+  // AI-detected conversation category (e.g., 'sales-call', 'business-meeting')
+  conversationCategory?: ConversationCategory;
 }
 
 export interface TranscriptionJob {

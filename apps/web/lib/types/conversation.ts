@@ -12,6 +12,7 @@ import type {
   TranscriptionStatus,
   SpeakerSegment,
   SummaryV2,
+  ConversationCategory,
 } from '@transcribe/shared';
 
 /**
@@ -31,6 +32,7 @@ export interface Conversation {
   sharing: ConversationSharing;
   assetsCount: number; // Count of generated AI assets (from generatedAnalysisIds)
   context?: string; // User-provided context during recording
+  conversationCategory?: ConversationCategory; // AI-detected category
 }
 
 export type ConversationStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -219,6 +221,7 @@ export function transcriptionToConversation(transcription: Transcription): Conve
     },
     assetsCount: transcription.generatedAnalysisIds?.length || 0,
     context: transcription.context,
+    conversationCategory: transcription.conversationCategory,
   };
 }
 

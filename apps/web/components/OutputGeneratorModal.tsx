@@ -118,9 +118,11 @@ interface OutputGeneratorModalProps {
   conversationTitle: string;
   conversationId: string;
   onOutputGenerated?: (asset: GeneratedAnalysis) => void;
+  /** Pre-select a template and skip to step 2 when opening */
+  preselectedTemplate?: string | null;
 }
 
-export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated }: OutputGeneratorModalProps) {
+export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conversationId, onOutputGenerated, preselectedTemplate }: OutputGeneratorModalProps) {
   const t = useTranslations('aiAssets.modal');
   const tTemplates = useTranslations('aiAssets.templates');
   const tCommon = useTranslations('common');
@@ -153,6 +155,17 @@ export function OutputGeneratorModal({ isOpen, onClose, conversationTitle, conve
       setError(null);
     }, 300);
   }, [onClose]);
+
+  // Handle preselected template: auto-select and skip to step 2
+  useEffect(() => {
+    if (isOpen && preselectedTemplate) {
+      const template = allTemplates.find(t => t.id === preselectedTemplate);
+      if (template) {
+        setSelectedType(template.id as TemplateId);
+        setStep(2);
+      }
+    }
+  }, [isOpen, preselectedTemplate]);
 
   // Handle Escape key to close modal (blocked during generation)
   useEffect(() => {

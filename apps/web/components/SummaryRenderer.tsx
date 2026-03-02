@@ -48,23 +48,23 @@ interface SummaryV2RendererProps {
 
 const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highlightOptions }) => {
   return (
-    <div className="space-y-8">
+    <div className="max-w-[680px] mx-auto space-y-10">
       {/* Intro Paragraph */}
       {summary.intro && (
-        <p className="text-xl font-light text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-2xl font-light text-gray-700 dark:text-gray-300 leading-[1.75]">
           <TextHighlighter text={summary.intro} highlight={highlightOptions} />
         </p>
       )}
 
       {/* Key Points Box */}
       {summary.keyPoints.length > 0 && (
-        <div className="px-6 py-6 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg">
+        <div className="px-8 py-8 bg-gray-50 dark:bg-gray-800/50 border-l-4 border-[#8D6AFA] rounded-r-lg shadow-sm">
           <h3 className="text-lg font-bold text-[#8D6AFA] mb-5 uppercase tracking-wide">
             Key Points
           </h3>
           <ol className="mx-4 list-decimal list-inside divide-y divide-gray-200 dark:divide-gray-700">
             {summary.keyPoints.map((point, idx) => (
-              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed py-4 first:pt-0 last:pb-0">
+              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8] py-4 first:pt-0 last:pb-0">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">
                   <TextHighlighter text={point.topic} highlight={highlightOptions} />:
                 </span>{' '}
@@ -77,13 +77,13 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
 
       {/* Detailed Discussion Sections */}
       {summary.detailedSections.length > 0 && (
-        <div className="space-y-6 mt-2">
+        <div className="space-y-8 mt-2">
           {summary.detailedSections.map((section, idx) => (
             <div key={idx}>
-              <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
                 <TextHighlighter text={section.topic} highlight={highlightOptions} />
               </h4>
-              <p className="text-base text-gray-700 dark:text-gray-300 leading-loose">
+              <p className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
                 <TextHighlighter text={section.content} highlight={highlightOptions} />
               </p>
             </div>
@@ -93,13 +93,13 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
 
       {/* Decisions (only shown if present) */}
       {summary.decisions && summary.decisions.length > 0 && (
-        <div className="px-6 py-6 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-5 uppercase tracking-wide">
+        <div className="px-8 py-8 bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20 border-l-4 border-[#14D0DC] rounded-r-lg shadow-sm">
+          <h3 className="text-lg font-bold text-[#14D0DC] mb-5 uppercase tracking-wide">
             Decisions Made
           </h3>
           <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.decisions.map((decision, idx) => (
-              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
                 <TextHighlighter text={decision} highlight={highlightOptions} />
               </li>
             ))}
@@ -109,13 +109,13 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
 
       {/* Next Steps (only shown if present) */}
       {summary.nextSteps && summary.nextSteps.length > 0 && (
-        <div className="px-6 py-6 bg-[#3F38A0]/10 dark:bg-[#3F38A0]/20 border-l-4 border-[#3F38A0] rounded-r-lg">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-5 uppercase tracking-wide">
+        <div className="px-8 py-8 bg-[#3F38A0]/10 dark:bg-[#3F38A0]/20 border-l-4 border-[#3F38A0] rounded-r-lg shadow-sm">
+          <h3 className="text-lg font-bold text-[#3F38A0] dark:text-[#7b74d4] mb-5 uppercase tracking-wide">
             Next Steps
           </h3>
           <ol className="space-y-5 mx-4 list-decimal list-inside">
             {summary.nextSteps.map((step, idx) => (
-              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="text-[17px] text-gray-700 dark:text-gray-300 leading-[1.8]">
                 <TextHighlighter text={step} highlight={highlightOptions} />
               </li>
             ))}

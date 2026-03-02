@@ -19,6 +19,8 @@ import { formatDuration } from '@/lib/formatters';
 import { useTranslations } from 'next-intl';
 import { AiIcon } from '@/components/icons/AiIcon';
 import { AssetListSkeleton } from '@/components/skeletons/AssetListSkeleton';
+import { AssetRecommendations } from '@/components/AssetRecommendations';
+import type { AssetRecommendation } from '@/lib/assetRecommendations';
 
 interface ConversationMetadata {
   duration: number;
@@ -36,6 +38,8 @@ interface AssetSidebarProps {
   onAssetClick: (asset: GeneratedAnalysis) => void;
   selectedAssetId?: string | null;
   metadata: ConversationMetadata;
+  recommendations?: AssetRecommendation[];
+  onRecommendationSelect?: (templateId: string) => void;
 }
 
 export function AssetSidebar({
@@ -45,6 +49,8 @@ export function AssetSidebar({
   onAssetClick,
   selectedAssetId,
   metadata,
+  recommendations,
+  onRecommendationSelect,
 }: AssetSidebarProps) {
   const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
@@ -116,6 +122,17 @@ export function AssetSidebar({
         )}
 
       </div>
+
+      {/* Asset Recommendations */}
+      {recommendations && recommendations.length > 0 && onRecommendationSelect && (
+        <div className="border-t border-gray-200 dark:border-gray-700">
+          <AssetRecommendations
+            recommendations={recommendations}
+            onSelectTemplate={onRecommendationSelect}
+            variant="sidebar"
+          />
+        </div>
+      )}
 
       {/* Collapsible Recording Context Section */}
       {metadata.context && (

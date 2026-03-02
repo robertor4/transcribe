@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Reading time indicator**: Shows estimated reading time (based on 238 wpm) as a pill badge in the conversation header metadata, updating when switching between Summary and Transcript tabs
+  - Files: [ReadingTimeIndicator.tsx](apps/web/components/ReadingTimeIndicator.tsx), [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx)
+- **Auto-categorize conversation type**: AI-detected category (sales-call, business-meeting, one-on-one, interview, brainstorm, solo-recording, presentation, workshop, support-call, general) is now extracted during transcription processing and displayed as a badge in the conversation header
+  - Backend: Extended V2 summary prompt with category classification, updated parser with overloaded `parseSummaryV2()` to extract metadata
+  - Frontend: New `ConversationCategoryBadge` component, `conversationCategory` field on Conversation type
+  - Files: [prompts.ts](apps/api/src/transcription/prompts.ts), [summary-parser.ts](apps/api/src/transcription/parsers/summary-parser.ts), [transcription.processor.ts](apps/api/src/transcription/transcription.processor.ts), [types.ts](packages/shared/src/types.ts), [conversationCategory.ts](apps/web/lib/conversationCategory.ts), [ConversationCategoryBadge.tsx](apps/web/components/ConversationCategoryBadge.tsx)
+- **AI asset recommendations**: Context-aware template suggestions based on conversation category, shown both below the summary content and in the right sidebar. Clicking a recommendation opens the generator modal with the template pre-selected
+  - Files: [assetRecommendations.ts](apps/web/lib/assetRecommendations.ts), [AssetRecommendations.tsx](apps/web/components/AssetRecommendations.tsx), [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx), [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx)
+
 ### Changed
+- **Improved summary reading quality**: Constrained reading width to 680px for optimal line length, upgraded intro to `text-2xl` with `leading-[1.75]`, body text to `text-[17px]` with `leading-[1.8]`, section headings to `text-lg font-bold` with bottom borders, colored "Decisions Made" heading cyan and "Next Steps" heading deep purple, increased spacing and padding with subtle shadows
+  - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)
+- **Brand-aligned transcript speaker colors**: Replaced generic blue/green/purple/orange palette with brand-derived colors (primary purple, cyan, deep purple, amber, accent dark, indigo). Stats grid values now use brand purple, timeline bar has a subtle purple-to-cyan gradient, connector lines use brand purple
+  - File: [TranscriptTimeline.tsx](apps/web/components/TranscriptTimeline.tsx)
+- **Right panel collapsed by default**: New users see the AI Assets panel collapsed initially, giving more space to the main content. Existing users retain their preference via localStorage
+  - File: [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
 - **Landing page pricing aligned with pricing page**: Renamed tiers from Starter/Pro/Team to Starter/Pro/Enterprise with matching features and locale-aware dynamic pricing from the shared pricing utility
   - Pro tier price now uses `getPricingForLocale()` ($25 USD / €23 EUR) instead of hardcoded €29
   - Enterprise tier replaces Team tier with "Contact sales" pricing

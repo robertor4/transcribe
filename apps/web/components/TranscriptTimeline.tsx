@@ -52,13 +52,14 @@ export default function TranscriptTimeline({ segments, className = '', highlight
     const speakerId = parseInt(speakerTag.replace(/[^0-9]/g, '')) ||
                      (speakerTag.charCodeAt(speakerTag.length - 1) - 64);
 
+    // Brand-aligned color palette
     const colors = [
-      { bg: 'bg-blue-50 dark:bg-blue-900/30', border: 'border-blue-400 dark:border-blue-600', text: 'text-blue-700 dark:text-blue-400', avatar: 'bg-blue-500' },
-      { bg: 'bg-green-50 dark:bg-green-900/30', border: 'border-green-400 dark:border-green-600', text: 'text-green-700 dark:text-green-400', avatar: 'bg-green-500' },
-      { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-purple-400 dark:border-purple-600', text: 'text-purple-700 dark:text-purple-400', avatar: 'bg-purple-500' },
-      { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-400 dark:border-orange-600', text: 'text-orange-700 dark:text-orange-400', avatar: 'bg-orange-500' },
-      { bg: 'bg-purple-50 dark:bg-purple-900/30', border: 'border-pink-400 dark:border-pink-600', text: 'text-pink-700 dark:text-pink-400', avatar: 'bg-purple-500' },
-      { bg: 'bg-teal-50 dark:bg-teal-900/30', border: 'border-teal-400 dark:border-teal-600', text: 'text-teal-700 dark:text-teal-400', avatar: 'bg-teal-500' },
+      { bg: 'bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/15', border: 'border-[#8D6AFA] dark:border-[#8D6AFA]/70', text: 'text-[#8D6AFA] dark:text-[#a98afb]', avatar: 'bg-[#8D6AFA]' },
+      { bg: 'bg-[#14D0DC]/5 dark:bg-[#14D0DC]/15', border: 'border-[#14D0DC] dark:border-[#14D0DC]/70', text: 'text-[#0ea5b0] dark:text-[#14D0DC]', avatar: 'bg-[#14D0DC]' },
+      { bg: 'bg-[#3F38A0]/5 dark:bg-[#3F38A0]/15', border: 'border-[#3F38A0] dark:border-[#3F38A0]/70', text: 'text-[#3F38A0] dark:text-[#7b74d4]', avatar: 'bg-[#3F38A0]' },
+      { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-400 dark:border-amber-600', text: 'text-amber-700 dark:text-amber-400', avatar: 'bg-amber-500' },
+      { bg: 'bg-[#23194B]/5 dark:bg-[#23194B]/20', border: 'border-[#23194B] dark:border-[#4a3f7a]', text: 'text-[#23194B] dark:text-[#a99dd4]', avatar: 'bg-[#23194B]' },
+      { bg: 'bg-indigo-50 dark:bg-indigo-900/20', border: 'border-indigo-400 dark:border-indigo-600', text: 'text-indigo-700 dark:text-indigo-400', avatar: 'bg-indigo-500' },
     ];
 
     return colors[(speakerId - 1) % colors.length];
@@ -253,21 +254,21 @@ export default function TranscriptTimeline({ segments, className = '', highlight
       <div className="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatTime(totalDuration)}</div>
+            <div className="text-2xl font-semibold text-[#8D6AFA]">{formatTime(totalDuration)}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Total Duration</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{segments.length}</div>
+            <div className="text-2xl font-semibold text-[#8D6AFA]">{segments.length}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Segments</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            <div className="text-2xl font-semibold text-[#8D6AFA]">
               {new Set(segments.map(s => s.speakerTag)).size}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Speakers</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+            <div className="text-2xl font-semibold text-[#8D6AFA]">
               {Math.round(segments.reduce((sum, s) => sum + s.text.split(' ').length, 0) / segments.length)}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Avg Words/Segment</div>
@@ -283,7 +284,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
         </div>
         <div
           ref={timelineRef}
-          className="relative h-12 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer overflow-hidden"
+          className="relative h-12 bg-gradient-to-r from-[#8D6AFA]/5 to-[#14D0DC]/5 dark:from-[#8D6AFA]/10 dark:to-[#14D0DC]/10 rounded-lg cursor-pointer overflow-hidden"
           onClick={handleTimelineClick}
         >
           {/* Speaker blocks on timeline */}
@@ -343,7 +344,7 @@ export default function TranscriptTimeline({ segments, className = '', highlight
               className="relative transition-all mb-6"
             >
               {/* Timeline connector - hidden on mobile for space */}
-              <div className="hidden sm:block absolute left-16 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 opacity-50" />
+              <div className="hidden sm:block absolute left-16 top-0 bottom-0 w-0.5 bg-[#8D6AFA]/20 dark:bg-[#8D6AFA]/30" />
 
               {/* Time marker - simplified on mobile */}
               <div className="hidden sm:flex absolute left-0 top-4 items-center">

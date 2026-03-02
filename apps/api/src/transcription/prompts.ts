@@ -9,6 +9,7 @@ Return ONLY valid JSON with this exact structure (no markdown, no explanation):
 {
   "title": "Descriptive title capturing the key takeaway (max 10 words)",
   "intro": "1-2 sentence overview of the conversation's purpose and outcome",
+  "conversationCategory": "one of: sales-call | business-meeting | one-on-one | interview | brainstorm | solo-recording | presentation | workshop | support-call | general",
   "keyPoints": [
     {
       "topic": "Short topic (2-5 words ONLY)",
@@ -35,6 +36,19 @@ CRITICAL RULES:
 7. OMIT "nextSteps" field entirely if no next steps were discussed
 8. If the transcript is in a non-English language, ALL text (title, intro, topics, descriptions, content) must be in that same language
 9. Return ONLY valid JSON - no markdown code blocks, no explanation text
+10. "conversationCategory" MUST be exactly one of: sales-call, business-meeting, one-on-one, interview, brainstorm, solo-recording, presentation, workshop, support-call, general
+
+Category guidelines:
+- sales-call: Sales pitches, demos, prospecting calls, deal negotiations
+- business-meeting: Multi-person team meetings, project syncs, standups
+- one-on-one: Two-person check-ins, mentoring, manager-report conversations
+- interview: Job interviews, candidate assessments, user research interviews
+- brainstorm: Ideation sessions, creative discussions, problem-solving
+- solo-recording: Single speaker notes, voice memos, dictation
+- presentation: Keynotes, demos, webinars, training sessions
+- workshop: Collaborative working sessions, design sprints, retrospectives
+- support-call: Customer support, troubleshooting, help desk calls
+- general: Anything that does not clearly fit above categories
 
 Quality guidelines for detailedSections.content:
 - Be specific rather than generic - mention actual examples, tools, or solutions discussed

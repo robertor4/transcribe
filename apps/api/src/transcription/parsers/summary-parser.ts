@@ -3,6 +3,7 @@ import {
   SummaryV2,
   SummaryKeyPoint,
   SummaryDetailedSection,
+  ConversationCategory,
 } from '@transcribe/shared';
 
 const logger = new Logger('SummaryParser');
@@ -13,11 +14,25 @@ const logger = new Logger('SummaryParser');
 interface RawSummaryJson {
   title?: unknown;
   intro?: unknown;
+  conversationCategory?: unknown;
   keyPoints?: unknown[];
   detailedSections?: unknown[];
   decisions?: unknown[];
   nextSteps?: unknown[];
 }
+
+/**
+ * Result of parsing the AI summary response, including the summary and any extra metadata.
+ */
+export interface ParsedSummaryResult {
+  summary: SummaryV2;
+  conversationCategory?: ConversationCategory;
+}
+
+const VALID_CATEGORIES: ConversationCategory[] = [
+  'sales-call', 'business-meeting', 'one-on-one', 'interview', 'brainstorm',
+  'solo-recording', 'presentation', 'workshop', 'support-call', 'general',
+];
 
 /**
  * Parse and validate AI JSON response into SummaryV2 structure.
@@ -31,7 +46,9 @@ interface RawSummaryJson {
  * @returns Validated SummaryV2 object
  * @throws Error if JSON parsing fails completely
  */
-export function parseSummaryV2(aiResponse: string): SummaryV2 {
+export function parseSummaryV2(aiResponse: string): SummaryV2;
+export function parseSummaryV2(aiResponse: string, extractMetadata: true): ParsedSummaryResult;
+export function parseSummaryV2(aiResponse: string, extractMetadata?: boolean): SummaryV2 | ParsedSummaryResult {
   // Clean up the response - remove markdown code blocks if present
   let jsonString = aiResponse.trim();
 
@@ -96,10 +113,25 @@ export function parseSummaryV2(aiResponse: string): SummaryV2 {
     summary.nextSteps = nextSteps;
   }
 
+  // Extract conversation category if present
+  let conversationCategory: ConversationCategory | undefined;
+  if (typeof raw.conversationCategory === 'string') {
+    const cat = raw.conversationCategory.trim().toLowerCase() as ConversationCategory;
+    if (VALID_CATEGORIES.includes(cat)) {
+      conversationCategory = cat;
+    } else {
+      logger.warn(`Invalid conversationCategory "${raw.conversationCategory}", defaulting to undefined`);
+    }
+  }
+
   // Log validation results
   logger.debug(
-    `Parsed summary: ${summary.keyPoints.length} key points, ${summary.detailedSections.length} detailed sections`,
+    `Parsed summary: ${summary.keyPoints.length} key points, ${summary.detailedSections.length} detailed sections, category: ${conversationCategory || 'none'}`,
   );
+
+  if (extractMetadata) {
+    return { summary, conversationCategory };
+  }
 
   return summary;
 }

@@ -133,13 +133,15 @@ export class TranscriptionProcessor {
 
       // V2 ARCHITECTURE: Generate summaryV2 directly, other analyses via templates
       // 1. Generate summaryV2 (always, stored on transcription doc for fast access)
-      const summaryV2 = analysisSelection.generateSummary
+      const summaryResult = analysisSelection.generateSummary
         ? await this.transcriptionService.generateSummaryV2Only(
             transcriptText,
             context,
             detectedLanguage,
           )
         : null;
+      const summaryV2 = summaryResult?.summary ?? null;
+      const conversationCategory = summaryResult?.conversationCategory;
 
       // 2. Generate actionItems and communicationStyles as GeneratedAnalysis docs
       const generatedAnalysisIds: string[] = [];
@@ -243,6 +245,14 @@ export class TranscriptionProcessor {
       if (detectedLanguage) {
         updateData.detectedLanguage = detectedLanguage;
         updateData.summaryLanguage = detectedLanguage;
+      }
+
+      // Add AI-detected conversation category
+      if (conversationCategory) {
+        updateData.conversationCategory = conversationCategory;
+        this.logger.log(
+          `Conversation category detected: ${conversationCategory}`,
+        );
       }
 
       // Add speaker diarization data if available

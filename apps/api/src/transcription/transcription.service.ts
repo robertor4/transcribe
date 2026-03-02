@@ -34,7 +34,7 @@ import {
   SummaryV2,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
-import { parseSummaryV2, summaryV2ToMarkdown } from './parsers/summary-parser';
+import { parseSummaryV2, summaryV2ToMarkdown, type ParsedSummaryResult } from './parsers/summary-parser';
 import { FirebaseService } from '../firebase/firebase.service';
 import { StorageService } from '../firebase/services/storage.service';
 import { UserRepository } from '../firebase/repositories/user.repository';
@@ -849,7 +849,7 @@ ${fullCustomPrompt}`;
     transcriptionText: string,
     context?: string,
     language?: string,
-  ): Promise<SummaryV2> {
+  ): Promise<ParsedSummaryResult> {
     try {
       this.logger.log('Generating V2 structured summary...');
 
@@ -879,14 +879,14 @@ ${fullCustomPrompt}`;
         );
       }
 
-      // Parse and validate the JSON response
-      const summaryV2 = parseSummaryV2(aiResponse);
+      // Parse and validate the JSON response, extracting metadata
+      const { summary: summaryV2, conversationCategory } = parseSummaryV2(aiResponse, true);
 
       this.logger.log(
-        `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections`,
+        `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections, category: ${conversationCategory || 'none'}`,
       );
 
-      return summaryV2;
+      return { summaryV2, conversationCategory };
     } catch (error) {
       this.logger.error('Error generating V2 summary:', error);
       throw error;
@@ -902,7 +902,7 @@ ${fullCustomPrompt}`;
     context?: string,
     language?: string,
   ): Promise<{ summaryV2: SummaryV2; markdownSummary: string }> {
-    const summaryV2 = await this.generateSummaryV2(
+    const { summaryV2 } = await this.generateSummaryV2(
       transcriptionText,
       context,
       language,
@@ -1049,15 +1049,15 @@ ${fullCustomPrompt}`;
     transcriptionText: string,
     context?: string,
     language?: string,
-  ): Promise<SummaryV2 | null> {
+  ): Promise<ParsedSummaryResult | null> {
     try {
       this.logger.log('Generating V2 summary only (no other core analyses)...');
-      const summaryV2 = await this.generateSummaryV2(
+      const result = await this.generateSummaryV2(
         transcriptionText,
         context,
         language,
       );
-      return summaryV2;
+      return result;
     } catch (error) {
       this.logger.error('V2 summary generation failed:', error);
       return null;
@@ -1605,18 +1605,22 @@ ${fullCustomPrompt}`;
     );
 
     // Generate new V2 structured summary
-    const summaryV2 = await this.generateSummaryV2(
+    const { summaryV2, conversationCategory } = await this.generateSummaryV2(
       transcription.transcriptText,
       transcription.context,
       transcription.detectedLanguage,
     );
 
-    // Update transcription with new V2 summary only
-    const updates = {
+    // Update transcription with new V2 summary and category
+    const updates: Record<string, unknown> = {
       summaryV2: summaryV2,
       summaryVersion: (transcription.summaryVersion || 1) + 1,
       updatedAt: new Date(),
     };
+
+    if (conversationCategory) {
+      updates.conversationCategory = conversationCategory;
+    }
 
     await this.transcriptionRepository.updateTranscription(
       transcriptionId,
@@ -1624,7 +1628,7 @@ ${fullCustomPrompt}`;
     );
 
     this.logger.log(
-      `V2 summary regenerated: "${summaryV2.title}", ${summaryV2.keyPoints.length} key points`,
+      `V2 summary regenerated: "${summaryV2.title}", ${summaryV2.keyPoints.length} key points, category: ${conversationCategory || 'none'}`,
     );
 
     return this.transcriptionRepository.getTranscription(

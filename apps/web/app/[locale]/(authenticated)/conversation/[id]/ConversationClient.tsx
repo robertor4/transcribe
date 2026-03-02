@@ -46,6 +46,11 @@ import { QASlidePanel } from '@/components/QASlidePanel';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
 import { TextHighlighter, useHighlightOptions } from '@/components/TextHighlighter';
 import { ConversationSkeleton } from '@/components/skeletons/ConversationSkeleton';
+import { ReadingTimeIndicator, countWords } from '@/components/ReadingTimeIndicator';
+import { ConversationCategoryBadge } from '@/components/ConversationCategoryBadge';
+import { AssetRecommendations } from '@/components/AssetRecommendations';
+import { getAssetRecommendations } from '@/lib/assetRecommendations';
+import type { ConversationCategory } from '@transcribe/shared';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -59,6 +64,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const locale = (params?.locale as string) || 'en';
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const [preselectedTemplate, setPreselectedTemplate] = useState<string | null>(null);
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
@@ -199,6 +205,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   }, [conversation, user, conversationId, refreshRecentlyOpened]);
 
   const handleGenerateOutput = () => {
+    setPreselectedTemplate(null);
+    setIsGeneratorOpen(true);
+  };
+
+  const handleRecommendationSelect = (templateId: string) => {
+    setPreselectedTemplate(templateId);
     setIsGeneratorOpen(true);
   };
 
@@ -439,6 +451,38 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   // V1 legacy conversation detection (no structured summaryV2)
   const isLegacyConversation = !conversation.source.summary.summaryV2;
 
+  // Calculate word count for reading time indicator
+  const summaryWordCount = (() => {
+    const v2 = conversation.source.summary.summaryV2;
+    if (v2) {
+      const parts = [
+        v2.intro || '',
+        ...v2.keyPoints.map(kp => `${kp.topic} ${kp.description}`),
+        ...v2.detailedSections.map(s => `${s.topic} ${s.content}`),
+        ...(v2.decisions || []),
+        ...(v2.nextSteps || []),
+      ];
+      return countWords(parts.join(' '));
+    }
+    return countWords(conversation.source.summary.text);
+  })();
+
+  const transcriptWordCount = (() => {
+    const segments = conversation.source.transcript.speakerSegments;
+    if (segments && segments.length > 0) {
+      return countWords(segments.map(s => s.text).join(' '));
+    }
+    return countWords(conversation.source.transcript.text);
+  })();
+
+  const activeWordCount = activeTab === 'summary' ? summaryWordCount : transcriptWordCount;
+
+  // Compute asset recommendations based on conversation category
+  const recommendations = getAssetRecommendations(
+    conversation.conversationCategory as ConversationCategory | undefined,
+    outputs,
+  );
+
   // Metadata for the asset sidebar
   const sidebarMetadata = {
     duration: conversation.source.audioDuration,
@@ -462,6 +506,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               onAssetClick={openAssetPanel}
               selectedAssetId={selectedAsset?.id}
               metadata={sidebarMetadata}
+              recommendations={recommendations}
+              onRecommendationSelect={handleRecommendationSelect}
             />
           </div>
         }
@@ -497,7 +543,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                 </h1>
               )}
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-                <div className="flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
+                <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
                   <span>{formatDuration(conversation.source.audioDuration)}</span>
                   <span>·</span>
                   <span>
@@ -508,6 +554,18 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       year: 'numeric',
                     })}
                   </span>
+                  {activeWordCount > 0 && (
+                    <>
+                      <span>·</span>
+                      <ReadingTimeIndicator wordCount={activeWordCount} />
+                    </>
+                  )}
+                  {conversation.conversationCategory && (
+                    <>
+                      <span>·</span>
+                      <ConversationCategoryBadge category={conversation.conversationCategory} />
+                    </>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Desktop: Show Ask Questions and Copy buttons */}
@@ -712,6 +770,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   </div>
                 )}
               </section>
+
+              {/* Asset Recommendations - shown below summary */}
+              {recommendations.length > 0 && (
+                <AssetRecommendations
+                  recommendations={recommendations}
+                  onSelectTemplate={handleRecommendationSelect}
+                  variant="inline"
+                />
+              )}
             </div>
 
             <div className={activeTab === 'transcript' ? '' : 'hidden'}>
@@ -769,9 +836,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
       {/* Output Generator Modal */}
       <OutputGeneratorModal
         isOpen={isGeneratorOpen}
-        onClose={() => setIsGeneratorOpen(false)}
+        onClose={() => {
+          setIsGeneratorOpen(false);
+          setPreselectedTemplate(null);
+        }}
         conversationTitle={conversation.title}
         conversationId={conversationId}
+        preselectedTemplate={preselectedTemplate}
         onOutputGenerated={(asset) => {
           // Add the new asset to the list
           setOutputs((prev) => [asset, ...prev]);

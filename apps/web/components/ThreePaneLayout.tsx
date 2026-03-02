@@ -50,7 +50,7 @@ export function ThreePaneLayout({
 
   const rightPanelState = useCollapsibleSidebar({
     storageKey: 'neural-summary:right-panel-collapsed',
-    defaultCollapsed: false,
+    defaultCollapsed: true,
   });
 
   // Track if we should focus search after sidebar expands
