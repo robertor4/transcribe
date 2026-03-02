@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, cloneElement, isValidElement, useState, useCallback } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, PanelRight, Zap } from 'lucide-react';
 import { CollapsibleSidebar } from './CollapsibleSidebar';
 import { LeftNavigationCollapsed } from './LeftNavigationCollapsed';
 import { MobileAppDrawer } from './MobileAppDrawer';
@@ -19,6 +19,10 @@ interface ThreePaneLayoutProps {
   mobileTitle?: ReactNode;
   /** Callback for "New Conversation" action from mobile drawer */
   onNewConversation?: () => void;
+  /** Override initial collapse state for left sidebar (does not read from localStorage) */
+  initialLeftCollapsed?: boolean;
+  /** Override initial collapse state for right panel (does not read from localStorage) */
+  initialRightCollapsed?: boolean;
 }
 
 /**
@@ -39,18 +43,22 @@ export function ThreePaneLayout({
   rightPanelWidth = 360,
   mobileTitle,
   onNewConversation,
+  initialLeftCollapsed,
+  initialRightCollapsed,
 }: ThreePaneLayoutProps) {
   const isMobile = useIsMobile(1024); // lg breakpoint
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const leftSidebarState = useCollapsibleSidebar({
     storageKey: 'neural-summary:left-sidebar-collapsed',
-    defaultCollapsed: false,
+    defaultCollapsed: initialLeftCollapsed ?? false,
+    forceInitial: initialLeftCollapsed !== undefined,
   });
 
   const rightPanelState = useCollapsibleSidebar({
     storageKey: 'neural-summary:right-panel-collapsed',
-    defaultCollapsed: true,
+    defaultCollapsed: initialRightCollapsed ?? true,
+    forceInitial: initialRightCollapsed !== undefined,
   });
 
   // Track if we should focus search after sidebar expands
@@ -75,6 +83,13 @@ export function ThreePaneLayout({
         onSearchFocused: clearFocusSearch,
       })
     : leftSidebar;
+
+  // Clone rightPanel element to inject collapse function
+  const rightPanelWithCollapse = isValidElement(rightPanel)
+    ? cloneElement(rightPanel as React.ReactElement<{ onCollapse?: () => void }>, {
+        onCollapse: rightPanelState.toggle,
+      })
+    : rightPanel;
 
   return (
     <div className="flex h-screen-safe w-full overflow-hidden bg-white dark:bg-gray-900">
@@ -134,8 +149,30 @@ export function ThreePaneLayout({
             onToggle={rightPanelState.toggle}
             width={rightPanelWidth}
             collapsedWidth={48}
+            collapsedContent={
+              <div className="h-full flex flex-col items-center py-4 gap-2">
+                <button
+                  onClick={rightPanelState.toggle}
+                  className="group relative p-2 rounded-lg hover:bg-gray-200/60 dark:hover:bg-gray-700/60 transition-colors"
+                  aria-label="Open AI Assets panel"
+                >
+                  <PanelRight className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
+                    Open AI Assets
+                  </div>
+                </button>
+                <div className="w-6 h-px bg-gray-200 dark:bg-gray-700" />
+                <button
+                  onClick={rightPanelState.toggle}
+                  className="p-2 rounded-lg hover:bg-gray-200/60 dark:hover:bg-gray-700/60 transition-colors"
+                  aria-label="AI Assets"
+                >
+                  <Zap className="w-5 h-5 text-[#8D6AFA]" />
+                </button>
+              </div>
+            }
           >
-            {rightPanel}
+            {rightPanelWithCollapse}
           </CollapsibleSidebar>
         </div>
       )}

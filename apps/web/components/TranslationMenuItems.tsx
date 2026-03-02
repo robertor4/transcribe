@@ -130,7 +130,7 @@ export function TranslationMenuItems({
       {/* Collapsible header - clickable to expand/collapse */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3"
+        className="w-full px-3 py-2 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:bg-accent transition-colors flex items-center gap-2.5 rounded-md"
       >
         {isTranslating ? (
           <Loader2 className="w-4 h-4 animate-spin text-gray-500 dark:text-gray-400" />
@@ -152,10 +152,10 @@ export function TranslationMenuItems({
           <button
             onClick={() => handleSelect('original')}
             disabled={isTranslating}
-            className={`w-full flex items-center justify-between px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+            className={`w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium transition-colors disabled:opacity-50 rounded-md ${
               currentLocale === 'original'
                 ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-accent'
             }`}
           >
             <span>{getOriginalLabel()}</span>
@@ -170,10 +170,10 @@ export function TranslationMenuItems({
                   key={locale.code}
                   onClick={() => handleSelect(locale.code)}
                   disabled={isTranslating}
-                  className={`w-full flex items-center justify-between px-4 py-2 text-sm transition-colors disabled:opacity-50 ${
+                  className={`w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium transition-colors disabled:opacity-50 rounded-md ${
                     currentLocale === locale.code
                       ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-accent'
                   }`}
                 >
                   <span>{locale.nativeName}</span>
@@ -189,7 +189,7 @@ export function TranslationMenuItems({
               <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
               {canTranslate ? (
                 <>
-                  <div className="px-4 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     {t('translateTo')}
                   </div>
                   <div className="max-h-32 overflow-y-auto">
@@ -198,7 +198,7 @@ export function TranslationMenuItems({
                         key={locale.code}
                         onClick={() => handleSelect(locale.code)}
                         disabled={isTranslating}
-                        className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                        className="w-full flex items-center justify-between px-3 py-2 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:bg-accent transition-colors disabled:opacity-50 rounded-md"
                       >
                         <span>{locale.nativeName}</span>
                         <Plus className="w-4 h-4 text-gray-400" />
@@ -207,7 +207,7 @@ export function TranslationMenuItems({
                   </div>
                 </>
               ) : (
-                <div className="px-4 py-3">
+                <div className="px-3 py-3">
                   <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
                     <Lock className="w-4 h-4" />
                     <span className="text-xs font-semibold uppercase tracking-wide">

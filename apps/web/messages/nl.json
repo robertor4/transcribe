@@ -839,7 +839,14 @@
       "changeLanguage": "Taal wijzigen",
       "proFeature": "Pro-functie",
       "upgradeToTranslate": "Upgrade naar Pro om je gesprekken in meer dan 50 talen te vertalen.",
-      "upgradeToPro": "Upgraden naar Pro"
+      "upgradeToPro": "Upgraden naar Pro",
+      "dialogTitle": "Taal",
+      "dialogDescription": "Samenvatting en AI-items worden vertaald. Het transcript blijft in de oorspronkelijke taal.",
+      "translated": "Vertaald",
+      "translate": "Vertalen",
+      "showAllLanguages": "Alle talen tonen",
+      "hideLanguages": "Minder tonen",
+      "slowHint": "Vertaling kan even duren bij langere gesprekken. Je kunt dit venster sluiten — het gaat op de achtergrond verder."
     }
   },
   "howItWorks": {

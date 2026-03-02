@@ -51,7 +51,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
     <div className="max-w-[680px] mx-auto space-y-10">
       {/* Intro Paragraph */}
       {summary.intro && (
-        <p className="text-2xl font-light text-gray-700 dark:text-gray-300 leading-[1.75]">
+        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
           <TextHighlighter text={summary.intro} highlight={highlightOptions} />
         </p>
       )}

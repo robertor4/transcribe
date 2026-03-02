@@ -8,13 +8,16 @@ import {
   ArrowLeft,
   AlertCircle,
   Copy,
+  Check,
   Zap,
   MoreVertical,
   Trash2,
   Replace,
   RefreshCw,
   Loader2,
+  Globe,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
@@ -30,7 +33,7 @@ import { ShareModal } from '@/components/ShareModal';
 import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { DropdownMenu } from '@/components/DropdownMenu';
-import { TranslationMenuItems } from '@/components/TranslationMenuItems';
+import { TranslationDialog } from '@/components/TranslationDialog';
 import { ExportPDFMenuItem } from '@/components/ExportPDFMenuItem';
 import { useConversation } from '@/hooks/useConversation';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
@@ -40,7 +43,7 @@ import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
-import { formatDuration } from '@/lib/formatters';
+
 import { useTranslations } from 'next-intl';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { AnimatedAiIcon } from '@/components/icons/AnimatedAiIcon';
@@ -51,6 +54,8 @@ import { ConversationCategoryBadge } from '@/components/ConversationCategoryBadg
 import { AssetRecommendations } from '@/components/AssetRecommendations';
 import { getAssetRecommendations } from '@/lib/assetRecommendations';
 import type { ConversationCategory } from '@transcribe/shared';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface ConversationClientProps {
   conversationId: string;
@@ -74,6 +79,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
   const [isFindReplaceOpen, setIsFindReplaceOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [translationDialogOpen, setTranslationDialogOpen] = useState(false);
 
   // Find & Replace highlight state
   const [searchText, setSearchText] = useState('');
@@ -105,6 +111,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     setLocale,
     getTranslatedContent,
   } = useConversationTranslations(conversationId);
+
+  // Show toast when translation completes
+  const wasTranslating = useRef(false);
+  useEffect(() => {
+    if (wasTranslating.current && !isTranslating) {
+      toast.success(tConversation('translation.translationComplete'));
+    }
+    wasTranslating.current = isTranslating;
+  }, [isTranslating, tConversation]);
 
   // Slide panel for AI Assets
   const {
@@ -496,20 +511,20 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   return (
     <div className="h-screen flex flex-col h-full">
       <ThreePaneLayout
+        initialLeftCollapsed={true}
+        initialRightCollapsed={true}
         leftSidebar={<LeftNavigation />}
         rightPanel={
-          <div className="hidden lg:block h-full">
-            <AssetSidebar
-              assets={outputs}
-              isLoading={isLoadingOutputs}
-              onGenerateNew={handleGenerateOutput}
-              onAssetClick={openAssetPanel}
-              selectedAssetId={selectedAsset?.id}
-              metadata={sidebarMetadata}
-              recommendations={recommendations}
-              onRecommendationSelect={handleRecommendationSelect}
-            />
-          </div>
+          <AssetSidebar
+            assets={outputs}
+            isLoading={isLoadingOutputs}
+            onGenerateNew={handleGenerateOutput}
+            onAssetClick={openAssetPanel}
+            selectedAssetId={selectedAsset?.id}
+            metadata={sidebarMetadata}
+            recommendations={recommendations}
+            onRecommendationSelect={handleRecommendationSelect}
+          />
         }
         mainContent={
           <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
@@ -530,64 +545,93 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onChange={(e) => setEditedTitle(e.target.value)}
                   onBlur={handleSaveTitle}
                   onKeyDown={handleTitleKeyDown}
-                  className="text-2xl lg:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-3 font-[Montserrat]"
+                  className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-4"
+                  style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
                 />
               ) : (
                 <h1
                   onClick={handleStartEditTitle}
-                  className="text-2xl lg:text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-3 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all"
+                  className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 cursor-text hover:border-b-2 hover:border-gray-300 dark:hover:border-gray-600 transition-all leading-snug"
+                  style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
                   title="Click to rename"
                   id="conversation-title"
                 >
                   <TextHighlighter text={conversation.title} highlight={highlightOptions} />
                 </h1>
               )}
-              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-                <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-                  <span>{formatDuration(conversation.source.audioDuration)}</span>
-                  <span>·</span>
-                  <span>
-                    Created{' '}
-                    {conversation.createdAt.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </span>
-                  {activeWordCount > 0 && (
-                    <>
-                      <span>·</span>
-                      <ReadingTimeIndicator wordCount={activeWordCount} />
-                    </>
-                  )}
-                  {conversation.conversationCategory && (
-                    <>
-                      <span>·</span>
-                      <ConversationCategoryBadge category={conversation.conversationCategory} />
-                    </>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* Desktop: Show Ask Questions and Copy buttons */}
-                  <div className="hidden sm:flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={<AnimatedAiIcon size={14} />}
-                      onClick={() => setIsQAPanelOpen(true)}
-                    >
-                      {tConversation('actions.askQuestions')}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={<Copy className="w-4 h-4" />}
-                      onClick={handleCopy}
-                    >
-                      {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
-                    </Button>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <span>
+                  {conversation.createdAt.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
+                {activeWordCount > 0 && (
+                  <>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <ReadingTimeIndicator wordCount={activeWordCount} />
+                  </>
+                )}
+                {conversation.conversationCategory && (
+                  <>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <ConversationCategoryBadge category={conversation.conversationCategory} />
+                  </>
+                )}
+
+                {/* Action icons */}
+                <TooltipProvider>
+                  <div className="hidden sm:flex items-center gap-3 ml-2">
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setIsQAPanelOpen(true)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                        >
+                          <AnimatedAiIcon size={16} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {tConversation('actions.askQuestions')}
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <Tooltip open={copiedSummary || undefined}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={handleCopy}
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            copiedSummary
+                              ? 'text-green-500'
+                              : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          {copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setTranslationDialogOpen(true)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <Globe className="w-4 h-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {tConversation('translation.dialogTitle')}
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
-                  <DropdownMenu
+                </TooltipProvider>
+                <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                         <MoreVertical className="w-5 h-5" />
@@ -617,20 +661,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                           ]
                         : []),
                       { type: 'divider' },
-                      {
-                        type: 'custom',
-                        content: (
-                          <TranslationMenuItems
-                            status={translationStatus}
-                            currentLocale={currentLocale}
-                            isTranslating={isTranslating}
-                            userTier={userTier}
-                            isAdmin={isAdmin}
-                            onSelectLocale={setLocale}
-                            onTranslate={translate}
-                          />
-                        ),
-                      },
                       ...(conversation.source.summary.summaryV2
                         ? [
                             {
@@ -675,35 +705,28 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       },
                     ]}
                   />
-                </div>
               </div>
             </div>
 
             {/* Tab Navigation */}
-            <nav className="lg:sticky lg:top-0 lg:z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6">
-              <div className="flex items-center gap-1 py-1">
-                <button
-                  onClick={() => setActiveTab('summary')}
-                  className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
-                    activeTab === 'summary'
-                      ? 'text-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {tConversation('tabs.summary')}
-                </button>
-                <button
-                  onClick={() => setActiveTab('transcript')}
-                  className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
-                    activeTab === 'transcript'
-                      ? 'text-[#8D6AFA] bg-purple-50 dark:bg-purple-900/30'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-[#8D6AFA] hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {tConversation('tabs.transcript')}
-                </button>
-              </div>
-            </nav>
+            <div className="lg:sticky lg:top-0 lg:z-10 bg-white dark:bg-gray-900 mb-8 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'summary' | 'transcript')}>
+                <TabsList variant="line" className="w-full justify-start gap-0 -mb-px">
+                  <TabsTrigger
+                    value="summary"
+                    className="px-4 py-2.5 text-sm font-semibold rounded-none border-b-2 border-transparent data-[state=active]:border-b-[#8D6AFA] data-[state=active]:text-[#8D6AFA] after:hidden"
+                  >
+                    {tConversation('tabs.summary')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="transcript"
+                    className="px-4 py-2.5 text-sm font-semibold rounded-none border-b-2 border-transparent data-[state=active]:border-b-[#8D6AFA] data-[state=active]:text-[#8D6AFA] after:hidden"
+                  >
+                    {tConversation('tabs.transcript')}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
 
             {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
             <div className={activeTab === 'summary' ? '' : 'hidden'}>
@@ -927,6 +950,19 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             }
           }, 100);
         }}
+      />
+
+      {/* Translation Dialog */}
+      <TranslationDialog
+        open={translationDialogOpen}
+        onOpenChange={setTranslationDialogOpen}
+        status={translationStatus}
+        currentLocale={currentLocale}
+        isTranslating={isTranslating}
+        userTier={userTier}
+        isAdmin={isAdmin}
+        onSelectLocale={setLocale}
+        onTranslate={translate}
       />
 
       {/* Delete Confirmation Modal */}

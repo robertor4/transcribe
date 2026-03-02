@@ -48,10 +48,10 @@ export function DropdownMenu({ trigger, items, align = 'end' }: DropdownMenuProp
         {trigger}
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align={align} sideOffset={8} className="w-56 z-[9999]">
+      <DropdownMenuContent align={align} sideOffset={8} className="w-56 z-[9999] p-1.5">
         {items.map((item, idx) => {
           if (item.type === 'divider') {
-            return <DropdownMenuSeparator key={idx} />;
+            return <DropdownMenuSeparator key={idx} className="my-1.5" />;
           }
 
           if (item.type === 'custom') {
@@ -67,9 +67,9 @@ export function DropdownMenu({ trigger, items, align = 'end' }: DropdownMenuProp
               onSelect={item.onClick}
               variant={item.variant === 'danger' ? 'destructive' : 'default'}
               title={item.disabled ? item.disabledReason : undefined}
-              className="gap-3 px-4 py-2 font-medium cursor-pointer"
+              className="gap-2.5 px-3 py-2 text-[13px] font-medium cursor-pointer rounded-md"
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-4 h-4 shrink-0" />
               <span>{item.label}</span>
             </ShadcnDropdownMenuItem>
           );

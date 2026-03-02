@@ -839,7 +839,14 @@
       "changeLanguage": "Sprache ändern",
       "proFeature": "Pro-Funktion",
       "upgradeToTranslate": "Upgrade auf Pro, um deine Gespräche in über 50 Sprachen zu übersetzen.",
-      "upgradeToPro": "Auf Pro upgraden"
+      "upgradeToPro": "Auf Pro upgraden",
+      "dialogTitle": "Sprache",
+      "dialogDescription": "Zusammenfassung und KI-Inhalte werden übersetzt. Das Transkript bleibt in der Originalsprache.",
+      "translated": "Übersetzt",
+      "translate": "Übersetzen",
+      "showAllLanguages": "Alle Sprachen anzeigen",
+      "hideLanguages": "Weniger anzeigen",
+      "slowHint": "Die Übersetzung kann bei längeren Gesprächen etwas dauern. Du kannst dieses Fenster schließen — es wird im Hintergrund fortgesetzt."
     }
   },
   "howItWorks": {

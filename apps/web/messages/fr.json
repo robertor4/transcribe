@@ -839,7 +839,14 @@
       "changeLanguage": "Changer de langue",
       "proFeature": "Fonction Pro",
       "upgradeToTranslate": "Passe à Pro pour traduire tes conversations dans plus de 50 langues.",
-      "upgradeToPro": "Passer à Pro"
+      "upgradeToPro": "Passer à Pro",
+      "dialogTitle": "Langue",
+      "dialogDescription": "Le résumé et les contenus IA seront traduits. La transcription reste dans sa langue d'origine.",
+      "translated": "Traduit",
+      "translate": "Traduire",
+      "showAllLanguages": "Afficher toutes les langues",
+      "hideLanguages": "Afficher moins",
+      "slowHint": "La traduction peut prendre un moment pour les conversations plus longues. Tu peux fermer cette fenêtre — elle continuera en arrière-plan."
     }
   },
   "howItWorks": {

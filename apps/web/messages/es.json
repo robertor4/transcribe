@@ -839,7 +839,14 @@
       "changeLanguage": "Cambiar idioma",
       "proFeature": "Función Pro",
       "upgradeToTranslate": "Actualiza a Pro para traducir tus conversaciones a más de 50 idiomas.",
-      "upgradeToPro": "Actualizar a Pro"
+      "upgradeToPro": "Actualizar a Pro",
+      "dialogTitle": "Idioma",
+      "dialogDescription": "El resumen y los contenidos de IA se traducirán. La transcripción permanece en su idioma original.",
+      "translated": "Traducido",
+      "translate": "Traducir",
+      "showAllLanguages": "Mostrar todos los idiomas",
+      "hideLanguages": "Mostrar menos",
+      "slowHint": "La traducción puede tardar un momento en conversaciones más largas. Puedes cerrar esta ventana — continuará en segundo plano."
     }
   },
   "howItWorks": {

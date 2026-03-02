@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **AI asset recommendations**: Context-aware template suggestions based on conversation category, shown both below the summary content and in the right sidebar. Clicking a recommendation opens the generator modal with the template pre-selected
   - Files: [assetRecommendations.ts](apps/web/lib/assetRecommendations.ts), [AssetRecommendations.tsx](apps/web/components/AssetRecommendations.tsx), [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx), [AssetSidebar.tsx](apps/web/components/AssetSidebar.tsx)
 
+- **Language switcher dialog**: Redesigned translation feature from cramped dropdown submenu into a dedicated dialog with clear UX. Globe icon in the metadata row opens the dialog, which explains what gets translated (summary + AI Assets, not transcript), shows original and translated languages with status, and allows translating to new languages with inline progress
+  - New: [TranslationDialog.tsx](apps/web/components/TranslationDialog.tsx)
+  - Modified: [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx)
+  - Translation strings added to all 5 locale files
+
 ### Changed
 - **Improved summary reading quality**: Constrained reading width to 680px for optimal line length, upgraded intro to `text-2xl` with `leading-[1.75]`, body text to `text-[17px]` with `leading-[1.8]`, section headings to `text-lg font-bold` with bottom borders, colored "Decisions Made" heading cyan and "Next Steps" heading deep purple, increased spacing and padding with subtle shadows
   - File: [SummaryRenderer.tsx](apps/web/components/SummaryRenderer.tsx)

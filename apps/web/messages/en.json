@@ -840,7 +840,14 @@
       "changeLanguage": "Change language",
       "proFeature": "Pro feature",
       "upgradeToTranslate": "Upgrade to Pro to translate your conversations into 50+ languages.",
-      "upgradeToPro": "Upgrade to Pro"
+      "upgradeToPro": "Upgrade to Pro",
+      "dialogTitle": "Language",
+      "dialogDescription": "Summary and AI Assets will be translated. The transcript stays in its original language.",
+      "translated": "Translated",
+      "translate": "Translate",
+      "showAllLanguages": "Show all languages",
+      "hideLanguages": "Show less",
+      "slowHint": "Translation may take a moment for longer conversations. You can close this dialog — it will continue in the background."
     }
   },
   "howItWorks": {

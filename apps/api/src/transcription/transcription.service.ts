@@ -886,7 +886,7 @@ ${fullCustomPrompt}`;
         `V2 summary generated: ${summaryV2.keyPoints.length} key points, ${summaryV2.detailedSections.length} sections, category: ${conversationCategory || 'none'}`,
       );
 
-      return { summaryV2, conversationCategory };
+      return { summary: summaryV2, conversationCategory };
     } catch (error) {
       this.logger.error('Error generating V2 summary:', error);
       throw error;
@@ -902,7 +902,7 @@ ${fullCustomPrompt}`;
     context?: string,
     language?: string,
   ): Promise<{ summaryV2: SummaryV2; markdownSummary: string }> {
-    const { summaryV2 } = await this.generateSummaryV2(
+    const { summary: summaryV2 } = await this.generateSummaryV2(
       transcriptionText,
       context,
       language,
@@ -1605,7 +1605,7 @@ ${fullCustomPrompt}`;
     );
 
     // Generate new V2 structured summary
-    const { summaryV2, conversationCategory } = await this.generateSummaryV2(
+    const { summary: summaryV2, conversationCategory } = await this.generateSummaryV2(
       transcription.transcriptText,
       transcription.context,
       transcription.detectedLanguage,

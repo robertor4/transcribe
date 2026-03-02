@@ -11,6 +11,7 @@ import {
   Users as UsersIcon,
   MessageSquareText,
   FileText,
+  PanelRightClose,
 } from 'lucide-react';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 import { Button } from '@/components/Button';
@@ -40,6 +41,8 @@ interface AssetSidebarProps {
   metadata: ConversationMetadata;
   recommendations?: AssetRecommendation[];
   onRecommendationSelect?: (templateId: string) => void;
+  /** Callback to collapse/close the sidebar panel */
+  onCollapse?: () => void;
 }
 
 export function AssetSidebar({
@@ -51,6 +54,7 @@ export function AssetSidebar({
   metadata,
   recommendations,
   onRecommendationSelect,
+  onCollapse,
 }: AssetSidebarProps) {
   const [isContextExpanded, setIsContextExpanded] = useState(true);
   const [isMetadataExpanded, setIsMetadataExpanded] = useState(false);
@@ -74,6 +78,15 @@ export function AssetSidebar({
               </span>
             )}
           </div>
+          {onCollapse && (
+            <button
+              onClick={onCollapse}
+              className="ml-auto p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              aria-label="Close panel"
+            >
+              <PanelRightClose className="w-4 h-4 text-gray-400" />
+            </button>
+          )}
         </div>
         {assets.length > 0 && (
           <Button
