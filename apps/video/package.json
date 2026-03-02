@@ -1,0 +1,26 @@
+{
+  "name": "@neural-summary/video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Remotion video compositions for Neural Summary",
+  "scripts": {
+    "studio": "remotion studio src/index.ts --port=3100",
+    "render": "remotion render src/index.ts",
+    "render:promo": "remotion render src/index.ts Promo60s --output=out/promo-60s.mp4",
+    "upgrade": "remotion upgrade",
+    "lint": "echo 'no lint configured'"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.263",
+    "@remotion/player": "4.0.263",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "4.0.263"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "typescript": "^5.9.3"
+  }
+}
