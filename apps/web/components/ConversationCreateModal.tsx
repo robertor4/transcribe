@@ -76,6 +76,7 @@ export function ConversationCreateModal({
   // Recovery state
   const [recoverableRecordings, setRecoverableRecordings] = useState<RecoverableRecording[]>([]);
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
+  const [recoveryCheckDone, setRecoveryCheckDone] = useState(false);
   const [continueRecordingData, setContinueRecordingData] = useState<ContinueRecordingData | null>(null);
   // Track which upload method to use after recovery
   const [recoveryUploadMethod, setRecoveryUploadMethod] = useState<'record-microphone' | 'record-tab-audio' | null>(null);
@@ -123,6 +124,7 @@ export function ConversationCreateModal({
     setProcessingError(null);
     setRecoverableRecordings([]);
     setShowRecoveryDialog(false);
+    setRecoveryCheckDone(false);
     setContinueRecordingData(null);
     setRecoveryUploadMethod(null);
     setPendingRecoveryDeletionId(null);
@@ -133,7 +135,10 @@ export function ConversationCreateModal({
   // Only show recordings belonging to the current user (privacy/security)
   useEffect(() => {
     const checkForRecovery = async () => {
-      if (!isOpen || !user?.uid) return;
+      if (!isOpen || !user?.uid) {
+        setRecoveryCheckDone(false);
+        return;
+      }
 
       try {
         const storage = await getRecordingStorage();
@@ -153,6 +158,8 @@ export function ConversationCreateModal({
       } catch (err) {
         console.error('[ConversationCreateModal] Failed to check for recoverable recordings:', err);
       }
+
+      setRecoveryCheckDone(true);
     };
 
     checkForRecovery();
@@ -347,14 +354,18 @@ export function ConversationCreateModal({
         />
       )}
 
-      {/* Main Modal — shadcn Dialog */}
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {/* Main Modal — shadcn Dialog
+          Only render after recovery check completes and recovery dialog is dismissed.
+          This avoids Radix Dialog's modal behavior (pointer-events: none on body,
+          focus trap) from blocking interaction with the recovery dialog. */}
+      <Dialog open={isOpen && recoveryCheckDone && !showRecoveryDialog} onOpenChange={handleOpenChange}>
         <DialogContent
           className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col gap-0 p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700/50"
           showCloseButton={!isInCriticalStage}
           onInteractOutside={(e) => {
-            // Prevent overlay click from closing during recording or critical stages
-            if (isRecording || isInCriticalStage) {
+            // Prevent overlay click from closing during recording, critical stages,
+            // or when recovery dialog is open (its clicks are outside DialogContent)
+            if (isRecording || isInCriticalStage || showRecoveryDialog) {
               e.preventDefault();
             }
           }}

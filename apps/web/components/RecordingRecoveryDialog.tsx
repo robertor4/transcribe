@@ -503,14 +503,14 @@ export function RecordingRecoveryDialog({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 dark:bg-black/70 z-[60] animate-in fade-in duration-200"
+        className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-[60] pointer-events-auto animate-in fade-in duration-200"
         onClick={onClose}
       />
 
       {/* Dialog */}
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[60] pointer-events-auto flex items-center justify-center p-4">
         <div
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -531,7 +531,7 @@ export function RecordingRecoveryDialog({
             <button
               type="button"
               onClick={onClose}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -717,12 +717,12 @@ export function RecordingRecoveryDialog({
       {confirmDiscardId && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-[70]"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[70] pointer-events-auto"
             onClick={() => setConfirmDiscardId(null)}
           />
-          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[70] pointer-events-auto flex items-center justify-center p-4">
             <div
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 animate-in zoom-in-95 duration-200"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-4">
