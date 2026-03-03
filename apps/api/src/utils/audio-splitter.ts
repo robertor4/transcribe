@@ -108,20 +108,77 @@ export class AudioSplitter {
   }
 
   async getAudioDuration(filePath: string): Promise<number> {
+    try {
+      return await this.probeAudioDuration(filePath);
+    } catch (firstError) {
+      // Browser-recorded WebM/Matroska files often have incomplete headers.
+      // Retry with extended probe options that force ffprobe to scan more data.
+      this.logger.warn(
+        `Standard ffprobe failed for ${path.basename(filePath)}, retrying with extended probe options...`,
+      );
+      try {
+        return await this.probeAudioDuration(filePath, [
+          '-analyzeduration',
+          '200000000',
+          '-probesize',
+          '200000000',
+        ]);
+      } catch {
+        throw new Error(
+          `Failed to get audio duration: ${firstError instanceof Error ? firstError.message : String(firstError)}`,
+        );
+      }
+    }
+  }
+
+  private probeAudioDuration(
+    filePath: string,
+    options?: string[],
+  ): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      ffmpeg.ffprobe(filePath, (err, metadata) => {
+      const callback = (err: Error | null, metadata: any) => {
         if (err) {
-          reject(new Error(`Failed to get audio duration: ${err.message}`));
+          reject(err);
         } else {
           resolve(metadata.format.duration || 0);
         }
-      });
+      };
+
+      if (options) {
+        ffmpeg.ffprobe(filePath, options, callback);
+      } else {
+        ffmpeg.ffprobe(filePath, callback);
+      }
     });
   }
 
   async getFileSize(filePath: string): Promise<number> {
     const stats = await fs.promises.stat(filePath);
     return stats.size;
+  }
+
+  /**
+   * Estimate audio duration from file size when ffprobe fails.
+   * Uses approximate bitrate assumptions per format.
+   */
+  private estimateDurationFromFileSize(
+    fileSizeBytes: number,
+    filePath: string,
+  ): number {
+    const ext = path.extname(filePath).toLowerCase();
+    // Approximate bytes-per-second for common formats
+    const bytesPerSecond: Record<string, number> = {
+      '.webm': 12000, // ~96kbps Opus
+      '.ogg': 16000, // ~128kbps Vorbis
+      '.mp3': 16000, // ~128kbps MP3
+      '.m4a': 16000, // ~128kbps AAC
+      '.wav': 176400, // 44.1kHz 16-bit stereo PCM
+      '.flac': 50000, // ~400kbps lossless
+    };
+    const rate = bytesPerSecond[ext] || 16000;
+    const estimated = fileSizeBytes / rate;
+    // Ensure at least 10 seconds, cap at 8 hours
+    return Math.max(10, Math.min(estimated, 28800));
   }
 
   async shouldSplitFile(filePath: string): Promise<boolean> {
@@ -146,7 +203,17 @@ export class AudioSplitter {
     }
 
     const fileSize = await this.getFileSize(inputPath);
-    const duration = await this.getAudioDuration(inputPath);
+    let duration: number;
+    try {
+      duration = await this.getAudioDuration(inputPath);
+    } catch {
+      // Fallback: estimate duration from file size for formats where ffprobe fails
+      // (e.g., browser-recorded WebM with incomplete Matroska headers)
+      duration = this.estimateDurationFromFileSize(fileSize, inputPath);
+      this.logger.warn(
+        `ffprobe failed for ${path.basename(inputPath)}, estimated duration: ${Math.floor(duration / 60)}m${Math.floor(duration % 60)}s from file size`,
+      );
+    }
 
     this.logger.log(
       `Splitting audio file (${(fileSize / 1024 / 1024).toFixed(1)}MB, ${Math.floor(duration / 60)}m${Math.floor(duration % 60)}s)`,

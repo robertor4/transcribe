@@ -162,6 +162,42 @@ describe('AudioSplitter', () => {
       (splitter as any).ffmpegPath = '/usr/bin/ffmpeg';
     });
 
+    it('should fall back to estimated duration when ffprobe fails for WebM', async () => {
+      const largeSize = 50 * 1024 * 1024; // 50MB
+      (fs.promises.stat as jest.Mock).mockResolvedValue({ size: largeSize });
+
+      const ffmpeg = require('fluent-ffmpeg');
+      // Both standard and extended ffprobe calls fail
+      ffmpeg.ffprobe.mockImplementation((...args: any[]) => {
+        const callback = args[args.length - 1];
+        callback(new Error('ffprobe failed on webm'));
+      });
+
+      // Mock extractChunk to return quickly
+      (splitter as any).extractChunk = jest
+        .fn()
+        .mockImplementation(
+          async (
+            input: string,
+            output: string,
+            start: number,
+            duration: number,
+            index: number,
+          ) => ({
+            path: output,
+            startTime: start,
+            endTime: start + duration,
+            duration,
+            index,
+          }),
+        );
+
+      const result = await splitter.splitAudioFile('/tmp/recording.webm');
+
+      // Should succeed with estimated duration instead of throwing
+      expect(result.length).toBeGreaterThan(1);
+    });
+
     it('should return original file if under size limit', async () => {
       const smallSize = 10 * 1024 * 1024; // 10MB
       (fs.promises.stat as jest.Mock).mockResolvedValue({ size: smallSize });
@@ -210,13 +246,32 @@ describe('AudioSplitter', () => {
       expect(result).toBe(600);
     });
 
-    it('should throw error on ffprobe failure', async () => {
+    it('should retry with extended options when standard ffprobe fails', async () => {
       const ffmpeg = require('fluent-ffmpeg');
-      ffmpeg.ffprobe.mockImplementation(
-        (path: string, callback: (err: Error) => void) => {
+      let callCount = 0;
+      ffmpeg.ffprobe.mockImplementation((...args: any[]) => {
+        callCount++;
+        const callback = args[args.length - 1];
+        if (callCount === 1) {
+          // First call (standard) fails
           callback(new Error('ffprobe failed'));
-        },
-      );
+        } else {
+          // Second call (extended options) succeeds
+          callback(null, { format: { duration: 120 } });
+        }
+      });
+
+      const result = await splitter.getAudioDuration('/tmp/test.webm');
+      expect(result).toBe(120);
+      expect(callCount).toBe(2);
+    });
+
+    it('should throw error when both standard and extended ffprobe fail', async () => {
+      const ffmpeg = require('fluent-ffmpeg');
+      ffmpeg.ffprobe.mockImplementation((...args: any[]) => {
+        const callback = args[args.length - 1];
+        callback(new Error('ffprobe failed'));
+      });
 
       await expect(splitter.getAudioDuration('/tmp/test.mp3')).rejects.toThrow(
         'Failed to get audio duration',
