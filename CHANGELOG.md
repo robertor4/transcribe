@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- **WebM upload processing failure**: Browser-recorded WebM files (from MediaRecorder) have malformed Matroska containers that cause both ffprobe and ffmpeg to fail. Three layers of resilience added: (1) `getAudioDuration` retries with extended `-analyzeduration`/`-probesize` options, (2) `splitAudioFile` falls back to file-size-based duration estimation, (3) Whisper fallback now pre-converts WebM to MP3 via `convertWebmToMp3()` before splitting, and `extractChunk` uses error-tolerant input options for WebM files
-  - Modified: [audio-splitter.ts](apps/api/src/utils/audio-splitter.ts), [audio-splitter.spec.ts](apps/api/src/utils/audio-splitter.spec.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+- **Safari/iOS recordings completely broken**: Safari claims `audio/webm` support via `MediaRecorder.isTypeSupported()` but produces structurally invalid files missing the EBML header entirely (starts with raw Matroska Cluster `0x1F43B675` instead of `0x1A45DFA3`). Fixed with: (1) Frontend: `detectBestAudioFormat()` now detects Safari and skips WebM, forcing `audio/mp4` which Safari handles correctly, (2) Backend: upload endpoint validates EBML header on `.webm` files and returns a clear error message if missing, (3) Backend resilience: ffprobe retry with extended options, file-size duration estimation, WebM-to-MP3 pre-conversion in Whisper fallback, and error-tolerant `extractChunk` input options
+  - Modified: [audio.ts](apps/web/utils/audio.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [audio-splitter.ts](apps/api/src/utils/audio-splitter.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
 - **Mobile: missing clear button for recently opened conversations**: Added trash icon button to `MobileAppDrawer` to allow clearing the recently opened list, matching the existing desktop `LeftNavigation` behavior
   - Modified: [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx)
 

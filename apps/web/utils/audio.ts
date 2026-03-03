@@ -10,30 +10,44 @@ export interface AudioFormat {
 }
 
 /**
- * Detects the best supported audio format for the current browser
+ * Detects the best supported audio format for the current browser.
  * Priority: WebM (Opus) > WebM (VP8) > MP4 (AAC)
+ *
+ * Safari/iOS exception: Safari claims to support audio/webm but produces
+ * structurally invalid files (missing EBML header). We force audio/mp4 on
+ * Safari, which it handles correctly.
  */
 export function detectBestAudioFormat(): AudioFormat {
-  // Try WebM with Opus codec (best for speech, supported by Chrome/Firefox)
   if (typeof MediaRecorder !== 'undefined') {
-    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-      return {
-        mimeType: 'audio/webm;codecs=opus',
-        extension: 'webm',
-        codec: 'opus',
-      };
+    // Safari (including iOS) reports WebM support but produces broken files:
+    // the output starts with a raw Matroska Cluster (0x1F43B675) instead of
+    // the required EBML header (0x1A45DFA3). Skip WebM entirely on Safari.
+    const isSafari =
+      typeof navigator !== 'undefined' &&
+      /Safari/.test(navigator.userAgent) &&
+      !/Chrome/.test(navigator.userAgent);
+
+    if (!isSafari) {
+      // Try WebM with Opus codec (best for speech, supported by Chrome/Firefox)
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        return {
+          mimeType: 'audio/webm;codecs=opus',
+          extension: 'webm',
+          codec: 'opus',
+        };
+      }
+
+      // Try WebM without codec spec (Firefox fallback)
+      if (MediaRecorder.isTypeSupported('audio/webm')) {
+        return {
+          mimeType: 'audio/webm',
+          extension: 'webm',
+          codec: 'vp8',
+        };
+      }
     }
 
-    // Try WebM with VP8 (fallback)
-    if (MediaRecorder.isTypeSupported('audio/webm')) {
-      return {
-        mimeType: 'audio/webm',
-        extension: 'webm',
-        codec: 'vp8',
-      };
-    }
-
-    // Try MP4 (Safari)
+    // MP4 (AAC) — reliable on Safari/iOS, also supported by other browsers
     if (MediaRecorder.isTypeSupported('audio/mp4')) {
       return {
         mimeType: 'audio/mp4',

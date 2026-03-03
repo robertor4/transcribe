@@ -141,6 +141,29 @@ export class TranscriptionController {
       throw new BadRequestException('File size exceeds limit');
     }
 
+    // Validate WebM files have a proper EBML header.
+    // Safari/iOS claims WebM support but produces structurally invalid files
+    // missing the required EBML header (0x1A45DFA3).
+    if (
+      file.originalname.endsWith('.webm') &&
+      file.buffer.length >= 4 &&
+      !(
+        file.buffer[0] === 0x1a &&
+        file.buffer[1] === 0x45 &&
+        file.buffer[2] === 0xdf &&
+        file.buffer[3] === 0xa3
+      )
+    ) {
+      this.logger.warn(
+        `Invalid WebM file uploaded: ${file.originalname} — missing EBML header (first bytes: ${file.buffer.slice(0, 4).toString('hex')})`,
+      );
+      throw new BadRequestException(
+        'This WebM recording is corrupted (missing container header). ' +
+          'This is a known Safari/iOS issue. Please try recording with a different browser (Chrome or Firefox), ' +
+          'or upload an MP3/M4A file instead.',
+      );
+    }
+
     // Check quota before processing
     // Use ffprobe for accurate duration instead of file-size estimation
     const fileSizeBytes = file.size;
