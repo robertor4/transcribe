@@ -551,11 +551,34 @@ export class TranscriptionService {
         );
       }
 
-      const tempFilePath = path.join(
+      let tempFilePath = path.join(
         '/tmp',
         `audio_${Date.now()}${fileExtension}`,
       );
       fs.writeFileSync(tempFilePath, fileBuffer);
+
+      // Browser-recorded WebM files often have malformed Matroska containers
+      // that ffmpeg cannot open for splitting. Convert to MP3 first.
+      if (fileExtension === '.webm') {
+        this.logger.log(
+          'WebM file detected, converting to MP3 for reliable processing...',
+        );
+        if (onProgress) {
+          onProgress(12, 'Converting WebM format for processing...');
+        }
+        const mp3Path = await this.audioSplitter.convertWebmToMp3(tempFilePath);
+        if (mp3Path) {
+          // Clean up original WebM and use the MP3
+          fs.unlinkSync(tempFilePath);
+          tempFilePath = mp3Path;
+          fileExtension = '.mp3';
+          this.logger.log('WebM to MP3 conversion successful');
+        } else {
+          this.logger.warn(
+            'WebM to MP3 conversion failed, proceeding with original file',
+          );
+        }
+      }
 
       // For backward compatibility, keep the chunking logic here
       // This method is now mainly used as a legacy fallback

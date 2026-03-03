@@ -181,6 +181,53 @@ export class AudioSplitter {
     return Math.max(10, Math.min(estimated, 28800));
   }
 
+  /**
+   * Convert a WebM file to MP3 for reliable processing.
+   * Browser-recorded WebM files often have malformed Matroska containers
+   * that ffmpeg cannot open. This uses error-tolerant input options.
+   * @returns Path to the converted MP3 file, or null if conversion fails
+   */
+  async convertWebmToMp3(inputPath: string): Promise<string | null> {
+    const safePath = this.sanitizePath(inputPath);
+    const mp3Path = safePath.replace(/\.webm$/i, '.mp3');
+    const safeOutputPath = this.sanitizePath(mp3Path);
+
+    this.logger.log(
+      `Converting WebM to MP3: ${path.basename(safePath)} → ${path.basename(safeOutputPath)}`,
+    );
+
+    return new Promise<string | null>((resolve) => {
+      ffmpeg(safePath)
+        .inputOptions([
+          '-analyzeduration',
+          '200000000',
+          '-probesize',
+          '200000000',
+        ])
+        .audioCodec('libmp3lame')
+        .audioBitrate('128k')
+        .on('end', () => {
+          this.logger.log(
+            `WebM to MP3 conversion complete: ${path.basename(safeOutputPath)}`,
+          );
+          resolve(safeOutputPath);
+        })
+        .on('error', (err) => {
+          this.logger.error('WebM to MP3 conversion failed:', err.message);
+          // Clean up partial output
+          try {
+            if (fs.existsSync(safeOutputPath)) {
+              fs.unlinkSync(safeOutputPath);
+            }
+          } catch {
+            // ignore cleanup errors
+          }
+          resolve(null);
+        })
+        .save(safeOutputPath);
+    });
+  }
+
   async shouldSplitFile(filePath: string): Promise<boolean> {
     const fileSize = await this.getFileSize(filePath);
     return fileSize > this.MAX_WHISPER_SIZE;
@@ -303,7 +350,20 @@ export class AudioSplitter {
         return;
       }
 
-      ffmpeg(safePath)
+      const command = ffmpeg(safePath);
+
+      // Add error-tolerant input options for WebM/Matroska files
+      const ext = path.extname(safePath).toLowerCase();
+      if (ext === '.webm' || ext === '.mkv') {
+        command.inputOptions([
+          '-analyzeduration',
+          '200000000',
+          '-probesize',
+          '200000000',
+        ]);
+      }
+
+      command
         .setStartTime(startTime)
         .setDuration(duration)
         .audioCodec('libmp3lame')

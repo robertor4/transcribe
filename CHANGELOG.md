@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- **WebM upload processing failure**: Browser-recorded WebM files (from MediaRecorder) often have incomplete Matroska container headers, causing `ffprobe` to fail when extracting audio duration. Added two layers of resilience: (1) `getAudioDuration` now retries with extended `-analyzeduration`/`-probesize` options when standard probing fails, (2) `splitAudioFile` falls back to file-size-based duration estimation when ffprobe fails entirely, preventing the "Processing failed" error at ~35%
-  - Modified: [audio-splitter.ts](apps/api/src/utils/audio-splitter.ts), [audio-splitter.spec.ts](apps/api/src/utils/audio-splitter.spec.ts)
+- **WebM upload processing failure**: Browser-recorded WebM files (from MediaRecorder) have malformed Matroska containers that cause both ffprobe and ffmpeg to fail. Three layers of resilience added: (1) `getAudioDuration` retries with extended `-analyzeduration`/`-probesize` options, (2) `splitAudioFile` falls back to file-size-based duration estimation, (3) Whisper fallback now pre-converts WebM to MP3 via `convertWebmToMp3()` before splitting, and `extractChunk` uses error-tolerant input options for WebM files
+  - Modified: [audio-splitter.ts](apps/api/src/utils/audio-splitter.ts), [audio-splitter.spec.ts](apps/api/src/utils/audio-splitter.spec.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
 - **Mobile: missing clear button for recently opened conversations**: Added trash icon button to `MobileAppDrawer` to allow clearing the recently opened list, matching the existing desktop `LeftNavigation` behavior
   - Modified: [MobileAppDrawer.tsx](apps/web/components/MobileAppDrawer.tsx)
 

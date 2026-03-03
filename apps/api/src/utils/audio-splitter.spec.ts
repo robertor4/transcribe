@@ -510,6 +510,68 @@ describe('AudioSplitter', () => {
     });
   });
 
+  describe('convertWebmToMp3', () => {
+    beforeEach(() => {
+      (splitter as any).ffmpegPath = '/usr/bin/ffmpeg';
+    });
+
+    it('should convert WebM to MP3 successfully', async () => {
+      const ffmpeg = require('fluent-ffmpeg');
+      const mockCommand = {
+        inputOptions: jest.fn().mockReturnThis(),
+        audioCodec: jest.fn().mockReturnThis(),
+        audioBitrate: jest.fn().mockReturnThis(),
+        on: jest.fn().mockImplementation(function (
+          this: any,
+          event: string,
+          cb: (...args: any[]) => void,
+        ) {
+          if (event === 'end') {
+            setTimeout(() => cb(), 0);
+          }
+          return this;
+        }),
+        save: jest.fn(),
+      };
+      ffmpeg.mockReturnValue(mockCommand);
+
+      const result = await splitter.convertWebmToMp3('/tmp/recording.webm');
+      expect(result).toBe('/tmp/recording.mp3');
+      expect(mockCommand.inputOptions).toHaveBeenCalledWith([
+        '-analyzeduration',
+        '200000000',
+        '-probesize',
+        '200000000',
+      ]);
+      expect(mockCommand.audioCodec).toHaveBeenCalledWith('libmp3lame');
+    });
+
+    it('should return null when conversion fails', async () => {
+      const ffmpeg = require('fluent-ffmpeg');
+      const mockCommand = {
+        inputOptions: jest.fn().mockReturnThis(),
+        audioCodec: jest.fn().mockReturnThis(),
+        audioBitrate: jest.fn().mockReturnThis(),
+        on: jest.fn().mockImplementation(function (
+          this: any,
+          event: string,
+          cb: (...args: any[]) => void,
+        ) {
+          if (event === 'error') {
+            setTimeout(() => cb(new Error('Invalid data')), 0);
+          }
+          return this;
+        }),
+        save: jest.fn(),
+      };
+      ffmpeg.mockReturnValue(mockCommand);
+      (fs.existsSync as jest.Mock).mockReturnValue(false);
+
+      const result = await splitter.convertWebmToMp3('/tmp/recording.webm');
+      expect(result).toBeNull();
+    });
+  });
+
   describe('mergeAudioFiles', () => {
     it('should throw if ffmpeg is not available', async () => {
       (splitter as any).ffmpegPath = undefined;
