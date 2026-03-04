@@ -13,21 +13,26 @@ export interface AudioFormat {
  * Detects the best supported audio format for the current browser.
  * Priority: WebM (Opus) > WebM (VP8) > MP4 (AAC)
  *
- * Safari/iOS exception: Safari claims to support audio/webm but produces
- * structurally invalid files (missing EBML header). We force audio/mp4 on
- * Safari, which it handles correctly.
+ * Safari & iOS exception: WebKit-based browsers claim to support audio/webm
+ * but produce structurally invalid files (missing EBML header). We force
+ * audio/mp4 on all WebKit browsers, which they handle correctly.
+ *
+ * This affects ALL iOS/iPadOS browsers (Safari, Chrome, Firefox, Edge) because
+ * Apple requires all browsers on iOS to use WebKit under the hood.
  */
 export function detectBestAudioFormat(): AudioFormat {
   if (typeof MediaRecorder !== 'undefined') {
-    // Safari (including iOS) reports WebM support but produces broken files:
+    // All WebKit-based browsers produce broken WebM files:
     // the output starts with a raw Matroska Cluster (0x1F43B675) instead of
-    // the required EBML header (0x1A45DFA3). Skip WebM entirely on Safari.
-    const isSafari =
-      typeof navigator !== 'undefined' &&
-      /Safari/.test(navigator.userAgent) &&
-      !/Chrome/.test(navigator.userAgent);
+    // the required EBML header (0x1A45DFA3). Skip WebM on:
+    // 1. Safari on macOS (has "Safari" but not "Chrome" in UA)
+    // 2. ALL iOS/iPadOS browsers (they all use WebKit regardless of brand)
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+    const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const useWebKitWorkaround = isSafari || isIOS;
 
-    if (!isSafari) {
+    if (!useWebKitWorkaround) {
       // Try WebM with Opus codec (best for speech, supported by Chrome/Firefox)
       if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
         return {
