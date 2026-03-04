@@ -1480,7 +1480,8 @@
       "features": "Fonctionnalités",
       "howItWorks": "Comment ça marche",
       "pricing": "Tarifs",
-      "contact": "Contact"
+      "contact": "Contact",
+      "blog": "Blog"
     },
     "footer": {
       "sections": {
@@ -1497,7 +1498,8 @@
         "help": "Aide",
         "privacy": "Confidentialité",
         "terms": "CGU",
-        "contact": "Contact"
+        "contact": "Contact",
+        "blog": "Blog"
       },
       "tagline": "Vous parlez. Ça crée.",
       "copyright": "© 2026 Neural Summary. Tous droits réservés."
@@ -2854,5 +2856,12 @@
     "retry": "Réessayer",
     "checking": "Vérification...",
     "dismiss": "Fermer"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Perspectives sur la transformation des idées parlées en documents professionnels structurés.",
+    "noPosts": "Pas encore d'articles. Revenez bientôt.",
+    "backToBlog": "Retour au blog",
+    "tableOfContents": "Table des matières"
   }
 }

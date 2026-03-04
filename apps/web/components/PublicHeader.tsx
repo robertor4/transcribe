@@ -55,6 +55,13 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               {tLanding('nav.howItWorks')}
             </Link>
             <Link
+              href={`/${locale}/blog`}
+              className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
+              aria-label="Read our blog"
+            >
+              {tLanding('nav.blog')}
+            </Link>
+            <Link
               href={`/${locale}/contact`}
               className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
               aria-label="Contact us"

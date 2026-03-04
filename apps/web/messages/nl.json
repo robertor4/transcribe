@@ -1502,7 +1502,8 @@
       "features": "Functies",
       "howItWorks": "Hoe het werkt",
       "pricing": "Prijzen",
-      "contact": "Contact"
+      "contact": "Contact",
+      "blog": "Blog"
     },
     "footer": {
       "sections": {
@@ -1519,7 +1520,8 @@
         "help": "Help",
         "privacy": "Privacy",
         "terms": "Voorwaarden",
-        "contact": "Contact"
+        "contact": "Contact",
+        "blog": "Blog"
       },
       "tagline": "Jij spreekt. Het creëert.",
       "copyright": "© 2026 Neural Summary. Alle rechten voorbehouden."
@@ -2859,5 +2861,12 @@
     "retry": "Opnieuw proberen",
     "checking": "Controleren...",
     "dismiss": "Sluiten"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Inzichten over het omzetten van gesproken ideeën in gestructureerde, professionele output.",
+    "noPosts": "Nog geen berichten. Kom snel terug.",
+    "backToBlog": "Terug naar blog",
+    "tableOfContents": "Inhoudsopgave"
   }
 }

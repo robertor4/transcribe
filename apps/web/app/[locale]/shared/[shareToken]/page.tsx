@@ -21,6 +21,7 @@ import { getOutputIcon } from '@/lib/outputIcons';
 import {
   Lock,
   Loader2,
+  BarChart3,
   FileText,
   Link2Off,
   Eye,
@@ -31,12 +32,17 @@ import {
   Download,
   UserPlus,
   Globe,
-  ScrollText,
+  MoreVertical,
+  Info,
+  Tag,
+  User,
 } from 'lucide-react';
 import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -387,9 +393,9 @@ export default function SharedTranscriptionPage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3 sm:py-6">
           {/* Logo/Branding */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <a href="https://neuralsummary.com" target="_blank" rel="noopener noreferrer">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -403,14 +409,14 @@ export default function SharedTranscriptionPage() {
 
           {/* Title — Merriweather serif, matching conversation page */}
           <h1
-            className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-snug break-words"
+            className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1.5 sm:mb-2 leading-snug break-words max-w-[680px]"
             style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
           >
             {transcription.title || transcription.fileName}
           </h1>
 
-          {/* Metadata row — badges | date | shared by | views | content actions | utility actions */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500">
+          {/* Metadata row */}
+          <div className="flex items-center gap-x-2 sm:gap-x-3 text-xs text-gray-500 whitespace-nowrap">
             {activeWordCount > 0 && (
               <>
                 <ReadingTimeIndicator wordCount={activeWordCount} />
@@ -418,28 +424,171 @@ export default function SharedTranscriptionPage() {
               </>
             )}
             {transcription.conversationCategory && (
-              <>
+              <span className="hidden sm:inline-flex items-center gap-x-2 sm:gap-x-3">
                 <ConversationCategoryBadge category={transcription.conversationCategory} />
                 <span className="text-gray-300">|</span>
-              </>
+              </span>
             )}
             <span>{formatDate(transcription.createdAt)}</span>
-            {transcription.sharedBy && (
-              <>
-                <span className="text-gray-300">|</span>
-                <span>{transcription.sharedBy}</span>
-              </>
-            )}
-            {transcription.viewCount !== undefined && (
-              <>
-                <span className="text-gray-300">|</span>
-                <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
-              </>
+
+            {/* Mobile info popover — shows category, shared by, views */}
+            {(transcription.conversationCategory || transcription.sharedBy || transcription.viewCount !== undefined) && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="sm:hidden p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent align="start" sideOffset={6} className="w-auto p-3 space-y-1.5 bg-white border-gray-200 shadow-lg">
+                  {transcription.conversationCategory && (
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Tag className="w-3.5 h-3.5 text-gray-400" />
+                      <ConversationCategoryBadge category={transcription.conversationCategory} />
+                    </div>
+                  )}
+                  {transcription.sharedBy && (
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <User className="w-3.5 h-3.5 text-gray-400" />
+                      <span>{transcription.sharedBy}</span>
+                    </div>
+                  )}
+                  {transcription.viewCount !== undefined && (
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Eye className="w-3.5 h-3.5 text-gray-400" />
+                      <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
             )}
 
-            {/* Action icons — content actions, then utility actions */}
+            {/* Mobile action dropdown */}
+            <div className="sm:hidden ml-auto">
+              <DropdownMenu
+                trigger={
+                  <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                }
+                items={[
+                  {
+                    icon: copiedSummary ? Check : Copy,
+                    label: copiedSummary ? t('copied') : t('copy'),
+                    onClick: handleCopySummary,
+                  },
+                  ...(translationStatus && translationStatus.availableLocales.length > 0
+                    ? [
+                        { type: 'divider' as const },
+                        {
+                          icon: Globe,
+                          label: `${
+                            translationStatus.originalLocale
+                              ? translationStatus.availableLocales.find(l => l.code.toLowerCase() === translationStatus.originalLocale?.toLowerCase())?.nativeName || 'Original'
+                              : 'Original'
+                          }${currentLocale === 'original' ? ' \u2713' : ''}`,
+                          onClick: () => setLocale('original'),
+                        },
+                        ...translationStatus.availableLocales
+                          .filter(l => l.code.toLowerCase() !== translationStatus.originalLocale?.toLowerCase())
+                          .map(loc => ({
+                            icon: Globe,
+                            label: `${loc.nativeName}${currentLocale === loc.code ? ' \u2713' : ''}`,
+                            onClick: () => setLocale(loc.code),
+                          })),
+                      ]
+                    : []),
+                  { type: 'divider' as const },
+                  ...(user
+                    ? isImported
+                      ? [{ icon: Check, label: t('importCta.imported'), onClick: () => {}, disabled: true }]
+                      : [{ icon: Download, label: isImporting ? t('importCta.importing') : t('importCta.importButton'), onClick: handleImport, disabled: isImporting }]
+                    : [{ icon: UserPlus, label: t('importCta.signUp'), onClick: handleSignUpToImport }]),
+                ]}
+              />
+            </div>
+
+            {/* Shared by — desktop only */}
+            {transcription.sharedBy && (
+              <span className="hidden sm:inline-flex items-center gap-x-3">
+                <span className="text-gray-300">|</span>
+                <span>{transcription.sharedBy}</span>
+              </span>
+            )}
+            {/* Views — desktop only */}
+            {transcription.viewCount !== undefined && (
+              <span className="hidden sm:inline-flex items-center gap-x-3">
+                <span className="text-gray-300">|</span>
+                <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
+              </span>
+            )}
+
+            {/* Desktop inline actions */}
             <TooltipProvider>
-              <div className="flex items-center gap-3 ml-2">
+              <div className="hidden sm:flex items-center gap-3 ml-2">
+                {/* Tab switchers — desktop only */}
+                {availableTabs > 1 && (
+                  <>
+                    <span className="text-gray-300">|</span>
+                    {hasSummary && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setActiveTab('summary')}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              activeTab === 'summary'
+                                ? 'text-[#8D6AFA] bg-purple-50'
+                                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            <BarChart3 className="w-4 h-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" sideOffset={6}>
+                          Summary
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {hasTranscript && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setActiveTab('transcript')}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              activeTab === 'transcript'
+                                ? 'text-[#8D6AFA] bg-purple-50'
+                                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" sideOffset={6}>
+                          Transcript
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {hasAIAssets && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setActiveTab('ai-assets')}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              activeTab === 'ai-assets'
+                                ? 'text-[#8D6AFA] bg-purple-50'
+                                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            <AiIcon size={16} />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" sideOffset={6}>
+                          {t('aiAssets')}
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+
                 <span className="text-gray-300">|</span>
 
                 {/* Copy */}
@@ -460,30 +609,6 @@ export default function SharedTranscriptionPage() {
                     {copiedSummary ? t('copied') : t('copy')}
                   </TooltipContent>
                 </Tooltip>
-
-                {/* Desktop summary/transcript toggle */}
-                {hasSummary && hasTranscript && (
-                  <>
-                    <span className="hidden lg:inline text-gray-300">|</span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
-                          className={`hidden lg:block p-1.5 rounded-lg transition-colors ${
-                            activeTab === 'transcript'
-                              ? 'text-gray-900 bg-gray-100'
-                              : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <ScrollText className="w-4 h-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" sideOffset={6}>
-                        {activeTab === 'summary' ? 'Transcript' : 'Summary'}
-                      </TooltipContent>
-                    </Tooltip>
-                  </>
-                )}
 
                 {/* Language switcher */}
                 {translationStatus && translationStatus.availableLocales.length > 0 && (
@@ -607,23 +732,24 @@ export default function SharedTranscriptionPage() {
                 )}
               </div>
             </TooltipProvider>
+
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-6 lg:py-8">
         {/* Editorial rule — desktop only, right above content */}
-        <hr className="hidden lg:block border-t-2 border-gray-600 mb-0" />
+        <hr className="hidden lg:block border-t-2 border-gray-300 dark:border-gray-400 mb-0" />
 
-        {/* Mobile tab navigation — pill style */}
+        {/* Tab navigation — pill style */}
         {availableTabs > 1 && (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SharedTab)} className="lg:hidden mt-4">
-            <TabsList className="bg-gray-100 h-7 p-0.5 rounded-full">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SharedTab)} className="sm:hidden mt-2">
+            <TabsList className="bg-gray-100 h-7 sm:h-8 p-0.5 rounded-full">
               {hasSummary && (
                 <TabsTrigger
                   value="summary"
-                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                  className="text-[11px] sm:text-xs font-medium h-6 sm:h-7 px-3 sm:px-4 rounded-full text-gray-600 data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
                 >
                   Summary
                 </TabsTrigger>
@@ -631,7 +757,7 @@ export default function SharedTranscriptionPage() {
               {hasTranscript && (
                 <TabsTrigger
                   value="transcript"
-                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                  className="text-[11px] sm:text-xs font-medium h-6 sm:h-7 px-3 sm:px-4 rounded-full text-gray-600 data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
                 >
                   Transcript
                 </TabsTrigger>
@@ -639,7 +765,7 @@ export default function SharedTranscriptionPage() {
               {hasAIAssets && (
                 <TabsTrigger
                   value="ai-assets"
-                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                  className="text-[11px] sm:text-xs font-medium h-6 sm:h-7 px-3 sm:px-4 rounded-full text-gray-600 data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
                 >
                   {t('aiAssets')}
                 </TabsTrigger>

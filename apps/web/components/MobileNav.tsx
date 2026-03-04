@@ -85,6 +85,13 @@ export function MobileNav({ locale }: MobileNavProps) {
                 {t('nav.howItWorks')}
               </Link>
               <Link
+                href={`/${locale}/blog`}
+                onClick={() => setIsOpen(false)}
+                className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                {t('nav.blog')}
+              </Link>
+              <Link
                 href={`/${locale}/contact`}
                 onClick={() => setIsOpen(false)}
                 className="block px-4 py-3 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"

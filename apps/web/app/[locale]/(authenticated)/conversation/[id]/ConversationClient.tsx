@@ -771,7 +771,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             </div>
 
             {/* Editorial rule — desktop only */}
-            <hr className="hidden lg:block border-t-2 border-gray-600 dark:border-gray-400 mt-6 lg:mt-8" />
+            <hr className="hidden lg:block border-t-2 border-gray-300 dark:border-gray-400 mt-6 lg:mt-8" />
 
             {/* Mobile transcript toggle */}
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ContentTab)} className="lg:hidden mt-4">

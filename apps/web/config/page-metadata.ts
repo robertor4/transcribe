@@ -54,7 +54,7 @@ export interface PageMetadataContent {
   };
 }
 
-export type PageType = 'landing' | 'pricing' | 'terms' | 'privacy';
+export type PageType = 'landing' | 'pricing' | 'terms' | 'privacy' | 'blog';
 
 /**
  * Landing page metadata - serves as the universal fallback for all pages

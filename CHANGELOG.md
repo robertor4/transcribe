@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SEO blog**: File-based MDX blog at `/[locale]/blog` for organic traffic and visibility
+  - Blog posts as `.mdx` files in `content/blog/` with frontmatter (title, description, date, tags)
+  - Blog index page with post cards, blog post page with MDX rendering via `next-mdx-remote/rsc`
+  - Full SEO: `generateMetadata`, JSON-LD `Blog`/`Article` schemas, sitemap entries, OpenGraph article type
+  - Blog link added to header nav, mobile nav, and footer
+  - Editorial design matching conversation page V2: Merriweather serif title, drop cap intro paragraph, tombstone uppercase section labels, editorial `<hr>` rule, generous line heights (1.8)
+  - Sticky table of contents sidebar on desktop (right side, `bg-gray-50`, `KeyPointsSidebar` pattern), inline TOC on mobile
+  - Reading time pill badge matching `ReadingTimeIndicator` style
+  - Blog route added to `MARKETING_SEGMENTS` in middleware
+  - Reading time estimates via `reading-time` package
+  - UI chrome translated in all 5 locales (en, nl, de, fr, es); posts are English-only to start
+  - Added: [lib/blog.ts](apps/web/lib/blog.ts), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx), [blog/[slug]/page.tsx](apps/web/app/[locale]/blog/[slug]/page.tsx), [PostCard.tsx](apps/web/components/blog/PostCard.tsx)
+  - Modified: [middleware.ts](apps/web/middleware.ts), [sitemap.ts](apps/web/app/sitemap.ts), [PublicHeader.tsx](apps/web/components/PublicHeader.tsx), [MobileNav.tsx](apps/web/components/MobileNav.tsx), [PublicFooter.tsx](apps/web/components/PublicFooter.tsx), [metadata.ts](apps/web/utils/metadata.ts)
+  - Dependencies: `gray-matter`, `next-mdx-remote`, `reading-time`
+
+### Changed
+- **Shared page mobile responsive improvements**: Improved the `/shared/[shareToken]` page layout for mobile devices
+  - Split metadata into 2 rows (content info + sharing info) to prevent awkward pipe separator wrapping on narrow screens
+  - Added `max-w-[680px]` constraint on title and metadata for optimal reading width
+  - Reduced logo row spacing on mobile (`mb-3 sm:mb-6`)
+  - Made tab navigation visible on all screen sizes — fixes AI Assets being unreachable on desktop (removed desktop-only ScrollText toggle)
+  - Added mobile action dropdown (MoreVertical menu) grouping Copy, Language, and Import actions for better touch accessibility
+  - Responsive tab sizing: slightly larger pill tabs on desktop (`sm:text-xs`, `sm:h-7`, `sm:px-4`)
+  - Consolidated metadata to single row on mobile: reading time + date + dropdown; category badge, shared by, and view count moved into dropdown info section
+  - Row 2 (sharing info + desktop actions) hidden on mobile, shown on desktop only
+  - Modified: [page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx)
+
 ### Fixed
 - **Auth guard for protected routes**: Unauthenticated users visiting `app.neuralsummary.com` could see the dashboard page instead of being redirected to login. Added centralized `AuthGuard` component in the authenticated layout that redirects to `/login` when no session exists and to `/verify-email` for unverified users. This protects all authenticated routes (dashboard, conversations, folders, settings, admin)
   - Added: [AuthGuard.tsx](apps/web/components/AuthGuard.tsx)

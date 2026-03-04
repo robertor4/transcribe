@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { locales } from '../i18n.config';
 import { SEO_BASE_URL } from '../config/page-metadata';
+import { getAllPosts } from '../lib/blog';
 
 const baseUrl = SEO_BASE_URL;
 
@@ -44,6 +45,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.4,
     },
+    {
+      path: '/blog',
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
   ];
 
   // Generate sitemap entries for all locales
@@ -85,6 +91,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 ? `${baseUrl}/${lang}${page.path}`
                 : `${baseUrl}/${lang}`;
               acc[lang] = langUrl;
+              return acc;
+            },
+            {} as Record<string, string>,
+          ),
+        },
+      });
+    });
+  });
+
+  // Add blog post entries
+  const posts = getAllPosts();
+  posts.forEach((post) => {
+    locales.forEach((locale) => {
+      sitemapEntries.push({
+        url: `${baseUrl}/${locale}/blog/${post.slug}`,
+        lastModified: post.date,
+        changeFrequency: 'monthly',
+        priority: 0.7,
+        alternates: {
+          languages: locales.reduce(
+            (acc, lang) => {
+              acc[lang] = `${baseUrl}/${lang}/blog/${post.slug}`;
               return acc;
             },
             {} as Record<string, string>,

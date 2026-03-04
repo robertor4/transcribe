@@ -17,7 +17,7 @@ export function ReadingTimeIndicator({ wordCount, className = '' }: ReadingTimeI
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 bg-[#8D6AFA]/10 text-[#8D6AFA] text-xs font-semibold px-3 py-1 rounded-full ${className}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap bg-[#8D6AFA]/10 text-[#8D6AFA] text-xs font-semibold px-3 py-1 rounded-full ${className}`}
     >
       <BookOpen className="w-3.5 h-3.5" />
       {minutes} min read

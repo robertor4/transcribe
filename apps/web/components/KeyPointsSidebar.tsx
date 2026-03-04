@@ -18,7 +18,7 @@ export function KeyPointsSidebar({ keyPoints }: KeyPointsSidebarProps) {
     <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
       <div className="sticky top-8 px-6 pt-10 pb-6">
         <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
-          Key Points
+          Key Takeaways
         </h3>
         <ol className="divide-y divide-gray-200 dark:divide-gray-700">
           {keyPoints.map((point, idx) => (

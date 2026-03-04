@@ -65,6 +65,14 @@ export function PublicFooter({ locale }: PublicFooterProps) {
                   {t('footer.links.pricing')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href={`/${locale}/blog`}
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                  {t('footer.links.blog')}
+                </Link>
+              </li>
             </ul>
           </div>
 

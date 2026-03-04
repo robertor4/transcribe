@@ -19,7 +19,7 @@ export function ConversationCategoryBadge({ category, className = '' }: Conversa
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 ${config.bgColor} ${config.textColor} text-xs font-semibold px-3 py-1 rounded-full ${className}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap ${config.bgColor} ${config.textColor} text-xs font-semibold px-3 py-1 rounded-full ${className}`}
     >
       <Icon className="w-3.5 h-3.5" />
       {config.label}

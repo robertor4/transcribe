@@ -222,3 +222,56 @@ export function getTermsMetadata(locale: string = 'en', overrides?: MetadataOver
 export function getPrivacyMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
   return buildPageMetadata(locale, '/privacy', overrides);
 }
+
+/**
+ * Get metadata for blog index page
+ */
+export function getBlogMetadata(locale: string = 'en', overrides?: MetadataOverrides): Metadata {
+  return buildPageMetadata(locale, '/blog', overrides);
+}
+
+/**
+ * Get metadata for an individual blog post
+ */
+export function getBlogPostMetadata(
+  locale: string,
+  post: {
+    title: string;
+    description: string;
+    keywords: string[];
+    slug: string;
+    image?: string;
+    publishedTime?: string;
+    author?: string;
+  },
+): Metadata {
+  const pageUrl = `${SEO_BASE_URL}/${locale}/blog/${post.slug}`;
+  const ogImage = post.image
+    ? `${SEO_BASE_URL}${post.image}`
+    : `${SEO_BASE_URL}${DEFAULT_OG_IMAGE}`;
+
+  return {
+    title: post.title,
+    description: post.description,
+    keywords: post.keywords,
+    openGraph: {
+      type: 'article',
+      locale: resolveOgLocale(locale),
+      url: pageUrl,
+      siteName: SITE_NAME,
+      title: post.title,
+      description: post.description,
+      publishedTime: post.publishedTime,
+      authors: post.author ? [post.author] : undefined,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: buildTwitterConfig(post.title, post.description),
+  };
+}

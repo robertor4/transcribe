@@ -1503,7 +1503,8 @@
       "features": "Features",
       "howItWorks": "How it works",
       "pricing": "Pricing",
-      "contact": "Contact"
+      "contact": "Contact",
+      "blog": "Blog"
     },
     "footer": {
       "sections": {
@@ -1520,7 +1521,8 @@
         "help": "Help",
         "privacy": "Privacy",
         "terms": "Terms",
-        "contact": "Contact"
+        "contact": "Contact",
+        "blog": "Blog"
       },
       "tagline": "You speak. It creates.",
       "copyright": "© 2026 Neural Summary. All rights reserved."
@@ -2866,5 +2868,12 @@
     "retry": "Retry",
     "checking": "Checking...",
     "dismiss": "Dismiss"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Insights on turning spoken ideas into structured, professional output.",
+    "noPosts": "No posts yet. Check back soon.",
+    "backToBlog": "Back to blog",
+    "tableOfContents": "Table of contents"
   }
 }
