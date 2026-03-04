@@ -84,8 +84,8 @@ export function ThreePaneLayout({
       })
     : leftSidebar;
 
-  // Clone rightPanel element to inject collapse function
-  const rightPanelWithCollapse = isValidElement(rightPanel)
+  // Clone rightPanel element to inject collapse function (only for React components, not native DOM elements)
+  const rightPanelWithCollapse = isValidElement(rightPanel) && typeof rightPanel.type !== 'string'
     ? cloneElement(rightPanel as React.ReactElement<{ onCollapse?: () => void }>, {
         onCollapse: rightPanelState.toggle,
       })

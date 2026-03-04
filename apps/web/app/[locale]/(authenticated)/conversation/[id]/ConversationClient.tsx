@@ -7,6 +7,7 @@ import {
   Share2,
   ArrowLeft,
   AlertCircle,
+  AlertTriangle,
   Copy,
   Check,
   Zap,
@@ -17,9 +18,10 @@ import {
   Loader2,
   Globe,
   ScrollText,
+  Mail,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { transcriptionApi } from '@/lib/api';
+import { transcriptionApi, contactApi } from '@/lib/api';
 import type { GeneratedAnalysis, Transcription } from '@transcribe/shared';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
@@ -28,8 +30,10 @@ import { AssetMobileSheet } from '@/components/AssetMobileSheet';
 import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
-import { SummaryRenderer } from '@/components/SummaryRenderer';
+import { TranslatedSummaryRenderer } from '@/components/TranslatedSummaryRenderer';
 import { InlineTranscript } from '@/components/InlineTranscript';
+import { KeyPointsSidebar } from '@/components/KeyPointsSidebar';
+import { useCopySummaryToClipboard } from '@/hooks/useCopySummaryToClipboard';
 import { computeSpeakerStats } from '@/components/TranscriptTimeline';
 import { formatDuration } from '@/lib/formatters';
 import { ShareModal } from '@/components/ShareModal';
@@ -59,6 +63,57 @@ import { getAssetRecommendations } from '@/lib/assetRecommendations';
 import type { ConversationCategory } from '@transcribe/shared';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+
+type ErrorCategory = 'fileCorrupt' | 'timeout' | 'quota' | 'generic';
+
+/**
+ * Map raw backend error messages to user-friendly categories.
+ * Avoids exposing internal details (file paths, ffmpeg codes) to users.
+ */
+function categorizeError(error?: string): ErrorCategory {
+  if (!error) return 'generic';
+  const lower = error.toLowerCase();
+
+  if (
+    lower.includes('invalid data') ||
+    lower.includes('error opening input') ||
+    lower.includes('invalid input') ||
+    lower.includes('corrupt') ||
+    lower.includes('moov atom') ||
+    lower.includes('ebml') ||
+    lower.includes('no such file') ||
+    lower.includes('not found') ||
+    lower.includes('unsupported') ||
+    lower.includes('ffmpeg exited') ||
+    lower.includes('ffprobe')
+  ) {
+    return 'fileCorrupt';
+  }
+
+  if (
+    lower.includes('timeout') ||
+    lower.includes('timed out') ||
+    lower.includes('deadline') ||
+    lower.includes('econnreset') ||
+    lower.includes('socket hang up')
+  ) {
+    return 'timeout';
+  }
+
+  if (
+    lower.includes('quota') ||
+    lower.includes('limit') ||
+    lower.includes('exceeded') ||
+    lower.includes('402')
+  ) {
+    return 'quota';
+  }
+
+  return 'generic';
+}
 
 interface ConversationClientProps {
   conversationId: string;
@@ -73,7 +128,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [preselectedTemplate, setPreselectedTemplate] = useState<string | null>(null);
-  const [copiedSummary, setCopiedSummary] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
   const [activeTab, setActiveTab] = useState<ContentTab>('summary');
@@ -286,118 +340,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     setTranscriptionForShare(updated);
   };
 
-  // Copy summary to clipboard as rich text HTML with plain text fallback
-  const handleCopySummary = async () => {
-    if (!conversation) return;
-
-    // Check if viewing a translation
-    const summaryTranslation = currentLocale !== 'original'
-      ? getTranslatedContent('summary', conversationId)
-      : null;
-
-    // Use translated content if available, otherwise use original
-    let summaryV2 = conversation.source.summary.summaryV2;
-    let summaryText = conversation.source.summary.text;
-
-    if (summaryTranslation) {
-      if (summaryTranslation.content.type === 'summaryV2') {
-        const translated = summaryTranslation.content;
-        summaryV2 = {
-          version: 2,
-          title: translated.title,
-          intro: translated.intro,
-          keyPoints: translated.keyPoints,
-          detailedSections: translated.detailedSections,
-          decisions: translated.decisions,
-          nextSteps: translated.nextSteps,
-          generatedAt: summaryTranslation.translatedAt,
-        };
-        summaryText = '';
-      } else if (summaryTranslation.content.type === 'summaryV1') {
-        summaryV2 = undefined;
-        summaryText = summaryTranslation.content.text;
-      }
-    }
-
-    let html = '';
-    let plainText = '';
-
-    if (summaryV2) {
-      // Build HTML for rich text copying
-      const htmlParts: string[] = [];
-      const textParts: string[] = [];
-
-      if (summaryV2.intro) {
-        htmlParts.push(`<p>${summaryV2.intro}</p>`);
-        textParts.push(summaryV2.intro);
-      }
-
-      if (summaryV2.keyPoints && summaryV2.keyPoints.length > 0) {
-        htmlParts.push('<h2>Key Points</h2><ul>');
-        textParts.push('\nKey Points\n');
-        summaryV2.keyPoints.forEach((point) => {
-          htmlParts.push(`<li><strong>${point.topic}:</strong> ${point.description}</li>`);
-          textParts.push(`• ${point.topic}: ${point.description}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      if (summaryV2.detailedSections && summaryV2.detailedSections.length > 0) {
-        summaryV2.detailedSections.forEach((section) => {
-          htmlParts.push(`<h3>${section.topic}</h3><p>${section.content}</p>`);
-          textParts.push(`\n${section.topic}\n${section.content}`);
-        });
-      }
-
-      if (summaryV2.decisions && summaryV2.decisions.length > 0) {
-        htmlParts.push('<h2>Decisions Made</h2><ul>');
-        textParts.push('\nDecisions Made\n');
-        summaryV2.decisions.forEach((decision) => {
-          htmlParts.push(`<li>${decision}</li>`);
-          textParts.push(`• ${decision}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      if (summaryV2.nextSteps && summaryV2.nextSteps.length > 0) {
-        htmlParts.push('<h2>Next Steps</h2><ul>');
-        textParts.push('\nNext Steps\n');
-        summaryV2.nextSteps.forEach((step) => {
-          htmlParts.push(`<li>${step}</li>`);
-          textParts.push(`• ${step}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      html = htmlParts.join('');
-      plainText = textParts.join('\n');
-    } else if (summaryText) {
-      html = `<p>${summaryText.replace(/\n/g, '</p><p>')}</p>`;
-      plainText = summaryText;
-    }
-
-    if (html && plainText) {
-      try {
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/html': new Blob([html], { type: 'text/html' }),
-            'text/plain': new Blob([plainText], { type: 'text/plain' }),
-          }),
-        ]);
-        setCopiedSummary(true);
-        setTimeout(() => setCopiedSummary(false), 2000);
-      } catch {
-        // Fallback to plain text if rich text fails
-        try {
-          await navigator.clipboard.writeText(plainText);
-          setCopiedSummary(true);
-          setTimeout(() => setCopiedSummary(false), 2000);
-        } catch (fallbackErr) {
-          console.error('Failed to copy summary:', fallbackErr);
-        }
-      }
-    }
-  };
+  // Copy summary to clipboard (hook handles translation detection + rich text)
+  const { copied: copiedSummary, setCopied: setCopiedSummary, handleCopy: handleCopySummary } = useCopySummaryToClipboard({
+    summaryV2: conversation?.source.summary.summaryV2,
+    summaryText: conversation?.source.summary.text || '',
+    sourceId: conversationId,
+    currentLocale,
+    getTranslatedContent,
+  });
 
   // Copy transcript to clipboard
   const handleCopyTranscript = async () => {
@@ -462,6 +412,89 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             <Button variant="primary">Back to Dashboard</Button>
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  // Failed transcription state
+  if (conversation.status === 'failed') {
+    const errorCategory = categorizeError(conversation.error);
+    const friendlyMessage = tConversation(`failed.reasons.${errorCategory}`);
+    const handleReportError = () => {
+      toast.promise(
+        contactApi.reportError({
+          conversationId: conversation.id,
+          conversationTitle: conversation.title || 'Untitled',
+          error: conversation.error || 'Unknown',
+          createdAt: conversation.createdAt.toISOString(),
+        }),
+        {
+          loading: tConversation('failed.reportSending'),
+          success: tConversation('failed.reportSent'),
+          error: tConversation('failed.reportFailed'),
+        },
+      );
+    };
+
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50/50 dark:bg-gray-900">
+        <Card className="w-full max-w-md mx-4 border-gray-200 dark:border-gray-700 pb-0 overflow-hidden">
+          <CardHeader className="justify-items-center text-center pb-0">
+            <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center mb-1">
+              <AlertTriangle className="w-6 h-6 text-amber-500" />
+            </div>
+            <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              {tConversation('failed.title')}
+            </CardTitle>
+            {conversation.title && (
+              <CardDescription className="text-gray-500 dark:text-gray-400">
+                {conversation.title}
+              </CardDescription>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-gray-700 dark:text-gray-300">
+                {friendlyMessage}
+              </AlertDescription>
+            </Alert>
+            <Separator />
+            <div className="flex flex-col gap-2 [&_a]:block [&_button]:w-full">
+              <Link href={`/${locale}/dashboard`}>
+                <Button variant="primary">{tConversation('failed.tryAgain')}</Button>
+              </Link>
+              <Button
+                variant="ghost"
+                onClick={() => setShowDeleteConfirm(true)}
+                icon={<Trash2 className="w-4 h-4" />}
+              >
+                {tConversation('failed.deleteConversation')}
+              </Button>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-center border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 py-5">
+            <button
+              onClick={handleReportError}
+              className="inline-flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              {tConversation('failed.reportIssue')}
+            </button>
+          </CardFooter>
+        </Card>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDeleteConversation}
+          title={tConversation('actions.deleteConfirmTitle')}
+          message={tConversation('actions.deleteConfirmMessage')}
+          confirmLabel={tConversation('actions.deleteConfirmYes')}
+          cancelLabel={tConversation('actions.deleteConfirmNo')}
+          variant="danger"
+        />
       </div>
     );
   }
@@ -767,50 +800,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               <div className={activeTab === 'summary' ? '' : 'hidden'}>
               <section id="summary" className="scroll-mt-16">
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
-                  (() => {
-                    // Check if viewing a translation
-                    const summaryTranslation = currentLocale !== 'original'
-                      ? getTranslatedContent('summary', conversationId)
-                      : null;
-
-                    if (summaryTranslation && summaryTranslation.content.type === 'summaryV2') {
-                      // Display translated structured summary
-                      const translated = summaryTranslation.content;
-                      return (
-                        <SummaryRenderer
-                          content=""
-                          summaryV2={{
-                            version: 2,
-                            title: translated.title,
-                            intro: translated.intro,
-                            keyPoints: translated.keyPoints,
-                            detailedSections: translated.detailedSections,
-                            decisions: translated.decisions,
-                            nextSteps: translated.nextSteps,
-                            generatedAt: summaryTranslation.translatedAt,
-                          }}
-                          highlightOptions={highlightOptions}
-                        />
-                      );
-                    } else if (summaryTranslation && summaryTranslation.content.type === 'summaryV1') {
-                      // Display translated markdown summary
-                      return (
-                        <SummaryRenderer
-                          content={summaryTranslation.content.text}
-                          highlightOptions={highlightOptions}
-                        />
-                      );
-                    }
-
-                    // Display original summary
-                    return (
-                      <SummaryRenderer
-                        content={conversation.source.summary.text}
-                        summaryV2={conversation.source.summary.summaryV2}
-                        highlightOptions={highlightOptions}
-                      />
-                    );
-                  })()
+                  <TranslatedSummaryRenderer
+                    summaryV2={conversation.source.summary.summaryV2}
+                    summaryText={conversation.source.summary.text}
+                    sourceId={conversationId}
+                    currentLocale={currentLocale}
+                    getTranslatedContent={getTranslatedContent}
+                    highlightOptions={highlightOptions}
+                  />
                 ) : (
                   <div className="text-center py-12 text-gray-500">
                     <p className="mb-4">{tConversation('summary.notAvailable')}</p>
@@ -852,7 +849,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {/* Contextual sidebar — desktop only */}
               {(() => {
                 if (activeTab === 'summary') {
-                  // Key Points sidebar
                   const summaryTranslation = currentLocale !== 'original'
                     ? getTranslatedContent('summary', conversationId)
                     : null;
@@ -860,27 +856,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     ? summaryTranslation.content.keyPoints
                     : conversation.source.summary.summaryV2?.keyPoints;
                   if (!kp || kp.length === 0) return null;
-                  return (
-                    <aside className="hidden lg:block w-60 flex-shrink-0 bg-gray-50 dark:bg-gray-800/50 -mt-10">
-                      <div className="sticky top-8 px-6 pt-10 pb-6">
-                        <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest">
-                          Key Points
-                        </h3>
-                        <ol className="divide-y divide-gray-200 dark:divide-gray-700">
-                          {kp.map((point: { topic: string; description: string }, idx: number) => (
-                            <li key={idx} className={`py-4 ${idx === 0 ? 'pt-0' : ''}`}>
-                              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug block">
-                                {point.topic}
-                              </span>
-                              <span className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed block mt-1">
-                                {point.description}
-                              </span>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
-                    </aside>
-                  );
+                  return <KeyPointsSidebar keyPoints={kp} />;
                 }
 
                 if (activeTab === 'transcript') {

@@ -5,9 +5,12 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { EmailService } from '../email/email.service';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 
 interface ContactFormDto {
   name: string;
@@ -145,6 +148,52 @@ export class ContactController {
       this.logger.error('Failed to process contact form:', error);
       throw new HttpException(
         'Failed to send message. Please try again later.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('error-report')
+  @UseGuards(FirebaseAuthGuard)
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
+  async submitErrorReport(
+    @Req() req: any,
+    @Body()
+    data: {
+      conversationId: string;
+      conversationTitle: string;
+      error: string;
+      createdAt: string;
+    },
+  ): Promise<{ success: boolean }> {
+    const user = req.user;
+
+    if (!data.conversationId || !data.error) {
+      throw new HttpException(
+        'Missing required fields',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const sent = await this.emailService.sendErrorReportEmail({
+        userId: user.uid,
+        userEmail: user.email || 'unknown',
+        conversationId: data.conversationId,
+        conversationTitle: data.conversationTitle || 'Untitled',
+        error: data.error,
+        createdAt: data.createdAt || new Date().toISOString(),
+      });
+
+      if (!sent) {
+        throw new Error('Email service failed');
+      }
+
+      return { success: true };
+    } catch (error) {
+      this.logger.error('Failed to send error report:', error);
+      throw new HttpException(
+        'Failed to send error report',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

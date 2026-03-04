@@ -584,4 +584,13 @@ export const importedConversationApi = {
   },
 };
 
+export const contactApi = {
+  reportError: (data: {
+    conversationId: string;
+    conversationTitle: string;
+    error: string;
+    createdAt: string;
+  }): Promise<{ success: boolean }> => api.post('/contact/error-report', data),
+};
+
 export default api;

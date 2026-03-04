@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Shared conversation page redesign**: Aligned the public shared page (`/shared/[shareToken]`) with the authenticated conversation page design. Changes include: Merriweather serif title font, editorial `<hr>` rule below header, Radix pill-style tabs (dark active state), `InlineTranscript` component for transcripts, `AIAssetSlidePanel` for AI assets (replacing inline accordion), `ReadingTimeIndicator`, `ConversationCategoryBadge`, short date format, inline action icons (copy, language, import) in metadata row with tooltips
+  - Modified: [page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx), [InlineTranscript.tsx](apps/web/components/InlineTranscript.tsx), [AIAssetSlidePanel.tsx](apps/web/components/AIAssetSlidePanel.tsx), [types.ts](packages/shared/src/types.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
+  - `InlineTranscript` refactored to accept either `Conversation` object or direct `speakerSegments`+`text` props (discriminated union)
+  - `AIAssetSlidePanel` `onDelete` and `conversationId` made optional for read-only shared view
+  - `SharedTranscriptionView` type extended with `conversationCategory` field, forwarded from backend
+  - Shared page now shows **Key Points sidebar** on desktop (right of content), matching conversation page two-column layout
+  - Editorial rule moved to right above content area, touching the Key Points sidebar for visual continuity
+  - Summary/Transcript **tabs are now mobile-only**; desktop uses ScrollText toggle icon in action toolbar
+  - Content container widened from `max-w-4xl` to `max-w-5xl` to accommodate two-column layout
+- **Reusable component extractions**: Reduced code duplication between conversation and shared pages
+  - [KeyPointsSidebar](apps/web/components/KeyPointsSidebar.tsx): Extracted from inline `<aside>` in both pages
+  - [getOutputIcon](apps/web/lib/outputIcons.ts): Extracted from shared page and `AIAssetSlidePanel` (was duplicated)
+  - [useCopySummaryToClipboard](apps/web/hooks/useCopySummaryToClipboard.ts): Extracted ~80-line clipboard logic with translation detection from both pages
+  - [TranslatedSummaryRenderer](apps/web/components/TranslatedSummaryRenderer.tsx): Extracted ~40-line translation IIFE from both pages
+
+### Added
+- **Failed conversation error state**: When a transcription fails, the conversation detail page now shows a dedicated error view using shadcn Card + Alert components instead of broken/empty UI. Raw backend errors are mapped to user-friendly messages by category (file corrupt/unsupported, timeout, quota, generic) to avoid exposing internal system details. "Report this issue" button sends an error report email via authenticated `POST /contact/error-report` endpoint (includes conversation ID, title, timestamp, and raw error for the dev team) instead of exposing details in a mailto link. Translated in all 5 locales
+  - Frontend: [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx), [conversation.ts](apps/web/lib/types/conversation.ts), [api.ts](apps/web/lib/api.ts)
+  - Backend: [contact.controller.ts](apps/api/src/contact/contact.controller.ts), [email.service.ts](apps/api/src/email/email.service.ts), [contact.module.ts](apps/api/src/contact/contact.module.ts)
+  - Translations: Added `conversation.failed.*` keys in all locale files
+
+### Fixed
+- **Console error: "Unknown event handler property 'onCollapse'"**: `ThreePaneLayout` used `cloneElement` to inject `onCollapse` onto the right panel element, but `ConversationSkeleton` passes a raw `<div>` as `rightPanel`. React warns when custom event handlers are applied to native DOM elements. Added a guard (`typeof rightPanel.type !== 'string'`) to skip `cloneElement` for native elements
+  - Modified: [ThreePaneLayout.tsx](apps/web/components/ThreePaneLayout.tsx)
+
 ### Fixed
 - **Safari/iOS recordings completely broken**: Safari claims `audio/webm` support via `MediaRecorder.isTypeSupported()` but produces structurally invalid files missing the EBML header entirely (starts with raw Matroska Cluster `0x1F43B675` instead of `0x1A45DFA3`). Fixed with: (1) Frontend: `detectBestAudioFormat()` now detects Safari and **all iOS/iPadOS browsers** (Chrome, Firefox, Edge — they all use WebKit) and skips WebM, forcing `audio/mp4` which they handle correctly, (2) Backend: upload endpoint validates EBML header on `.webm` files and returns a clear error message if missing, (3) Backend resilience: ffprobe retry with extended options, file-size duration estimation, WebM-to-MP3 pre-conversion in Whisper fallback, and error-tolerant `extractChunk` input options
   - Modified: [audio.ts](apps/web/utils/audio.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [audio-splitter.ts](apps/api/src/utils/audio-splitter.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)

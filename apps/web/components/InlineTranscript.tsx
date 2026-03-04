@@ -2,27 +2,40 @@
 
 import TranscriptTimeline from '@/components/TranscriptTimeline';
 import type { Conversation } from '@/lib/types/conversation';
+import type { SpeakerSegment } from '@transcribe/shared';
 import { TextHighlighter, type HighlightOptions } from './TextHighlighter';
 
-export interface InlineTranscriptProps {
-  conversation: Conversation;
+export type InlineTranscriptProps = {
   highlightOptions?: HighlightOptions;
-}
+} & (
+  | { conversation: Conversation; speakerSegments?: never; text?: never }
+  | { conversation?: never; speakerSegments?: SpeakerSegment[]; text?: string }
+);
 
 /**
  * Inline transcript component for the tabbed conversation view.
  * Renders the transcript with speaker timeline directly in the tab.
+ *
+ * Accepts either a full Conversation object or direct speakerSegments + text props.
  */
-export function InlineTranscript({ conversation, highlightOptions }: InlineTranscriptProps) {
-  const transcript = conversation.source.transcript;
+export function InlineTranscript(props: InlineTranscriptProps) {
+  const { highlightOptions } = props;
+
+  // Resolve data from either prop shape
+  const speakerSegments = props.conversation
+    ? props.conversation.source.transcript.speakerSegments
+    : props.speakerSegments;
+  const text = props.conversation
+    ? props.conversation.source.transcript.text
+    : props.text;
 
   return (
     <section className="scroll-mt-16">
       {/* Transcript Content */}
-      {transcript.speakerSegments && transcript.speakerSegments.length > 0 ? (
+      {speakerSegments && speakerSegments.length > 0 ? (
         <div>
           <TranscriptTimeline
-            segments={transcript.speakerSegments}
+            segments={speakerSegments}
             highlightOptions={highlightOptions}
           />
         </div>
@@ -35,10 +48,10 @@ export function InlineTranscript({ conversation, highlightOptions }: InlineTrans
           <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mb-6">
             This conversation does not have speaker diarization data.
           </p>
-          {transcript.text && (
+          {text && (
             <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-lg text-left">
               <p className="font-medium text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                <TextHighlighter text={transcript.text} highlight={highlightOptions} />
+                <TextHighlighter text={text} highlight={highlightOptions} />
               </p>
             </div>
           )}

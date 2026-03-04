@@ -851,6 +851,22 @@
       "showAllLanguages": "Afficher toutes les langues",
       "hideLanguages": "Afficher moins",
       "slowHint": "La traduction peut prendre un moment pour les conversations plus longues. Tu peux fermer cette fenêtre — elle continuera en arrière-plan."
+    },
+    "failed": {
+      "title": "Traitement échoué",
+      "tryAgain": "Réessayer",
+      "deleteConversation": "Supprimer",
+      "backToDashboard": "Retour au tableau de bord",
+      "reportIssue": "Signaler ce problème",
+      "reportSending": "Envoi du rapport d'erreur...",
+      "reportSent": "Merci d'avoir signalé cette erreur.",
+      "reportFailed": "Le rapport n'a pas pu être envoyé. Veuillez réessayer plus tard.",
+      "reasons": {
+        "fileCorrupt": "Le fichier n'a pas pu être traité. Il est peut-être corrompu ou dans un format non pris en charge. Veuillez essayer avec un autre fichier.",
+        "timeout": "Le traitement a pris trop de temps et a été interrompu. Cela peut arriver avec des fichiers très volumineux ou en période de forte demande. Veuillez réessayer.",
+        "quota": "Vous avez atteint votre limite d'utilisation. Mettez à niveau votre abonnement ou attendez la réinitialisation de votre quota mensuel.",
+        "generic": "Une erreur s'est produite lors du traitement de cette conversation. Veuillez réessayer ou téléverser un autre fichier."
+      }
     }
   },
   "howItWorks": {

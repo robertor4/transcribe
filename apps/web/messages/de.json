@@ -851,6 +851,22 @@
       "showAllLanguages": "Alle Sprachen anzeigen",
       "hideLanguages": "Weniger anzeigen",
       "slowHint": "Die Übersetzung kann bei längeren Gesprächen etwas dauern. Du kannst dieses Fenster schließen — es wird im Hintergrund fortgesetzt."
+    },
+    "failed": {
+      "title": "Verarbeitung fehlgeschlagen",
+      "tryAgain": "Erneut versuchen",
+      "deleteConversation": "Löschen",
+      "backToDashboard": "Zurück zum Dashboard",
+      "reportIssue": "Problem melden",
+      "reportSending": "Fehlerbericht wird gesendet...",
+      "reportSent": "Vielen Dank für die Meldung dieses Fehlers.",
+      "reportFailed": "Bericht konnte nicht gesendet werden. Bitte versuche es später erneut.",
+      "reasons": {
+        "fileCorrupt": "Die Datei konnte nicht verarbeitet werden. Sie ist möglicherweise beschädigt oder hat ein nicht unterstütztes Format. Bitte lade eine andere Datei hoch.",
+        "timeout": "Die Verarbeitung hat zu lange gedauert und wurde unterbrochen. Das kann bei sehr großen Dateien oder hoher Auslastung passieren. Bitte versuche es erneut.",
+        "quota": "Du hast dein Nutzungslimit erreicht. Upgrade dein Abonnement oder warte, bis dein monatliches Kontingent zurückgesetzt wird.",
+        "generic": "Bei der Verarbeitung dieses Gesprächs ist ein Fehler aufgetreten. Bitte versuche es erneut oder lade eine andere Datei hoch."
+      }
     }
   },
   "howItWorks": {

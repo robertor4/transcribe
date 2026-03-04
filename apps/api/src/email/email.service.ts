@@ -1285,4 +1285,103 @@ ${data.message}
       return false;
     }
   }
+
+  /**
+   * Send an error report email from an authenticated user
+   */
+  async sendErrorReportEmail(data: {
+    userId: string;
+    userEmail: string;
+    conversationId: string;
+    conversationTitle: string;
+    error: string;
+    createdAt: string;
+  }): Promise<boolean> {
+    if (!this.transporter) {
+      this.logger.warn(
+        'Email service not configured, skipping error report email',
+      );
+      return false;
+    }
+
+    const emailSubject = `[Error Report] ${data.conversationTitle}`;
+
+    try {
+      const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #d97706; padding: 20px; border-radius: 8px 8px 0 0; }
+    .header h1 { color: white; margin: 0; font-size: 20px; }
+    .content { background-color: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; }
+    .field { margin-bottom: 15px; }
+    .label { font-weight: 600; color: #374151; font-size: 14px; }
+    .value { color: #6b7280; margin-top: 4px; }
+    .error-box { background-color: #fef2f2; padding: 15px; border-radius: 8px; border-left: 3px solid #ef4444; font-family: monospace; font-size: 13px; color: #991b1b; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Processing Error Report</h1>
+    </div>
+    <div class="content">
+      <div class="field">
+        <div class="label">User</div>
+        <div class="value">${data.userEmail} (${data.userId})</div>
+      </div>
+      <div class="field">
+        <div class="label">Conversation</div>
+        <div class="value">${data.conversationTitle}</div>
+      </div>
+      <div class="field">
+        <div class="label">Conversation ID</div>
+        <div class="value">${data.conversationId}</div>
+      </div>
+      <div class="field">
+        <div class="label">Created</div>
+        <div class="value">${data.createdAt}</div>
+      </div>
+      <div class="field">
+        <div class="label">Error</div>
+        <div class="error-box">${data.error}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+
+      const textContent = `
+Processing Error Report
+========================
+
+User: ${data.userEmail} (${data.userId})
+Conversation: ${data.conversationTitle}
+Conversation ID: ${data.conversationId}
+Created: ${data.createdAt}
+
+Error:
+${data.error}
+      `;
+
+      const info = await this.transporter.sendMail({
+        from: `"Neural Summary Errors" <${this.fromEmail}>`,
+        to: 'hello@neuralsummary.com',
+        replyTo: data.userEmail,
+        subject: emailSubject,
+        html: htmlContent,
+        text: textContent,
+      });
+
+      this.logger.log(`Error report email sent: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      this.logger.error('Failed to send error report email:', error);
+      return false;
+    }
+  }
 }

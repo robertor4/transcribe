@@ -2033,6 +2033,7 @@ ${fullCustomPrompt}`;
       translations: transcription.translations || undefined,
       preferredTranslationLanguage:
         transcription.preferredTranslationLanguage || undefined,
+      conversationCategory: transcription.conversationCategory,
     };
 
     return sharedView;

@@ -851,6 +851,22 @@
       "showAllLanguages": "Alle talen tonen",
       "hideLanguages": "Minder tonen",
       "slowHint": "Vertaling kan even duren bij langere gesprekken. Je kunt dit venster sluiten — het gaat op de achtergrond verder."
+    },
+    "failed": {
+      "title": "Verwerking mislukt",
+      "tryAgain": "Opnieuw proberen",
+      "deleteConversation": "Verwijderen",
+      "backToDashboard": "Terug naar dashboard",
+      "reportIssue": "Probleem melden",
+      "reportSending": "Foutrapport verzenden...",
+      "reportSent": "Bedankt voor het melden van deze fout.",
+      "reportFailed": "Rapport kon niet worden verzonden. Probeer het later opnieuw.",
+      "reasons": {
+        "fileCorrupt": "Het bestand kon niet worden verwerkt. Het is mogelijk beschadigd of heeft een niet-ondersteund formaat. Probeer een ander bestand te uploaden.",
+        "timeout": "De verwerking duurde te lang en werd onderbroken. Dit kan gebeuren bij zeer grote bestanden of tijdens drukte. Probeer het opnieuw.",
+        "quota": "Je hebt je gebruikslimiet bereikt. Upgrade je abonnement of wacht tot je maandelijkse tegoed wordt hersteld.",
+        "generic": "Er is iets misgegaan bij het verwerken van dit gesprek. Probeer het opnieuw of upload een ander bestand."
+      }
     }
   },
   "howItWorks": {

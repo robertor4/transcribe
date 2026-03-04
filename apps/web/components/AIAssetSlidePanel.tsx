@@ -5,11 +5,6 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import {
   X,
-  Mail,
-  CheckSquare,
-  Edit3,
-  Share2,
-  MessageSquareQuote,
   Copy,
   Trash2,
   ExternalLink,
@@ -19,6 +14,7 @@ import type { GeneratedAnalysis, StructuredOutput, Translation } from '@transcri
 import { OutputRenderer } from '@/components/outputTemplates';
 import { Button } from '@/components/Button';
 import { formatRelativeTime } from '@/lib/formatters';
+import { getOutputIcon } from '@/lib/outputIcons';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
 import { useTranslations } from 'next-intl';
 
@@ -27,8 +23,8 @@ interface AIAssetSlidePanelProps {
   isOpen: boolean;
   isClosing: boolean;
   onClose: () => void;
-  onDelete: (assetId: string) => Promise<void>;
-  conversationId: string;
+  onDelete?: (assetId: string) => Promise<void>;
+  conversationId?: string;
   locale: string;
   /** Current translation locale ('original' or locale code like 'nl-NL') */
   currentTranslationLocale?: string;
@@ -36,27 +32,6 @@ interface AIAssetSlidePanelProps {
   getTranslatedContent?: (sourceType: 'summary' | 'analysis', sourceId: string) => Translation | undefined;
 }
 
-// Icon mapping for output types - returns component or null for default (AiIcon)
-function getOutputIcon(type: string) {
-  switch (type) {
-    case 'email':
-    case 'followUpEmail':
-    case 'salesEmail':
-    case 'internalUpdate':
-    case 'clientProposal':
-      return Mail;
-    case 'actionItems':
-      return CheckSquare;
-    case 'blogPost':
-      return Edit3;
-    case 'linkedin':
-      return Share2;
-    case 'communicationAnalysis':
-      return MessageSquareQuote;
-    default:
-      return null; // Use AiIcon for default
-  }
-}
 
 export function AIAssetSlidePanel({
   asset,
@@ -138,7 +113,7 @@ export function AIAssetSlidePanel({
 
   // Delete asset
   const handleDelete = async () => {
-    if (!asset) return;
+    if (!asset || !onDelete) return;
     setIsDeleting(true);
     try {
       await onDelete(asset.id);
@@ -240,48 +215,52 @@ export function AIAssetSlidePanel({
                 {copied ? t('panel.copied') : t('panel.copy')}
               </Button>
 
-              {!showDeleteConfirm ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  icon={<Trash2 className="w-4 h-4" />}
-                  onClick={() => setShowDeleteConfirm(true)}
-                >
-                  {t('panel.delete')}
-                </Button>
-              ) : (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                  <span className="text-xs text-red-700 dark:text-red-300">
-                    {t('panel.confirmDelete')}
-                  </span>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? '...' : 'Yes'}
-                  </Button>
+              {onDelete && (
+                !showDeleteConfirm ? (
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowDeleteConfirm(false)}
-                    disabled={isDeleting}
+                    icon={<Trash2 className="w-4 h-4" />}
+                    onClick={() => setShowDeleteConfirm(true)}
                   >
-                    No
+                    {t('panel.delete')}
                   </Button>
-                </div>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                    <span className="text-xs text-red-700 dark:text-red-300">
+                      {t('panel.confirmDelete')}
+                    </span>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? '...' : 'Yes'}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeleting}
+                    >
+                      No
+                    </Button>
+                  </div>
+                )
               )}
             </div>
 
-            {/* Right action - View Full */}
-            <Link
-              href={`/${locale}/conversation/${conversationId}/outputs/${asset.id}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#8D6AFA] hover:text-[#7A5AE0] transition-colors"
-            >
-              {t('panel.viewFull')}
-              <ExternalLink className="w-4 h-4" />
-            </Link>
+            {/* Right action - View Full (only when conversationId is available) */}
+            {conversationId && (
+              <Link
+                href={`/${locale}/conversation/${conversationId}/outputs/${asset.id}`}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#8D6AFA] hover:text-[#7A5AE0] transition-colors"
+              >
+                {t('panel.viewFull')}
+                <ExternalLink className="w-4 h-4" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

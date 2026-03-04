@@ -851,6 +851,22 @@
       "showAllLanguages": "Mostrar todos los idiomas",
       "hideLanguages": "Mostrar menos",
       "slowHint": "La traducción puede tardar un momento en conversaciones más largas. Puedes cerrar esta ventana — continuará en segundo plano."
+    },
+    "failed": {
+      "title": "Procesamiento fallido",
+      "tryAgain": "Intentar de nuevo",
+      "deleteConversation": "Eliminar",
+      "backToDashboard": "Volver al panel",
+      "reportIssue": "Reportar este problema",
+      "reportSending": "Enviando reporte de error...",
+      "reportSent": "Gracias por reportar este error.",
+      "reportFailed": "No se pudo enviar el reporte. Por favor, inténtalo más tarde.",
+      "reasons": {
+        "fileCorrupt": "No se pudo procesar el archivo. Puede estar dañado o tener un formato no compatible. Por favor, intenta subir otro archivo.",
+        "timeout": "El procesamiento tardó demasiado y fue interrumpido. Esto puede ocurrir con archivos muy grandes o durante alta demanda. Por favor, inténtalo de nuevo.",
+        "quota": "Has alcanzado tu límite de uso. Mejora tu plan o espera a que se restablezca tu cuota mensual.",
+        "generic": "Algo salió mal al procesar esta conversación. Por favor, inténtalo de nuevo o sube otro archivo."
+      }
     }
   },
   "howItWorks": {

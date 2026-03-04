@@ -33,6 +33,7 @@ export interface Conversation {
   assetsCount: number; // Count of generated AI assets (from generatedAnalysisIds)
   context?: string; // User-provided context during recording
   conversationCategory?: ConversationCategory; // AI-detected category
+  error?: string; // Error message when status is 'failed'
 }
 
 export type ConversationStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -222,6 +223,7 @@ export function transcriptionToConversation(transcription: Transcription): Conve
     assetsCount: transcription.generatedAnalysisIds?.length || 0,
     context: transcription.context,
     conversationCategory: transcription.conversationCategory,
+    error: transcription.error,
   };
 }
 

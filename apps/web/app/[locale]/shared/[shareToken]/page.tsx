@@ -3,14 +3,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { SharedTranscriptionView } from '@transcribe/shared';
-import { SummaryRenderer } from '@/components/SummaryRenderer';
-import TranscriptTimeline from '@/components/TranscriptTimeline';
-import { AnalysisContentRenderer } from '@/components/AnalysisContentRenderer';
-import { Button } from '@/components/Button';
+import type { SharedTranscriptionView, GeneratedAnalysis } from '@transcribe/shared';
+import { TranslatedSummaryRenderer } from '@/components/TranslatedSummaryRenderer';
+import { InlineTranscript } from '@/components/InlineTranscript';
+import { KeyPointsSidebar } from '@/components/KeyPointsSidebar';
+import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
+import { ReadingTimeIndicator, countWords } from '@/components/ReadingTimeIndicator';
+import { ConversationCategoryBadge } from '@/components/ConversationCategoryBadge';
+import { AiIcon } from '@/components/icons/AiIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { importedConversationApi } from '@/lib/api';
 import { setPendingImport } from '@/lib/pendingImport';
+import { useSlidePanel } from '@/hooks/useSlidePanel';
+import { useCopySummaryToClipboard } from '@/hooks/useCopySummaryToClipboard';
+import { formatRelativeTime } from '@/lib/formatters';
+import { getOutputIcon } from '@/lib/outputIcons';
 import {
   Lock,
   Loader2,
@@ -18,67 +25,20 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
-  BarChart3,
   Copy,
   Check,
-  ChevronDown,
   ChevronUp,
-  Mail,
-  CheckSquare,
-  Edit3,
-  Share2,
-  MessageSquareQuote,
   Download,
   UserPlus,
   Globe,
+  ScrollText,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { AiIcon } from '@/components/icons/AiIcon';
-import type { StructuredOutput } from '@transcribe/shared';
-import { getStructuredOutputPreview } from '@/components/outputTemplates';
-import { formatRelativeTime } from '@/lib/formatters';
 import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
-// Icon mapping for output types (matching AssetSidebarCard) - returns LucideIcon or null for default (AiIcon)
-function getOutputIcon(type: string): LucideIcon | null {
-  switch (type) {
-    case 'email':
-    case 'followUpEmail':
-    case 'salesEmail':
-    case 'internalUpdate':
-    case 'clientProposal':
-      return Mail;
-    case 'actionItems':
-      return CheckSquare;
-    case 'blogPost':
-      return Edit3;
-    case 'linkedin':
-      return Share2;
-    case 'communicationAnalysis':
-      return MessageSquareQuote;
-    default:
-      return null; // Use AiIcon for default
-  }
-}
-
-// Get content preview from asset
-function getContentPreview(content: unknown, contentType: string): string {
-  if (contentType === 'structured' && typeof content === 'object') {
-    return getStructuredOutputPreview(content as StructuredOutput);
-  }
-
-  const contentStr = typeof content === 'string'
-    ? content
-    : JSON.stringify(content);
-
-  return contentStr
-    .replace(/^#+ /gm, '') // Remove markdown headers
-    .replace(/\*\*/g, '') // Remove bold markers
-    .replace(/\n+/g, ' ') // Replace newlines with spaces
-    .slice(0, 100)
-    .trim() + (contentStr.length > 100 ? '...' : '');
-}
+type SharedTab = 'summary' | 'transcript' | 'ai-assets';
 
 export default function SharedTranscriptionPage() {
   const params = useParams();
@@ -109,11 +69,18 @@ export default function SharedTranscriptionPage() {
   const [passwordRequired, setPasswordRequired] = useState(false);
   const [passwordSubmitted, setPasswordSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [copiedSummary, setCopiedSummary] = useState(false);
-  const [activeTab, setActiveTab] = useState<'summary' | 'transcript' | 'ai-assets'>('summary');
-  const [expandedAssetId, setExpandedAssetId] = useState<string | null>(null);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<SharedTab>('summary');
+  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Slide panel for AI Assets
+  const {
+    selectedItem: selectedAsset,
+    isOpen: isPanelOpen,
+    isClosing: isPanelClosing,
+    open: openAssetPanel,
+    close: closeAssetPanel,
+  } = useSlidePanel<GeneratedAnalysis>();
 
   // Scroll-to-top visibility tracking
   useEffect(() => {
@@ -149,7 +116,6 @@ export default function SharedTranscriptionPage() {
   // Handle import for authenticated users
   const handleImport = async () => {
     if (!user) {
-      // Redirect to sign up with pending import
       setPendingImport(shareToken);
       router.push(`/${locale}/signup?redirect=/shared/${shareToken}`);
       return;
@@ -185,22 +151,22 @@ export default function SharedTranscriptionPage() {
     shareToken,
   });
 
+  // Copy summary to clipboard
+  const { copied: copiedSummary, handleCopy: handleCopySummary } = useCopySummaryToClipboard({
+    summaryV2: transcription?.summaryV2,
+    summaryText: transcription?.analyses?.summary || '',
+    sourceId: transcription?.id || '',
+    currentLocale,
+    getTranslatedContent,
+  });
+
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    const options: Intl.DateTimeFormatOptions = {
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    };
-    const formatted = d.toLocaleDateString('en-US', options);
-
-    // Add ordinal suffix to day
-    const day = d.getDate();
-    const suffix = ['th', 'st', 'nd', 'rd'][
-      day % 10 > 3 ? 0 : (day % 100 - day % 10 !== 10) ? day % 10 : 0
-    ];
-
-    return formatted.replace(/\d+,/, `${day}${suffix},`);
+    });
   };
 
   const fetchSharedTranscription = useCallback(async (withPassword?: string, incrementView: boolean = false) => {
@@ -216,7 +182,6 @@ export default function SharedTranscriptionPage() {
         queryParams.append('incrementView', 'true');
       }
 
-      // Ensure we're using the correct base URL in the browser
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
       const url = `${baseUrl}/api/transcriptions/shared/${shareToken}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
       const response = await fetch(url, {
@@ -254,16 +219,13 @@ export default function SharedTranscriptionPage() {
 
   useEffect(() => {
     if (shareToken) {
-      // Use sessionStorage to track if we've already incremented for this session
       const sessionKey = `share_view_${shareToken}`;
       const hasViewed = sessionStorage.getItem(sessionKey);
 
       if (!hasViewed) {
-        // First time viewing in this session - increment the view count
         fetchSharedTranscription(undefined, true);
         sessionStorage.setItem(sessionKey, 'true');
       } else {
-        // Already viewed in this session - don't increment
         fetchSharedTranscription(undefined, false);
       }
     }
@@ -272,122 +234,7 @@ export default function SharedTranscriptionPage() {
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordSubmitted(true);
-    // Don't increment view count when submitting password
     fetchSharedTranscription(password, false);
-  };
-
-
-  // Copy summary to clipboard as rich text HTML with plain text fallback
-  const handleCopySummary = async () => {
-    if (!transcription) return;
-
-    // Check if viewing a translation
-    const summaryTranslation = currentLocale !== 'original'
-      ? getTranslatedContent('summary', transcription.id)
-      : null;
-
-    // Use translated content if available, otherwise use original
-    let summaryV2 = transcription.summaryV2;
-    let summaryText = transcription.analyses?.summary || '';
-
-    if (summaryTranslation) {
-      if (summaryTranslation.content.type === 'summaryV2') {
-        const translated = summaryTranslation.content;
-        summaryV2 = {
-          version: 2,
-          title: translated.title,
-          intro: translated.intro,
-          keyPoints: translated.keyPoints,
-          detailedSections: translated.detailedSections,
-          decisions: translated.decisions,
-          nextSteps: translated.nextSteps,
-          generatedAt: summaryTranslation.translatedAt,
-        };
-        summaryText = '';
-      } else if (summaryTranslation.content.type === 'summaryV1') {
-        summaryV2 = undefined;
-        summaryText = summaryTranslation.content.text;
-      }
-    }
-
-    let html = '';
-    let plainText = '';
-
-    if (summaryV2) {
-      // Build HTML for rich text copying
-      const htmlParts: string[] = [];
-      const textParts: string[] = [];
-
-      if (summaryV2.intro) {
-        htmlParts.push(`<p>${summaryV2.intro}</p>`);
-        textParts.push(summaryV2.intro);
-      }
-
-      if (summaryV2.keyPoints && summaryV2.keyPoints.length > 0) {
-        htmlParts.push('<h2>Key Points</h2><ul>');
-        textParts.push('\nKey Points\n');
-        summaryV2.keyPoints.forEach((point) => {
-          htmlParts.push(`<li><strong>${point.topic}:</strong> ${point.description}</li>`);
-          textParts.push(`• ${point.topic}: ${point.description}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      if (summaryV2.detailedSections && summaryV2.detailedSections.length > 0) {
-        summaryV2.detailedSections.forEach((section) => {
-          htmlParts.push(`<h3>${section.topic}</h3><p>${section.content}</p>`);
-          textParts.push(`\n${section.topic}\n${section.content}`);
-        });
-      }
-
-      if (summaryV2.decisions && summaryV2.decisions.length > 0) {
-        htmlParts.push('<h2>Decisions Made</h2><ul>');
-        textParts.push('\nDecisions Made\n');
-        summaryV2.decisions.forEach((decision) => {
-          htmlParts.push(`<li>${decision}</li>`);
-          textParts.push(`• ${decision}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      if (summaryV2.nextSteps && summaryV2.nextSteps.length > 0) {
-        htmlParts.push('<h2>Next Steps</h2><ul>');
-        textParts.push('\nNext Steps\n');
-        summaryV2.nextSteps.forEach((step) => {
-          htmlParts.push(`<li>${step}</li>`);
-          textParts.push(`• ${step}`);
-        });
-        htmlParts.push('</ul>');
-      }
-
-      html = htmlParts.join('');
-      plainText = textParts.join('\n');
-    } else if (summaryText) {
-      html = `<p>${summaryText.replace(/\n/g, '</p><p>')}</p>`;
-      plainText = summaryText;
-    }
-
-    if (html && plainText) {
-      try {
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/html': new Blob([html], { type: 'text/html' }),
-            'text/plain': new Blob([plainText], { type: 'text/plain' }),
-          }),
-        ]);
-        setCopiedSummary(true);
-        setTimeout(() => setCopiedSummary(false), 2000);
-      } catch {
-        // Fallback to plain text if rich text fails
-        try {
-          await navigator.clipboard.writeText(plainText);
-          setCopiedSummary(true);
-          setTimeout(() => setCopiedSummary(false), 2000);
-        } catch (fallbackErr) {
-          console.error('Failed to copy summary:', fallbackErr);
-        }
-      }
-    }
   };
 
   // Check which sections are available
@@ -407,6 +254,33 @@ export default function SharedTranscriptionPage() {
       }
     }
   }, [transcription, hasSummary, hasTranscript, hasAIAssets]);
+
+  // Word count for reading time
+  const summaryWordCount = transcription ? (() => {
+    if (transcription.summaryV2) {
+      const v2 = transcription.summaryV2;
+      const parts = [
+        v2.intro || '',
+        ...(v2.keyPoints || []).map(kp => `${kp.topic} ${kp.description}`),
+        ...(v2.detailedSections || []).map(s => `${s.topic} ${s.content}`),
+        ...(v2.decisions || []),
+        ...(v2.nextSteps || []),
+      ];
+      return countWords(parts.join(' '));
+    }
+    return countWords(transcription.analyses?.summary || '');
+  })() : 0;
+
+  const transcriptWordCount = transcription ? (() => {
+    if (transcription.speakerSegments && transcription.speakerSegments.length > 0) {
+      return countWords(transcription.speakerSegments.map(s => s.text).join(' '));
+    }
+    return countWords(transcription.transcriptText || '');
+  })() : 0;
+
+  const activeWordCount = activeTab === 'summary' ? summaryWordCount : transcriptWordCount;
+
+  // --- Early returns for loading/password/error ---
 
   if (loading) {
     return (
@@ -481,12 +355,15 @@ export default function SharedTranscriptionPage() {
     return null;
   }
 
+  // Count available tabs for conditional rendering
+  const availableTabs = [hasSummary, hasTranscript, hasAIAssets].filter(Boolean).length;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {/* Logo/Branding - Logo only, no text */}
+      <div className="bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Logo/Branding */}
           <div className="flex items-center justify-between mb-6">
             <a href="https://neuralsummary.com" target="_blank" rel="noopener noreferrer">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -496,380 +373,360 @@ export default function SharedTranscriptionPage() {
                 className="h-8 w-auto"
               />
             </a>
-            {/* User avatar when logged in */}
             {user && <UserAvatarDropdown compact />}
           </div>
 
-          {/* Title and Metadata */}
-          <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 mb-3 break-words">
-              {transcription.title || transcription.fileName}
-            </h1>
-            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
-              <span>{transcription.sharedBy}</span>
-              <span className="text-gray-400">·</span>
-              <span>{formatDate(transcription.createdAt)}</span>
-              {transcription.viewCount !== undefined && (
-                <>
-                  <span className="text-gray-400">·</span>
-                  <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
-                </>
-              )}
-            </div>
-          </div>
+          {/* Title — Merriweather serif, matching conversation page */}
+          <h1
+            className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-snug break-words"
+            style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
+          >
+            {transcription.title || transcription.fileName}
+          </h1>
 
-        </div>
-      </div>
+          {/* Metadata row — badges | date | shared by | views | content actions | utility actions */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500">
+            {activeWordCount > 0 && (
+              <>
+                <ReadingTimeIndicator wordCount={activeWordCount} />
+                <span className="text-gray-300">|</span>
+              </>
+            )}
+            {transcription.conversationCategory && (
+              <>
+                <ConversationCategoryBadge category={transcription.conversationCategory} />
+                <span className="text-gray-300">|</span>
+              </>
+            )}
+            <span>{formatDate(transcription.createdAt)}</span>
+            {transcription.sharedBy && (
+              <>
+                <span className="text-gray-300">|</span>
+                <span>{transcription.sharedBy}</span>
+              </>
+            )}
+            {transcription.viewCount !== undefined && (
+              <>
+                <span className="text-gray-300">|</span>
+                <span>{transcription.viewCount} {transcription.viewCount === 1 ? 'view' : 'views'}</span>
+              </>
+            )}
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div>
-          {/* Tab Navigation + Action Buttons on same row */}
-          <nav className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200 mb-6">
-            <div className="flex items-center justify-between py-1 gap-2">
-              {/* Tabs - scrollable on mobile */}
-              <div
-                className="flex items-center gap-1 overflow-x-auto min-w-0"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {hasSummary && (
-                  <button
-                    onClick={() => setActiveTab('summary')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
-                      activeTab === 'summary'
-                        ? 'text-[#8D6AFA] bg-purple-50'
-                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-                      <BarChart3 className="w-4 h-4" />
-                      Summary
-                    </span>
-                  </button>
-                )}
-                {hasTranscript && (
-                  <button
-                    onClick={() => setActiveTab('transcript')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
-                      activeTab === 'transcript'
-                        ? 'text-[#8D6AFA] bg-purple-50'
-                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-                      <FileText className="w-4 h-4" />
-                      Transcript
-                    </span>
-                  </button>
-                )}
-                {hasAIAssets && (
-                  <button
-                    onClick={() => setActiveTab('ai-assets')}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors duration-200 ${
-                      activeTab === 'ai-assets'
-                        ? 'text-[#8D6AFA] bg-purple-50'
-                        : 'text-gray-700 hover:text-[#8D6AFA] hover:bg-gray-100'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-                      <AiIcon size={16} />
-                      {t('aiAssets')}
-                    </span>
-                  </button>
-                )}
-              </div>
+            {/* Action icons — content actions, then utility actions */}
+            <TooltipProvider>
+              <div className="flex items-center gap-3 ml-2">
+                <span className="text-gray-300">|</span>
 
-              {/* Action Buttons - icon-only on mobile */}
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {/* Import button */}
-                {user ? (
-                  isImported ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={<Check className="w-4 h-4 text-green-600" />}
-                      disabled
-                    >
-                      <span className="hidden sm:inline">{t('importCta.imported')}</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                      onClick={handleImport}
-                      disabled={isImporting}
-                    >
-                      <span className="hidden sm:inline">{isImporting ? t('importCta.importing') : t('importCta.importButton')}</span>
-                    </Button>
-                  )
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<UserPlus className="w-4 h-4" />}
-                    onClick={handleSignUpToImport}
-                  >
-                    <span className="hidden sm:inline">{t('importCta.signUp')}</span>
-                  </Button>
-                )}
-                {/* Copy button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  icon={copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  onClick={handleCopySummary}
-                >
-                  <span className="hidden sm:inline">{copiedSummary ? t('copied') : t('copy')}</span>
-                </Button>
-                {/* Language switcher dropdown */}
-                {translationStatus && translationStatus.availableLocales.length > 0 && (
-                  <div className="relative">
+                {/* Copy */}
+                <Tooltip open={copiedSummary || undefined}>
+                  <TooltipTrigger asChild>
                     <button
-                      onClick={() => setShowMoreMenu(!showMoreMenu)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                      aria-label="Change language"
+                      onClick={handleCopySummary}
+                      className={`p-1.5 rounded-lg transition-colors ${
+                        copiedSummary
+                          ? 'text-green-500'
+                          : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                      }`}
                     >
-                      <Globe className="w-4 h-4" />
-                      <span className="hidden sm:inline text-xs">
-                        {currentLocale === 'original'
-                          ? (translationStatus.originalLocale?.toUpperCase() || 'Original')
-                          : currentLocale.toUpperCase()}
-                      </span>
+                      {copiedSummary ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </button>
-                    {showMoreMenu && (
-                      <>
-                        {/* Backdrop to close menu */}
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setShowMoreMenu(false)}
-                        />
-                        {/* Dropdown menu */}
-                        <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px]">
-                          {/* Original language option */}
-                          <button
-                            onClick={() => {
-                              setLocale('original');
-                              setShowMoreMenu(false);
-                            }}
-                            className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors ${
-                              currentLocale === 'original'
-                                ? 'bg-purple-50 text-[#8D6AFA] font-medium'
-                                : 'text-gray-700 hover:bg-gray-50'
-                            }`}
-                          >
-                            <span>
-                              {translationStatus.originalLocale
-                                ? `${translationStatus.availableLocales.find(l => l.code.toLowerCase() === translationStatus.originalLocale?.toLowerCase())?.nativeName || translationStatus.originalLocale} (Original)`
-                                : 'Original'}
-                            </span>
-                            {currentLocale === 'original' && <Check className="w-4 h-4" />}
-                          </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={6}>
+                    {copiedSummary ? t('copied') : t('copy')}
+                  </TooltipContent>
+                </Tooltip>
 
-                          {/* Available translations */}
-                          {translationStatus.availableLocales.filter(l =>
-                            l.code.toLowerCase() !== translationStatus.originalLocale?.toLowerCase()
-                          ).map((locale) => (
+                {/* Desktop summary/transcript toggle */}
+                {hasSummary && hasTranscript && (
+                  <>
+                    <span className="hidden lg:inline text-gray-300">|</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
+                          className={`hidden lg:block p-1.5 rounded-lg transition-colors ${
+                            activeTab === 'transcript'
+                              ? 'text-gray-900 bg-gray-100'
+                              : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <ScrollText className="w-4 h-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {activeTab === 'summary' ? 'Transcript' : 'Summary'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </>
+                )}
+
+                {/* Language switcher */}
+                {translationStatus && translationStatus.availableLocales.length > 0 && (
+                  <>
+                    <span className="text-gray-300">|</span>
+                    <div className="relative">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                            aria-label="Change language"
+                          >
+                            <Globe className="w-4 h-4" />
+                          </button>
+                        </TooltipTrigger>
+                        {!showLanguageMenu && (
+                          <TooltipContent side="bottom" sideOffset={6}>
+                            {currentLocale === 'original'
+                              ? (translationStatus.originalLocale?.toUpperCase() || 'Original')
+                              : currentLocale.toUpperCase()}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                      {showLanguageMenu && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setShowLanguageMenu(false)}
+                          />
+                          <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[180px]">
                             <button
-                              key={locale.code}
                               onClick={() => {
-                                setLocale(locale.code);
-                                setShowMoreMenu(false);
+                                setLocale('original');
+                                setShowLanguageMenu(false);
                               }}
                               className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors ${
-                                currentLocale === locale.code
+                                currentLocale === 'original'
                                   ? 'bg-purple-50 text-[#8D6AFA] font-medium'
                                   : 'text-gray-700 hover:bg-gray-50'
                               }`}
                             >
-                              <span>{locale.nativeName}</span>
-                              {currentLocale === locale.code && <Check className="w-4 h-4" />}
+                              <span>
+                                {translationStatus.originalLocale
+                                  ? `${translationStatus.availableLocales.find(l => l.code.toLowerCase() === translationStatus.originalLocale?.toLowerCase())?.nativeName || translationStatus.originalLocale} (Original)`
+                                  : 'Original'}
+                              </span>
+                              {currentLocale === 'original' && <Check className="w-4 h-4" />}
                             </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+
+                            {translationStatus.availableLocales.filter(l =>
+                              l.code.toLowerCase() !== translationStatus.originalLocale?.toLowerCase()
+                            ).map((loc) => (
+                              <button
+                                key={loc.code}
+                                onClick={() => {
+                                  setLocale(loc.code);
+                                  setShowLanguageMenu(false);
+                                }}
+                                className={`w-full flex items-center justify-between px-3 py-2 text-sm transition-colors ${
+                                  currentLocale === loc.code
+                                    ? 'bg-purple-50 text-[#8D6AFA] font-medium'
+                                    : 'text-gray-700 hover:bg-gray-50'
+                                }`}
+                              >
+                                <span>{loc.nativeName}</span>
+                                {currentLocale === loc.code && <Check className="w-4 h-4" />}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </>
                 )}
-              </div>
-            </div>
-          </nav>
 
-          <div>
-            {/* Summary Tab Content */}
-            {hasSummary && (
-              <div className={activeTab === 'summary' ? 'block' : 'hidden'}>
-                {(() => {
-                  // Check if viewing a translation
-                  const summaryTranslation = currentLocale !== 'original'
-                    ? getTranslatedContent('summary', transcription.id)
-                    : null;
-
-                  if (summaryTranslation && summaryTranslation.content.type === 'summaryV2') {
-                    // Display translated structured summary
-                    const translated = summaryTranslation.content;
-                    return (
-                      <SummaryRenderer
-                        content=""
-                        summaryV2={{
-                          version: 2,
-                          title: translated.title,
-                          intro: translated.intro,
-                          keyPoints: translated.keyPoints,
-                          detailedSections: translated.detailedSections,
-                          decisions: translated.decisions,
-                          nextSteps: translated.nextSteps,
-                          generatedAt: summaryTranslation.translatedAt,
-                        }}
-                      />
-                    );
-                  } else if (summaryTranslation && summaryTranslation.content.type === 'summaryV1') {
-                    // Display translated markdown summary
-                    return (
-                      <SummaryRenderer
-                        content={summaryTranslation.content.text}
-                      />
-                    );
-                  }
-
-                  // Display original summary
-                  return (
-                    <SummaryRenderer
-                      content={transcription.analyses?.summary || ''}
-                      summaryV2={transcription.summaryV2}
-                    />
-                  );
-                })()}
-              </div>
-            )}
-
-            {/* Transcript Tab Content */}
-            {hasTranscript && (
-              <div className={activeTab === 'transcript' ? 'block' : 'hidden'}>
-                {transcription.speakerSegments && transcription.speakerSegments.length > 0 ? (
-                  <TranscriptTimeline
-                    segments={transcription.speakerSegments}
-                    className="!bg-transparent"
-                  />
+                {/* Import */}
+                <span className="text-gray-300">|</span>
+                {user ? (
+                  isImported ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="p-1.5 rounded-lg text-green-500 cursor-default" disabled>
+                          <Check className="w-4 h-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {t('importCta.imported')}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={handleImport}
+                          disabled={isImporting}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                        >
+                          {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {isImporting ? t('importCta.importing') : t('importCta.importButton')}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
                 ) : (
-                  <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed font-mono">
-                    {transcription.transcriptText}
-                  </p>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={handleSignUpToImport}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" sideOffset={6}>
+                      {t('importCta.signUp')}
+                    </TooltipContent>
+                  </Tooltip>
                 )}
+              </div>
+            </TooltipProvider>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Editorial rule — desktop only, right above content */}
+        <hr className="hidden lg:block border-t-2 border-gray-600 mb-0" />
+
+        {/* Mobile tab navigation — pill style */}
+        {availableTabs > 1 && (
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SharedTab)} className="lg:hidden mt-4">
+            <TabsList className="bg-gray-100 h-7 p-0.5 rounded-full">
+              {hasSummary && (
+                <TabsTrigger
+                  value="summary"
+                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                >
+                  Summary
+                </TabsTrigger>
+              )}
+              {hasTranscript && (
+                <TabsTrigger
+                  value="transcript"
+                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                >
+                  Transcript
+                </TabsTrigger>
+              )}
+              {hasAIAssets && (
+                <TabsTrigger
+                  value="ai-assets"
+                  className="text-[11px] font-medium h-6 px-3 rounded-full data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=active]:shadow-none"
+                >
+                  {t('aiAssets')}
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </Tabs>
+        )}
+
+        {/* Content area — two-column: main + key points sidebar */}
+        <div className="lg:flex pt-6 lg:pt-10">
+          <div className="flex-1 min-w-0 lg:pr-10">
+            {/* Summary */}
+            {hasSummary && (
+              <div className={activeTab === 'summary' ? '' : 'hidden'}>
+                <TranslatedSummaryRenderer
+                  summaryV2={transcription.summaryV2}
+                  summaryText={transcription.analyses?.summary || ''}
+                  sourceId={transcription.id}
+                  currentLocale={currentLocale}
+                  getTranslatedContent={getTranslatedContent}
+                />
               </div>
             )}
 
-            {/* AI Assets Tab Content */}
+            {/* Transcript */}
+            {hasTranscript && (
+              <div className={activeTab === 'transcript' ? '' : 'hidden'}>
+                <InlineTranscript
+                  speakerSegments={transcription.speakerSegments}
+                  text={transcription.transcriptText}
+                />
+              </div>
+            )}
+
+            {/* AI Assets — clickable cards that open slide panel */}
             {hasAIAssets && (
-              <div className={activeTab === 'ai-assets' ? 'block' : 'hidden'}>
+              <div className={activeTab === 'ai-assets' ? '' : 'hidden'}>
                 <div className="flex flex-col gap-3">
                   {transcription.generatedAnalyses?.map((analysis) => {
-                    const isExpanded = expandedAssetId === analysis.id;
                     const OutputIcon = getOutputIcon(analysis.templateId);
-                    const preview = getContentPreview(analysis.content, analysis.contentType);
                     const relativeTime = formatRelativeTime(new Date(analysis.generatedAt));
 
                     return (
-                      <div
+                      <button
                         key={analysis.id}
-                        className={`rounded-lg overflow-hidden transition-all duration-200 ${
-                          isExpanded
-                            ? 'bg-white border border-[#8D6AFA] shadow-sm'
-                            : 'bg-white border border-gray-200 hover:border-gray-300'
-                        }`}
+                        onClick={() => openAssetPanel(analysis)}
+                        className="w-full p-3 text-left rounded-lg bg-white border border-gray-200 hover:border-gray-300 transition-colors group"
                       >
-                        <button
-                          onClick={() => setExpandedAssetId(isExpanded ? null : analysis.id)}
-                          className="w-full p-3 text-left transition-colors group"
-                        >
-                          <div className="flex gap-3">
-                            {/* Icon */}
-                            <div className={`
-                              w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200
-                              ${isExpanded
-                                ? 'bg-[#8D6AFA] text-white'
-                                : 'bg-purple-50 group-hover:bg-[#8D6AFA]'
-                              }
-                            `}>
-                              {OutputIcon ? (
-                                <OutputIcon className={`
-                                  w-4 h-4 transition-colors duration-200
-                                  ${isExpanded
-                                    ? 'text-white'
-                                    : 'text-[#8D6AFA] group-hover:text-white'
-                                  }
-                                `} />
-                              ) : (
-                                <AiIcon size={16} className={`
-                                  transition-colors duration-200
-                                  ${isExpanded
-                                    ? 'text-white'
-                                    : 'text-[#8D6AFA] group-hover:text-white'
-                                  }
-                                `} />
-                              )}
-                            </div>
-
-                            {/* Content */}
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-2 mb-0.5">
-                                <p className={`
-                                  text-sm font-semibold truncate transition-colors duration-200
-                                  ${isExpanded
-                                    ? 'text-[#8D6AFA]'
-                                    : 'text-gray-900 group-hover:text-[#8D6AFA]'
-                                  }
-                                `}>
-                                  {analysis.templateName}
-                                </p>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <span className="text-xs text-gray-500">
-                                    {relativeTime}
-                                  </span>
-                                  <ChevronDown
-                                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                                      isExpanded ? 'rotate-180' : ''
-                                    }`}
-                                  />
-                                </div>
-                              </div>
-                              <p className="text-xs text-gray-600 line-clamp-1">
-                                {preview}
+                        <div className="flex gap-3">
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-purple-50 group-hover:bg-[#8D6AFA] transition-colors duration-200">
+                            {OutputIcon ? (
+                              <OutputIcon className="w-4 h-4 text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+                            ) : (
+                              <AiIcon size={16} className="text-[#8D6AFA] group-hover:text-white transition-colors duration-200" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                              <p className="text-sm font-semibold text-gray-900 group-hover:text-[#8D6AFA] truncate transition-colors duration-200">
+                                {analysis.templateName}
                               </p>
+                              <span className="text-xs text-gray-500 flex-shrink-0">
+                                {relativeTime}
+                              </span>
                             </div>
                           </div>
-                        </button>
-                        {isExpanded && (
-                          <div className="px-4 pb-4 border-t border-gray-100">
-                            <div className="pt-4">
-                              <AnalysisContentRenderer
-                                content={analysis.content}
-                                contentType={analysis.contentType}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                        </div>
+                      </button>
                     );
                   })}
                 </div>
               </div>
             )}
 
-            {/* Show message if no content was shared */}
+            {/* No content message */}
             {!hasSummary && !hasTranscript && !hasAIAssets && (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-700">No content available for this shared conversation.</p>
               </div>
             )}
-          </div>
+          </div>{/* end flex-1 main content */}
+
+          {/* Key Points sidebar — desktop only, shown on summary tab */}
+          {(() => {
+            if (activeTab !== 'summary') return null;
+            const summaryTranslation = currentLocale !== 'original'
+              ? getTranslatedContent('summary', transcription.id)
+              : null;
+            const kp = summaryTranslation?.content.type === 'summaryV2'
+              ? summaryTranslation.content.keyPoints
+              : transcription.summaryV2?.keyPoints;
+            if (!kp || kp.length === 0) return null;
+            return <KeyPointsSidebar keyPoints={kp} />;
+          })()}
         </div>
       </div>
 
+      {/* AI Asset Slide Panel */}
+      <AIAssetSlidePanel
+        asset={selectedAsset}
+        isOpen={isPanelOpen}
+        isClosing={isPanelClosing}
+        onClose={closeAssetPanel}
+        locale={locale}
+        currentTranslationLocale={currentLocale}
+        getTranslatedContent={getTranslatedContent}
+      />
+
       {/* Footer */}
       <div className="mt-16 border-t border-gray-200 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-sm text-gray-600">
             <p>
               {t('footer.poweredBy')}{' '}

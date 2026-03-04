@@ -852,6 +852,22 @@
       "showAllLanguages": "Show all languages",
       "hideLanguages": "Show less",
       "slowHint": "Translation may take a moment for longer conversations. You can close this dialog — it will continue in the background."
+    },
+    "failed": {
+      "title": "Processing failed",
+      "tryAgain": "Try again",
+      "deleteConversation": "Delete",
+      "backToDashboard": "Back to dashboard",
+      "reportIssue": "Report this issue",
+      "reportSending": "Sending error report...",
+      "reportSent": "Thank you for reporting this error.",
+      "reportFailed": "Could not send report. Please try again later.",
+      "reasons": {
+        "fileCorrupt": "The file could not be processed. It may be corrupted or in an unsupported format. Please try uploading a different file.",
+        "timeout": "Processing took too long and was interrupted. This can happen with very large files or during high demand. Please try again.",
+        "quota": "You've reached your usage limit. Upgrade your plan or wait for your monthly quota to reset.",
+        "generic": "Something went wrong while processing this conversation. Please try again or upload a different file."
+      }
     }
   },
   "howItWorks": {

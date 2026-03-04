@@ -1438,6 +1438,7 @@ export interface SharedTranscriptionView {
   contentOptions?: ShareContentOptions;
   translations?: Record<string, TranslationData>; // All available translations at time of sharing
   preferredTranslationLanguage?: string; // Sender's preferred language (e.g., 'es', 'fr', or 'original')
+  conversationCategory?: ConversationCategory;
 }
 
 // ============================================================================
