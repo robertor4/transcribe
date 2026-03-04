@@ -11,6 +11,7 @@ import { PageTracker } from '@/components/PageTracker';
 import { CookieConsent } from '@/components/CookieConsent';
 import { ApiUnavailableBanner } from '@/components/ApiUnavailableBanner';
 import { Toaster } from '@/components/ui/sonner';
+import { AuthGuard } from '@/components/AuthGuard';
 
 /**
  * Layout for authenticated pages that need full context providers.
@@ -28,21 +29,23 @@ export default function AuthenticatedLayout({
   return (
     <AuthProvider>
       <AnalyticsProvider>
-        <ApiHealthProvider>
-          <UsageProvider>
-            <ConversationsProvider>
-              <FoldersProvider>
-                <ImportedConversationsProvider>
-                  <PageTracker />
-                  <ApiUnavailableBanner />
-                  {children}
-                  <CookieConsent />
-                  <Toaster position="top-center" />
-                </ImportedConversationsProvider>
-              </FoldersProvider>
-            </ConversationsProvider>
-          </UsageProvider>
-        </ApiHealthProvider>
+        <AuthGuard>
+          <ApiHealthProvider>
+            <UsageProvider>
+              <ConversationsProvider>
+                <FoldersProvider>
+                  <ImportedConversationsProvider>
+                    <PageTracker />
+                    <ApiUnavailableBanner />
+                    {children}
+                    <CookieConsent />
+                    <Toaster position="top-center" />
+                  </ImportedConversationsProvider>
+                </FoldersProvider>
+              </ConversationsProvider>
+            </UsageProvider>
+          </ApiHealthProvider>
+        </AuthGuard>
       </AnalyticsProvider>
     </AuthProvider>
   );

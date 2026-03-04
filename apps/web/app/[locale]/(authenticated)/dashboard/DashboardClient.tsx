@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   Mic,
@@ -13,7 +13,7 @@ import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
 import { toast } from 'sonner';
 import { TwoColumnDashboardLayout } from '@/components/dashboard/TwoColumnDashboardLayout';
-import { DashboardSkeleton, DashboardInlineSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { DashboardInlineSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
 import { useFoldersContext } from '@/contexts/FoldersContext';
@@ -62,7 +62,7 @@ export function DashboardClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const locale = (params?.locale as string) || 'en';
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const t = useTranslations('dashboard');
 
   const { conversations, isLoading: conversationsLoading, refresh: refreshConversations } = useConversationsContext();
@@ -77,29 +77,6 @@ export function DashboardClient() {
   const [createModalConfig, setCreateModalConfig] = useState<CreateModalConfig>({
     isOpen: false,
   });
-
-  // Refresh user on mount to get latest email verification status
-  // This handles the case where user returns from email verification link
-  const { refreshUser } = useAuth();
-  const hasRefreshedRef = useRef(false);
-
-  useEffect(() => {
-    const checkVerification = async () => {
-      if (!authLoading && user && !user.emailVerified && !hasRefreshedRef.current) {
-        hasRefreshedRef.current = true;
-        // Refresh to get latest verification status from Firebase
-        await refreshUser();
-      }
-    };
-    checkVerification();
-  }, [authLoading, user, refreshUser]);
-
-  // Redirect unverified users to verify-email page (after refresh attempt)
-  useEffect(() => {
-    if (!authLoading && user && !user.emailVerified && hasRefreshedRef.current) {
-      router.replace(`/${locale}/verify-email`);
-    }
-  }, [authLoading, user, router, locale]);
 
   // Check for newConversation query param to auto-open modal
   useEffect(() => {
@@ -174,11 +151,6 @@ export function DashboardClient() {
   }, [handleRecordMicrophone, handleRecordTabAudio, handleUploadFile]);
 
   const isLoading = conversationsLoading || foldersLoading;
-
-  // Show loading state while checking auth, or if user is unverified (redirect in progress)
-  if (authLoading || (user && !user.emailVerified)) {
-    return <DashboardSkeleton />;
-  }
 
   return (
       <div className="h-screen flex flex-col">

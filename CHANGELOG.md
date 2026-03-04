@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Auth guard for protected routes**: Unauthenticated users visiting `app.neuralsummary.com` could see the dashboard page instead of being redirected to login. Added centralized `AuthGuard` component in the authenticated layout that redirects to `/login` when no session exists and to `/verify-email` for unverified users. This protects all authenticated routes (dashboard, conversations, folders, settings, admin)
+  - Added: [AuthGuard.tsx](apps/web/components/AuthGuard.tsx)
+  - Modified: [layout.tsx](apps/web/app/[locale]/(authenticated)/layout.tsx), [DashboardClient.tsx](apps/web/app/[locale]/(authenticated)/dashboard/DashboardClient.tsx)
+
 ### Changed
 - **Shared page error screen redesign**: Replaced the stark "ACCESS ERROR" screen on invalid/expired share links with a friendlier UI using shadcn Card + Button components. Now shows the Neural Summary logo, a soft purple broken-link icon, "Link unavailable" title, and a helpful message asking users to contact the link owner. Translated in all 5 locales
   - Modified: [page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx)
