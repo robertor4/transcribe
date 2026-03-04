@@ -1924,7 +1924,10 @@
     "hidePassword": "Masquer le mot de passe",
     "submit": "Soumettre",
     "error": {
-      "title": "Erreur d'accès",
+      "title": "Lien indisponible",
+      "subtitle": "Ce lien de partage a peut-être expiré ou été supprimé.",
+      "contactOwner": "Veuillez contacter la personne qui a partagé ce lien avec vous.",
+      "goHome": "Aller à Neural Summary",
       "invalidLink": "Ce lien de partage est invalide ou a expiré.",
       "notFound": "Transcription non trouvée.",
       "loadFailed": "Échec du chargement de la transcription."

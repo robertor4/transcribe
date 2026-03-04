@@ -1924,7 +1924,10 @@
     "hidePassword": "Passwort verbergen",
     "submit": "Absenden",
     "error": {
-      "title": "Zugriffsfehler",
+      "title": "Link nicht verfügbar",
+      "subtitle": "Dieser Link ist möglicherweise abgelaufen oder wurde entfernt.",
+      "contactOwner": "Bitte kontaktiere die Person, die diesen Link mit dir geteilt hat.",
+      "goHome": "Zu Neural Summary",
       "invalidLink": "Dieser Freigabelink ist ungültig oder abgelaufen.",
       "notFound": "Transkript nicht gefunden.",
       "loadFailed": "Laden des Transkripts fehlgeschlagen."

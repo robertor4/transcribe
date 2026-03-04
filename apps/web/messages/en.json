@@ -1594,7 +1594,10 @@
     "hidePassword": "Hide password",
     "submit": "Submit",
     "error": {
-      "title": "Access Error",
+      "title": "Link unavailable",
+      "subtitle": "This share link may have expired or been removed.",
+      "contactOwner": "Please contact the person who shared this link with you.",
+      "goHome": "Go to Neural Summary",
       "invalidLink": "This share link is invalid or has expired.",
       "notFound": "Transcript not found.",
       "loadFailed": "Failed to load transcript."

@@ -1924,7 +1924,10 @@
     "hidePassword": "Ocultar contraseña",
     "submit": "Enviar",
     "error": {
-      "title": "Error de acceso",
+      "title": "Enlace no disponible",
+      "subtitle": "Este enlace puede haber expirado o sido eliminado.",
+      "contactOwner": "Contacta a la persona que compartió este enlace contigo.",
+      "goHome": "Ir a Neural Summary",
       "invalidLink": "Este enlace para compartir es inválido o ha expirado.",
       "notFound": "Transcripción no encontrada.",
       "loadFailed": "Error al cargar la transcripción."

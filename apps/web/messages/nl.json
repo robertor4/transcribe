@@ -1593,7 +1593,10 @@
     "hidePassword": "Wachtwoord verbergen",
     "submit": "Verzenden",
     "error": {
-      "title": "Toegangsfout",
+      "title": "Link niet beschikbaar",
+      "subtitle": "Deze link is mogelijk verlopen of verwijderd.",
+      "contactOwner": "Neem contact op met de persoon die deze link met je heeft gedeeld.",
+      "goHome": "Naar Neural Summary",
       "invalidLink": "Deze deel link is ongeldig of verlopen.",
       "notFound": "Transcript niet gevonden.",
       "loadFailed": "Laden van transcript mislukt."

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Shared page error screen redesign**: Replaced the stark "ACCESS ERROR" screen on invalid/expired share links with a friendlier UI using shadcn Card + Button components. Now shows the Neural Summary logo, a soft purple broken-link icon, "Link unavailable" title, and a helpful message asking users to contact the link owner. Translated in all 5 locales
+  - Modified: [page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx)
+  - Translations: Added `shared.error.subtitle`, `shared.error.contactOwner`, `shared.error.goHome` keys; updated `shared.error.title` in all locale files
 - **Shared conversation page redesign**: Aligned the public shared page (`/shared/[shareToken]`) with the authenticated conversation page design. Changes include: Merriweather serif title font, editorial `<hr>` rule below header, Radix pill-style tabs (dark active state), `InlineTranscript` component for transcripts, `AIAssetSlidePanel` for AI assets (replacing inline accordion), `ReadingTimeIndicator`, `ConversationCategoryBadge`, short date format, inline action icons (copy, language, import) in metadata row with tooltips
   - Modified: [page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx), [InlineTranscript.tsx](apps/web/components/InlineTranscript.tsx), [AIAssetSlidePanel.tsx](apps/web/components/AIAssetSlidePanel.tsx), [types.ts](packages/shared/src/types.ts), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts)
   - `InlineTranscript` refactored to accept either `Conversation` object or direct `speakerSegments`+`text` props (discriminated union)

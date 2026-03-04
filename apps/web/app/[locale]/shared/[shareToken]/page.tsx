@@ -22,7 +22,7 @@ import {
   Lock,
   Loader2,
   FileText,
-  AlertCircle,
+  Link2Off,
   Eye,
   EyeOff,
   Copy,
@@ -37,6 +37,8 @@ import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 type SharedTab = 'summary' | 'transcript' | 'ai-assets';
 
@@ -341,12 +343,35 @@ export default function SharedTranscriptionPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2 uppercase tracking-wide">{t('error.title')}</h2>
-          <p className="text-gray-700">{error}</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+        <a href="https://neuralsummary.com" className="mb-10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/logos/neural-summary-logo.svg"
+            alt="Neural Summary"
+            className="h-8 w-auto"
+          />
+        </a>
+
+        <Card className="max-w-md w-full text-center border-gray-200/60 shadow-lg">
+          <CardHeader className="flex flex-col items-center gap-3 pb-2">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-purple-50">
+              <Link2Off className="h-7 w-7 text-[#8D6AFA]" />
+            </div>
+            <CardTitle className="text-xl text-gray-900">{t('error.title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-600">
+              {t('error.subtitle')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-500">{t('error.contactOwner')}</p>
+          </CardContent>
+          <CardFooter className="justify-center">
+            <Button variant="outline" asChild>
+              <a href="https://neuralsummary.com">{t('error.goHome')}</a>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
