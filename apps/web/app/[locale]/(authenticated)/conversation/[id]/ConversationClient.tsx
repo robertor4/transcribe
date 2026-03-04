@@ -602,6 +602,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     <span className="text-gray-300 dark:text-gray-600">|</span>
                   </>
                 )}
+                {conversation.conversationCategory && (
+                  <>
+                    <ConversationCategoryBadge category={conversation.conversationCategory} />
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
+                  </>
+                )}
                 <span>
                   {conversation.createdAt.toLocaleDateString('en-US', {
                     month: 'short',
@@ -609,12 +615,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     year: 'numeric',
                   })}
                 </span>
-                {conversation.conversationCategory && (
-                  <>
-                    <span className="text-gray-300 dark:text-gray-600">|</span>
-                    <ConversationCategoryBadge category={conversation.conversationCategory} />
-                  </>
-                )}
 
                 {/* Action icons */}
                 <TooltipProvider>
@@ -651,6 +651,26 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         {copiedSummary ? tConversation('actions.copied') : tConversation('actions.copy')}
                       </TooltipContent>
                     </Tooltip>
+                    <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
+                          className={`hidden lg:block p-1.5 rounded-lg transition-colors ${
+                            activeTab === 'transcript'
+                              ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
+                              : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          <ScrollText className="w-4 h-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={6}>
+                        {activeTab === 'summary'
+                          ? tConversation('tabs.transcript')
+                          : tConversation('tabs.summary')}
+                      </TooltipContent>
+                    </Tooltip>
                     <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -666,28 +686,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                       </TooltipContent>
                     </Tooltip>
                   </div>
-                </TooltipProvider>
-                <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setActiveTab(activeTab === 'summary' ? 'transcript' : 'summary')}
-                        className={`hidden lg:block p-1.5 rounded-lg transition-colors ${
-                          activeTab === 'transcript'
-                            ? 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800'
-                            : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                        }`}
-                      >
-                        <ScrollText className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={6}>
-                      {activeTab === 'summary'
-                        ? tConversation('tabs.transcript')
-                        : tConversation('tabs.summary')}
-                    </TooltipContent>
-                  </Tooltip>
                 </TooltipProvider>
                 <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                 <DropdownMenu
