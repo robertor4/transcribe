@@ -8,6 +8,8 @@ import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { sendEmailVerification, reload } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
+import { Button } from '@/components/ui/button';
 
 export default function VerifyEmailPage() {
   const [error, setError] = useState('');
@@ -96,13 +98,13 @@ export default function VerifyEmailPage() {
   };
 
   // Show loading state only while auth is initializing
-  // If not loading and no user, the useEffect will redirect to login
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
+      <div className="dark relative min-h-screen flex items-center justify-center bg-[#22184C]">
+        <AmbientGradient />
+        <div className="relative z-10 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8D6AFA] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-400">Loading...</p>
         </div>
       </div>
     );
@@ -114,104 +116,106 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="flex justify-center mb-8">
+    <div className="dark relative min-h-screen flex items-center justify-center bg-[#22184C] py-12 px-4 sm:px-6 lg:px-8">
+      <AmbientGradient />
+
+      <div className="relative z-10 max-w-md w-full">
+        <div className="mb-8">
+          <div className="flex justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/logos/neural-summary-logo-wTagLine.png"
+              src="/assets/logos/neural-summary-logo-white-wTagLine.svg"
               alt="Neural Summary - You speak. It creates."
               className="h-16 w-auto"
             />
           </div>
-          
-          {success ? (
-            <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
-                {tAuth('emailVerified')}
-              </h2>
-              <div className="mt-6 flex justify-center">
-                <CheckCircle className="h-16 w-16 text-green-500" />
-              </div>
-              <p className="mt-4 text-center text-sm text-gray-600">
-                {tAuth('redirectingToDashboard')}
-              </p>
-            </>
-          ) : (
-            <>
-              <h2 className="text-center text-3xl font-extrabold text-gray-900 uppercase tracking-wide">
-                {tAuth('verifyYourEmail')}
-              </h2>
-              {isResent && (
-                <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
-                  <p className="text-sm text-green-800 dark:text-green-300 font-medium text-center">
-                    {tAuth('welcomeBackVerification')}
-                  </p>
-                </div>
-              )}
-              <p className="mt-4 text-center text-sm text-gray-600">
-                {tAuth('verificationEmailSent')} <strong>{user.email}</strong>
-              </p>
-              <p className="mt-2 text-center text-sm text-gray-600">
-                {tAuth('checkYourInbox')}
-              </p>
-              <p className="mt-2 text-center text-xs text-gray-500">
-                {tAuth('checkSpamFolder')}
-              </p>
-            </>
-          )}
         </div>
 
-        {!success && (
-          <div className="mt-8 space-y-6">
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex items-center">
-                  <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
+        <div className="rounded-xl border border-white/[0.1] bg-white/[0.06] backdrop-blur-xl p-6 sm:p-8 shadow-2xl">
+          {success ? (
+            <div className="text-center space-y-4">
+              <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-green-900/30 border border-green-700/30">
+                <CheckCircle className="h-7 w-7 text-green-400" />
               </div>
-            )}
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <Mail className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">{tAuth('checkYourEmail')}</p>
-                  <p>{tAuth('clickVerificationLink')}</p>
-                </div>
-              </div>
+              <h2 className="text-xl font-semibold text-white">
+                {tAuth('emailVerified')}
+              </h2>
+              <p className="text-sm text-gray-400">
+                {tAuth('redirectingToDashboard')}
+              </p>
             </div>
-
-            <div className="space-y-4">
+          ) : (
+            <div className="space-y-6">
               <div className="text-center">
-                <p className="text-sm text-gray-600">
+                <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-[#8D6AFA]/10 border border-[#8D6AFA]/20 mb-4">
+                  <Mail className="h-7 w-7 text-[#8D6AFA]" />
+                </div>
+                <h2 className="text-xl font-semibold text-white">
+                  {tAuth('verifyYourEmail')}
+                </h2>
+                {isResent && (
+                  <div className="mt-3 bg-green-900/20 border border-green-700/30 rounded-lg p-3">
+                    <p className="text-sm text-green-300 font-medium">
+                      {tAuth('welcomeBackVerification')}
+                    </p>
+                  </div>
+                )}
+                <p className="mt-3 text-sm text-gray-400">
+                  {tAuth('verificationEmailSent')} <strong className="text-gray-200">{user.email}</strong>
+                </p>
+                <p className="mt-1 text-sm text-gray-400">
+                  {tAuth('checkYourInbox')}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {tAuth('checkSpamFolder')}
+                </p>
+              </div>
+
+              {error && (
+                <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-4 w-4 text-red-400 mr-2 flex-shrink-0" />
+                    <p className="text-sm text-red-300">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3">
+                <div className="flex items-start">
+                  <Mail className="h-4 w-4 text-blue-400 mr-2 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-blue-300">
+                    <p className="font-medium mb-0.5">{tAuth('checkYourEmail')}</p>
+                    <p className="text-blue-400">{tAuth('clickVerificationLink')}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 text-center">
+                <p className="text-sm text-gray-400">
                   {tAuth('didntReceiveEmail')}{' '}
                   <button
                     onClick={handleResendEmail}
                     disabled={resendCooldown > 0 || checkingVerification}
                     className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {resendCooldown > 0 
+                    {resendCooldown > 0
                       ? `${tAuth('resendIn')} ${resendCooldown}s`
                       : tAuth('resendEmail')
                     }
                   </button>
                 </p>
-              </div>
 
-              <div className="text-center">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => router.push('/login')}
-                  className="text-sm text-gray-500 hover:text-gray-700"
+                  className="text-sm text-gray-500 hover:text-gray-300 hover:bg-white/[0.06]"
                 >
                   {tAuth('backToLogin')}
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

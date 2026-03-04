@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Mail, AlertCircle, Loader2, CheckCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle, Loader2, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
@@ -26,7 +29,7 @@ export default function ForgotPasswordForm() {
     } catch (error) {
       const errorObj = error as { message?: string };
       const errorMessage = errorObj.message || 'Failed to send reset email';
-      
+
       if (errorMessage.includes('user-not-found')) {
         setError(tAuth('userNotFound'));
       } else if (errorMessage.includes('invalid-email')) {
@@ -43,41 +46,41 @@ export default function ForgotPasswordForm() {
 
   if (emailSent) {
     return (
-      <div className="max-w-md w-full space-y-8">
+      <div className="space-y-6">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30">
-            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+          <div className="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-green-900/30 border border-green-700/30">
+            <CheckCircle className="h-7 w-7 text-green-400" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+          <h2 className="mt-5 text-xl font-semibold text-white">
             {tAuth('resetLinkSent')}
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-400">
             {tAuth('checkEmailForReset')}
           </p>
-          <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-200">
+          <p className="mt-1 text-sm font-medium text-gray-200">
             {email}
           </p>
         </div>
 
-        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-          <p className="text-sm text-blue-800 dark:text-blue-300">
+        <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3">
+          <p className="text-sm text-blue-300">
             {tAuth('checkSpamFolder')}
           </p>
         </div>
 
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col items-center space-y-3">
           <button
             onClick={() => {
               setEmailSent(false);
               setEmail('');
             }}
-            className="text-sm text-[#8D6AFA] dark:text-[#8D6AFA] hover:text-[#7A5AE0] dark:hover:text-[#7A5AE0]"
+            className="text-sm text-[#8D6AFA] hover:text-[#7A5AE0]"
           >
             {tAuth('tryDifferentEmail')}
           </button>
           <Link
             href="/login"
-            className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-300"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {tAuth('backToLogin')}
@@ -88,66 +91,59 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="max-w-md w-full space-y-8">
+    <div className="space-y-6">
       <div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+        <h2 className="text-xl font-semibold text-white">
           {tAuth('resetPassword')}
         </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-sm text-gray-400">
           {tAuth('enterEmailForReset')}
         </p>
       </div>
 
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
+          <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
             <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-2" />
-              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
+              <AlertCircle className="h-4 w-4 text-red-400 mr-2 flex-shrink-0" />
+              <p className="text-sm text-red-300">{error}</p>
             </div>
           </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-gray-300">
             {tAuth('email')}
-          </label>
-          <div className="mt-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-            </div>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="appearance-none block w-full px-10 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-[#8D6AFA] focus:border-[#8D6AFA] sm:text-sm"
-              placeholder={tAuth('enterYourEmail')}
-            />
-          </div>
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={tAuth('enterYourEmail')}
+            className="h-11 bg-white/[0.08] border-white/[0.12] text-gray-100 placeholder:text-gray-500 focus-visible:border-[#8D6AFA] focus-visible:ring-[#8D6AFA]/30"
+          />
         </div>
 
-        <div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#8D6AFA] hover:bg-[#7A5AE0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8D6AFA] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              tAuth('sendResetLink')
-            )}
-          </button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full h-11 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-lg"
+        >
+          {loading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            tAuth('sendResetLink')
+          )}
+        </Button>
 
         <div className="text-center">
           <Link
             href="/login"
-            className="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="inline-flex items-center text-sm text-gray-500 hover:text-gray-300"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             {tAuth('backToLogin')}
