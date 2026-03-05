@@ -241,6 +241,8 @@
       "openSummary": "Abrir resumen",
       "openTranscript": "Abrir transcripción",
       "moveToFolder": "Mover a carpeta",
+      "moveSuccess": "Movido a {folder}",
+      "removeFromFolderSuccess": "Eliminado de la carpeta",
       "delete": "Eliminar",
       "deleteTitle": "¿Eliminar conversación?",
       "deleteMessage": "Esta acción no se puede deshacer. La conversación y todos sus AI assets se eliminarán permanentemente.",

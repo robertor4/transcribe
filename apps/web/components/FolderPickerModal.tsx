@@ -156,7 +156,7 @@ export function FolderPickerModal({
             >
               <div className="flex items-center gap-3">
                 <FolderOpen className="w-5 h-5 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-sm font-medium italic text-gray-500 dark:text-gray-400">
                   {t('noFolder')}
                 </span>
               </div>
@@ -180,7 +180,7 @@ export function FolderPickerModal({
             )}
 
             {!foldersLoading &&
-              folders.map((folder) => (
+              [...folders].sort((a, b) => a.name.localeCompare(b.name)).map((folder) => (
                 <button
                   key={folder.id}
                   onClick={() => setSelectedFolderId(folder.id)}

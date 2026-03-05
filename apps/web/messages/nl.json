@@ -241,6 +241,8 @@
       "openSummary": "Samenvatting openen",
       "openTranscript": "Transcript openen",
       "moveToFolder": "Verplaats naar map",
+      "moveSuccess": "Verplaatst naar {folder}",
+      "removeFromFolderSuccess": "Verwijderd uit map",
       "delete": "Verwijderen",
       "deleteTitle": "Gesprek verwijderen?",
       "deleteMessage": "Dit kan niet ongedaan worden gemaakt. Het gesprek en alle AI assets worden permanent verwijderd.",

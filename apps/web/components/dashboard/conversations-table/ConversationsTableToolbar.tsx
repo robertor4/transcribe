@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Search, FolderInput, FolderMinus, Trash2, X, Mic } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -15,6 +16,8 @@ import { Button } from '@/components/Button';
 import { FolderPickerModal } from '@/components/FolderPickerModal';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { moveConversationToFolder } from '@/lib/services/conversationService';
+import { useConversationsContext } from '@/contexts/ConversationsContext';
+import { useFoldersContext } from '@/contexts/FoldersContext';
 import type { StatusFilter } from './useConversationsTable';
 import type { FolderContext } from './types';
 
@@ -42,6 +45,8 @@ export function ConversationsTableToolbar({
   folderContext,
 }: ConversationsTableToolbarProps) {
   const t = useTranslations('dashboard');
+  const { refresh: refreshConversations } = useConversationsContext();
+  const { folders, refresh: refreshFolders } = useFoldersContext();
   const [showBulkFolderPicker, setShowBulkFolderPicker] = useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showBulkRemoveConfirm, setShowBulkRemoveConfirm] = useState(false);
@@ -75,7 +80,11 @@ export function ConversationsTableToolbar({
       );
       await Promise.all(promises);
       clearSelection();
-      await folderContext?.onRefresh();
+      await Promise.all([refreshConversations(), refreshFolders(), folderContext?.onRefresh()]);
+      const folderName = folders.find((f) => f.id === folderId)?.name;
+      if (folderName) {
+        toast.success(t('table.moveSuccess', { folder: folderName }));
+      }
     } catch (error) {
       console.error('Failed to move conversations:', error);
     } finally {

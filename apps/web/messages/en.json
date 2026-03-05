@@ -241,6 +241,8 @@
       "openSummary": "Open summary",
       "openTranscript": "Open transcript",
       "moveToFolder": "Move to folder",
+      "moveSuccess": "Moved to {folder}",
+      "removeFromFolderSuccess": "Removed from folder",
       "delete": "Delete",
       "deleteTitle": "Delete conversation?",
       "deleteMessage": "This action cannot be undone. The conversation and all its AI assets will be permanently deleted.",

@@ -12,7 +12,10 @@ import {
   AlignLeft,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { formatRelativeTime, formatDuration } from '@/lib/formatters';
+import { useConversationsContext } from '@/contexts/ConversationsContext';
+import { useFoldersContext } from '@/contexts/FoldersContext';
 import { AssetsCountBadge } from '../AssetsCountBadge';
 import {
   DropdownMenu,
@@ -81,6 +84,8 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
 }: ConversationsTableRowProps) {
   const router = useRouter();
   const t = useTranslations('dashboard');
+  const { refresh: refreshConversations } = useConversationsContext();
+  const { folders, refresh: refreshFolders } = useFoldersContext();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showFolderPicker, setShowFolderPicker] = useState(false);
@@ -283,6 +288,17 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
         conversationId={conversation.id}
         conversationTitle={conversation.title}
         currentFolderId={conversation.folderId}
+        onMoveComplete={async (newFolderId) => {
+          await Promise.all([refreshConversations(), refreshFolders()]);
+          const folderName = newFolderId
+            ? folders.find((f) => f.id === newFolderId)?.name
+            : null;
+          toast.success(
+            folderName
+              ? t('table.moveSuccess', { folder: folderName })
+              : t('table.removeFromFolderSuccess')
+          );
+        }}
       />
 
       {/* Delete Confirmation Modal */}

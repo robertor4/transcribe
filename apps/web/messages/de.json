@@ -241,6 +241,8 @@
       "openSummary": "Zusammenfassung öffnen",
       "openTranscript": "Transkript öffnen",
       "moveToFolder": "In Ordner verschieben",
+      "moveSuccess": "Verschoben nach {folder}",
+      "removeFromFolderSuccess": "Aus Ordner entfernt",
       "delete": "Löschen",
       "deleteTitle": "Gespräch löschen?",
       "deleteMessage": "Dies kann nicht rückgängig gemacht werden. Das Gespräch und alle AI Assets werden dauerhaft gelöscht.",

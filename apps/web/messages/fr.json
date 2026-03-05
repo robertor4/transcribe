@@ -241,6 +241,8 @@
       "openSummary": "Ouvrir le résumé",
       "openTranscript": "Ouvrir la transcription",
       "moveToFolder": "Déplacer vers un dossier",
+      "moveSuccess": "Déplacé vers {folder}",
+      "removeFromFolderSuccess": "Retiré du dossier",
       "delete": "Supprimer",
       "deleteTitle": "Supprimer la conversation ?",
       "deleteMessage": "Cette action est irréversible. La conversation et tous ses AI assets seront définitivement supprimés.",
