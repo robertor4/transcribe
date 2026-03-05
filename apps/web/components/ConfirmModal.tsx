@@ -10,6 +10,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 export type ConfirmModalVariant = 'danger' | 'warning' | 'info';
 
@@ -23,6 +24,8 @@ interface ConfirmModalProps {
   cancelLabel?: string;
   variant?: ConfirmModalVariant;
   isLoading?: boolean;
+  className?: string;
+  overlayClassName?: string;
 }
 
 /**
@@ -39,12 +42,14 @@ export function ConfirmModal({
   cancelLabel = 'Cancel',
   variant = 'danger',
   isLoading = false,
+  className,
+  overlayClassName,
 }: ConfirmModalProps) {
   const actionVariant = variant === 'info' ? 'default' : 'destructive';
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => !open && !isLoading && onClose()}>
-      <AlertDialogContent className="bg-white dark:bg-gray-800 gap-0 p-0 sm:max-w-md rounded-2xl border-0 shadow-xl">
+      <AlertDialogContent overlayClassName={overlayClassName} className={cn("bg-white dark:bg-gray-800 gap-0 p-0 sm:max-w-md rounded-2xl border-0 shadow-xl", className)}>
         <AlertDialogHeader className="p-6 pb-4">
           <AlertDialogTitle className="text-gray-900 dark:text-gray-100">
             {title}

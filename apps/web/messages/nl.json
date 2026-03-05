@@ -61,7 +61,10 @@
     "steps": {
       "capture": {
         "title": "Nieuw gesprek",
-        "description": "Kies hoe je je audio wilt toevoegen"
+        "description": "Kies hoe je je audio wilt toevoegen",
+        "descriptionMic": "Neem audio op via je microfoon. Ideaal voor vergaderingen, spraakmemo's en brainstormsessies.",
+        "descriptionTab": "Leg audio vast van een browsertabblad. Ideaal voor online vergaderingen, webinars en videogesprekken in je browser.",
+        "descriptionUpload": "Upload een bestaand audio- of videobestand. Ideaal voor opgenomen interviews, podcasts en vergaderopnames."
       },
       "context": {
         "title": "Context toevoegen",

@@ -61,7 +61,10 @@
     "steps": {
       "capture": {
         "title": "Create a conversation",
-        "description": "Choose how to add your audio"
+        "description": "Choose how to add your audio",
+        "descriptionMic": "Record audio from your microphone. Best for in-person meetings, voice memos, and brainstorming sessions.",
+        "descriptionTab": "Capture audio from a browser tab. Best for online meetings, webinars, and video calls in your browser.",
+        "descriptionUpload": "Upload an existing audio or video file. Best for pre-recorded interviews, podcasts, and meeting recordings."
       },
       "context": {
         "title": "Add context",

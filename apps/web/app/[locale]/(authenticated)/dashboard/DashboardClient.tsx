@@ -7,7 +7,6 @@ import {
   Monitor,
   Upload,
 } from 'lucide-react';
-import { Button as ShadcnButton } from '@/components/ui/button';
 import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { ConversationCreateModal, type CreateStep } from '@/components/ConversationCreateModal';
@@ -28,6 +27,8 @@ interface QuickCreateButton {
   labelKey: 'recordRoom' | 'recordTab' | 'uploadFileLabel';
   descKey: 'recordRoomDesc' | 'recordTabDesc' | 'uploadFileDesc';
   action: 'record-microphone' | 'record-tab-audio' | 'upload';
+  color: string;
+  hoverColor: string;
 }
 
 const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
@@ -36,18 +37,24 @@ const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
     labelKey: 'recordRoom',
     descKey: 'recordRoomDesc',
     action: 'record-microphone',
+    color: 'bg-[#8D6AFA]',
+    hoverColor: 'group-hover:bg-[#7A5AE0]',
   },
   {
     Icon: Monitor,
     labelKey: 'recordTab',
     descKey: 'recordTabDesc',
     action: 'record-tab-audio',
+    color: 'bg-[#14D0DC]',
+    hoverColor: 'group-hover:bg-[#10B8C4]',
   },
   {
     Icon: Upload,
     labelKey: 'uploadFileLabel',
     descKey: 'uploadFileDesc',
     action: 'upload',
+    color: 'bg-[#3F38A0]',
+    hoverColor: 'group-hover:bg-[#352F88]',
   },
 ];
 
@@ -169,7 +176,7 @@ export function DashboardClient() {
           <div className="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-4 lg:pt-[38px] pb-12">
             {/* Personalized Greeting - hidden on mobile (shown in top bar) */}
             <div className="mb-4 hidden sm:block">
-              <h1 className="text-2xl font-bold text-[#8D6AFA]" style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}>
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>
             </div>
@@ -182,12 +189,12 @@ export function DashboardClient() {
                 <button
                   onClick={handleRecordMicrophone}
                   aria-label={`${t('recordRoom')}: ${t('recordRoomDesc')}`}
-                  className="group relative w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
+                  className="group relative w-full flex items-center overflow-hidden bg-white dark:bg-gray-800/40 border-2 border-gray-200 dark:border-gray-700/50 rounded-2xl hover:border-[#8D6AFA] dark:hover:border-[#8D6AFA] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8D6AFA]/50 focus-visible:ring-offset-2 transition-all duration-200 ease-out text-left active:scale-[0.98]"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8D6AFA] group-hover:scale-105 transition-all duration-200">
-                    <Mic className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-white group-hover:scale-110 transition-all duration-200" />
+                  <div className="w-1/4 flex-shrink-0 bg-[#8D6AFA] flex items-center justify-center py-4">
+                    <Mic className="w-6 h-6 text-white" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 px-4 py-3">
                     <div className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#8D6AFA] transition-colors duration-200">
                       {t('recordRoom')}
                     </div>
@@ -215,17 +222,20 @@ export function DashboardClient() {
               </div>
 
               {/* Desktop: Inline action buttons */}
-              <div className="hidden sm:flex gap-3">
+              <div className="hidden sm:flex gap-3 items-center">
                 {QUICK_CREATE_BUTTONS.map((type) => (
-                  <ShadcnButton
+                  <button
                     key={type.action}
-                    variant="outline"
                     onClick={getButtonHandler(type.action)}
-                    className="h-10 px-4 gap-2 bg-white dark:bg-gray-800/40 border-gray-200 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800/40 hover:text-[#8D6AFA] hover:border-[#8D6AFA] transition-colors"
+                    className="group flex items-center overflow-hidden h-10 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600/50 rounded-lg hover:shadow-md hover:scale-[1.02] transition-all duration-200"
                   >
-                    <type.Icon className="w-4 h-4" />
-                    {t(type.labelKey)}
-                  </ShadcnButton>
+                    <div className={`w-10 h-10 flex-shrink-0 ${type.color} ${type.hoverColor} flex items-center justify-center transition-colors duration-200`}>
+                      <type.Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="px-3 text-sm font-medium text-gray-800 dark:text-gray-200 transition-colors">
+                      {t(type.labelKey)}
+                    </span>
+                  </button>
                 ))}
               </div>
             </section>

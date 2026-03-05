@@ -384,7 +384,12 @@ export function ConversationCreateModal({
               {currentStep === 'processing' && t('steps.processing.title')}
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
-              {currentStep === 'capture' && t('steps.capture.description')}
+              {currentStep === 'capture' && (
+                effectiveUploadMethod === 'record-microphone' ? t('steps.capture.descriptionMic')
+                : effectiveUploadMethod === 'record-tab-audio' ? t('steps.capture.descriptionTab')
+                : effectiveUploadMethod === 'file' ? t('steps.capture.descriptionUpload')
+                : t('steps.capture.description')
+              )}
               {currentStep === 'context' && t('steps.context.description')}
               {currentStep === 'processing' && t('steps.processing.description')}
             </DialogDescription>

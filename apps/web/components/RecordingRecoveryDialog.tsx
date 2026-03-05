@@ -30,6 +30,7 @@ import type { RecoverableRecording } from '@/utils/recordingStorage';
 import { getRecordingStorage } from '@/utils/recordingStorage';
 import { useAudioWaveform, ensureAudioContextReady } from '@/hooks/useAudioWaveform';
 import { Button } from './Button';
+import { ConfirmModal } from './ConfirmModal';
 
 /**
  * Format duration in seconds to MM:SS or HH:MM:SS
@@ -714,46 +715,18 @@ export function RecordingRecoveryDialog({
       </div>
 
       {/* Discard Confirmation Modal */}
-      {confirmDiscardId && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[70] pointer-events-auto"
-            onClick={() => setConfirmDiscardId(null)}
-          />
-          <div className="fixed inset-0 z-[70] pointer-events-auto flex items-center justify-center p-4">
-            <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in zoom-in-95 duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                  <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {t('discardTitle')}
-                </h3>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                {t('discardMessage')}
-              </p>
-              <div className="flex gap-3 justify-end">
-                <Button
-                  variant="ghost"
-                  onClick={() => setConfirmDiscardId(null)}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={handleConfirmDiscard}
-                >
-                  {t('discard')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <ConfirmModal
+        isOpen={!!confirmDiscardId}
+        onClose={() => setConfirmDiscardId(null)}
+        onConfirm={handleConfirmDiscard}
+        title={t('discardTitle')}
+        message={t('discardMessage')}
+        confirmLabel={t('discard')}
+        cancelLabel={t('cancel')}
+        variant="danger"
+        overlayClassName="z-[70]"
+        className="z-[70]"
+      />
     </>
   );
 }

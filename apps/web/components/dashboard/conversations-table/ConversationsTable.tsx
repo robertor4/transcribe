@@ -193,7 +193,7 @@ export function ConversationsTable({
     return (
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
             {t('conversations')}
           </h2>
         </div>
@@ -223,7 +223,7 @@ export function ConversationsTable({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-[#8D6AFA] uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
           {t('conversations')}
         </h2>
       </div>

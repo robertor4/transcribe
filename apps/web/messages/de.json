@@ -61,7 +61,10 @@
     "steps": {
       "capture": {
         "title": "Gespräch erstellen",
-        "description": "Wähle, wie du dein Audio hinzufügen möchtest"
+        "description": "Wähle, wie du dein Audio hinzufügen möchtest",
+        "descriptionMic": "Nimm Audio über dein Mikrofon auf. Ideal für persönliche Meetings, Sprachnotizen und Brainstorming-Sitzungen.",
+        "descriptionTab": "Erfasse Audio von einem Browser-Tab. Ideal für Online-Meetings, Webinare und Videoanrufe in deinem Browser.",
+        "descriptionUpload": "Lade eine vorhandene Audio- oder Videodatei hoch. Ideal für aufgenommene Interviews, Podcasts und Meeting-Aufnahmen."
       },
       "context": {
         "title": "Kontext hinzufügen",
