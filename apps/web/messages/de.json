@@ -828,7 +828,18 @@
     "summary": {
       "notAvailable": "Zusammenfassung ist noch nicht verfügbar.",
       "regenerate": "Zusammenfassung neu generieren",
-      "regenerating": "Wird generiert..."
+      "regenerating": "Wird generiert...",
+      "regenerateDialogTitle": "Zusammenfassung neu generieren",
+      "regenerateDialogDescription": "Passen Sie an, wie die Zusammenfassung generiert wird.",
+      "contextLabel": "Besprechungskontext",
+      "contextPlaceholder": "z.B. Wöchentliches Produktmeeting, Q1-Planungssitzung...",
+      "instructionsLabel": "Zusätzliche Anweisungen",
+      "instructionsPlaceholder": "z.B. Fokus auf Entscheidungen und nächste Schritte, kurz halten...",
+      "regenerateButton": "Neu generieren",
+      "cancelButton": "Abbrechen",
+      "regeneratingToast": "Zusammenfassung wird neu generiert...",
+      "regenerateSuccess": "Zusammenfassung erfolgreich generiert",
+      "regenerateError": "Zusammenfassung konnte nicht generiert werden"
     },
     "translation": {
       "original": "Original",

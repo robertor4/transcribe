@@ -828,7 +828,18 @@
     "summary": {
       "notAvailable": "Le résumé n'est pas encore disponible.",
       "regenerate": "Régénérer le résumé",
-      "regenerating": "Régénération en cours..."
+      "regenerating": "Régénération en cours...",
+      "regenerateDialogTitle": "Régénérer le résumé",
+      "regenerateDialogDescription": "Personnalisez la génération du résumé.",
+      "contextLabel": "Contexte de la réunion",
+      "contextPlaceholder": "ex. Sync produit hebdomadaire, session de planification Q1...",
+      "instructionsLabel": "Instructions supplémentaires",
+      "instructionsPlaceholder": "ex. Se concentrer sur les décisions et les actions, rester concis...",
+      "regenerateButton": "Régénérer",
+      "cancelButton": "Annuler",
+      "regeneratingToast": "Le résumé est en cours de régénération...",
+      "regenerateSuccess": "Résumé régénéré avec succès",
+      "regenerateError": "Échec de la régénération du résumé"
     },
     "translation": {
       "original": "Original",

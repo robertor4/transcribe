@@ -876,6 +876,7 @@ ${fullCustomPrompt}`;
     transcriptionText: string,
     context?: string,
     language?: string,
+    instructions?: string,
   ): Promise<ParsedSummaryResult> {
     try {
       this.logger.log('Generating V2 structured summary...');
@@ -885,6 +886,7 @@ ${fullCustomPrompt}`;
         transcriptionText,
         context,
         language,
+        instructions,
       );
 
       const completion = await this.openai.chat.completions.create({
@@ -1615,7 +1617,8 @@ ${fullCustomPrompt}`;
   async regenerateSummary(
     transcriptionId: string,
     userId: string,
-    _instructions?: string,
+    instructions?: string,
+    context?: string,
   ): Promise<any> {
     // Verify user owns this transcription
     const transcription = await this.transcriptionRepository.getTranscription(
@@ -1630,6 +1633,14 @@ ${fullCustomPrompt}`;
       throw new Error('No transcript available for this transcription');
     }
 
+    // Update context if provided
+    const effectiveContext = context ?? transcription.context;
+    if (context !== undefined) {
+      await this.transcriptionRepository.updateTranscription(transcriptionId, {
+        context,
+      });
+    }
+
     this.logger.log(
       `Regenerating V2 summary for transcription ${transcriptionId}`,
     );
@@ -1638,14 +1649,17 @@ ${fullCustomPrompt}`;
     const { summary: summaryV2, conversationCategory } =
       await this.generateSummaryV2(
         transcription.transcriptText,
-        transcription.context,
+        effectiveContext,
         transcription.detectedLanguage,
+        instructions,
       );
 
     // Update transcription with new V2 summary and category
+    // Clear stale translations since the summary content has changed
     const updates: Record<string, unknown> = {
       summaryV2: summaryV2,
       summaryVersion: (transcription.summaryVersion || 1) + 1,
+      translations: {},
       updatedAt: new Date(),
     };
 

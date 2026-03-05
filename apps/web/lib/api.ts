@@ -254,8 +254,8 @@ export const transcriptionApi = {
     return api.delete(`/transcriptions/${id}`);
   },
 
-  regenerateSummary: async (id: string, instructions?: string): Promise<ApiResponse<{ summary: string }>> => {
-    return api.post(`/transcriptions/${id}/regenerate-summary`, { instructions });
+  regenerateSummary: async (id: string, options?: { instructions?: string; context?: string }): Promise<ApiResponse<{ summary: string }>> => {
+    return api.post(`/transcriptions/${id}/regenerate-summary`, options || {});
   },
 
   // Comment API methods

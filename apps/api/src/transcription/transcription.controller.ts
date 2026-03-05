@@ -876,13 +876,14 @@ export class TranscriptionController {
   @UseGuards(FirebaseAuthGuard)
   async regenerateSummary(
     @Param('id') transcriptionId: string,
-    @Body() request: { instructions?: string },
+    @Body() request: { instructions?: string; context?: string },
     @Req() req: Request & { user: any },
   ): Promise<ApiResponse<Transcription>> {
     const transcription = await this.transcriptionService.regenerateSummary(
       transcriptionId,
       req.user.uid,
       request.instructions,
+      request.context,
     );
 
     return {

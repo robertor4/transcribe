@@ -829,7 +829,18 @@
     "summary": {
       "notAvailable": "Summary is not available yet.",
       "regenerate": "Regenerate Summary",
-      "regenerating": "Regenerating..."
+      "regenerating": "Regenerating...",
+      "regenerateDialogTitle": "Regenerate Summary",
+      "regenerateDialogDescription": "Customize how the summary is generated.",
+      "contextLabel": "Meeting context",
+      "contextPlaceholder": "e.g., Weekly product sync, Q1 planning session...",
+      "instructionsLabel": "Additional instructions",
+      "instructionsPlaceholder": "e.g., Focus on decisions and action items, keep it brief...",
+      "regenerateButton": "Regenerate",
+      "cancelButton": "Cancel",
+      "regeneratingToast": "Summary is being regenerated...",
+      "regenerateSuccess": "Summary regenerated successfully",
+      "regenerateError": "Failed to regenerate summary"
     },
     "translation": {
       "original": "Original",

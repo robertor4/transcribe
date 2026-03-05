@@ -828,7 +828,18 @@
     "summary": {
       "notAvailable": "Samenvatting is nog niet beschikbaar.",
       "regenerate": "Samenvatting opnieuw genereren",
-      "regenerating": "Bezig met genereren..."
+      "regenerating": "Bezig met genereren...",
+      "regenerateDialogTitle": "Samenvatting opnieuw genereren",
+      "regenerateDialogDescription": "Pas aan hoe de samenvatting wordt gegenereerd.",
+      "contextLabel": "Vergadercontext",
+      "contextPlaceholder": "bijv. Wekelijkse productsync, Q1 planningssessie...",
+      "instructionsLabel": "Aanvullende instructies",
+      "instructionsPlaceholder": "bijv. Focus op beslissingen en actiepunten, houd het kort...",
+      "regenerateButton": "Opnieuw genereren",
+      "cancelButton": "Annuleren",
+      "regeneratingToast": "Samenvatting wordt opnieuw gegenereerd...",
+      "regenerateSuccess": "Samenvatting succesvol gegenereerd",
+      "regenerateError": "Samenvatting opnieuw genereren mislukt"
     },
     "translation": {
       "original": "Origineel",

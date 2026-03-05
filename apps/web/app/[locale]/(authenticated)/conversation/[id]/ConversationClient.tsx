@@ -66,6 +66,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { RegenerateSummaryDialog } from './RegenerateSummaryDialog';
 
 type ErrorCategory = 'fileCorrupt' | 'timeout' | 'quota' | 'generic';
 
@@ -149,6 +150,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [isRegeneratingSummary, setIsRegeneratingSummary] = useState(false);
+  const [isRegenerateDialogOpen, setIsRegenerateDialogOpen] = useState(false);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
@@ -312,16 +314,19 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   };
 
   // Regenerate summary handler
-  const handleRegenerateSummary = async () => {
+  const handleRegenerateSummary = async (options?: { context?: string; instructions?: string }) => {
     if (isRegeneratingSummary) return;
 
+    setIsRegenerateDialogOpen(false);
     setIsRegeneratingSummary(true);
+    toast.info(tConversation('summary.regeneratingToast'));
     try {
-      await transcriptionApi.regenerateSummary(conversationId);
-      // Refresh the conversation to get the new summary
+      await transcriptionApi.regenerateSummary(conversationId, options);
       await refresh();
+      toast.success(tConversation('summary.regenerateSuccess'));
     } catch (error) {
       console.error('Failed to regenerate summary:', error);
+      toast.error(tConversation('summary.regenerateError'));
     } finally {
       setIsRegeneratingSummary(false);
     }
@@ -717,7 +722,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                             {
                               icon: RefreshCw,
                               label: isRegeneratingSummary ? tConversation('summary.regenerating') : tConversation('summary.regenerate'),
-                              onClick: handleRegenerateSummary,
+                              onClick: () => setIsRegenerateDialogOpen(true),
                               disabled: isRegeneratingSummary,
                             },
                           ]
@@ -797,6 +802,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
               {/* Tab Content - Both tabs are always rendered for Find & Replace scroll navigation */}
               <div className={activeTab === 'summary' ? '' : 'hidden'}>
               <section id="summary" className="scroll-mt-16">
+                {isRegeneratingSummary && (
+                  <div className="flex items-center gap-2 px-3 py-2 mb-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/40">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600 dark:text-purple-400" />
+                    <span className="text-sm text-purple-700 dark:text-purple-300">{tConversation('summary.regenerating')}</span>
+                  </div>
+                )}
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
                   <TranslatedSummaryRenderer
                     summaryV2={conversation.source.summary.summaryV2}
@@ -813,7 +824,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     {(isAdmin || userTier !== 'free') && (
                       <Button
                         variant="primary"
-                        onClick={handleRegenerateSummary}
+                        onClick={() => setIsRegenerateDialogOpen(true)}
                         disabled={isRegeneratingSummary}
                         icon={isRegeneratingSummary ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                       >
@@ -1084,6 +1095,14 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         isAdmin={isAdmin}
         onSelectLocale={setLocale}
         onTranslate={translate}
+      />
+
+      {/* Regenerate Summary Dialog */}
+      <RegenerateSummaryDialog
+        open={isRegenerateDialogOpen}
+        onOpenChange={setIsRegenerateDialogOpen}
+        initialContext={conversation.context || ''}
+        onSubmit={handleRegenerateSummary}
       />
 
       {/* Delete Confirmation Modal */}

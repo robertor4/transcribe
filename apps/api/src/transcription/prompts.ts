@@ -417,6 +417,7 @@ export function buildSummaryPromptV2(
   transcription: string,
   context = '',
   language = '',
+  instructions = '',
 ): string {
   let fullPrompt = SUMMARIZATION_PROMPT_V2;
 
@@ -430,6 +431,11 @@ Use this context to better understand references, participants, and technical te
 ---
 
 ${fullPrompt}`;
+  }
+
+  // Add user instructions if provided
+  if (instructions) {
+    fullPrompt += `\n\n---\nADDITIONAL INSTRUCTIONS FROM THE USER:\n${instructions}\n\nApply these instructions when generating the summary.`;
   }
 
   // Add language instructions if specified
