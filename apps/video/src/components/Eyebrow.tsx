@@ -5,6 +5,8 @@ interface EyebrowProps {
   children: React.ReactNode;
   /** Override color (default: cyan #14D0DC) */
   color?: string;
+  /** Override font size in web-px, scaled via sz(). Default: 11 */
+  size?: number;
 }
 
 /**
@@ -13,14 +15,15 @@ interface EyebrowProps {
 export const Eyebrow: React.FC<EyebrowProps> = ({
   children,
   color = colors.cyan,
+  size = 11,
 }) => {
   return (
     <div
       style={{
         fontFamily: '"DM Mono", monospace',
-        fontSize: sz(11),
+        fontSize: sz(size),
         fontWeight: 400,
-        letterSpacing: 3.5,
+        letterSpacing: size > 14 ? 5 : 3.5,
         textTransform: 'uppercase',
         color,
       }}

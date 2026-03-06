@@ -115,7 +115,7 @@ function buildMdxComponents(): MDXComponents {
     },
     li: ({ children }) => (
       <li className="flex items-start gap-3 text-[15px] text-gray-700 leading-[1.7]">
-        <span className="flex-shrink-0 w-5 h-5 rounded-full border border-gray-300 text-gray-400 text-[10px] font-bold flex items-center justify-center mt-[3px]">&gt;</span>
+        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center mt-[3px]">&gt;</span>
         <span className="flex-1">{children}</span>
       </li>
     ),

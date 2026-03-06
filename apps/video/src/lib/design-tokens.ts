@@ -6,8 +6,8 @@
 // ─── Colors ──────────────────────────────────────────────
 export const colors = {
   bg: '#22184C',
-  bgCard: 'rgba(255, 255, 255, 0.04)',
-  bgCardBorder: 'rgba(255, 255, 255, 0.07)',
+  bgCard: 'rgba(255, 255, 255, 0.08)',
+  bgCardBorder: 'rgba(255, 255, 255, 0.15)',
 
   primary: '#8D6AFA',
   primaryHover: '#7A5AE0',
@@ -27,9 +27,9 @@ export const colors = {
 
   // Text hierarchy
   textPrimary: '#ffffff',
-  textSecondary: 'rgba(255, 255, 255, 0.6)',
-  textMuted: 'rgba(255, 255, 255, 0.35)',
-  textSubtle: 'rgba(255, 255, 255, 0.18)',
+  textSecondary: 'rgba(255, 255, 255, 0.8)',
+  textMuted: 'rgba(255, 255, 255, 0.55)',
+  textSubtle: 'rgba(255, 255, 255, 0.3)',
 
   // Level bars
   barPurple: '#8D6AFA',

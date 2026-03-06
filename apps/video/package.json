@@ -7,6 +7,10 @@
     "studio": "remotion studio src/index.ts --port=3100",
     "render": "remotion render src/index.ts",
     "render:promo": "remotion render src/index.ts Promo60s --output=out/promo-60s.mp4",
+    "render:blog-speed-gap": "remotion render src/index.ts BlogSpeedGap --output=out/blog-speed-gap.mp4",
+    "render:blog-cascade": "remotion render src/index.ts BlogDeliverableCascade --output=out/blog-deliverable-cascade.mp4",
+    "render:blog-roi": "remotion render src/index.ts BlogROICounter --output=out/blog-roi-counter.mp4",
+    "render:blog-all": "npm run render:blog-speed-gap && npm run render:blog-cascade && npm run render:blog-roi",
     "upgrade": "remotion upgrade",
     "lint": "echo 'no lint configured'"
   },

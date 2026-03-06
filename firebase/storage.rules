@@ -67,5 +67,12 @@ service firebase.storage {
       allow write: if false; // Only backend can write via Admin SDK
       allow delete: if false; // Only backend can delete
     }
+
+    // Public blog videos (Remotion animations, no authentication required)
+    match /public/blog-videos/{fileName} {
+      allow read: if true; // Public read access
+      allow write: if false; // Only backend can write via Admin SDK
+      allow delete: if false; // Only backend can delete
+    }
   }
 }
