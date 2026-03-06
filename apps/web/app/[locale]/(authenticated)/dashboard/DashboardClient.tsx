@@ -19,6 +19,8 @@ import { useFoldersContext } from '@/contexts/FoldersContext';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { getCreativeGreeting } from '@/lib/userHelpers';
 import { useTranslations } from 'next-intl';
+import { OnboardingQuestionnaire } from '@/components/onboarding/OnboardingQuestionnaire';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import type { LucideIcon } from 'lucide-react';
 
 // Quick create button config - defined outside component to avoid recreation
@@ -182,7 +184,7 @@ export function DashboardClient() {
             </div>
 
             {/* Quick Create Buttons */}
-            <section className="mb-6 sm:mb-10">
+            <section className="mb-6 sm:mb-10" data-tour-step="dashboard-create">
               {/* Mobile: Primary action + secondary row */}
               <div className="sm:hidden space-y-2">
                 {/* Primary: Record the room */}
@@ -266,6 +268,10 @@ export function DashboardClient() {
         initialStep={createModalConfig.initialStep}
         uploadMethod={createModalConfig.uploadMethod}
       />
+
+      {/* Onboarding */}
+      <OnboardingQuestionnaire />
+      <OnboardingTour />
       </div>
   );
 }

@@ -19,7 +19,12 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { UserService } from './user.service';
 import { UsageService } from '../usage/usage.service';
 import { FirebaseService } from '../firebase/firebase.service';
-import { ApiResponse, User } from '@transcribe/shared';
+import {
+  ApiResponse,
+  OnboardingData,
+  OnboardingResponses,
+  User,
+} from '@transcribe/shared';
 
 @Controller('user')
 @UseGuards(FirebaseAuthGuard)
@@ -206,6 +211,40 @@ export class UserController {
         resetDate: nextReset,
       },
     };
+  }
+
+  /**
+   * Save onboarding questionnaire responses and state
+   */
+  @Put('onboarding')
+  async updateOnboarding(
+    @Req() req: Request,
+    @Body()
+    body: {
+      responses?: OnboardingResponses;
+      questionnaireCompletedAt?: string;
+      tourCompletedAt?: string;
+      completedAt?: string;
+      skippedAt?: string;
+    },
+  ): Promise<ApiResponse<OnboardingData>> {
+    const userId = (req as any).user.uid;
+    const onboarding = await this.userService.updateOnboarding(userId, body);
+    return { success: true, data: onboarding };
+  }
+
+  /**
+   * Seed an example conversation for onboarding
+   * Idempotent: returns existing example if already created
+   */
+  @Post('onboarding/seed-example')
+  async seedExampleConversation(
+    @Req() req: Request,
+  ): Promise<ApiResponse<{ transcriptionId: string }>> {
+    const userId = (req as any).user.uid;
+    const transcriptionId =
+      await this.userService.seedExampleConversation(userId);
+    return { success: true, data: { transcriptionId } };
   }
 
   /**

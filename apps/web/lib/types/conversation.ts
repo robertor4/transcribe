@@ -34,6 +34,7 @@ export interface Conversation {
   context?: string; // User-provided context during recording
   conversationCategory?: ConversationCategory; // AI-detected category
   error?: string; // Error message when status is 'failed'
+  isExample?: boolean; // Onboarding example conversation
 }
 
 export type ConversationStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -224,6 +225,7 @@ export function transcriptionToConversation(transcription: Transcription): Conve
     context: transcription.context,
     conversationCategory: transcription.conversationCategory,
     error: transcription.error,
+    isExample: transcription.isExample,
   };
 }
 
@@ -275,6 +277,7 @@ export function transcriptionSummaryToConversation(
     },
     assetsCount: summary.generatedAnalysisIds?.length || 0,
     context: undefined, // Not available in summary
+    isExample: summary.isExample,
   };
 }
 

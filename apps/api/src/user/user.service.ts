@@ -2,8 +2,24 @@ import { Injectable, Logger } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import { StorageService } from '../firebase/services/storage.service';
 import { UserRepository } from '../firebase/repositories/user.repository';
+import { TranscriptionRepository } from '../firebase/repositories/transcription.repository';
+import { AnalysisRepository } from '../firebase/repositories/analysis.repository';
 import { StripeService } from '../stripe/stripe.service';
-import { User } from '@transcribe/shared';
+import {
+  OnboardingData,
+  OnboardingResponses,
+  TranscriptionStatus,
+  User,
+} from '@transcribe/shared';
+import {
+  getExampleSpeakerSegments,
+  getExampleSpeakers,
+  getExampleTranscriptText,
+  getExampleSummaryV2,
+  getExampleActionItems,
+  getExampleFollowUpEmail,
+  getExampleMeetingMinutes,
+} from './fixtures/example-conversation.en';
 
 @Injectable()
 export class UserService {
@@ -13,6 +29,8 @@ export class UserService {
     private firebaseService: FirebaseService,
     private storageService: StorageService,
     private userRepository: UserRepository,
+    private transcriptionRepository: TranscriptionRepository,
+    private analysisRepository: AnalysisRepository,
     private stripeService: StripeService,
   ) {}
 
@@ -459,6 +477,141 @@ export class UserService {
       );
       throw error;
     }
+  }
+
+  /**
+   * Update onboarding state and questionnaire responses
+   */
+  async updateOnboarding(
+    userId: string,
+    data: {
+      responses?: OnboardingResponses;
+      questionnaireCompletedAt?: string;
+      tourCompletedAt?: string;
+      completedAt?: string;
+      skippedAt?: string;
+    },
+  ): Promise<OnboardingData> {
+    const user = await this.userRepository.getUser(userId);
+    const existing = user?.onboarding || {};
+
+    const updated: OnboardingData = {
+      ...existing,
+      ...(data.responses && { responses: data.responses }),
+      ...(data.questionnaireCompletedAt && {
+        questionnaireCompletedAt: new Date(data.questionnaireCompletedAt),
+      }),
+      ...(data.tourCompletedAt && {
+        tourCompletedAt: new Date(data.tourCompletedAt),
+      }),
+      ...(data.completedAt && { completedAt: new Date(data.completedAt) }),
+      ...(data.skippedAt && { skippedAt: new Date(data.skippedAt) }),
+    };
+
+    await this.userRepository.updateUser(userId, { onboarding: updated });
+    this.logger.log(`Onboarding state updated for user ${userId}`);
+    return updated;
+  }
+
+  /**
+   * Seed an example conversation for a new user's onboarding.
+   * Idempotent: if the user already has an example conversation, returns its ID.
+   * Does NOT count against usage quotas.
+   */
+  async seedExampleConversation(userId: string): Promise<string> {
+    // Idempotency check
+    const user = await this.userRepository.getUser(userId);
+    if (user?.onboarding?.exampleConversationId) {
+      this.logger.log(
+        `Example conversation already exists for user ${userId}: ${user.onboarding.exampleConversationId}`,
+      );
+      return user.onboarding.exampleConversationId;
+    }
+
+    const now = new Date();
+
+    // Create the transcription document
+    const transcriptionId =
+      await this.transcriptionRepository.createTranscription({
+        userId,
+        fileName: 'Example: Product Strategy Meeting',
+        title: 'Example: Product Strategy Meeting',
+        fileSize: 0,
+        mimeType: 'audio/mpeg',
+        duration: 520,
+        status: TranscriptionStatus.COMPLETED,
+        transcriptText: getExampleTranscriptText(),
+        summaryV2: getExampleSummaryV2(),
+        speakerCount: 2,
+        speakers: getExampleSpeakers(),
+        speakerSegments: getExampleSpeakerSegments(),
+        diarizationConfidence: 0.95,
+        conversationCategory: 'business-meeting',
+        isExample: true,
+        detectedLanguage: 'english',
+        summaryLanguage: 'english',
+        createdAt: now,
+        updatedAt: now,
+        completedAt: now,
+      });
+
+    // Create pre-generated AI assets
+    const [actionItemsId, followUpEmailId, meetingMinutesId] =
+      await Promise.all([
+        this.analysisRepository.createGeneratedAnalysis({
+          transcriptionId,
+          userId,
+          templateId: 'actionItems',
+          templateName: 'Action Items',
+          templateVersion: '1.0.0',
+          content: getExampleActionItems(),
+          contentType: 'structured',
+          model: 'gpt-5',
+          generatedAt: now,
+          generationTimeMs: 0,
+        }),
+        this.analysisRepository.createGeneratedAnalysis({
+          transcriptionId,
+          userId,
+          templateId: 'followUpEmail',
+          templateName: 'Follow-up Email',
+          templateVersion: '1.0.0',
+          content: getExampleFollowUpEmail(),
+          contentType: 'structured',
+          model: 'gpt-5',
+          generatedAt: now,
+          generationTimeMs: 0,
+        }),
+        this.analysisRepository.createGeneratedAnalysis({
+          transcriptionId,
+          userId,
+          templateId: 'meetingMinutes',
+          templateName: 'Meeting Minutes',
+          templateVersion: '1.0.0',
+          content: getExampleMeetingMinutes(),
+          contentType: 'structured',
+          model: 'gpt-5',
+          generatedAt: now,
+          generationTimeMs: 0,
+        }),
+      ]);
+
+    // Link analyses to transcription
+    await this.transcriptionRepository.updateTranscription(transcriptionId, {
+      generatedAnalysisIds: [actionItemsId, followUpEmailId, meetingMinutesId],
+    });
+
+    // Store the example conversation ID on the user's onboarding data
+    const onboarding: OnboardingData = {
+      ...(user?.onboarding || {}),
+      exampleConversationId: transcriptionId,
+    };
+    await this.userRepository.updateUser(userId, { onboarding });
+
+    this.logger.log(
+      `Seeded example conversation ${transcriptionId} with 3 AI assets for user ${userId}`,
+    );
+    return transcriptionId;
   }
 
   /**

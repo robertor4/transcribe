@@ -259,6 +259,7 @@
       "nextPage": "Page suivante",
       "noResults": "Aucune conversation trouvée",
       "noDuration": "--",
+      "example": "Exemple",
       "deleteMultipleTitle": "Supprimer {count} conversations ?",
       "deleteMultipleMessage": "Cette action est irréversible. Toutes les conversations sélectionnées et leurs AI assets seront définitivement supprimés.",
       "selectAll": "Tout sélectionner",
@@ -2879,5 +2880,89 @@
     "noPosts": "Pas encore d'articles. Revenez bientôt.",
     "backToBlog": "Retour au blog",
     "tableOfContents": "Table des matières"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur Neural Summary",
+      "subtitle": "Répondez à quelques questions pour personnaliser votre expérience.",
+      "getStarted": "Commencer",
+      "skip": "Passer"
+    },
+    "useCaseRole": {
+      "useCaseTitle": "Pour quoi utiliserez-vous principalement Neural Summary ?",
+      "roleTitle": "Quel est votre rôle ?",
+      "useCases": {
+        "work-meetings": "Réunions de travail",
+        "interviews": "Entretiens",
+        "content-creation": "Création de contenu",
+        "personal-notes": "Notes personnelles",
+        "client-calls": "Appels clients",
+        "brainstorming": "Brainstorming"
+      },
+      "roles": {
+        "product-manager": "Chef de produit",
+        "founder": "Fondateur / PDG",
+        "consultant": "Consultant",
+        "engineer": "Ingénieur",
+        "sales": "Commercial",
+        "content-creator": "Créateur de contenu",
+        "other": "Autre"
+      },
+      "roleOtherPlaceholder": "Votre rôle"
+    },
+    "teamOutput": {
+      "teamTitle": "Travaillez-vous seul ou en équipe ?",
+      "outputTitle": "Quels types de sorties vous intéressent le plus ?",
+      "teamSizes": {
+        "solo": "Seul",
+        "small": "Petite équipe (2-10)",
+        "medium": "Moyenne (11-50)",
+        "large": "Grande (50+)"
+      },
+      "outputTypes": {
+        "actionItems": "Actions à mener",
+        "meetingMinutes": "Compte-rendu",
+        "followUpEmail": "E-mail de suivi",
+        "blogPost": "Article de blog",
+        "prd": "PRD",
+        "executiveSummary": "Résumé exécutif",
+        "linkedIn": "Post LinkedIn",
+        "custom": "Personnalisé"
+      }
+    },
+    "discovery": {
+      "title": "Comment avez-vous découvert Neural Summary ?",
+      "sources": {
+        "search": "Recherche web",
+        "social-media": "Réseaux sociaux",
+        "friend": "Ami ou collègue",
+        "producthunt": "Product Hunt",
+        "other": "Autre"
+      },
+      "complete": "Terminer"
+    },
+    "progress": "Étape {current} sur {total}",
+    "continue": "Continuer",
+    "back": "Retour",
+    "tour": {
+      "step1Title": "Votre tableau de bord",
+      "step1Description": "Voici votre tableau de bord. Toutes vos conversations apparaissent ici. Créez-en de nouvelles en enregistrant de l'audio ou en téléchargeant un fichier.",
+      "step2Title": "Organisez avec des dossiers",
+      "step2Description": "Organisez vos conversations dans des dossiers pour un accès facile.",
+      "step3Title": "Recherchez partout",
+      "step3Description": "Recherchez dans toutes vos conversations et assets IA.",
+      "step4Title": "Conversation exemple",
+      "step4Description": "Nous avons créé une conversation exemple pour vous. Ouvrez-la pour découvrir ce que Neural Summary peut faire.",
+      "step5Title": "Explorez et créez",
+      "step5Description": "Explorez le résumé, la transcription et les assets IA. Posez des questions ou générez de nouveaux documents.",
+      "next": "Suivant",
+      "skipTour": "Passer la visite",
+      "startExploring": "Commencer l'exploration",
+      "stepOf": "{current} sur {total}"
+    },
+    "exampleBadge": "Exemple",
+    "exampleBanner": "Ceci est une conversation exemple. Téléchargez votre propre audio pour commencer.",
+    "exampleBannerCta": "Télécharger de l'audio",
+    "tutorial": "Tutoriel"
   }
 }

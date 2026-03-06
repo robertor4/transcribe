@@ -142,6 +142,7 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
         onTouchMove={handleTouchMove}
         data-state={isSelected ? 'selected' : undefined}
         className="group cursor-pointer"
+        {...(conversation.isExample ? { 'data-tour-step': 'example-conversation' } : {})}
       >
         {/* Checkbox */}
         <TableCell className="w-[40px] pr-0" data-no-navigate>
@@ -160,6 +161,11 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
             <span className="font-medium text-gray-900 dark:text-gray-100 truncate transition-colors">
               {conversation.title}
             </span>
+            {conversation.isExample && (
+              <Badge variant="outline" className="flex-shrink-0 text-[10px] px-1.5 py-0 border-purple-300 text-purple-600 dark:border-purple-700 dark:text-purple-400">
+                {t('table.example')}
+              </Badge>
+            )}
             {/* Mobile-only status indicator (hidden when Status column is visible) */}
             {conversation.status === 'processing' && (
               <span className="flex-shrink-0 lg:hidden px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">

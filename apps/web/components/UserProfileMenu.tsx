@@ -4,7 +4,8 @@ import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUsage } from '@/contexts/UsageContext';
 import { useTranslations } from 'next-intl';
-import { LogOut, Settings, User as UserIcon, ChevronDown, Shield, Sun, Moon, Monitor } from 'lucide-react';
+import { LogOut, Settings, User as UserIcon, ChevronDown, Shield, Sun, Moon, Monitor, GraduationCap } from 'lucide-react';
+import { useOnboarding } from '@/components/onboarding/OnboardingProvider';
 import { UsageIndicator } from '@/components/paywall/UsageIndicator';
 import { UserAvatar } from '@/components/UserAvatar';
 import { useTheme, ThemeMode } from '@/hooks/useTheme';
@@ -28,10 +29,12 @@ interface UserProfileMenuProps {
 export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
   const { user, logout } = useAuth();
   const { usageStats, isAdmin, profilePhotoUrl } = useUsage();
+  const { restartOnboarding } = useOnboarding();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const tAuth = useTranslations('auth');
   const tSettings = useTranslations('settings');
+  const tOnboarding = useTranslations('onboarding');
   const tCommon = useTranslations('common');
   const tUsage = useTranslations('usage');
 
@@ -248,6 +251,12 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
         <DropdownMenuItem onSelect={handleSettingsClick} className="gap-3 px-4 py-2 cursor-pointer">
           <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           <span>{tSettings('title')}</span>
+        </DropdownMenuItem>
+
+        {/* Tutorial */}
+        <DropdownMenuItem onSelect={restartOnboarding} className="gap-3 px-4 py-2 cursor-pointer">
+          <GraduationCap className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <span>{tOnboarding('tutorial')}</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

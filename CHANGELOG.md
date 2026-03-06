@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Onboarding experience for new users**: Full onboarding flow with questionnaire, spotlight tour, and preloaded example conversation
+  - 4-step blocking questionnaire modal: welcome, use case + role, team + output types, discovery source
+  - Spotlight guided tour (5 steps) built with Radix Popover + Framer Motion highlighting dashboard, folders, search, and example conversation
+  - Preloaded example conversation: realistic 8-minute product strategy meeting with 2 speakers, V2 summary, and 3 pre-generated AI assets (action items, follow-up email, meeting minutes)
+  - New `OnboardingProvider` context with `useOnboarding` hook for managing onboarding state
+  - Backend: `PUT /user/onboarding` and `POST /user/onboarding/seed-example` endpoints
+  - "Example" badge on dashboard conversation cards for seeded conversations
+  - `onboarding` field on User type, `isExample` flag on Transcription/TranscriptionSummary types
+  - Full i18n support: all onboarding UI translated in en, nl, de, fr, es
+  - New files: [OnboardingProvider.tsx](apps/web/components/onboarding/OnboardingProvider.tsx), [OnboardingQuestionnaire.tsx](apps/web/components/onboarding/OnboardingQuestionnaire.tsx), [OnboardingTour.tsx](apps/web/components/onboarding/OnboardingTour.tsx), [example-conversation.en.ts](apps/api/src/user/fixtures/example-conversation.en.ts)
+  - Modified: [types.ts](packages/shared/src/types.ts), [user.controller.ts](apps/api/src/user/user.controller.ts), [user.service.ts](apps/api/src/user/user.service.ts), [DashboardClient.tsx](apps/web/app/[locale]/(authenticated)/dashboard/DashboardClient.tsx), [layout.tsx](apps/web/app/[locale]/(authenticated)/layout.tsx), [ConversationsTableRow.tsx](apps/web/components/dashboard/conversations-table/ConversationsTableRow.tsx), [LeftNavigation.tsx](apps/web/components/LeftNavigation.tsx), [conversation.ts](apps/web/lib/types/conversation.ts), [transcription.repository.ts](apps/api/src/firebase/repositories/transcription.repository.ts)
+
 - **SEO blog**: File-based MDX blog at `/[locale]/blog` for organic traffic and visibility
   - Blog posts as `.mdx` files in `content/blog/` with frontmatter (title, description, date, tags)
   - Blog index page with post cards, blog post page with MDX rendering via `next-mdx-remote/rsc`

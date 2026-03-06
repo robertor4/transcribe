@@ -259,6 +259,7 @@
       "nextPage": "Volgende pagina",
       "noResults": "Geen gesprekken gevonden",
       "noDuration": "--",
+      "example": "Voorbeeld",
       "deleteMultipleTitle": "{count} gesprekken verwijderen?",
       "deleteMultipleMessage": "Dit kan niet ongedaan worden gemaakt. Alle geselecteerde gesprekken en hun AI assets worden permanent verwijderd.",
       "selectAll": "Alles selecteren",
@@ -2884,5 +2885,89 @@
     "noPosts": "Nog geen berichten. Kom snel terug.",
     "backToBlog": "Terug naar blog",
     "tableOfContents": "Inhoudsopgave"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welkom bij Neural Summary",
+      "subtitle": "Beantwoord een paar korte vragen zodat we je ervaring kunnen afstemmen.",
+      "getStarted": "Aan de slag",
+      "skip": "Overslaan"
+    },
+    "useCaseRole": {
+      "useCaseTitle": "Waarvoor ga je Neural Summary voornamelijk gebruiken?",
+      "roleTitle": "Wat beschrijft jouw rol het best?",
+      "useCases": {
+        "work-meetings": "Werkvergaderingen",
+        "interviews": "Interviews",
+        "content-creation": "Content creatie",
+        "personal-notes": "Persoonlijke notities",
+        "client-calls": "Klantgesprekken",
+        "brainstorming": "Brainstormen"
+      },
+      "roles": {
+        "product-manager": "Productmanager",
+        "founder": "Oprichter / CEO",
+        "consultant": "Consultant",
+        "engineer": "Engineer",
+        "sales": "Sales",
+        "content-creator": "Content creator",
+        "other": "Anders"
+      },
+      "roleOtherPlaceholder": "Jouw rol"
+    },
+    "teamOutput": {
+      "teamTitle": "Werk je alleen of in een team?",
+      "outputTitle": "Welke outputs interesseren je het meest?",
+      "teamSizes": {
+        "solo": "Solo",
+        "small": "Klein team (2-10)",
+        "medium": "Middelgroot (11-50)",
+        "large": "Groot (50+)"
+      },
+      "outputTypes": {
+        "actionItems": "Actiepunten",
+        "meetingMinutes": "Notulen",
+        "followUpEmail": "Follow-up e-mail",
+        "blogPost": "Blogpost",
+        "prd": "PRD",
+        "executiveSummary": "Samenvatting",
+        "linkedIn": "LinkedIn-bericht",
+        "custom": "Aangepast"
+      }
+    },
+    "discovery": {
+      "title": "Hoe heb je over Neural Summary gehoord?",
+      "sources": {
+        "search": "Zoekmachine",
+        "social-media": "Social media",
+        "friend": "Vriend of collega",
+        "producthunt": "Product Hunt",
+        "other": "Anders"
+      },
+      "complete": "Voltooien"
+    },
+    "progress": "Stap {current} van {total}",
+    "continue": "Doorgaan",
+    "back": "Terug",
+    "tour": {
+      "step1Title": "Je dashboard",
+      "step1Description": "Dit is je dashboard. Al je gesprekken verschijnen hier. Maak nieuwe aan door audio op te nemen of een bestand te uploaden.",
+      "step2Title": "Organiseer met mappen",
+      "step2Description": "Organiseer je gesprekken in mappen voor eenvoudige toegang.",
+      "step3Title": "Doorzoek alles",
+      "step3Description": "Zoek door al je gesprekken en AI-assets.",
+      "step4Title": "Voorbeeldgesprek",
+      "step4Description": "We hebben een voorbeeldgesprek voor je aangemaakt. Open het om te zien wat Neural Summary kan.",
+      "step5Title": "Verken en creeer",
+      "step5Description": "Verken de samenvatting, het transcript en de AI-assets. Probeer vragen te stellen of nieuwe outputs te genereren.",
+      "next": "Volgende",
+      "skipTour": "Tour overslaan",
+      "startExploring": "Begin met verkennen",
+      "stepOf": "{current} van {total}"
+    },
+    "exampleBadge": "Voorbeeld",
+    "exampleBanner": "Dit is een voorbeeldgesprek. Upload je eigen audio om te beginnen.",
+    "exampleBannerCta": "Audio uploaden",
+    "tutorial": "Rondleiding"
   }
 }

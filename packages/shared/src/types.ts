@@ -92,6 +92,45 @@ export interface User {
     onTranscriptionComplete?: boolean;
     digest?: 'immediate' | 'daily' | 'weekly';
   };
+
+  // Onboarding state
+  onboarding?: OnboardingData;
+}
+
+export interface OnboardingResponses {
+  primaryUseCase?:
+    | 'work-meetings'
+    | 'interviews'
+    | 'content-creation'
+    | 'personal-notes'
+    | 'client-calls'
+    | 'brainstorming';
+  role?:
+    | 'product-manager'
+    | 'founder'
+    | 'consultant'
+    | 'engineer'
+    | 'sales'
+    | 'content-creator'
+    | 'other';
+  roleOther?: string;
+  teamSize?: 'solo' | 'small' | 'medium' | 'large';
+  topOutputTypes?: string[];
+  discoverySource?:
+    | 'search'
+    | 'social-media'
+    | 'friend'
+    | 'producthunt'
+    | 'other';
+}
+
+export interface OnboardingData {
+  completedAt?: Date;
+  skippedAt?: Date;
+  questionnaireCompletedAt?: Date;
+  tourCompletedAt?: Date;
+  exampleConversationId?: string;
+  responses?: OnboardingResponses;
 }
 
 export interface TranscriptionContext {
@@ -1188,6 +1227,8 @@ export interface TranscriptionSummary {
   generatedAnalysisIds?: string[];
   // For sharing indicator
   shareToken?: string;
+  // Onboarding: marks this as a preloaded example conversation
+  isExample?: boolean;
 }
 
 export interface Transcription {
@@ -1254,6 +1295,8 @@ export interface Transcription {
   vectorIndexVersion?: number; // Schema version for future migrations
   // AI-detected conversation category (e.g., 'sales-call', 'business-meeting')
   conversationCategory?: ConversationCategory;
+  // Onboarding: marks this as a preloaded example conversation
+  isExample?: boolean;
 }
 
 export interface TranscriptionJob {

@@ -124,7 +124,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
       </div>
 
       {/* Search */}
-      <div className="py-3 px-4">
+      <div className="py-3 px-4" data-tour-step="nav-search">
         {/* Enhanced Search Bar */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
@@ -239,7 +239,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
         <div className="mx-4 border-t border-black/20" />
 
         {/* Folders Section - Tap to expand/collapse (touch-friendly) */}
-        <div className="py-4 px-4">
+        <div className="py-4 px-4" data-tour-step="nav-folders">
           <div className={`flex items-center justify-between ${isFoldersExpanded ? 'mb-3' : ''}`}>
             <button
               onClick={() => setIsFoldersExpanded(!isFoldersExpanded)}

@@ -187,6 +187,7 @@ export class TranscriptionRepository {
       'updatedAt',
       'generatedAnalysisIds',
       'shareToken',
+      'isExample',
       'deletedAt', // Needed for filtering
     ];
 
@@ -500,6 +501,7 @@ export class TranscriptionRepository {
       updatedAt: this.toDateOrValue(data.updatedAt),
       generatedAnalysisIds: data.generatedAnalysisIds,
       shareToken: data.shareToken,
+      isExample: data.isExample || undefined,
     } as TranscriptionSummary;
   }
 }
