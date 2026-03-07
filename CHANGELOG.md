@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Mobile companion app (Phase 3 - Recording Detail)**: View completed transcription results
+  - Fetches full transcription from `GET /transcriptions/:id` API
+  - Displays title, duration, language, speaker count metadata chips
+  - Renders summaryV2 overview, key points (bullet list), and structured sections
+  - Collapsible transcript preview (first 500 chars with "Show full transcript" toggle)
+  - Pull-to-refresh, loading/error states with retry
+  - "View full details on web" button opens `neuralsummary.com/en/conversation/{id}`
+  - Back navigation via Expo Router Stack.Screen header
+
 - **Mobile companion app (Phase 2 - Record & Upload)**: Full recording, upload, and progress tracking
   - `useRecorder` hook wrapping `expo-audio` `useAudioRecorder` with record/pause/resume/stop, timer, and audio level metering
   - Record screen with animated pulse ring (audio level visualization), pause/resume controls, and discard confirmation
