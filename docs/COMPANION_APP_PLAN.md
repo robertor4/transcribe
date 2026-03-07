@@ -277,7 +277,8 @@ The mobile app uses the **exact same endpoints** as the web app:
   └── settings.tsx       # Account, notifications, about
 
 (stack)
-  └── recording/[id].tsx # Recording detail (basic transcript preview)
+  ├── confirm-upload.tsx  # Post-recording: optional context field + upload button
+  └── recording/[id].tsx  # Recording detail (transcript preview + "View full details" → web)
 ```
 
 ### Screen Specs
@@ -416,7 +417,8 @@ No new shared code needed — the existing types are sufficient.
 - [ ] Save recordings to local filesystem
 - [ ] Test recording quality (M4A format, 128kbps bitrate)
 - [ ] Test iOS background recording (UIBackgroundModes: audio)
-- [ ] Document Android background recording limitation
+- [ ] Enable `enableBackgroundRecording` config plugin (iOS + Android)
+- [ ] Test Android foreground service notification during recording
 - [ ] Implement audio level visualization
 
 **De-risking checkpoint**: Does a recording on the phone produce a file that AssemblyAI/Whisper can transcribe accurately?
@@ -425,6 +427,7 @@ No new shared code needed — the existing types are sufficient.
 
 **Goal**: Upload recordings and track processing status
 
+- [ ] Post-recording confirmation screen (optional context field + upload button)
 - [ ] Implement `@react-native-firebase/storage` upload with `putFile()`
 - [ ] Upload progress tracking (bytes transferred / total)
 - [ ] Implement upload queue (zustand store persisted with MMKV)
@@ -456,7 +459,8 @@ No new shared code needed — the existing types are sufficient.
 - [ ] Error states and empty states
 - [ ] Offline recording queue (record now, upload later)
 - [ ] App icon and splash screen (Neural Summary branding)
-- [ ] Deep links to web app for full features
+- [ ] Localization: all 5 languages (en, nl, de, fr, es) using expo-localization + i18n-js
+- [ ] Deep links to web app for full details ("View full details" button)
 - [ ] Haptic feedback on record actions
 - [ ] Dark mode support
 - [ ] Accessibility audit (VoiceOver, TalkBack)
@@ -468,10 +472,8 @@ No new shared code needed — the existing types are sufficient.
 ### Phase 6: Post-Launch (Week 10+)
 
 - [ ] iOS home screen widget ("tap to record")
-- [ ] Android foreground service for background recording
 - [ ] Chunked upload during recording (for very long recordings)
 - [ ] Folder selection before recording
-- [ ] Context input ("What is this recording about?")
 - [ ] Siri Shortcuts / Android Quick Tile integration
 - [ ] Analytics (recording frequency, upload success rate)
 
@@ -505,7 +507,7 @@ No new shared code needed — the existing types are sufficient.
 
 **Permissions**:
 - `RECORD_AUDIO` — core functionality
-- `FOREGROUND_SERVICE` — background recording (v1.1)
+- `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MICROPHONE` — background recording (v1)
 - `POST_NOTIFICATIONS` — push notifications
 - `INTERNET` — upload and API
 
@@ -516,29 +518,19 @@ No new shared code needed — the existing types are sufficient.
 
 ---
 
-## 10. Open Questions
+## 10. Decisions (Resolved)
 
-### Needs decision before starting
-
-1. **App name**: "Neural Summary" (brand consistency) vs "Neural Summary Recorder" (clearer purpose)?
-
-2. **Minimum viable recording quality**: What bitrate/sample rate? Recommendation: 128kbps AAC in M4A container (good quality, reasonable file size, ~1MB per minute).
-
-3. **Offline behavior**: Should the app allow unlimited offline recordings (uploaded later), or respect quota limits even offline?
-
-4. **Deep link strategy**: When user taps a completed recording, open the web app in browser or show a basic in-app preview?
-
-5. **Android background recording**: Accept the limitation for v1, or delay Android launch until fixed?
-
-6. **Should we add the `context` field?**: The web upload has an optional context field ("What is this recording about?") that improves AI output quality. Include in mobile v1?
-
-### Can defer
-
-7. **Widget priority**: Is the iOS widget important enough for v1, or can it wait?
-
-8. **Localization**: Support all 5 languages (en, nl, de, fr, es) from day one, or launch English-only?
-
-9. **Analytics**: What events matter most? (recording_started, recording_completed, upload_success, upload_failed)
+| # | Question | Decision |
+|---|----------|----------|
+| 1 | **App name** | "Neural Summary - Voice Recorder" — brand first, descriptor after dash |
+| 2 | **Recording quality** | 128kbps AAC in M4A container (~1MB/min) |
+| 3 | **Offline behavior** | Unlimited offline recordings. Check quotas only at upload time. Never block recording. |
+| 4 | **Deep link strategy** | Both — show basic in-app transcript preview + "View full details" button that opens web app |
+| 5 | **Android background recording** | Enable from v1 using expo-audio's `enableBackgroundRecording` plugin. Handle Play Store foreground service declaration. |
+| 6 | **Context field** | Yes — optional post-recording. Show on confirmation screen after recording stops, before upload. Non-blocking. |
+| 7 | **iOS widget** | Defer to v1.1 |
+| 8 | **Localization** | All 5 languages from day one (en, nl, de, fr, es) |
+| 9 | **Analytics** | Defer — decide during implementation |
 
 ---
 
