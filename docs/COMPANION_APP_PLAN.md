@@ -80,14 +80,15 @@ This is acceptable — the recording functionality needs native code anyway.
 - **Recommendation**: Start with option 3 for MVP, implement option 1 for v1.1. Monitor the expo/expo#40945 issue for a fix.
 
 #### Risk 2: Background upload reliability
-- **Status**: iOS limits background execution to ~30 seconds after app exit
-- **Impact**: Large file uploads (>100MB) may not complete if user leaves the app
+- **Status**: iOS limits background execution to ~30 seconds after app exit. Research confirmed `expo-file-system uploadAsync` is **unreliable** for large files ([expo/expo#16453](https://github.com/expo/expo/issues/16453), [#26750](https://github.com/expo/expo/issues/26750)). `react-native-background-upload` has maintenance concerns and uploads may pause when backgrounded ([#332](https://github.com/Vydia/react-native-background-upload/issues/332)).
+- **Impact**: Large file uploads (>100MB) may not complete if user leaves the app. If user force-quits on iOS, **all background tasks stop immediately** — no workaround exists.
 - **Mitigation**:
-  1. Use `@react-native-firebase/storage` `putFile()` — Uses native NSURLSession on iOS, which the OS manages independently
-  2. **Chunked upload during recording** — Upload chunks as they're recorded (the codebase already has `ChunkUploader` for this pattern). Each chunk is ~5MB, uploads complete quickly
-  3. Show "stay in app" prompt for very large uploads (>500MB)
-  4. Resume incomplete uploads when app returns to foreground
-- **Recommendation**: Chunked upload during recording (option 2) is the safest approach and mirrors the existing web architecture.
+  1. Use `@react-native-firebase/storage` `putFile()` — Uses native NSURLSession on iOS, which the OS manages in a separate `nsurlsessiond` daemon process. This is the only reliable background transfer on iOS.
+  2. **Chunked upload during recording** — Upload 5MB chunks as they're recorded (the codebase already has `ChunkUploader` for this pattern). Each chunk completes in seconds, so even if the app exits, at most one small chunk is lost.
+  3. **Resumable uploads on restart** — On app relaunch, detect incomplete uploads and resume from last successful chunk. Firebase Storage `putFile()` supports pause/resume natively.
+  4. Show "stay in app" prompt for very large post-recording uploads (>500MB)
+- **Recommendation**: Chunked upload during recording (option 2) is the safest approach. It mirrors the existing web architecture and sidesteps the iOS background execution problem entirely.
+- **What we explicitly avoid**: `expo-file-system uploadAsync` (unreliable), tus protocol (adds server complexity), custom NSURLSession native module (over-engineering for v1).
 
 #### Risk 3: App Store rejection
 - **Status**: Apple rejects "thin" apps or WebView wrappers
@@ -108,6 +109,10 @@ This is acceptable — the recording functionality needs native code anyway.
 #### Risk 6: Monorepo complexity
 - Adding a React Native app to a Turborepo with Next.js and NestJS
 - **Mitigation**: Expo projects are self-contained. The app only depends on `packages/shared` for types. No shared UI components (different rendering targets). Turborepo handles this well.
+
+#### Risk 6.5: expo-file-system uploadAsync is unreliable
+- Research confirmed multiple open issues with `expo-file-system` background uploads: silent failures on large files, `NSURLErrorDomain Code=-999` errors on iOS (SDK 50+), and extremely slow background speeds.
+- **Mitigation**: Do NOT use `expo-file-system uploadAsync` for uploads. Use `@react-native-firebase/storage` `putFile()` exclusively, which bypasses these issues entirely by using the native Firebase SDK.
 
 ### LOW RISKS
 
