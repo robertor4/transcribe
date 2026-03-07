@@ -33,16 +33,19 @@ A companion mobile app that does **one thing well**: capture audio on the phone 
 
 ## 2. Tech Stack Decision
 
-### Chosen: React Native with Expo (SDK 53)
+### Chosen: React Native with Expo (SDK 55)
 
 | Component | Choice | Version | Rationale |
 |-----------|--------|---------|-----------|
-| Framework | Expo SDK 53 | Latest stable | React Native 0.79, React 19, New Architecture default |
-| Audio | `expo-audio` | v55.0.6 | Stable in SDK 53, replaces deprecated `expo-av` |
+| Framework | Expo SDK 55 | Latest stable (Feb 2026) | React Native 0.83, React 19.2, New Architecture only (legacy dropped) |
+| Audio | `expo-audio` | v55.x | Only option — `expo-av` was removed in SDK 55. Stable since SDK 53. |
 | Firebase | `@react-native-firebase/*` | v22+ | Native SDK access for large file uploads, FCM, Auth |
-| Navigation | `expo-router` | v4+ | File-based routing, consistent with Next.js mental model |
+| Navigation | `expo-router` | v7 | File-based routing, consistent with Next.js mental model |
 | State | `zustand` | v5+ | Lightweight, no boilerplate, works well with RN |
-| Build | EAS Build + Submit | Latest | Cloud builds, OTA updates, store submission |
+| Build | EAS Build + Submit | Latest | Cloud builds, OTA updates, store submission, no Mac needed for iOS |
+| Widgets | `expo-widgets` | New in SDK 55 | iOS Home Screen Widgets and Live Activities (recording status) |
+
+**Platform requirements**: iOS 15.1+, Android 7+ (API 24). Apple requires Xcode 16+ for App Store submissions.
 
 ### Why not alternatives?
 
@@ -60,9 +63,16 @@ Using `@react-native-firebase` requires **development builds** (not Expo Go). Th
 - Local development uses `npx expo run:ios` / `npx expo run:android` or EAS development builds
 - First build takes longer (~10 min via EAS)
 - Subsequent builds use cache and are faster
-- OTA updates still work for JS-only changes
+- OTA updates still work for JS-only changes (75% smaller in SDK 55 via Hermes bytecode diffing)
 
 This is acceptable — the recording functionality needs native code anyway.
+
+### SDK 55 specific notes
+- **Legacy Architecture dropped** — New Architecture is the only option. All libraries must be compatible.
+- **expo-av removed** — not just deprecated. `expo-audio` is the sole audio recording library.
+- **expo-file-system legacy `uploadAsync` deprecated** as of SDK 54. New class-based `File`/`Directory` API available, but we use `@react-native-firebase/storage` `putFile()` instead.
+- **expo-widgets** enables iOS Home Screen Widgets natively — useful for a "tap to record" widget.
+- **Swift 6 adoption** and ArrayBuffer support for improved binary data handling.
 
 ---
 
@@ -71,8 +81,8 @@ This is acceptable — the recording functionality needs native code anyway.
 ### CRITICAL RISKS
 
 #### Risk 1: Android background recording is broken in expo-audio
-- **Status**: Open issue (expo/expo#40945, filed Nov 2025)
-- **Impact**: When the app goes to background on Android, recording pauses. Resumes when foregrounded.
+- **Status**: Open issue (expo/expo#40945, filed Nov 2025). Additional issue: recording becomes **muted after ~1 minute** in background ([#25977](https://github.com/expo/expo/issues/25977)). General Android expo-audio bugs also reported ([#39926](https://github.com/expo/expo/issues/39926)).
+- **Impact**: When the app goes to background on Android, recording pauses. Resumes when foregrounded. iOS 18+ and Android 15 have introduced aggressive battery optimization that can flag apps doing sustained background work.
 - **Mitigation options**:
   1. **Foreground service notification** — Show a persistent notification during recording (like Spotify). This keeps the app "alive" on Android. Requires `expo-task-manager` or a custom native module.
   2. **Use `@siteed/expo-audio-studio`** — Third-party library with explicit background recording support on both platforms.
