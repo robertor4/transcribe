@@ -80,14 +80,23 @@ This is acceptable — the recording functionality needs native code anyway.
 
 ### CRITICAL RISKS
 
-#### Risk 1: Android background recording is broken in expo-audio
+#### Risk 1: Android background recording
 - **Status**: Open issue (expo/expo#40945, filed Nov 2025). Additional issue: recording becomes **muted after ~1 minute** in background ([#25977](https://github.com/expo/expo/issues/25977)). General Android expo-audio bugs also reported ([#39926](https://github.com/expo/expo/issues/39926)).
-- **Impact**: When the app goes to background on Android, recording pauses. Resumes when foregrounded. iOS 18+ and Android 15 have introduced aggressive battery optimization that can flag apps doing sustained background work.
+- **Impact**: Without a foreground service, recording pauses when the app is backgrounded on Android. iOS 18+ and Android 15 have introduced aggressive battery optimization.
+- **Update (de-risked)**: `expo-audio` has a **built-in `enableBackgroundRecording` config plugin option** that automatically configures:
+  - iOS: `UIBackgroundModes: ["audio"]` in Info.plist
+  - Android: Foreground service with `microphone` type + persistent notification
+  - This is the official Expo solution — no custom native modules needed.
+- **Remaining concerns**:
+  - Android 14+ requires `FOREGROUND_SERVICE_MICROPHONE` permission
+  - Play Store review requires declaring foreground service permissions + video demonstrating usage
+  - iOS watchdog can silently kill recordings if CPU/memory usage is too high while backgrounded
+  - Audio session conflicts with other apps (phone calls, Siri) will interrupt recording
 - **Mitigation options**:
-  1. **Foreground service notification** — Show a persistent notification during recording (like Spotify). This keeps the app "alive" on Android. Requires `expo-task-manager` or a custom native module.
-  2. **Use `@siteed/expo-audio-studio`** — Third-party library with explicit background recording support on both platforms.
-  3. **Accept limitation for v1** — Document that Android users should keep the app open during recording. Most recordings are active (user is speaking), so backgrounding is less common.
-- **Recommendation**: Start with option 3 for MVP, implement option 1 for v1.1. Monitor the expo/expo#40945 issue for a fix.
+  1. **Use `enableBackgroundRecording` plugin** (recommended) — Built into expo-audio, handles both platforms
+  2. **Use `@siteed/expo-audio-studio`** — Third-party library with more advanced background support + waveform visualization in Android notifications
+  3. **Use `react-native-audio-api`** (Software Mansion) — Has its own Expo plugin with foreground service support. More powerful but overkill for simple recording.
+- **Recommendation**: Use option 1 (`enableBackgroundRecording`) from the start. It's built-in and requires no extra dependencies. Test on physical devices early — background recording does NOT work in Expo Go or simulators.
 
 #### Risk 2: Background upload reliability
 - **Status**: iOS limits background execution to ~30 seconds after app exit. Research confirmed `expo-file-system uploadAsync` is **unreliable** for large files ([expo/expo#16453](https://github.com/expo/expo/issues/16453), [#26750](https://github.com/expo/expo/issues/26750)). `react-native-background-upload` has maintenance concerns and uploads may pause when backgrounded ([#332](https://github.com/Vydia/react-native-background-upload/issues/332)).
@@ -132,7 +141,8 @@ This is acceptable — the recording functionality needs native code anyway.
 
 #### Risk 8: Audio format compatibility
 - Mobile recordings need to work with AssemblyAI/Whisper transcription
-- **Mitigation**: Record in M4A (AAC) on iOS, M4A on Android. Both are natively supported by the transcription APIs and are already in the accepted formats list.
+- **Mitigation**: Record in **M4A (AAC) at 128 kbps**. This is the native recording format on both iOS and Android — no transcoding needed. Both AssemblyAI and OpenAI Whisper accept it directly. File size is ~1MB per minute (reasonable for mobile upload). The existing backend already accepts M4A.
+- **Alternatives considered**: WAV (lossless, ~600MB/hr — too large for mobile), FLAC (lossless, ~250MB/hr — not natively recorded on mobile), WebM/Opus (web format, not native mobile recorder output).
 
 ---
 
@@ -275,7 +285,9 @@ The mobile app uses the **exact same endpoints** as the web app:
 #### 1. Record Screen (Main — default tab)
 - Large, prominent record button (center of screen)
 - Timer display during recording
-- Audio level visualization (waveform or level meter)
+- Audio level visualization — two options:
+  - **`@simform_solutions/react-native-audio-waveform`** — ready-made, native waveform for live recording and playback
+  - **DIY with expo-audio metering** — set `isMeteringEnabled: true`, get dB levels per update, render with `react-native-svg` or `react-native-skia` (lighter dependency)
 - Pause/resume button
 - Stop button → triggers upload
 - Optional: context input field ("What is this recording about?")
