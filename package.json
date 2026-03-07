@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "dev:all": "npm run redis:start && npm run build:shared && turbo run dev --parallel",
+    "dev": "turbo run dev --parallel --filter=!mobile",
+    "dev:all": "npm run redis:start && npm run build:shared && turbo run dev --parallel --filter=!mobile",
     "dev:docker": "docker-compose -f docker-compose.dev.yml up",
     "dev:docker:build": "docker-compose -f docker-compose.dev.yml build",
     "docker:up": "docker-compose up -d",
@@ -19,6 +19,7 @@
     "build:shared": "cd packages/shared && npm run build",
     "start": "turbo run start --parallel",
     "lint": "turbo run lint",
+    "mobile:start": "cd apps/mobile && expo start",
     "video:studio": "cd apps/video && npm run studio",
     "video:render": "cd apps/video && npm run render:promo",
     "clean": "turbo run clean && npm run redis:stop",

@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Mobile companion app (Phase 1 - Foundation)**: React Native app in `apps/mobile/` using Expo SDK 55 + Expo Router
+  - Expo Router file-based navigation with auth flow, tab navigation (Record, Recordings, Settings), and stack screens
+  - Firebase Auth integration via `@react-native-firebase/auth` (email/password + Google Sign-In)
+  - Zustand auth store with Firebase `onAuthStateChanged` listener, email verification requirement, and token management
+  - Axios API client with automatic Firebase ID token injection and 401 retry logic
+  - Login and Register screens matching Neural Summary brand (dark purple `#23194B` primary, brand purple `#8D6AFA` accents)
+  - Record screen placeholder with large record button and timer display
+  - Recordings list with pull-to-refresh and empty state
+  - Settings screen with account info and sign-out
+  - Post-recording confirmation screen with optional context field
+  - Recording detail screen with "View full details" link to web app
+  - `expo-audio` configured with `enableBackgroundRecording` for iOS + Android
+  - `@react-native-firebase/storage` ready for `putFile()` uploads
+  - Socket.io client dependency for real-time progress tracking
+  - Turborepo integration: `@transcribe/shared` dependency, excluded from `turbo run dev`
+  - New files: `apps/mobile/app/`, `apps/mobile/stores/auth.ts`, `apps/mobile/lib/api.ts`, `apps/mobile/lib/config.ts`
+  - Root: Added `mobile:start` script, filtered mobile from `dev`/`dev:all` scripts
+
+
 - **Onboarding experience for new users**: Full onboarding flow with questionnaire, spotlight tour, and preloaded example conversation
   - 4-step blocking questionnaire modal: welcome, use case + role, team + output types, discovery source
   - Spotlight guided tour (5 steps) built with Radix Popover + Framer Motion highlighting dashboard, folders, search, and example conversation

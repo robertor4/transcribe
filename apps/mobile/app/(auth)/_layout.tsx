@@ -1,0 +1,19 @@
+import { Redirect, Stack } from 'expo-router';
+import { useAuthStore } from '../../stores/auth';
+
+export default function AuthLayout() {
+  const { user } = useAuthStore();
+
+  if (user) {
+    return <Redirect href="/(tabs)/record" />;
+  }
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: '#ffffff' },
+      }}
+    />
+  );
+}
