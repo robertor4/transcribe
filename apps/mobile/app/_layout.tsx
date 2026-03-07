@@ -3,15 +3,27 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuthStore } from '../stores/auth';
+import { useRecordingsStore } from '../stores/recordings';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { initialize, initialized } = useAuthStore();
+  const { initialize, initialized, user } = useAuthStore();
+  const { connectWebSocket, disconnectWebSocket } = useRecordingsStore();
 
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Connect WebSocket when user is authenticated
+  useEffect(() => {
+    if (user) {
+      connectWebSocket();
+    } else {
+      disconnectWebSocket();
+    }
+    return () => disconnectWebSocket();
+  }, [user, connectWebSocket, disconnectWebSocket]);
 
   useEffect(() => {
     if (initialized) {

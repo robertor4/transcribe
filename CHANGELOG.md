@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Mobile companion app (Phase 2 - Record & Upload)**: Full recording, upload, and progress tracking
+  - `useRecorder` hook wrapping `expo-audio` `useAudioRecorder` with record/pause/resume/stop, timer, and audio level metering
+  - Record screen with animated pulse ring (audio level visualization), pause/resume controls, and discard confirmation
+  - Upload service: `putFile()` to Firebase Storage at `uploads/{userId}/`, then `POST /transcriptions/process-from-storage`
+  - WebSocket service with auto-reconnect, exponential backoff, token refresh, and subscription restore
+  - Recordings store (zustand): fetch list from API, track active upload progress, real-time status updates via WebSocket
+  - Recordings list with status badges (Queued/Processing/Done/Failed), progress percentages, relative timestamps
+  - Active upload banner with combined progress bar (storage upload 0-50%, processing 50-100%)
+  - Confirm-upload screen wired to trigger full upload flow with optional context
+  - New files: `lib/useRecorder.ts`, `lib/upload.ts`, `lib/websocket.ts`, `stores/recordings.ts`
+
 - **Mobile companion app (Phase 1 - Foundation)**: React Native app in `apps/mobile/` using Expo SDK 55 + Expo Router
   - Expo Router file-based navigation with auth flow, tab navigation (Record, Recordings, Settings), and stack screens
   - Firebase Auth integration via `@react-native-firebase/auth` (email/password + Google Sign-In)
