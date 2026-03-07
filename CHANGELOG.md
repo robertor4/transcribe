@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Mobile companion app (Phase 4 - Settings & Polish)**:
+  - Settings screen: subscription tier badge, monthly usage stats (conversations + duration), quick links to web dashboard/subscription management, app version/build info
+  - `ErrorBoundary` component wrapping root layout for crash recovery with "Try Again" button
+  - Haptic feedback on record button actions (`expo-haptics`: medium impact on record/pause/resume, success notification on stop)
+  - Fetches user profile from `GET /user/profile` for tier and usage data
+
 - **Mobile companion app (Phase 3 - Recording Detail)**: View completed transcription results
   - Fetches full transcription from `GET /transcriptions/:id` API
   - Displays title, duration, language, speaker count metadata chips

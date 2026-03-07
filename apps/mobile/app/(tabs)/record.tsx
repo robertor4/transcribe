@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useRecorder, RecordingResult } from '../../lib/useRecorder';
 
 function formatTime(seconds: number): string {
@@ -38,12 +39,13 @@ export default function RecordScreen() {
 
   const handlePrimaryAction = useCallback(async () => {
     try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       if (state === 'idle') {
         await start();
       } else if (state === 'recording') {
-        await pause();
+        pause();
       } else if (state === 'paused') {
-        await resume();
+        resume();
       }
     } catch (error: unknown) {
       const message =
@@ -53,6 +55,7 @@ export default function RecordScreen() {
   }, [state, start, pause, resume]);
 
   const handleStop = useCallback(async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const result = await stop();
     if (result) {
       pendingRecording = result;
