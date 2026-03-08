@@ -1,0 +1,102 @@
+---
+title: Cloudflare Tunnel
+description: How local development is exposed via Cloudflare Tunnel for testing.
+---
+
+## Overview
+
+Local development services are exposed to the internet through a **Cloudflare Tunnel**, enabling testing with real HTTPS, webhooks, and mobile devices without port forwarding or firewall changes.
+
+<Mermaid chart={`
+graph LR
+    subgraph Local["Your Machine"]
+        NEXT["Next.js\n:3000"]
+        NEST["NestJS API\n:3001"]
+        CF["cloudflared\n(daemon)"]
+    end
+
+    subgraph Cloudflare["Cloudflare Edge"]
+        TUNNEL["Tunnel:\nneural-summary-dev"]
+        DNS["DNS"]
+    end
+
+    subgraph Internet
+        BROWSER["Browser / Client"]
+    end
+
+    CF -->|"Outbound connection\n(HTTP/2)"| TUNNEL
+    TUNNEL --> DNS
+    BROWSER -->|"https://neuralsummary.uneti.ai"| DNS
+    DNS --> TUNNEL
+    TUNNEL --> CF
+    CF -->|"http://localhost:3000"| NEXT
+    CF -->|"http://localhost:3001"| NEST
+`} />
+
+## How It Works
+
+1. **`npm run dev`** starts Next.js on `:3000` and NestJS on `:3001`
+2. **`cloudflared tunnel run neural-summary-dev`** reads `~/.cloudflared/config.yml` and opens an outbound connection to Cloudflare's edge network
+3. Cloudflare DNS has CNAME records pointing the subdomains to the tunnel
+4. Incoming requests to `neuralsummary.uneti.ai` are routed through the tunnel back to your local services
+
+No inbound ports need to be open. The tunnel is initiated from your machine outward.
+
+## Configuration
+
+**Tunnel config** (`~/.cloudflared/config.yml`):
+
+```yaml
+tunnel: neural-summary-dev
+credentials-file: ~/.cloudflared/<tunnel-id>.json
+
+ingress:
+  - hostname: neuralsummary.uneti.ai
+    service: http://localhost:3000
+
+  - hostname: neuralsummary-api.uneti.ai
+    service: http://localhost:3001
+
+  - service: http_status:404
+```
+
+## Domain Mapping
+
+| URL | Routes To | Service |
+|-----|-----------|---------|
+| `https://neuralsummary.uneti.ai` | `localhost:3000` | Next.js frontend |
+| `https://neuralsummary-api.uneti.ai` | `localhost:3001` | NestJS API |
+
+## CORS Configuration
+
+The NestJS backend allows tunnel domains in development mode:
+
+```typescript
+// apps/api/src/main.ts
+origin: [
+  /\.trycloudflare\.com$/,  // Cloudflare quick tunnels
+  /\.uneti\.ai$/,            // Custom tunnel domains
+]
+```
+
+This is disabled in production.
+
+## Running
+
+Open two terminals:
+
+```bash
+# Terminal 1: Start dev servers
+npm run dev
+
+# Terminal 2: Start tunnel
+cloudflared tunnel run neural-summary-dev
+```
+
+The site is then accessible at `https://neuralsummary.uneti.ai/`.
+
+## Key Properties
+
+- **TLS termination** happens at Cloudflare's edge. Local servers run plain HTTP
+- **No firewall/router changes** needed since `cloudflared` initiates all connections outward
+- **Production uses Traefik** (not tunnels) with Let's Encrypt on `neuralsummary.com`

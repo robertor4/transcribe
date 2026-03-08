@@ -1,0 +1,121 @@
+---
+title: System Architecture
+description: High-level architecture overview of the Neural Summary platform.
+---
+
+## System Overview
+
+Neural Summary is a monorepo application built with **Turborepo**. The system follows a queue-based architecture for reliable audio processing with real-time progress updates via WebSockets.
+
+<Mermaid chart={`
+graph TB
+    subgraph Client["Browser / Client"]
+        WEB[Next.js Frontend<br/>:3000]
+    end
+
+    subgraph Server["Backend Services"]
+        API[NestJS API<br/>:3001]
+        QUEUE[Bull Queue]
+        PROCESSOR[Transcription Processor]
+        WS[WebSocket Gateway]
+    end
+
+    subgraph External["External Services"]
+        AAI[AssemblyAI]
+        WHISPER[OpenAI Whisper]
+        GPT[GPT-5]
+        FFMPEG[FFmpeg]
+    end
+
+    subgraph Storage["Data Layer"]
+        REDIS[(Redis<br/>:6379)]
+        FIRESTORE[(Firestore)]
+        FIREBASE_STORAGE[(Firebase Storage)]
+    end
+
+    WEB -->|REST API| API
+    WEB <-->|Socket.io| WS
+    API -->|Enqueue Job| QUEUE
+    QUEUE --- REDIS
+    QUEUE -->|Process| PROCESSOR
+    PROCESSOR -->|Transcribe| AAI
+    PROCESSOR -.->|Fallback| WHISPER
+    PROCESSOR -->|Analyze| GPT
+    PROCESSOR -->|Split Audio| FFMPEG
+    PROCESSOR -->|Store| FIRESTORE
+    PROCESSOR -->|Upload/Download| FIREBASE_STORAGE
+    WS -->|Progress Events| WEB
+    API -->|Auth| FIRESTORE
+`} />
+
+## Key Architectural Decisions
+
+### Queue-Based Processing
+
+All audio processing goes through a **Bull/Redis queue** rather than being handled synchronously. This provides:
+
+- **Reliability**: Jobs survive server restarts and are retried on failure
+- **Scalability**: Configurable concurrency (default: 2 simultaneous jobs)
+- **Visibility**: Job progress is tracked and broadcast in real-time
+- **Backpressure**: The queue prevents the system from being overwhelmed
+
+### Monorepo with Shared Types
+
+The `packages/shared` package contains all TypeScript types, constants, and validation utilities used by both frontend and backend. This ensures type safety across the full stack.
+
+```
+packages/shared/
+├── src/
+│   ├── types/          # Transcription, Analysis, User types
+│   ├── constants/      # Subscription tiers, file limits
+│   └── validation/     # Shared validation logic
+├── dist/               # Built output
+└── package.json
+```
+
+### Firebase as Data Layer
+
+Firebase provides three integrated services:
+- **Firestore**: NoSQL document store for all application data
+- **Firebase Storage**: Blob storage for audio files with signed URLs
+- **Firebase Auth**: Authentication with email/password and Google OAuth
+
+All three share the same project configuration and SDK, simplifying the infrastructure.
+
+## Module Architecture (Backend)
+
+The NestJS backend is organized into focused modules:
+
+<Mermaid chart={`
+graph LR
+    subgraph Modules
+        AUTH[Auth Module]
+        TRANS[Transcription Module]
+        USAGE[Usage Module]
+        WS[WebSocket Module]
+        FIREBASE[Firebase Module]
+        EMAIL[Email Module]
+        STRIPE[Stripe Module]
+        CONTACT[Contact Module]
+    end
+
+    TRANS --> FIREBASE
+    TRANS --> WS
+    TRANS --> USAGE
+    AUTH --> FIREBASE
+    STRIPE --> FIREBASE
+    STRIPE --> USAGE
+    EMAIL --> FIREBASE
+    CONTACT --> EMAIL
+`} />
+
+| Module | Responsibility |
+|--------|---------------|
+| **Transcription** | Upload, processing, analysis generation |
+| **Auth** | Firebase Auth token verification |
+| **WebSocket** | Real-time progress broadcasting |
+| **Firebase** | Firestore and Storage operations |
+| **Usage** | Quota tracking and enforcement |
+| **Stripe** | Subscription billing and webhooks |
+| **Email** | Transactional email via Gmail SMTP |
+| **Contact** | Contact form with Turnstile protection |

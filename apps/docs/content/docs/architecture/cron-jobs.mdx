@@ -1,0 +1,76 @@
+---
+title: Scheduled Tasks
+description: Automated cron jobs for maintenance, billing, and cleanup.
+---
+
+## Overview
+
+The application runs **5 automated cron jobs** for maintenance, billing, and cleanup. All run in UTC timezone and respect graceful shutdown.
+
+<Mermaid chart={`
+gantt
+    title Daily Cron Schedule (UTC)
+    dateFormat HH:mm
+    axisFormat %H:%M
+
+    section Hourly
+    Zombie Cleanup           :crit, 00:00, 1h
+
+    section Daily
+    Overage Check            :02:00, 1h
+    Usage Warnings           :10:00, 1h
+
+    section Monthly
+    Usage Reset (1st)        :milestone, 00:00, 0h
+    Usage Cleanup (15th)     :03:00, 1h
+`} />
+
+## Jobs
+
+### 1. Zombie Cleanup
+
+**Schedule**: Every hour
+**File**: `apps/api/src/transcription/cleanup.service.ts`
+
+Finds transcriptions stuck in PENDING or PROCESSING status for over 24 hours. Marks them as FAILED and cleans up orphaned files from Firebase Storage.
+
+### 2. Monthly Usage Reset
+
+**Schedule**: 1st of each month at 00:00 UTC
+**File**: `apps/api/src/usage/usage.scheduler.ts`
+
+Resets monthly usage quotas for all users. Features:
+- **Resumable**: Saves progress every 10 users (survives crashes)
+- **Startup recovery**: Checks for missed resets on boot
+- **Graceful shutdown**: Can pause mid-batch and resume
+
+### 3. Daily Overage Check
+
+**Schedule**: Daily at 02:00 UTC
+**File**: `apps/api/src/usage/usage.scheduler.ts`
+
+Calculates usage beyond monthly quota for Professional/Business tier users. Overage rate: $0.50/hour after 60 hours/month. Actual billing is handled via Stripe webhooks on subscription renewal.
+
+### 4. Daily Usage Warnings
+
+**Schedule**: Daily at 10:00 UTC
+**File**: `apps/api/src/usage/usage.scheduler.ts`
+
+Warns users approaching their quota limit (80%+ usage). Currently logs warnings; email notifications are planned.
+
+### 5. Monthly Usage Cleanup
+
+**Schedule**: 15th of each month at 03:00 UTC
+**File**: `apps/api/src/usage/usage.scheduler.ts`
+
+Deletes usage records older than 12 months from Firestore for GDPR compliance and database size management.
+
+## Monitoring
+
+All jobs log start, completion, and error messages with duration:
+
+```bash
+docker logs -f transcribe-api | grep -E "Cleanup|Usage"
+```
+
+Failed jobs log errors but never crash the application.

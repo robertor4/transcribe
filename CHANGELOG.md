@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Technical documentation site** (`apps/docs`) — Fumadocs-powered docs app with Mermaid diagram support, auto-generated table of contents, and full-text search
+  - Architecture overview with system diagrams
+  - Processing pipeline documentation with sequence diagrams
+  - Authentication & security guide
+  - WebSocket protocol reference with state diagrams
+  - Cron jobs / scheduled tasks documentation
+  - Development setup guide including Cloudflare Tunnel networking
+  - Environment variables reference
+  - Deployment & troubleshooting guides
+  - API reference with endpoint tables and Firestore schema
+  - Run with `npm run docs:dev` (port 3003)
+  - Excluded from `npm run dev` to avoid interference with main app
+
 ### Changed
 - **Redesigned AI Asset page header** to match Conversation page style
   - Replaced bulky icon-box + uppercase title layout with compact metadata row

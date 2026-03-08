@@ -1,0 +1,65 @@
+---
+title: Development Setup
+description: Getting started with local development.
+---
+
+## Quick Start
+
+```bash
+npm run fresh         # Clean install and start everything (first run)
+npm run dev:all       # Start Redis, build shared package, run all services
+```
+
+## Service Management
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Run frontend + backend in parallel (without Redis) |
+| `npm run dev:all` | Start Redis, build shared, run all services |
+| `npm run redis:start` | Start Redis Docker container |
+| `npm run redis:stop` | Stop Redis container |
+| `npm run redis:check` | Verify Redis connectivity |
+| `npm run build:shared` | Rebuild shared TypeScript types package |
+
+## Ports
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Next.js (web) | 3000 | Frontend dev server |
+| NestJS (api) | 3001 | Backend API server |
+| Docs | 3003 | This documentation site |
+| Redis | 6379 | Queue and cache |
+
+## Testing
+
+```bash
+# Backend
+cd apps/api
+npm run test          # Unit tests
+npm run test:watch    # Watch mode
+npm run test:cov      # Coverage report
+npm run test:e2e      # End-to-end tests
+
+# Linting (run after every change)
+cd apps/web && npm run lint    # Frontend
+cd apps/api && npm run lint    # Backend
+npm run lint                   # All packages
+```
+
+Test files are co-located with source files using `.spec.ts` suffix.
+
+## Shared Package
+
+After modifying types in `packages/shared`, rebuild before using them:
+
+```bash
+npm run build:shared
+```
+
+The frontend and backend both depend on `@transcribe/shared` which links to this local package.
+
+## Prerequisites
+
+- **Node.js** 20+
+- **Docker** (for Redis)
+- **FFmpeg** (`brew install ffmpeg` on macOS)

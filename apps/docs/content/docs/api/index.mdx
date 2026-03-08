@@ -1,0 +1,98 @@
+---
+title: API Reference
+description: REST API endpoints and data models.
+---
+
+## Base URL
+
+| Environment | URL |
+|-------------|-----|
+| Development | `http://localhost:3001` |
+| Tunnel | `https://neuralsummary-api.uneti.ai` |
+| Production | `https://neuralsummary.com/api` |
+
+## Authentication
+
+All endpoints require a Firebase Auth JWT token in the `Authorization` header:
+
+```
+Authorization: Bearer <firebase-jwt-token>
+```
+
+## Key Endpoints
+
+### Transcriptions
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/transcription` | Create a new transcription job |
+| `GET` | `/transcription` | List user's transcriptions |
+| `GET` | `/transcription/:id` | Get transcription by ID |
+| `DELETE` | `/transcription/:id` | Delete a transcription |
+| `PATCH` | `/transcription/:id` | Update transcription metadata |
+
+### Analyses (AI Assets)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/analysis` | Generate an AI Asset |
+| `GET` | `/analysis/:id` | Get analysis by ID |
+| `DELETE` | `/analysis/:id` | Delete an analysis |
+
+### Folders
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/folder` | Create a folder |
+| `GET` | `/folder` | List user's folders |
+| `PATCH` | `/folder/:id` | Update folder |
+| `DELETE` | `/folder/:id` | Delete folder |
+
+### Usage
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/usage` | Get current usage stats |
+| `GET` | `/usage/history` | Get usage history |
+
+## Firestore Collections
+
+### `transcriptions`
+
+```typescript
+interface Transcription {
+  id: string;
+  userId: string;
+  title: string;
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  transcript?: string;
+  summary?: string;
+  duration?: number;
+  language?: string;
+  speakers?: Speaker[];
+  folderId?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+```
+
+### `analyses`
+
+```typescript
+interface Analysis {
+  id: string;
+  userId: string;
+  transcriptionId: string;
+  templateId: string;
+  content: string;
+  createdAt: Timestamp;
+}
+```
+
+### Required Indexes
+
+| Collection | Fields | Order |
+|-----------|--------|-------|
+| `transcriptions` | `userId`, `createdAt` | ASC, DESC |
+| `folders` | `userId`, `sortOrder`, `createdAt` | ASC, ASC, ASC |
+| `transcriptions` | `userId`, `folderId`, `createdAt` | ASC, ASC, DESC |

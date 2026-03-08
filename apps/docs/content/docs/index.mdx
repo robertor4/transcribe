@@ -1,0 +1,55 @@
+---
+title: Overview
+description: Technical documentation for the Neural Summary platform.
+---
+
+Neural Summary is a **voice-to-output creation platform** that transforms conversations into work-ready documents. It processes audio through AI transcription, applies intelligent analysis templates, and generates structured deliverables.
+
+## Quick Links
+
+<Cards>
+  <Card title="Architecture" href="/docs/architecture" />
+  <Card title="Processing Pipeline" href="/docs/architecture/processing-pipeline" />
+  <Card title="Development Setup" href="/docs/development" />
+  <Card title="Tunneling & Networking" href="/docs/development/tunneling" />
+  <Card title="Deployment" href="/docs/deployment" />
+  <Card title="API Reference" href="/docs/api" />
+</Cards>
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 15 (App Router), TypeScript, Tailwind CSS v4 |
+| **Backend** | NestJS, TypeScript, Bull queues, Socket.io |
+| **Database** | Firebase Firestore |
+| **Storage** | Firebase Storage |
+| **Auth** | Firebase Auth (Email/Password + Google OAuth) |
+| **Queue** | Redis with Bull |
+| **AI** | AssemblyAI (transcription), OpenAI GPT-5 (analysis) |
+| **Audio** | FFmpeg for splitting large files |
+
+## Monorepo Structure
+
+```
+neural-summary/
+├── apps/
+│   ├── api/          # NestJS backend
+│   ├── web/          # Next.js frontend
+│   ├── docs/         # This documentation site
+│   └── video/        # Remotion video compositions
+├── packages/
+│   └── shared/       # Shared TypeScript types & constants
+├── turbo.json        # Turborepo pipeline config
+└── package.json      # Workspace root
+```
+
+## Terminology
+
+Since V2, user-facing terminology differs from internal code naming. Renaming internal code would require database migrations and API changes.
+
+| UI Term (V2) | Code Term | Description |
+|--------------|-----------|-------------|
+| **Conversation** | `transcription` | An uploaded audio file with its transcript |
+| **AI Asset** | `analysis` | Generated content from a template |
+| **AI Asset Template** | `analysisTemplate` | The prompt configuration for generation |

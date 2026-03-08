@@ -1,0 +1,80 @@
+---
+title: Deployment
+description: Production deployment via GitHub Actions and Docker.
+---
+
+## Overview
+
+Production is deployed automatically via **GitHub Actions** when code is pushed to `main`. The stack runs in Docker containers behind a **Traefik** reverse proxy with Let's Encrypt SSL.
+
+<Mermaid chart={`
+graph TB
+    subgraph GitHub
+        PUSH["Push to main"]
+        GHA["GitHub Actions"]
+    end
+
+    subgraph Server["Production Server"]
+        TRAEFIK["Traefik\n:80/:443"]
+        WEB_C["Web Container\n(Next.js)"]
+        API_C["API Container\n(NestJS)"]
+        REDIS_C["Redis Container\n:6379"]
+    end
+
+    subgraph DNS
+        CF["Cloudflare DNS"]
+    end
+
+    PUSH --> GHA
+    GHA -->|"SSH + Docker build"| Server
+    CF -->|"neuralsummary.com"| TRAEFIK
+    TRAEFIK -->|"/"| WEB_C
+    TRAEFIK -->|"/api"| API_C
+    API_C --> REDIS_C
+`} />
+
+## Deployment Options
+
+### Automatic (recommended)
+
+Push to `main` triggers the deployment workflow automatically.
+
+### Manual via GitHub Actions
+
+Go to **Actions** tab and run "Deploy to Production" with options:
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| Deployment type | `full`, `quick`, `service-only` | Full rebuild, restart only, or specific services |
+| Services | `api`, `web`, `redis`, `traefik` | Which services to deploy |
+| Skip build | `true`/`false` | Deploy without rebuilding images |
+
+### Emergency
+
+```bash
+./deploy-manual.sh              # Full deploy
+./deploy-manual.sh --quick      # Restart without rebuild
+./deploy-manual.sh --service api,web
+```
+
+## Rollback
+
+Run the "Rollback Deployment" workflow in GitHub Actions. Options:
+- Rollback to previous deployment
+- Specify a commit hash
+
+## Health Checks
+
+Run the "Health Check" workflow to verify all services:
+- Redis connectivity
+- API responsiveness
+- Web accessibility
+- Traefik routing
+- SSL certificate validity
+
+## Required GitHub Secrets
+
+| Secret | Description |
+|--------|-------------|
+| `SSH_PRIVATE_KEY` | SSH key for server access |
+| `DEPLOY_SERVER` | Production server hostname/IP |

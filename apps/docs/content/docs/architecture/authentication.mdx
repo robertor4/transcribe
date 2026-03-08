@@ -1,0 +1,87 @@
+---
+title: Authentication & Security
+description: How authentication and authorization work across the platform.
+---
+
+## Authentication Flow
+
+Neural Summary uses **Firebase Auth** for authentication with two providers: email/password and Google OAuth.
+
+<Mermaid chart={`
+sequenceDiagram
+    participant U as User
+    participant WEB as Next.js App
+    participant FB as Firebase Auth
+    participant API as NestJS API
+    participant FS as Firestore
+
+    U->>WEB: Login (email or Google)
+    WEB->>FB: Authenticate
+    FB-->>WEB: JWT Token
+    WEB->>API: Request + Authorization: Bearer {token}
+    API->>FB: Verify token (FirebaseAuthGuard)
+    FB-->>API: Decoded token (uid, email)
+    API->>FS: Query with userId filter
+    FS-->>API: User-scoped data
+    API-->>WEB: Response
+`} />
+
+## Guards
+
+### FirebaseAuthGuard
+
+Applied to all protected API endpoints. Verifies the Firebase JWT token and attaches the decoded user to the request.
+
+**Location**: `apps/api/src/guards/firebase-auth.guard.ts`
+
+### SubscriptionGuard
+
+Checks user subscription tier for gated features. Admin users bypass all tier restrictions.
+
+**Location**: `apps/api/src/guards/subscription.guard.ts`
+
+## User Data: Auth vs Firestore
+
+A critical distinction exists between Firebase Auth data and Firestore user documents:
+
+| Source | Method | Contains |
+|--------|--------|----------|
+| **Firebase Auth** | `getUserById(uid)` | `uid`, `email`, `displayName`, `photoURL` |
+| **Firestore** | `getUser(uid)` | Everything above + `subscriptionTier`, `stripeCustomerId`, `usageStats`, `role` |
+
+**Common bug**: Using `getUserById()` when subscription data is needed. This causes features to silently fall back to "free" tier behavior.
+
+```typescript
+// Wrong - only gets auth data
+const user = await this.firebaseService.getUserById(uid);
+
+// Correct - gets full profile with subscription
+const user = await this.firebaseService.getUser(uid);
+```
+
+## Data Isolation
+
+All Firestore queries are scoped by `userId`:
+
+```typescript
+const transcriptions = await firestore
+  .collection('transcriptions')
+  .where('userId', '==', authenticatedUser.uid)
+  .orderBy('createdAt', 'desc')
+  .get();
+```
+
+Users can never access another user's data. There is no API endpoint that returns data without a `userId` filter.
+
+## Admin Bypass
+
+Admin users bypass all quota and tier restrictions. The check pattern is:
+
+```typescript
+// Backend (usage.service.ts)
+if (user.role === 'admin') return; // skip quota check
+
+// Frontend
+const { isAdmin } = useUsage();
+const canUse = isAdmin || userTier !== 'free';
+```

@@ -1,0 +1,10 @@
+{
+  "title": "Architecture",
+  "pages": [
+    "index",
+    "processing-pipeline",
+    "authentication",
+    "websockets",
+    "cron-jobs"
+  ]
+}
