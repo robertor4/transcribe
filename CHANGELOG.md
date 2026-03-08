@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Redesigned AI Asset page header** to match Conversation page style
+  - Replaced bulky icon-box + uppercase title layout with compact metadata row
+  - Asset type badge (purple pill), date, and inline action icons (Copy with tooltip, Translate, More menu)
+  - Modified: [DetailPageHeader.tsx](apps/web/components/detail-pages/DetailPageHeader.tsx), [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+- **Per-item async translation** — Translation is now scoped per item (summary or single AI asset) instead of translating everything at once. Dialog closes immediately after language selection, with toast notifications showing estimated time and inline loading banner on the page. Prevents Cloudflare 524 timeouts for conversations with multiple assets.
+  - Rewritten: [useConversationTranslations.ts](apps/web/hooks/useConversationTranslations.ts) — new `translateItem` method with scoped API params, `translatingScope` state, `estimateTranslationSeconds` utility
+  - Simplified: [TranslationDialog.tsx](apps/web/components/TranslationDialog.tsx) — fire-and-forget language picker, removed loading UI
+  - Updated: [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx) — per-summary translation with toast + inline banner
+  - Updated: [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx) — per-asset translation with toast + inline banner
+
+### Added
+- **Translate action on AI Asset pages** — Globe icon in toolbar opens TranslationDialog, reusing existing backend translation support for analyses
+- **Share action on AI Asset pages** — Share option in More menu opens conversation-level ShareModal
+- **Translated content display** — AI Asset pages show translated content when a non-original locale is selected, with merge logic to preserve template `type` discriminator and fill incomplete fields
+- **Retranslate option** — Refresh icon next to translated locales in TranslationDialog allows re-rendering faulty translations via `forceRetranslate` flag
+- **Translation time estimation** — `estimateTranslationSeconds()` utility estimates translation duration based on content length and gpt-5-mini benchmarks (~4 chars/token, ~100 tokens/sec)
+
+### Fixed
+- **Translation rendering bug** — Translated AI assets no longer display raw JSON; template `type` field is preserved through the translation pipeline
+- **Incomplete translation content** — Increased backend `max_completion_tokens` from 8000 to 16000 and added field merge (backend + frontend) to ensure all structured content fields are present
+- **Translated enum values breaking templates** — Created shared `mergeTranslatedContent()` utility ([translationMerge.ts](apps/web/lib/translationMerge.ts)) that recursively restores enum fields (`priority`, `status`, `severity`, `sentiment`, `recommendation`, `qualification`, etc.) from original content after translation merge. Also updated backend GPT prompt to instruct model not to translate enum values
+
+### Removed
+- **Unused `slowHint` translation key** — Removed from all 5 locale files (no longer shown in simplified TranslationDialog)
+
 - **Redesigned Recommendations Memo template** with editorial styling inspired by Blog Post and Summary templates
   - Serif headings (Merriweather), constrained `max-w-[680px]` reading column, editorial rule divider
   - Executive summary rendered as pull-quote with purple left border instead of boxed InfoBox

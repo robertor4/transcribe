@@ -798,12 +798,20 @@
       "confirmDelete": "Dieses Asset löschen?",
       "viewFull": "Vollständige Seite anzeigen"
     },
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "translate": "Übersetzen",
+    "share": "Teilen",
     "findReplace": "Suchen & Ersetzen",
     "delete": "Löschen",
     "deleteConfirmTitle": "AI-Asset löschen?",
     "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Dieses AI-Asset wird dauerhaft gelöscht.",
     "deleteConfirmYes": "Ja, löschen",
-    "deleteConfirmNo": "Abbrechen"
+    "deleteConfirmNo": "Abbrechen",
+    "translatingBanner": "Übersetzung läuft...",
+    "translatingEstimate": "Übersetzung (~{seconds}s)...",
+    "translateSuccess": "Übersetzung abgeschlossen",
+    "translateError": "Übersetzung fehlgeschlagen. Bitte versuche es erneut."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +862,7 @@
       "translateTo": "Übersetzen in",
       "translating": "Übersetze...",
       "translationComplete": "Übersetzung abgeschlossen",
-      "translationFailed": "Übersetzung fehlgeschlagen",
+      "translationFailed": "Übersetzung fehlgeschlagen. Die Anfrage hat möglicherweise das Zeitlimit überschritten — bitte erneut versuchen.",
       "noTranslationsAvailable": "Keine Übersetzungen verfügbar",
       "assetsTranslated": "Assets übersetzt",
       "changeLanguage": "Sprache ändern",
@@ -867,7 +875,11 @@
       "translate": "Übersetzen",
       "showAllLanguages": "Alle Sprachen anzeigen",
       "hideLanguages": "Weniger anzeigen",
-      "slowHint": "Die Übersetzung kann bei längeren Gesprächen etwas dauern. Du kannst dieses Fenster schließen — es wird im Hintergrund fortgesetzt."
+      "retranslate": "Neu übersetzen",
+      "translatingBanner": "Übersetzung läuft...",
+      "translatingEstimate": "Übersetzung (~{seconds}s)...",
+      "translateSuccess": "Übersetzung abgeschlossen",
+      "translateError": "Übersetzung fehlgeschlagen. Bitte versuche es erneut."
     },
     "failed": {
       "title": "Verarbeitung fehlgeschlagen",

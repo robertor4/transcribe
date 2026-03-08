@@ -798,12 +798,20 @@
       "confirmDelete": "Supprimer cet asset ?",
       "viewFull": "Voir page complète"
     },
+    "copy": "Copier",
+    "copied": "Copié !",
+    "translate": "Traduire",
+    "share": "Partager",
     "findReplace": "Rechercher et remplacer",
     "delete": "Supprimer",
     "deleteConfirmTitle": "Supprimer l'AI Asset ?",
     "deleteConfirmMessage": "Cette action ne peut pas être annulée. Cet AI Asset sera définitivement supprimé.",
     "deleteConfirmYes": "Oui, supprimer",
-    "deleteConfirmNo": "Annuler"
+    "deleteConfirmNo": "Annuler",
+    "translatingBanner": "Traduction en cours...",
+    "translatingEstimate": "Traduction (~{seconds}s)...",
+    "translateSuccess": "Traduction terminée",
+    "translateError": "La traduction a échoué. Veuillez réessayer."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +862,7 @@
       "translateTo": "Traduire en",
       "translating": "Traduction en cours...",
       "translationComplete": "Traduction terminée",
-      "translationFailed": "Échec de la traduction",
+      "translationFailed": "Échec de la traduction. La requête a peut-être expiré — veuillez réessayer.",
       "noTranslationsAvailable": "Aucune traduction disponible",
       "assetsTranslated": "éléments traduits",
       "changeLanguage": "Changer de langue",
@@ -867,7 +875,11 @@
       "translate": "Traduire",
       "showAllLanguages": "Afficher toutes les langues",
       "hideLanguages": "Afficher moins",
-      "slowHint": "La traduction peut prendre un moment pour les conversations plus longues. Tu peux fermer cette fenêtre — elle continuera en arrière-plan."
+      "retranslate": "Retraduire",
+      "translatingBanner": "Traduction en cours...",
+      "translatingEstimate": "Traduction (~{seconds}s)...",
+      "translateSuccess": "Traduction terminée",
+      "translateError": "La traduction a échoué. Veuillez réessayer."
     },
     "failed": {
       "title": "Traitement échoué",

@@ -862,7 +862,8 @@ export class TranslationService {
     const systemPrompt = `You are a professional translator. Translate the JSON content to ${targetLanguage}.
 
 CRITICAL INSTRUCTIONS:
-- ONLY translate text values (strings), NOT keys or structure
+- ONLY translate human-readable text values, NOT keys or structure
+- DO NOT translate enum/categorical values that serve as programmatic identifiers. These must stay in English exactly as-is: "high", "medium", "low", "positive", "negative", "neutral", "yes", "no", "true", "false", and the "type" field value
 - Maintain the exact JSON structure
 - Preserve all non-text values (numbers, booleans, arrays structure)
 - Keep technical terms when appropriate
@@ -877,7 +878,7 @@ CRITICAL INSTRUCTIONS:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        max_completion_tokens: 8000,
+        max_completion_tokens: 16000,
         response_format: { type: 'json_object' },
       });
 
@@ -896,7 +897,12 @@ CRITICAL INSTRUCTIONS:
         throw new Error('Empty translation response after retries');
       }
 
-      return JSON.parse(translatedJson) as StructuredOutput;
+      const translated = JSON.parse(translatedJson) as StructuredOutput;
+
+      // Merge original fields back for any that the translation dropped
+      // (GPT may truncate large outputs, losing fields at the end)
+      const merged = { ...content, ...translated } as StructuredOutput;
+      return merged;
     } catch (error) {
       if (
         retryCount < maxRetries &&

@@ -799,12 +799,20 @@
       "confirmDelete": "Delete this asset?",
       "viewFull": "View Full Page"
     },
+    "copy": "Copy",
+    "copied": "Copied!",
+    "translate": "Translate",
+    "share": "Share",
     "findReplace": "Find & Replace",
     "delete": "Delete",
     "deleteConfirmTitle": "Delete AI Asset?",
     "deleteConfirmMessage": "This action cannot be undone. This AI asset will be permanently deleted.",
     "deleteConfirmYes": "Yes, delete",
-    "deleteConfirmNo": "Cancel"
+    "deleteConfirmNo": "Cancel",
+    "translatingBanner": "Translating...",
+    "translatingEstimate": "Translating (~{seconds}s)...",
+    "translateSuccess": "Translation complete",
+    "translateError": "Translation failed. Please try again."
   },
   "conversation": {
     "tabs": {
@@ -855,7 +863,7 @@
       "translateTo": "Translate to",
       "translating": "Translating...",
       "translationComplete": "Translation complete",
-      "translationFailed": "Translation failed",
+      "translationFailed": "Translation failed. The request may have timed out — please try again.",
       "noTranslationsAvailable": "No translations available",
       "assetsTranslated": "assets translated",
       "changeLanguage": "Change language",
@@ -868,7 +876,11 @@
       "translate": "Translate",
       "showAllLanguages": "Show all languages",
       "hideLanguages": "Show less",
-      "slowHint": "Translation may take a moment for longer conversations. You can close this dialog — it will continue in the background."
+      "retranslate": "Retranslate",
+      "translatingBanner": "Translating...",
+      "translatingEstimate": "Translating (~{seconds}s)...",
+      "translateSuccess": "Translation complete",
+      "translateError": "Translation failed. Please try again."
     },
     "failed": {
       "title": "Processing failed",

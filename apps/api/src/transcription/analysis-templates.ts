@@ -2114,7 +2114,10 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              recommendation: { type: 'string', description: 'Short action phrase, under 15 words' },
+              recommendation: {
+                type: 'string',
+                description: 'Short action phrase, under 15 words',
+              },
               priority: { type: 'string', enum: ['high', 'medium', 'low'] },
               rationale: { type: 'string' },
               impact: { type: 'string' },

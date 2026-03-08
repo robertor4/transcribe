@@ -13,14 +13,16 @@ import {
   FileText,
   MessageSquareQuote,
   Copy,
+  Check,
   Trash2,
   StickyNote,
   ImagePlus,
   Replace,
   MoreVertical,
+  Globe,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput } from '@transcribe/shared';
+import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput, Transcription } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
@@ -30,12 +32,24 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
+import { TranslationDialog } from '@/components/TranslationDialog';
+import { TranslatingBanner } from '@/components/TranslatingBanner';
+import { ShareModal } from '@/components/ShareModal';
 import { useConversation } from '@/hooks/useConversation';
+import { useConversationTranslations, estimateTranslationSeconds } from '@/hooks/useConversationTranslations';
 import { formatRelativeTime } from '@/lib/formatters';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
+import { mergeTranslatedContent } from '@/lib/translationMerge';
 import type { StructuredOutput } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
 import { useUsage } from '@/contexts/UsageContext';
+import { toast } from 'sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface OutputDetailClientProps {
   conversationId: string;
@@ -58,6 +72,40 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const [imageError, setImageError] = useState<string | null>(null);
   const [showFindReplace, setShowFindReplace] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [translationDialogOpen, setTranslationDialogOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
+
+  const userTier = usageStats?.tier || 'free';
+
+  // Translation support
+  const {
+    status: translationStatus,
+    translatingScope,
+    currentLocale,
+    translateItem,
+    setLocale,
+    getTranslatedContent,
+  } = useConversationTranslations(conversationId);
+
+  const isTranslatingAsset = translatingScope?.type === 'asset' && translatingScope.assetId === outputId;
+  const [translationEstimate, setTranslationEstimate] = useState(0);
+
+  const handleTranslateAsset = async (localeCode: string, options?: { forceRetranslate?: boolean }) => {
+    setTranslationDialogOpen(false);
+    const contentLength = typeof output?.content === 'string'
+      ? output.content.length
+      : JSON.stringify(output?.content || '').length;
+    const estimate = estimateTranslationSeconds(contentLength);
+    setTranslationEstimate(estimate);
+    toast.info(t('translatingEstimate', { seconds: estimate }));
+    try {
+      await translateItem(localeCode, { type: 'asset', assetId: outputId }, options);
+      toast.success(t('translateSuccess'));
+    } catch {
+      toast.error(t('translateError'));
+    }
+  };
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
@@ -133,6 +181,19 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       router.push(`/${locale}/conversation/${conversationId}`);
     } catch (err) {
       console.error('Failed to delete output:', err);
+    }
+  };
+
+  // Open share modal (shares the parent conversation)
+  const handleOpenShareModal = async () => {
+    try {
+      const response = await transcriptionApi.get(conversationId);
+      if (response.success && response.data) {
+        setTranscriptionForShare(response.data as Transcription);
+        setIsShareModalOpen(true);
+      }
+    } catch (err) {
+      console.error('Failed to load conversation for sharing:', err);
     }
   };
 
@@ -222,6 +283,25 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const OutputIcon = getOutputIcon(output.templateId);
   const conversationTitle = conversation?.title || 'Conversation';
 
+  // Get translated content for this asset (if viewing a translation)
+  const translation = currentLocale !== 'original' ? getTranslatedContent('analysis', outputId) : undefined;
+  const translatedAssetRaw = translation?.content as { type: 'analysis'; content: string | StructuredOutput; contentType: 'markdown' | 'structured' } | undefined;
+
+  // Merge translated content with original: fills dropped fields, preserves type discriminator,
+  // and restores enum values (priority, status, severity, etc.) that GPT may have translated
+  const translatedAsset = translatedAssetRaw
+    ? {
+        ...translatedAssetRaw,
+        content:
+          typeof translatedAssetRaw.content === 'object' && typeof output.content === 'object'
+            ? mergeTranslatedContent(
+                output.content as unknown as Record<string, unknown>,
+                translatedAssetRaw.content as unknown as Record<string, unknown>,
+              )
+            : translatedAssetRaw.content,
+      }
+    : undefined;
+
   // Extract metadata from structured content for the right panel
   const getOutputMetadata = (): { label: string; value: string }[] => {
     if (typeof output.content !== 'object' || !output.content) return [];
@@ -287,71 +367,115 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       <DetailPageHeader
         conversationId={conversationId}
         conversationTitle={conversationTitle}
-        icon={OutputIcon}
-        title={output.templateName}
-        subtitle={`Generated ${formatRelativeTime(new Date(output.generatedAt))}`}
+        templateName={output.templateName}
+        templateIcon={OutputIcon}
+        generatedAt={new Date(output.generatedAt)}
         actions={
-          <div className="flex items-center gap-1 sm:gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<Copy className="w-4 h-4" />}
-              onClick={handleCopy}
-            >
-              <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
-            </Button>
+          <TooltipProvider>
+            <div className="flex items-center gap-3">
+              <Tooltip open={copied || undefined}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleCopy}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      copied
+                        ? 'text-green-500'
+                        : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {copied ? t('copied') : t('copy')}
+                </TooltipContent>
+              </Tooltip>
 
-            <DropdownMenu
-              trigger={
-                <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              }
-              items={[
-                // Generate Image - for blog posts with premium
-                ...(isBlogPost && isPremiumUser
-                  ? [
-                      {
-                        icon: isGeneratingImage ? Loader2 : ImagePlus,
-                        label: isGeneratingImage
-                          ? 'Generating...'
-                          : hasHeroImage
-                            ? 'Regenerate Image'
-                            : 'Generate Image',
-                        onClick: handleGenerateImage,
-                        disabled: isGeneratingImage,
-                      },
-                    ]
-                  : []),
-                // Generate Image upgrade hint - for blog posts without premium
-                ...(isBlogPost && !hasHeroImage && !isPremiumUser
-                  ? [
-                      {
-                        icon: ImagePlus,
-                        label: 'Generate Image (Pro)',
-                        onClick: () => router.push(`/${locale}/pricing`),
-                      },
-                    ]
-                  : []),
-                {
-                  icon: Replace,
-                  label: t('findReplace'),
-                  onClick: () => setShowFindReplace(true),
-                },
-                { type: 'divider' as const },
-                {
-                  icon: Trash2,
-                  label: t('delete'),
-                  onClick: () => setShowDeleteConfirm(true),
-                  variant: 'danger' as const,
-                },
-              ]}
-            />
-          </div>
+              <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setTranslationDialogOpen(true)}
+                    className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Globe className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {t('translate')}
+                </TooltipContent>
+              </Tooltip>
+
+              <DropdownMenu
+                trigger={
+                  <button className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                }
+                items={[
+                  // Generate Image - for blog posts with premium
+                  ...(isBlogPost && isPremiumUser
+                    ? [
+                        {
+                          icon: isGeneratingImage ? Loader2 : ImagePlus,
+                          label: isGeneratingImage
+                            ? 'Generating...'
+                            : hasHeroImage
+                              ? 'Regenerate Image'
+                              : 'Generate Image',
+                          onClick: handleGenerateImage,
+                          disabled: isGeneratingImage,
+                        },
+                      ]
+                    : []),
+                  // Generate Image upgrade hint - for blog posts without premium
+                  ...(isBlogPost && !hasHeroImage && !isPremiumUser
+                    ? [
+                        {
+                          icon: ImagePlus,
+                          label: 'Generate Image (Pro)',
+                          onClick: () => router.push(`/${locale}/pricing`),
+                        },
+                      ]
+                    : []),
+                  {
+                    icon: Globe,
+                    label: t('translate'),
+                    onClick: () => setTranslationDialogOpen(true),
+                  },
+                  {
+                    icon: Replace,
+                    label: t('findReplace'),
+                    onClick: () => setShowFindReplace(true),
+                  },
+                  { type: 'divider' as const },
+                  {
+                    icon: Share2,
+                    label: t('share'),
+                    onClick: handleOpenShareModal,
+                  },
+                  {
+                    icon: Trash2,
+                    label: t('delete'),
+                    onClick: () => setShowDeleteConfirm(true),
+                    variant: 'danger' as const,
+                  },
+                ]}
+              />
+            </div>
+          </TooltipProvider>
         }
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
+        {/* Translation in progress banner */}
+        <TranslatingBanner
+          isActive={isTranslatingAsset}
+          estimatedSeconds={translationEstimate}
+          label={t('translatingBanner')}
+        />
+
         {/* Image generation error */}
         {imageError && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -381,8 +505,8 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           }
         >
           <OutputRenderer
-            content={output.content}
-            contentType={output.contentType}
+            content={(translatedAsset?.content ?? output.content) as string | StructuredOutput}
+            contentType={translatedAsset?.contentType ?? output.contentType}
             templateId={output.templateId}
             analysisId={output.id}
           />
@@ -410,6 +534,28 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         cancelLabel={t('deleteConfirmNo')}
         variant="danger"
       />
+
+      {/* Translation Dialog */}
+      <TranslationDialog
+        open={translationDialogOpen}
+        onOpenChange={setTranslationDialogOpen}
+        status={translationStatus}
+        currentLocale={currentLocale}
+        userTier={userTier}
+        isAdmin={isAdmin}
+        onSelectLocale={setLocale}
+        onTranslate={handleTranslateAsset}
+      />
+
+      {/* Share Modal */}
+      {transcriptionForShare && (
+        <ShareModal
+          transcription={transcriptionForShare}
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          onShareUpdate={setTranscriptionForShare}
+        />
+      )}
     </DetailPageLayout>
   );
 }

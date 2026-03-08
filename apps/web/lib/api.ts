@@ -473,7 +473,7 @@ export const translationApi = {
   translate: async (
     transcriptionId: string,
     targetLocale: string,
-    options?: { translateSummary?: boolean; translateAssets?: boolean; assetIds?: string[] }
+    options?: { translateSummary?: boolean; translateAssets?: boolean; assetIds?: string[]; forceRetranslate?: boolean }
   ): Promise<ApiResponse<TranslateConversationResponse>> => {
     return api.post(`/translations/${transcriptionId}`, {
       targetLocale,

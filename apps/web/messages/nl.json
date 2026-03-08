@@ -798,12 +798,20 @@
       "confirmDelete": "Deze asset verwijderen?",
       "viewFull": "Bekijk volledige pagina"
     },
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "translate": "Vertalen",
+    "share": "Delen",
     "findReplace": "Zoeken en vervangen",
     "delete": "Verwijderen",
     "deleteConfirmTitle": "AI Asset verwijderen?",
     "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit AI Asset wordt permanent verwijderd.",
     "deleteConfirmYes": "Ja, verwijderen",
-    "deleteConfirmNo": "Annuleren"
+    "deleteConfirmNo": "Annuleren",
+    "translatingBanner": "Vertaling bezig...",
+    "translatingEstimate": "Vertaling (~{seconds}s)...",
+    "translateSuccess": "Vertaling voltooid",
+    "translateError": "Vertaling mislukt. Probeer het opnieuw."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +862,7 @@
       "translateTo": "Vertalen naar",
       "translating": "Bezig met vertalen...",
       "translationComplete": "Vertaling voltooid",
-      "translationFailed": "Vertaling mislukt",
+      "translationFailed": "Vertaling mislukt. Het verzoek is mogelijk verlopen — probeer het opnieuw.",
       "noTranslationsAvailable": "Geen vertalingen beschikbaar",
       "assetsTranslated": "items vertaald",
       "changeLanguage": "Taal wijzigen",
@@ -867,7 +875,11 @@
       "translate": "Vertalen",
       "showAllLanguages": "Alle talen tonen",
       "hideLanguages": "Minder tonen",
-      "slowHint": "Vertaling kan even duren bij langere gesprekken. Je kunt dit venster sluiten — het gaat op de achtergrond verder."
+      "retranslate": "Opnieuw vertalen",
+      "translatingBanner": "Vertaling bezig...",
+      "translatingEstimate": "Vertaling (~{seconds}s)...",
+      "translateSuccess": "Vertaling voltooid",
+      "translateError": "Vertaling mislukt. Probeer het opnieuw."
     },
     "failed": {
       "title": "Verwerking mislukt",

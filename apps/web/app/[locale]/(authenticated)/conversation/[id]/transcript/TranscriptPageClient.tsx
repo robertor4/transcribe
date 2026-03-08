@@ -87,9 +87,9 @@ export function TranscriptPageClient({ conversationId }: TranscriptPageClientPro
       <DetailPageHeader
         conversationId={conversationId}
         conversationTitle={conversation.title}
-        icon={FileText}
-        title="Transcript"
-        subtitle={`${transcript.speakers} speakers · ${Math.floor(transcript.confidence * 100)}% confidence`}
+        templateIcon={FileText}
+        templateName="Transcript"
+        generatedAt={new Date(conversation.createdAt)}
         maxWidth="max-w-6xl"
         actions={
           <Button

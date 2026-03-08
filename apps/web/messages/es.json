@@ -798,12 +798,20 @@
       "confirmDelete": "¿Eliminar este asset?",
       "viewFull": "Ver página completa"
     },
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "translate": "Traducir",
+    "share": "Compartir",
     "findReplace": "Buscar y reemplazar",
     "delete": "Eliminar",
     "deleteConfirmTitle": "¿Eliminar AI Asset?",
     "deleteConfirmMessage": "Esta acción no se puede deshacer. Este AI Asset se eliminará permanentemente.",
     "deleteConfirmYes": "Sí, eliminar",
-    "deleteConfirmNo": "Cancelar"
+    "deleteConfirmNo": "Cancelar",
+    "translatingBanner": "Traduciendo...",
+    "translatingEstimate": "Traduciendo (~{seconds}s)...",
+    "translateSuccess": "Traducción completada",
+    "translateError": "La traducción falló. Inténtalo de nuevo."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +862,7 @@
       "translateTo": "Traducir a",
       "translating": "Traduciendo...",
       "translationComplete": "Traducción completada",
-      "translationFailed": "Traducción fallida",
+      "translationFailed": "Traducción fallida. La solicitud puede haber expirado — inténtalo de nuevo.",
       "noTranslationsAvailable": "No hay traducciones disponibles",
       "assetsTranslated": "elementos traducidos",
       "changeLanguage": "Cambiar idioma",
@@ -867,7 +875,11 @@
       "translate": "Traducir",
       "showAllLanguages": "Mostrar todos los idiomas",
       "hideLanguages": "Mostrar menos",
-      "slowHint": "La traducción puede tardar un momento en conversaciones más largas. Puedes cerrar esta ventana — continuará en segundo plano."
+      "retranslate": "Retraducir",
+      "translatingBanner": "Traduciendo...",
+      "translatingEstimate": "Traduciendo (~{seconds}s)...",
+      "translateSuccess": "Traducción completada",
+      "translateError": "La traducción falló. Inténtalo de nuevo."
     },
     "failed": {
       "title": "Procesamiento fallido",

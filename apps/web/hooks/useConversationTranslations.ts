@@ -5,7 +5,7 @@
  *
  * Manages translation state for a conversation:
  * - Fetches available translations and their status
- * - Handles translation requests
+ * - Handles per-item translation requests (summary or individual AI asset)
  * - Manages locale preference switching
  */
 
@@ -15,6 +15,11 @@ import type {
   Translation,
   ConversationTranslations,
 } from '@transcribe/shared';
+
+export type TranslatingScope =
+  | { type: 'summary' }
+  | { type: 'asset'; assetId: string }
+  | null;
 
 export interface UseConversationTranslationsOptions {
   /** Set to true for shared view (uses public endpoints, no auth) */
@@ -32,18 +37,35 @@ export interface UseConversationTranslationsResult {
   isLoading: boolean;
   /** Whether a translation is in progress */
   isTranslating: boolean;
+  /** What is currently being translated (summary or specific asset) */
+  translatingScope: TranslatingScope;
   /** Error if any */
   error: Error | null;
   /** Currently selected locale ('original' or locale code like 'es-ES') */
   currentLocale: string;
-  /** Translate to a new locale */
-  translate: (targetLocale: string) => Promise<void>;
+  /** Translate a specific item (summary or single asset) to a locale */
+  translateItem: (
+    targetLocale: string,
+    scope: { type: 'summary' } | { type: 'asset'; assetId: string },
+    options?: { forceRetranslate?: boolean }
+  ) => Promise<void>;
   /** Switch to an existing translated locale */
   setLocale: (localeCode: string) => Promise<void>;
   /** Refresh status from server */
   refresh: () => Promise<void>;
   /** Get translated content for a specific source (summary or analysis) */
   getTranslatedContent: (sourceType: 'summary' | 'analysis', sourceId: string) => Translation | undefined;
+}
+
+/**
+ * Estimate translation time in seconds based on content character length.
+ * Based on observed GPT-5 structured JSON translation speeds (~65-80 chars/sec)
+ * plus fixed overhead for API calls and Firestore operations.
+ */
+export function estimateTranslationSeconds(contentLength: number): number {
+  const processingTime = contentLength / 75;
+  const overhead = 10;
+  return Math.max(15, Math.ceil(processingTime + overhead));
 }
 
 export function useConversationTranslations(
@@ -56,6 +78,7 @@ export function useConversationTranslations(
   const [activeTranslations, setActiveTranslations] = useState<Translation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [translatingScope, setTranslatingScope] = useState<TranslatingScope>(null);
   const [error, setError] = useState<Error | null>(null);
   const [currentLocale, setCurrentLocale] = useState<string>('original');
 
@@ -111,18 +134,26 @@ export function useConversationTranslations(
     }
   }, [conversationId, isShared, shareToken]);
 
-  // Translate to a new locale
-  const translate = useCallback(async (targetLocale: string) => {
-    if (!conversationId || isShared) {
-      // Can't translate in shared view
-      return;
-    }
+  // Translate a specific item (summary or single AI asset)
+  const translateItem = useCallback(async (
+    targetLocale: string,
+    scope: { type: 'summary' } | { type: 'asset'; assetId: string },
+    options?: { forceRetranslate?: boolean }
+  ) => {
+    if (!conversationId || isShared) return;
 
     setIsTranslating(true);
+    setTranslatingScope(scope);
     setError(null);
 
     try {
-      await translationApi.translate(conversationId, targetLocale);
+      const apiOptions = {
+        ...options,
+        translateSummary: scope.type === 'summary',
+        translateAssets: scope.type === 'asset',
+        ...(scope.type === 'asset' ? { assetIds: [scope.assetId] } : {}),
+      };
+      await translationApi.translate(conversationId, targetLocale, apiOptions);
 
       // Refresh status and fetch new translations
       await fetchStatus();
@@ -133,6 +164,7 @@ export function useConversationTranslations(
       throw err;
     } finally {
       setIsTranslating(false);
+      setTranslatingScope(null);
     }
   }, [conversationId, isShared, fetchStatus, fetchTranslations]);
 
@@ -183,9 +215,10 @@ export function useConversationTranslations(
     activeTranslations,
     isLoading,
     isTranslating,
+    translatingScope,
     error,
     currentLocale,
-    translate,
+    translateItem,
     setLocale,
     refresh: fetchStatus,
     getTranslatedContent,
