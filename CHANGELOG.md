@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Redesigned Create AI Asset wizard dialog** with side-nav layout and improved UX
+  - Two-column layout: vertical step navigation on the left, content on the right (desktop)
+  - Reduced from 4 steps to 3: removed review step (Select Type -> Instructions -> Generate)
+  - Collapsible category sections (collapsed by default) with template counts
+  - Compact template list: icon + name with info tooltips (hover on desktop, click on touch)
+  - Search bar to filter templates by name or description
+  - Mobile-optimized: single column with compact dot step indicator, full-width content
+  - Installed `ScrollArea` and `Tooltip` shadcn components
+  - Modified: [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+
 ### Added
 - **Onboarding experience for new users**: Full onboarding flow with questionnaire, spotlight tour, and preloaded example conversation
   - 4-step blocking questionnaire modal: welcome, use case + role, team + output types, discovery source
