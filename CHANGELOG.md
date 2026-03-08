@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Blog archive page** — editorial layout with featured latest post (large card) and 2-column grid for remaining posts; tag pills, improved spacing, and optional cover image support ([PostCard.tsx](apps/web/components/blog/PostCard.tsx), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx))
+
 ### Added
 - **Technical documentation site** (`apps/docs`) — Fumadocs-powered docs app with Mermaid diagram support, auto-generated table of contents, and full-text search
   - Architecture overview with system diagrams
@@ -22,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Excluded from `npm run dev` to avoid interference with main app
 
 ### Changed
+- **Redesigned Project Status Report template** — blog-style `>` bullets for accomplishments, shadcn Table + Badge for milestones and risks, `!` alert circles for blockers, `>` bullets for next period goals
+  - Modified: [ProjectStatusTemplate.tsx](apps/web/components/outputTemplates/ProjectStatusTemplate.tsx)
+  - Updated AI prompt to generate concise 1-2 sentence summaries, and explicitly require short milestone/risk names with separate notes/mitigation fields
+  - Modified: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts)
+  - Template gracefully handles legacy data where milestone/risk names are empty (falls back to notes/mitigation)
+- **Replaced AI Asset detail page sidebar** with AssetSidebar — users can now switch between sibling outputs directly from the right panel, matching the Conversation summary page pattern
+  - Modified: [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+- **Removed BETA label** from Meeting Minutes, Retrospective Summary, Decision Document, and Recommendations Memo templates
+  - Modified: [meetingMinutes.ts](apps/web/lib/outputTemplates/meetingMinutes.ts), [retrospective.ts](apps/web/lib/outputTemplates/retrospective.ts), [decisionDocument.ts](apps/web/lib/outputTemplates/decisionDocument.ts), [recommendationsMemo.ts](apps/web/lib/outputTemplates/recommendationsMemo.ts)
 - **Redesigned AI Asset page header** to match Conversation page style
   - Replaced bulky icon-box + uppercase title layout with compact metadata row
   - Asset type badge (purple pill), date, and inline action icons (Copy with tooltip, Translate, More menu)

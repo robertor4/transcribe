@@ -15,19 +15,17 @@ import {
   Copy,
   Check,
   Trash2,
-  StickyNote,
   ImagePlus,
   Replace,
   MoreVertical,
   Globe,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput, Transcription } from '@transcribe/shared';
+import type { GeneratedAnalysis, BlogPostOutput, Transcription } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
-import { DetailMetadataPanel } from '@/components/detail-pages/DetailMetadataPanel';
-import { RightPanelSection } from '@/components/detail-pages/RightPanelSection';
+import { AssetSidebar } from '@/components/AssetSidebar';
 import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -37,7 +35,6 @@ import { TranslatingBanner } from '@/components/TranslatingBanner';
 import { ShareModal } from '@/components/ShareModal';
 import { useConversation } from '@/hooks/useConversation';
 import { useConversationTranslations, estimateTranslationSeconds } from '@/hooks/useConversationTranslations';
-import { formatRelativeTime } from '@/lib/formatters';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
 import { mergeTranslatedContent } from '@/lib/translationMerge';
 import type { StructuredOutput } from '@transcribe/shared';
@@ -68,6 +65,8 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const { conversation } = useConversation(conversationId);
   const { usageStats, isAdmin } = useUsage();
   const [output, setOutput] = useState<GeneratedAnalysis | null>(null);
+  const [siblingOutputs, setSiblingOutputs] = useState<GeneratedAnalysis[]>([]);
+  const [isLoadingSiblings, setIsLoadingSiblings] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [copied, setCopied] = useState(false);
@@ -149,6 +148,24 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
 
     fetchOutput();
   }, [conversationId, outputId]);
+
+  // Fetch all sibling outputs for the sidebar
+  useEffect(() => {
+    async function fetchSiblings() {
+      setIsLoadingSiblings(true);
+      try {
+        const response = await transcriptionApi.getUserAnalyses(conversationId);
+        if (response.success && response.data) {
+          setSiblingOutputs(response.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch sibling outputs:', err);
+      } finally {
+        setIsLoadingSiblings(false);
+      }
+    }
+    fetchSiblings();
+  }, [conversationId]);
 
   // Copy content to clipboard as rich text (HTML) with plain text fallback
   const handleCopy = async () => {
@@ -305,65 +322,27 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       }
     : undefined;
 
-  // Extract metadata from structured content for the right panel
-  const getOutputMetadata = (): { label: string; value: string }[] => {
-    if (typeof output.content !== 'object' || !output.content) return [];
-
-    const content = output.content as { type?: string };
-
-    if (content.type === 'blogPost') {
-      const blogData = output.content as BlogPostOutput;
-      const metadata: { label: string; value: string }[] = [];
-      if (blogData.metadata?.wordCount) {
-        metadata.push({ label: 'Word count', value: `${blogData.metadata.wordCount} words` });
-      }
-      if (blogData.metadata?.tone) {
-        metadata.push({ label: 'Tone', value: blogData.metadata.tone });
-      }
-      if (blogData.metadata?.targetAudience) {
-        metadata.push({ label: 'Audience', value: blogData.metadata.targetAudience });
-      }
-      return metadata;
-    }
-
-    if (content.type === 'linkedin') {
-      const linkedinData = output.content as LinkedInOutput;
-      if (linkedinData.characterCount) {
-        return [{ label: 'Characters', value: `${linkedinData.characterCount}` }];
-      }
-    }
-
-    return [];
+  // Sidebar metadata for the conversation
+  const sidebarMetadata = {
+    duration: conversation?.source?.audioDuration || 0,
+    createdAt: conversation?.createdAt ? new Date(conversation.createdAt) : new Date(),
+    status: (conversation?.status || 'ready') as 'pending' | 'processing' | 'ready' | 'failed',
+    speakers: conversation?.source?.transcript?.speakers,
+    context: conversation?.context,
   };
-
-  // Details for right panel
-  const detailsData = [
-    { label: 'Generated', value: formatRelativeTime(new Date(output.generatedAt)) },
-    { label: 'Template', value: output.templateName },
-    ...getOutputMetadata(),
-  ];
-
-  // Custom sections for the right panel
-  const customSections = output.customInstructions ? (
-    <RightPanelSection icon={StickyNote} title="Custom Instructions" showBorder>
-      <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
-        {output.customInstructions}
-      </p>
-    </RightPanelSection>
-  ) : null;
 
   return (
     <DetailPageLayout
       rightPanel={
-        <DetailMetadataPanel
-          conversation={{
-            id: conversationId,
-            title: conversationTitle,
-            audioDuration: conversation?.source.audioDuration || 0
+        <AssetSidebar
+          assets={siblingOutputs}
+          isLoading={isLoadingSiblings}
+          onGenerateNew={() => router.push(`/${locale}/conversation/${conversationId}`)}
+          onAssetClick={(asset) => {
+            router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
           }}
-          details={detailsData}
-          sectionTitle="Conversation"
-          customSections={customSections}
+          selectedAssetId={outputId}
+          metadata={sidebarMetadata}
         />
       }
     >

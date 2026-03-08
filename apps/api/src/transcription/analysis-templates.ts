@@ -1929,10 +1929,10 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 Include:
 1. Project name and reporting period
 2. Overall status (green/yellow/red) with justification
-3. Summary of current state
-4. Accomplishments this period
-5. Milestones with status
-6. Risks with mitigation strategies and severity
+3. Summary: 1-2 sentences MAX — a concise executive snapshot, not a detailed recap
+4. Accomplishments this period (short bullet-style strings)
+5. Milestones: each must have a short "milestone" name (e.g., "Folder taxonomy design") AND a separate "notes" field for details. Never leave the "milestone" field empty.
+6. Risks: each must have a short "risk" name (e.g., "SQL vs NoSQL decision delay") AND a separate "mitigation" field. Never leave the "risk" field empty.
 7. Blockers if any
 8. Goals for next period
 9. Budget status if discussed
@@ -1953,20 +1953,20 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         projectName: { type: 'string' },
         reportingPeriod: { type: 'string' },
         overallStatus: { type: 'string', enum: ['green', 'yellow', 'red'] },
-        summary: { type: 'string' },
+        summary: { type: 'string', description: '1-2 sentence executive snapshot. Keep it concise.' },
         accomplishments: { type: 'array', items: { type: 'string' } },
         milestones: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
-              milestone: { type: 'string' },
+              milestone: { type: 'string', description: 'Short milestone name, e.g. "Folder taxonomy design". Must not be empty.' },
               status: {
                 type: 'string',
                 enum: ['completed', 'on-track', 'at-risk', 'delayed'],
               },
               date: { type: 'string' },
-              notes: { type: 'string' },
+              notes: { type: 'string', description: 'Additional context or details about the milestone.' },
             },
             required: ['milestone', 'status'],
           },
@@ -1976,8 +1976,8 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              risk: { type: 'string' },
-              mitigation: { type: 'string' },
+              risk: { type: 'string', description: 'Short risk name, e.g. "SQL vs NoSQL decision delay". Must not be empty.' },
+              mitigation: { type: 'string', description: 'Strategy to mitigate this risk.' },
               severity: { type: 'string', enum: ['high', 'medium', 'low'] },
             },
             required: ['risk', 'mitigation', 'severity'],

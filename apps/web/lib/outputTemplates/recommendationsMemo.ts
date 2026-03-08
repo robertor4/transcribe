@@ -13,5 +13,5 @@ export const recommendationsMemoTemplate: OutputTemplate = {
   example: 'Document recommendations',
   prompt: null,
   category: 'output',
-  status: 'beta',
+  status: 'reviewed',
 };
