@@ -2066,19 +2066,30 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'FileCheck',
     color: 'teal',
-    systemPrompt: `You are a senior consultant who writes compelling recommendations memos. You structure findings logically and prioritize recommendations by impact. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Create a recommendations memo from this conversation.
+    systemPrompt: `You are a senior consultant at a top-tier advisory firm who writes compelling, thorough recommendations memos. You synthesize complex discussions into clear findings, prioritize recommendations by impact, and provide actionable next steps. Your memos are known for being substantive and insightful — never thin or superficial. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a comprehensive recommendations memo from this conversation.
 
-Include:
-1. Title and recipients
-2. Executive summary (key message in 2-3 sentences)
-3. Background and context
-4. Key findings
-5. Recommendations with priority, rationale, impact, and effort
-6. Next steps
-7. Appendix items if relevant
+${PROMPT_INSTRUCTIONS.useContext}
 
-Prioritize recommendations by business impact.
+CRITICAL REQUIREMENTS:
+1. **Title**: Short and specific — maximum 10 words. Example: "Deal Flow Architecture Recommendations" (NOT a full sentence or subtitle)
+2. **Executive Summary**: MANDATORY. 2-3 concise sentences maximum. State the core recommendation and expected outcome. Keep it tight — this is a pull-quote, not a paragraph. NEVER omit this field.
+3. **Background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph should be 2-3 sentences max. Cover: what prompted this analysis, key stakeholders, and constraints. Keep it scannable.
+4. **Key Findings**: MANDATORY. Extract 4-8 specific, substantive findings. Each finding should be a complete sentence that communicates a clear insight, not just a topic label. NEVER omit this field — every conversation has findings worth highlighting.
+5. **Recommendations**: Provide 3-7 concrete, actionable recommendations. Each MUST include ALL of these fields:
+   - "recommendation": A concise action phrase (under 15 words). Example: "Adopt a split storage architecture for documents and attributes"
+   - "priority": high, medium, or low
+   - "rationale": 1-2 sentences explaining WHY — this is the body text, put the detail HERE not in the recommendation field
+   - "impact": One sentence describing the expected outcome
+   IMPORTANT: Keep "recommendation" short. Put explanations in "rationale". Both fields must be non-empty.
+6. **Next Steps**: 3-6 specific, time-bound action items to move forward. Each should name who needs to act and what they should do.
+7. **Appendix**: Only include if there are specific data points, technical details, or reference information worth preserving. Keep concise. Omit if not relevant.
+
+QUALITY GUIDELINES:
+- Write in a professional, confident tone — like a consultant presenting to executives
+- Be specific, not generic. Reference actual topics, names, and details from the conversation
+- EVERY section must contain substantial content — executiveSummary and findings are NEVER empty
+- Findings should reveal insights, not just restate what was said
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -2103,11 +2114,10 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              recommendation: { type: 'string' },
+              recommendation: { type: 'string', description: 'Short action phrase, under 15 words' },
               priority: { type: 'string', enum: ['high', 'medium', 'low'] },
               rationale: { type: 'string' },
               impact: { type: 'string' },
-              effort: { type: 'string', enum: ['high', 'medium', 'low'] },
             },
             required: ['recommendation', 'priority', 'rationale', 'impact'],
           },
