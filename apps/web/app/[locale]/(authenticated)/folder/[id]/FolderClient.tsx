@@ -27,7 +27,6 @@ import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConversationCreateModal } from '@/components/ConversationCreateModal';
 import { DeleteFolderModal } from '@/components/DeleteFolderModal';
-import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { FolderAssetCard } from '@/components/FolderAssetCard';
 import { QASlidePanel } from '@/components/QASlidePanel';
 import { ConversationsTable } from '@/components/dashboard/conversations-table/ConversationsTable';
@@ -35,7 +34,6 @@ import type { FolderContext } from '@/components/dashboard/conversations-table/t
 import { useFolderConversations } from '@/hooks/useFolderConversations';
 import { useFolders } from '@/hooks/useFolders';
 import { useUsage } from '@/contexts/UsageContext';
-import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { deleteConversation } from '@/lib/services/conversationService';
 import { transcriptionApi, type RecentAnalysis } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/formatters';
@@ -69,14 +67,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
   const [isLoadingAssets, setIsLoadingAssets] = useState(true);
   const [isStatsExpanded, setIsStatsExpanded] = useState(false);
   const [isQAPanelOpen, setIsQAPanelOpen] = useState(false);
-
-  const {
-    selectedItem: selectedAsset,
-    isOpen: isPanelOpen,
-    isClosing: isPanelClosing,
-    open: openAssetPanel,
-    close: closeAssetPanel,
-  } = useSlidePanel<RecentAnalysis>();
 
   const handleDeleteFolder = async (deleteContents: boolean) => {
     setIsDeleting(true);
@@ -193,14 +183,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
     fetchAssets();
   }, [folderId]);
 
-  // Handle deleting an asset from the slide panel
-  const handleDeleteAsset = async (assetId: string) => {
-    if (!selectedAsset) return;
-    await transcriptionApi.deleteAnalysis(selectedAsset.transcriptionId, assetId);
-    setAssets(prev => prev.filter(a => a.id !== assetId));
-    closeAssetPanel();
-  };
-
   // Handle deleting a conversation
   const handleDeleteConversation = async (conversationId: string) => {
     try {
@@ -280,8 +262,8 @@ export function FolderClient({ folderId }: FolderClientProps) {
                   <FolderAssetCard
                     key={asset.id}
                     asset={asset}
-                    onClick={() => openAssetPanel(asset)}
-                    isActive={selectedAsset?.id === asset.id}
+                    onClick={() => router.push(`/${locale}/conversation/${asset.transcriptionId}/outputs/${asset.id}`)}
+                    isActive={false}
                   />
                 ))
               ) : (
@@ -477,19 +459,6 @@ export function FolderClient({ folderId }: FolderClientProps) {
         userTier={userTier}
         isAdmin={isAdmin}
       />
-
-      {/* AI Asset Slide Panel */}
-      {selectedAsset && (
-        <AIAssetSlidePanel
-          asset={selectedAsset}
-          isOpen={isPanelOpen}
-          isClosing={isPanelClosing}
-          onClose={closeAssetPanel}
-          onDelete={handleDeleteAsset}
-          conversationId={selectedAsset.transcriptionId}
-          locale={locale}
-        />
-      )}
 
       {/* Conversation Create Modal */}
       <ConversationCreateModal

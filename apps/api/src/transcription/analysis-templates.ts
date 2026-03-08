@@ -2082,8 +2082,8 @@ CRITICAL REQUIREMENTS:
    - "rationale": 1-2 sentences explaining WHY — this is the body text, put the detail HERE not in the recommendation field
    - "impact": One sentence describing the expected outcome
    IMPORTANT: Keep "recommendation" short. Put explanations in "rationale". Both fields must be non-empty.
-6. **Next Steps**: 3-6 specific, time-bound action items to move forward. Each should name who needs to act and what they should do.
-7. **Appendix**: Only include if there are specific data points, technical details, or reference information worth preserving. Keep concise. Omit if not relevant.
+6. **Appendix**: Only include if there are specific data points or reference information worth preserving. Each item must be a plain-text sentence — NEVER include raw JSON, code, or data structures. Summarize technical details in natural language. Omit if not relevant.
+Do NOT include a "nextSteps" field.
 
 QUALITY GUIDELINES:
 - Write in a professional, confident tone — like a consultant presenting to executives
@@ -2122,7 +2122,6 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
             required: ['recommendation', 'priority', 'rationale', 'impact'],
           },
         },
-        nextSteps: { type: 'array', items: { type: 'string' } },
         appendix: { type: 'array', items: { type: 'string' } },
       },
       required: [
@@ -2132,7 +2131,6 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         'background',
         'findings',
         'recommendations',
-        'nextSteps',
       ],
     },
   }),

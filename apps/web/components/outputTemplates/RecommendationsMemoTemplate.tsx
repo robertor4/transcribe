@@ -5,11 +5,17 @@ import {
   User,
   Users,
   Search,
-  ArrowRight,
   Paperclip,
+  ChevronRight,
 } from 'lucide-react';
+import { useState } from 'react';
 import type { RecommendationsMemoOutput, Recommendation } from '@transcribe/shared';
 import { safeString } from './shared/safeDisplay';
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible';
 
 interface RecommendationsMemoTemplateProps {
   data: RecommendationsMemoOutput;
@@ -24,8 +30,17 @@ const serifFont = { fontFamily: 'var(--font-merriweather), Georgia, serif' };
 function safeArray<T = unknown>(value: unknown): T[] {
   if (Array.isArray(value)) return value as T[];
   if (value === null || value === undefined) return [];
-  // AI returned a single item instead of an array — wrap it
   return [value] as T[];
+}
+
+/**
+ * Filters out JSON blobs from appendix items.
+ * AI sometimes dumps raw JSON instead of plain-text summaries.
+ */
+function filterAppendixItems(items: unknown[]): string[] {
+  return items
+    .map(item => safeString(item))
+    .filter(text => text && !text.trimStart().startsWith('{') && !text.trimStart().startsWith('['));
 }
 
 /**
@@ -45,8 +60,6 @@ function RecommendationCard({ recommendation, index }: { recommendation: Recomme
   const impact = safeString(recommendation.impact);
   const priorityLabel = { high: 'High', medium: 'Medium', low: 'Low' };
 
-  // Combine recommendation + rationale into body text.
-  // If the AI put everything in one field, this still renders well.
   const hasRationale = rationale && rationale !== recText;
 
   return (
@@ -75,8 +88,8 @@ function RecommendationCard({ recommendation, index }: { recommendation: Recomme
 export function RecommendationsMemoTemplate({ data }: RecommendationsMemoTemplateProps) {
   const recommendations = safeArray<Recommendation>(data.recommendations);
   const findings = safeArray(data.findings);
-  const nextSteps = safeArray(data.nextSteps);
-  const appendix = safeArray(data.appendix);
+  const appendix = filterAppendixItems(safeArray(data.appendix));
+  const [appendixOpen, setAppendixOpen] = useState(false);
 
   const highPriority = recommendations.filter(r => r.priority === 'high');
   const mediumPriority = recommendations.filter(r => r.priority === 'medium');
@@ -171,14 +184,14 @@ export function RecommendationsMemoTemplate({ data }: RecommendationsMemoTemplat
         </section>
       )}
 
-      {/* Recommendations — clean numbered list, no color coding */}
+      {/* Key Recommendations */}
       {allGrouped.length > 0 && (
         <section className="mb-10">
           <h2
             className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1 pb-3 border-b border-gray-200 dark:border-gray-700"
             style={serifFont}
           >
-            Recommendations
+            Key Recommendations
           </h2>
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {allGrouped.map((rec, idx) => (
@@ -188,43 +201,35 @@ export function RecommendationsMemoTemplate({ data }: RecommendationsMemoTemplat
         </section>
       )}
 
-      {/* Next Steps */}
-      {nextSteps.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
-            <ArrowRight className="w-3.5 h-3.5" />
-            Next Steps
-          </h2>
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
-            {nextSteps.map((step, idx) => (
-              <div key={idx} className="flex gap-3">
-                <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-6 flex-shrink-0 pt-1">
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
-                <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
-                  {safeString(step)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Appendix */}
+      {/* Appendix — collapsible */}
       {appendix.length > 0 && (
         <section>
-          <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-4 uppercase tracking-widest flex items-center gap-2">
-            <Paperclip className="w-3.5 h-3.5" />
-            Appendix
-          </h2>
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
-            {appendix.map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-sm text-gray-500 dark:text-gray-400">
-                <span className="mt-2 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
-                <span className="leading-relaxed">{safeString(item)}</span>
+          <Collapsible open={appendixOpen} onOpenChange={setAppendixOpen}>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full cursor-pointer group">
+              <Paperclip className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                Appendix
+              </span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                ({appendix.length})
+              </span>
+              <ChevronRight
+                className={`w-3.5 h-3.5 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
+                  appendixOpen ? 'rotate-90' : ''
+                }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-4 space-y-2">
+                {appendix.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="mt-2 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0" />
+                    <span className="leading-relaxed">{safeString(item)}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </CollapsibleContent>
+          </Collapsible>
         </section>
       )}
     </article>

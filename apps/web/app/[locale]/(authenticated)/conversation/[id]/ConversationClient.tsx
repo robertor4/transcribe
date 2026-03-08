@@ -27,7 +27,6 @@ import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { AssetSidebar } from '@/components/AssetSidebar';
 import { AssetMobileSheet } from '@/components/AssetMobileSheet';
-import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { TranslatedSummaryRenderer } from '@/components/TranslatedSummaryRenderer';
@@ -43,7 +42,6 @@ import { DropdownMenu } from '@/components/DropdownMenu';
 import { TranslationDialog } from '@/components/TranslationDialog';
 import { ExportPDFMenuItem } from '@/components/ExportPDFMenuItem';
 import { useConversation } from '@/hooks/useConversation';
-import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
 import { updateConversationTitle, deleteConversation } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
@@ -180,15 +178,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
     wasTranslating.current = isTranslating;
   }, [isTranslating, tConversation]);
 
-  // Slide panel for AI Assets
-  const {
-    selectedItem: selectedAsset,
-    isOpen: isPanelOpen,
-    isClosing: isPanelClosing,
-    open: openAssetPanel,
-    close: closeAssetPanel,
-  } = useSlidePanel<GeneratedAnalysis>();
-
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
 
@@ -286,12 +275,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const handleRecommendationSelect = (templateId: string) => {
     setPreselectedTemplate(templateId);
     setIsGeneratorOpen(true);
-  };
-
-  // Delete asset handler for slide panel
-  const handleDeleteAsset = async (assetId: string) => {
-    await transcriptionApi.deleteAnalysis(conversationId, assetId);
-    fetchOutputs();
   };
 
   // Share modal handlers
@@ -560,8 +543,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             assets={outputs}
             isLoading={isLoadingOutputs}
             onGenerateNew={handleGenerateOutput}
-            onAssetClick={openAssetPanel}
-            selectedAssetId={selectedAsset?.id}
+            onAssetClick={(asset) => {
+              router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
+            }}
             metadata={sidebarMetadata}
             recommendations={recommendations}
             onRecommendationSelect={handleRecommendationSelect}
@@ -962,18 +946,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         </button>
       </div>
 
-      {/* AI Asset Slide Panel */}
-      <AIAssetSlidePanel
-        asset={selectedAsset}
-        isOpen={isPanelOpen}
-        isClosing={isPanelClosing}
-        onClose={closeAssetPanel}
-        onDelete={handleDeleteAsset}
-        conversationId={conversationId}
-        locale={locale}
-        currentTranslationLocale={currentLocale}
-        getTranslatedContent={getTranslatedContent}
-      />
+
 
       {/* Mobile Asset Sheet */}
       <AssetMobileSheet
@@ -1001,8 +974,8 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onOutputGenerated={(asset) => {
           // Add the new asset to the list
           setOutputs((prev) => [asset, ...prev]);
-          // Open the slide panel with the new asset
-          openAssetPanel(asset);
+          // Navigate to the full page view
+          router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
         }}
       />
 
