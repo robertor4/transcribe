@@ -56,6 +56,9 @@ interface OutputDetailClientProps {
   outputId: string;
 }
 
+/** Templates that render a sidebar (TOC, agenda, etc.) and need the wider max-w-5xl container. */
+const sidebarTemplates = new Set(['meetingMinutes']);
+
 export function OutputDetailClient({ conversationId, outputId }: OutputDetailClientProps) {
   const params = useParams();
   const router = useRouter();
@@ -370,6 +373,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         templateName={output.templateName}
         templateIcon={OutputIcon}
         generatedAt={new Date(output.generatedAt)}
+        maxWidth={sidebarTemplates.has(output.templateId) ? 'max-w-5xl' : 'max-w-4xl'}
         actions={
           <TooltipProvider>
             <div className="flex items-center gap-3">
@@ -404,6 +408,22 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
                 </TooltipTrigger>
                 <TooltipContent side="bottom" sideOffset={6}>
                   {t('translate')}
+                </TooltipContent>
+              </Tooltip>
+
+              <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {t('delete')}
                 </TooltipContent>
               </Tooltip>
 
@@ -468,7 +488,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         }
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
+      <div className={`${sidebarTemplates.has(output.templateId) ? 'max-w-5xl' : 'max-w-4xl'} mx-auto px-4 sm:px-6 pb-8`}>
         {/* Translation in progress banner */}
         <TranslatingBanner
           isActive={isTranslatingAsset}

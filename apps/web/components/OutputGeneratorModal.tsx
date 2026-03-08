@@ -471,7 +471,7 @@ export function OutputGeneratorModal({
               open={isOpen}
               onOpenChange={() => toggleCategory(cat.id)}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full px-3 py-3 rounded-md bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <CatIcon className={`w-4 h-4 ${cat.color} flex-shrink-0`} />
                 <span className="text-[11px] font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex-1 text-left">
                   {t(translationKey as Parameters<typeof t>[0])}

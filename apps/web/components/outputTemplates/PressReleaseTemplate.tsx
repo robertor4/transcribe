@@ -1,54 +1,52 @@
 'use client';
 
 import {
-  Newspaper,
   MapPin,
-  Quote,
   Building2,
   Phone,
-  FileText,
 } from 'lucide-react';
 import type { PressReleaseOutput } from '@transcribe/shared';
-import { SectionCard, InfoBox } from './shared';
+import {
+  EDITORIAL,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialPullQuote,
+} from './shared';
 
 interface PressReleaseTemplateProps {
   data: PressReleaseOutput;
 }
 
 export function PressReleaseTemplate({ data }: PressReleaseTemplateProps) {
+  const metadata = data.dateline ? (
+    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <MapPin className="w-3.5 h-3.5" />
+      <span className="font-medium">{data.dateline}</span>
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Newspaper className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words uppercase">
-              {data.headline}
-            </h2>
-            {data.subheadline && (
-              <p className="mt-2 text-lg text-gray-700 dark:text-gray-300 italic">
-                {data.subheadline}
-              </p>
-            )}
-            <div className="flex items-center gap-2 mt-3 text-sm text-gray-500 dark:text-gray-400">
-              <MapPin className="w-4 h-4" />
-              <span className="font-medium">{data.dateline}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title={data.headline} metadata={metadata} />
+
+      {/* Subheadline as pull quote */}
+      {data.subheadline && (
+        <EditorialPullQuote>
+          <p>{data.subheadline}</p>
+        </EditorialPullQuote>
+      )}
 
       {/* Lead Paragraph */}
-      <div className="text-lg text-gray-800 dark:text-gray-200 font-medium leading-relaxed">
+      <p className={`${EDITORIAL.body} font-medium text-lg mb-8`}>
         {data.lead}
-      </div>
+      </p>
 
       {/* Body */}
       {data.body && data.body.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-10">
           {data.body.map((paragraph, idx) => (
-            <p key={idx} className="text-gray-700 dark:text-gray-300 leading-relaxed">
+            <p key={idx} className={EDITORIAL.body}>
               {paragraph}
             </p>
           ))}
@@ -57,52 +55,42 @@ export function PressReleaseTemplate({ data }: PressReleaseTemplateProps) {
 
       {/* Quotes */}
       {data.quotes && data.quotes.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-6 mb-10">
           {data.quotes.map((quote, idx) => (
-            <div
+            <EditorialPullQuote
               key={idx}
-              className="border-l-4 border-[#8D6AFA] bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 rounded-r-xl p-4"
+              cite={
+                quote.title
+                  ? `${quote.attribution}, ${quote.title}`
+                  : quote.attribution
+              }
             >
-              <div className="flex items-start gap-3">
-                <Quote className="w-5 h-5 text-[#8D6AFA] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-gray-700 dark:text-gray-300 italic mb-2">
-                    &ldquo;{quote.quote}&rdquo;
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-semibold">{quote.attribution}</span>
-                    {quote.title && <span>, {quote.title}</span>}
-                  </p>
-                </div>
-              </div>
-            </div>
+              <p>&ldquo;{quote.quote}&rdquo;</p>
+            </EditorialPullQuote>
           ))}
         </div>
       )}
 
       {/* Boilerplate */}
-      <SectionCard
-        title="About"
-        icon={Building2}
-        iconColor="text-gray-500"
-        className="bg-gray-50 dark:bg-gray-800/50"
-      >
-        <p className="text-gray-600 dark:text-gray-400 text-sm">{data.boilerplate}</p>
-      </SectionCard>
+      <EditorialSection label="About" icon={Building2} borderTop>
+        <p className={EDITORIAL.body}>{data.boilerplate}</p>
+      </EditorialSection>
 
       {/* Contact Info */}
       {data.contactInfo && (
-        <SectionCard title="Media Contact" icon={Phone} iconColor="text-gray-500">
-          <p className="text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap">
+        <EditorialSection label="Media Contact" icon={Phone} borderTop>
+          <p className={`${EDITORIAL.body} whitespace-pre-wrap`}>
             {data.contactInfo}
           </p>
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Footer marker */}
-      <div className="text-center text-gray-400 dark:text-gray-500 text-sm font-medium">
-        ###
+      <div className={`text-center ${EDITORIAL.sectionBorder} pt-6`}>
+        <span className="text-sm font-medium text-gray-400 dark:text-gray-500">
+          ###
+        </span>
       </div>
-    </div>
+    </EditorialArticle>
   );
 }

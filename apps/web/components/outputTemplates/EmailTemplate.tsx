@@ -26,6 +26,7 @@ import { useUsage } from '@/contexts/UsageContext';
 import { transcriptionApi } from '@/lib/api';
 import { Button } from '@/components/Button';
 import { UserAvatar } from '@/components/UserAvatar';
+import { EditorialArticle, EDITORIAL } from './shared';
 
 // Union type for all email outputs
 type EmailData =
@@ -167,13 +168,13 @@ function EmailBody({
 }) {
   return (
     <div className="space-y-4">
-      <p className="text-gray-900 dark:text-gray-100">{greeting}</p>
+      <p className="text-[16px] text-gray-900 dark:text-gray-100 leading-[1.8]">{greeting}</p>
 
       <div className="space-y-4">
         {body.map((paragraph, index) => (
           <p
             key={index}
-            className="text-gray-700 dark:text-gray-300 leading-relaxed"
+            className={EDITORIAL.body}
           >
             {paragraph}
           </p>
@@ -236,7 +237,7 @@ function FollowUpEmailContent({ data }: { data: FollowUpEmailOutput }) {
           <FileText className="w-5 h-5" />
           Meeting recap
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">{data.meetingRecap}</p>
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">{data.meetingRecap}</p>
       </div>
 
       {/* Decisions Confirmed - Brand cyan styling */}
@@ -248,7 +249,7 @@ function FollowUpEmailContent({ data }: { data: FollowUpEmailOutput }) {
           </h3>
           <ul className="space-y-4 ml-4">
             {data.decisionsConfirmed.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 <span className="mt-2 w-2 h-2 bg-[#14D0DC] rounded-full flex-shrink-0" />
                 <span>{item}</span>
               </li>
@@ -268,7 +269,7 @@ function FollowUpEmailContent({ data }: { data: FollowUpEmailOutput }) {
             {data.actionItems.map((item: EmailActionItem, index: number) => (
               <li key={index} className="flex items-start gap-3">
                 <span className="w-2 h-2 rounded-full bg-[#8D6AFA] mt-2 flex-shrink-0" />
-                <div className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                <div className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                   <span>{item.task}</span>
                   {(item.owner || item.deadline) && (
                     <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
@@ -290,7 +291,7 @@ function FollowUpEmailContent({ data }: { data: FollowUpEmailOutput }) {
           <ChevronRight className="w-5 h-5 text-[#3F38A0]" />
           Next steps
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">{data.nextSteps}</p>
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">{data.nextSteps}</p>
       </div>
     </>
   );
@@ -309,7 +310,7 @@ function SalesEmailContent({ data }: { data: SalesEmailOutput }) {
           </h3>
           <ul className="space-y-4 ml-4">
             {data.painPointsAddressed.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 <span className="mt-2 w-2 h-2 bg-[#8D6AFA] rounded-full flex-shrink-0" />
                 <span>{item}</span>
               </li>
@@ -324,7 +325,7 @@ function SalesEmailContent({ data }: { data: SalesEmailOutput }) {
           <Lightbulb className="w-5 h-5 text-[#8D6AFA]" />
           How we can help
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
           {data.valueProposition}
         </p>
       </div>
@@ -335,13 +336,13 @@ function SalesEmailContent({ data }: { data: SalesEmailOutput }) {
           <Target className="w-5 h-5 text-[#14D0DC]" />
           Next step
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">{data.callToAction}</p>
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">{data.callToAction}</p>
       </div>
 
       {/* Urgency Hook (optional) - Secondary alt styling */}
       {data.urgencyHook && (
         <div className="mt-6 px-6 py-5 bg-[#3F38A0]/10 dark:bg-[#3F38A0]/20 border-l-4 border-[#3F38A0] rounded-r-lg">
-          <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed flex items-center gap-3">
+          <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] flex items-center gap-3">
             <Clock className="w-5 h-5 text-[#3F38A0] flex-shrink-0" />
             {data.urgencyHook}
           </p>
@@ -360,7 +361,7 @@ function InternalUpdateContent({ data }: { data: InternalUpdateOutput }) {
         <h3 className="text-lg font-bold text-[#8D6AFA] mb-4 uppercase tracking-wide">
           TL;DR
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] font-medium">
           {data.tldr}
         </p>
       </div>
@@ -374,7 +375,7 @@ function InternalUpdateContent({ data }: { data: InternalUpdateOutput }) {
           </h3>
           <ul className="space-y-4 ml-4">
             {data.keyDecisions.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 <span className="mt-2 w-2 h-2 bg-[#14D0DC] rounded-full flex-shrink-0" />
                 <span>{item}</span>
               </li>
@@ -392,7 +393,7 @@ function InternalUpdateContent({ data }: { data: InternalUpdateOutput }) {
           </h3>
           <ul className="space-y-4 ml-4">
             {data.blockers.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 <span className="mt-2 w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
                 <span>{item}</span>
               </li>
@@ -407,7 +408,7 @@ function InternalUpdateContent({ data }: { data: InternalUpdateOutput }) {
           <Target className="w-5 h-5 text-[#3F38A0]" />
           Next milestone
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
           {data.nextMilestone}
         </p>
       </div>
@@ -424,7 +425,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
         <h3 className="text-lg font-bold text-[#8D6AFA] mb-4 uppercase tracking-wide">
           Executive summary
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
           {data.executiveSummary}
         </p>
       </div>
@@ -438,7 +439,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
           </h3>
           <ul className="space-y-4 ml-4">
             {data.requirementsSummary.map((item, idx) => (
-              <li key={idx} className="flex items-start gap-3 text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 <span className="mt-2 w-2 h-2 bg-[#14D0DC] rounded-full flex-shrink-0" />
                 <span>{item}</span>
               </li>
@@ -453,7 +454,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
           <Lightbulb className="w-5 h-5 text-[#8D6AFA]" />
           Proposed solution
         </h3>
-        <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+        <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
           {data.proposedSolution}
         </p>
       </div>
@@ -465,7 +466,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
             <Clock className="w-5 h-5 text-[#3F38A0]" />
             Timeline estimate
           </h3>
-          <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+          <p className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
             {data.timelineEstimate}
           </p>
         </div>
@@ -480,7 +481,7 @@ function ClientProposalContent({ data }: { data: ClientProposalOutput }) {
           </h3>
           <ol className="space-y-3 ml-4 list-decimal list-inside">
             {data.nextStepsToEngage.map((step, idx) => (
-              <li key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <li key={idx} className="text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
                 {step}
               </li>
             ))}
@@ -540,7 +541,7 @@ export function EmailTemplate({ data, analysisId }: EmailTemplateProps) {
   };
 
   return (
-    <div>
+    <EditorialArticle>
       <EmailHeader
         subject={data.subject}
         userName={user?.displayName}
@@ -558,6 +559,6 @@ export function EmailTemplate({ data, analysisId }: EmailTemplateProps) {
           freshPhotoUrl={profilePhotoUrl}
         />
       </EmailBody>
-    </div>
+    </EditorialArticle>
   );
 }

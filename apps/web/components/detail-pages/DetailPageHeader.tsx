@@ -12,7 +12,7 @@ interface DetailPageHeaderProps {
   templateIcon: LucideIcon;
   generatedAt: Date;
   actions: ReactNode;
-  maxWidth?: 'max-w-4xl' | 'max-w-6xl';
+  maxWidth?: 'max-w-4xl' | 'max-w-5xl' | 'max-w-6xl';
 }
 
 /**

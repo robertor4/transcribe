@@ -1,16 +1,24 @@
 'use client';
 
 import {
-  Users,
   Calendar,
   MessageSquare,
   TrendingUp,
   TrendingDown,
   ListTodo,
-  CalendarClock,
 } from 'lucide-react';
 import type { OneOnOneNotesOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  BulletList,
+  EDITORIAL,
+  safeString,
+} from './shared';
 
 interface OneOnOneTemplateProps {
   data: OneOnOneNotesOutput;
@@ -21,121 +29,106 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
   const hasReceivedFeedback = data.feedback?.received && data.feedback.received.length > 0;
   const hasFeedback = hasGivenFeedback || hasReceivedFeedback;
 
+  const metadata = data.date ? (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <span className="flex items-center gap-1.5">
+        <Calendar className="w-3.5 h-3.5" />
+        {safeString(data.date)}
+      </span>
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Users className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              1:1 Meeting Notes
-            </h2>
-            <MetadataRow
-              items={[{ label: 'Date', value: data.date, icon: Calendar }]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title="1:1 Meeting Notes" metadata={metadata} />
 
       {/* Participants */}
       {data.participants && (
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">Manager:</span>
-            <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.manager)}</span>
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <span className="text-sm text-purple-600 dark:text-purple-400 font-medium">Report:</span>
-            <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.report)}</span>
-          </div>
+        <div className="flex flex-wrap gap-4 mb-10">
+          {data.participants.manager && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">Manager:</span>
+              <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.manager)}</span>
+            </div>
+          )}
+          {data.participants.report && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <span className="text-sm text-purple-600 dark:text-purple-400 font-medium">Report:</span>
+              <span className="text-gray-900 dark:text-gray-100">{safeString(data.participants.report)}</span>
+            </div>
+          )}
         </div>
       )}
 
       {/* Topics Discussed */}
       {data.topics && data.topics.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-[#8D6AFA]" />
-            Topics Discussed
-          </h3>
-          {data.topics.map((topic, idx) => (
-            <SectionCard key={idx} variant="outlined">
-              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                {safeString(topic.topic)}
-              </h4>
-              <p className="text-gray-600 dark:text-gray-400 break-words">{safeString(topic.notes)}</p>
-              {topic.followUp && (
-                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700/50">
-                  <span className="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-                    Follow-up
-                  </span>
-                  <p className="mt-1 text-gray-700 dark:text-gray-300">{safeString(topic.followUp)}</p>
-                </div>
-              )}
-            </SectionCard>
-          ))}
-        </div>
+        <EditorialSection label="Topics Discussed" icon={MessageSquare} borderTop>
+          <div className="space-y-6">
+            {data.topics.map((topic, idx) => (
+              <div key={idx} className={`${idx > 0 ? `pt-6 ${EDITORIAL.sectionBorder}` : ''}`}>
+                <EditorialHeading>{safeString(topic.topic)}</EditorialHeading>
+                <p className={`${EDITORIAL.body} mt-3`}>{safeString(topic.notes)}</p>
+                {topic.followUp && (
+                  <div className="mt-4">
+                    <span className={EDITORIAL.sectionLabel}>Follow-up</span>
+                    <p className={`${EDITORIAL.body} mt-1`}>{safeString(topic.followUp)}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </EditorialSection>
       )}
 
       {/* Feedback */}
       {hasFeedback && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           {hasGivenFeedback && (
-            <SectionCard title="Feedback Given" icon={TrendingUp} iconColor="text-green-500">
+            <EditorialSection label="Feedback Given" icon={TrendingUp}>
               <BulletList
                 items={data.feedback!.given!}
                 bulletColor="bg-green-500"
-                className="text-gray-600 dark:text-gray-400"
+                className={EDITORIAL.listItem}
               />
-            </SectionCard>
+            </EditorialSection>
           )}
           {hasReceivedFeedback && (
-            <SectionCard title="Feedback Received" icon={TrendingDown} iconColor="text-blue-500">
+            <EditorialSection label="Feedback Received" icon={TrendingDown}>
               <BulletList
                 items={data.feedback!.received!}
                 bulletColor="bg-blue-500"
-                className="text-gray-600 dark:text-gray-400"
+                className={EDITORIAL.listItem}
               />
-            </SectionCard>
+            </EditorialSection>
           )}
         </div>
       )}
 
       {/* Action Items */}
       {data.actionItems && data.actionItems.length > 0 && (
-        <SectionCard title="Action Items" icon={ListTodo} iconColor="text-amber-500">
-          <div className="space-y-3">
-            {data.actionItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
-                    {idx + 1}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.task)}</p>
-                  <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
-                    {item.deadline && <span>Due: {safeString(item.deadline)}</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <EditorialSection label="Action Items" icon={ListTodo} borderTop>
+          <EditorialNumberedList
+            items={data.actionItems.map((item) => ({
+              primary: (
+                <>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{safeString(item.task)}</span>
+                </>
+              ),
+              secondary: [
+                item.owner ? `Owner: ${safeString(item.owner)}` : null,
+                item.deadline ? `Due: ${safeString(item.deadline)}` : null,
+              ].filter(Boolean).join(' · ') || undefined,
+            }))}
+          />
+        </EditorialSection>
       )}
 
       {/* Next Meeting */}
       {data.nextMeeting && (
-        <InfoBox title="Next 1:1" icon={CalendarClock} variant="purple">
-          {data.nextMeeting}
-        </InfoBox>
+        <EditorialPullQuote cite="Next 1:1" color="#8D6AFA">
+          <p>{safeString(data.nextMeeting)}</p>
+        </EditorialPullQuote>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

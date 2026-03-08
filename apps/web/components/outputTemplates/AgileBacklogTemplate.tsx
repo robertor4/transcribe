@@ -16,6 +16,15 @@ import { useTranslations } from 'next-intl';
 import ReactMarkdown from 'react-markdown';
 import type { AgileBacklogOutput, UserStory, Epic } from '@transcribe/shared';
 import { userStoryToHtml, userStoryToMarkdown } from '@/lib/outputToMarkdown';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialCollapsible,
+  EditorialPullQuote,
+  EditorialParagraphs,
+  EDITORIAL,
+} from './shared';
 
 interface AgileBacklogTemplateProps {
   data: AgileBacklogOutput;
@@ -88,14 +97,14 @@ function UserStoryCard({ story, t }: UserStoryCardProps) {
   };
 
   return (
-    <div className="border-l-2 border-l-[#8D6AFA]/30 border border-gray-200 dark:border-gray-700 rounded-lg p-5 bg-white dark:bg-gray-800/50 group">
+    <div className="border-l-2 border-l-gray-300 dark:border-l-gray-600 pl-5 py-3 group">
       {/* Header with ID and title */}
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 text-[#8D6AFA] dark:text-[#8D6AFA]">
+          <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
             {story.id}
           </span>
-          <h4 className="text-base font-medium text-gray-900 dark:text-gray-100">{story.title}</h4>
+          <h4 className="text-[16px] font-semibold text-gray-900 dark:text-gray-100 leading-snug">{story.title}</h4>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -120,21 +129,21 @@ function UserStoryCard({ story, t }: UserStoryCardProps) {
       </div>
 
       {/* User story statement */}
-      <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-gray-700 dark:text-gray-300 [&_p]:m-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_strong]:dark:text-gray-100">
+      <div className={`mb-4 ${EDITORIAL.body} [&_p]:m-0 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_strong]:dark:text-gray-100`}>
         <ReactMarkdown>{story.statement}</ReactMarkdown>
       </div>
 
       {/* Acceptance criteria */}
       {story.acceptanceCriteria && story.acceptanceCriteria.length > 0 && (
         <div className="mb-4 pl-4 border-l-2 border-[#14D0DC]/30">
-          <h5 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+          <h5 className={`${EDITORIAL.sectionLabel} mb-3`}>
             {t.acceptanceCriteria}
           </h5>
           <ul className="space-y-2">
             {story.acceptanceCriteria.map((ac, index) => (
               <li key={index} className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#14D0DC] flex-shrink-0 mt-0.5" />
-                <span className="text-gray-700 dark:text-gray-300">{ac.criterion}</span>
+                <span className={EDITORIAL.listItem}>{ac.criterion}</span>
               </li>
             ))}
           </ul>
@@ -143,7 +152,7 @@ function UserStoryCard({ story, t }: UserStoryCardProps) {
 
       {/* Expandable details (technical notes, dependencies) */}
       {hasDetails && (
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+        <div className={`mt-4 pt-4 ${EDITORIAL.sectionBorder}`}>
           <button
             onClick={() => setShowDetails(!showDetails)}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
@@ -165,9 +174,9 @@ function UserStoryCard({ story, t }: UserStoryCardProps) {
                     <Code className="w-3.5 h-3.5" />
                     <span>{t.technicalNotes}</span>
                   </div>
-                  <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400 pl-5">
+                  <ul className="space-y-1 pl-5">
                     {story.technicalNotes.map((note, index) => (
-                      <li key={index} className="list-disc">
+                      <li key={index} className={`list-disc ${EDITORIAL.listItem}`}>
                         {note}
                       </li>
                     ))}
@@ -212,34 +221,34 @@ function EpicSection({ epic, defaultExpanded = true, t }: EpicSectionProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div className="mb-8 last:mb-0">
+    <div className="mb-10 last:mb-0">
       {/* Epic header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-3 p-4 bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 rounded-lg hover:bg-[#8D6AFA]/10 dark:hover:bg-[#8D6AFA]/20 transition-colors text-left"
+        className="w-full flex items-center gap-3 py-3 border-b border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-colors text-left"
       >
         {isExpanded ? (
-          <ChevronDown className="w-5 h-5 text-[#8D6AFA]" />
+          <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
         ) : (
-          <ChevronRight className="w-5 h-5 text-[#8D6AFA]" />
+          <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
         )}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-[#8D6AFA]/20 dark:bg-[#8D6AFA]/30 text-[#8D6AFA]">
+            <span className="inline-flex items-center flex-shrink-0 whitespace-nowrap px-2 py-0.5 rounded text-xs font-mono font-medium bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
               {epic.id}
             </span>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{epic.title}</h3>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{epic.title}</h3>
+            <span className="text-sm text-gray-400 dark:text-gray-500">
               ({epic.stories?.length || 0} {t.stories})
             </span>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{epic.description}</p>
+          <p className={`${EDITORIAL.body} mt-1`}>{epic.description}</p>
         </div>
       </button>
 
       {/* Stories */}
       {isExpanded && epic.stories && epic.stories.length > 0 && (
-        <div className="mt-4 ml-8 space-y-4">
+        <div className="mt-5 ml-6 space-y-5">
           {epic.stories.map((story) => (
             <UserStoryCard key={story.id} story={story} t={t} />
           ))}
@@ -286,47 +295,53 @@ export function AgileBacklogTemplate({ data }: AgileBacklogTemplateProps) {
     );
   }
 
+  const metadata = (
+    <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+      <span className="flex items-center gap-1.5">
+        <Layers className="w-3.5 h-3.5" />
+        {totalEpics} {totalEpics !== 1 ? 'epics' : 'epic'}
+      </span>
+      <span className="text-gray-300 dark:text-gray-600">|</span>
+      <span>
+        {totalStories} {totalStories !== 1 ? tRaw('userStories') : tRaw('userStory')}
+      </span>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Stats */}
-      <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-        <div className="flex items-center gap-1.5">
-          <Layers className="w-4 h-4" />
-          <span>
-            {totalEpics} {totalEpics !== 1 ? 'epics' : 'epic'}
-          </span>
-        </div>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
-        <span>
-          {totalStories} {totalStories !== 1 ? tRaw('userStories') : tRaw('userStory')}
-        </span>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title={tRaw('name')} metadata={metadata} />
+
+      {/* Summary — pull-quote style */}
+      {data.summary && (
+        <EditorialPullQuote>
+          <EditorialParagraphs text={data.summary} />
+        </EditorialPullQuote>
+      )}
 
       {/* Epics */}
       {epics.length > 0 && (
-        <div>
-          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-            {tRaw('epics')}
-          </h2>
+        <EditorialSection label={tRaw('epics')} icon={Layers}>
           {epics.map((epic) => (
             <EpicSection key={epic.id} epic={epic} t={t} />
           ))}
-        </div>
+        </EditorialSection>
       )}
 
       {/* Standalone Stories */}
       {standaloneStories.length > 0 && (
-        <div>
-          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-            {tRaw('standaloneStories')}
-          </h2>
-          <div className="space-y-4">
+        <EditorialCollapsible
+          label={tRaw('standaloneStories')}
+          count={totalStandaloneStories}
+          defaultOpen={epics.length === 0}
+        >
+          <div className="space-y-5">
             {standaloneStories.map((story) => (
               <UserStoryCard key={story.id} story={story} t={t} />
             ))}
           </div>
-        </div>
+        </EditorialCollapsible>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

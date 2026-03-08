@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { BlogPostOutput } from '@transcribe/shared';
+import { EditorialArticle, EditorialHeading, serifFont, EDITORIAL } from './shared';
 
 interface BlogPostTemplateProps {
   data: BlogPostOutput;
@@ -10,10 +11,8 @@ interface BlogPostTemplateProps {
 export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
   const [imageError, setImageError] = useState(false);
 
-  const serifFont = { fontFamily: 'var(--font-merriweather), Georgia, serif' };
-
   return (
-    <article className="max-w-[680px] overflow-x-hidden">
+    <EditorialArticle>
       {/* Headline */}
       <h1
         className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-snug"
@@ -30,7 +29,7 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
       )}
 
       {/* Editorial rule */}
-      <hr className="hidden lg:block border-t-2 border-gray-300 dark:border-gray-600 mb-8" />
+      <hr className={`hidden lg:block ${EDITORIAL.rule} mb-8`} />
 
       {/* Hero Image — magazine-style float right */}
       {data.heroImage && !imageError && (
@@ -59,15 +58,10 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
       {/* Sections */}
       {data.sections.map((section, index) => (
         <section key={index} className="mb-8">
-          <h2
-            className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 mt-10 pb-3 border-b border-gray-200 dark:border-gray-700"
-            style={serifFont}
-          >
-            {section.heading}
-          </h2>
+          <EditorialHeading className="mb-6 mt-10">{section.heading}</EditorialHeading>
 
           {section.paragraphs.map((paragraph, pIndex) => (
-            <p key={pIndex} className="text-[16px] text-gray-700 dark:text-gray-300 leading-[1.35] mb-6">
+            <p key={pIndex} className={`${EDITORIAL.body} mb-6`}>
               {paragraph}
             </p>
           ))}
@@ -75,7 +69,7 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
           {section.bulletPoints && section.bulletPoints.length > 0 && (
             <ul className="list-none pl-0 space-y-2.5 pt-4 mb-2">
               {section.bulletPoints.map((point, bIndex) => (
-                <li key={bIndex} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7]">
+                <li key={bIndex} className={`flex items-start gap-3 ${EDITORIAL.listItem}`}>
                   <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-800 text-[10px] font-bold flex items-center justify-center mt-[3px]">&gt;</span>
                   <span className="flex-1">{typeof point === 'string' ? point : JSON.stringify(point)}</span>
                 </li>
@@ -110,6 +104,6 @@ export function BlogPostTemplate({ data }: BlogPostTemplateProps) {
           {data.callToAction}
         </p>
       </div>
-    </article>
+    </EditorialArticle>
   );
 }

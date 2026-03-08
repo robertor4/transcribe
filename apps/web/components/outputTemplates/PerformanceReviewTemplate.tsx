@@ -6,11 +6,19 @@ import {
   User,
   Trophy,
   TrendingUp,
-  Target,
   MessageSquare,
 } from 'lucide-react';
 import type { PerformanceReviewOutput, PerformanceRating } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  BulletList,
+  EDITORIAL,
+} from './shared';
 
 interface PerformanceReviewTemplateProps {
   data: PerformanceReviewOutput;
@@ -47,7 +55,7 @@ function CategoryRatingCard({ rating }: { rating: PerformanceRating }) {
         <h4 className="font-semibold text-gray-900 dark:text-gray-100">{rating.category}</h4>
         <RatingBar rating={rating.rating} />
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400">{rating.comments}</p>
+      <p className={EDITORIAL.body}>{rating.comments}</p>
     </div>
   );
 }
@@ -68,7 +76,7 @@ function OverallRatingDisplay({ rating }: { rating: number }) {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 text-center">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 text-center mb-10">
       <div className="flex justify-center mb-3">
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
@@ -88,101 +96,85 @@ function OverallRatingDisplay({ rating }: { rating: number }) {
 }
 
 export function PerformanceReviewTemplate({ data }: PerformanceReviewTemplateProps) {
+  const metadata = (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      {data.employeeName && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" />
+          <span className="text-gray-400">Employee:</span> {data.employeeName}
+        </span>
+      )}
+      {data.reviewerName && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" />
+          <span className="text-gray-400">Reviewer:</span> {data.reviewerName}
+        </span>
+      )}
+      {data.reviewPeriod && (
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          {data.reviewPeriod}
+        </span>
+      )}
+    </div>
+  );
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Star className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Performance Review
-            </h2>
-            <MetadataRow
-              items={[
-                { label: 'Employee', value: data.employeeName, icon: User },
-                { label: 'Reviewer', value: data.reviewerName },
-                { label: 'Period', value: data.reviewPeriod, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title="Performance Review" metadata={metadata} />
 
       {/* Overall Rating */}
       <OverallRatingDisplay rating={data.overallRating} />
 
       {/* Category Ratings */}
       {data.ratings && data.ratings.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Ratings by Category
-          </h3>
+        <EditorialSection label="Ratings by Category" icon={Star} borderTop>
           <div className="grid grid-cols-1 gap-4">
             {data.ratings.map((rating, idx) => (
               <CategoryRatingCard key={idx} rating={rating} />
             ))}
           </div>
-        </div>
+        </EditorialSection>
       )}
 
       {/* Accomplishments & Areas for Growth */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.accomplishments && data.accomplishments.length > 0 && (
-          <SectionCard
-            title="Key Accomplishments"
-            icon={Trophy}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10"
-          >
-            <BulletList items={data.accomplishments} bulletColor="bg-green-500" />
-          </SectionCard>
-        )}
-        {data.areasForGrowth && data.areasForGrowth.length > 0 && (
-          <SectionCard
-            title="Areas for Growth"
-            icon={TrendingUp}
-            iconColor="text-amber-500"
-            className="bg-amber-50/50 dark:bg-amber-900/10"
-          >
-            <BulletList items={data.areasForGrowth} bulletColor="bg-amber-500" />
-          </SectionCard>
-        )}
-      </div>
+      {data.accomplishments && data.accomplishments.length > 0 && (
+        <EditorialSection label="Key Accomplishments" icon={Trophy} borderTop>
+          <BulletList items={data.accomplishments} bulletColor="bg-green-500" />
+        </EditorialSection>
+      )}
+
+      {data.areasForGrowth && data.areasForGrowth.length > 0 && (
+        <EditorialSection label="Areas for Growth" icon={TrendingUp} borderTop>
+          <BulletList items={data.areasForGrowth} bulletColor="bg-amber-500" />
+        </EditorialSection>
+      )}
 
       {/* Goals */}
       {data.goals && data.goals.length > 0 && (
-        <SectionCard title="Development Goals" icon={Target} iconColor="text-[#8D6AFA]">
-          <div className="space-y-3">
-            {data.goals.map((goal, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#8D6AFA]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-[#8D6AFA]">{idx + 1}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{goal.goal}</p>
-                  {goal.timeline && (
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      Timeline: {goal.timeline}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <section className="mb-10">
+          <EditorialHeading>Development Goals</EditorialHeading>
+          <EditorialNumberedList
+            items={data.goals.map((goal) => ({
+              primary: (
+                <span className={EDITORIAL.listItem}>
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">{goal.goal}</span>
+                </span>
+              ),
+              secondary: goal.timeline ? `Timeline: ${goal.timeline}` : undefined,
+            }))}
+          />
+        </section>
       )}
 
       {/* Additional Comments */}
       {data.additionalComments && (
-        <InfoBox title="Additional Comments" icon={MessageSquare} variant="gray">
-          {data.additionalComments}
-        </InfoBox>
+        <EditorialSection label="Additional Comments" icon={MessageSquare} borderTop>
+          <EditorialPullQuote>
+            <p className={EDITORIAL.body}>{data.additionalComments}</p>
+          </EditorialPullQuote>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

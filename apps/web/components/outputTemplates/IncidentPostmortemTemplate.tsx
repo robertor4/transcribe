@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  AlertOctagon,
   Calendar,
   Clock,
   AlertTriangle,
@@ -9,37 +8,25 @@ import {
   XCircle,
   Target,
   Lightbulb,
-  ListTodo,
 } from 'lucide-react';
 import type { IncidentPostmortemOutput, IncidentTimelineEntry } from '@transcribe/shared';
-import { SectionCard, BulletList, InfoBox, StatusBadge, safeString } from './shared';
+import {
+  StatusBadge,
+  BulletList,
+  safeString,
+  EDITORIAL,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  EditorialParagraphs,
+} from './shared';
 
 interface IncidentPostmortemTemplateProps {
   data: IncidentPostmortemOutput;
 }
-
-const SEVERITY_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  critical: {
-    bg: 'bg-red-100 dark:bg-red-900/30',
-    text: 'text-red-700 dark:text-red-400',
-    border: 'border-red-300 dark:border-red-800',
-  },
-  high: {
-    bg: 'bg-orange-100 dark:bg-orange-900/30',
-    text: 'text-orange-700 dark:text-orange-400',
-    border: 'border-orange-300 dark:border-orange-800',
-  },
-  medium: {
-    bg: 'bg-amber-100 dark:bg-amber-900/30',
-    text: 'text-amber-700 dark:text-amber-400',
-    border: 'border-amber-300 dark:border-amber-800',
-  },
-  low: {
-    bg: 'bg-gray-100 dark:bg-gray-700',
-    text: 'text-gray-700 dark:text-gray-300',
-    border: 'border-gray-300 dark:border-gray-600',
-  },
-};
 
 function TimelineItem({ entry, index }: { entry: IncidentTimelineEntry; index: number }) {
   return (
@@ -55,127 +42,120 @@ function TimelineItem({ entry, index }: { entry: IncidentTimelineEntry; index: n
             <span className="text-xs text-gray-500 dark:text-gray-400">({safeString(entry.actor)})</span>
           )}
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mt-1">{safeString(entry.event)}</p>
+        <p className={`${EDITORIAL.body} mt-1`}>{safeString(entry.event)}</p>
       </div>
     </div>
   );
 }
 
 export function IncidentPostmortemTemplate({ data }: IncidentPostmortemTemplateProps) {
-  const severityStyle = SEVERITY_STYLES[data.severity] || SEVERITY_STYLES.medium;
+  const metadata = (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <StatusBadge status={data.severity} variant="priority" />
+      {data.date && (
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          {data.date}
+        </span>
+      )}
+      {data.duration && (
+        <span className="flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5" />
+          Duration: {data.duration}
+        </span>
+      )}
+    </div>
+  );
 
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className={`${severityStyle.bg} ${severityStyle.border} border rounded-xl p-4`}>
-        <div className="flex items-start gap-3">
-          <AlertOctagon className={`w-6 h-6 ${severityStyle.text} flex-shrink-0 mt-1`} />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-                {data.title}
-              </h2>
-              <StatusBadge status={data.severity} variant="priority" />
-            </div>
-            <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                {data.date}
-              </span>
-              {data.duration && (
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  Duration: {data.duration}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title={data.title} metadata={metadata} />
 
       {/* Impact Summary */}
-      <InfoBox title="Impact Summary" icon={AlertTriangle} variant="red">
-        {data.impactSummary}
-      </InfoBox>
+      {safeString(data.impactSummary) && (
+        <EditorialPullQuote color="#ef4444">
+          <EditorialParagraphs text={data.impactSummary} />
+        </EditorialPullQuote>
+      )}
 
       {/* Timeline */}
       {data.timeline && data.timeline.length > 0 && (
-        <SectionCard title="Incident Timeline" icon={Clock} iconColor="text-[#8D6AFA]">
+        <EditorialSection label="Incident Timeline" icon={Clock} borderTop>
           <div className="mt-2">
             {data.timeline.map((entry, idx) => (
               <TimelineItem key={idx} entry={entry} index={idx} />
             ))}
           </div>
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Root Cause */}
-      <InfoBox title="Root Cause" icon={Target} variant="amber">
-        {data.rootCause}
-      </InfoBox>
+      {safeString(data.rootCause) && (
+        <EditorialSection label="Root Cause" icon={Target} borderTop>
+          <EditorialPullQuote color="#f59e0b">
+            <EditorialParagraphs text={data.rootCause} />
+          </EditorialPullQuote>
+        </EditorialSection>
+      )}
 
       {/* Contributing Factors */}
       {data.contributingFactors && data.contributingFactors.length > 0 && (
-        <SectionCard title="Contributing Factors" icon={AlertTriangle} iconColor="text-amber-500">
+        <EditorialSection label="Contributing Factors" icon={AlertTriangle} borderTop>
           <BulletList items={data.contributingFactors} bulletColor="bg-amber-500" />
-        </SectionCard>
+        </EditorialSection>
       )}
 
-      {/* What Went Well & What Went Poorly */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.whatWentWell && data.whatWentWell.length > 0 && (
-          <SectionCard
-            title="What Went Well"
-            icon={CheckCircle2}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10"
-          >
-            <BulletList items={data.whatWentWell} bulletColor="bg-green-500" />
-          </SectionCard>
-        )}
-        {data.whatWentPoorly && data.whatWentPoorly.length > 0 && (
-          <SectionCard
-            title="What Went Poorly"
-            icon={XCircle}
-            iconColor="text-red-500"
-            className="bg-red-50/50 dark:bg-red-900/10"
-          >
-            <BulletList items={data.whatWentPoorly} bulletColor="bg-red-500" />
-          </SectionCard>
-        )}
-      </div>
+      {/* What Went Well & What Went Poorly — side by side */}
+      {((data.whatWentWell && data.whatWentWell.length > 0) ||
+        (data.whatWentPoorly && data.whatWentPoorly.length > 0)) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          {data.whatWentWell && data.whatWentWell.length > 0 && (
+            <EditorialSection label="What Went Well" icon={CheckCircle2}>
+              <BulletList items={data.whatWentWell} bulletColor="bg-green-500" />
+            </EditorialSection>
+          )}
+          {data.whatWentPoorly && data.whatWentPoorly.length > 0 && (
+            <EditorialSection label="What Went Poorly" icon={XCircle}>
+              <BulletList items={data.whatWentPoorly} bulletColor="bg-red-500" />
+            </EditorialSection>
+          )}
+        </div>
+      )}
 
       {/* Action Items */}
       {data.actionItems && data.actionItems.length > 0 && (
-        <SectionCard title="Action Items" icon={ListTodo} iconColor="text-[#8D6AFA]">
-          <div className="space-y-3">
-            {data.actionItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.action)}</p>
-                    <StatusBadge status={item.priority} variant="priority" className="flex-shrink-0" />
-                  </div>
-                  <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
-                    {item.dueDate && <span>Due: {safeString(item.dueDate)}</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <section className="mb-10">
+          <EditorialHeading>Action Items</EditorialHeading>
+          <EditorialNumberedList
+            items={data.actionItems.map(item => {
+              const owner = safeString(item.owner);
+              const dueDate = safeString(item.dueDate);
+              const meta = [owner && `Owner: ${owner}`, dueDate && `Due: ${dueDate}`]
+                .filter(Boolean)
+                .join(' · ');
+
+              return {
+                primary: (
+                  <>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {safeString(item.action)}
+                    </span>
+                  </>
+                ),
+                badge: <StatusBadge status={item.priority} variant="priority" />,
+                secondary: meta || undefined,
+              };
+            })}
+          />
+        </section>
       )}
 
       {/* Lessons Learned */}
       {data.lessonsLearned && data.lessonsLearned.length > 0 && (
-        <InfoBox title="Lessons Learned" icon={Lightbulb} variant="purple">
+        <EditorialSection label="Lessons Learned" icon={Lightbulb} borderTop>
           <BulletList items={data.lessonsLearned} bulletColor="bg-[#8D6AFA]" />
-        </InfoBox>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

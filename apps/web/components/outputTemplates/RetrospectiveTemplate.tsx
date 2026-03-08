@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  RotateCcw,
   ThumbsUp,
   AlertTriangle,
   ListTodo,
@@ -11,7 +10,16 @@ import {
   Frown,
 } from 'lucide-react';
 import type { RetrospectiveOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, safeString } from './shared';
+import {
+  MetadataRow,
+  safeString,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  EDITORIAL,
+} from './shared';
 
 interface RetrospectiveTemplateProps {
   data: RetrospectiveOutput;
@@ -20,131 +28,164 @@ interface RetrospectiveTemplateProps {
 function getMoodIcon(mood?: string) {
   if (!mood) return null;
   const lowerMood = mood.toLowerCase();
-  if (lowerMood.includes('positive') || lowerMood.includes('happy') || lowerMood.includes('good')) {
-    return <Smile className="w-5 h-5 text-green-500" />;
+  if (lowerMood.includes('positive') || lowerMood.includes('happy') || lowerMood.includes('good') || lowerMood.includes('constructive') || lowerMood.includes('aligned')) {
+    return <Smile className="w-4 h-4 text-green-500" />;
   }
   if (lowerMood.includes('negative') || lowerMood.includes('frustrated') || lowerMood.includes('bad')) {
-    return <Frown className="w-5 h-5 text-red-500" />;
+    return <Frown className="w-4 h-4 text-red-500" />;
   }
-  return <Meh className="w-5 h-5 text-amber-500" />;
+  return <Meh className="w-4 h-4 text-amber-500" />;
+}
+
+function getMoodColor(mood?: string): string {
+  if (!mood) return '#8D6AFA';
+  const lowerMood = mood.toLowerCase();
+  if (lowerMood.includes('positive') || lowerMood.includes('happy') || lowerMood.includes('good') || lowerMood.includes('constructive') || lowerMood.includes('aligned')) {
+    return '#22c55e';
+  }
+  if (lowerMood.includes('negative') || lowerMood.includes('frustrated') || lowerMood.includes('bad')) {
+    return '#ef4444';
+  }
+  return '#f59e0b';
+}
+
+/** Parse team into an array of name strings */
+function parseTeam(team: unknown): string[] {
+  if (!team) return [];
+  if (Array.isArray(team)) {
+    return team.map((t) => {
+      if (typeof t === 'string') return t;
+      if (typeof t === 'object' && t !== null) {
+        const obj = t as Record<string, unknown>;
+        return String(obj.name || obj.title || obj.label || t);
+      }
+      return String(t);
+    }).filter(Boolean);
+  }
+  if (typeof team === 'string') {
+    return team.split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  return [safeString(team)].filter(Boolean);
+}
+
+/** Chevron bullet list matching blog post style */
+function ChevronList({ items, color }: { items: string[]; color: 'green' | 'amber' | 'neutral' }) {
+  const bgColor = color === 'green' ? 'bg-green-600 dark:bg-green-500' : color === 'amber' ? 'bg-amber-500 dark:bg-amber-400' : 'bg-gray-800 dark:bg-gray-200';
+  const textColor = color === 'neutral' ? 'text-white dark:text-gray-800' : 'text-white dark:text-gray-800';
+
+  return (
+    <ul className="list-none pl-0 space-y-2.5">
+      {items.map((item, idx) => {
+        const text = safeString(item);
+        if (!text) return null;
+        return (
+          <li key={idx} className={`flex items-start gap-3 ${EDITORIAL.listItem}`}>
+            <span className={`flex-shrink-0 w-5 h-5 rounded-full ${bgColor} ${textColor} text-[10px] font-bold flex items-center justify-center mt-[3px]`}>&gt;</span>
+            <span className="flex-1">{text}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export function RetrospectiveTemplate({ data }: RetrospectiveTemplateProps) {
-  return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <RotateCcw className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-              Sprint Retrospective
-            </h2>
-            <MetadataRow
-              items={[
-                { label: 'Sprint/Period', value: data.sprintOrPeriod },
-                { label: 'Team', value: data.team },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+  const teamMembers = parseTeam(data.team);
 
-      {/* Team Mood */}
-      {data.teamMood && (
-        <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-          {getMoodIcon(data.teamMood)}
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">Team Mood:</span>
-            <span className="ml-2 text-gray-900 dark:text-gray-100 font-medium">{data.teamMood}</span>
-          </div>
+  const metadata = data.sprintOrPeriod ? (
+    <MetadataRow
+      items={[
+        { label: 'Sprint/Period', value: data.sprintOrPeriod },
+      ]}
+    />
+  ) : undefined;
+
+  return (
+    <EditorialArticle>
+      <EditorialTitle title="Sprint Retrospective" metadata={metadata} />
+
+      {/* Team Members as badges */}
+      {teamMembers.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {teamMembers.map((name, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+            >
+              {name}
+            </span>
+          ))}
         </div>
       )}
 
-      {/* What Went Well & What to Improve */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Went Well */}
-        {data.wentWell && data.wentWell.length > 0 && (
-          <SectionCard
-            title="What Went Well"
-            icon={ThumbsUp}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800/30"
-          >
-            <BulletList
-              items={data.wentWell}
-              bulletColor="bg-green-500"
-              className="text-gray-700 dark:text-gray-300"
-            />
-          </SectionCard>
-        )}
+      {/* Team Mood */}
+      {data.teamMood && (
+        <EditorialPullQuote color={getMoodColor(data.teamMood)}>
+          <p className="flex items-center gap-2 not-italic">
+            {getMoodIcon(data.teamMood)}
+            <span className={`${EDITORIAL.sectionLabel} not-italic`}>Team Mood:</span>
+            <span className="text-base font-medium text-gray-900 dark:text-gray-100 not-italic" style={{ fontFamily: 'inherit' }}>
+              {safeString(data.teamMood)}
+            </span>
+          </p>
+        </EditorialPullQuote>
+      )}
 
-        {/* To Improve */}
-        {data.toImprove && data.toImprove.length > 0 && (
-          <SectionCard
-            title="What to Improve"
-            icon={AlertTriangle}
-            iconColor="text-amber-500"
-            className="bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30"
-          >
-            <BulletList
-              items={data.toImprove}
-              bulletColor="bg-amber-500"
-              className="text-gray-700 dark:text-gray-300"
-            />
-          </SectionCard>
-        )}
-      </div>
+      {/* What Went Well */}
+      {data.wentWell && data.wentWell.length > 0 && (
+        <EditorialSection label="What Went Well" icon={ThumbsUp} borderTop>
+          <ChevronList items={data.wentWell} color="green" />
+        </EditorialSection>
+      )}
+
+      {/* What to Improve */}
+      {data.toImprove && data.toImprove.length > 0 && (
+        <EditorialSection label="What to Improve" icon={AlertTriangle} borderTop>
+          <ChevronList items={data.toImprove} color="amber" />
+        </EditorialSection>
+      )}
 
       {/* Action Items */}
       {data.actionItems && data.actionItems.length > 0 && (
-        <SectionCard title="Action Items" icon={ListTodo} iconColor="text-[#8D6AFA]">
-          <div className="space-y-3">
-            {data.actionItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#8D6AFA]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-[#8D6AFA]">{idx + 1}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(item.action)}</p>
-                  <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {item.owner && <span>Owner: {safeString(item.owner)}</span>}
-                    {item.dueDate && <span>Due: {safeString(item.dueDate)}</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <EditorialSection label="Action Items" icon={ListTodo} borderTop>
+          <EditorialNumberedList
+            items={data.actionItems.map((item) => {
+              const owner = item.owner ? safeString(item.owner) : '';
+              const dueDate = item.dueDate ? safeString(item.dueDate) : '';
+              const secondaryParts: string[] = [];
+              if (owner) secondaryParts.push(`Owner: ${owner}`);
+              if (dueDate) secondaryParts.push(`Due: ${dueDate}`);
+
+              return {
+                primary: (
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {safeString(item.action)}
+                  </span>
+                ),
+                secondary: secondaryParts.length > 0
+                  ? secondaryParts.join(' · ')
+                  : undefined,
+              };
+            })}
+          />
+        </EditorialSection>
       )}
 
       {/* Shoutouts */}
       {data.shoutouts && data.shoutouts.length > 0 && (
-        <SectionCard
-          title="Shoutouts"
-          icon={Award}
-          iconColor="text-yellow-500"
-          className="bg-yellow-50/50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800/30"
-        >
-          <BulletList
+        <EditorialSection label="Shoutouts" icon={Award} borderTop>
+          <ChevronList
             items={data.shoutouts.map((shoutout) => {
-              // Handle both string and object formats from AI
               if (typeof shoutout === 'string') return shoutout;
-              // AI sometimes returns {name, reason} objects
               const obj = shoutout as unknown as { name?: string; reason?: string };
               if (obj.name && obj.reason) return `${obj.name}: ${obj.reason}`;
               if (obj.name) return obj.name;
               return String(shoutout);
             })}
-            bulletColor="bg-yellow-500"
-            className="text-gray-700 dark:text-gray-300"
+            color="neutral"
           />
-        </SectionCard>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

@@ -4,6 +4,8 @@ interface BulletListProps {
   items: ReactNode[];
   bulletColor?: string;
   className?: string;
+  /** Bold the text before the first colon in each item */
+  boldBeforeColon?: boolean;
 }
 
 /**
@@ -47,6 +49,7 @@ export function BulletList({
   items,
   bulletColor = 'bg-gray-500',
   className = '',
+  boldBeforeColon = false,
 }: BulletListProps) {
   if (!items || items.length === 0) return null;
 
@@ -61,10 +64,24 @@ export function BulletList({
             ? item
             : toDisplayString(item);
 
+        // Apply bold-before-colon formatting if enabled and content is a string
+        let rendered: ReactNode = displayContent;
+        if (boldBeforeColon && typeof displayContent === 'string') {
+          const colonIdx = displayContent.indexOf(':');
+          if (colonIdx > 0 && colonIdx < 60) {
+            rendered = (
+              <>
+                <strong className="font-semibold text-gray-900 dark:text-gray-100">{displayContent.slice(0, colonIdx)}</strong>
+                {displayContent.slice(colonIdx)}
+              </>
+            );
+          }
+        }
+
         return (
-          <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300 min-w-0">
+          <li key={idx} className="flex items-start gap-2 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] min-w-0">
             <span className={`mt-2 w-1.5 h-1.5 ${bulletColor} rounded-full flex-shrink-0`} />
-            <span className="break-words min-w-0">{displayContent}</span>
+            <span className="break-words min-w-0">{rendered}</span>
           </li>
         );
       })}

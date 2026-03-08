@@ -6,7 +6,6 @@ import {
   User,
   Target,
   Ban,
-  FileText,
   GitBranch,
   ThumbsUp,
   ThumbsDown,
@@ -17,17 +16,37 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import type { TechnicalDesignDocOutput, DesignAlternative } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, safeString } from './shared';
+import {
+  BulletList,
+  StatusBadge,
+  safeString,
+  EDITORIAL,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialPullQuote,
+  EditorialParagraphs,
+  EditorialCollapsible,
+  EditorialNumberedList,
+} from './shared';
 
 interface TechnicalDesignDocTemplateProps {
   data: TechnicalDesignDocOutput;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  draft: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
-  review: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400' },
-  approved: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400' },
-  implemented: { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400' },
+const STATUS_VARIANT: Record<string, 'priority' | 'rag' | 'sentiment'> = {
+  draft: 'priority',
+  review: 'rag',
+  approved: 'rag',
+  implemented: 'rag',
+};
+
+const STATUS_MAP: Record<string, string> = {
+  draft: 'low',
+  review: 'amber',
+  approved: 'green',
+  implemented: 'on-track',
 };
 
 function AlternativeCard({ alternative, index }: { alternative: DesignAlternative; index: number }) {
@@ -97,126 +116,123 @@ function AlternativeCard({ alternative, index }: { alternative: DesignAlternativ
 }
 
 export function TechnicalDesignDocTemplate({ data }: TechnicalDesignDocTemplateProps) {
-  const statusStyle = STATUS_STYLES[data.status] || STATUS_STYLES.draft;
+  const statusVariant = STATUS_VARIANT[data.status] || 'priority';
+  const statusLabel = STATUS_MAP[data.status] || data.status;
+
+  const metadata = (data.author || data.date || data.status) ? (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      {data.author && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" />
+          {data.author}
+        </span>
+      )}
+      {data.date && (
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          {data.date}
+        </span>
+      )}
+      {data.status && (
+        <StatusBadge status={statusLabel} variant={statusVariant} />
+      )}
+    </div>
+  ) : undefined;
 
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Code2 className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-                {data.title}
-              </h2>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
-                {data.status}
-              </span>
-            </div>
-            <MetadataRow
-              items={[
-                { label: 'Author', value: data.author, icon: User },
-                { label: 'Date', value: data.date, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title={data.title} metadata={metadata} />
 
-      {/* Overview */}
-      <InfoBox title="Overview" icon={FileText} variant="purple">
-        {data.overview}
-      </InfoBox>
+      {/* Overview — pull-quote style */}
+      {safeString(data.overview) && (
+        <EditorialPullQuote>
+          <EditorialParagraphs text={data.overview} />
+        </EditorialPullQuote>
+      )}
 
       {/* Background */}
       {data.background && (
-        <SectionCard title="Background" icon={FileText} iconColor="text-gray-500">
-          <p className="text-gray-700 dark:text-gray-300">{safeString(data.background)}</p>
-        </SectionCard>
+        <EditorialSection label="Background" borderTop>
+          <EditorialParagraphs text={data.background} />
+        </EditorialSection>
       )}
 
       {/* Goals & Non-Goals */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.goals && data.goals.length > 0 && (
-          <SectionCard
-            title="Goals"
-            icon={Target}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10"
-          >
-            <BulletList items={data.goals} bulletColor="bg-green-500" />
-          </SectionCard>
-        )}
-        {data.nonGoals && data.nonGoals.length > 0 && (
-          <SectionCard
-            title="Non-Goals"
-            icon={Ban}
-            iconColor="text-gray-500"
-            className="bg-gray-50 dark:bg-gray-800/50"
-          >
-            <BulletList items={data.nonGoals} bulletColor="bg-gray-400" />
-          </SectionCard>
-        )}
-      </div>
+      {data.goals && data.goals.length > 0 && (
+        <EditorialSection label="Goals" icon={Target} borderTop>
+          <BulletList items={data.goals} bulletColor="bg-green-500" className={EDITORIAL.listItem} />
+        </EditorialSection>
+      )}
+      {data.nonGoals && data.nonGoals.length > 0 && (
+        <EditorialSection label="Non-Goals" icon={Ban}>
+          <BulletList items={data.nonGoals} bulletColor="bg-gray-400" className={EDITORIAL.listItem} />
+        </EditorialSection>
+      )}
 
-      {/* Proposed Solution */}
-      <InfoBox title="Proposed Solution" icon={GitBranch} variant="cyan">
-        {data.proposedSolution}
-      </InfoBox>
+      {/* Proposed Solution — pull-quote style */}
+      {safeString(data.proposedSolution) && (
+        <section className="mb-10">
+          <EditorialHeading>Proposed Solution</EditorialHeading>
+          <EditorialPullQuote color="#14D0DC">
+            <EditorialParagraphs text={data.proposedSolution} />
+          </EditorialPullQuote>
+        </section>
+      )}
 
       {/* Alternatives Considered */}
       {data.alternatives && data.alternatives.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Alternatives Considered
-          </h3>
-          {data.alternatives.map((alt, idx) => (
-            <AlternativeCard key={idx} alternative={alt} index={idx} />
-          ))}
-        </div>
+        <EditorialCollapsible
+          label="Alternatives Considered"
+          icon={GitBranch}
+          count={data.alternatives.length}
+          defaultOpen
+        >
+          <div className="space-y-4">
+            {data.alternatives.map((alt, idx) => (
+              <AlternativeCard key={idx} alternative={alt} index={idx} />
+            ))}
+          </div>
+        </EditorialCollapsible>
       )}
 
       {/* Technical Details */}
       {data.technicalDetails && data.technicalDetails.length > 0 && (
-        <SectionCard title="Technical Details" icon={Code2} iconColor="text-[#8D6AFA]">
-          <BulletList items={data.technicalDetails} bulletColor="bg-[#8D6AFA]" />
-        </SectionCard>
+        <EditorialSection label="Technical Details" icon={Code2} borderTop>
+          <EditorialNumberedList
+            items={data.technicalDetails.map(detail => ({
+              primary: safeString(detail),
+            }))}
+          />
+        </EditorialSection>
       )}
 
       {/* Security Considerations */}
       {data.securityConsiderations && data.securityConsiderations.length > 0 && (
-        <SectionCard
-          title="Security Considerations"
-          icon={Shield}
-          iconColor="text-red-500"
-          className="bg-red-50/30 dark:bg-red-900/10"
-        >
-          <BulletList items={data.securityConsiderations} bulletColor="bg-red-500" />
-        </SectionCard>
+        <EditorialSection label="Security Considerations" icon={Shield} borderTop>
+          <BulletList items={data.securityConsiderations} bulletColor="bg-red-500" className={EDITORIAL.listItem} />
+        </EditorialSection>
       )}
 
       {/* Testing Strategy */}
       {data.testingStrategy && (
-        <SectionCard title="Testing Strategy" icon={TestTube2} iconColor="text-blue-500">
-          <p className="text-gray-700 dark:text-gray-300">{safeString(data.testingStrategy)}</p>
-        </SectionCard>
+        <EditorialSection label="Testing Strategy" icon={TestTube2} borderTop>
+          <EditorialParagraphs text={data.testingStrategy} />
+        </EditorialSection>
       )}
 
       {/* Rollout Plan */}
       {data.rolloutPlan && (
-        <SectionCard title="Rollout Plan" icon={Rocket} iconColor="text-amber-500">
-          <p className="text-gray-700 dark:text-gray-300">{safeString(data.rolloutPlan)}</p>
-        </SectionCard>
+        <EditorialSection label="Rollout Plan" icon={Rocket} borderTop>
+          <EditorialParagraphs text={data.rolloutPlan} />
+        </EditorialSection>
       )}
 
       {/* Open Questions */}
       {data.openQuestions && data.openQuestions.length > 0 && (
-        <InfoBox title="Open Questions" icon={HelpCircle} variant="amber">
-          <BulletList items={data.openQuestions} bulletColor="bg-amber-500" />
-        </InfoBox>
+        <EditorialCollapsible label="Open Questions" icon={HelpCircle} count={data.openQuestions.length} defaultOpen>
+          <BulletList items={data.openQuestions} bulletColor="bg-amber-500" className={EDITORIAL.listItem} />
+        </EditorialCollapsible>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

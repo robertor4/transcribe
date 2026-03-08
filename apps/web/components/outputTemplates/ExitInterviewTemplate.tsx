@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  DoorOpen,
   Calendar,
   User,
   Building2,
@@ -16,7 +15,15 @@ import {
   MinusCircle,
 } from 'lucide-react';
 import type { ExitInterviewOutput, ExitTheme } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, StatusBadge } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialPullQuote,
+  BulletList,
+  StatusBadge,
+  EDITORIAL,
+} from './shared';
 
 interface ExitInterviewTemplateProps {
   data: ExitInterviewOutput;
@@ -59,7 +66,7 @@ function ThemeCard({ theme }: { theme: ExitTheme }) {
           {theme.details && theme.details.length > 0 && (
             <ul className="space-y-1">
               {theme.details.map((detail, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                <li key={idx} className={`flex items-start gap-2 ${EDITORIAL.listItem}`}>
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0 mt-2" />
                   <span>{detail}</span>
                 </li>
@@ -72,115 +79,93 @@ function ThemeCard({ theme }: { theme: ExitTheme }) {
   );
 }
 
-export function ExitInterviewTemplate({ data }: ExitInterviewTemplateProps) {
+function BooleanIndicator({ value, label }: { value: boolean | null; label: string }) {
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <DoorOpen className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Exit Interview Analysis
-            </h2>
-            <MetadataRow
-              items={[
-                { label: 'Employee', value: data.employee, icon: User },
-                { label: 'Department', value: data.department, icon: Building2 },
-                { label: 'Tenure', value: data.tenure, icon: Clock },
-                { label: 'Date', value: data.date, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <div className="flex items-center justify-between py-3">
+      <span className={EDITORIAL.body}>{label}</span>
+      {value === true && <CheckCircle2 className="w-6 h-6 text-green-500" />}
+      {value === false && <XCircle className="w-6 h-6 text-red-500" />}
+      {value === null && <MinusCircle className="w-6 h-6 text-gray-400" />}
+    </div>
+  );
+}
 
-      {/* Reason for Leaving */}
-      <InfoBox title="Primary Reason for Leaving" icon={MessageSquare} variant="purple">
-        {data.reasonForLeaving}
-      </InfoBox>
+export function ExitInterviewTemplate({ data }: ExitInterviewTemplateProps) {
+  const metadata = (data.employee || data.department || data.tenure || data.date) ? (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      {data.employee && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" /> {data.employee}
+        </span>
+      )}
+      {data.department && (
+        <span className="flex items-center gap-1.5">
+          <Building2 className="w-3.5 h-3.5" /> {data.department}
+        </span>
+      )}
+      {data.tenure && (
+        <span className="flex items-center gap-1.5">
+          <Clock className="w-3.5 h-3.5" /> {data.tenure}
+        </span>
+      )}
+      {data.date && (
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" /> {data.date}
+        </span>
+      )}
+    </div>
+  ) : undefined;
 
-      {/* Themes */}
+  return (
+    <EditorialArticle>
+      <EditorialTitle title="Exit Interview Analysis" metadata={metadata} />
+
+      {/* Reason for Leaving — pull-quote style */}
+      {data.reasonForLeaving && (
+        <EditorialPullQuote cite="Primary Reason for Leaving">
+          <p>{data.reasonForLeaving}</p>
+        </EditorialPullQuote>
+      )}
+
+      {/* Key Themes */}
       {data.themes && data.themes.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-[#8D6AFA]" />
-            Key Themes
-          </h3>
-          {data.themes.map((theme, idx) => (
-            <ThemeCard key={idx} theme={theme} />
-          ))}
-        </div>
+        <EditorialSection label="Key Themes" icon={TrendingUp} borderTop>
+          <div className="space-y-4">
+            {data.themes.map((theme, idx) => (
+              <ThemeCard key={idx} theme={theme} />
+            ))}
+          </div>
+        </EditorialSection>
       )}
 
       {/* What Worked Well vs Could Improve */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {data.whatWorkedWell && data.whatWorkedWell.length > 0 && (
-          <SectionCard
-            title="What Worked Well"
-            icon={ThumbsUp}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10"
-          >
+          <EditorialSection label="What Worked Well" icon={ThumbsUp}>
             <BulletList items={data.whatWorkedWell} bulletColor="bg-green-500" />
-          </SectionCard>
+          </EditorialSection>
         )}
         {data.whatCouldImprove && data.whatCouldImprove.length > 0 && (
-          <SectionCard
-            title="Areas for Improvement"
-            icon={ThumbsDown}
-            iconColor="text-red-500"
-            className="bg-red-50/50 dark:bg-red-900/10"
-          >
+          <EditorialSection label="Areas for Improvement" icon={ThumbsDown}>
             <BulletList items={data.whatCouldImprove} bulletColor="bg-red-500" />
-          </SectionCard>
+          </EditorialSection>
         )}
       </div>
 
       {/* Suggestions */}
       {data.suggestions && data.suggestions.length > 0 && (
-        <SectionCard
-          title="Suggestions"
-          icon={Lightbulb}
-          iconColor="text-amber-500"
-          className="bg-amber-50/50 dark:bg-amber-900/10"
-        >
+        <EditorialSection label="Suggestions" icon={Lightbulb} borderTop>
           <BulletList items={data.suggestions} bulletColor="bg-amber-500" />
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Would Recommend / Would Return */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Would Recommend Company</span>
-            {data.wouldRecommend === true && (
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
-            )}
-            {data.wouldRecommend === false && (
-              <XCircle className="w-6 h-6 text-red-500" />
-            )}
-            {data.wouldRecommend === null && (
-              <MinusCircle className="w-6 h-6 text-gray-400" />
-            )}
-          </div>
+      <EditorialSection label="Final Assessment" icon={MessageSquare} borderTop>
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <BooleanIndicator value={data.wouldRecommend} label="Would Recommend Company" />
+          <BooleanIndicator value={data.wouldReturn} label="Would Return" />
         </div>
-        <div className="p-4 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-400">Would Return</span>
-            {data.wouldReturn === true && (
-              <CheckCircle2 className="w-6 h-6 text-green-500" />
-            )}
-            {data.wouldReturn === false && (
-              <XCircle className="w-6 h-6 text-red-500" />
-            )}
-            {data.wouldReturn === null && (
-              <MinusCircle className="w-6 h-6 text-gray-400" />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+      </EditorialSection>
+    </EditorialArticle>
   );
 }

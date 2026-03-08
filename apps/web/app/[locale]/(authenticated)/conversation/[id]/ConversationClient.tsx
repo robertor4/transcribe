@@ -990,7 +990,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         preselectedTemplate={preselectedTemplate}
         onOutputGenerated={(asset) => {
           // Add the new asset to the list
-          setOutputs((prev) => [asset, ...prev]);
+          setOutputs((prev) => [asset, ...prev.filter((a) => a.id !== asset.id)]);
           // Navigate to the full page view
           router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
         }}

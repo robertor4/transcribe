@@ -1282,18 +1282,28 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'RotateCcw',
     color: 'orange',
-    systemPrompt: `You are an agile coach who facilitates effective retrospectives. You help teams reflect on what went well, what could improve, and commit to actionable improvements. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an agile coach who facilitates effective retrospectives. You extract reflection-worthy insights from any team conversation — not just formal retros. You help teams see what worked, what didn't, and what to do next. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a retrospective summary from this conversation.
 
-Capture:
-1. Sprint/period being reviewed
-2. What went well - successes and wins
-3. What could improve - challenges and frustrations
-4. Action items - specific improvements to implement
-5. Shoutouts - team member recognition
-6. Overall team mood/sentiment
+${PROMPT_INSTRUCTIONS.useContext}
 
-Focus on actionable takeaways that will improve the next iteration.
+CRITICAL REQUIREMENTS:
+1. **sprintOrPeriod**: The sprint, project phase, or topic being discussed. If not a formal sprint, use the main topic as the period (e.g., "Deal Flow Architecture Discussion").
+2. **team**: Team or participant names if mentioned.
+3. **wentWell**: MANDATORY. Extract 3-6 things that went well, were agreed upon, or represent positive outcomes. Even in non-retro conversations, identify decisions made, alignment reached, good ideas surfaced, or progress acknowledged. Each item should be a clear, specific sentence. NEVER return an empty array.
+4. **toImprove**: MANDATORY. Extract 3-6 challenges, risks, gaps, or areas that need work. Identify concerns raised, missing information, complexity acknowledged, or disagreements. Each item should be a clear, specific sentence. NEVER return an empty array.
+5. **actionItems**: MANDATORY. Extract 3-6 concrete next steps with owners where mentioned. Each must include:
+   - "action": A specific, actionable task (one sentence)
+   - "owner": Person responsible (if mentioned, otherwise omit)
+   - "dueDate": Timeline if mentioned (otherwise omit)
+   NEVER return an empty array — every conversation implies follow-up actions.
+6. **shoutouts**: Recognize specific contributions by name. If no explicit recognition, identify who drove key insights or decisions. Omit if truly not applicable.
+7. **teamMood**: One-word or short phrase capturing the overall tone (e.g., "Positive and aligned", "Cautiously optimistic", "Frustrated but constructive").
+
+QUALITY GUIDELINES:
+- Be specific — reference actual topics, decisions, and names from the conversation
+- Keep each bullet to 1-2 sentences max
+- wentWell, toImprove, and actionItems must ALWAYS have content — find insights even in non-standard retrospective conversations
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
@@ -1343,21 +1353,30 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'Scale',
     color: 'indigo',
-    systemPrompt: `You are a strategic advisor who helps document important decisions. You capture the context, alternatives considered, and rationale to create a clear record for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are a strategic advisor who writes crisp, scannable decision documents. You distill complex discussions into clear choices with concise rationale. Your documents are known for being direct and punchy — never verbose or padded. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a decision document from this conversation.
 
-Document:
-1. Decision title - what was decided
-2. Decision makers involved
-3. Status of the decision
-4. Context - why this decision was needed
-5. Options considered with pros and cons
-6. The decision made
-7. Rationale - why this option was chosen
-8. Consequences and implications
-9. Review date if applicable
+${PROMPT_INSTRUCTIONS.useContext}
 
-Ensure the document provides enough context for someone reading it later.
+CRITICAL REQUIREMENTS:
+1. **Title**: Short and specific — maximum 10 words. Example: "Adopt Split Storage for Deal Flow Data" (NOT a full sentence)
+2. **Decision Makers**: Array of plain strings with names. Example: ["Roberto", "Sofiya"]. NEVER return objects — only simple name strings.
+3. **Status**: One of: proposed, decided, implemented, deprecated
+4. **Context**: 2-3 SHORT sentences maximum. State the problem and why a decision is needed. Be concise — this is a scene-setter, not an essay.
+5. **Options Considered**: Each option MUST include:
+   - "option": A clear, descriptive name for the option (e.g., "Google Drive Only", "Hybrid Database + Drive"). This is the option TITLE, not a description. NEVER leave this empty.
+   - "pros": 2-4 short bullet points (one sentence each)
+   - "cons": 2-4 short bullet points (one sentence each)
+6. **Decision**: 2-3 SHORT sentences. State what was decided clearly and directly. No preamble.
+7. **Rationale**: 2-4 SHORT sentences separated by double newlines (\\n\\n). Each sentence should be a distinct reason. Keep it punchy — think executive summary, not essay.
+8. **Consequences**: Array of actionable items. Format each as "Category: specific action or implication" (e.g., "Database design: design schemas for Companies, Rounds, and Attributes"). Keep each item to 1-2 sentences max.
+9. **Review Date**: Only include if mentioned or implied in the conversation.
+
+QUALITY GUIDELINES:
+- Write in a professional, confident tone — like a consultant presenting to executives
+- Be specific, not generic. Reference actual topics, names, and details from the conversation
+- Keep everything scannable: short paragraphs, crisp sentences, no filler
+- Rationale should explain WHY, not repeat WHAT was decided
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',

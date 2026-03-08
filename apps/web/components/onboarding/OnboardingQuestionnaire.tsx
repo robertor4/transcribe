@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/Button';
 import { useOnboarding } from './OnboardingProvider';
 import { WelcomeStep } from './steps/WelcomeStep';
@@ -59,6 +60,9 @@ export function OnboardingQuestionnaire() {
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
+        <VisuallyHidden>
+          <DialogTitle>Onboarding</DialogTitle>
+        </VisuallyHidden>
         {/* Progress dots */}
         {step > 1 && (
           <div className="flex items-center justify-center gap-2 pt-6 pb-2">

@@ -33,14 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - **Unused `slowHint` translation key** — Removed from all 5 locale files (no longer shown in simplified TranslationDialog)
 
-- **Redesigned Recommendations Memo template** with editorial styling inspired by Blog Post and Summary templates
-  - Serif headings (Merriweather), constrained `max-w-[680px]` reading column, editorial rule divider
-  - Executive summary rendered as pull-quote with purple left border instead of boxed InfoBox
-  - Replaced card-heavy layout with clean sections using uppercase tracking-widest headings and monospace-numbered items
-  - Recommendations as clean numbered list with concise titles, rationale, and italic impact — removed effort field and color-coded priority borders
-  - Findings, Next Steps, and Appendix follow the same clean numbered/bulleted pattern as SummaryV2
-  - Defensive rendering with `safeString()` and `safeArray()` to handle AI returning unexpected types (objects instead of strings, strings instead of arrays)
-  - Modified: [RecommendationsMemoTemplate.tsx](apps/web/components/outputTemplates/RecommendationsMemoTemplate.tsx)
+- **Editorial design system for all AI Asset templates** — Unified 32 templates from card-heavy dashboard aesthetic to clean editorial typography
+  - Created 9 shared editorial components in [`outputTemplates/shared/`](apps/web/components/outputTemplates/shared/): `EditorialArticle`, `EditorialTitle`, `EditorialSection`, `EditorialHeading`, `EditorialNumberedList`, `EditorialPullQuote`, `EditorialParagraphs`, `EditorialCollapsible`, plus `editorial.ts` constants
+  - Design principles: Merriweather serif headings, constrained `max-w-[680px]` reading column, whitespace + typography hierarchy instead of card borders, uppercase section labels, monospace zero-padded numbering
+  - Converted all templates except LinkedIn and Twitter (which intentionally mimic platform UIs)
+  - Updated [`BulletList.tsx`](apps/web/components/outputTemplates/shared/BulletList.tsx) text sizing to `text-[15px] leading-[1.7]`
+  - Email template: kept email-specific UI (colored border-left sections, send-to-self, signature) while wrapping in `EditorialArticle` for consistent width
 - **Improved Recommendations Memo AI prompt** for richer, more substantive content generation
   - Enforced short titles (max 10 words), concise recommendation headings (under 15 words)
   - Executive summary and key findings marked as MANDATORY — never omitted
