@@ -1,5 +1,3 @@
-'use client';
-
 import { HeroHeadline } from '@/components/landing/hero/HeroHeadline';
 import { HeroCTAs } from '@/components/landing/hero/HeroCTAs';
 import { HeroTranscriptCard } from './HeroTranscriptCard';
@@ -61,18 +59,14 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
               </div>
             </HeroHeadline>
 
-            <HeroHeadline delay={120}>
-              <h1 className="text-[clamp(40px,5vw,60px)] font-black leading-[1.1] tracking-tight mb-6">
-                {t.headline1}<br />
-                {t.headline2}<em>{t.headlineEm}</em>
-              </h1>
-            </HeroHeadline>
+            <h1 className="text-[clamp(40px,5vw,60px)] font-black leading-[1.1] tracking-tight mb-6">
+              {t.headline1}<br />
+              {t.headline2}<em>{t.headlineEm}</em>
+            </h1>
 
-            <HeroHeadline delay={240}>
-              <p className="text-[17px] text-white/60 leading-relaxed max-w-[440px] mb-9">
-                {t.body}<strong className="text-white font-medium">{t.bodyStrong}</strong>{t.bodyEnd}
-              </p>
-            </HeroHeadline>
+            <p className="text-[17px] text-white/60 leading-relaxed max-w-[440px] mb-9">
+              {t.body}<strong className="text-white font-medium">{t.bodyStrong}</strong>{t.bodyEnd}
+            </p>
 
             <HeroCTAs delay={360}>
               <a

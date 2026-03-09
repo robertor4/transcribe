@@ -1,10 +1,10 @@
 import React from 'react';
-import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
 import { WaveDivider } from '@/components/landing/shared/WaveDivider';
+import { HeroSection } from '@/components/landing/sections/HeroSection';
 import { SocialProofBar } from '@/components/landing/sections/SocialProofBar';
 import { CompatibilitySection } from '@/components/landing/sections/CompatibilitySection';
 import { OutputsSection } from '@/components/landing/sections/OutputsSection';
@@ -17,12 +17,6 @@ import { PricingSection } from '@/components/landing/sections/PricingSection';
 import { FinalCtaSection } from '@/components/landing/sections/FinalCtaSection';
 import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
 import { CookieConsent } from '@/components/CookieConsent';
-
-// Dynamic import for the hero (client component with framer-motion animations)
-const HeroSection = dynamic(
-  () => import('@/components/landing/sections/HeroSection').then(mod => ({ default: mod.HeroSection })),
-  { ssr: true }
-);
 
 export default async function LandingPage({
   params
