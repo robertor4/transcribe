@@ -619,13 +619,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
                 {/* Action icons */}
                 <TooltipProvider>
-                  <div className="flex items-center gap-3 ml-2">
+                  <div className="hidden sm:flex items-center gap-3 ml-2">
                     <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => setIsQAPanelOpen(true)}
-                          className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                         >
                           <AnimatedAiIcon size={16} />
                         </button>
@@ -634,7 +634,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         {tConversation('actions.askQuestions')}
                       </TooltipContent>
                     </Tooltip>
-                    <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip open={copiedSummary || undefined}>
                       <TooltipTrigger asChild>
                         <button
@@ -672,12 +672,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                           : tConversation('tabs.summary')}
                       </TooltipContent>
                     </Tooltip>
-                    <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => setTranslationDialogOpen(true)}
-                          className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <Globe className="w-4 h-4" />
                         </button>
@@ -686,9 +686,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         {tConversation('translation.dialogTitle')}
                       </TooltipContent>
                     </Tooltip>
+                    <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                   </div>
                 </TooltipProvider>
-                <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                 <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">

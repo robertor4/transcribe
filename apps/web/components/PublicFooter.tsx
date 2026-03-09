@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { Youtube, Linkedin, Twitter } from 'lucide-react';
 
 interface PublicFooterProps {
   locale: string;
@@ -33,6 +34,17 @@ export function PublicFooter({ locale }: PublicFooterProps) {
             <p className="text-sm text-gray-500">
               {t('footer.copyright')}
             </p>
+            <div className="flex items-center gap-4 mt-4">
+              <a href="https://www.youtube.com/@NeuralSummary" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="text-gray-400 hover:text-white transition-colors">
+                <Youtube className="h-5 w-5" />
+              </a>
+              <a href="https://www.linkedin.com/company/neural-summary/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-gray-400 hover:text-white transition-colors">
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a href="https://x.com/NeuralSummary" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="text-gray-400 hover:text-white transition-colors">
+                <Twitter className="h-5 w-5" />
+              </a>
+            </div>
           </div>
 
           {/* Column 2: Product */}

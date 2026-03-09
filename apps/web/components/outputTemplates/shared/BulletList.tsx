@@ -6,6 +6,8 @@ interface BulletListProps {
   className?: string;
   /** Bold the text before the first colon in each item */
   boldBeforeColon?: boolean;
+  /** "dot" = small colored dot (default), "chevron" = editorial blog-post style circle with > */
+  variant?: 'dot' | 'chevron';
 }
 
 /**
@@ -50,6 +52,7 @@ export function BulletList({
   bulletColor = 'bg-gray-500',
   className = '',
   boldBeforeColon = false,
+  variant = 'dot',
 }: BulletListProps) {
   if (!items || items.length === 0) return null;
 
@@ -79,8 +82,12 @@ export function BulletList({
         }
 
         return (
-          <li key={idx} className="flex items-start gap-2 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] min-w-0">
-            <span className={`mt-2 w-1.5 h-1.5 ${bulletColor} rounded-full flex-shrink-0`} />
+          <li key={idx} className={`flex items-start ${variant === 'chevron' ? 'gap-3' : 'gap-2'} text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] min-w-0`}>
+            {variant === 'chevron' ? (
+              <span className={`flex-shrink-0 w-5 h-5 rounded-full ${bulletColor || 'bg-gray-800 dark:bg-gray-200'} text-white dark:text-gray-800 text-[10px] font-bold flex items-center justify-center mt-[3px]`}>&gt;</span>
+            ) : (
+              <span className={`mt-2 w-1.5 h-1.5 ${bulletColor} rounded-full flex-shrink-0`} />
+            )}
             <span className="break-words min-w-0">{rendered}</span>
           </li>
         );

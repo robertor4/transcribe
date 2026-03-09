@@ -32,7 +32,10 @@
     "theme": "Thema",
     "themeLight": "Licht",
     "themeDark": "Donker",
-    "themeSystem": "Systeem"
+    "themeSystem": "Systeem",
+    "generatingInBackground": "Nog bezig met genereren. We laten je weten wanneer het klaar is.",
+    "generationComplete": "{name} is klaar",
+    "generationFailed": "Genereren mislukt. Probeer het opnieuw."
   },
   "search": {
     "placeholder": "Zoek gesprekken...",
@@ -64,22 +67,40 @@
         "description": "Kies hoe je je audio wilt toevoegen",
         "descriptionMic": "Neem audio op via je microfoon. Ideaal voor vergaderingen, spraakmemo's en brainstormsessies.",
         "descriptionTab": "Leg audio vast van een browsertabblad. Ideaal voor online vergaderingen, webinars en videogesprekken in je browser.",
-        "descriptionUpload": "Upload een bestaand audio- of videobestand. Ideaal voor opgenomen interviews, podcasts en vergaderopnames."
+        "descriptionUpload": "Upload een bestaand audio- of videobestand. Ideaal voor opgenomen interviews, podcasts en vergaderopnames.",
+        "sidebarLabel": "Opname"
       },
       "context": {
         "title": "Context toevoegen",
-        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)"
+        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)",
+        "sidebarLabel": "Context"
       },
       "processing": {
-        "title": "Verwerken...",
-        "description": "Dit kan even duren"
+        "title": "Verwerking",
+        "description": "Je gesprek wordt verwerkt",
+        "sidebarLabel": "Verwerking",
+        "complete": "Verwerking voltooid",
+        "redirecting": "Doorverwijzen over {countdown}s...",
+        "viewNow": "Gesprek nu bekijken"
       }
     },
     "contextLabel": "Context (optioneel)",
     "contextPlaceholder": "bijv. productmeeting, verkoopgesprek, interview...",
     "back": "Terug",
     "skip": "Overslaan",
-    "continue": "Doorgaan"
+    "continue": "Doorgaan",
+    "changeMethod": "Methode wijzigen",
+    "clearAll": "Alles wissen",
+    "uploadAndProcess": "Uploaden & verwerken ({count})",
+    "dropFilesHere": "Sleep je bestanden hierheen",
+    "dropFilesHereActive": "Loslaten om te uploaden",
+    "orClickToBrowse": "of klik om te bladeren (maximaal 3 bestanden)",
+    "supportedFormatsLabel": "Audio- & videobestanden",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB per bestand",
+    "selectedFiles": "Geselecteerde bestanden ({count})",
+    "dragToReorder": "Sleep om te herschikken",
+    "removeFile": "Bestand verwijderen",
+    "filesCount": "{current} van {max}"
   },
   "auth": {
     "signIn": "Inloggen",
@@ -446,6 +467,7 @@
     },
     "confirm": {
       "cancelRecording": "Weet je zeker dat je wilt annuleren? Je opname gaat verloren.",
+      "reRecord": "Weet je zeker dat je opnieuw wilt opnemen? Je huidige opname gaat verloren.",
       "goBack": "Ga terug"
     },
     "warnings": {
@@ -558,6 +580,8 @@
     "loading": "AI asset laden...",
     "notFound": "AI asset niet gevonden",
     "notFoundDescription": "De AI asset die je zoekt bestaat niet of je hebt geen toegang.",
+    "backToConversation": "Terug naar gesprek",
+    "backToDashboard": "Terug naar dashboard",
     "modal": {
       "title": "AI Asset maken",
       "steps": {
@@ -1552,7 +1576,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "Jij spreekt. Het creëert.",
+      "tagline": "Creëer met je stem.",
       "copyright": "© 2026 Neural Summary. Alle rechten voorbehouden."
     }
   },

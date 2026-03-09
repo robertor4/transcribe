@@ -22,6 +22,12 @@ interface AudioDevice {
   label: string;
 }
 
+export interface PreviewActions {
+  onConfirm: () => void;
+  onReRecord: () => void;
+  onCancel: () => void;
+}
+
 interface SimpleAudioRecorderProps {
   /**
    * Called when user confirms the recording.
@@ -32,6 +38,8 @@ interface SimpleAudioRecorderProps {
   onCancel: () => void;
   /** Called when actual recording state changes (recording/paused vs idle/stopped) */
   onRecordingStateChange?: (isRecording: boolean) => void;
+  /** Called when preview state changes — provides action handlers for the modal footer */
+  onPreviewStateChange?: (isPreviewing: boolean, actions?: PreviewActions) => void;
   /** When set, skips source selection and starts with this source */
   initialSource?: RecordingSource | null;
   /** Data for continuing a recovered recording */
@@ -59,6 +67,7 @@ export function SimpleAudioRecorder({
   onComplete,
   onCancel,
   onRecordingStateChange,
+  onPreviewStateChange,
   initialSource,
   continueRecordingData,
 }: SimpleAudioRecorderProps) {
@@ -214,6 +223,8 @@ export function SimpleAudioRecorder({
     const isActivelyRecording = state === 'recording' || state === 'paused';
     onRecordingStateChange?.(isActivelyRecording);
   }, [state, onRecordingStateChange]);
+
+  // Preview state effect is placed after handler definitions (see handleCancelPreview)
 
   // Prepare for continue mode when continueRecordingData is provided
   useEffect(() => {
@@ -627,13 +638,15 @@ export function SimpleAudioRecorder({
   }, [audioBlob, onComplete, createMarkAsUploaded, reset, trackEvent, duration, selectedSource]);
 
   const handleReRecord = useCallback(() => {
+    const confirmed = window.confirm(t('confirm.reRecord', { defaultValue: 'Are you sure you want to re-record? Your current recording will be lost.' }));
+    if (!confirmed) return;
     reset();
     // If we came from a direct action, stay on the recording interface (don't show source selector)
     // Otherwise, go back to source selection
     if (!initialSource) {
       setShowSourceSelector(true);
     }
-  }, [reset, initialSource]);
+  }, [reset, initialSource, t]);
 
   // Wrap stopRecording to pre-warm AudioContext for the preview waveform
   // This ensures the AudioContext can be resumed on mobile browsers
@@ -644,9 +657,36 @@ export function SimpleAudioRecorder({
   }, [stopRecording]);
 
   const handleCancelPreview = useCallback(() => {
+    const confirmed = window.confirm(t('confirm.cancelRecording', { defaultValue: 'Are you sure you want to cancel? Your recording will be lost.' }));
+    if (!confirmed) return;
     reset();
     onCancel();
-  }, [reset, onCancel]);
+  }, [reset, onCancel, t]);
+
+  // Store latest handlers in refs to avoid them as effect dependencies
+  // This prevents infinite re-render loops when handler references change
+  const handleConfirmRef = useRef(handleConfirm);
+  const handleReRecordRef = useRef(handleReRecord);
+  const handleCancelPreviewRef = useRef(handleCancelPreview);
+  const onPreviewStateChangeRef = useRef(onPreviewStateChange);
+  handleConfirmRef.current = handleConfirm;
+  handleReRecordRef.current = handleReRecord;
+  handleCancelPreviewRef.current = handleCancelPreview;
+  onPreviewStateChangeRef.current = onPreviewStateChange;
+
+  // Notify parent when entering/exiting preview state (stopped with blob)
+  useEffect(() => {
+    const isPreviewing = state === 'stopped' && !!audioBlob;
+    if (isPreviewing) {
+      onPreviewStateChangeRef.current?.(true, {
+        onConfirm: () => handleConfirmRef.current(),
+        onReRecord: () => handleReRecordRef.current(),
+        onCancel: () => handleCancelPreviewRef.current(),
+      });
+    } else {
+      onPreviewStateChangeRef.current?.(false);
+    }
+  }, [state, audioBlob]);
 
   const handleCancelRecording = useCallback(() => {
     const confirmed = window.confirm(t('confirm.cancelRecording'));
@@ -703,9 +743,6 @@ export function SimpleAudioRecorder({
         <RecordingPreview
           audioBlob={audioBlob}
           duration={duration}
-          onConfirm={handleConfirm}
-          onReRecord={handleReRecord}
-          onCancel={handleCancelPreview}
         />
       </div>
     );

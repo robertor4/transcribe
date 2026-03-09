@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   X, ArrowLeft, ArrowRight, AlertCircle, Mail, FileText, BarChart3,
   Lock, Users, Briefcase, Code2, TrendingUp, Search, ChevronDown, Info, Check,
@@ -30,6 +30,7 @@ import { transcriptionApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
 import { useUsage } from '@/contexts/UsageContext';
 import { Link } from '@/i18n/navigation';
+import { toast } from 'sonner';
 import type { GeneratedAnalysis } from '@transcribe/shared';
 
 // Filter out transcribe-only since we're already in a conversation with transcription
@@ -267,6 +268,53 @@ interface OutputGeneratorModalProps {
   preselectedTemplate?: string | null;
 }
 
+const ROTATING_MESSAGES = [
+  'This may take a few moments',
+  'Teaching AI to read between the lines...',
+  'Turning your words into something presentable...',
+  'Our AI is typing so you don\'t have to...',
+  'Structuring thoughts at the speed of sound...',
+  'Doing in seconds what used to take hours...',
+  'Pretending to think really hard...',
+  'Converting caffeine into documents...',
+  'Making your ideas look professional...',
+  'Almost done. Probably. Maybe.',
+  'Your voice, our fingers. Metaphorically.',
+];
+
+function RotatingSubtext() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % ROTATING_MESSAGES.length);
+        setVisible(true);
+      }, 400);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <p
+      className="text-sm font-medium bg-[length:250%_100%] bg-clip-text transition-opacity duration-400"
+      style={{
+        opacity: visible ? 1 : 0,
+        backgroundImage:
+          'linear-gradient(90deg, transparent calc(50% - 4em), #d1d5db 50%, transparent calc(50% + 4em)), linear-gradient(#6b7280, #6b7280)',
+        backgroundRepeat: 'no-repeat, padding-box',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        animation: 'shimmer 3s linear infinite reverse',
+      }}
+    >
+      {ROTATING_MESSAGES[index]}
+    </p>
+  );
+}
+
 export function OutputGeneratorModal({
   isOpen,
   onClose,
@@ -301,8 +349,14 @@ export function OutputGeneratorModal({
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const closedDuringGenerationRef = useRef(false);
+  const generatingTemplateRef = useRef<string | null>(null);
 
   const handleClose = useCallback(() => {
+    if (isGenerating) {
+      closedDuringGenerationRef.current = true;
+      toast.info(tCommon('generatingInBackground'), { duration: 4000 });
+    }
     onClose();
     setTimeout(() => {
       setStep(1);
@@ -313,7 +367,7 @@ export function OutputGeneratorModal({
       setSearchQuery('');
       setOpenCategories(new Set());
     }, 300);
-  }, [onClose]);
+  }, [onClose, isGenerating, tCommon]);
 
   // Handle preselected template
   useEffect(() => {
@@ -372,6 +426,8 @@ export function OutputGeneratorModal({
     setStep(3);
     setIsGenerating(true);
     setError(null);
+    closedDuringGenerationRef.current = false;
+    generatingTemplateRef.current = getTemplateName(selectedType);
 
     try {
       const response = await transcriptionApi.generateAnalysis(
@@ -381,21 +437,41 @@ export function OutputGeneratorModal({
       );
 
       if (response.success && response.data) {
-        setIsGenerating(false);
         refreshUsage();
+
+        if (closedDuringGenerationRef.current) {
+          toast.success(
+            tCommon('generationComplete', { name: generatingTemplateRef.current ?? '' }),
+            { duration: 5000 }
+          );
+        } else {
+          setIsGenerating(false);
+        }
+
         onOutputGenerated?.(response.data);
-        setTimeout(() => handleClose(), 1500);
+
+        if (!closedDuringGenerationRef.current) {
+          setTimeout(() => handleClose(), 1500);
+        }
       } else {
         throw new Error(response.message || 'Failed to generate output');
       }
     } catch (err) {
       console.error('Error generating output:', err);
-      setIsGenerating(false);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to generate output. Please try again.'
-      );
+
+      if (closedDuringGenerationRef.current) {
+        toast.error(
+          tCommon('generationFailed'),
+          { duration: 5000 }
+        );
+      } else {
+        setIsGenerating(false);
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to generate output. Please try again.'
+        );
+      }
     }
   };
 
@@ -698,16 +774,13 @@ export function OutputGeneratorModal({
                     {isGenerating ? (
                       <>
                         <GeneratingLoader className="mb-6" size="lg" />
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                          {t('generatingOutput', {
-                            name: selectedType
-                              ? getTemplateName(selectedType)
-                              : '',
-                          })}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {t('generatingWait')}
-                        </p>
+                        {selectedOption && (
+                          <span className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-3">
+                            <selectedOption.icon className="w-4 h-4" />
+                            {getTemplateName(selectedOption.id)}
+                          </span>
+                        )}
+                        <RotatingSubtext />
                       </>
                     ) : error ? (
                       <>

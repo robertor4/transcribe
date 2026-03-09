@@ -32,7 +32,10 @@
     "theme": "Design",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "generatingInBackground": "Wird noch generiert. Wir benachrichtigen dich, wenn es fertig ist.",
+    "generationComplete": "{name} ist fertig",
+    "generationFailed": "Generierung fehlgeschlagen. Bitte versuche es erneut."
   },
   "search": {
     "placeholder": "Gespräche suchen...",
@@ -64,22 +67,40 @@
         "description": "Wähle, wie du dein Audio hinzufügen möchtest",
         "descriptionMic": "Nimm Audio über dein Mikrofon auf. Ideal für persönliche Meetings, Sprachnotizen und Brainstorming-Sitzungen.",
         "descriptionTab": "Erfasse Audio von einem Browser-Tab. Ideal für Online-Meetings, Webinare und Videoanrufe in deinem Browser.",
-        "descriptionUpload": "Lade eine vorhandene Audio- oder Videodatei hoch. Ideal für aufgenommene Interviews, Podcasts und Meeting-Aufnahmen."
+        "descriptionUpload": "Lade eine vorhandene Audio- oder Videodatei hoch. Ideal für aufgenommene Interviews, Podcasts und Meeting-Aufnahmen.",
+        "sidebarLabel": "Aufnahme"
       },
       "context": {
         "title": "Kontext hinzufügen",
-        "description": "Füge Kontext hinzu, um die Transkriptionsgenauigkeit zu verbessern (optional)"
+        "description": "Füge Kontext hinzu, um die Transkriptionsgenauigkeit zu verbessern (optional)",
+        "sidebarLabel": "Kontext"
       },
       "processing": {
-        "title": "Verarbeitung...",
-        "description": "Das kann einen Moment dauern"
+        "title": "Verarbeitung",
+        "description": "Dein Gespräch wird verarbeitet",
+        "sidebarLabel": "Verarbeitung",
+        "complete": "Verarbeitung abgeschlossen",
+        "redirecting": "Weiterleitung in {countdown}s...",
+        "viewNow": "Gespräch jetzt ansehen"
       }
     },
     "contextLabel": "Kontext (optional)",
     "contextPlaceholder": "z.B. Produktmeeting, Verkaufsgespräch, Interview...",
     "back": "Zurück",
     "skip": "Überspringen",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "changeMethod": "Methode ändern",
+    "clearAll": "Alle entfernen",
+    "uploadAndProcess": "Hochladen & verarbeiten ({count})",
+    "dropFilesHere": "Dateien hier ablegen",
+    "dropFilesHereActive": "Loslassen zum Hochladen",
+    "orClickToBrowse": "oder klicken zum Durchsuchen (bis zu 3 Dateien)",
+    "supportedFormatsLabel": "Audio- & Videodateien",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB pro Datei",
+    "selectedFiles": "Ausgewählte Dateien ({count})",
+    "dragToReorder": "Ziehen zum Neuordnen",
+    "removeFile": "Datei entfernen",
+    "filesCount": "{current} von {max}"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -446,6 +467,7 @@
     },
     "confirm": {
       "cancelRecording": "Sind Sie sicher, dass Sie abbrechen möchten? Ihre Aufnahme geht verloren.",
+      "reRecord": "Möchten Sie wirklich erneut aufnehmen? Ihre aktuelle Aufnahme geht verloren.",
       "goBack": "Zurück"
     },
     "warnings": {
@@ -558,6 +580,8 @@
     "loading": "KI-Asset wird geladen...",
     "notFound": "KI-Asset nicht gefunden",
     "notFoundDescription": "Das gesuchte KI-Asset existiert nicht oder Sie haben keinen Zugriff darauf.",
+    "backToConversation": "Zurück zur Konversation",
+    "backToDashboard": "Zurück zum Dashboard",
     "modal": {
       "title": "KI-Asset erstellen",
       "steps": {
@@ -1530,7 +1554,7 @@
         "contact": "Kontakt",
         "blog": "Blog"
       },
-      "tagline": "Du sprichst. Es kreiert.",
+      "tagline": "Erschaffe mit deiner Stimme.",
       "copyright": "© 2026 Neural Summary. Alle Rechte vorbehalten."
     }
   },

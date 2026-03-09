@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { getPricingMetadata, MetadataOverrides } from '@/utils/metadata';
 import { PricingProviders } from './providers';
 
@@ -118,6 +119,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return getPricingMetadata(locale, metadata);
 }
 
-export default function PricingLayout({ children }: Props) {
-  return <PricingProviders>{children}</PricingProviders>;
+export default async function PricingLayout({ children, params }: Props) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pricing.faq' });
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: t('questions.trial.question'),
+        acceptedAnswer: { '@type': 'Answer', text: t('questions.trial.answer') },
+      },
+      {
+        '@type': 'Question',
+        name: t('questions.cancel.question'),
+        acceptedAnswer: { '@type': 'Answer', text: t('questions.cancel.answer') },
+      },
+      {
+        '@type': 'Question',
+        name: t('questions.upgrade.question'),
+        acceptedAnswer: { '@type': 'Answer', text: t('questions.upgrade.answer') },
+      },
+      {
+        '@type': 'Question',
+        name: t('questions.enterprise.question'),
+        acceptedAnswer: { '@type': 'Answer', text: t('questions.enterprise.answer') },
+      },
+    ],
+  };
+
+  return (
+    <PricingProviders>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      {children}
+    </PricingProviders>
+  );
 }

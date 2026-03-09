@@ -32,7 +32,10 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "generatingInBackground": "Still generating. We'll notify you when it's ready.",
+    "generationComplete": "{name} is ready",
+    "generationFailed": "Generation failed. Please try again."
   },
   "search": {
     "placeholder": "Search conversations...",
@@ -64,22 +67,40 @@
         "description": "Choose how to add your audio",
         "descriptionMic": "Record audio from your microphone. Best for in-person meetings, voice memos, and brainstorming sessions.",
         "descriptionTab": "Capture audio from a browser tab. Best for online meetings, webinars, and video calls in your browser.",
-        "descriptionUpload": "Upload an existing audio or video file. Best for pre-recorded interviews, podcasts, and meeting recordings."
+        "descriptionUpload": "Upload an existing audio or video file. Best for pre-recorded interviews, podcasts, and meeting recordings.",
+        "sidebarLabel": "Capture"
       },
       "context": {
         "title": "Add context",
-        "description": "Provide context to improve transcription accuracy (optional)"
+        "description": "Provide context to improve transcription accuracy (optional)",
+        "sidebarLabel": "Context"
       },
       "processing": {
-        "title": "Processing...",
-        "description": "This may take a moment"
+        "title": "Processing",
+        "description": "Your conversation is being processed",
+        "sidebarLabel": "Processing",
+        "complete": "Processing complete",
+        "redirecting": "Redirecting in {countdown}s...",
+        "viewNow": "View conversation now"
       }
     },
     "contextLabel": "Context (optional)",
     "contextPlaceholder": "e.g., product meeting, sales call, interview...",
     "back": "Back",
     "skip": "Skip",
-    "continue": "Continue"
+    "continue": "Continue",
+    "changeMethod": "Change method",
+    "clearAll": "Clear all",
+    "uploadAndProcess": "Upload & process ({count})",
+    "dropFilesHere": "Drop your files here",
+    "dropFilesHereActive": "Release to upload",
+    "orClickToBrowse": "or click to browse (up to 3 files)",
+    "supportedFormatsLabel": "Audio & video files",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB per file",
+    "selectedFiles": "Selected files ({count})",
+    "dragToReorder": "Drag to reorder",
+    "removeFile": "Remove file",
+    "filesCount": "{current} of {max}"
   },
   "auth": {
     "signIn": "Sign In",
@@ -447,6 +468,7 @@
     },
     "confirm": {
       "cancelRecording": "Are you sure you want to cancel? Your recording will be lost.",
+      "reRecord": "Are you sure you want to re-record? Your current recording will be lost.",
       "goBack": "Go back"
     },
     "warnings": {
@@ -559,6 +581,8 @@
     "loading": "Loading AI asset...",
     "notFound": "AI asset not found",
     "notFoundDescription": "The AI asset you are looking for does not exist or you do not have access to it.",
+    "backToConversation": "Back to conversation",
+    "backToDashboard": "Back to dashboard",
     "modal": {
       "title": "Create AI Asset",
       "steps": {
@@ -1553,7 +1577,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "You speak. It creates.",
+      "tagline": "Create with your voice.",
       "copyright": "© 2026 Neural Summary. All rights reserved."
     }
   },

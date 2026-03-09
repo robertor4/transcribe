@@ -1953,20 +1953,31 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         projectName: { type: 'string' },
         reportingPeriod: { type: 'string' },
         overallStatus: { type: 'string', enum: ['green', 'yellow', 'red'] },
-        summary: { type: 'string', description: '1-2 sentence executive snapshot. Keep it concise.' },
+        summary: {
+          type: 'string',
+          description: '1-2 sentence executive snapshot. Keep it concise.',
+        },
         accomplishments: { type: 'array', items: { type: 'string' } },
         milestones: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
-              milestone: { type: 'string', description: 'Short milestone name, e.g. "Folder taxonomy design". Must not be empty.' },
+              milestone: {
+                type: 'string',
+                description:
+                  'Short milestone name, e.g. "Folder taxonomy design". Must not be empty.',
+              },
               status: {
                 type: 'string',
                 enum: ['completed', 'on-track', 'at-risk', 'delayed'],
               },
               date: { type: 'string' },
-              notes: { type: 'string', description: 'Additional context or details about the milestone.' },
+              notes: {
+                type: 'string',
+                description:
+                  'Additional context or details about the milestone.',
+              },
             },
             required: ['milestone', 'status'],
           },
@@ -1976,8 +1987,15 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              risk: { type: 'string', description: 'Short risk name, e.g. "SQL vs NoSQL decision delay". Must not be empty.' },
-              mitigation: { type: 'string', description: 'Strategy to mitigate this risk.' },
+              risk: {
+                type: 'string',
+                description:
+                  'Short risk name, e.g. "SQL vs NoSQL decision delay". Must not be empty.',
+              },
+              mitigation: {
+                type: 'string',
+                description: 'Strategy to mitigate this risk.',
+              },
               severity: { type: 'string', enum: ['high', 'medium', 'low'] },
             },
             required: ['risk', 'mitigation', 'severity'],
@@ -2377,23 +2395,48 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'specialized',
     icon: 'Code2',
     color: 'purple',
-    systemPrompt: `You are a senior software architect who creates clear, thorough technical design documents. You document decisions, alternatives, and trade-offs for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are a senior software architect who creates clear, thorough technical design documents. You write like a principal engineer: specific, scannable, no filler. Every section is dense with substance. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a technical design document from this conversation.
 
-Include:
-1. Title and status
-2. Overview of what's being built
-3. Goals and non-goals
-4. Background context
-5. Proposed solution
-6. Alternatives considered with pros/cons and rejection reasons
-7. Technical details
-8. Security considerations
-9. Testing strategy
-10. Rollout plan
-11. Open questions
+${PROMPT_INSTRUCTIONS.useContext}
 
-Be thorough enough that another engineer could implement from this doc.
+CRITICAL REQUIREMENTS — you MUST populate ALL sections with substantial content. Do NOT consolidate everything into background or overview:
+
+1. **title**: Short and specific — maximum 10 words. Example: "Split Storage Architecture for VC Deal Flow" (NOT a full sentence)
+2. **status**: draft, review, approved, or implemented
+3. **overview**: 2-3 concise sentences maximum. State what's being built and why. This is a pull-quote, not a paragraph. NEVER leave thin.
+4. **background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph 2-3 sentences max. Cover: what prompted this design, key stakeholders, and constraints. Keep it scannable.
+5. **goals**: 3-5 specific objectives. Each goal is ONE concise sentence. Focus on the most important outcomes, not exhaustive lists.
+6. **nonGoals**: 2-3 items explicitly out of scope. Each is ONE concise sentence.
+7. **proposedSolution**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph 2-3 sentences max. Be specific but concise — state the approach, key technologies, and rationale without repeating background. Write like a senior engineer in a design review, not a thesis.
+8. **alternatives**: 2-5 alternatives. Each MUST have:
+   - "approach": A descriptive name under 10 words. Example: "Store JSON metadata in Drive folders" (NOT "Option 1")
+   - "pros": 2-4 specific advantages
+   - "cons": 2-4 specific disadvantages
+   - "rejected": boolean
+   - "rejectionReason": 1 sentence if rejected
+9. **technicalDetails**: 4-10 specific implementation details. Each is a complete sentence covering data models, API designs, protocols, or integration points. Be concrete — reference actual technologies and patterns.
+10. **securityConsiderations**: 2-5 items covering access control, authentication, data protection, or compliance concerns discussed.
+11. **testingStrategy**: A string with 4-8 bullet points separated by newlines (\\n). Each bullet starts with "- " and describes a specific test or validation step. Example: "- Unit test schema validations and upsert idempotency\\n- Integration test Drive webhook ingestion end-to-end"
+12. **rolloutPlan**: A string with 3-6 bullet points separated by newlines (\\n). Each bullet starts with "- " and a phase label followed by a colon. Example: "- Phase 1: Deploy read-only sync service to staging\\n- Phase 2: Enable write path with feature flag\\n- Rollback: Revert feature flag and replay events from checkpoint"
+13. **openQuestions**: 2-6 unresolved decisions or concerns from the conversation. Each is a specific question, not a vague topic.
+14. **diagrams**: Generate 1-2 Mermaid diagrams that are MOST relevant to the proposed solution. Choose diagram types that best communicate the architecture:
+   - Use erDiagram when the conversation discusses data models or entity relationships
+   - Use flowchart LR/TD when there is a clear system architecture or data pipeline
+   - Use sequenceDiagram when there are important multi-step interactions between components
+   Do NOT generate all types — pick only the 1-2 that add the most value for an engineer reading this doc. Each diagram MUST have both "title" (string) and "chart" (string). NEVER leave "chart" empty or null.
+
+Each diagram MUST include a caption (1 sentence explaining what the diagram shows).
+
+Example: {"title": "Data Flow", "chart": "flowchart LR\\n  A[Upload] --> B[Process]\\n  B --> C[Store]\\n  C --> D[Query]", "caption": "End-to-end data pipeline from file upload to queryable storage."}
+
+Keep diagrams simple (under 12 nodes). Use short labels. Omit the entire array only if the conversation lacks technical detail.
+
+QUALITY GUIDELINES:
+- Write like a principal engineer — specific, not generic. Reference actual topics, names, and technologies from the conversation.
+- Every section must contain substantial content. NEVER return empty arrays or blank strings.
+- Keep text scannable: short paragraphs, crisp sentences, no filler.
+- Findings should reveal architecture insights, not just restate what was said.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -2437,16 +2480,35 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         testingStrategy: { type: 'string' },
         rolloutPlan: { type: 'string' },
         openQuestions: { type: 'array', items: { type: 'string' } },
+        diagrams: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              chart: { type: 'string' },
+              caption: { type: 'string' },
+            },
+            required: ['title', 'chart', 'caption'],
+          },
+        },
       },
       required: [
         'type',
         'title',
         'status',
         'overview',
+        'background',
         'goals',
+        'nonGoals',
         'proposedSolution',
         'alternatives',
         'technicalDetails',
+        'securityConsiderations',
+        'testingStrategy',
+        'rolloutPlan',
+        'openQuestions',
+        'diagrams',
       ],
     },
   }),

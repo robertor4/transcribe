@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {
   Loader2,
   AlertCircle,
+  ArrowLeft,
   Mail,
   CheckSquare,
   Edit3,
@@ -47,6 +48,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 interface OutputDetailClientProps {
   conversationId: string;
@@ -283,19 +287,37 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   // Error state
   if (error || !output) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {t('notFound')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error?.message || t('notFoundDescription')}
-          </p>
-          <Link href={`/${locale}/conversation/${conversationId}`}>
-            <Button variant="primary">Back to Conversation</Button>
-          </Link>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50/50 dark:bg-gray-900">
+        <Card className="w-full max-w-md mx-4 border-gray-200 dark:border-gray-700 pb-0 overflow-hidden">
+          <CardHeader className="justify-items-center text-center pb-0">
+            <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center mb-1">
+              <AlertCircle className="w-6 h-6 text-amber-500" />
+            </div>
+            <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              {t('notFound')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-gray-700 dark:text-gray-300">
+                {error?.message || t('notFoundDescription')}
+              </AlertDescription>
+            </Alert>
+            <Separator />
+            <div className="flex flex-col gap-2 [&_a]:block [&_button]:w-full">
+              <Link href={`/${locale}/conversation/${conversationId}`}>
+                <Button variant="brand" icon={<ArrowLeft className="w-4 h-4" />}>
+                  {t('backToConversation')}
+                </Button>
+              </Link>
+              <Link href={`/${locale}/dashboard`}>
+                <Button variant="ghost">{t('backToDashboard')}</Button>
+              </Link>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-center border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 py-5" />
+        </Card>
       </div>
     );
   }
@@ -360,7 +382,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleCopy}
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`hidden sm:block p-1.5 rounded-lg transition-colors ${
                       copied
                         ? 'text-green-500'
                         : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -413,6 +435,11 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
                   </button>
                 }
                 items={[
+                  {
+                    icon: Copy,
+                    label: copied ? t('copied') : t('copy'),
+                    onClick: handleCopy,
+                  },
                   // Generate Image - for blog posts with premium
                   ...(isBlogPost && isPremiumUser
                     ? [

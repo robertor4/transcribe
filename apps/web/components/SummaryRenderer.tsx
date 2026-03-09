@@ -115,7 +115,7 @@ const SummaryV2Renderer: React.FC<SummaryV2RendererProps> = ({ summary, highligh
                 onOpenChange={() => toggleSection(idx)}
               >
                 <CollapsibleTrigger className="flex items-center gap-3 w-full py-4 text-left group cursor-pointer">
-                  <span className="text-xs font-mono text-gray-400 dark:text-gray-500 w-6 flex-shrink-0">
+                  <span className="text-xs font-mono text-gray-300 dark:text-gray-600 group-hover:text-[#8D6AFA] w-6 flex-shrink-0 transition-colors">
                     {String(idx + 1).padStart(2, '0')}
                   </span>
                   <span className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 flex-1">

@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { ArrowLeft, ArrowRight, X, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from './Button';
-import { UploadInterface } from './UploadInterface';
+import { UploadInterface, type InputMethod } from './UploadInterface';
 import { RealProcessingView } from './RealProcessingView';
+import type { PreviewActions } from './SimpleAudioRecorder';
 import { RecordingRecoveryDialog } from './RecordingRecoveryDialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import {
   getRecordingStorage,
@@ -24,16 +25,13 @@ interface ConversationCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (conversationId: string) => void;
-  folderId?: string | null; // Optional folder context
-
-  // Context-aware entry props
+  folderId?: string | null;
   initialStep?: CreateStep;
   uploadMethod?: 'file' | 'record' | 'record-microphone' | 'record-tab-audio' | null;
 }
 
 export type CreateStep = 'capture' | 'context' | 'processing' | 'complete';
 
-// Data for continuing a recovered recording
 export interface ContinueRecordingData {
   chunks: Blob[];
   duration: number;
@@ -41,36 +39,116 @@ export interface ContinueRecordingData {
   recordingId: string;
 }
 
-/**
- * Simplified conversation creation modal
- * Step 1: Upload/record audio
- * Step 2: Add context (optional)
- * Step 3: Processing
- * Step 4: Navigate to conversation detail
- */
+const STEPS = ['capture', 'context', 'processing'] as const;
+type StepName = (typeof STEPS)[number];
+
+// Desktop sidebar step item
+function StepNavItem({
+  stepNum,
+  label,
+  currentStep,
+  isCompleted,
+  onClick,
+}: {
+  stepNum: number;
+  label: string;
+  currentStep: StepName;
+  isCompleted: boolean;
+  onClick?: () => void;
+}) {
+  const stepName = STEPS[stepNum - 1];
+  const isActive = stepName === currentStep;
+  const isClickable = onClick && isCompleted;
+
+  return (
+    <button
+      onClick={isClickable ? onClick : undefined}
+      disabled={!isClickable}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-left w-full transition-all ${
+        isActive
+          ? 'bg-purple-50 dark:bg-[#8D6AFA]/10'
+          : isClickable
+          ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer'
+          : 'opacity-50 cursor-default'
+      }`}
+    >
+      <div
+        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${
+          isActive
+            ? 'bg-[#8D6AFA] text-white'
+            : isCompleted
+            ? 'bg-[#14D0DC] text-white'
+            : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+        }`}
+      >
+        {isCompleted ? <Check className="w-3.5 h-3.5" /> : stepNum}
+      </div>
+      <span
+        className={`text-sm font-medium ${
+          isActive
+            ? 'text-[#8D6AFA]'
+            : isCompleted
+            ? 'text-gray-900 dark:text-gray-100'
+            : 'text-gray-500 dark:text-gray-400'
+        }`}
+      >
+        {label}
+      </span>
+    </button>
+  );
+}
+
+// Mobile step indicator (horizontal dots)
+function MobileStepIndicator({ currentStep }: { currentStep: StepName }) {
+  return (
+    <div className="flex items-center justify-center gap-2 py-3 md:hidden">
+      {STEPS.map((s) => (
+        <div
+          key={s}
+          className={`h-1.5 rounded-full transition-all ${
+            s === currentStep
+              ? 'w-6 bg-[#8D6AFA]'
+              : STEPS.indexOf(s) < STEPS.indexOf(currentStep)
+              ? 'w-1.5 bg-[#14D0DC]'
+              : 'w-1.5 bg-gray-300 dark:bg-gray-600'
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
 export function ConversationCreateModal({
   isOpen,
   onClose,
   onComplete,
   folderId,
-  // initialStep is defined in interface but not yet implemented
   uploadMethod,
 }: ConversationCreateModalProps) {
   const t = useTranslations('conversationCreate');
+  const tCommon = useTranslations('common');
+  const tRecording = useTranslations('recording');
   const { user } = useAuth();
 
-  // State for flow
+  // Step state
   const [currentStep, setCurrentStep] = useState<CreateStep>('capture');
   const [overallContext, setOverallContext] = useState<string>('');
+  const [isRecording, setIsRecording] = useState(false);
+
+  // Lifted state from UploadInterface
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<InputMethod | null>(null);
+  const [processingMode, setProcessingMode] = useState<'individual' | 'merged'>('individual');
+
+  // Preview state (when recording is stopped and user can preview)
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [previewActions, setPreviewActions] = useState<PreviewActions | null>(null);
+
+  // Upload/recording state
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-  const [, setProcessingMode] = useState<'individual' | 'merged'>('individual');
-  const [isRecording, setIsRecording] = useState(false);
-  // Store markAsUploaded callback to call after successful processing
   const [markAsUploadedCallback, setMarkAsUploadedCallback] = useState<(() => Promise<void>) | null>(null);
-  // Store processing error for display
   const [, setProcessingError] = useState<string | null>(null);
-  // Store recovered recording ID to delete after successful processing
   const [pendingRecoveryDeletionId, setPendingRecoveryDeletionId] = useState<string | null>(null);
 
   // Recovery state
@@ -78,48 +156,85 @@ export function ConversationCreateModal({
   const [showRecoveryDialog, setShowRecoveryDialog] = useState(false);
   const [recoveryCheckDone, setRecoveryCheckDone] = useState(false);
   const [continueRecordingData, setContinueRecordingData] = useState<ContinueRecordingData | null>(null);
-  // Track which upload method to use after recovery
   const [recoveryUploadMethod, setRecoveryUploadMethod] = useState<'record-microphone' | 'record-tab-audio' | null>(null);
 
-  // Check if we're in a critical stage that should be protected from accidental close
-  // Preview (context) and processing stages are critical - user has recorded content at risk
-  const isInCriticalStage = currentStep === 'context' || currentStep === 'processing';
+  const isInCriticalStage = currentStep === 'processing';
+
+  const effectiveUploadMethod = recoveryUploadMethod || uploadMethod;
+
+  // Map uploadMethod prop to InputMethod type
+  const mapUploadMethodToInputMethod = useCallback((method: string | null | undefined): InputMethod | null => {
+    if (!method) return null;
+    if (method === 'record-microphone') return 'record-microphone';
+    if (method === 'record-tab-audio') return 'record-tab-audio';
+    if (method === 'record') return 'record-microphone';
+    if (method === 'file') return 'upload';
+    return null;
+  }, []);
+
+  // Derive sub-state for footer rendering
+  const captureSubState = useMemo((): 'method-selection' | 'recording' | 'preview' | 'dropzone' | 'file-list' => {
+    if (!selectedMethod) return 'method-selection';
+    if (selectedMethod === 'record-microphone' || selectedMethod === 'record-tab-audio') {
+      return isPreviewing ? 'preview' : 'recording';
+    }
+    if (selectedMethod === 'upload' && selectedFiles.length === 0) return 'dropzone';
+    return 'file-list';
+  }, [selectedMethod, selectedFiles.length, isPreviewing]);
+
+  // Step labels for sidebar
+  const stepLabels = [
+    t('steps.capture.sidebarLabel'),
+    t('steps.context.sidebarLabel'),
+    t('steps.processing.sidebarLabel'),
+  ];
+
+  // Header title and description
+  const stepTitle = useMemo(() => {
+    if (currentStep === 'capture') return t('steps.capture.title');
+    if (currentStep === 'context') return t('steps.context.title');
+    return t('steps.processing.title');
+  }, [currentStep, t]);
+
+  const stepDescription = useMemo(() => {
+    if (currentStep === 'capture') {
+      if (selectedMethod === 'record-microphone') return t('steps.capture.descriptionMic');
+      if (selectedMethod === 'record-tab-audio') return t('steps.capture.descriptionTab');
+      if (selectedMethod === 'upload') return t('steps.capture.descriptionUpload');
+      return t('steps.capture.description');
+    }
+    if (currentStep === 'context') return t('steps.context.description');
+    return t('steps.processing.description');
+  }, [currentStep, selectedMethod, t]);
 
   // Reset state when modal closes
   const handleClose = useCallback(() => {
-    // Only show confirmation when there's actual progress to lose:
-    // - Actively recording or paused
-    // - In preview stage (context) - recording completed, ready for processing
-    // - Processing in progress
-    // - Files selected for upload
-    // - Recording completed but not yet processed
     const hasProgress =
       isRecording ||
       currentStep === 'processing' ||
-      currentStep === 'context' || // Added: protect preview stage too
+      currentStep === 'context' ||
       uploadedFiles.length > 0 ||
+      selectedFiles.length > 0 ||
       recordedBlob !== null;
 
     if (hasProgress) {
-      // Use a more explicit confirmation message for critical stages
       const message = isInCriticalStage
         ? t('confirmCancelCritical', { defaultValue: t('confirmCancel') })
         : t('confirmCancel');
 
-      const confirmed = window.confirm(message);
-
-      if (!confirmed) {
-        return; // User cancelled, keep modal open
-      }
+      if (!window.confirm(message)) return;
     }
 
-    // Reset all state
     setCurrentStep('capture');
     setOverallContext('');
+    setSelectedFiles([]);
+    setSelectedMethod(null);
+    setProcessingMode('individual');
     setUploadedFiles([]);
     setRecordedBlob(null);
-    setProcessingMode('individual');
     setIsRecording(false);
+    setIsPreviewing(false);
+    setPreviewActions(null);
     setMarkAsUploadedCallback(null);
     setProcessingError(null);
     setRecoverableRecordings([]);
@@ -129,28 +244,22 @@ export function ConversationCreateModal({
     setRecoveryUploadMethod(null);
     setPendingRecoveryDeletionId(null);
     onClose();
-  }, [isRecording, currentStep, uploadedFiles.length, recordedBlob, onClose, t, isInCriticalStage]);
+  }, [isRecording, currentStep, uploadedFiles.length, selectedFiles.length, recordedBlob, onClose, t, isInCriticalStage]);
 
-  // Check for recoverable recordings when modal opens
-  // Only show recordings belonging to the current user (privacy/security)
+  // Check for recoverable recordings
   useEffect(() => {
     const checkForRecovery = async () => {
       if (!isOpen || !user?.uid) {
         setRecoveryCheckDone(false);
         return;
       }
-
       try {
         const storage = await getRecordingStorage();
-        // Get only recordings belonging to this user
         const userRecordings = await storage.getRecordingsByUser(user.uid);
-
-        // Filter out recent recordings (current session - less than 2 seconds old)
         const twoSecondsAgo = Date.now() - 2000;
         const recoverable = userRecordings.filter(
           (r) => r.lastSaved < twoSecondsAgo && r.duration > 0
         );
-
         if (recoverable.length > 0) {
           setRecoverableRecordings(recoverable);
           setShowRecoveryDialog(true);
@@ -158,82 +267,76 @@ export function ConversationCreateModal({
       } catch (err) {
         console.error('[ConversationCreateModal] Failed to check for recoverable recordings:', err);
       }
-
       setRecoveryCheckDone(true);
     };
-
     checkForRecovery();
   }, [isOpen, user?.uid]);
 
-  // Reset state when modal opens
+  // Reset state when modal opens — set selectedMethod from uploadMethod prop
   useEffect(() => {
     if (isOpen) {
       setCurrentStep('capture');
       setOverallContext('');
+      setSelectedFiles([]);
+      setSelectedMethod(mapUploadMethodToInputMethod(uploadMethod));
+      setProcessingMode('individual');
       setUploadedFiles([]);
       setRecordedBlob(null);
-      setProcessingMode('individual');
       setIsRecording(false);
+      setIsPreviewing(false);
+      setPreviewActions(null);
       setMarkAsUploadedCallback(null);
       setProcessingError(null);
       setContinueRecordingData(null);
       setRecoveryUploadMethod(null);
       setPendingRecoveryDeletionId(null);
-      // Don't reset recoverableRecordings or showRecoveryDialog here - they're set by checkForRecovery
     }
-  }, [isOpen, uploadMethod]);
+  }, [isOpen, uploadMethod, mapUploadMethodToInputMethod]);
 
-  // Prevent browser navigation/close during critical stages (preview, processing)
-  // This protects against accidental tab close, back button, or page refresh
+  // Prevent browser close during critical stages
   useEffect(() => {
     if (!isOpen || !isInCriticalStage) return;
-
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Show browser's native "Leave site?" confirmation
       e.preventDefault();
-      // Note: returnValue is deprecated but Chrome still requires it for beforeunload to work
       e.returnValue = '';
     };
-
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isOpen, isInCriticalStage]);
 
-  // Upload handlers
-  const handleFileUpload = (files: File[], mode: 'individual' | 'merged') => {
-    setUploadedFiles(files);
-    setProcessingMode(mode);
-    setCurrentStep('context'); // Go directly to context step
+  // --- Action handlers ---
+
+  const handlePreviewStateChange = useCallback((previewing: boolean, actions?: PreviewActions) => {
+    setIsPreviewing(previewing);
+    setPreviewActions(previewing && actions ? actions : null);
+  }, []);
+
+  const handleConfirmUpload = () => {
+    setUploadedFiles(selectedFiles);
+    setCurrentStep('context');
   };
 
-  const handleRecordingComplete = (blob: Blob, markAsUploaded: () => Promise<void>) => {
+  const handleRecordingComplete = useCallback((blob: Blob, markAsUploaded: () => Promise<void>) => {
     setRecordedBlob(blob);
-    // Store the callback to call after successful upload/processing
     setMarkAsUploadedCallback(() => markAsUploaded);
-    // Convert blob to file for compatibility
     const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
     setUploadedFiles([file]);
-    setProcessingMode('individual'); // Single recording always individual
-    setCurrentStep('context'); // Go directly to context step
-  };
+    setProcessingMode('individual');
+    setIsPreviewing(false);
+    setPreviewActions(null);
+    setCurrentStep('context');
+  }, []);
 
-  // Context submission
   const handleContextSubmit = () => {
     setCurrentStep('processing');
   };
 
-  // Processing complete handler - receives real transcription ID from backend
   const handleProcessingComplete = async (transcriptionId: string) => {
-    // Clean up IndexedDB backup now that processing succeeded
     if (markAsUploadedCallback) {
-      try {
-        await markAsUploadedCallback();
-      } catch (err) {
+      try { await markAsUploadedCallback(); } catch (err) {
         console.error('[ConversationCreateModal] Failed to clean up IndexedDB backup:', err);
       }
     }
-
-    // Clean up recovered recording from IndexedDB now that processing succeeded
     if (pendingRecoveryDeletionId) {
       try {
         const storage = await getRecordingStorage();
@@ -243,13 +346,16 @@ export function ConversationCreateModal({
       }
     }
 
-    // Reset state without confirmation (successful completion, not cancellation)
     setCurrentStep('capture');
     setOverallContext('');
+    setSelectedFiles([]);
+    setSelectedMethod(null);
+    setProcessingMode('individual');
     setUploadedFiles([]);
     setRecordedBlob(null);
-    setProcessingMode('individual');
     setIsRecording(false);
+    setIsPreviewing(false);
+    setPreviewActions(null);
     setMarkAsUploadedCallback(null);
     setProcessingError(null);
     setRecoverableRecordings([]);
@@ -258,51 +364,29 @@ export function ConversationCreateModal({
     setRecoveryUploadMethod(null);
     setPendingRecoveryDeletionId(null);
     onClose();
-
-    // Navigate to conversation detail with real transcription ID
     onComplete(transcriptionId);
   };
 
-  // Processing error handler
   const handleProcessingError = (error: string) => {
     setProcessingError(error);
-    // Don't auto-close - let user see the error and retry or cancel
   };
 
   // Recovery handlers
   const handleProcessImmediately = async (recording: RecoverableRecording, blob: Blob) => {
-    // Store the recording ID for deletion after successful processing
-    // Don't delete now - only delete after processing completes successfully
     setPendingRecoveryDeletionId(recording.id);
-
-    // Convert blob to file
-    const file = new File([blob], 'recovered-recording.webm', {
-      type: recording.mimeType,
-    });
-
-    // Set up for processing
+    const file = new File([blob], 'recovered-recording.webm', { type: recording.mimeType });
     setUploadedFiles([file]);
     setProcessingMode('individual');
     setRecoverableRecordings([]);
     setShowRecoveryDialog(false);
-    setCurrentStep('context'); // Go to context step
+    setCurrentStep('context');
   };
 
   const handleContinueRecording = (recording: RecoverableRecording, chunks: Blob[]) => {
-    // Store the recovery info for SimpleAudioRecorder
-    setContinueRecordingData({
-      chunks,
-      duration: recording.duration,
-      source: recording.source,
-      recordingId: recording.id,
-    });
-
-    // Set upload method based on original source
-    const method = recording.source === 'tab-audio'
-      ? 'record-tab-audio'
-      : 'record-microphone';
+    setContinueRecordingData({ chunks, duration: recording.duration, source: recording.source, recordingId: recording.id });
+    const method = recording.source === 'tab-audio' ? 'record-tab-audio' : 'record-microphone';
     setRecoveryUploadMethod(method);
-
+    setSelectedMethod(method);
     setShowRecoveryDialog(false);
     setRecoverableRecordings([]);
   };
@@ -314,36 +398,34 @@ export function ConversationCreateModal({
     } catch (err) {
       console.error('[ConversationCreateModal] Failed to discard recording:', err);
     }
-
-    // Update the list
     setRecoverableRecordings((prev) => prev.filter((r) => r.id !== id));
-
-    // Close dialog if no more recordings
-    if (recoverableRecordings.length <= 1) {
-      setShowRecoveryDialog(false);
-    }
+    if (recoverableRecordings.length <= 1) setShowRecoveryDialog(false);
   };
 
   const handleCloseRecoveryDialog = () => {
     setShowRecoveryDialog(false);
-    // Keep recordings in state - user can still see them if they open modal again
-    // But we won't show the dialog again in this session
   };
 
-  // Determine the effective upload method
-  // Priority: recoveryUploadMethod (from continue recording) > uploadMethod (from props)
-  const effectiveUploadMethod = recoveryUploadMethod || uploadMethod;
-
-  // Handle Dialog open/close — runs our confirmation logic on any close attempt
   const handleOpenChange = useCallback((open: boolean) => {
-    if (!open) {
-      handleClose();
-    }
+    if (!open) handleClose();
   }, [handleClose]);
+
+  // Navigate to a completed step
+  const navigateToStep = (stepName: StepName) => {
+    const targetIndex = STEPS.indexOf(stepName);
+    const currentIndex = STEPS.indexOf(currentStep as StepName);
+    if (targetIndex < currentIndex) {
+      setCurrentStep(stepName);
+    }
+  };
+
+  // Should footer be visible?
+  // Hide during processing and active recording (SimpleAudioRecorder has its own controls)
+  // Show during preview (footer renders Proceed/Re-record/Cancel)
+  const showFooter = currentStep !== 'processing' && !(currentStep === 'capture' && captureSubState === 'recording');
 
   return (
     <>
-      {/* Recovery Dialog - shown before main content when recordings found */}
       {isOpen && showRecoveryDialog && recoverableRecordings.length > 0 && (
         <RecordingRecoveryDialog
           recordings={recoverableRecordings}
@@ -354,112 +436,170 @@ export function ConversationCreateModal({
         />
       )}
 
-      {/* Main Modal — shadcn Dialog
-          Only render after recovery check completes and recovery dialog is dismissed.
-          This avoids Radix Dialog's modal behavior (pointer-events: none on body,
-          focus trap) from blocking interaction with the recovery dialog. */}
       <Dialog open={isOpen && recoveryCheckDone && !showRecoveryDialog} onOpenChange={handleOpenChange}>
         <DialogContent
-          className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col gap-0 p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700/50"
-          showCloseButton={!isInCriticalStage}
+          showCloseButton={false}
+          className="bg-white dark:bg-gray-900 rounded-2xl sm:max-w-2xl max-h-[85vh] overflow-hidden p-0 gap-0 flex flex-col border-gray-200 dark:border-gray-700/50"
           onInteractOutside={(e) => {
-            // Prevent overlay click from closing during recording, critical stages,
-            // or when recovery dialog is open (its clicks are outside DialogContent)
-            if (isRecording || isInCriticalStage || showRecoveryDialog) {
-              e.preventDefault();
-            }
+            if (isRecording || isInCriticalStage || showRecoveryDialog) e.preventDefault();
           }}
           onEscapeKeyDown={(e) => {
-            // Prevent escape during recovery dialog (it has its own handler)
-            if (showRecoveryDialog) {
-              e.preventDefault();
-            }
+            if (showRecoveryDialog) e.preventDefault();
           }}
         >
           {/* Header */}
-          <DialogHeader className="px-6 pt-5 pb-0 gap-0.5">
-            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
-              {currentStep === 'capture' && t('steps.capture.title')}
-              {currentStep === 'context' && t('steps.context.title')}
-              {currentStep === 'processing' && t('steps.processing.title')}
-            </DialogTitle>
-            <DialogDescription className="text-xs text-gray-500 dark:text-gray-400">
-              {currentStep === 'capture' && (
-                effectiveUploadMethod === 'record-microphone' ? t('steps.capture.descriptionMic')
-                : effectiveUploadMethod === 'record-tab-audio' ? t('steps.capture.descriptionTab')
-                : effectiveUploadMethod === 'file' ? t('steps.capture.descriptionUpload')
-                : t('steps.capture.description')
-              )}
-              {currentStep === 'context' && t('steps.context.description')}
-              {currentStep === 'processing' && t('steps.processing.description')}
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto">
-            {/* Step 1: Capture Audio */}
-            {currentStep === 'capture' && (
-              <div className="px-6 py-5">
-                <UploadInterface
-                  onFileUpload={handleFileUpload}
-                  onRecordingComplete={handleRecordingComplete}
-                  onBack={() => {
-                    // Close modal when back is clicked from method selection
-                    handleClose();
-                  }}
-                  initialMethod={effectiveUploadMethod}
-                  onRecordingStateChange={setIsRecording}
-                  continueRecordingData={continueRecordingData}
-                />
-              </div>
+          <div className="flex-shrink-0 flex items-center justify-between px-5 md:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="min-w-0">
+              <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+                {stepTitle}
+              </DialogTitle>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+                {stepDescription}
+              </p>
+            </div>
+            {!isInCriticalStage && !isRecording && (
+              <button
+                onClick={handleClose}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center transition-colors flex-shrink-0 ml-4"
+              >
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </button>
             )}
+          </div>
 
-            {/* Step 2: Context Input */}
-            {currentStep === 'context' && (
-              <div className="px-6 py-5">
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('contextLabel')}
-                    </label>
-                    <textarea
-                      value={overallContext}
-                      onChange={(e) => setOverallContext(e.target.value)}
-                      placeholder={t('contextPlaceholder')}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder:text-gray-500 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 resize-none transition-colors"
-                      rows={3}
+          {/* Mobile step indicator */}
+          <MobileStepIndicator currentStep={currentStep as StepName} />
+
+          {/* Body: sidebar + content */}
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+            {/* Desktop sidebar */}
+            <div className="hidden md:flex flex-col w-40 flex-shrink-0 border-r border-gray-200 dark:border-gray-700 p-3 bg-gray-50/50 dark:bg-gray-800/30">
+              <nav className="space-y-1">
+                {STEPS.map((s, idx) => (
+                  <StepNavItem
+                    key={s}
+                    stepNum={idx + 1}
+                    label={stepLabels[idx]}
+                    currentStep={currentStep as StepName}
+                    isCompleted={STEPS.indexOf(s) < STEPS.indexOf(currentStep as StepName)}
+                    onClick={() => navigateToStep(s)}
+                  />
+                ))}
+              </nav>
+            </div>
+
+            {/* Content area */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0">
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="px-5 md:px-6 py-5">
+                  {/* Step 1: Capture */}
+                  {currentStep === 'capture' && (
+                    <UploadInterface
+                      selectedFiles={selectedFiles}
+                      onSelectedFilesChange={setSelectedFiles}
+                      processingMode={processingMode}
+                      onProcessingModeChange={setProcessingMode}
+                      selectedMethod={selectedMethod}
+                      onMethodChange={setSelectedMethod}
+                      onRecordingComplete={handleRecordingComplete}
+                      onRecordingStateChange={setIsRecording}
+                      onPreviewStateChange={handlePreviewStateChange}
+                      continueRecordingData={continueRecordingData}
                     />
+                  )}
+
+                  {/* Step 2: Context */}
+                  {currentStep === 'context' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {t('contextLabel')}
+                      </label>
+                      <textarea
+                        value={overallContext}
+                        onChange={(e) => setOverallContext(e.target.value)}
+                        placeholder={t('contextPlaceholder')}
+                        className="w-full h-28 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20 outline-none transition-colors resize-none text-sm"
+                      />
+                    </div>
+                  )}
+
+                  {/* Step 3: Processing */}
+                  {currentStep === 'processing' && uploadedFiles.length > 0 && (
+                    <RealProcessingView
+                      file={uploadedFiles[0]}
+                      context={overallContext || undefined}
+                      folderId={folderId || undefined}
+                      onComplete={handleProcessingComplete}
+                      onError={handleProcessingError}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
+
+              {/* Footer */}
+              {showFooter && (
+                <div className="flex-shrink-0 px-5 md:px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between bg-white dark:bg-gray-900">
+                  {/* Left side */}
+                  <div>
+                    {currentStep === 'capture' && captureSubState === 'dropzone' && !effectiveUploadMethod && (
+                      <Button variant="ghost" size="sm" icon={<ArrowLeft className="w-3.5 h-3.5" />} onClick={() => setSelectedMethod(null)}>
+                        {t('back')}
+                      </Button>
+                    )}
+                    {currentStep === 'capture' && captureSubState === 'file-list' && (
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedFiles([]); setProcessingMode('individual'); }}>
+                        {t('clearAll')}
+                      </Button>
+                    )}
+                    {currentStep === 'capture' && captureSubState === 'preview' && previewActions && (
+                      <Button variant="ghost" size="sm" icon={<ArrowLeft className="w-3.5 h-3.5" />} onClick={previewActions.onReRecord}>
+                        {tRecording('preview.reRecord')}
+                      </Button>
+                    )}
+                    {currentStep === 'context' && (
+                      <Button variant="ghost" size="sm" icon={<ArrowLeft className="w-3.5 h-3.5" />} onClick={() => setCurrentStep('capture')}>
+                        {t('back')}
+                      </Button>
+                    )}
                   </div>
 
-                  <div className="flex justify-between gap-4 pt-4 mt-1 -mx-6 px-6 pb-1 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-                    <Button variant="ghost" onClick={() => setCurrentStep('capture')}>
-                      {t('back')}
-                    </Button>
-                    <div className="flex gap-3">
-                      <Button variant="brand-outline" onClick={() => setCurrentStep('processing')}>
-                        {t('skip')}
+                  {/* Right side */}
+                  <div className="flex items-center gap-2">
+                    {currentStep === 'capture' && captureSubState === 'preview' && previewActions ? (
+                      <>
+                        <Button variant="ghost" size="sm" onClick={previewActions.onCancel}>
+                          {tCommon('cancel')}
+                        </Button>
+                        <Button variant="brand" size="sm" icon={<ArrowRight className="w-3.5 h-3.5" />} onClick={previewActions.onConfirm}>
+                          {tRecording('preview.proceed')}
+                        </Button>
+                      </>
+                    ) : currentStep === 'capture' ? (
+                      <Button variant="ghost" size="sm" onClick={handleClose}>
+                        {tCommon('cancel')}
                       </Button>
-                      <Button variant="brand" onClick={handleContextSubmit}>
+                    ) : null}
+
+                    {currentStep === 'capture' && captureSubState === 'file-list' && (
+                      <Button
+                        variant="brand"
+                        size="sm"
+                        icon={<ArrowRight className="w-3.5 h-3.5" />}
+                        onClick={handleConfirmUpload}
+                      >
+                        {t('uploadAndProcess', { count: selectedFiles.length })}
+                      </Button>
+                    )}
+
+                    {currentStep === 'context' && (
+                      <Button variant="brand" size="sm" icon={<ArrowRight className="w-3.5 h-3.5" />} onClick={handleContextSubmit}>
                         {t('continue')}
                       </Button>
-                    </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
-
-            {/* Step 3: Processing */}
-            {currentStep === 'processing' && uploadedFiles.length > 0 && (
-              <div className="px-6 py-5">
-                <RealProcessingView
-                  file={uploadedFiles[0]}
-                  context={overallContext || undefined}
-                  folderId={folderId || undefined}
-                  onComplete={handleProcessingComplete}
-                  onError={handleProcessingError}
-                />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

@@ -32,7 +32,10 @@
     "theme": "Tema",
     "themeLight": "Claro",
     "themeDark": "Oscuro",
-    "themeSystem": "Sistema"
+    "themeSystem": "Sistema",
+    "generatingInBackground": "Aún generando. Te notificaremos cuando esté listo.",
+    "generationComplete": "{name} está listo",
+    "generationFailed": "La generación falló. Inténtalo de nuevo."
   },
   "search": {
     "placeholder": "Buscar conversaciones...",
@@ -64,22 +67,40 @@
         "description": "Elige cómo añadir tu audio",
         "descriptionMic": "Graba audio desde tu micrófono. Ideal para reuniones presenciales, notas de voz y sesiones de lluvia de ideas.",
         "descriptionTab": "Captura audio de una pestaña del navegador. Ideal para reuniones en línea, seminarios web y videollamadas en tu navegador.",
-        "descriptionUpload": "Sube un archivo de audio o video existente. Ideal para entrevistas grabadas, podcasts y grabaciones de reuniones."
+        "descriptionUpload": "Sube un archivo de audio o video existente. Ideal para entrevistas grabadas, podcasts y grabaciones de reuniones.",
+        "sidebarLabel": "Captura"
       },
       "context": {
         "title": "Añadir contexto",
-        "description": "Proporciona contexto para mejorar la precisión de la transcripción (opcional)"
+        "description": "Proporciona contexto para mejorar la precisión de la transcripción (opcional)",
+        "sidebarLabel": "Contexto"
       },
       "processing": {
-        "title": "Procesando...",
-        "description": "Esto puede tardar un momento"
+        "title": "Procesando",
+        "description": "Tu conversación se está procesando",
+        "sidebarLabel": "Procesamiento",
+        "complete": "Procesamiento completo",
+        "redirecting": "Redirigiendo en {countdown}s...",
+        "viewNow": "Ver conversación ahora"
       }
     },
     "contextLabel": "Contexto (opcional)",
     "contextPlaceholder": "ej. reunión de producto, llamada de ventas, entrevista...",
     "back": "Atrás",
     "skip": "Omitir",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "changeMethod": "Cambiar método",
+    "clearAll": "Limpiar todo",
+    "uploadAndProcess": "Subir y procesar ({count})",
+    "dropFilesHere": "Arrastra tus archivos aquí",
+    "dropFilesHereActive": "Suelta para subir",
+    "orClickToBrowse": "o haz clic para explorar (hasta 3 archivos)",
+    "supportedFormatsLabel": "Archivos de audio y video",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Máx 5GB por archivo",
+    "selectedFiles": "Archivos seleccionados ({count})",
+    "dragToReorder": "Arrastra para reordenar",
+    "removeFile": "Eliminar archivo",
+    "filesCount": "{current} de {max}"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -446,6 +467,7 @@
     },
     "confirm": {
       "cancelRecording": "¿Estás seguro de que quieres cancelar? Tu grabación se perderá.",
+      "reRecord": "¿Seguro que quieres volver a grabar? Tu grabación actual se perderá.",
       "goBack": "Volver"
     },
     "warnings": {
@@ -558,6 +580,8 @@
     "loading": "Cargando asset de IA...",
     "notFound": "Asset de IA no encontrado",
     "notFoundDescription": "El asset de IA que buscas no existe o no tienes acceso.",
+    "backToConversation": "Volver a la conversación",
+    "backToDashboard": "Volver al panel",
     "modal": {
       "title": "Crear asset de IA",
       "steps": {
@@ -1530,7 +1554,7 @@
         "contact": "Contacto",
         "blog": "Blog"
       },
-      "tagline": "Tú hablas. Crea.",
+      "tagline": "Crea con tu voz.",
       "copyright": "© 2026 Neural Summary. Todos los derechos reservados."
     }
   },

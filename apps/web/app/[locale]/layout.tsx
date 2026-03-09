@@ -75,7 +75,7 @@ export const metadata: Metadata = {
         url: 'https://neuralsummary.com/assets/socials/neural-summary-og.png',
         width: 1200,
         height: 630,
-        alt: 'Neural Summary - You speak. It creates.',
+        alt: 'Neural Summary - Create with your voice.',
       }
     ],
   },

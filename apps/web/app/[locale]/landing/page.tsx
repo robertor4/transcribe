@@ -338,6 +338,11 @@ export default async function LandingPage({
                     url: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
                   },
                   description: 'The meeting intelligence platform. Turn every conversation into searchable transcripts, summaries, and ready-to-use documents.',
+                  sameAs: [
+                    'https://www.youtube.com/@NeuralSummary',
+                    'https://www.linkedin.com/company/neural-summary/',
+                    'https://x.com/NeuralSummary',
+                  ],
                 },
                 {
                   '@type': 'SoftwareApplication',

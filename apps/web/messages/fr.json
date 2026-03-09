@@ -32,7 +32,10 @@
     "theme": "Thème",
     "themeLight": "Clair",
     "themeDark": "Sombre",
-    "themeSystem": "Système"
+    "themeSystem": "Système",
+    "generatingInBackground": "Encore en cours de génération. Nous vous notifierons quand ce sera prêt.",
+    "generationComplete": "{name} est prêt",
+    "generationFailed": "La génération a échoué. Veuillez réessayer."
   },
   "search": {
     "placeholder": "Rechercher des conversations...",
@@ -64,22 +67,40 @@
         "description": "Choisissez comment ajouter votre audio",
         "descriptionMic": "Enregistrez l'audio depuis votre microphone. Idéal pour les réunions en personne, les mémos vocaux et les sessions de brainstorming.",
         "descriptionTab": "Capturez l'audio d'un onglet de navigateur. Idéal pour les réunions en ligne, les webinaires et les appels vidéo dans votre navigateur.",
-        "descriptionUpload": "Importez un fichier audio ou vidéo existant. Idéal pour les interviews enregistrées, les podcasts et les enregistrements de réunions."
+        "descriptionUpload": "Importez un fichier audio ou vidéo existant. Idéal pour les interviews enregistrées, les podcasts et les enregistrements de réunions.",
+        "sidebarLabel": "Capture"
       },
       "context": {
         "title": "Ajouter du contexte",
-        "description": "Fournissez du contexte pour améliorer la précision de la transcription (optionnel)"
+        "description": "Fournissez du contexte pour améliorer la précision de la transcription (optionnel)",
+        "sidebarLabel": "Contexte"
       },
       "processing": {
-        "title": "Traitement...",
-        "description": "Cela peut prendre un moment"
+        "title": "Traitement",
+        "description": "Votre conversation est en cours de traitement",
+        "sidebarLabel": "Traitement",
+        "complete": "Traitement terminé",
+        "redirecting": "Redirection dans {countdown}s...",
+        "viewNow": "Voir la conversation"
       }
     },
     "contextLabel": "Contexte (optionnel)",
     "contextPlaceholder": "ex. réunion produit, appel commercial, entretien...",
     "back": "Retour",
     "skip": "Passer",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "changeMethod": "Changer de méthode",
+    "clearAll": "Tout effacer",
+    "uploadAndProcess": "Importer et traiter ({count})",
+    "dropFilesHere": "Déposez vos fichiers ici",
+    "dropFilesHereActive": "Relâchez pour importer",
+    "orClickToBrowse": "ou cliquez pour parcourir (jusqu'à 3 fichiers)",
+    "supportedFormatsLabel": "Fichiers audio et vidéo",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5Go par fichier",
+    "selectedFiles": "Fichiers sélectionnés ({count})",
+    "dragToReorder": "Glisser pour réorganiser",
+    "removeFile": "Supprimer le fichier",
+    "filesCount": "{current} sur {max}"
   },
   "auth": {
     "signIn": "Se connecter",
@@ -446,6 +467,7 @@
     },
     "confirm": {
       "cancelRecording": "Êtes-vous sûr de vouloir annuler ? Votre enregistrement sera perdu.",
+      "reRecord": "Êtes-vous sûr de vouloir réenregistrer ? Votre enregistrement actuel sera perdu.",
       "goBack": "Retour"
     },
     "warnings": {
@@ -558,6 +580,8 @@
     "loading": "Chargement de l'asset IA...",
     "notFound": "Asset IA introuvable",
     "notFoundDescription": "L'asset IA que vous recherchez n'existe pas ou vous n'y avez pas accès.",
+    "backToConversation": "Retour à la conversation",
+    "backToDashboard": "Retour au tableau de bord",
     "modal": {
       "title": "Créer un asset IA",
       "steps": {
@@ -1530,7 +1554,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "Vous parlez. Ça crée.",
+      "tagline": "Créez avec votre voix.",
       "copyright": "© 2026 Neural Summary. Tous droits réservés."
     }
   },

@@ -15,10 +15,10 @@ const LANDING_OVERRIDES: Record<string, MetadataOverrides> = {
   en: {
     openGraph: {
       description:
-        'You speak. It creates. Turn spoken thinking into structured, professional documents with AI that interviews you and generates work-ready deliverables.',
+        'Create with your voice. Turn spoken thinking into structured, professional documents with AI that interviews you and generates work-ready deliverables.',
     },
     twitter: {
-      title: 'Neural Summary – You Speak. It Creates.',
+      title: 'Neural Summary – Create with Your Voice.',
       description:
         'Turn spoken thinking into structured documents. Upload conversations or let AI interview you. No writing. No formatting. Just think out loud.',
     },
@@ -26,10 +26,10 @@ const LANDING_OVERRIDES: Record<string, MetadataOverrides> = {
   nl: {
     openGraph: {
       description:
-        'Jij spreekt. Het creëert. Transformeer gesproken gedachten in gestructureerde, professionele documenten met AI die je interviewt en werkklare deliverables genereert.',
+        'Creëer met je stem. Transformeer gesproken gedachten in gestructureerde, professionele documenten met AI die je interviewt en werkklare deliverables genereert.',
     },
     twitter: {
-      title: 'Neural Summary – Jij Spreekt. Het Creëert.',
+      title: 'Neural Summary – Creëer met Je Stem.',
       description:
         'Transformeer gesproken gedachten in gestructureerde documenten. Upload gesprekken of laat AI je interviewen. Geen schrijven. Geen formatteren. Gewoon hardop denken.',
     },
@@ -37,10 +37,10 @@ const LANDING_OVERRIDES: Record<string, MetadataOverrides> = {
   de: {
     openGraph: {
       description:
-        'Du sprichst. Es kreiert. Verwandeln Sie gesprochene Gedanken in strukturierte, professionelle Dokumente mit KI, die Sie interviewt und arbeitsfertige Ergebnisse generiert.',
+        'Erschaffe mit deiner Stimme. Verwandeln Sie gesprochene Gedanken in strukturierte, professionelle Dokumente mit KI, die Sie interviewt und arbeitsfertige Ergebnisse generiert.',
     },
     twitter: {
-      title: 'Neural Summary – Du Sprichst. Es Kreiert.',
+      title: 'Neural Summary – Erschaffe mit Deiner Stimme.',
       description:
         'Verwandeln Sie gesprochene Gedanken in strukturierte Dokumente. Laden Sie Gespräche hoch oder lassen Sie sich von KI interviewen. Kein Schreiben. Keine Formatierung. Einfach laut denken.',
     },
@@ -48,10 +48,10 @@ const LANDING_OVERRIDES: Record<string, MetadataOverrides> = {
   fr: {
     openGraph: {
       description:
-        'Vous parlez. Ça crée. Transformez vos pensées parlées en documents structurés et professionnels avec l\'IA qui vous interviewe et génère des livrables prêts à l\'emploi.',
+        'Créez avec votre voix. Transformez vos pensées parlées en documents structurés et professionnels avec l\'IA qui vous interviewe et génère des livrables prêts à l\'emploi.',
     },
     twitter: {
-      title: 'Neural Summary – Vous Parlez. Ça Crée.',
+      title: 'Neural Summary – Créez avec Votre Voix.',
       description:
         'Transformez vos pensées parlées en documents structurés. Téléchargez des conversations ou laissez l\'IA vous interviewer. Sans écriture. Sans mise en forme. Pensez simplement à voix haute.',
     },
@@ -59,10 +59,10 @@ const LANDING_OVERRIDES: Record<string, MetadataOverrides> = {
   es: {
     openGraph: {
       description:
-        'Tú hablas. Crea. Transforma el pensamiento hablado en documentos estructurados y profesionales con IA que te entrevista y genera entregables listos para trabajar.',
+        'Crea con tu voz. Transforma el pensamiento hablado en documentos estructurados y profesionales con IA que te entrevista y genera entregables listos para trabajar.',
     },
     twitter: {
-      title: 'Neural Summary – Tú Hablas. Crea.',
+      title: 'Neural Summary – Crea con Tu Voz.',
       description:
         'Transforma el pensamiento hablado en documentos estructurados. Sube conversaciones o deja que la IA te entreviste. Sin escribir. Sin formatear. Solo piensa en voz alta.',
     },

@@ -17,6 +17,13 @@ export async function generateMetadata({
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    keywords: [
+      'Neural Summary contact',
+      'contact support',
+      'get in touch',
+      'AI transcription support',
+      'Neural Summary help',
+    ],
     openGraph: {
       title: t('meta.title'),
       description: t('meta.description'),

@@ -7,7 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Social media icons in footer** — YouTube, LinkedIn, and X (Twitter) icon links added to [PublicFooter.tsx](apps/web/components/PublicFooter.tsx) with `sameAs` structured data in Organization schema ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **FAQ structured data on pricing page** — FAQPage JSON-LD schema with 4 FAQ items injected via [pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx) for Google rich results
+- **Contact page SEO keywords** — Added keywords meta tag to [contact/page.tsx](apps/web/app/[locale]/contact/page.tsx)
+
 ### Changed
+- **Create conversation modal full redesign** — Rebuilt the upload wizard to match the OutputGeneratorModal design system: custom header with uppercase title, desktop step sidebar with numbered circles (active=purple, completed=cyan), mobile horizontal step dots, fixed footer owned by the modal shell, and ScrollArea content. Lifted state (selectedFiles, selectedMethod, processingMode) from UploadInterface to ConversationCreateModal for controlled component pattern ([ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [UploadInterface.tsx](apps/web/components/UploadInterface.tsx))
+- **Processing step redesign** — Replaced the dense 4-column stage grid and large progress bar with a centered layout matching OutputGeneratorModal: GeneratingLoader waveform animation, file name purple badge, slim progress bar, RotatingSubtext with shimmer effect, centered error/success states with icon circles ([RealProcessingView.tsx](apps/web/components/RealProcessingView.tsx))
+- **Recording preview footer consolidation** — Moved Cancel/Proceed/Re-record buttons from inline RecordingPreview into the modal's unified footer, matching the consistent footer pattern across all steps. Preview state is now communicated via `onPreviewStateChange` callback chain ([RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx))
+- **Pre-selected upload method skip** — When opening the modal from dashboard quick actions (Upload file, Record mic, Record tab), the method selection step is now skipped and the user goes directly to the relevant interface
+- **Internationalized hardcoded strings** — Replaced all hardcoded English strings in the upload flow ("Drop your files here", "Change method", "Clear all", etc.) with translation keys across all 5 languages, including sidebar labels and processing step strings
+
+### Added
+- **New tagline**: Changed brand tagline from "You speak. It creates." to "Create with your voice." across all 5 languages, auth pages, SEO metadata, PWA manifest, SVG logo, and documentation
+- **Rotating humorous subtexts during AI Asset generation** — The "This may take a few moments" text now cycles through witty messages with a fade animation while generating ([OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx))
+- **Mermaid diagram support for Technical Design Document** — AI now generates 1-3 architecture, data flow, or sequence diagrams using Mermaid syntax when the conversation contains sufficient technical detail
+  - New reusable `Mermaid` component ([Mermaid.tsx](apps/web/components/Mermaid.tsx)) with error handling for invalid syntax
+  - Added `diagrams` field to `TechnicalDesignDocOutput` type ([types.ts](packages/shared/src/types.ts))
+  - Updated backend prompt and JSON schema to request diagram generation ([analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts))
+  - Updated frontend template to render diagrams with titled containers ([TechnicalDesignDocTemplate.tsx](apps/web/components/outputTemplates/TechnicalDesignDocTemplate.tsx))
+
+### Changed
+- **Technical Design Document template overhaul** — Redesigned alternative cards with clean check/x icons and shadcn Badge for rejected status; testing strategy renders as checkbox list; rollout plan shows bold phase labels; open questions use standard black editorial bullets ([TechnicalDesignDocTemplate.tsx](apps/web/components/outputTemplates/TechnicalDesignDocTemplate.tsx))
+- **Mermaid diagram lightbox** — Diagrams now have an expand button and full-screen lightbox with caption support ([Mermaid.tsx](apps/web/components/Mermaid.tsx))
+- **Background AI Asset generation** — Closing the generation modal continues processing in the background with toast notifications on completion ([OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx))
 - **Blog archive page** — editorial layout with featured latest post (large card) and 2-column grid for remaining posts; tag pills, improved spacing, and optional cover image support ([PostCard.tsx](apps/web/components/blog/PostCard.tsx), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx))
 
 ### Added
