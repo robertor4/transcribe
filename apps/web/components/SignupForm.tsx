@@ -5,7 +5,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
-import { AlertCircle, Loader2, Check, X, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, Loader2, Check, X, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -396,13 +396,13 @@ export default function SignupForm() {
         />
         <label htmlFor="acceptTerms" className="text-sm text-gray-400 leading-snug">
           {tAuth('iAgreeToThe')}{' '}
-          <Link href="/terms" className="text-[#8D6AFA] hover:text-[#7A5AE0]">
-            {tAuth('termsOfService')}
-          </Link>{' '}
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#8D6AFA] hover:text-[#7A5AE0] inline-flex items-center gap-0.5">
+            {tAuth('termsOfService')}<ExternalLink className="w-3 h-3" />
+          </a>{' '}
           {tAuth('and')}{' '}
-          <Link href="/privacy" className="text-[#8D6AFA] hover:text-[#7A5AE0]">
-            {tAuth('privacyPolicy')}
-          </Link>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#8D6AFA] hover:text-[#7A5AE0] inline-flex items-center gap-0.5">
+            {tAuth('privacyPolicy')}<ExternalLink className="w-3 h-3" />
+          </a>
         </label>
       </div>
 
@@ -433,15 +433,12 @@ export default function SignupForm() {
       </Button>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/[0.1]" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-3 text-gray-500 bg-[#2A2254] rounded-full text-xs">
-            {tAuth('orContinueWith')}
-          </span>
-        </div>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 border-t border-white/[0.1]" />
+        <span className="text-gray-400 text-xs">
+          {tAuth('orContinueWith')}
+        </span>
+        <div className="flex-1 border-t border-white/[0.1]" />
       </div>
 
       {/* Google Sign Up */}
@@ -450,7 +447,7 @@ export default function SignupForm() {
         variant="outline"
         onClick={handleGoogleSignup}
         disabled={loading}
-        className="w-full h-11 bg-white/[0.06] border-white/[0.12] text-gray-300 hover:bg-white/[0.1] hover:text-white"
+        className="w-full h-11 bg-white/10 dark:bg-white/10 border-white/20 dark:border-white/20 text-gray-200 hover:bg-white/[0.16] dark:hover:bg-white/[0.16] hover:text-white"
       >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
           <path
@@ -473,7 +470,7 @@ export default function SignupForm() {
         {tAuth('signUpWithGoogle')}
       </Button>
 
-      <p className="text-center text-sm text-gray-500">
+      <p className="text-center text-sm text-gray-400">
         {tAuth('alreadyHaveAccount')}{' '}
         <Link href="/login" className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0]">
           {tAuth('signIn')}

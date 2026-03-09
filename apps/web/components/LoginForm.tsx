@@ -285,15 +285,12 @@ export default function LoginForm() {
       </Button>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/[0.1]" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-3 text-gray-500 bg-[#2A2254] rounded-full text-xs">
-            {tAuth('orContinueWith')}
-          </span>
-        </div>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 border-t border-white/[0.1]" />
+        <span className="text-gray-400 text-xs">
+          {tAuth('orContinueWith')}
+        </span>
+        <div className="flex-1 border-t border-white/[0.1]" />
       </div>
 
       {/* Google Sign In */}
@@ -305,7 +302,7 @@ export default function LoginForm() {
         className={`w-full h-11 ${
           suggestGoogle
             ? 'border-[#8D6AFA] bg-purple-900/30 text-gray-200 hover:bg-purple-900/40 animate-pulse'
-            : 'bg-white/[0.06] border-white/[0.12] text-gray-300 hover:bg-white/[0.1] hover:text-white'
+            : 'bg-white/10 dark:bg-white/10 border-white/20 dark:border-white/20 text-gray-200 hover:bg-white/[0.16] dark:hover:bg-white/[0.16] hover:text-white'
         }`}
       >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

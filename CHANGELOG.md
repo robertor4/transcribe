@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Turnstile error translations** — Added `captchaRequired` and `captchaFailed` translation keys across all 5 languages
 
 ### Changed
+- **Auth page UI polish** — Improved text contrast and element visibility on signup and login pages: bumped "Or continue with" and "Already have an account?" text to `text-gray-400`, increased Google sign-in button contrast with `dark:` prefix overrides, replaced divider overlay hack with clean flexbox layout, and made Terms of Service / Privacy Policy links open in new tabs with external link icons ([SignupForm.tsx](apps/web/components/SignupForm.tsx), [LoginForm.tsx](apps/web/components/LoginForm.tsx))
 - **ContactController uses shared TurnstileService** — Replaced inline Turnstile verification with shared [TurnstileService](apps/api/src/auth/turnstile.service.ts) ([contact.controller.ts](apps/api/src/contact/contact.controller.ts))
 
 ### Changed
