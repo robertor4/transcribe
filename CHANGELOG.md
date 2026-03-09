@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Cloudflare Turnstile on signup and login pages** — Added CAPTCHA verification to prevent bot/spam account creation. Turnstile widget renders on both [SignupForm.tsx](apps/web/components/SignupForm.tsx) and [LoginForm.tsx](apps/web/components/LoginForm.tsx). Token is verified server-side via new `POST /auth/verify-turnstile` endpoint before Firebase Auth account creation ([auth.controller.ts](apps/api/src/auth/auth.controller.ts))
+- **Shared TurnstileService** — Extracted Turnstile verification into reusable [turnstile.service.ts](apps/api/src/auth/turnstile.service.ts), used by both auth and contact controllers
+- **Spam account cleanup script** — [cleanup-spam-accounts.js](scripts/cleanup-spam-accounts.js) identifies and deletes Firebase Auth accounts with no Firestore document, unverified email, and email/password provider. Supports dry-run mode (default) and `--delete` flag
+- **Turnstile error translations** — Added `captchaRequired` and `captchaFailed` translation keys across all 5 languages
+
 ### Changed
+- **ContactController uses shared TurnstileService** — Replaced inline Turnstile verification with shared [TurnstileService](apps/api/src/auth/turnstile.service.ts) ([contact.controller.ts](apps/api/src/contact/contact.controller.ts))
+
+### Changed
+- **Hero section LCP optimization** — Removed framer-motion `opacity: 0` animation from `<h1>` and body paragraph so they render visible immediately in server HTML instead of waiting for JS hydration. Converted [HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx) from client component to server component, eliminating the dynamic import and reducing JS needed for first paint. Animations preserved on non-LCP elements (eyebrow, CTAs, social proof)
 - **Lazy-load Firebase Analytics** — Deferred analytics bundle (~60KB) so it only loads when `AnalyticsProvider` mounts (authenticated/checkout pages), not on the landing page. Converted eager `getAnalytics()` init in [firebase.ts](apps/web/lib/firebase.ts) to on-demand `initAnalytics()` with dynamic `import('firebase/analytics')` in [AnalyticsContext.tsx](apps/web/contexts/AnalyticsContext.tsx)
 - **Collapse redirect chain** — Root URL now redirects directly to `/{locale}/landing` in a single hop instead of `/ → /en → /en/landing` (saves ~840ms on mobile). Implemented in [middleware.ts](apps/web/middleware.ts) for both marketing domain and dev
 - **Signup links use `<a>` tags** — Changed signup CTAs on landing page from Next.js `<Link>` to plain `<a>` tags pointing to the app domain, preventing RSC prefetch CORS errors when navigating cross-domain ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx), [FinalCtaSection.tsx](apps/web/components/landing/sections/FinalCtaSection.tsx))

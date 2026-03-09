@@ -11,6 +11,7 @@ import {
 import { Throttle } from '@nestjs/throttler';
 import { EmailService } from '../email/email.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { TurnstileService } from '../auth/turnstile.service';
 
 interface ContactFormDto {
   name: string;
@@ -26,40 +27,10 @@ interface ContactFormDto {
 export class ContactController {
   private readonly logger = new Logger(ContactController.name);
 
-  constructor(private readonly emailService: EmailService) {}
-
-  /**
-   * Verify Cloudflare Turnstile token
-   */
-  private async verifyTurnstileToken(token: string): Promise<boolean> {
-    try {
-      const secretKey = process.env.TURNSTILE_SECRET_KEY;
-      if (!secretKey) {
-        this.logger.warn('TURNSTILE_SECRET_KEY not configured');
-        return false;
-      }
-
-      const response = await fetch(
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            secret: secretKey,
-            response: token,
-          }),
-        },
-      );
-
-      const result = await response.json();
-      return result.success === true;
-    } catch (error) {
-      this.logger.error('Turnstile verification error:', error);
-      return false;
-    }
-  }
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly turnstileService: TurnstileService,
+  ) {}
 
   @Post()
   @Throttle({ default: { ttl: 60000, limit: 5 } }) // 5 requests per minute
@@ -80,7 +51,9 @@ export class ContactController {
       );
     }
 
-    const isValidToken = await this.verifyTurnstileToken(data.turnstileToken);
+    const isValidToken = await this.turnstileService.verifyToken(
+      data.turnstileToken,
+    );
     if (!isValidToken) {
       this.logger.warn('Invalid Turnstile token');
       throw new HttpException(

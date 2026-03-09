@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,9 +10,11 @@ import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
 import { importedConversationApi } from '@/lib/api';
+import { getApiUrl } from '@/lib/config';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -22,6 +24,8 @@ export default function LoginForm() {
   const [suggestGoogle, setSuggestGoogle] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
@@ -31,11 +35,32 @@ export default function LoginForm() {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
     setSuggestGoogle(false);
     setShowPasswordReset(false);
 
+    if (!turnstileToken) {
+      setError(tAuth('captchaRequired'));
+      return;
+    }
+
+    setLoading(true);
+
     try {
+      // Verify Turnstile token server-side before signing in
+      const verifyResponse = await fetch(`${getApiUrl()}/auth/verify-turnstile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      if (!verifyResponse.ok) {
+        setError(tAuth('captchaFailed'));
+        turnstileRef.current?.reset();
+        setTurnstileToken('');
+        setLoading(false);
+        return;
+      }
+
       await signInWithEmail(email, password);
       trackEvent('login', {
         method: 'email',
@@ -233,9 +258,23 @@ export default function LoginForm() {
         </Link>
       </div>
 
+      {/* Turnstile CAPTCHA */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+            onSuccess={setTurnstileToken}
+            onError={() => setTurnstileToken('')}
+            onExpire={() => setTurnstileToken('')}
+            options={{ theme: 'dark' }}
+          />
+        </div>
+      )}
+
       <Button
         type="submit"
-        disabled={loading}
+        disabled={loading || !turnstileToken}
         className="w-full h-11 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-lg"
       >
         {loading ? (
