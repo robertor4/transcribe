@@ -251,7 +251,7 @@ export default function LoginForm() {
           <div className="w-full border-t border-white/[0.1]" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-3 text-gray-500 bg-white/[0.06] rounded-full text-xs">
+          <span className="px-3 text-gray-500 bg-[#2A2254] rounded-full text-xs">
             {tAuth('orContinueWith')}
           </span>
         </div>
