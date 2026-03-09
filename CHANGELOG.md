@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Lazy-load Firebase Analytics** — Deferred analytics bundle (~60KB) so it only loads when `AnalyticsProvider` mounts (authenticated/checkout pages), not on the landing page. Converted eager `getAnalytics()` init in [firebase.ts](apps/web/lib/firebase.ts) to on-demand `initAnalytics()` with dynamic `import('firebase/analytics')` in [AnalyticsContext.tsx](apps/web/contexts/AnalyticsContext.tsx)
+- **Collapse redirect chain** — Root URL now redirects directly to `/{locale}/landing` in a single hop instead of `/ → /en → /en/landing` (saves ~840ms on mobile). Implemented in [middleware.ts](apps/web/middleware.ts) for both marketing domain and dev
+- **Signup links use `<a>` tags** — Changed signup CTAs on landing page from Next.js `<Link>` to plain `<a>` tags pointing to the app domain, preventing RSC prefetch CORS errors when navigating cross-domain ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx), [FinalCtaSection.tsx](apps/web/components/landing/sections/FinalCtaSection.tsx))
+- **Improved text contrast on landing page** — Changed `text-white/30` (30% opacity, ~3.2:1 ratio) to `text-white/50` (50% opacity, ~5.5:1 ratio) across all landing sections for WCAG AA compliance. Affected: HeroSection, FinalCtaSection, PricingSection, TestimonialsSection, CompatibilitySection, ChatMock, SecuritySection, OutputsSection, InfrastructureSection, SocialProofBar
+
+### Fixed
+- **Image aspect ratio mismatch** — Updated `lionel-hero.webp` width/height attributes from 320x450 to actual dimensions 860x997, fixing the distorted display ratio reported by Lighthouse ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx))
+- **Missing `<main>` landmark** — Changed landing page wrapper from `<div>` to `<main>` for screen reader navigation ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **Cookie consent on all pages** — Decoupled `CookieConsent` from `AnalyticsContext` (now standalone, localStorage-only) so it renders on the landing page, auth pages, and pricing page without loading the analytics bundle. `AnalyticsProvider` listens for consent changes via a custom DOM event ([CookieConsent.tsx](apps/web/components/CookieConsent.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx), [(auth)/layout.tsx](apps/web/app/[locale]/(auth)/layout.tsx), [pricing/providers.tsx](apps/web/app/[locale]/pricing/providers.tsx))
+
 ### Added
 - **About page** — New `/about` page with Organization and AboutPage JSON-LD schemas, 4 sections (mission, product, audience, values), CTA, and full i18n support across all 5 languages. Added to middleware marketing segments, sitemap, and robots.txt ([about/page.tsx](apps/web/app/[locale]/about/page.tsx))
 - **WebSite JSON-LD schema on landing page** — Added `WebSite` structured data with `alternateName`, `inLanguage`, and publisher reference alongside existing Organization + SoftwareApplication schemas ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))

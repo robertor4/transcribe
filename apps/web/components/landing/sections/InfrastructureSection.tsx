@@ -49,7 +49,7 @@ export function InfrastructureSection({ translations: t }: InfrastructureSection
                 <AnimatedCounter value={statAnimations[key].value} suffix={statAnimations[key].suffix} />
               </div>
               <div className="text-[15px] font-semibold text-white mb-2">{t.stats[key].label}</div>
-              <div className="text-[13px] text-white/30 leading-relaxed">{t.stats[key].desc}</div>
+              <div className="text-[13px] text-white/50 leading-relaxed">{t.stats[key].desc}</div>
             </div>
           ))}
         </div>

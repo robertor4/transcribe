@@ -1,37 +1,41 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { Cookie, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from './Button';
 
+/**
+ * Standalone cookie consent banner. Reads/writes `analytics_consent` in
+ * localStorage — no dependency on AnalyticsContext so it can render on
+ * any page (landing, auth, authenticated) without pulling in the analytics
+ * bundle.
+ *
+ * AnalyticsProvider picks up the stored value on mount and also listens
+ * for changes via the `storage` event + a custom `analytics-consent-change`
+ * event for same-tab updates.
+ */
 export function CookieConsent() {
-  const { setAnalyticsConsent } = useAnalytics();
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check if user has already made a choice only after mounting
     const consentChoice = localStorage.getItem('analytics_consent');
     if (consentChoice === null) {
-      // No choice made yet, show banner after a delay
       setTimeout(() => setShowBanner(true), 1000);
     }
   }, []);
 
-  const handleAccept = () => {
-    setAnalyticsConsent(true);
+  const setConsent = (consent: boolean) => {
+    localStorage.setItem('analytics_consent', consent.toString());
+    // Notify AnalyticsProvider in the same tab (storage events only fire cross-tab)
+    window.dispatchEvent(
+      new CustomEvent('analytics-consent-change', { detail: { consent } }),
+    );
     setShowBanner(false);
   };
 
-  const handleDecline = () => {
-    setAnalyticsConsent(false);
-    setShowBanner(false);
-  };
-
-  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted || !showBanner) return null;
 
   return (
@@ -53,7 +57,7 @@ export function CookieConsent() {
               </div>
             </div>
             <button
-              onClick={handleDecline}
+              onClick={() => setConsent(false)}
               className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
               aria-label="Close"
             >
@@ -111,7 +115,7 @@ export function CookieConsent() {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
-                onClick={handleAccept}
+                onClick={() => setConsent(true)}
                 variant="brand"
                 size="md"
                 fullWidth
@@ -119,7 +123,7 @@ export function CookieConsent() {
                 Accept Analytics
               </Button>
               <Button
-                onClick={handleDecline}
+                onClick={() => setConsent(false)}
                 variant="ghost"
                 size="md"
                 fullWidth

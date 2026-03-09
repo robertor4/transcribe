@@ -16,6 +16,7 @@ import { SecuritySection } from '@/components/landing/sections/SecuritySection';
 import { PricingSection } from '@/components/landing/sections/PricingSection';
 import { FinalCtaSection } from '@/components/landing/sections/FinalCtaSection';
 import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
+import { CookieConsent } from '@/components/CookieConsent';
 
 // Dynamic import for the hero (client component with framer-motion animations)
 const HeroSection = dynamic(
@@ -35,7 +36,7 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-[#22184C] text-white overflow-x-hidden relative landing-page">
+      <main className="min-h-screen bg-[#22184C] text-white overflow-x-hidden relative landing-page">
         <AmbientGradient />
 
         {/* 1. Hero */}
@@ -387,7 +388,8 @@ export default async function LandingPage({
             }),
           }}
         />
-      </div>
+      </main>
+      <CookieConsent />
     </>
   );
 }

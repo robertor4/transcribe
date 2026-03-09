@@ -5,7 +5,7 @@ import { HeroCTAs } from '@/components/landing/hero/HeroCTAs';
 import { HeroTranscriptCard } from './HeroTranscriptCard';
 import { VideoLightbox } from '@/components/landing/VideoLightbox';
 import Image from 'next/image';
-import Link from 'next/link';
+import { getAppUrl } from '@/lib/config';
 
 interface HeroSectionTranslations {
   eyebrow: string;
@@ -43,6 +43,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ translations: t, locale }: HeroSectionProps) {
+  const appUrl = getAppUrl();
   return (
     <section
       id="hero"
@@ -74,17 +75,17 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
             </HeroHeadline>
 
             <HeroCTAs delay={360}>
-              <Link
-                href={`/${locale}/signup`}
+              <a
+                href={`${appUrl}/${locale}/signup`}
                 className="inline-flex items-center bg-[#8D6AFA] text-white border-none px-5 py-3 sm:px-7 sm:py-3.5 rounded-[10px] text-[15px] font-semibold transition-all hover:bg-[#7A5AE0] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(141,106,250,0.35)] whitespace-nowrap"
               >
                 {t.ctaPrimary}
-              </Link>
+              </a>
               <VideoLightbox label={t.ctaSecondary} />
             </HeroCTAs>
 
             <HeroHeadline delay={480}>
-              <div className="flex items-center gap-4 mt-6 sm:mt-12 text-[13px] text-white/30">
+              <div className="flex items-center gap-4 mt-6 sm:mt-12 text-[13px] text-white/50">
                 <div className="flex">
                   {[
                     '/assets/images/avatars/roberto-ramadhin.webp',
@@ -120,8 +121,8 @@ export function HeroSection({ translations: t, locale }: HeroSectionProps) {
               src="/assets/images/lionel-hero.webp"
               alt="Lionel — Neural Summary mascot"
               className="absolute bottom-0 left-1/2 -translate-x-[40%] w-[320px] z-[3] drop-shadow-[0_0_60px_rgba(141,106,250,0.25)]"
-              width={320}
-              height={450}
+              width={860}
+              height={997}
             />
           </div>
         </div>

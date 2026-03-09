@@ -53,7 +53,7 @@ export function CompatibilitySection({ translations: t }: CompatibilitySectionPr
                 <Mic className="w-8 h-8 text-[#48c78e]" strokeWidth={1.5} />
               )}
               <div className="text-[13px] font-medium text-white">{t.platforms[key].name}</div>
-              <div className="text-[11px] text-white/30 text-center leading-snug">{t.platforms[key].desc}</div>
+              <div className="text-[11px] text-white/50 text-center leading-snug">{t.platforms[key].desc}</div>
             </div>
           ))}
         </div>

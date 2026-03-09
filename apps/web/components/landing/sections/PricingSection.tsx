@@ -82,15 +82,15 @@ export function PricingSection({ translations: t, proMonthlyPrice, proAnnualPric
                 </div>
               )}
 
-              <div className="text-xs font-[family-name:var(--font-dm-mono)] text-white/30 tracking-[2px] uppercase mb-2">
+              <div className="text-xs font-[family-name:var(--font-dm-mono)] text-white/50 tracking-[2px] uppercase mb-2">
                 {data.tier}
               </div>
 
               <div className="font-[family-name:var(--font-merriweather)] text-[38px] font-black leading-none mb-1">
-                {data.price}<span className="text-base font-normal text-white/30">{data.period}</span>
+                {data.price}<span className="text-base font-normal text-white/50">{data.period}</span>
               </div>
 
-              <div className="text-xs text-white/30 mb-5">{data.periodSub}</div>
+              <div className="text-xs text-white/50 mb-5">{data.periodSub}</div>
 
               <div className="flex flex-col gap-2.5 mb-6">
                 {data.features.split(',').map((feature) => (
@@ -115,7 +115,7 @@ export function PricingSection({ translations: t, proMonthlyPrice, proAnnualPric
           ))}
         </div>
 
-        <p className="text-[13px] text-white/30 mt-6">
+        <p className="text-[13px] text-white/50 mt-6">
           {t.note}{' '}
           <Link href={`/${locale}/contact`} className="text-[#14D0DC] hover:underline">
             {t.noteCta}

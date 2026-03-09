@@ -28,7 +28,7 @@ export function SocialProofBar({ translations: t, avatar }: SocialProofBarProps)
           <div className="flex items-center gap-3 shrink-0">
             <div className="text-right">
               <div className="text-sm font-semibold text-white">{t.name}</div>
-              <div className="text-xs text-white/30 font-[family-name:var(--font-dm-mono)]">{t.title}</div>
+              <div className="text-xs text-white/50 font-[family-name:var(--font-dm-mono)]">{t.title}</div>
             </div>
             {avatar && (
               <Image

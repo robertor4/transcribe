@@ -53,7 +53,7 @@ export function SecuritySection({ translations: t }: SecuritySectionProps) {
               >
                 <Icon className="w-6 h-6 text-[#14D0DC]" strokeWidth={1.5} />
                 <div className="text-[13px] font-semibold text-white">{t.badges[key].title}</div>
-                <div className="text-[11px] text-white/30 leading-snug">{t.badges[key].desc}</div>
+                <div className="text-[11px] text-white/50 leading-snug">{t.badges[key].desc}</div>
               </div>
             ))}
           </div>

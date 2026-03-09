@@ -53,7 +53,7 @@ export function OutputsSection({ translations: t }: OutputsSectionProps) {
                 </div>
                 <div>
                   <div className="text-[15px] font-semibold text-white">{t.categories[key].title}</div>
-                  <div className="text-[11px] text-white/30 font-[family-name:var(--font-dm-mono)]">{t.categories[key].subtitle}</div>
+                  <div className="text-[11px] text-white/50 font-[family-name:var(--font-dm-mono)]">{t.categories[key].subtitle}</div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-[7px]">

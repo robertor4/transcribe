@@ -2,6 +2,7 @@
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
+import { CookieConsent } from '@/components/CookieConsent';
 
 /**
  * Providers for the pricing page.
@@ -13,6 +14,7 @@ export function PricingProviders({ children }: { children: React.ReactNode }) {
     <AuthProvider>
       <AnalyticsProvider>
         {children}
+        <CookieConsent />
       </AnalyticsProvider>
     </AuthProvider>
   );

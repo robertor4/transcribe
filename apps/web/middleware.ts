@@ -41,6 +41,21 @@ export default function middleware(request: NextRequest) {
     hostname !== `www.${MARKETING_HOST}` &&
     hostname !== APP_HOST
   ) {
+    // Collapse redirect chain: bare root → /{locale}/landing in one hop
+    // (instead of / → /en → /en/landing which costs ~840ms on mobile)
+    if (request.nextUrl.pathname === '/') {
+      const response = intlMiddleware(request);
+      // intlMiddleware redirects / → /{locale}. Rewrite target to /{locale}/landing
+      const location = response.headers.get('location');
+      if (location && response.status >= 300 && response.status < 400) {
+        const url = new URL(location, request.url);
+        if (!url.pathname.endsWith('/landing')) {
+          url.pathname = url.pathname.replace(/\/?$/, '/landing');
+          return NextResponse.redirect(url, response.status);
+        }
+      }
+      return response;
+    }
     return intlMiddleware(request);
   }
 
@@ -69,6 +84,20 @@ export default function middleware(request: NextRequest) {
   // App domain root (no segment) → let through to page.tsx which redirects to /dashboard
   if (isOnApp && segment === null) {
     return intlMiddleware(request);
+  }
+
+  // Marketing domain root: collapse / → /{locale}/landing in one redirect
+  if (isOnMarketing && segment === null) {
+    const response = intlMiddleware(request);
+    const location = response.headers.get('location');
+    if (location && response.status >= 300 && response.status < 400) {
+      const url = new URL(location, request.url);
+      if (!url.pathname.endsWith('/landing')) {
+        url.pathname = url.pathname.replace(/\/?$/, '/landing');
+        return NextResponse.redirect(url, response.status);
+      }
+    }
+    return response;
   }
 
   // Marketing route on app domain → redirect to marketing
