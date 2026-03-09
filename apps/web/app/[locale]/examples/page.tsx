@@ -13,6 +13,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: {
+      canonical: `https://neuralsummary.com/${locale}/examples`,
+      languages: {
+        en: 'https://neuralsummary.com/en/examples',
+        nl: 'https://neuralsummary.com/nl/examples',
+        de: 'https://neuralsummary.com/de/examples',
+        fr: 'https://neuralsummary.com/fr/examples',
+        es: 'https://neuralsummary.com/es/examples',
+      },
+    },
     openGraph: {
       title: t('meta.title'),
       description: t('meta.description'),

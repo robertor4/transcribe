@@ -1279,9 +1279,9 @@
   "landing": {
     "hero": {
       "eyebrow": "The meeting intelligence platform",
-      "headline1": "Every conversation,",
-      "headline2": "a ",
-      "headlineEm": "strategic asset.",
+      "headline1": "Neural Summary turns conversations",
+      "headline2": "into ",
+      "headlineEm": "strategic assets.",
       "body": "Neural Summary turns every meeting into searchable transcripts, summaries, and ",
       "bodyStrong": "ready-to-use documents",
       "bodyEnd": ". Nothing gets lost. Nothing needs to be rewritten.",
@@ -3012,5 +3012,86 @@
     "exampleBanner": "This is an example conversation. Upload your own audio to get started.",
     "exampleBannerCta": "Upload audio",
     "tutorial": "Tutorial"
+  },
+  "about": {
+    "meta": {
+      "title": "About Neural Summary | Voice-to-Document AI Platform",
+      "description": "Neural Summary is a voice-to-document AI platform that turns spoken thinking into structured, professional output. Learn about our mission, technology, and team."
+    },
+    "title": "About Neural Summary",
+    "subtitle": "The platform that turns spoken thinking into structured output.",
+    "mission": {
+      "tag": "Our mission",
+      "title": "Remove the friction between thinking and creating",
+      "body": "Neural Summary exists because ideas deserve better than getting lost between a conversation and a document. We built a platform that transforms spoken thinking, meetings, and rough notes into structured, professional output. No writing. No formatting. Just think out loud."
+    },
+    "product": {
+      "tag": "The product",
+      "title": "What Neural Summary does",
+      "body": "Neural Summary is a voice-to-document AI platform. Upload a recording or let our AI interview you. Neural Summary transcribes, analyzes, and generates work-ready documents: product specs, blog posts, strategy docs, follow-up emails, and more.",
+      "features": {
+        "transcription": {
+          "title": "Transcription",
+          "desc": "Enterprise-grade speech-to-text with speaker identification in 99+ languages."
+        },
+        "analysis": {
+          "title": "AI analysis",
+          "desc": "Neural Summary extracts key points, action items, and insights from every conversation."
+        },
+        "templates": {
+          "title": "Document templates",
+          "desc": "Generate structured output using 20+ professional templates. From meeting notes to product specs."
+        },
+        "chat": {
+          "title": "Ask anything",
+          "desc": "Chat with your transcripts. Neural Summary answers questions about any meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Built for",
+      "title": "Who uses Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Product managers",
+          "desc": "Turn brainstorms into product specs in minutes."
+        },
+        "founders": {
+          "title": "Founders",
+          "desc": "Transform vision talks into strategy docs for your team."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Convert client calls into follow-up emails and reports."
+        },
+        "creators": {
+          "title": "Content creators",
+          "desc": "Turn interviews into publish-ready articles."
+        }
+      }
+    },
+    "values": {
+      "tag": "Our values",
+      "title": "What we believe",
+      "items": {
+        "privacy": {
+          "title": "Privacy first",
+          "desc": "GDPR compliant. Your data is encrypted and never used for training. You own everything you create."
+        },
+        "quality": {
+          "title": "Quality over speed",
+          "desc": "We use the best AI models available. Neural Summary prioritizes accuracy and usefulness over shortcuts."
+        },
+        "simplicity": {
+          "title": "Simplicity",
+          "desc": "No clutter, no learning curve. Upload, process, done. Neural Summary stays out of your way."
+        }
+      }
+    },
+    "cta": {
+      "title": "Try Neural Summary for free",
+      "body": "Start turning your conversations into work-ready documents today.",
+      "button": "Get started"
+    }
   }
 }

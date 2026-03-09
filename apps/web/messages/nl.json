@@ -1278,9 +1278,9 @@
   "landing": {
     "hero": {
       "eyebrow": "Het meeting intelligence platform",
-      "headline1": "Elk gesprek,",
-      "headline2": "een ",
-      "headlineEm": "strategisch voordeel.",
+      "headline1": "Neural Summary maakt van gesprekken",
+      "headline2": "",
+      "headlineEm": "strategische documenten.",
       "body": "Neural Summary maakt van elke meeting doorzoekbare transcripten, samenvattingen en ",
       "bodyStrong": "kant-en-klare documenten",
       "bodyEnd": ". Niets gaat verloren. Niets hoeft herschreven te worden.",
@@ -3005,5 +3005,86 @@
     "exampleBanner": "Dit is een voorbeeldgesprek. Upload je eigen audio om te beginnen.",
     "exampleBannerCta": "Audio uploaden",
     "tutorial": "Rondleiding"
+  },
+  "about": {
+    "meta": {
+      "title": "Over Neural Summary | Spraak-naar-document AI-platform",
+      "description": "Neural Summary is een AI-platform dat gesproken ideeën omzet in gestructureerde, professionele documenten. Lees over onze missie, technologie en team."
+    },
+    "title": "Over Neural Summary",
+    "subtitle": "Het platform dat gesproken denken omzet in gestructureerde output.",
+    "mission": {
+      "tag": "Onze missie",
+      "title": "De wrijving tussen denken en creëren wegnemen",
+      "body": "Neural Summary bestaat omdat ideeën beter verdienen dan verloren te gaan tussen een gesprek en een document. We hebben een platform gebouwd dat gesproken gedachten, meetings en ruwe notities transformeert naar gestructureerde, professionele output. Niet schrijven. Niet opmaken. Gewoon hardop denken."
+    },
+    "product": {
+      "tag": "Het product",
+      "title": "Wat Neural Summary doet",
+      "body": "Neural Summary is een AI-platform voor spraak-naar-document. Upload een opname of laat onze AI je interviewen. Neural Summary transcribeert, analyseert en genereert werkklare documenten: productspecificaties, blogposts, strategiedocumenten, opvolgmails en meer.",
+      "features": {
+        "transcription": {
+          "title": "Transcriptie",
+          "desc": "Zakelijke spraak-naar-tekst met sprekerherkenning in 99+ talen."
+        },
+        "analysis": {
+          "title": "AI-analyse",
+          "desc": "Neural Summary haalt kernpunten, actiepunten en inzichten uit elk gesprek."
+        },
+        "templates": {
+          "title": "Documentsjablonen",
+          "desc": "Genereer gestructureerde output met 20+ professionele sjablonen. Van vergadernotities tot productspecificaties."
+        },
+        "chat": {
+          "title": "Stel elke vraag",
+          "desc": "Chat met je transcripten. Neural Summary beantwoordt vragen over elke meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Gebouwd voor",
+      "title": "Wie gebruikt Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Productmanagers",
+          "desc": "Zet brainstorms om in productspecificaties in minuten."
+        },
+        "founders": {
+          "title": "Oprichters",
+          "desc": "Transformeer visiegesprekken naar strategiedocumenten voor je team."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Zet klantgesprekken om in opvolgmails en rapporten."
+        },
+        "creators": {
+          "title": "Contentmakers",
+          "desc": "Zet interviews om in publiceerklare artikelen."
+        }
+      }
+    },
+    "values": {
+      "tag": "Onze waarden",
+      "title": "Waar we in geloven",
+      "items": {
+        "privacy": {
+          "title": "Privacy eerst",
+          "desc": "AVG-conform. Je data is versleuteld en wordt nooit gebruikt voor training. Alles wat je maakt is van jou."
+        },
+        "quality": {
+          "title": "Kwaliteit boven snelheid",
+          "desc": "We gebruiken de beste beschikbare AI-modellen. Neural Summary geeft prioriteit aan nauwkeurigheid en bruikbaarheid."
+        },
+        "simplicity": {
+          "title": "Eenvoud",
+          "desc": "Geen rommel, geen leercurve. Uploaden, verwerken, klaar. Neural Summary blijft uit je weg."
+        }
+      }
+    },
+    "cta": {
+      "title": "Probeer Neural Summary gratis",
+      "body": "Begin vandaag nog met het omzetten van gesprekken in werkklare documenten.",
+      "button": "Aan de slag"
+    }
   }
 }

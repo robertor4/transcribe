@@ -16,6 +16,7 @@ const MARKETING_SEGMENTS = new Set([
   'privacy',
   'terms',
   'blog',
+  'about',
 ]);
 
 // Route segments served on both domains (no redirect)

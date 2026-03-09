@@ -1256,9 +1256,9 @@
   "landing": {
     "hero": {
       "eyebrow": "Die Meeting-Intelligence-Plattform",
-      "headline1": "Jedes Gespräch,",
-      "headline2": "ein ",
-      "headlineEm": "strategischer Vorteil.",
+      "headline1": "Neural Summary verwandelt Gespräche",
+      "headline2": "in ",
+      "headlineEm": "strategische Dokumente.",
       "body": "Neural Summary verwandelt jedes Meeting in durchsuchbare Transkripte, Zusammenfassungen und ",
       "bodyStrong": "sofort einsetzbare Dokumente",
       "bodyEnd": ". Nichts geht verloren. Nichts muss neu geschrieben werden.",
@@ -3005,5 +3005,86 @@
     "exampleBanner": "Dies ist ein Beispielgespräch. Lade deine eigene Audiodatei hoch, um loszulegen.",
     "exampleBannerCta": "Audio hochladen",
     "tutorial": "Tutorial"
+  },
+  "about": {
+    "meta": {
+      "title": "Über Neural Summary | Sprache-zu-Dokument KI-Plattform",
+      "description": "Neural Summary ist eine KI-Plattform, die gesprochenes Denken in strukturierte, professionelle Dokumente verwandelt. Erfahren Sie mehr über unsere Mission, Technologie und unser Team."
+    },
+    "title": "Über Neural Summary",
+    "subtitle": "Die Plattform, die gesprochenes Denken in strukturierte Ergebnisse verwandelt.",
+    "mission": {
+      "tag": "Unsere Mission",
+      "title": "Die Reibung zwischen Denken und Schaffen beseitigen",
+      "body": "Neural Summary existiert, weil Ideen es verdienen, nicht zwischen einem Gespräch und einem Dokument verloren zu gehen. Wir haben eine Plattform gebaut, die gesprochene Gedanken, Meetings und grobe Notizen in strukturierte, professionelle Ergebnisse verwandelt. Kein Schreiben. Keine Formatierung. Einfach laut denken."
+    },
+    "product": {
+      "tag": "Das Produkt",
+      "title": "Was Neural Summary macht",
+      "body": "Neural Summary ist eine KI-Plattform für Sprache-zu-Dokument. Laden Sie eine Aufnahme hoch oder lassen Sie sich von unserer KI interviewen. Neural Summary transkribiert, analysiert und erstellt arbeitsfertige Dokumente: Produktspezifikationen, Blogartikel, Strategiedokumente, Follow-up-E-Mails und mehr.",
+      "features": {
+        "transcription": {
+          "title": "Transkription",
+          "desc": "Professionelle Sprache-zu-Text-Umwandlung mit Sprechererkennung in über 99 Sprachen."
+        },
+        "analysis": {
+          "title": "KI-Analyse",
+          "desc": "Neural Summary extrahiert Kernpunkte, Aufgaben und Erkenntnisse aus jedem Gespräch."
+        },
+        "templates": {
+          "title": "Dokumentvorlagen",
+          "desc": "Erstellen Sie strukturierte Ergebnisse mit über 20 professionellen Vorlagen. Von Meetingnotizen bis Produktspezifikationen."
+        },
+        "chat": {
+          "title": "Alles fragen",
+          "desc": "Chatten Sie mit Ihren Transkripten. Neural Summary beantwortet Fragen zu jedem Meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Entwickelt für",
+      "title": "Wer nutzt Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Produktmanager",
+          "desc": "Verwandeln Sie Brainstormings in Produktspezifikationen in Minuten."
+        },
+        "founders": {
+          "title": "Gründer",
+          "desc": "Machen Sie aus Visionsgesprächen Strategiedokumente für Ihr Team."
+        },
+        "consultants": {
+          "title": "Berater",
+          "desc": "Wandeln Sie Kundengespräche in Follow-up-E-Mails und Berichte um."
+        },
+        "creators": {
+          "title": "Content-Ersteller",
+          "desc": "Verwandeln Sie Interviews in veröffentlichungsfertige Artikel."
+        }
+      }
+    },
+    "values": {
+      "tag": "Unsere Werte",
+      "title": "Woran wir glauben",
+      "items": {
+        "privacy": {
+          "title": "Datenschutz zuerst",
+          "desc": "DSGVO-konform. Ihre Daten sind verschlüsselt und werden nie für Training verwendet. Alles, was Sie erstellen, gehört Ihnen."
+        },
+        "quality": {
+          "title": "Qualität vor Geschwindigkeit",
+          "desc": "Wir verwenden die besten verfügbaren KI-Modelle. Neural Summary priorisiert Genauigkeit und Nutzen."
+        },
+        "simplicity": {
+          "title": "Einfachheit",
+          "desc": "Kein Durcheinander, keine Lernkurve. Hochladen, verarbeiten, fertig. Neural Summary bleibt im Hintergrund."
+        }
+      }
+    },
+    "cta": {
+      "title": "Neural Summary kostenlos testen",
+      "body": "Beginnen Sie noch heute, Gespräche in arbeitsfertige Dokumente zu verwandeln.",
+      "button": "Loslegen"
+    }
   }
 }

@@ -96,7 +96,7 @@ export function PublicFooter({ locale }: PublicFooterProps) {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href={`/${locale}/landing`}
+                  href={`/${locale}/about`}
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                   {t('footer.links.about')}

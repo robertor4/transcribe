@@ -1256,9 +1256,9 @@
   "landing": {
     "hero": {
       "eyebrow": "La plateforme d'intelligence pour vos réunions",
-      "headline1": "Chaque conversation,",
-      "headline2": "un ",
-      "headlineEm": "atout stratégique.",
+      "headline1": "Neural Summary transforme vos conversations",
+      "headline2": "en ",
+      "headlineEm": "documents stratégiques.",
       "body": "Neural Summary transforme chaque réunion en transcriptions consultables, résumés et ",
       "bodyStrong": "documents prêts à l'emploi",
       "bodyEnd": ". Rien ne se perd. Rien n'a besoin d'être réécrit.",
@@ -3000,5 +3000,86 @@
     "exampleBanner": "Ceci est une conversation exemple. Téléchargez votre propre audio pour commencer.",
     "exampleBannerCta": "Télécharger de l'audio",
     "tutorial": "Tutoriel"
+  },
+  "about": {
+    "meta": {
+      "title": "A propos de Neural Summary | Plateforme IA voix-vers-document",
+      "description": "Neural Summary est une plateforme IA qui transforme la parole en documents structurés et professionnels. Découvrez notre mission, notre technologie et notre équipe."
+    },
+    "title": "A propos de Neural Summary",
+    "subtitle": "La plateforme qui transforme la pensée parlée en résultats structurés.",
+    "mission": {
+      "tag": "Notre mission",
+      "title": "Supprimer la friction entre penser et créer",
+      "body": "Neural Summary existe parce que les idées méritent mieux que d'être perdues entre une conversation et un document. Nous avons construit une plateforme qui transforme les pensées parlées, les réunions et les notes brutes en résultats structurés et professionnels. Pas d'écriture. Pas de mise en forme. Pensez tout simplement à voix haute."
+    },
+    "product": {
+      "tag": "Le produit",
+      "title": "Ce que fait Neural Summary",
+      "body": "Neural Summary est une plateforme IA de voix-vers-document. Téléchargez un enregistrement ou laissez notre IA vous interviewer. Neural Summary transcrit, analyse et génère des documents prêts à l'emploi : spécifications produit, articles de blog, documents stratégiques, emails de suivi et plus encore.",
+      "features": {
+        "transcription": {
+          "title": "Transcription",
+          "desc": "Conversion parole-texte professionnelle avec identification des intervenants dans plus de 99 langues."
+        },
+        "analysis": {
+          "title": "Analyse IA",
+          "desc": "Neural Summary extrait les points clés, les actions et les insights de chaque conversation."
+        },
+        "templates": {
+          "title": "Modèles de documents",
+          "desc": "Générez des résultats structurés avec plus de 20 modèles professionnels. Des notes de réunion aux spécifications produit."
+        },
+        "chat": {
+          "title": "Posez n'importe quelle question",
+          "desc": "Discutez avec vos transcriptions. Neural Summary répond aux questions sur n'importe quelle réunion."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Conçu pour",
+      "title": "Qui utilise Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Chefs de produit",
+          "desc": "Transformez les brainstormings en spécifications produit en quelques minutes."
+        },
+        "founders": {
+          "title": "Fondateurs",
+          "desc": "Convertissez les discussions de vision en documents stratégiques pour votre équipe."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Transformez les appels clients en emails de suivi et rapports."
+        },
+        "creators": {
+          "title": "Créateurs de contenu",
+          "desc": "Transformez les interviews en articles prêts à publier."
+        }
+      }
+    },
+    "values": {
+      "tag": "Nos valeurs",
+      "title": "Ce en quoi nous croyons",
+      "items": {
+        "privacy": {
+          "title": "Confidentialité d'abord",
+          "desc": "Conforme au RGPD. Vos données sont chiffrées et jamais utilisées pour l'entrainement. Tout ce que vous créez vous appartient."
+        },
+        "quality": {
+          "title": "Qualité avant vitesse",
+          "desc": "Nous utilisons les meilleurs modèles IA disponibles. Neural Summary privilégie la précision et l'utilité."
+        },
+        "simplicity": {
+          "title": "Simplicité",
+          "desc": "Pas de désordre, pas de courbe d'apprentissage. Télécharger, traiter, terminé. Neural Summary reste discret."
+        }
+      }
+    },
+    "cta": {
+      "title": "Essayez Neural Summary gratuitement",
+      "body": "Commencez dès aujourd'hui à transformer vos conversations en documents prêts à l'emploi.",
+      "button": "Commencer"
+    }
   }
 }

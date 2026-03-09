@@ -6,6 +6,7 @@ import {
   resolveOgLocale,
   getPageMetadataContent,
 } from '@/config/page-metadata';
+import { locales } from '@/i18n.config';
 
 const DASHBOARD_TITLES: Record<string, string> = {
   en: 'Dashboard',
@@ -172,10 +173,23 @@ export function buildPageMetadata(
   const twitterTitle = overrides?.twitter?.title ?? baseContent.twitter?.title ?? title;
   const twitterDescription = overrides?.twitter?.description ?? baseContent.twitter?.description ?? description;
 
+  // Build hreflang alternates for all locales
+  const languages = locales.reduce(
+    (acc, lang) => {
+      acc[lang] = `${SEO_BASE_URL}/${lang}${urlPath}`;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
   return {
     title,
     description,
     keywords,
+    alternates: {
+      canonical: pageUrl,
+      languages,
+    },
     openGraph: buildOpenGraphConfig({
       locale,
       title: ogTitle,
@@ -250,10 +264,23 @@ export function getBlogPostMetadata(
     ? `${SEO_BASE_URL}${post.image}`
     : `${SEO_BASE_URL}${DEFAULT_OG_IMAGE}`;
 
+  // Build hreflang alternates for blog post across all locales
+  const blogLanguages = locales.reduce(
+    (acc, lang) => {
+      acc[lang] = `${SEO_BASE_URL}/${lang}/blog/${post.slug}`;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
   return {
     title: post.title,
     description: post.description,
     keywords: post.keywords,
+    alternates: {
+      canonical: pageUrl,
+      languages: blogLanguages,
+    },
     openGraph: {
       type: 'article',
       locale: resolveOgLocale(locale),

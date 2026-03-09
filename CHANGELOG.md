@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **About page** — New `/about` page with Organization and AboutPage JSON-LD schemas, 4 sections (mission, product, audience, values), CTA, and full i18n support across all 5 languages. Added to middleware marketing segments, sitemap, and robots.txt ([about/page.tsx](apps/web/app/[locale]/about/page.tsx))
+- **WebSite JSON-LD schema on landing page** — Added `WebSite` structured data with `alternateName`, `inLanguage`, and publisher reference alongside existing Organization + SoftwareApplication schemas ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+
+### Changed
+- **Brand name in `<h1>` tag** — Landing page headline now includes "Neural Summary" in the `<h1>` for branded search ranking. Updated across all 5 locales: "Neural Summary turns conversations into strategic assets." ([en.json](apps/web/messages/en.json), [nl.json](apps/web/messages/nl.json), [de.json](apps/web/messages/de.json), [fr.json](apps/web/messages/fr.json), [es.json](apps/web/messages/es.json))
+- **Title tag optimization** — Updated to `"Neural Summary | Voice-to-Document AI Platform"` with brand name leading. Added `Neural Summary`, `NeuralSummary`, `neural summary app`, `neural summary AI` to keywords. Description now leads with "Neural Summary" ([layout.tsx](apps/web/app/[locale]/layout.tsx))
+- **Enhanced Organization JSON-LD** — Added `alternateName`, `foundingDate`, `image`, and `width`/`height` to logo ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **Footer about link** — Points to `/about` instead of `/landing` ([PublicFooter.tsx](apps/web/components/PublicFooter.tsx))
+
+### Fixed
+- **Webmanifest empty fields** — Added `name`, `short_name`, `description`, `start_url`, and brand `theme_color` to [site.webmanifest](apps/web/public/assets/favicons/site.webmanifest)
+- **Canonical URL duplication bug** — Removed global `canonical: 'https://neuralsummary.com'` from [layout.tsx](apps/web/app/[locale]/layout.tsx) that was causing Google to treat all pages as duplicates of the root ("Duplicate without user-selected canonical"). Each page now declares its own canonical URL and hreflang alternates via [metadata.ts](apps/web/utils/metadata.ts) `buildPageMetadata()`, plus manual canonicals on [about](apps/web/app/[locale]/about/page.tsx), [contact](apps/web/app/[locale]/contact/page.tsx), and [examples](apps/web/app/[locale]/examples/page.tsx) pages
+
+### Fixed
+- **Stripe checkout localhost redirect bug** — Replaced all inline `process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'` fallbacks with centralized `getApiUrl()` helper across 8 client-side files. The helper uses hostname detection as a safety net, ensuring API calls always route to `/api` in production even if the env var is missing at build time. Affected files: [pricing/page.tsx](apps/web/app/[locale]/pricing/page.tsx), [checkout/page.tsx](apps/web/app/[locale]/(auth)/checkout/[tier]/page.tsx), [checkout/success/page.tsx](apps/web/app/[locale]/(auth)/checkout/success/page.tsx), [subscription/page.tsx](apps/web/app/[locale]/(authenticated)/settings/subscription/page.tsx), [UsageContext.tsx](apps/web/contexts/UsageContext.tsx), [AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx), [UserActivityPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/users/[userId]/UserActivityPanel.tsx), [ContactForm.tsx](apps/web/components/ContactForm.tsx)
+
+### Added
 - **Social media icons in footer** — YouTube, LinkedIn, and X (Twitter) icon links added to [PublicFooter.tsx](apps/web/components/PublicFooter.tsx) with `sameAs` structured data in Organization schema ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
 - **FAQ structured data on pricing page** — FAQPage JSON-LD schema with 4 FAQ items injected via [pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx) for Google rich results
 - **Contact page SEO keywords** — Added keywords meta tag to [contact/page.tsx](apps/web/app/[locale]/contact/page.tsx)
