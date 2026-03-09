@@ -142,6 +142,8 @@
     "passwordNumber": "Un chiffre",
     "passwordRequirementsNotMet": "Veuillez remplir toutes les exigences du mot de passe",
     "acceptTermsRequired": "Veuillez accepter les conditions générales",
+    "captchaRequired": "Veuillez compléter la vérification de sécurité",
+    "captchaFailed": "Vérification de sécurité échouée. Veuillez réessayer.",
     "iAgreeToThe": "J'accepte les",
     "termsOfService": "Conditions de service",
     "and": "et",
@@ -1349,7 +1351,7 @@
       }
     },
     "ask": {
-      "tag": "Mémoire institutionnelle, à la demande",
+      "tag": "Agentic Chat",
       "headline1": "Posez n'importe quelle question sur",
       "headline2": "n'importe quelle ",
       "headlineEm": "réunion.",
@@ -1418,7 +1420,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Adopté par ceux qui dirigent",
+      "tag": "Adopté par les leaders",
       "headline1": "Les leaders parlent.",
       "headline2": "Neural Summary ",
       "headlineEm": "s'occupe du reste.",

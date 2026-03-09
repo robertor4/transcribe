@@ -142,6 +142,8 @@
     "passwordNumber": "Eine Zahl",
     "passwordRequirementsNotMet": "Bitte erfüllen Sie alle Passwort-Anforderungen",
     "acceptTermsRequired": "Bitte akzeptieren Sie die Nutzungsbedingungen",
+    "captchaRequired": "Bitte schließen Sie die Sicherheitsüberprüfung ab",
+    "captchaFailed": "Sicherheitsüberprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "iAgreeToThe": "Ich stimme den",
     "termsOfService": "Nutzungsbedingungen",
     "and": "und",
@@ -1349,7 +1351,7 @@
       }
     },
     "ask": {
-      "tag": "Institutionelles Wissen, auf Abruf",
+      "tag": "Agentic Chat",
       "headline1": "Frag alles über",
       "headline2": "jedes ",
       "headlineEm": "Meeting.",
@@ -1418,7 +1420,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Vertraut von Entscheidungsträgern",
+      "tag": "Von Führungskräften vertraut",
       "headline1": "Führungskräfte reden.",
       "headline2": "Neural Summary ",
       "headlineEm": "erledigt den Rest.",

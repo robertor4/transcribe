@@ -142,6 +142,8 @@
     "passwordNumber": "Één cijfer",
     "passwordRequirementsNotMet": "Voldoe aan alle wachtwoordvereisten",
     "acceptTermsRequired": "Accepteer de algemene voorwaarden",
+    "captchaRequired": "Voltooi de beveiligingscontrole",
+    "captchaFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
     "iAgreeToThe": "Ik ga akkoord met de",
     "termsOfService": "Servicevoorwaarden",
     "and": "en",
@@ -1371,7 +1373,7 @@
       }
     },
     "ask": {
-      "tag": "Institutioneel geheugen, on demand",
+      "tag": "Agentic Chat",
       "headline1": "Vraag alles over",
       "headline2": "elke ",
       "headlineEm": "meeting.",
@@ -1440,7 +1442,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Vertrouwd door mensen die de leiding hebben",
+      "tag": "Vertrouwd door leiders",
       "headline1": "Leiders praten.",
       "headline2": "Neural Summary ",
       "headlineEm": "doet de rest.",

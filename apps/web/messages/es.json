@@ -142,6 +142,8 @@
     "passwordNumber": "Un número",
     "passwordRequirementsNotMet": "Por favor cumpla con todos los requisitos de contraseña",
     "acceptTermsRequired": "Por favor acepte los términos y condiciones",
+    "captchaRequired": "Por favor complete la verificación de seguridad",
+    "captchaFailed": "Verificación de seguridad fallida. Inténtelo de nuevo.",
     "iAgreeToThe": "Acepto los",
     "termsOfService": "Términos de Servicio",
     "and": "y",
@@ -1349,7 +1351,7 @@
       }
     },
     "ask": {
-      "tag": "Memoria institucional, bajo demanda",
+      "tag": "Agentic Chat",
       "headline1": "Pregunta lo que sea sobre",
       "headline2": "cualquier ",
       "headlineEm": "reunión.",
@@ -1418,7 +1420,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "La confianza de quienes toman decisiones",
+      "tag": "La confianza de los líderes",
       "headline1": "Los líderes hablan.",
       "headline2": "Neural Summary ",
       "headlineEm": "se encarga del resto.",

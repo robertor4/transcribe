@@ -142,6 +142,8 @@
     "passwordNumber": "One number",
     "passwordRequirementsNotMet": "Please meet all password requirements",
     "acceptTermsRequired": "Please accept the terms and conditions",
+    "captchaRequired": "Please complete the security check",
+    "captchaFailed": "Security check failed. Please try again.",
     "iAgreeToThe": "I agree to the",
     "termsOfService": "Terms of Service",
     "and": "and",
@@ -1372,7 +1374,7 @@
       }
     },
     "ask": {
-      "tag": "Institutional memory, on demand",
+      "tag": "Agentic Chat",
       "headline1": "Ask anything about",
       "headline2": "any ",
       "headlineEm": "meeting.",
@@ -1441,7 +1443,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Trusted by people who run things",
+      "tag": "Trusted by leaders",
       "headline1": "Leaders talk.",
       "headline2": "Neural Summary ",
       "headlineEm": "handles the rest.",
