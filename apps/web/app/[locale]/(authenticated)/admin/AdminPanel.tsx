@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { getApiUrl } from '@/lib/config';
 
 // Tier badge config matching conversations table outline badge pattern
 const tierConfig: Record<string, { dot: string; badge: string }> = {
@@ -134,7 +135,7 @@ export function AdminPanel() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users`,
+        `${getApiUrl()}/admin/users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -174,7 +175,7 @@ export function AdminPanel() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}?hardDelete=${hardDelete}`,
+        `${getApiUrl()}/admin/users/${userId}?hardDelete=${hardDelete}`,
         {
           method: 'DELETE',
           headers: {

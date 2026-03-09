@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useRef, ReactNode } fro
 import { useAuth } from './AuthContext';
 import websocketService from '@/lib/websocket';
 import { WEBSOCKET_EVENTS, UserRole } from '@transcribe/shared';
+import { getApiUrl } from '@/lib/config';
 
 interface UsageStats {
   tier: string;
@@ -65,7 +66,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     try {
       const token = await user.getIdToken();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/profile`,
+        `${getApiUrl()}/user/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +100,7 @@ export function UsageProvider({ children }: { children: ReactNode }) {
     try {
       const token = await user.getIdToken();
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/usage-stats`,
+        `${getApiUrl()}/user/usage-stats`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

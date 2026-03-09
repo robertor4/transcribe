@@ -12,6 +12,7 @@ import { SubscriptionSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { Button } from '@/components/Button';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { getApiUrl } from '@/lib/config';
 
 interface SubscriptionData {
   subscription: {
@@ -153,7 +154,7 @@ export default function SubscriptionPage() {
     try {
       setLoading(true);
       const token = await user?.getIdToken();
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = getApiUrl();
 
       const [subResponse, usageResponse, historyResponse] = await Promise.all([
         fetch(`${apiUrl}/stripe/subscription`, {
@@ -209,7 +210,7 @@ export default function SubscriptionPage() {
     try {
       setCancelling(true);
       const token = await user?.getIdToken();
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = getApiUrl();
 
       const response = await fetch(`${apiUrl}/stripe/cancel-subscription`, {
         method: 'POST',

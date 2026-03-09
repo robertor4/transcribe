@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { getApiUrl } from '@/lib/config';
 
 interface ContactFormProps {
   locale: string;
@@ -89,7 +90,7 @@ export function ContactForm({ locale }: ContactFormProps) {
     setFormState('submitting');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
+      const response = await fetch(`${getApiUrl()}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
