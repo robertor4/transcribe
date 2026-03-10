@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-03-10
+
+### Editorial Redesign, Onboarding, SEO & Security
+
 ### Added
 - **User avatars in admin panel** — Added avatar column before user name showing profile photos or initial-letter fallback circles. Admin API now enriches Firestore user data with Firebase Auth `photoURL` for users missing it ([AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx), [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts))
 - **Admin panel delete confirmation dialogs** — Replaced inline Yes/No confirmation with proper `ConfirmModal` (shadcn AlertDialog) for both soft and hard delete actions. Added tooltips on action buttons and sonner toast notifications on success/error ([AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx))
@@ -50,6 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Improved text contrast on landing page** — Changed `text-white/30` (30% opacity, ~3.2:1 ratio) to `text-white/50` (50% opacity, ~5.5:1 ratio) across all landing sections for WCAG AA compliance. Affected: HeroSection, FinalCtaSection, PricingSection, TestimonialsSection, CompatibilitySection, ChatMock, SecuritySection, OutputsSection, InfrastructureSection, SocialProofBar
 
 ### Fixed
+- **Dashboard not refreshing after moving conversation to folder** — Conversations now disappear from dashboard when moved to a folder, with a success toast notification confirming the action. Folder picker sorts folders alphabetically with italic "No folder" option ([DashboardClient.tsx](apps/web/app/[locale]/(authenticated)/dashboard/DashboardClient.tsx), [FolderPickerModal.tsx](apps/web/components/FolderPickerModal.tsx))
+- **ConfirmModal border and radius** — Softened border styling and fixed bottom corner radius mismatch on `ConfirmModal` ([ConfirmModal.tsx](apps/web/components/ConfirmModal.tsx))
+- **Solid background for auth divider badge** — "Or continue with" divider on login and signup pages now uses a solid background instead of transparent overlay ([LoginForm.tsx](apps/web/components/LoginForm.tsx), [SignupForm.tsx](apps/web/components/SignupForm.tsx))
 - **Image aspect ratio mismatch** — Updated `lionel-hero.webp` width/height attributes from 320x450 to actual dimensions 860x997, fixing the distorted display ratio reported by Lighthouse ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx))
 - **Missing `<main>` landmark** — Changed landing page wrapper from `<div>` to `<main>` for screen reader navigation ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
 - **Cookie consent on all pages** — Decoupled `CookieConsent` from `AnalyticsContext` (now standalone, localStorage-only) so it renders on the landing page, auth pages, and pricing page without loading the analytics bundle. `AnalyticsProvider` listens for consent changes via a custom DOM event ([CookieConsent.tsx](apps/web/components/CookieConsent.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx), [(auth)/layout.tsx](apps/web/app/[locale]/(auth)/layout.tsx), [pricing/providers.tsx](apps/web/app/[locale]/pricing/providers.tsx))
@@ -77,6 +84,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Contact page SEO keywords** — Added keywords meta tag to [contact/page.tsx](apps/web/app/[locale]/contact/page.tsx)
 
 ### Changed
+- **Dashboard UX improvements** — Each quick-create button now has a distinct brand color (Record Mic: purple, Record Tab: cyan, Upload: deep purple) with full-width cards and colored left stripe. Replaced custom discard dialog with reusable `ConfirmModal`. Create modal shows mode-specific descriptions per capture method across all 5 locales. Right panel collapsed by default on detail pages ([DashboardClient.tsx](apps/web/app/[locale]/(authenticated)/dashboard/DashboardClient.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx))
+- **Conversation toolbar reorder** — Reorganized metadata row: reading time → category badge → date → AI → copy → transcript toggle → globe → more menu. Badges and metadata now form a logical left group, actionable items follow ([ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx))
+- **Landing page badge text updates** — Changed "Institutional memory, on demand" to "Agentic Chat" and "Trusted by people who run things" to "Trusted by leaders" across all 5 locales
 - **Create conversation modal full redesign** — Rebuilt the upload wizard to match the OutputGeneratorModal design system: custom header with uppercase title, desktop step sidebar with numbered circles (active=purple, completed=cyan), mobile horizontal step dots, fixed footer owned by the modal shell, and ScrollArea content. Lifted state (selectedFiles, selectedMethod, processingMode) from UploadInterface to ConversationCreateModal for controlled component pattern ([ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [UploadInterface.tsx](apps/web/components/UploadInterface.tsx))
 - **Processing step redesign** — Replaced the dense 4-column stage grid and large progress bar with a centered layout matching OutputGeneratorModal: GeneratingLoader waveform animation, file name purple badge, slim progress bar, RotatingSubtext with shimmer effect, centered error/success states with icon circles ([RealProcessingView.tsx](apps/web/components/RealProcessingView.tsx))
 - **Recording preview footer consolidation** — Moved Cancel/Proceed/Re-record buttons from inline RecordingPreview into the modal's unified footer, matching the consistent footer pattern across all steps. Preview state is now communicated via `onPreviewStateChange` callback chain ([RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx))
@@ -146,6 +156,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - **Unused `slowHint` translation key** — Removed from all 5 locale files (no longer shown in simplified TranslationDialog)
+- **Unused `mic-button.webp` asset** — Removed unused image asset from the project
 
 - **Editorial design system for all AI Asset templates** — Unified 32 templates from card-heavy dashboard aesthetic to clean editorial typography
   - Created 9 shared editorial components in [`outputTemplates/shared/`](apps/web/components/outputTemplates/shared/): `EditorialArticle`, `EditorialTitle`, `EditorialSection`, `EditorialHeading`, `EditorialNumberedList`, `EditorialPullQuote`, `EditorialParagraphs`, `EditorialCollapsible`, plus `editorial.ts` constants
@@ -171,6 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Modified: [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
 
 ### Added
+- **Blog post #1: "The Consultant's Secret"** — First MDX blog post with 3 Remotion video compositions (SpeedGap, DeliverableCascade, ROICounter) hosted on Firebase Storage. Includes design token updates, Firebase Storage rules for public blog video access, and upload script for blog assets. Added 5 future blog post drafts ([content/blog/](content/blog/))
+- **Regenerate summary dialog** — New `RegenerateSummaryDialog` component allowing users to customize summary regeneration with two optional fields: meeting context (e.g., "Weekly product sync") and additional instructions (e.g., "Focus on decisions"). Backend accepts custom context/instructions. Progress indicator shows on summary section during regeneration with toast notifications for success/error. Translated in all 5 locales ([RegenerateSummaryDialog.tsx](apps/web/components/RegenerateSummaryDialog.tsx), [transcription.service.ts](apps/api/src/transcription/transcription.service.ts))
 - **Onboarding experience for new users**: Full onboarding flow with questionnaire, spotlight tour, and preloaded example conversation
   - 4-step blocking questionnaire modal: welcome, use case + role, team + output types, discovery source
   - Spotlight guided tour (5 steps) built with Radix Popover + Framer Motion highlighting dashboard, folders, search, and example conversation
