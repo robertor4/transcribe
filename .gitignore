@@ -47,6 +47,9 @@ temp/
 coverage/
 .nyc_output/
 
+# Security scan results
+security/results/
+
 # Production environment
 .env.production
 

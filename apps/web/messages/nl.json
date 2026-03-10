@@ -144,6 +144,7 @@
     "acceptTermsRequired": "Accepteer de algemene voorwaarden",
     "captchaRequired": "Voltooi de beveiligingscontrole",
     "captchaFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
+    "accountSuspended": "Je account is opgeschort. Neem contact op met support als je denkt dat dit een vergissing is.",
     "iAgreeToThe": "Ik ga akkoord met de",
     "termsOfService": "Servicevoorwaarden",
     "and": "en",
@@ -151,11 +152,13 @@
     "orContinueWith": "Of ga verder met",
     "signupFailed": "Account aanmaken mislukt. Probeer het opnieuw.",
     "verifyYourEmail": "Verifieer je e-mail",
-    "verificationEmailSent": "We hebben een verificatie-e-mail gestuurd naar",
-    "checkYourInbox": "Controleer je inbox en klik op de verificatielink om door te gaan.",
+    "verificationEmailSent": "We hebben een code gestuurd naar",
+    "checkYourInbox": "Controleer je inbox en voer de verificatiecode in om door te gaan.",
     "checkYourEmail": "Controleer je e-mail",
-    "clickVerificationLink": "Klik op de verificatielink die we hebben gestuurd om je registratie te voltooien.",
-    "enterVerificationCode": "Voer de 6-cijferige code uit je e-mail in",
+    "clickVerificationLink": "Voer de 6-cijferige verificatiecode in die we hebben gestuurd om je registratie te voltooien.",
+    "enterVerificationCode": "Voer je verificatiecode in",
+    "codeSent": "Een nieuwe code is naar je e-mail gestuurd.",
+    "verifyingCode": "Verifiëren...",
     "verifyEmail": "E-mail verifiëren",
     "emailVerified": "E-mail geverifieerd!",
     "redirectingToDashboard": "Doorverwijzen naar je dashboard...",
@@ -171,7 +174,7 @@
     "sendResetLink": "Resetlink verzenden",
     "resetLinkSent": "Link verzonden!",
     "checkEmailForReset": "Controleer je e-mail voor een link om je wachtwoord te resetten.",
-    "checkSpamFolder": "Als je de e-mail niet ziet, controleer dan je spammap.",
+    "checkSpamFolder": "Controleer ook je spammap.",
     "tryDifferentEmail": "Probeer een ander e-mailadres",
     "newPassword": "Nieuw wachtwoord",
     "confirmNewPassword": "Nieuw wachtwoord bevestigen",
@@ -194,7 +197,7 @@
     "emailExistsPasswordMismatch": "Dit e-mailadres is al geregistreerd, maar het wachtwoord komt niet overeen.",
     "or": "of",
     "resetYourPassword": "stel je wachtwoord opnieuw in",
-    "welcomeBackVerification": "Welkom terug! We hebben je een nieuwe verificatielink gestuurd. Controleer je inbox."
+    "welcomeBackVerification": "Welkom terug! We hebben je een nieuwe verificatiecode gestuurd. Controleer je inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1753,6 +1756,12 @@
       "pricing": {
         "title": "Prijzen en Betalingsvoorwaarden",
         "content": "We behouden ons het recht voor om onze prijzen op elk moment te wijzigen om veranderingen in operationele kosten, marktomstandigheden, serviceverbeteringen of andere zakelijke factoren te weerspiegelen.",
+        "freeTier": {
+          "title": "Gratis abonnement - Introductieaanbod",
+          "content": "Het gratis abonnement wordt aangeboden als een introductieaanbod en vormt geen garantie voor eeuwigdurende gratis toegang. De functies, gebruikslimieten en beschikbaarheid van het gratis abonnement kunnen op elk moment naar eigen goeddunken worden gewijzigd, verminderd of stopgezet.",
+          "notice": "Wij zullen minimaal 30 dagen van tevoren per e-mail en in-app melding informeren voordat materiële wijzigingen aan het gratis abonnement worden doorgevoerd. Materiële wijzigingen omvatten, maar zijn niet beperkt tot: aanzienlijke verlagingen van gebruikslimieten, verwijdering van kernfuncties of volledige stopzetting van het gratis abonnement.",
+          "continued": "Voortgezet gebruik van de Service na een dergelijke kennisgeving betekent aanvaarding van de wijzigingen. Als u niet akkoord gaat met de wijzigingen, kunt u uw gebruik van de Service stopzetten en uw gegevens kosteloos exporteren voordat de wijzigingen van kracht worden."
+        },
         "changes": {
           "title": "Prijswijzigingen",
           "content": "We zullen minimaal 30 dagen van tevoren op de hoogte stellen voordat prijswijzigingen van kracht worden voor bestaande abonnementen. Nieuwe prijzen zijn van toepassing op verlengingen na de kennisgevingsperiode.",
@@ -1857,7 +1866,7 @@
       },
       "amendments": {
         "title": "Wijzigingen in de Voorwaarden",
-        "content": "Wij behouden ons het recht voor om deze Voorwaarden op elk moment te wijzigen. Wij zullen gebruikers op de hoogte stellen van materiële wijzigingen door de nieuwe Voorwaarden op deze pagina te plaatsen en de 'Ingangsdatum' bij te werken."
+        "content": "Wij behouden ons het recht voor om deze Voorwaarden op elk moment te wijzigen. Wij zullen gebruikers op de hoogte stellen van materiële wijzigingen per e-mail en door de nieuwe Voorwaarden op deze pagina te plaatsen met een bijgewerkte 'Ingangsdatum'. Voor materiële wijzigingen die uw rechten of verplichtingen beïnvloeden, zullen wij minimaal 30 dagen van tevoren informeren. Voortgezet gebruik van de Service na de ingangsdatum van herziene Voorwaarden betekent aanvaarding van de wijzigingen."
       }
     }
   },
@@ -2998,6 +3007,8 @@
       "step4Description": "We hebben een voorbeeldgesprek voor je aangemaakt. Open het om te zien wat Neural Summary kan.",
       "step5Title": "Verken en creeer",
       "step5Description": "Verken de samenvatting, het transcript en de AI-assets. Probeer vragen te stellen of nieuwe outputs te genereren.",
+      "completionTitle": "Je bent helemaal klaar",
+      "completionDescription": "Je kent nu de basis. Upload een gesprek of verken het voorbeeld om Neural Summary in actie te zien.",
       "next": "Volgende",
       "skipTour": "Tour overslaan",
       "startExploring": "Begin met verkennen",

@@ -144,6 +144,7 @@
     "acceptTermsRequired": "Please accept the terms and conditions",
     "captchaRequired": "Please complete the security check",
     "captchaFailed": "Security check failed. Please try again.",
+    "accountSuspended": "Your account has been suspended. Please contact support if you believe this is an error.",
     "iAgreeToThe": "I agree to the",
     "termsOfService": "Terms of Service",
     "and": "and",
@@ -151,11 +152,13 @@
     "orContinueWith": "Or continue with",
     "signupFailed": "Failed to create account. Please try again.",
     "verifyYourEmail": "Verify your email",
-    "verificationEmailSent": "We've sent a verification email to",
-    "checkYourInbox": "Please check your inbox and click the verification link to continue.",
+    "verificationEmailSent": "We sent a code to",
+    "checkYourInbox": "Please check your inbox and enter the verification code to continue.",
     "checkYourEmail": "Check your email",
-    "clickVerificationLink": "Click the verification link we sent to complete your signup.",
-    "enterVerificationCode": "Enter the 6-digit code from your email",
+    "clickVerificationLink": "Enter the 6-digit verification code we sent to complete your signup.",
+    "enterVerificationCode": "Enter your verification code",
+    "codeSent": "A new code has been sent to your email.",
+    "verifyingCode": "Verifying...",
     "verifyEmail": "Verify Email",
     "emailVerified": "Email Verified!",
     "redirectingToDashboard": "Redirecting to your dashboard...",
@@ -171,7 +174,7 @@
     "sendResetLink": "Send Reset Link",
     "resetLinkSent": "Reset Link Sent!",
     "checkEmailForReset": "Check your email for a link to reset your password.",
-    "checkSpamFolder": "If you don't see the email, check your spam folder.",
+    "checkSpamFolder": "Also check your spam folder.",
     "tryDifferentEmail": "Try a different email",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
@@ -194,7 +197,7 @@
     "emailExistsPasswordMismatch": "This email is already registered but the password doesn't match.",
     "or": "or",
     "resetYourPassword": "reset your password",
-    "welcomeBackVerification": "Welcome back! We've sent you a new verification link. Check your inbox."
+    "welcomeBackVerification": "Welcome back! We've sent you a new verification code. Check your inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1754,6 +1757,12 @@
       "pricing": {
         "title": "Pricing and Payment Terms",
         "content": "We reserve the right to modify our pricing at any time to reflect changes in operational costs, market conditions, service improvements, or other business factors.",
+        "freeTier": {
+          "title": "Free Tier - Introductory Offer",
+          "content": "The free tier is provided as an introductory offer and does not constitute a guarantee of perpetual free access. The features, usage limits, and availability of the free tier may be modified, reduced, or discontinued at any time at our sole discretion.",
+          "notice": "We will provide at least 30 days advance notice via email and in-app notification before implementing material changes to the free tier. Material changes include, but are not limited to: significant reductions in usage limits, removal of core features, or discontinuation of the free tier entirely.",
+          "continued": "Continued use of the Service after such notification constitutes acceptance of the changes. If you do not agree with the changes, you may discontinue your use of the Service and export your data at no cost before the changes take effect."
+        },
         "changes": {
           "title": "Price Changes",
           "content": "We will provide at least 30 days advance notice before any price changes take effect for existing subscriptions. New pricing will apply to renewals after the notice period.",
@@ -1858,7 +1867,7 @@
       },
       "amendments": {
         "title": "Amendments to Terms",
-        "content": "We reserve the right to modify these Terms at any time. We will notify users of any material changes by posting the new Terms on this page and updating the 'Effective Date'."
+        "content": "We reserve the right to modify these Terms at any time. We will notify users of any material changes by email and by posting the new Terms on this page with an updated 'Effective Date'. For material changes that affect your rights or obligations, we will provide at least 30 days advance notice. Continued use of the Service after the effective date of revised Terms constitutes acceptance of the changes."
       }
     }
   },
@@ -3005,6 +3014,8 @@
       "step4Description": "We created an example conversation for you. Open it to see what Neural Summary can do.",
       "step5Title": "Explore and create",
       "step5Description": "Explore the summary, transcript, and AI assets. Try asking questions or generating new outputs.",
+      "completionTitle": "You're all set",
+      "completionDescription": "You now know the basics. Upload a conversation or explore the example to see Neural Summary in action.",
       "next": "Next",
       "skipTour": "Skip tour",
       "startExploring": "Start exploring",

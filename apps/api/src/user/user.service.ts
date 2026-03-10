@@ -486,10 +486,10 @@ export class UserService {
     userId: string,
     data: {
       responses?: OnboardingResponses;
-      questionnaireCompletedAt?: string;
-      tourCompletedAt?: string;
-      completedAt?: string;
-      skippedAt?: string;
+      questionnaireCompletedAt?: string | null;
+      tourCompletedAt?: string | null;
+      completedAt?: string | null;
+      skippedAt?: string | null;
     },
   ): Promise<OnboardingData> {
     const user = await this.userRepository.getUser(userId);
@@ -498,15 +498,23 @@ export class UserService {
     const updated: OnboardingData = {
       ...existing,
       ...(data.responses && { responses: data.responses }),
-      ...(data.questionnaireCompletedAt && {
-        questionnaireCompletedAt: new Date(data.questionnaireCompletedAt),
-      }),
-      ...(data.tourCompletedAt && {
-        tourCompletedAt: new Date(data.tourCompletedAt),
-      }),
-      ...(data.completedAt && { completedAt: new Date(data.completedAt) }),
-      ...(data.skippedAt && { skippedAt: new Date(data.skippedAt) }),
     };
+
+    // Handle timestamp fields: null means delete, string means set
+    const timestampFields = [
+      'questionnaireCompletedAt',
+      'tourCompletedAt',
+      'completedAt',
+      'skippedAt',
+    ] as const;
+
+    for (const field of timestampFields) {
+      if (data[field] === null) {
+        delete updated[field];
+      } else if (data[field]) {
+        updated[field] = new Date(data[field]);
+      }
+    }
 
     await this.userRepository.updateUser(userId, { onboarding: updated });
     this.logger.log(`Onboarding state updated for user ${userId}`);

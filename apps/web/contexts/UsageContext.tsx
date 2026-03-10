@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthContext';
 import websocketService from '@/lib/websocket';
 import { WEBSOCKET_EVENTS, UserRole } from '@transcribe/shared';
@@ -45,7 +46,8 @@ interface UsageContextType {
 const UsageContext = createContext<UsageContextType | undefined>(undefined);
 
 export function UsageProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +57,14 @@ export function UsageProvider({ children }: { children: ReactNode }) {
   // Track if we've already fetched for this user to prevent duplicate calls
   const hasFetchedRef = useRef(false);
   const lastUserIdRef = useRef<string | null>(null);
+
+  /**
+   * Handle suspended account: log out and redirect to login with message
+   */
+  const handleSuspendedAccount = async () => {
+    await logout();
+    router.push('/login?suspended=true');
+  };
 
   const fetchUserProfile = async () => {
     if (!user) {
@@ -82,6 +92,13 @@ export function UsageProvider({ children }: { children: ReactNode }) {
         if (data.data?.photoURL) {
           setProfilePhotoUrl(data.data.photoURL);
         }
+      } else if (response.status === 401) {
+        const data = await response.json().catch(() => null);
+        if (data?.message?.includes('suspended')) {
+          await handleSuspendedAccount();
+          return;
+        }
+        setUserRole(UserRole.USER);
       } else {
         setUserRole(UserRole.USER);
       }

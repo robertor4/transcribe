@@ -45,6 +45,13 @@ WORKDIR /app/apps/api
 # Create temp directory for audio processing
 RUN mkdir -p temp
 
+# Run as non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs && \
+    chown -R nestjs:nodejs /app
+
+USER nestjs
+
 # Expose port
 EXPOSE 3001
 

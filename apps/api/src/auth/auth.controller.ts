@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
-import { FirebaseAuthGuard } from './firebase-auth.guard';
+import { FirebaseAuthGuard, AllowUnverifiedEmail } from './firebase-auth.guard';
 import { EmailVerificationService } from './email-verification.service';
 import { TurnstileService } from './turnstile.service';
 import { UserService } from '../user/user.service';
@@ -81,6 +81,7 @@ export class AuthController {
 
   @Post('verify-email')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 5, ttl: 300000 } }) // 5 attempts per 5 minutes
   async verifyEmail(
     @Req() req: AuthenticatedRequest,
@@ -108,6 +109,7 @@ export class AuthController {
 
   @Post('resend-verification')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 resends per 10 minutes
   async resendVerification(
     @Req() req: AuthenticatedRequest,
@@ -133,7 +135,7 @@ export class AuthController {
       );
 
     // Send email
-    this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,
@@ -145,6 +147,7 @@ export class AuthController {
 
   @Post('send-verification-code')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 sends per 10 minutes
   async sendVerificationCode(
     @Req() req: AuthenticatedRequest,
@@ -160,7 +163,7 @@ export class AuthController {
       );
 
     // Send email
-    this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,

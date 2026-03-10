@@ -135,6 +135,7 @@
     "weakPassword": "La contraseña debe tener al menos 6 caracteres",
     "userNotFound": "Usuario no encontrado",
     "tooManyRequests": "Demasiadas solicitudes. Por favor, inténtalo más tarde.",
+    "accountSuspended": "Tu cuenta ha sido suspendida. Ponte en contacto con soporte si crees que se trata de un error.",
     "displayNameRequired": "Por favor ingrese su nombre completo",
     "passwordMinLength": "Al menos 8 caracteres",
     "passwordUppercase": "Una letra mayúscula",
@@ -151,11 +152,13 @@
     "orContinueWith": "O continuar con",
     "signupFailed": "Error al crear la cuenta. Por favor intente de nuevo.",
     "verifyYourEmail": "Verifica tu correo electrónico",
-    "verificationEmailSent": "Hemos enviado un correo de verificación a",
-    "checkYourInbox": "Por favor revise su bandeja de entrada y haga clic en el enlace de verificación para continuar.",
+    "verificationEmailSent": "Enviamos un código a",
+    "checkYourInbox": "Por favor revise su bandeja de entrada e ingrese el código de verificación para continuar.",
     "checkYourEmail": "Revise su correo electrónico",
-    "clickVerificationLink": "Haga clic en el enlace de verificación que enviamos para completar su registro.",
-    "enterVerificationCode": "Ingrese el código de 6 dígitos de su correo electrónico",
+    "clickVerificationLink": "Ingrese el código de verificación de 6 dígitos que enviamos para completar su registro.",
+    "enterVerificationCode": "Ingrese su código de verificación",
+    "codeSent": "Se ha enviado un nuevo código a su correo electrónico.",
+    "verifyingCode": "Verificando...",
     "verifyEmail": "Verificar Correo Electrónico",
     "emailVerified": "¡Correo Electrónico Verificado!",
     "redirectingToDashboard": "Redirigiendo a su panel de control...",
@@ -171,7 +174,7 @@
     "sendResetLink": "Enviar enlace de restablecimiento",
     "resetLinkSent": "¡Enlace enviado!",
     "checkEmailForReset": "Revise su correo electrónico para obtener un enlace para restablecer su contraseña.",
-    "checkSpamFolder": "Si no ve el correo, revise su carpeta de spam.",
+    "checkSpamFolder": "Revise también su carpeta de spam.",
     "tryDifferentEmail": "Probar con otro correo",
     "newPassword": "Nueva contraseña",
     "confirmNewPassword": "Confirmar nueva contraseña",
@@ -194,7 +197,7 @@
     "emailExistsPasswordMismatch": "Este correo electrónico ya está registrado pero la contraseña no coincide.",
     "or": "o",
     "resetYourPassword": "restablece tu contraseña",
-    "welcomeBackVerification": "Bienvenido de nuevo. Te hemos enviado un nuevo enlace de verificación. Revisa tu bandeja de entrada."
+    "welcomeBackVerification": "Bienvenido de nuevo. Te hemos enviado un nuevo código de verificación. Revisa tu bandeja de entrada."
   },
   "dashboard": {
     "title": "Panel de control",
@@ -1591,6 +1594,12 @@
       "pricing": {
         "title": "Precios y condiciones de pago",
         "content": "Nos reservamos el derecho de modificar nuestros precios en cualquier momento para reflejar cambios en los costos operativos, las condiciones del mercado, las mejoras del servicio u otros factores comerciales.",
+        "freeTier": {
+          "title": "Plan gratuito - Oferta introductoria",
+          "content": "El plan gratuito se ofrece como una oferta introductoria y no constituye una garantía de acceso gratuito permanente. Las funciones, los límites de uso y la disponibilidad del plan gratuito pueden modificarse, reducirse o discontinuarse en cualquier momento a nuestra entera discreción.",
+          "notice": "Le notificaremos con al menos 30 días de anticipación por correo electrónico y notificación en la aplicación antes de implementar cambios materiales en el plan gratuito. Los cambios materiales incluyen, entre otros: reducciones significativas en los límites de uso, eliminación de funciones principales o discontinuación total del plan gratuito.",
+          "continued": "El uso continuado del Servicio después de dicha notificación constituye la aceptación de los cambios. Si no está de acuerdo con los cambios, puede dejar de usar el Servicio y exportar sus datos sin costo antes de que los cambios entren en vigor."
+        },
         "changes": {
           "title": "Cambios de precios",
           "content": "Le notificaremos con al menos 30 días de anticipación antes de que los cambios de precios entren en vigor para las suscripciones existentes. Los nuevos precios se aplicarán a las renovaciones después del período de notificación.",
@@ -1695,7 +1704,7 @@
       },
       "amendments": {
         "title": "Enmiendas a los términos",
-        "content": "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Notificaremos a los usuarios sobre cambios materiales publicando los nuevos Términos en esta página y actualizando la 'Fecha de vigencia'."
+        "content": "Nos reservamos el derecho de modificar estos Términos en cualquier momento. Notificaremos a los usuarios sobre cambios materiales por correo electrónico y publicando los nuevos Términos en esta página con una 'Fecha de vigencia' actualizada. Para cambios materiales que afecten sus derechos u obligaciones, proporcionaremos al menos 30 días de aviso previo. El uso continuado del Servicio después de la fecha de vigencia de los Términos revisados constituye la aceptación de los cambios."
       }
     }
   },
@@ -2993,6 +3002,8 @@
       "step4Description": "Hemos creado una conversación de ejemplo para ti. Ábrela para ver lo que Neural Summary puede hacer.",
       "step5Title": "Explora y crea",
       "step5Description": "Explora el resumen, la transcripción y los activos de IA. Haz preguntas o genera nuevos documentos.",
+      "completionTitle": "Todo listo",
+      "completionDescription": "Ya conoces lo básico. Sube una conversación o explora el ejemplo para ver Neural Summary en acción.",
       "next": "Siguiente",
       "skipTour": "Omitir tour",
       "startExploring": "Empezar a explorar",

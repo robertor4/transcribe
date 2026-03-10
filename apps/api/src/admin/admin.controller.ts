@@ -182,6 +182,47 @@ export class AdminController {
   }
 
   /**
+   * Restore a soft-deleted user account
+   * @param userId - The user ID to restore
+   * @returns Restore confirmation
+   */
+  @Post('users/:userId/restore')
+  async restoreUser(
+    @Param('userId') userId: string,
+  ): Promise<ApiResponse<{ message: string }>> {
+    this.logger.log(`Admin: Restoring user ${userId}`);
+
+    const user = await this.userRepository.getUser(userId);
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not found',
+      };
+    }
+
+    if (!user.isDeleted) {
+      return {
+        success: false,
+        error: 'User is not soft-deleted, nothing to restore',
+      };
+    }
+
+    await this.userRepository.restoreUser(userId);
+
+    this.logger.log(
+      `Admin: Restored user ${user.email} (${userId}) successfully`,
+    );
+
+    return {
+      success: true,
+      data: {
+        message: `User ${user.email} (${userId}) has been restored successfully.`,
+      },
+    };
+  }
+
+  /**
    * Reset user's monthly usage (give them a fresh trial/start)
    * @param userId - The user ID to reset usage for
    * @returns Reset confirmation with previous usage stats

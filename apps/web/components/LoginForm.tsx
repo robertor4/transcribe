@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,8 +30,10 @@ export default function LoginForm() {
 
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
+  const isSuspended = searchParams.get('suspended') === 'true';
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +71,24 @@ export default function LoginForm() {
       });
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Check if account is suspended before proceeding
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
+        const profileResponse = await fetch(`${getApiUrl()}/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (profileResponse.status === 401) {
+          const data = await profileResponse.json().catch(() => null);
+          if (data?.message?.includes('suspended')) {
+            await auth.signOut();
+            setError(tAuth('accountSuspended'));
+            setLoading(false);
+            return;
+          }
+        }
+      }
 
       // Force reload to get latest email verification status
       if (auth.currentUser) {
@@ -156,6 +177,24 @@ export default function LoginForm() {
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
 
+      // Check if account is suspended before proceeding
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
+        const profileResponse = await fetch(`${getApiUrl()}/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (profileResponse.status === 401) {
+          const data = await profileResponse.json().catch(() => null);
+          if (data?.message?.includes('suspended')) {
+            await auth.signOut();
+            setError(tAuth('accountSuspended'));
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
       // Check for pending import
       const pendingImport = getPendingImport();
       if (pendingImport) {
@@ -180,6 +219,16 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-5" onSubmit={handleEmailLogin}>
+      {isSuspended && (
+        <div className="bg-orange-900/30 border border-orange-700 rounded-lg p-3">
+          <div className="flex items-center">
+            <AlertCircle className="h-4 w-4 text-orange-400 mr-2 flex-shrink-0" />
+            <p className="text-sm text-orange-300">
+              {tAuth('accountSuspended')}
+            </p>
+          </div>
+        </div>
+      )}
       {error && (
         <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
           <div className="flex items-center">

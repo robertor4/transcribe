@@ -7,7 +7,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { AlertCircle, Loader2, Check, X, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
 import { importedConversationApi } from '@/lib/api';
@@ -108,15 +107,19 @@ export default function SignupForm() {
         email: email
       });
 
-      // Send verification email
+      // Send verification code via backend
       if (auth.currentUser) {
         try {
-          await sendEmailVerification(auth.currentUser, {
-            url: `${window.location.origin}/dashboard`, // Redirect URL after verification
+          const token = await auth.currentUser.getIdToken();
+          await fetch(`${getApiUrl()}/auth/send-verification-code`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           });
-          console.log('Verification email sent successfully');
         } catch (emailError) {
-          console.error('Error sending verification email:', emailError);
+          console.error('Error sending verification code:', emailError);
           // Still redirect to verification page even if email fails
           // User can resend from there
         }
@@ -149,13 +152,18 @@ export default function SignupForm() {
               await auth.currentUser.reload();
 
               if (!auth.currentUser.emailVerified) {
-                // Unverified: resend verification email and redirect
+                // Unverified: resend verification code and redirect
                 try {
-                  await sendEmailVerification(auth.currentUser, {
-                    url: `${window.location.origin}/dashboard`,
+                  const token = await auth.currentUser.getIdToken();
+                  await fetch(`${getApiUrl()}/auth/send-verification-code`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
                   });
                 } catch (emailError) {
-                  console.error('Error resending verification email:', emailError);
+                  console.error('Error resending verification code:', emailError);
                 }
                 router.push('/verify-email?resent=true');
               } else {

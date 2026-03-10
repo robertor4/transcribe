@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { useOnboarding } from './OnboardingProvider';
 
@@ -12,6 +13,7 @@ interface TourStep {
   titleKey: string;
   descriptionKey: string;
   position: 'top' | 'bottom' | 'left' | 'right';
+  type?: 'spotlight' | 'modal';
 }
 
 const TOUR_STEPS: TourStep[] = [
@@ -38,6 +40,13 @@ const TOUR_STEPS: TourStep[] = [
     titleKey: 'step4Title',
     descriptionKey: 'step4Description',
     position: 'bottom',
+  },
+  {
+    targetSelector: '',
+    titleKey: 'completionTitle',
+    descriptionKey: 'completionDescription',
+    position: 'bottom',
+    type: 'modal',
   },
 ];
 
@@ -85,12 +94,25 @@ export function OnboardingTour() {
   const [isVisible, setIsVisible] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
 
+  // Reset step index when tour restarts
+  const prevShowTourRef = useRef(false);
+  useEffect(() => {
+    if (showTour && !prevShowTourRef.current) {
+      setCurrentStep(0);
+      setIsVisible(false);
+    }
+    prevShowTourRef.current = showTour;
+  }, [showTour]);
+
   const step = TOUR_STEPS[currentStep];
   const isLastStep = currentStep === TOUR_STEPS.length - 1;
+  const isModalStep = step?.type === 'modal';
+  // Total spotlight steps (exclude the modal completion step from count)
+  const spotlightStepCount = TOUR_STEPS.filter((s) => s.type !== 'modal').length;
 
   // Find and track target element
   const updateTargetRect = useCallback(() => {
-    if (!step) return;
+    if (!step || isModalStep) return;
     const el = document.querySelector(step.targetSelector);
     if (el) {
       const rect = el.getBoundingClientRect();
@@ -102,10 +124,16 @@ export function OnboardingTour() {
     } else {
       setIsVisible(false);
     }
-  }, [step]);
+  }, [step, isModalStep]);
 
   useEffect(() => {
     if (!showTour) return;
+
+    // Modal steps are always visible
+    if (isModalStep) {
+      setIsVisible(true);
+      return;
+    }
 
     // Small delay to let the DOM settle
     const timeout = setTimeout(updateTargetRect, 300);
@@ -119,7 +147,7 @@ export function OnboardingTour() {
       window.removeEventListener('scroll', updateTargetRect, true);
       window.removeEventListener('resize', updateTargetRect);
     };
-  }, [showTour, currentStep, updateTargetRect]);
+  }, [showTour, currentStep, updateTargetRect, isModalStep]);
 
   const handleNext = useCallback(() => {
     if (isLastStep) {
@@ -132,6 +160,45 @@ export function OnboardingTour() {
 
   if (!showTour || !step) return null;
 
+  // Render modal completion step
+  if (isModalStep) {
+    return createPortal(
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9998] bg-black/50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+              className="w-full max-w-sm rounded-xl bg-white shadow-xl border border-gray-200 p-8 text-center"
+            >
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-[#8D6AFA]/10 border border-[#8D6AFA]/20 mb-5">
+                <CheckCircle className="h-8 w-8 text-[#8D6AFA]" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {t(step.titleKey)}
+              </h3>
+              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                {t(step.descriptionKey)}
+              </p>
+              <Button variant="brand" fullWidth onClick={completeTour}>
+                {t('startExploring')}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body,
+    );
+  }
+
+  // Render spotlight step
   const clipPath = targetRect
     ? `polygon(
         0% 0%, 0% 100%,
@@ -202,7 +269,7 @@ export function OnboardingTour() {
                 <span className="text-xs text-gray-400">
                   {t('stepOf', {
                     current: currentStep + 1,
-                    total: TOUR_STEPS.length,
+                    total: spotlightStepCount,
                   })}
                 </span>
 
@@ -214,7 +281,7 @@ export function OnboardingTour() {
                     {t('skipTour')}
                   </button>
                   <Button variant="brand" size="sm" onClick={handleNext}>
-                    {isLastStep ? t('startExploring') : t('next')}
+                    {t('next')}
                   </Button>
                 </div>
               </div>

@@ -4,9 +4,10 @@ import { EmailVerificationService } from './email-verification.service';
 import { TurnstileService } from './turnstile.service';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { UserModule } from '../user/user.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [FirebaseModule, UserModule],
+  imports: [FirebaseModule, UserModule, EmailModule],
   controllers: [AuthController],
   providers: [EmailVerificationService, TurnstileService],
   exports: [EmailVerificationService, TurnstileService],

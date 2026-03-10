@@ -135,6 +135,7 @@
     "weakPassword": "Le mot de passe doit contenir au moins 6 caractères",
     "userNotFound": "Utilisateur non trouvé",
     "tooManyRequests": "Trop de demandes. Veuillez réessayer plus tard.",
+    "accountSuspended": "Votre compte a été suspendu. Veuillez contacter le support si vous pensez qu'il s'agit d'une erreur.",
     "displayNameRequired": "Veuillez entrer votre nom complet",
     "passwordMinLength": "Au moins 8 caractères",
     "passwordUppercase": "Une lettre majuscule",
@@ -151,11 +152,13 @@
     "orContinueWith": "Ou continuer avec",
     "signupFailed": "Échec de la création du compte. Veuillez réessayer.",
     "verifyYourEmail": "Vérifiez votre e-mail",
-    "verificationEmailSent": "Nous avons envoyé un e-mail de vérification à",
-    "checkYourInbox": "Veuillez vérifier votre boîte de réception et cliquer sur le lien de vérification pour continuer.",
+    "verificationEmailSent": "Nous avons envoyé un code à",
+    "checkYourInbox": "Veuillez vérifier votre boîte de réception et entrer le code de vérification pour continuer.",
     "checkYourEmail": "Vérifiez votre e-mail",
-    "clickVerificationLink": "Cliquez sur le lien de vérification que nous avons envoyé pour terminer votre inscription.",
-    "enterVerificationCode": "Entrez le code à 6 chiffres de votre e-mail",
+    "clickVerificationLink": "Entrez le code de vérification à 6 chiffres que nous avons envoyé pour terminer votre inscription.",
+    "enterVerificationCode": "Entrez votre code de vérification",
+    "codeSent": "Un nouveau code a été envoyé à votre e-mail.",
+    "verifyingCode": "Vérification en cours...",
     "verifyEmail": "Vérifier l'e-mail",
     "emailVerified": "E-mail vérifié !",
     "redirectingToDashboard": "Redirection vers votre tableau de bord...",
@@ -171,7 +174,7 @@
     "sendResetLink": "Envoyer le lien de réinitialisation",
     "resetLinkSent": "Lien envoyé !",
     "checkEmailForReset": "Vérifiez votre e-mail pour obtenir un lien de réinitialisation de votre mot de passe.",
-    "checkSpamFolder": "Si vous ne voyez pas l'e-mail, vérifiez votre dossier spam.",
+    "checkSpamFolder": "Vérifiez aussi votre dossier spam.",
     "tryDifferentEmail": "Essayer un autre e-mail",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer le nouveau mot de passe",
@@ -194,7 +197,7 @@
     "emailExistsPasswordMismatch": "Cet e-mail est déjà enregistré mais le mot de passe ne correspond pas.",
     "or": "ou",
     "resetYourPassword": "réinitialisez votre mot de passe",
-    "welcomeBackVerification": "Bienvenue ! Nous vous avons envoyé un nouveau lien de vérification. Vérifiez votre boîte de réception."
+    "welcomeBackVerification": "Bienvenue ! Nous vous avons envoyé un nouveau code de vérification. Vérifiez votre boîte de réception."
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -1591,6 +1594,12 @@
       "pricing": {
         "title": "Tarification et conditions de paiement",
         "content": "Nous nous réservons le droit de modifier nos tarifs à tout moment pour refléter les changements de coûts opérationnels, les conditions du marché, les améliorations du service ou d'autres facteurs commerciaux.",
+        "freeTier": {
+          "title": "Forfait gratuit - Offre de lancement",
+          "content": "Le forfait gratuit est proposé en tant qu'offre de lancement et ne constitue pas une garantie d'accès gratuit permanent. Les fonctionnalités, les limites d'utilisation et la disponibilité du forfait gratuit peuvent être modifiées, réduites ou supprimées à tout moment à notre seule discrétion.",
+          "notice": "Nous vous informerons au moins 30 jours à l'avance par e-mail et notification dans l'application avant de mettre en oeuvre des changements importants au forfait gratuit. Les changements importants comprennent, sans s'y limiter : des réductions significatives des limites d'utilisation, la suppression de fonctionnalités principales ou l'arrêt total du forfait gratuit.",
+          "continued": "L'utilisation continue du Service après une telle notification constitue l'acceptation des modifications. Si vous n'êtes pas d'accord avec les modifications, vous pouvez cesser d'utiliser le Service et exporter vos données sans frais avant que les modifications ne prennent effet."
+        },
         "changes": {
           "title": "Changements de prix",
           "content": "Nous vous informerons au moins 30 jours à l'avance avant que les changements de prix ne prennent effet pour les abonnements existants. Les nouveaux prix s'appliqueront aux renouvellements après la période de préavis.",
@@ -1695,7 +1704,7 @@
       },
       "amendments": {
         "title": "Modifications des conditions",
-        "content": "Nous nous réservons le droit de modifier ces Conditions à tout moment. Nous informerons les utilisateurs de tout changement important en publiant les nouvelles Conditions sur cette page et en mettant à jour la 'Date d'entrée en vigueur'."
+        "content": "Nous nous réservons le droit de modifier ces Conditions à tout moment. Nous informerons les utilisateurs de tout changement important par e-mail et en publiant les nouvelles Conditions sur cette page avec une 'Date d'entrée en vigueur' mise à jour. Pour les changements importants affectant vos droits ou obligations, nous fournirons un préavis d'au moins 30 jours. L'utilisation continue du Service après la date d'entrée en vigueur des Conditions révisées constitue l'acceptation des modifications."
       }
     }
   },
@@ -2993,6 +3002,8 @@
       "step4Description": "Nous avons créé une conversation exemple pour vous. Ouvrez-la pour découvrir ce que Neural Summary peut faire.",
       "step5Title": "Explorez et créez",
       "step5Description": "Explorez le résumé, la transcription et les assets IA. Posez des questions ou générez de nouveaux documents.",
+      "completionTitle": "Vous êtes prêt",
+      "completionDescription": "Vous connaissez maintenant les bases. Importez une conversation ou explorez l'exemple pour voir Neural Summary en action.",
       "next": "Suivant",
       "skipTour": "Passer la visite",
       "startExploring": "Commencer l'exploration",

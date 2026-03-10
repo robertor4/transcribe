@@ -52,7 +52,8 @@ export function useConversations(): UseConversationsResult {
         setIsLoading(false);
       }
     },
-    [user]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   // Initial fetch
@@ -65,7 +66,8 @@ export function useConversations(): UseConversationsResult {
       setConversations([]);
       setIsLoading(false);
     }
-  }, [user, authLoading, fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user, authLoading, fetchConversations]);
 
   // WebSocket listeners for real-time progress
   useEffect(() => {
@@ -114,7 +116,8 @@ export function useConversations(): UseConversationsResult {
       unsubCompleted();
       unsubFailed();
     };
-  }, [user, fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user, fetchConversations]);
 
   // Subscribe to in-progress conversations
   useEffect(() => {

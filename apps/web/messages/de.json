@@ -144,6 +144,7 @@
     "acceptTermsRequired": "Bitte akzeptieren Sie die Nutzungsbedingungen",
     "captchaRequired": "Bitte schließen Sie die Sicherheitsüberprüfung ab",
     "captchaFailed": "Sicherheitsüberprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "accountSuspended": "Ihr Konto wurde gesperrt. Bitte kontaktieren Sie den Support, wenn Sie glauben, dass dies ein Fehler ist.",
     "iAgreeToThe": "Ich stimme den",
     "termsOfService": "Nutzungsbedingungen",
     "and": "und",
@@ -151,11 +152,13 @@
     "orContinueWith": "Oder fortfahren mit",
     "signupFailed": "Fehler beim Erstellen des Kontos. Bitte versuchen Sie es erneut.",
     "verifyYourEmail": "Bestätigen Sie Ihre E-Mail",
-    "verificationEmailSent": "Wir haben eine Bestätigungs-E-Mail gesendet an",
-    "checkYourInbox": "Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Bestätigungslink, um fortzufahren.",
+    "verificationEmailSent": "Wir haben einen Code gesendet an",
+    "checkYourInbox": "Bitte überprüfen Sie Ihren Posteingang und geben Sie den Bestätigungscode ein, um fortzufahren.",
     "checkYourEmail": "Überprüfen Sie Ihre E-Mails",
-    "clickVerificationLink": "Klicken Sie auf den Bestätigungslink, den wir gesendet haben, um Ihre Registrierung abzuschließen.",
-    "enterVerificationCode": "Geben Sie den 6-stelligen Code aus Ihrer E-Mail ein",
+    "clickVerificationLink": "Geben Sie den 6-stelligen Bestätigungscode ein, den wir gesendet haben, um Ihre Registrierung abzuschließen.",
+    "enterVerificationCode": "Bestätigungscode eingeben",
+    "codeSent": "Ein neuer Code wurde an Ihre E-Mail gesendet.",
+    "verifyingCode": "Wird überprüft...",
     "verifyEmail": "E-Mail bestätigen",
     "emailVerified": "E-Mail bestätigt!",
     "redirectingToDashboard": "Weiterleitung zu Ihrem Dashboard...",
@@ -171,7 +174,7 @@
     "sendResetLink": "Zurücksetzungslink senden",
     "resetLinkSent": "Link gesendet!",
     "checkEmailForReset": "Überprüfen Sie Ihre E-Mails für einen Link zum Zurücksetzen Ihres Passworts.",
-    "checkSpamFolder": "Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner.",
+    "checkSpamFolder": "Überprüfen Sie auch Ihren Spam-Ordner.",
     "tryDifferentEmail": "Andere E-Mail versuchen",
     "newPassword": "Neues Passwort",
     "confirmNewPassword": "Neues Passwort bestätigen",
@@ -194,7 +197,7 @@
     "emailExistsPasswordMismatch": "Diese E-Mail-Adresse ist bereits registriert, aber das Passwort stimmt nicht überein.",
     "or": "oder",
     "resetYourPassword": "setzen Sie Ihr Passwort zurück",
-    "welcomeBackVerification": "Willkommen zurück! Wir haben Ihnen einen neuen Bestätigungslink gesendet. Prüfen Sie Ihren Posteingang."
+    "welcomeBackVerification": "Willkommen zurück! Wir haben Ihnen einen neuen Bestätigungscode gesendet. Prüfen Sie Ihren Posteingang."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1591,6 +1594,12 @@
       "pricing": {
         "title": "Preise und Zahlungsbedingungen",
         "content": "Wir behalten uns das Recht vor, unsere Preise jederzeit zu ändern, um Änderungen der Betriebskosten, Marktbedingungen, Serviceverbesserungen oder andere geschäftliche Faktoren widerzuspiegeln.",
+        "freeTier": {
+          "title": "Kostenloses Abonnement - Einführungsangebot",
+          "content": "Das kostenlose Abonnement wird als Einführungsangebot bereitgestellt und stellt keine Garantie für dauerhaft kostenlosen Zugang dar. Die Funktionen, Nutzungsgrenzen und Verfügbarkeit des kostenlosen Abonnements können jederzeit nach eigenem Ermessen geändert, reduziert oder eingestellt werden.",
+          "notice": "Wir werden mindestens 30 Tage im Voraus per E-Mail und In-App-Benachrichtigung informieren, bevor wesentliche Änderungen am kostenlosen Abonnement vorgenommen werden. Wesentliche Änderungen umfassen unter anderem: erhebliche Reduzierungen der Nutzungsgrenzen, Entfernung von Kernfunktionen oder vollständige Einstellung des kostenlosen Abonnements.",
+          "continued": "Die fortgesetzte Nutzung des Service nach einer solchen Benachrichtigung stellt die Annahme der Änderungen dar. Wenn Sie mit den Änderungen nicht einverstanden sind, können Sie die Nutzung des Service einstellen und Ihre Daten kostenlos exportieren, bevor die Änderungen wirksam werden."
+        },
         "changes": {
           "title": "Preisänderungen",
           "content": "Wir werden Sie mindestens 30 Tage im Voraus benachrichtigen, bevor Preisänderungen für bestehende Abonnements wirksam werden. Neue Preise gelten für Verlängerungen nach Ablauf der Benachrichtigungsfrist.",
@@ -1695,7 +1704,7 @@
       },
       "amendments": {
         "title": "Änderungen der Bedingungen",
-        "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über wesentliche Änderungen informieren, indem wir die neuen Bedingungen auf dieser Seite veröffentlichen und das 'Inkrafttreten'-Datum aktualisieren."
+        "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über wesentliche Änderungen per E-Mail informieren und die neuen Bedingungen auf dieser Seite mit einem aktualisierten 'Inkrafttreten'-Datum veröffentlichen. Für wesentliche Änderungen, die Ihre Rechte oder Pflichten betreffen, werden wir mindestens 30 Tage im Voraus informieren. Die fortgesetzte Nutzung des Service nach dem Inkrafttreten überarbeiteter Bedingungen stellt die Annahme der Änderungen dar."
       }
     }
   },
@@ -2998,6 +3007,8 @@
       "step4Description": "Wir haben ein Beispielgespräch für dich erstellt. Öffne es, um zu sehen, was Neural Summary kann.",
       "step5Title": "Erkunden und erstellen",
       "step5Description": "Erkunde die Zusammenfassung, das Transkript und die KI-Assets. Stelle Fragen oder generiere neue Outputs.",
+      "completionTitle": "Alles bereit",
+      "completionDescription": "Du kennst jetzt die Grundlagen. Lade ein Gespräch hoch oder erkunde das Beispiel, um Neural Summary in Aktion zu sehen.",
       "next": "Weiter",
       "skipTour": "Tour überspringen",
       "startExploring": "Erkunden starten",

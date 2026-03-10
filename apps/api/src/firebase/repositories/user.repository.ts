@@ -159,6 +159,23 @@ export class UserRepository {
   }
 
   /**
+   * Restore a soft-deleted user (clear deletion flags, preserve all data)
+   */
+  async restoreUser(userId: string): Promise<void> {
+    try {
+      await this.db.collection('users').doc(userId).update({
+        isDeleted: false,
+        deletedAt: admin.firestore.FieldValue.delete(),
+        updatedAt: new Date(),
+      });
+      this.logger.log(`Restored soft-deleted user document for ${userId}`);
+    } catch (error) {
+      this.logger.error(`Error restoring user ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Hard delete user document from Firestore
    */
   async deleteUser(userId: string): Promise<void> {
@@ -203,7 +220,37 @@ export class UserRepository {
   async getAllUsers(): Promise<any[]> {
     try {
       const snapshot = await this.db.collection('users').get();
-      return snapshot.docs.map((doc) => this.mapUserDates(doc.data(), doc.id));
+      const users = snapshot.docs.map((doc) =>
+        this.mapUserDates(doc.data(), doc.id),
+      );
+
+      // Enrich with Firebase Auth photoURL for users missing it in Firestore
+      const missingPhoto = users.filter((u) => !u.photoURL);
+      if (missingPhoto.length > 0) {
+        try {
+          const authUsers = await this.auth.getUsers(
+            missingPhoto.map((u) => ({ uid: u.uid })),
+          );
+          const photoMap = new Map<string, string>();
+          for (const authUser of authUsers.users) {
+            if (authUser.photoURL) {
+              photoMap.set(authUser.uid, authUser.photoURL);
+            }
+          }
+          for (const u of users) {
+            if (!u.photoURL && photoMap.has(u.uid)) {
+              u.photoURL = photoMap.get(u.uid);
+            }
+          }
+        } catch (authError) {
+          this.logger.warn(
+            'Failed to enrich users with Auth photoURLs:',
+            authError,
+          );
+        }
+      }
+
+      return users;
     } catch (error) {
       this.logger.error('Error fetching all users:', error);
       return [];
@@ -228,6 +275,26 @@ export class UserRepository {
   }
 
   /**
+   * Delete documents in chunked batches of 500 (Firestore batch limit)
+   */
+  private async deleteInBatches(
+    docs: FirebaseFirestore.QueryDocumentSnapshot[],
+  ): Promise<number> {
+    const BATCH_SIZE = 500;
+    let deletedCount = 0;
+
+    for (let i = 0; i < docs.length; i += BATCH_SIZE) {
+      const chunk = docs.slice(i, i + BATCH_SIZE);
+      const batch = this.db.batch();
+      chunk.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+      deletedCount += chunk.length;
+    }
+
+    return deletedCount;
+  }
+
+  /**
    * Delete all user transcriptions (batch operation for account deletion)
    */
   async deleteUserTranscriptions(userId: string): Promise<number> {
@@ -237,15 +304,7 @@ export class UserRepository {
         .where('userId', '==', userId)
         .get();
 
-      let deletedCount = 0;
-      const batch = this.db.batch();
-
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deletedCount++;
-      });
-
-      await batch.commit();
+      const deletedCount = await this.deleteInBatches(snapshot.docs);
       this.logger.log(
         `Deleted ${deletedCount} transcriptions for user ${userId}`,
       );
@@ -269,15 +328,7 @@ export class UserRepository {
         .where('userId', '==', userId)
         .get();
 
-      let deletedCount = 0;
-      const batch = this.db.batch();
-
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deletedCount++;
-      });
-
-      await batch.commit();
+      const deletedCount = await this.deleteInBatches(snapshot.docs);
       this.logger.log(
         `Deleted ${deletedCount} generated analyses for user ${userId}`,
       );
@@ -301,15 +352,7 @@ export class UserRepository {
         .where('userId', '==', userId)
         .get();
 
-      let deletedCount = 0;
-      const batch = this.db.batch();
-
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deletedCount++;
-      });
-
-      await batch.commit();
+      const deletedCount = await this.deleteInBatches(snapshot.docs);
       this.logger.log(`Deleted ${deletedCount} folders for user ${userId}`);
       return deletedCount;
     } catch (error) {
@@ -328,15 +371,7 @@ export class UserRepository {
         .where('userId', '==', userId)
         .get();
 
-      let deletedCount = 0;
-      const batch = this.db.batch();
-
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deletedCount++;
-      });
-
-      await batch.commit();
+      const deletedCount = await this.deleteInBatches(snapshot.docs);
       this.logger.log(
         `Deleted ${deletedCount} usage records for user ${userId}`,
       );
@@ -360,15 +395,7 @@ export class UserRepository {
         .where('userId', '==', userId)
         .get();
 
-      let deletedCount = 0;
-      const batch = this.db.batch();
-
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-        deletedCount++;
-      });
-
-      await batch.commit();
+      const deletedCount = await this.deleteInBatches(snapshot.docs);
       this.logger.log(
         `Deleted ${deletedCount} imported conversations for user ${userId}`,
       );
