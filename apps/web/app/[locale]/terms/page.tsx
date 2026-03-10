@@ -28,7 +28,7 @@ export default async function TermsPage({
     text: t('meta.description'),
     url: `https://neuralsummary.com/${locale}/terms`,
     datePublished: '2025-08-10',
-    dateModified: '2025-08-27',
+    dateModified: '2026-03-09',
     publisher: {
       '@type': 'Organization',
       name: 'Neural Summary',
@@ -56,7 +56,7 @@ export default async function TermsPage({
               {t('title')}
             </h1>
             <p className="text-lg text-white/60">
-              {t('effectiveDate')}: <strong className="text-white/80">27 August 2025</strong>
+              {t('effectiveDate')}: <strong className="text-white/80">9 March 2026</strong>
             </p>
           </div>
         </section>
@@ -121,6 +121,16 @@ export default async function TermsPage({
                   {t('sections.pricing.title')}
                 </h2>
                 <p className="text-sm text-white/70 mb-3 leading-relaxed">{t('sections.pricing.content')}</p>
+
+                <h3 className="text-lg font-semibold text-white/90 mt-4 mb-2">{t('sections.pricing.freeTier.title')}</h3>
+                <p className="text-sm text-white/70 mb-3 leading-relaxed">{t('sections.pricing.freeTier.content')}</p>
+                <p className="text-sm text-white/70 mb-3 leading-relaxed">{t('sections.pricing.freeTier.notice')}</p>
+                <div className="bg-yellow-500/10 border-l-4 border-yellow-400/50 p-3 mb-3 rounded-r-lg">
+                  <div className="flex">
+                    <AlertCircle className="h-4 w-4 text-yellow-400 mt-0.5 mr-2 flex-shrink-0" />
+                    <p className="text-sm text-white/70">{t('sections.pricing.freeTier.continued')}</p>
+                  </div>
+                </div>
 
                 <h3 className="text-lg font-semibold text-white/90 mt-4 mb-2">{t('sections.pricing.changes.title')}</h3>
                 <p className="text-sm text-white/70 mb-3 leading-relaxed">{t('sections.pricing.changes.content')}</p>

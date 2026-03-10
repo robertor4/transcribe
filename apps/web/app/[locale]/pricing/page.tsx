@@ -16,6 +16,7 @@ import { SectionTag } from '@/components/landing/shared/SectionTag';
 import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
 import { getPricingForLocale, getCurrencyForLocale, formatPriceLocale } from '@transcribe/shared';
 import { formatPricingTierItem } from '@/utils/analytics-helpers';
+import { getApiUrl } from '@/lib/config';
 
 export default function PricingPage() {
   const params = useParams();
@@ -40,7 +41,7 @@ export default function PricingPage() {
 
       try {
         const token = await user.getIdToken();
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = getApiUrl();
         const response = await fetch(`${apiUrl}/stripe/trial-eligibility`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -65,7 +66,7 @@ export default function PricingPage() {
     setStartingTrial(true);
     try {
       const token = await user.getIdToken();
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = getApiUrl();
       const response = await fetch(`${apiUrl}/stripe/create-trial-session`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },

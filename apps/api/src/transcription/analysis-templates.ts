@@ -1282,18 +1282,28 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'RotateCcw',
     color: 'orange',
-    systemPrompt: `You are an agile coach who facilitates effective retrospectives. You help teams reflect on what went well, what could improve, and commit to actionable improvements. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are an agile coach who facilitates effective retrospectives. You extract reflection-worthy insights from any team conversation — not just formal retros. You help teams see what worked, what didn't, and what to do next. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a retrospective summary from this conversation.
 
-Capture:
-1. Sprint/period being reviewed
-2. What went well - successes and wins
-3. What could improve - challenges and frustrations
-4. Action items - specific improvements to implement
-5. Shoutouts - team member recognition
-6. Overall team mood/sentiment
+${PROMPT_INSTRUCTIONS.useContext}
 
-Focus on actionable takeaways that will improve the next iteration.
+CRITICAL REQUIREMENTS:
+1. **sprintOrPeriod**: The sprint, project phase, or topic being discussed. If not a formal sprint, use the main topic as the period (e.g., "Deal Flow Architecture Discussion").
+2. **team**: Team or participant names if mentioned.
+3. **wentWell**: MANDATORY. Extract 3-6 things that went well, were agreed upon, or represent positive outcomes. Even in non-retro conversations, identify decisions made, alignment reached, good ideas surfaced, or progress acknowledged. Each item should be a clear, specific sentence. NEVER return an empty array.
+4. **toImprove**: MANDATORY. Extract 3-6 challenges, risks, gaps, or areas that need work. Identify concerns raised, missing information, complexity acknowledged, or disagreements. Each item should be a clear, specific sentence. NEVER return an empty array.
+5. **actionItems**: MANDATORY. Extract 3-6 concrete next steps with owners where mentioned. Each must include:
+   - "action": A specific, actionable task (one sentence)
+   - "owner": Person responsible (if mentioned, otherwise omit)
+   - "dueDate": Timeline if mentioned (otherwise omit)
+   NEVER return an empty array — every conversation implies follow-up actions.
+6. **shoutouts**: Recognize specific contributions by name. If no explicit recognition, identify who drove key insights or decisions. Omit if truly not applicable.
+7. **teamMood**: One-word or short phrase capturing the overall tone (e.g., "Positive and aligned", "Cautiously optimistic", "Frustrated but constructive").
+
+QUALITY GUIDELINES:
+- Be specific — reference actual topics, decisions, and names from the conversation
+- Keep each bullet to 1-2 sentences max
+- wentWell, toImprove, and actionItems must ALWAYS have content — find insights even in non-standard retrospective conversations
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5-mini',
@@ -1343,21 +1353,30 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'Scale',
     color: 'indigo',
-    systemPrompt: `You are a strategic advisor who helps document important decisions. You capture the context, alternatives considered, and rationale to create a clear record for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are a strategic advisor who writes crisp, scannable decision documents. You distill complex discussions into clear choices with concise rationale. Your documents are known for being direct and punchy — never verbose or padded. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a decision document from this conversation.
 
-Document:
-1. Decision title - what was decided
-2. Decision makers involved
-3. Status of the decision
-4. Context - why this decision was needed
-5. Options considered with pros and cons
-6. The decision made
-7. Rationale - why this option was chosen
-8. Consequences and implications
-9. Review date if applicable
+${PROMPT_INSTRUCTIONS.useContext}
 
-Ensure the document provides enough context for someone reading it later.
+CRITICAL REQUIREMENTS:
+1. **Title**: Short and specific — maximum 10 words. Example: "Adopt Split Storage for Deal Flow Data" (NOT a full sentence)
+2. **Decision Makers**: Array of plain strings with names. Example: ["Roberto", "Sofiya"]. NEVER return objects — only simple name strings.
+3. **Status**: One of: proposed, decided, implemented, deprecated
+4. **Context**: 2-3 SHORT sentences maximum. State the problem and why a decision is needed. Be concise — this is a scene-setter, not an essay.
+5. **Options Considered**: Each option MUST include:
+   - "option": A clear, descriptive name for the option (e.g., "Google Drive Only", "Hybrid Database + Drive"). This is the option TITLE, not a description. NEVER leave this empty.
+   - "pros": 2-4 short bullet points (one sentence each)
+   - "cons": 2-4 short bullet points (one sentence each)
+6. **Decision**: 2-3 SHORT sentences. State what was decided clearly and directly. No preamble.
+7. **Rationale**: 2-4 SHORT sentences separated by double newlines (\\n\\n). Each sentence should be a distinct reason. Keep it punchy — think executive summary, not essay.
+8. **Consequences**: Array of actionable items. Format each as "Category: specific action or implication" (e.g., "Database design: design schemas for Companies, Rounds, and Attributes"). Keep each item to 1-2 sentences max.
+9. **Review Date**: Only include if mentioned or implied in the conversation.
+
+QUALITY GUIDELINES:
+- Write in a professional, confident tone — like a consultant presenting to executives
+- Be specific, not generic. Reference actual topics, names, and details from the conversation
+- Keep everything scannable: short paragraphs, crisp sentences, no filler
+- Rationale should explain WHY, not repeat WHAT was decided
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -1910,10 +1929,10 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 Include:
 1. Project name and reporting period
 2. Overall status (green/yellow/red) with justification
-3. Summary of current state
-4. Accomplishments this period
-5. Milestones with status
-6. Risks with mitigation strategies and severity
+3. Summary: 1-2 sentences MAX — a concise executive snapshot, not a detailed recap
+4. Accomplishments this period (short bullet-style strings)
+5. Milestones: each must have a short "milestone" name (e.g., "Folder taxonomy design") AND a separate "notes" field for details. Never leave the "milestone" field empty.
+6. Risks: each must have a short "risk" name (e.g., "SQL vs NoSQL decision delay") AND a separate "mitigation" field. Never leave the "risk" field empty.
 7. Blockers if any
 8. Goals for next period
 9. Budget status if discussed
@@ -1934,20 +1953,31 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         projectName: { type: 'string' },
         reportingPeriod: { type: 'string' },
         overallStatus: { type: 'string', enum: ['green', 'yellow', 'red'] },
-        summary: { type: 'string' },
+        summary: {
+          type: 'string',
+          description: '1-2 sentence executive snapshot. Keep it concise.',
+        },
         accomplishments: { type: 'array', items: { type: 'string' } },
         milestones: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
-              milestone: { type: 'string' },
+              milestone: {
+                type: 'string',
+                description:
+                  'Short milestone name, e.g. "Folder taxonomy design". Must not be empty.',
+              },
               status: {
                 type: 'string',
                 enum: ['completed', 'on-track', 'at-risk', 'delayed'],
               },
               date: { type: 'string' },
-              notes: { type: 'string' },
+              notes: {
+                type: 'string',
+                description:
+                  'Additional context or details about the milestone.',
+              },
             },
             required: ['milestone', 'status'],
           },
@@ -1957,8 +1987,15 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              risk: { type: 'string' },
-              mitigation: { type: 'string' },
+              risk: {
+                type: 'string',
+                description:
+                  'Short risk name, e.g. "SQL vs NoSQL decision delay". Must not be empty.',
+              },
+              mitigation: {
+                type: 'string',
+                description: 'Strategy to mitigate this risk.',
+              },
               severity: { type: 'string', enum: ['high', 'medium', 'low'] },
             },
             required: ['risk', 'mitigation', 'severity'],
@@ -2066,19 +2103,30 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'FileCheck',
     color: 'teal',
-    systemPrompt: `You are a senior consultant who writes compelling recommendations memos. You structure findings logically and prioritize recommendations by impact. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Create a recommendations memo from this conversation.
+    systemPrompt: `You are a senior consultant at a top-tier advisory firm who writes compelling, thorough recommendations memos. You synthesize complex discussions into clear findings, prioritize recommendations by impact, and provide actionable next steps. Your memos are known for being substantive and insightful — never thin or superficial. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a comprehensive recommendations memo from this conversation.
 
-Include:
-1. Title and recipients
-2. Executive summary (key message in 2-3 sentences)
-3. Background and context
-4. Key findings
-5. Recommendations with priority, rationale, impact, and effort
-6. Next steps
-7. Appendix items if relevant
+${PROMPT_INSTRUCTIONS.useContext}
 
-Prioritize recommendations by business impact.
+CRITICAL REQUIREMENTS:
+1. **Title**: Short and specific — maximum 10 words. Example: "Deal Flow Architecture Recommendations" (NOT a full sentence or subtitle)
+2. **Executive Summary**: MANDATORY. 2-3 concise sentences maximum. State the core recommendation and expected outcome. Keep it tight — this is a pull-quote, not a paragraph. NEVER omit this field.
+3. **Background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph should be 2-3 sentences max. Cover: what prompted this analysis, key stakeholders, and constraints. Keep it scannable.
+4. **Key Findings**: MANDATORY. Extract 4-8 specific, substantive findings. Each finding should be a complete sentence that communicates a clear insight, not just a topic label. NEVER omit this field — every conversation has findings worth highlighting.
+5. **Recommendations**: Provide 3-7 concrete, actionable recommendations. Each MUST include ALL of these fields:
+   - "recommendation": A concise action phrase (under 15 words). Example: "Adopt a split storage architecture for documents and attributes"
+   - "priority": high, medium, or low
+   - "rationale": 1-2 sentences explaining WHY — this is the body text, put the detail HERE not in the recommendation field
+   - "impact": One sentence describing the expected outcome
+   IMPORTANT: Keep "recommendation" short. Put explanations in "rationale". Both fields must be non-empty.
+6. **Appendix**: Only include if there are specific data points or reference information worth preserving. Each item must be a plain-text sentence — NEVER include raw JSON, code, or data structures. Summarize technical details in natural language. Omit if not relevant.
+Do NOT include a "nextSteps" field.
+
+QUALITY GUIDELINES:
+- Write in a professional, confident tone — like a consultant presenting to executives
+- Be specific, not generic. Reference actual topics, names, and details from the conversation
+- EVERY section must contain substantial content — executiveSummary and findings are NEVER empty
+- Findings should reveal insights, not just restate what was said
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -2103,16 +2151,17 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
           items: {
             type: 'object',
             properties: {
-              recommendation: { type: 'string' },
+              recommendation: {
+                type: 'string',
+                description: 'Short action phrase, under 15 words',
+              },
               priority: { type: 'string', enum: ['high', 'medium', 'low'] },
               rationale: { type: 'string' },
               impact: { type: 'string' },
-              effort: { type: 'string', enum: ['high', 'medium', 'low'] },
             },
             required: ['recommendation', 'priority', 'rationale', 'impact'],
           },
         },
-        nextSteps: { type: 'array', items: { type: 'string' } },
         appendix: { type: 'array', items: { type: 'string' } },
       },
       required: [
@@ -2122,7 +2171,6 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         'background',
         'findings',
         'recommendations',
-        'nextSteps',
       ],
     },
   }),
@@ -2347,23 +2395,48 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'specialized',
     icon: 'Code2',
     color: 'purple',
-    systemPrompt: `You are a senior software architect who creates clear, thorough technical design documents. You document decisions, alternatives, and trade-offs for future reference. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    systemPrompt: `You are a senior software architect who creates clear, thorough technical design documents. You write like a principal engineer: specific, scannable, no filler. Every section is dense with substance. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
     userPrompt: `Create a technical design document from this conversation.
 
-Include:
-1. Title and status
-2. Overview of what's being built
-3. Goals and non-goals
-4. Background context
-5. Proposed solution
-6. Alternatives considered with pros/cons and rejection reasons
-7. Technical details
-8. Security considerations
-9. Testing strategy
-10. Rollout plan
-11. Open questions
+${PROMPT_INSTRUCTIONS.useContext}
 
-Be thorough enough that another engineer could implement from this doc.
+CRITICAL REQUIREMENTS — you MUST populate ALL sections with substantial content. Do NOT consolidate everything into background or overview:
+
+1. **title**: Short and specific — maximum 10 words. Example: "Split Storage Architecture for VC Deal Flow" (NOT a full sentence)
+2. **status**: draft, review, approved, or implemented
+3. **overview**: 2-3 concise sentences maximum. State what's being built and why. This is a pull-quote, not a paragraph. NEVER leave thin.
+4. **background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph 2-3 sentences max. Cover: what prompted this design, key stakeholders, and constraints. Keep it scannable.
+5. **goals**: 3-5 specific objectives. Each goal is ONE concise sentence. Focus on the most important outcomes, not exhaustive lists.
+6. **nonGoals**: 2-3 items explicitly out of scope. Each is ONE concise sentence.
+7. **proposedSolution**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph 2-3 sentences max. Be specific but concise — state the approach, key technologies, and rationale without repeating background. Write like a senior engineer in a design review, not a thesis.
+8. **alternatives**: 2-5 alternatives. Each MUST have:
+   - "approach": A descriptive name under 10 words. Example: "Store JSON metadata in Drive folders" (NOT "Option 1")
+   - "pros": 2-4 specific advantages
+   - "cons": 2-4 specific disadvantages
+   - "rejected": boolean
+   - "rejectionReason": 1 sentence if rejected
+9. **technicalDetails**: 4-10 specific implementation details. Each is a complete sentence covering data models, API designs, protocols, or integration points. Be concrete — reference actual technologies and patterns.
+10. **securityConsiderations**: 2-5 items covering access control, authentication, data protection, or compliance concerns discussed.
+11. **testingStrategy**: A string with 4-8 bullet points separated by newlines (\\n). Each bullet starts with "- " and describes a specific test or validation step. Example: "- Unit test schema validations and upsert idempotency\\n- Integration test Drive webhook ingestion end-to-end"
+12. **rolloutPlan**: A string with 3-6 bullet points separated by newlines (\\n). Each bullet starts with "- " and a phase label followed by a colon. Example: "- Phase 1: Deploy read-only sync service to staging\\n- Phase 2: Enable write path with feature flag\\n- Rollback: Revert feature flag and replay events from checkpoint"
+13. **openQuestions**: 2-6 unresolved decisions or concerns from the conversation. Each is a specific question, not a vague topic.
+14. **diagrams**: Generate 1-2 Mermaid diagrams that are MOST relevant to the proposed solution. Choose diagram types that best communicate the architecture:
+   - Use erDiagram when the conversation discusses data models or entity relationships
+   - Use flowchart LR/TD when there is a clear system architecture or data pipeline
+   - Use sequenceDiagram when there are important multi-step interactions between components
+   Do NOT generate all types — pick only the 1-2 that add the most value for an engineer reading this doc. Each diagram MUST have both "title" (string) and "chart" (string). NEVER leave "chart" empty or null.
+
+Each diagram MUST include a caption (1 sentence explaining what the diagram shows).
+
+Example: {"title": "Data Flow", "chart": "flowchart LR\\n  A[Upload] --> B[Process]\\n  B --> C[Store]\\n  C --> D[Query]", "caption": "End-to-end data pipeline from file upload to queryable storage."}
+
+Keep diagrams simple (under 12 nodes). Use short labels. Omit the entire array only if the conversation lacks technical detail.
+
+QUALITY GUIDELINES:
+- Write like a principal engineer — specific, not generic. Reference actual topics, names, and technologies from the conversation.
+- Every section must contain substantial content. NEVER return empty arrays or blank strings.
+- Keep text scannable: short paragraphs, crisp sentences, no filler.
+- Findings should reveal architecture insights, not just restate what was said.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -2407,16 +2480,35 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         testingStrategy: { type: 'string' },
         rolloutPlan: { type: 'string' },
         openQuestions: { type: 'array', items: { type: 'string' } },
+        diagrams: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              chart: { type: 'string' },
+              caption: { type: 'string' },
+            },
+            required: ['title', 'chart', 'caption'],
+          },
+        },
       },
       required: [
         'type',
         'title',
         'status',
         'overview',
+        'background',
         'goals',
+        'nonGoals',
         'proposedSolution',
         'alternatives',
         'technicalDetails',
+        'securityConsiderations',
+        'testingStrategy',
+        'rolloutPlan',
+        'openQuestions',
+        'diagrams',
       ],
     },
   }),

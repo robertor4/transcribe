@@ -17,6 +17,23 @@ export async function generateMetadata({
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    keywords: [
+      'Neural Summary contact',
+      'contact support',
+      'get in touch',
+      'AI transcription support',
+      'Neural Summary help',
+    ],
+    alternates: {
+      canonical: `https://neuralsummary.com/${locale}/contact`,
+      languages: {
+        en: 'https://neuralsummary.com/en/contact',
+        nl: 'https://neuralsummary.com/nl/contact',
+        de: 'https://neuralsummary.com/de/contact',
+        fr: 'https://neuralsummary.com/fr/contact',
+        es: 'https://neuralsummary.com/es/contact',
+      },
+    },
     openGraph: {
       title: t('meta.title'),
       description: t('meta.description'),

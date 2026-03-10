@@ -840,6 +840,15 @@ export interface TechnicalDesignDocOutput {
   testingStrategy?: string;
   rolloutPlan?: string;
   openQuestions?: string[];
+  /** Mermaid diagrams illustrating architecture, data flow, or sequences */
+  diagrams?: Array<{
+    /** Short label describing what the diagram shows */
+    title: string;
+    /** Valid Mermaid syntax (graph, sequenceDiagram, erDiagram, flowchart, etc.) */
+    chart: string;
+    /** One-sentence caption explaining the diagram */
+    caption?: string;
+  }>;
 }
 
 /** Incident timeline entry */

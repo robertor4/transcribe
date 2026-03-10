@@ -14,6 +14,8 @@ export default async function BlogPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: 'blog' });
   const posts = getAllPosts();
 
+  const [featuredPost, ...remainingPosts] = posts;
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
@@ -31,7 +33,7 @@ export default async function BlogPage({ params }: Props) {
     <>
       <PublicHeader locale={locale} />
       <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-3">
               {t('title')}
@@ -46,10 +48,24 @@ export default async function BlogPage({ params }: Props) {
               {t('noPosts')}
             </p>
           ) : (
-            <div className="grid gap-6">
-              {posts.map((post) => (
-                <PostCard key={post.slug} post={post} locale={locale} />
-              ))}
+            <div className="space-y-10">
+              {/* Featured / latest post */}
+              {featuredPost && (
+                <PostCard
+                  post={featuredPost}
+                  locale={locale}
+                  featured
+                />
+              )}
+
+              {/* Remaining posts in a grid */}
+              {remainingPosts.length > 0 && (
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {remainingPosts.map((post) => (
+                    <PostCard key={post.slug} post={post} locale={locale} />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

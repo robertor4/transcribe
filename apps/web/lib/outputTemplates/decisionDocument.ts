@@ -13,5 +13,5 @@ export const decisionDocumentTemplate: OutputTemplate = {
   example: 'Document important decisions',
   prompt: null,
   category: 'output',
-  status: 'beta',
+  status: 'reviewed',
 };

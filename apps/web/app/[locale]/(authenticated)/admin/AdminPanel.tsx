@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUsage } from '@/contexts/UsageContext';
 import { useRouter } from 'next/navigation';
 import { User, UserRole } from '@transcribe/shared';
-import { Trash2, UserX, Shield, RefreshCw, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Trash2, UserX, RotateCcw, Shield, RefreshCw, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -15,6 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { getApiUrl } from '@/lib/config';
+import { UserAvatar } from '@/components/UserAvatar';
 
 // Tier badge config matching conversations table outline badge pattern
 const tierConfig: Record<string, { dot: string; badge: string }> = {
@@ -38,21 +44,24 @@ const statusConfig: Record<string, { dot: string; badge: string; label: string }
     badge: 'border-green-200 dark:border-green-800 text-green-700 dark:text-green-400',
     label: 'Active',
   },
-  deleted: {
-    dot: 'bg-red-500',
-    badge: 'border-red-200 dark:border-red-800 text-red-700 dark:text-red-400',
-    label: 'Deleted',
+  inactive: {
+    dot: 'bg-orange-500',
+    badge: 'border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400',
+    label: 'Inactive',
   },
 };
 
 export function AdminPanel() {
   const { user, loading: authLoading } = useAuth();
+  const { profilePhotoUrl } = useUsage();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ userId: string; hard: boolean } | null>(null);
+  const [confirmRestore, setConfirmRestore] = useState<string | null>(null);
+  const [restoringUserId, setRestoringUserId] = useState<string | null>(null);
 
   // Sort state
   type SortColumn = 'lastLogin' | 'created' | null;
@@ -134,7 +143,7 @@ export function AdminPanel() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users`,
+        `${getApiUrl()}/admin/users`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -156,15 +165,18 @@ export function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (user) {
       fetchUsers();
     }
-  }, [user, fetchUsers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user]);
 
   const handleDeleteUser = async (userId: string, hardDelete: boolean) => {
+    const targetUser = users.find((u) => u.uid === userId);
     try {
       setDeletingUserId(userId);
 
@@ -174,7 +186,7 @@ export function AdminPanel() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}?hardDelete=${hardDelete}`,
+        `${getApiUrl()}/admin/users/${userId}?hardDelete=${hardDelete}`,
         {
           method: 'DELETE',
           headers: {
@@ -188,11 +200,50 @@ export function AdminPanel() {
       }
 
       setConfirmDelete(null);
+      toast.success(
+        hardDelete
+          ? `${targetUser?.displayName || targetUser?.email || 'User'} permanently deleted`
+          : `${targetUser?.displayName || targetUser?.email || 'User'} soft-deleted`,
+      );
       await fetchUsers();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      toast.error(err instanceof Error ? err.message : 'Failed to delete user');
     } finally {
       setDeletingUserId(null);
+    }
+  };
+
+  const handleRestoreUser = async (userId: string) => {
+    const targetUser = users.find((u) => u.uid === userId);
+    try {
+      setRestoringUserId(userId);
+
+      const token = await user?.getIdToken();
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch(
+        `${getApiUrl()}/admin/users/${userId}/restore`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to restore user');
+      }
+
+      setConfirmRestore(null);
+      toast.success(`${targetUser?.displayName || targetUser?.email || 'User'} restored`);
+      await fetchUsers();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to restore user');
+    } finally {
+      setRestoringUserId(null);
     }
   };
 
@@ -293,6 +344,7 @@ export function AdminPanel() {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-100 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800/60">
+              <TableHead className="w-[40px] pr-0"><span className="sr-only">Avatar</span></TableHead>
               <TableHead>User</TableHead>
               <TableHead className="w-[100px]">Tier</TableHead>
               <TableHead className="hidden md:table-cell w-[80px]">Role</TableHead>
@@ -305,7 +357,7 @@ export function AdminPanel() {
           <TableBody>
             {sortedUsers.map((u) => {
               const tier = tierConfig[u.subscriptionTier] || tierConfig.free;
-              const status = u.isDeleted ? statusConfig.deleted : statusConfig.active;
+              const status = u.isDeleted ? statusConfig.inactive : statusConfig.active;
 
               return (
                 <TableRow
@@ -313,6 +365,15 @@ export function AdminPanel() {
                   className={`group cursor-pointer transition-colors ${u.isDeleted ? 'bg-red-50/30 dark:bg-red-900/5' : ''}`}
                   onClick={() => router.push(`/admin/users/${u.uid}`)}
                 >
+                  <TableCell className="py-2.5 pr-0 w-[40px]">
+                    <UserAvatar
+                      size="sm"
+                      freshPhotoUrl={u.uid === user?.uid ? (profilePhotoUrl ?? undefined) : (u.photoURL || undefined)}
+                      displayName={u.displayName}
+                      email={u.email}
+                      showBorder={false}
+                    />
+                  </TableCell>
                   <TableCell className="py-2.5">
                     <div>
                       <span className="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">
@@ -347,49 +408,50 @@ export function AdminPanel() {
                     </Badge>
                   </TableCell>
                   <TableCell className="py-2.5 text-right">
+                    {u.role !== UserRole.ADMIN && u.isDeleted && (
+                      <TooltipProvider>
+                        <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setConfirmRestore(u.uid)}
+                                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">Restore user</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
+                    )}
                     {u.role !== UserRole.ADMIN && !u.isDeleted && (
-                      <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                        {confirmDelete?.userId === u.uid ? (
-                          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                            <span className="text-xs text-red-700 dark:text-red-300 whitespace-nowrap">
-                              {confirmDelete.hard ? 'Permanent?' : 'Soft delete?'}
-                            </span>
-                            <Button
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleDeleteUser(u.uid, confirmDelete.hard)}
-                              disabled={deletingUserId === u.uid}
-                            >
-                              {deletingUserId === u.uid ? '...' : 'Yes'}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setConfirmDelete(null)}
-                              disabled={deletingUserId === u.uid}
-                            >
-                              No
-                            </Button>
-                          </div>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() => setConfirmDelete({ userId: u.uid, hard: false })}
-                              className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
-                              title="Soft delete (preserve data)"
-                            >
-                              <UserX className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => setConfirmDelete({ userId: u.uid, hard: true })}
-                              className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
-                              title="Hard delete (permanent)"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      <TooltipProvider>
+                        <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setConfirmDelete({ userId: u.uid, hard: false })}
+                                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                              >
+                                <UserX className="w-4 h-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">Soft delete (preserve data)</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setConfirmDelete({ userId: u.uid, hard: true })}
+                                className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">Hard delete (permanent)</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TooltipProvider>
                     )}
                   </TableCell>
                 </TableRow>
@@ -398,6 +460,46 @@ export function AdminPanel() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Delete confirmation modal */}
+      {confirmDelete && (() => {
+        const targetUser = users.find((u) => u.uid === confirmDelete.userId);
+        const userName = targetUser?.displayName || targetUser?.email || 'this user';
+        return (
+          <ConfirmModal
+            isOpen={true}
+            onClose={() => setConfirmDelete(null)}
+            onConfirm={() => handleDeleteUser(confirmDelete.userId, confirmDelete.hard)}
+            title={confirmDelete.hard ? 'Permanently delete user?' : 'Soft delete user?'}
+            message={
+              confirmDelete.hard
+                ? `This will permanently delete ${userName} and all their data (conversations, AI assets, storage files, and auth account). This action cannot be undone.`
+                : `This will mark ${userName} as deleted. Their data will be preserved and the account can potentially be recovered.`
+            }
+            confirmLabel={confirmDelete.hard ? 'Delete permanently' : 'Soft delete'}
+            variant={confirmDelete.hard ? 'danger' : 'warning'}
+            isLoading={deletingUserId === confirmDelete.userId}
+          />
+        );
+      })()}
+
+      {/* Restore confirmation modal */}
+      {confirmRestore && (() => {
+        const targetUser = users.find((u) => u.uid === confirmRestore);
+        const userName = targetUser?.displayName || targetUser?.email || 'this user';
+        return (
+          <ConfirmModal
+            isOpen={true}
+            onClose={() => setConfirmRestore(null)}
+            onConfirm={() => handleRestoreUser(confirmRestore)}
+            title="Restore user?"
+            message={`This will reactivate ${userName}. Their data and subscription will be restored.`}
+            confirmLabel="Restore"
+            variant="info"
+            isLoading={restoringUserId === confirmRestore}
+          />
+        );
+      })()}
     </div>
   );
 }

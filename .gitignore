@@ -14,6 +14,8 @@ output/
 completed/
 dist/
 build/
+.next/
+.source/
 
 # Logs
 logs/
@@ -44,6 +46,9 @@ temp/
 # Test coverage
 coverage/
 .nyc_output/
+
+# Security scan results
+security/results/
 
 # Production environment
 .env.production

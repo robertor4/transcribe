@@ -32,7 +32,10 @@
     "theme": "Design",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "generatingInBackground": "Wird noch generiert. Wir benachrichtigen dich, wenn es fertig ist.",
+    "generationComplete": "{name} ist fertig",
+    "generationFailed": "Generierung fehlgeschlagen. Bitte versuche es erneut."
   },
   "search": {
     "placeholder": "Gespräche suchen...",
@@ -64,22 +67,40 @@
         "description": "Wähle, wie du dein Audio hinzufügen möchtest",
         "descriptionMic": "Nimm Audio über dein Mikrofon auf. Ideal für persönliche Meetings, Sprachnotizen und Brainstorming-Sitzungen.",
         "descriptionTab": "Erfasse Audio von einem Browser-Tab. Ideal für Online-Meetings, Webinare und Videoanrufe in deinem Browser.",
-        "descriptionUpload": "Lade eine vorhandene Audio- oder Videodatei hoch. Ideal für aufgenommene Interviews, Podcasts und Meeting-Aufnahmen."
+        "descriptionUpload": "Lade eine vorhandene Audio- oder Videodatei hoch. Ideal für aufgenommene Interviews, Podcasts und Meeting-Aufnahmen.",
+        "sidebarLabel": "Aufnahme"
       },
       "context": {
         "title": "Kontext hinzufügen",
-        "description": "Füge Kontext hinzu, um die Transkriptionsgenauigkeit zu verbessern (optional)"
+        "description": "Füge Kontext hinzu, um die Transkriptionsgenauigkeit zu verbessern (optional)",
+        "sidebarLabel": "Kontext"
       },
       "processing": {
-        "title": "Verarbeitung...",
-        "description": "Das kann einen Moment dauern"
+        "title": "Verarbeitung",
+        "description": "Dein Gespräch wird verarbeitet",
+        "sidebarLabel": "Verarbeitung",
+        "complete": "Verarbeitung abgeschlossen",
+        "redirecting": "Weiterleitung in {countdown}s...",
+        "viewNow": "Gespräch jetzt ansehen"
       }
     },
     "contextLabel": "Kontext (optional)",
     "contextPlaceholder": "z.B. Produktmeeting, Verkaufsgespräch, Interview...",
     "back": "Zurück",
     "skip": "Überspringen",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "changeMethod": "Methode ändern",
+    "clearAll": "Alle entfernen",
+    "uploadAndProcess": "Hochladen & verarbeiten ({count})",
+    "dropFilesHere": "Dateien hier ablegen",
+    "dropFilesHereActive": "Loslassen zum Hochladen",
+    "orClickToBrowse": "oder klicken zum Durchsuchen (bis zu 3 Dateien)",
+    "supportedFormatsLabel": "Audio- & Videodateien",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB pro Datei",
+    "selectedFiles": "Ausgewählte Dateien ({count})",
+    "dragToReorder": "Ziehen zum Neuordnen",
+    "removeFile": "Datei entfernen",
+    "filesCount": "{current} von {max}"
   },
   "auth": {
     "signIn": "Anmelden",
@@ -121,6 +142,9 @@
     "passwordNumber": "Eine Zahl",
     "passwordRequirementsNotMet": "Bitte erfüllen Sie alle Passwort-Anforderungen",
     "acceptTermsRequired": "Bitte akzeptieren Sie die Nutzungsbedingungen",
+    "captchaRequired": "Bitte schließen Sie die Sicherheitsüberprüfung ab",
+    "captchaFailed": "Sicherheitsüberprüfung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "accountSuspended": "Ihr Konto wurde gesperrt. Bitte kontaktieren Sie den Support, wenn Sie glauben, dass dies ein Fehler ist.",
     "iAgreeToThe": "Ich stimme den",
     "termsOfService": "Nutzungsbedingungen",
     "and": "und",
@@ -128,11 +152,13 @@
     "orContinueWith": "Oder fortfahren mit",
     "signupFailed": "Fehler beim Erstellen des Kontos. Bitte versuchen Sie es erneut.",
     "verifyYourEmail": "Bestätigen Sie Ihre E-Mail",
-    "verificationEmailSent": "Wir haben eine Bestätigungs-E-Mail gesendet an",
-    "checkYourInbox": "Bitte überprüfen Sie Ihren Posteingang und klicken Sie auf den Bestätigungslink, um fortzufahren.",
+    "verificationEmailSent": "Wir haben einen Code gesendet an",
+    "checkYourInbox": "Bitte überprüfen Sie Ihren Posteingang und geben Sie den Bestätigungscode ein, um fortzufahren.",
     "checkYourEmail": "Überprüfen Sie Ihre E-Mails",
-    "clickVerificationLink": "Klicken Sie auf den Bestätigungslink, den wir gesendet haben, um Ihre Registrierung abzuschließen.",
-    "enterVerificationCode": "Geben Sie den 6-stelligen Code aus Ihrer E-Mail ein",
+    "clickVerificationLink": "Geben Sie den 6-stelligen Bestätigungscode ein, den wir gesendet haben, um Ihre Registrierung abzuschließen.",
+    "enterVerificationCode": "Bestätigungscode eingeben",
+    "codeSent": "Ein neuer Code wurde an Ihre E-Mail gesendet.",
+    "verifyingCode": "Wird überprüft...",
     "verifyEmail": "E-Mail bestätigen",
     "emailVerified": "E-Mail bestätigt!",
     "redirectingToDashboard": "Weiterleitung zu Ihrem Dashboard...",
@@ -148,7 +174,7 @@
     "sendResetLink": "Zurücksetzungslink senden",
     "resetLinkSent": "Link gesendet!",
     "checkEmailForReset": "Überprüfen Sie Ihre E-Mails für einen Link zum Zurücksetzen Ihres Passworts.",
-    "checkSpamFolder": "Wenn Sie die E-Mail nicht sehen, überprüfen Sie Ihren Spam-Ordner.",
+    "checkSpamFolder": "Überprüfen Sie auch Ihren Spam-Ordner.",
     "tryDifferentEmail": "Andere E-Mail versuchen",
     "newPassword": "Neues Passwort",
     "confirmNewPassword": "Neues Passwort bestätigen",
@@ -171,7 +197,7 @@
     "emailExistsPasswordMismatch": "Diese E-Mail-Adresse ist bereits registriert, aber das Passwort stimmt nicht überein.",
     "or": "oder",
     "resetYourPassword": "setzen Sie Ihr Passwort zurück",
-    "welcomeBackVerification": "Willkommen zurück! Wir haben Ihnen einen neuen Bestätigungslink gesendet. Prüfen Sie Ihren Posteingang."
+    "welcomeBackVerification": "Willkommen zurück! Wir haben Ihnen einen neuen Bestätigungscode gesendet. Prüfen Sie Ihren Posteingang."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -446,6 +472,7 @@
     },
     "confirm": {
       "cancelRecording": "Sind Sie sicher, dass Sie abbrechen möchten? Ihre Aufnahme geht verloren.",
+      "reRecord": "Möchten Sie wirklich erneut aufnehmen? Ihre aktuelle Aufnahme geht verloren.",
       "goBack": "Zurück"
     },
     "warnings": {
@@ -558,6 +585,8 @@
     "loading": "KI-Asset wird geladen...",
     "notFound": "KI-Asset nicht gefunden",
     "notFoundDescription": "Das gesuchte KI-Asset existiert nicht oder Sie haben keinen Zugriff darauf.",
+    "backToConversation": "Zurück zur Konversation",
+    "backToDashboard": "Zurück zum Dashboard",
     "modal": {
       "title": "KI-Asset erstellen",
       "steps": {
@@ -578,11 +607,11 @@
       "categorySales": "Vertrieb",
       "categoryHR": "HR & Personal",
       "categoryLeadership": "Führung",
-      "customInstructionsTitle": "Benutzerdefinierte Anweisungen hinzufügen (optional)",
-      "customInstructionsDescription": "Gib spezifische Anweisungen, um die Ausgabe an deine Bedürfnisse anzupassen",
-      "customInstructionsLabel": "Benutzerdefinierte Anweisungen",
-      "customInstructionsPlaceholder": "Beispiel: Fokussiere dich auf die technischen Aspekte, halte es unter 500 Wörtern und erwähne die besprochenen Metriken.",
-      "leaveBlankDefault": "Leer lassen für Standardeinstellungen von {name}",
+      "customInstructionsTitle": "Etwas Bestimmtes?",
+      "customInstructionsDescription": "Sag uns, worauf wir uns konzentrieren sollen, oder klick einfach auf Generieren für die Standardeinstellungen.",
+      "customInstructionsLabel": "Deine Vorgaben",
+      "customInstructionsPlaceholder": "z.B. Halte es unter 500 Wörtern, fokussiere dich auf die technischen Details, nimm die besprochenen Metriken mit...",
+      "leaveBlankDefault": "Komplett optional — wir nutzen smarte Standardeinstellungen für {name}",
       "reviewTitle": "Überprüfen und bestätigen",
       "reviewDescription": "Überprüfe deine Auswahl vor der Generierung",
       "outputType": "Ausgabetyp",
@@ -798,12 +827,20 @@
       "confirmDelete": "Dieses Asset löschen?",
       "viewFull": "Vollständige Seite anzeigen"
     },
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "translate": "Übersetzen",
+    "share": "Teilen",
     "findReplace": "Suchen & Ersetzen",
     "delete": "Löschen",
     "deleteConfirmTitle": "AI-Asset löschen?",
     "deleteConfirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Dieses AI-Asset wird dauerhaft gelöscht.",
     "deleteConfirmYes": "Ja, löschen",
-    "deleteConfirmNo": "Abbrechen"
+    "deleteConfirmNo": "Abbrechen",
+    "translatingBanner": "Übersetzung läuft...",
+    "translatingEstimate": "Übersetzung (~{seconds}s)...",
+    "translateSuccess": "Übersetzung abgeschlossen",
+    "translateError": "Übersetzung fehlgeschlagen. Bitte versuche es erneut."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +891,7 @@
       "translateTo": "Übersetzen in",
       "translating": "Übersetze...",
       "translationComplete": "Übersetzung abgeschlossen",
-      "translationFailed": "Übersetzung fehlgeschlagen",
+      "translationFailed": "Übersetzung fehlgeschlagen. Die Anfrage hat möglicherweise das Zeitlimit überschritten — bitte erneut versuchen.",
       "noTranslationsAvailable": "Keine Übersetzungen verfügbar",
       "assetsTranslated": "Assets übersetzt",
       "changeLanguage": "Sprache ändern",
@@ -867,7 +904,11 @@
       "translate": "Übersetzen",
       "showAllLanguages": "Alle Sprachen anzeigen",
       "hideLanguages": "Weniger anzeigen",
-      "slowHint": "Die Übersetzung kann bei längeren Gesprächen etwas dauern. Du kannst dieses Fenster schließen — es wird im Hintergrund fortgesetzt."
+      "retranslate": "Neu übersetzen",
+      "translatingBanner": "Übersetzung läuft...",
+      "translatingEstimate": "Übersetzung (~{seconds}s)...",
+      "translateSuccess": "Übersetzung abgeschlossen",
+      "translateError": "Übersetzung fehlgeschlagen. Bitte versuche es erneut."
     },
     "failed": {
       "title": "Verarbeitung fehlgeschlagen",
@@ -1220,9 +1261,9 @@
   "landing": {
     "hero": {
       "eyebrow": "Die Meeting-Intelligence-Plattform",
-      "headline1": "Jedes Gespräch,",
-      "headline2": "ein ",
-      "headlineEm": "strategischer Vorteil.",
+      "headline1": "Neural Summary verwandelt Gespräche",
+      "headline2": "in ",
+      "headlineEm": "strategische Dokumente.",
       "body": "Neural Summary verwandelt jedes Meeting in durchsuchbare Transkripte, Zusammenfassungen und ",
       "bodyStrong": "sofort einsetzbare Dokumente",
       "bodyEnd": ". Nichts geht verloren. Nichts muss neu geschrieben werden.",
@@ -1313,7 +1354,7 @@
       }
     },
     "ask": {
-      "tag": "Institutionelles Wissen, auf Abruf",
+      "tag": "Agentic Chat",
       "headline1": "Frag alles über",
       "headline2": "jedes ",
       "headlineEm": "Meeting.",
@@ -1382,7 +1423,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Vertraut von Entscheidungsträgern",
+      "tag": "Von Führungskräften vertraut",
       "headline1": "Führungskräfte reden.",
       "headline2": "Neural Summary ",
       "headlineEm": "erledigt den Rest.",
@@ -1518,7 +1559,7 @@
         "contact": "Kontakt",
         "blog": "Blog"
       },
-      "tagline": "Du sprichst. Es kreiert.",
+      "tagline": "Erschaffe mit deiner Stimme.",
       "copyright": "© 2026 Neural Summary. Alle Rechte vorbehalten."
     }
   },
@@ -1553,6 +1594,12 @@
       "pricing": {
         "title": "Preise und Zahlungsbedingungen",
         "content": "Wir behalten uns das Recht vor, unsere Preise jederzeit zu ändern, um Änderungen der Betriebskosten, Marktbedingungen, Serviceverbesserungen oder andere geschäftliche Faktoren widerzuspiegeln.",
+        "freeTier": {
+          "title": "Kostenloses Abonnement - Einführungsangebot",
+          "content": "Das kostenlose Abonnement wird als Einführungsangebot bereitgestellt und stellt keine Garantie für dauerhaft kostenlosen Zugang dar. Die Funktionen, Nutzungsgrenzen und Verfügbarkeit des kostenlosen Abonnements können jederzeit nach eigenem Ermessen geändert, reduziert oder eingestellt werden.",
+          "notice": "Wir werden mindestens 30 Tage im Voraus per E-Mail und In-App-Benachrichtigung informieren, bevor wesentliche Änderungen am kostenlosen Abonnement vorgenommen werden. Wesentliche Änderungen umfassen unter anderem: erhebliche Reduzierungen der Nutzungsgrenzen, Entfernung von Kernfunktionen oder vollständige Einstellung des kostenlosen Abonnements.",
+          "continued": "Die fortgesetzte Nutzung des Service nach einer solchen Benachrichtigung stellt die Annahme der Änderungen dar. Wenn Sie mit den Änderungen nicht einverstanden sind, können Sie die Nutzung des Service einstellen und Ihre Daten kostenlos exportieren, bevor die Änderungen wirksam werden."
+        },
         "changes": {
           "title": "Preisänderungen",
           "content": "Wir werden Sie mindestens 30 Tage im Voraus benachrichtigen, bevor Preisänderungen für bestehende Abonnements wirksam werden. Neue Preise gelten für Verlängerungen nach Ablauf der Benachrichtigungsfrist.",
@@ -1657,7 +1704,7 @@
       },
       "amendments": {
         "title": "Änderungen der Bedingungen",
-        "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über wesentliche Änderungen informieren, indem wir die neuen Bedingungen auf dieser Seite veröffentlichen und das 'Inkrafttreten'-Datum aktualisieren."
+        "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über wesentliche Änderungen per E-Mail informieren und die neuen Bedingungen auf dieser Seite mit einem aktualisierten 'Inkrafttreten'-Datum veröffentlichen. Für wesentliche Änderungen, die Ihre Rechte oder Pflichten betreffen, werden wir mindestens 30 Tage im Voraus informieren. Die fortgesetzte Nutzung des Service nach dem Inkrafttreten überarbeiteter Bedingungen stellt die Annahme der Änderungen dar."
       }
     }
   },
@@ -2960,6 +3007,8 @@
       "step4Description": "Wir haben ein Beispielgespräch für dich erstellt. Öffne es, um zu sehen, was Neural Summary kann.",
       "step5Title": "Erkunden und erstellen",
       "step5Description": "Erkunde die Zusammenfassung, das Transkript und die KI-Assets. Stelle Fragen oder generiere neue Outputs.",
+      "completionTitle": "Alles bereit",
+      "completionDescription": "Du kennst jetzt die Grundlagen. Lade ein Gespräch hoch oder erkunde das Beispiel, um Neural Summary in Aktion zu sehen.",
       "next": "Weiter",
       "skipTour": "Tour überspringen",
       "startExploring": "Erkunden starten",
@@ -2969,5 +3018,86 @@
     "exampleBanner": "Dies ist ein Beispielgespräch. Lade deine eigene Audiodatei hoch, um loszulegen.",
     "exampleBannerCta": "Audio hochladen",
     "tutorial": "Tutorial"
+  },
+  "about": {
+    "meta": {
+      "title": "Über Neural Summary | Sprache-zu-Dokument KI-Plattform",
+      "description": "Neural Summary ist eine KI-Plattform, die gesprochenes Denken in strukturierte, professionelle Dokumente verwandelt. Erfahren Sie mehr über unsere Mission, Technologie und unser Team."
+    },
+    "title": "Über Neural Summary",
+    "subtitle": "Die Plattform, die gesprochenes Denken in strukturierte Ergebnisse verwandelt.",
+    "mission": {
+      "tag": "Unsere Mission",
+      "title": "Die Reibung zwischen Denken und Schaffen beseitigen",
+      "body": "Neural Summary existiert, weil Ideen es verdienen, nicht zwischen einem Gespräch und einem Dokument verloren zu gehen. Wir haben eine Plattform gebaut, die gesprochene Gedanken, Meetings und grobe Notizen in strukturierte, professionelle Ergebnisse verwandelt. Kein Schreiben. Keine Formatierung. Einfach laut denken."
+    },
+    "product": {
+      "tag": "Das Produkt",
+      "title": "Was Neural Summary macht",
+      "body": "Neural Summary ist eine KI-Plattform für Sprache-zu-Dokument. Laden Sie eine Aufnahme hoch oder lassen Sie sich von unserer KI interviewen. Neural Summary transkribiert, analysiert und erstellt arbeitsfertige Dokumente: Produktspezifikationen, Blogartikel, Strategiedokumente, Follow-up-E-Mails und mehr.",
+      "features": {
+        "transcription": {
+          "title": "Transkription",
+          "desc": "Professionelle Sprache-zu-Text-Umwandlung mit Sprechererkennung in über 99 Sprachen."
+        },
+        "analysis": {
+          "title": "KI-Analyse",
+          "desc": "Neural Summary extrahiert Kernpunkte, Aufgaben und Erkenntnisse aus jedem Gespräch."
+        },
+        "templates": {
+          "title": "Dokumentvorlagen",
+          "desc": "Erstellen Sie strukturierte Ergebnisse mit über 20 professionellen Vorlagen. Von Meetingnotizen bis Produktspezifikationen."
+        },
+        "chat": {
+          "title": "Alles fragen",
+          "desc": "Chatten Sie mit Ihren Transkripten. Neural Summary beantwortet Fragen zu jedem Meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Entwickelt für",
+      "title": "Wer nutzt Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Produktmanager",
+          "desc": "Verwandeln Sie Brainstormings in Produktspezifikationen in Minuten."
+        },
+        "founders": {
+          "title": "Gründer",
+          "desc": "Machen Sie aus Visionsgesprächen Strategiedokumente für Ihr Team."
+        },
+        "consultants": {
+          "title": "Berater",
+          "desc": "Wandeln Sie Kundengespräche in Follow-up-E-Mails und Berichte um."
+        },
+        "creators": {
+          "title": "Content-Ersteller",
+          "desc": "Verwandeln Sie Interviews in veröffentlichungsfertige Artikel."
+        }
+      }
+    },
+    "values": {
+      "tag": "Unsere Werte",
+      "title": "Woran wir glauben",
+      "items": {
+        "privacy": {
+          "title": "Datenschutz zuerst",
+          "desc": "DSGVO-konform. Ihre Daten sind verschlüsselt und werden nie für Training verwendet. Alles, was Sie erstellen, gehört Ihnen."
+        },
+        "quality": {
+          "title": "Qualität vor Geschwindigkeit",
+          "desc": "Wir verwenden die besten verfügbaren KI-Modelle. Neural Summary priorisiert Genauigkeit und Nutzen."
+        },
+        "simplicity": {
+          "title": "Einfachheit",
+          "desc": "Kein Durcheinander, keine Lernkurve. Hochladen, verarbeiten, fertig. Neural Summary bleibt im Hintergrund."
+        }
+      }
+    },
+    "cta": {
+      "title": "Neural Summary kostenlos testen",
+      "body": "Beginnen Sie noch heute, Gespräche in arbeitsfertige Dokumente zu verwandeln.",
+      "button": "Loslegen"
+    }
   }
 }

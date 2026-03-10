@@ -6,16 +6,22 @@ import {
   Req,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
-import { FirebaseAuthGuard } from './firebase-auth.guard';
+import { FirebaseAuthGuard, AllowUnverifiedEmail } from './firebase-auth.guard';
 import { EmailVerificationService } from './email-verification.service';
+import { TurnstileService } from './turnstile.service';
 import { UserService } from '../user/user.service';
 import type { ApiResponse } from '@transcribe/shared';
 
 interface VerifyEmailDto {
   code: string;
+}
+
+interface VerifyTurnstileDto {
+  token: string;
 }
 
 interface AuthenticatedRequest extends Request {
@@ -27,21 +33,44 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly emailVerificationService: EmailVerificationService,
+    private readonly turnstileService: TurnstileService,
     private readonly userService: UserService,
   ) {}
+
+  @Post('verify-turnstile')
+  @Throttle({ short: { limit: 10, ttl: 60000 } }) // 10 verifications per minute
+  async verifyTurnstile(
+    @Body() dto: VerifyTurnstileDto,
+  ): Promise<ApiResponse<{ success: boolean }>> {
+    if (!dto.token) {
+      throw new HttpException(
+        'Turnstile token is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const isValid = await this.turnstileService.verifyToken(dto.token);
+    if (!isValid) {
+      this.logger.warn('Turnstile verification failed for auth request');
+      throw new HttpException(
+        'CAPTCHA verification failed. Please try again.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return {
+      success: true,
+      data: { success: true },
+    };
+  }
 
   @Post('signup')
   @Throttle({ short: { limit: 3, ttl: 60000 } }) // 3 signups per minute
   signup(): ApiResponse<{ message: string }> {
-    // This endpoint is called after Firebase Auth creates the user
-    // We use it to trigger the verification email
-    // The actual user creation is handled by Firebase Auth on the frontend
-
-    // Note: In a production app, you might want to verify the user was actually created
-    // by checking with Firebase Admin SDK
-
     return {
       success: true,
       data: {
@@ -52,6 +81,7 @@ export class AuthController {
 
   @Post('verify-email')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 5, ttl: 300000 } }) // 5 attempts per 5 minutes
   async verifyEmail(
     @Req() req: AuthenticatedRequest,
@@ -79,6 +109,7 @@ export class AuthController {
 
   @Post('resend-verification')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 resends per 10 minutes
   async resendVerification(
     @Req() req: AuthenticatedRequest,
@@ -104,7 +135,7 @@ export class AuthController {
       );
 
     // Send email
-    this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,
@@ -116,6 +147,7 @@ export class AuthController {
 
   @Post('send-verification-code')
   @UseGuards(FirebaseAuthGuard)
+  @AllowUnverifiedEmail()
   @Throttle({ short: { limit: 3, ttl: 600000 } }) // 3 sends per 10 minutes
   async sendVerificationCode(
     @Req() req: AuthenticatedRequest,
@@ -131,7 +163,7 @@ export class AuthController {
       );
 
     // Send email
-    this.emailVerificationService.sendVerificationEmail(userEmail, code);
+    await this.emailVerificationService.sendVerificationEmail(userEmail, code);
 
     return {
       success: true,

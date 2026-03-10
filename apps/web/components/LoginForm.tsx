@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,9 +11,11 @@ import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
 import { importedConversationApi } from '@/lib/api';
+import { getApiUrl } from '@/lib/config';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
@@ -22,20 +25,45 @@ export default function LoginForm() {
   const [suggestGoogle, setSuggestGoogle] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const { signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
+  const isSuspended = searchParams.get('suspended') === 'true';
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
     setSuggestGoogle(false);
     setShowPasswordReset(false);
 
+    if (!turnstileToken) {
+      setError(tAuth('captchaRequired'));
+      return;
+    }
+
+    setLoading(true);
+
     try {
+      // Verify Turnstile token server-side before signing in
+      const verifyResponse = await fetch(`${getApiUrl()}/auth/verify-turnstile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      if (!verifyResponse.ok) {
+        setError(tAuth('captchaFailed'));
+        turnstileRef.current?.reset();
+        setTurnstileToken('');
+        setLoading(false);
+        return;
+      }
+
       await signInWithEmail(email, password);
       trackEvent('login', {
         method: 'email',
@@ -43,6 +71,24 @@ export default function LoginForm() {
       });
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Check if account is suspended before proceeding
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
+        const profileResponse = await fetch(`${getApiUrl()}/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (profileResponse.status === 401) {
+          const data = await profileResponse.json().catch(() => null);
+          if (data?.message?.includes('suspended')) {
+            await auth.signOut();
+            setError(tAuth('accountSuspended'));
+            setLoading(false);
+            return;
+          }
+        }
+      }
 
       // Force reload to get latest email verification status
       if (auth.currentUser) {
@@ -131,6 +177,24 @@ export default function LoginForm() {
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
 
+      // Check if account is suspended before proceeding
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken();
+        const profileResponse = await fetch(`${getApiUrl()}/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (profileResponse.status === 401) {
+          const data = await profileResponse.json().catch(() => null);
+          if (data?.message?.includes('suspended')) {
+            await auth.signOut();
+            setError(tAuth('accountSuspended'));
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
       // Check for pending import
       const pendingImport = getPendingImport();
       if (pendingImport) {
@@ -155,6 +219,16 @@ export default function LoginForm() {
 
   return (
     <form className="space-y-5" onSubmit={handleEmailLogin}>
+      {isSuspended && (
+        <div className="bg-orange-900/30 border border-orange-700 rounded-lg p-3">
+          <div className="flex items-center">
+            <AlertCircle className="h-4 w-4 text-orange-400 mr-2 flex-shrink-0" />
+            <p className="text-sm text-orange-300">
+              {tAuth('accountSuspended')}
+            </p>
+          </div>
+        </div>
+      )}
       {error && (
         <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
           <div className="flex items-center">
@@ -233,9 +307,23 @@ export default function LoginForm() {
         </Link>
       </div>
 
+      {/* Turnstile CAPTCHA */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+            onSuccess={setTurnstileToken}
+            onError={() => setTurnstileToken('')}
+            onExpire={() => setTurnstileToken('')}
+            options={{ theme: 'dark' }}
+          />
+        </div>
+      )}
+
       <Button
         type="submit"
-        disabled={loading}
+        disabled={loading || !turnstileToken}
         className="w-full h-11 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-lg"
       >
         {loading ? (
@@ -246,15 +334,12 @@ export default function LoginForm() {
       </Button>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/[0.1]" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-3 text-gray-500 bg-white/[0.06] rounded-full text-xs">
-            {tAuth('orContinueWith')}
-          </span>
-        </div>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 border-t border-white/[0.1]" />
+        <span className="text-gray-400 text-xs">
+          {tAuth('orContinueWith')}
+        </span>
+        <div className="flex-1 border-t border-white/[0.1]" />
       </div>
 
       {/* Google Sign In */}
@@ -266,7 +351,7 @@ export default function LoginForm() {
         className={`w-full h-11 ${
           suggestGoogle
             ? 'border-[#8D6AFA] bg-purple-900/30 text-gray-200 hover:bg-purple-900/40 animate-pulse'
-            : 'bg-white/[0.06] border-white/[0.12] text-gray-300 hover:bg-white/[0.1] hover:text-white'
+            : 'bg-white/10 dark:bg-white/10 border-white/20 dark:border-white/20 text-gray-200 hover:bg-white/[0.16] dark:hover:bg-white/[0.16] hover:text-white'
         }`}
       >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

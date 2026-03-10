@@ -13,5 +13,5 @@ export const retrospectiveTemplate: OutputTemplate = {
   example: 'Summarize team retrospectives',
   prompt: null,
   category: 'output',
-  status: 'beta',
+  status: 'reviewed',
 };

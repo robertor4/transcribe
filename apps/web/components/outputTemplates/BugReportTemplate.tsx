@@ -1,10 +1,8 @@
 'use client';
 
 import {
-  Bug,
   Calendar,
   User,
-  AlertTriangle,
   ListOrdered,
   Check,
   X,
@@ -15,116 +13,114 @@ import {
   Paperclip,
 } from 'lucide-react';
 import type { BugReportOutput } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, StatusBadge } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  BulletList,
+  StatusBadge,
+  EDITORIAL,
+} from './shared';
 
 interface BugReportTemplateProps {
   data: BugReportOutput;
 }
 
 export function BugReportTemplate({ data }: BugReportTemplateProps) {
+  const metadata = (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+      {data.reportedBy && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" />
+          {data.reportedBy}
+        </span>
+      )}
+      {data.date && (
+        <span className="flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" />
+          {data.date}
+        </span>
+      )}
+      <StatusBadge status={data.severity} variant="priority" />
+      <StatusBadge status={data.priority} variant="priority" />
+    </div>
+  );
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Bug className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-              {data.title}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <StatusBadge status={data.severity} variant="priority" />
-              <StatusBadge status={data.priority} variant="priority" />
-            </div>
-            <MetadataRow
-              items={[
-                { label: 'Reported by', value: data.reportedBy, icon: User },
-                { label: 'Date', value: data.date, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      {/* Title */}
+      <EditorialTitle title={data.title} metadata={metadata} />
 
       {/* Summary */}
-      <InfoBox title="Summary" icon={AlertTriangle} variant="red">
-        {data.summary}
-      </InfoBox>
+      <EditorialPullQuote color="#ef4444">
+        <p>{data.summary}</p>
+      </EditorialPullQuote>
 
       {/* Steps to Reproduce */}
       {data.stepsToReproduce && data.stepsToReproduce.length > 0 && (
-        <SectionCard title="Steps to Reproduce" icon={ListOrdered} iconColor="text-blue-500">
-          <div className="space-y-2">
-            {data.stepsToReproduce.map((step, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{idx + 1}</span>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300 break-words">{step}</p>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <EditorialSection label="Steps to Reproduce" icon={ListOrdered}>
+          <EditorialNumberedList
+            items={data.stepsToReproduce.map((step) => ({
+              primary: step,
+            }))}
+          />
+        </EditorialSection>
       )}
 
       {/* Expected vs Actual */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SectionCard
-          title="Expected Behavior"
-          icon={Check}
-          iconColor="text-green-500"
-          className="bg-green-50/50 dark:bg-green-900/10"
-        >
-          <p className="text-gray-700 dark:text-gray-300">{data.expectedBehavior}</p>
-        </SectionCard>
-        <SectionCard
-          title="Actual Behavior"
-          icon={X}
-          iconColor="text-red-500"
-          className="bg-red-50/50 dark:bg-red-900/10"
-        >
-          <p className="text-gray-700 dark:text-gray-300">{data.actualBehavior}</p>
-        </SectionCard>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <EditorialSection label="Expected Behavior" icon={Check}>
+          <p className={EDITORIAL.body}>{data.expectedBehavior}</p>
+        </EditorialSection>
+        <EditorialSection label="Actual Behavior" icon={X}>
+          <p className={EDITORIAL.body}>{data.actualBehavior}</p>
+        </EditorialSection>
       </div>
 
       {/* Environment */}
       {data.environment && (
-        <SectionCard title="Environment" icon={Monitor} iconColor="text-gray-500">
-          <p className="text-gray-700 dark:text-gray-300 font-mono text-sm">{data.environment}</p>
-        </SectionCard>
+        <EditorialSection label="Environment" icon={Monitor} borderTop>
+          <p className="text-sm font-mono text-gray-700 dark:text-gray-300 leading-relaxed">
+            {data.environment}
+          </p>
+        </EditorialSection>
       )}
 
       {/* Possible Cause */}
       {data.possibleCause && (
-        <InfoBox title="Possible Cause" icon={Lightbulb} variant="amber">
-          {data.possibleCause}
-        </InfoBox>
+        <EditorialSection label="Possible Cause" icon={Lightbulb} borderTop>
+          <EditorialPullQuote color="#f59e0b">
+            <p>{data.possibleCause}</p>
+          </EditorialPullQuote>
+        </EditorialSection>
       )}
 
       {/* Suggested Fix */}
       {data.suggestedFix && (
-        <InfoBox title="Suggested Fix" icon={Wrench} variant="purple">
-          {data.suggestedFix}
-        </InfoBox>
+        <EditorialSection label="Suggested Fix" icon={Wrench} borderTop>
+          <EditorialPullQuote color="#8D6AFA">
+            <p>{data.suggestedFix}</p>
+          </EditorialPullQuote>
+        </EditorialSection>
       )}
 
       {/* Workaround */}
       {data.workaround && (
-        <InfoBox title="Workaround" icon={RefreshCw} variant="cyan">
-          {data.workaround}
-        </InfoBox>
+        <EditorialSection label="Workaround" icon={RefreshCw} borderTop>
+          <EditorialPullQuote color="#14D0DC">
+            <p>{data.workaround}</p>
+          </EditorialPullQuote>
+        </EditorialSection>
       )}
 
       {/* Attachments */}
       {data.attachments && data.attachments.length > 0 && (
-        <SectionCard title="Attachments" icon={Paperclip} iconColor="text-gray-500">
+        <EditorialSection label="Attachments" icon={Paperclip} borderTop>
           <BulletList items={data.attachments} bulletColor="bg-gray-400" />
-        </SectionCard>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

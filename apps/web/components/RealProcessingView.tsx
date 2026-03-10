@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { FileAudio, MessageSquare, CheckCircle2, AlertCircle, Loader2, RotateCcw, Download, ArrowUpCircle } from 'lucide-react';
+import { FileAudio, AlertCircle, RotateCcw, Download, ArrowUpCircle, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
-import { AiIcon } from './icons/AiIcon';
 import { Button } from './Button';
+import { GeneratingLoader } from './GeneratingLoader';
 import { transcriptionApi } from '@/lib/api';
 import { websocketService } from '@/lib/websocket';
 import { uploadFileDirect } from '@/utils/directUpload';
@@ -39,9 +39,55 @@ interface FailedData {
   error: string;
 }
 
+const PROCESSING_MESSAGES = [
+  'This may take a few moments',
+  'Listening to every word...',
+  'Teaching AI to understand your conversation...',
+  'Transcribing at the speed of sound...',
+  'Our AI is typing so you don\'t have to...',
+  'Turning audio into insights...',
+  'Almost there. Probably. Maybe.',
+  'Making sense of it all...',
+  'Converting speech to structured text...',
+];
+
+function RotatingSubtext() {
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % PROCESSING_MESSAGES.length);
+        setVisible(true);
+      }, 400);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <p
+      className="text-sm font-medium bg-[length:250%_100%] bg-clip-text transition-opacity duration-400"
+      style={{
+        opacity: visible ? 1 : 0,
+        backgroundImage:
+          'linear-gradient(90deg, transparent calc(50% - 4em), #d1d5db 50%, transparent calc(50% + 4em)), linear-gradient(#6b7280, #6b7280)',
+        backgroundRepeat: 'no-repeat, padding-box',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        animation: 'shimmer 3s linear infinite reverse',
+      }}
+    >
+      {PROCESSING_MESSAGES[index]}
+    </p>
+  );
+}
+
 /**
- * Real processing view that uploads files and tracks progress via WebSocket
- * Replaces the simulated ProcessingSimulator with actual backend integration
+ * Real processing view that uploads files and tracks progress via WebSocket.
+ * Redesigned to match the OutputGeneratorModal's step 3 layout with
+ * GeneratingLoader waveform animation, RotatingSubtext shimmer, and centered states.
  */
 export function RealProcessingView({
   file,
@@ -52,6 +98,7 @@ export function RealProcessingView({
   onError,
 }: RealProcessingViewProps) {
   const t = useTranslations('processing');
+  const tCreate = useTranslations('conversationCreate');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string || 'en';
@@ -59,7 +106,6 @@ export function RealProcessingView({
 
   const [stage, setStage] = useState<ProcessingStage>('uploading');
   const [progress, setProgress] = useState(0);
-  const [statusMessage, setStatusMessage] = useState('Preparing upload...');
   const [transcriptionId, setTranscriptionId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -90,7 +136,6 @@ export function RealProcessingView({
   const handleCompletion = useCallback((completedTranscriptionId: string) => {
     setStage('complete');
     setProgress(100);
-    setStatusMessage('Processing complete!');
     setCountdown(3);
 
     // Start countdown
@@ -98,7 +143,9 @@ export function RealProcessingView({
       setCountdown(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(countdownInterval);
-          onComplete(completedTranscriptionId);
+          // Call onComplete outside the state updater to avoid
+          // "Cannot update a component while rendering a different component"
+          setTimeout(() => onComplete(completedTranscriptionId), 0);
           return null;
         }
         return prev - 1;
@@ -113,7 +160,6 @@ export function RealProcessingView({
   const handleError = useCallback((error: string) => {
     setStage('error');
     setErrorMessage(error);
-    setStatusMessage('Processing failed');
     onError(error);
   }, [onError]);
 
@@ -131,7 +177,6 @@ export function RealProcessingView({
     // Reset all state
     setStage('uploading');
     setProgress(0);
-    setStatusMessage('Preparing upload...');
     setTranscriptionId(null);
     setErrorMessage(null);
     setCountdown(null);
@@ -164,6 +209,11 @@ export function RealProcessingView({
     router.push(`/${locale}/pricing`);
   }, [router, locale]);
 
+  // Truncate filename for display
+  const truncatedName = file.name.length > 30
+    ? file.name.substring(0, 27) + '...'
+    : file.name;
+
   // Upload file and setup WebSocket listeners
   useEffect(() => {
     if (uploadInitiated.current) return;
@@ -179,27 +229,13 @@ export function RealProcessingView({
         // Start upload - using direct Firebase Storage upload
         setStage('uploading');
         setProgress(0);
-        setStatusMessage('Uploading audio file...');
 
         // Upload directly to Firebase Storage with progress tracking
-        // This bypasses the backend for the actual file transfer (much faster for large files)
         const { promise: uploadPromise } = uploadFileDirect(file, user.uid, {
-          onProgress: (bytesTransferred, totalBytes, percentage, state) => {
+          onProgress: (bytesTransferred, totalBytes, percentage) => {
             // Map upload progress (0-100) to 0-25% of overall progress
             const mappedProgress = Math.round(percentage * 0.25);
             setProgress(mappedProgress);
-
-            // Update status message with upload progress for large files
-            if (totalBytes > 100 * 1024 * 1024) { // > 100MB
-              const loadedMB = (bytesTransferred / (1024 * 1024)).toFixed(0);
-              const totalMB = (totalBytes / (1024 * 1024)).toFixed(0);
-              setStatusMessage(`Uploading audio file... ${loadedMB}MB / ${totalMB}MB`);
-            }
-
-            // Handle paused state
-            if (state === 'paused') {
-              setStatusMessage('Upload paused');
-            }
           },
           onError: (error) => {
             console.error('[RealProcessingView] Direct upload error:', error);
@@ -212,7 +248,6 @@ export function RealProcessingView({
         console.log('[RealProcessingView] Direct upload complete:', uploadResult);
 
         // Now notify backend to process the uploaded file
-        setStatusMessage('Starting transcription...');
         const response = await transcriptionApi.processFromStorage(
           uploadResult.storagePath,
           uploadResult.fileName,
@@ -229,7 +264,6 @@ export function RealProcessingView({
         }
 
         // The API returns a Transcription object with 'id', not 'transcriptionId'
-        // Handle both cases for compatibility
         const responseData = response.data as { id?: string; transcriptionId?: string };
         const newTranscriptionId = responseData.id || responseData.transcriptionId;
 
@@ -252,7 +286,6 @@ export function RealProcessingView({
 
         setProgress(25);
         setStage('processing');
-        setStatusMessage('Transcribing audio...');
 
         // Subscribe to transcription updates
         websocketService.subscribeToTranscription(newTranscriptionId);
@@ -272,10 +305,8 @@ export function RealProcessingView({
             // Update stage based on backend stage
             if (progressData.stage === 'summarizing') {
               setStage('summarizing');
-              setStatusMessage('Generating summary and insights...');
             } else if (progressData.stage === 'processing') {
               setStage('processing');
-              setStatusMessage(progressData.message || 'Transcribing audio...');
             }
           }
         );
@@ -313,7 +344,6 @@ export function RealProcessingView({
         cleanupFns.current.push(unsubFailed);
 
         // Fallback: Poll for status every 10 seconds if WebSocket fails
-        // This is more aggressive than before to handle WebSocket issues
         const startPolling = () => {
           const pollInterval = setInterval(async () => {
             const currentId = transcriptionIdRef.current;
@@ -363,220 +393,110 @@ export function RealProcessingView({
   // eslint-disable-next-line react-hooks/exhaustive-deps -- Upload runs on mount and on retry, selectedTemplates is captured at that time
   }, [file, context, folderId, handleCompletion, handleError, retryCount, user?.uid]);
 
-  const getStageIcon = (stageName: ProcessingStage) => {
-    switch (stageName) {
-      case 'uploading':
-        return FileAudio;
-      case 'processing':
-        return MessageSquare;
-      case 'summarizing':
-        return null; // Use AiIcon
-      case 'complete':
-        return CheckCircle2;
-      case 'error':
-        return AlertCircle;
-    }
-  };
+  // Active processing state (uploading/processing/summarizing)
+  if (stage !== 'error' && stage !== 'complete') {
+    return (
+      <div className="py-10 text-center">
+        <GeneratingLoader className="mb-6" size="lg" />
 
-  const getStageLabel = (stageName: ProcessingStage) => {
-    switch (stageName) {
-      case 'uploading':
-        return 'Uploading';
-      case 'processing':
-        return 'Transcribing';
-      case 'summarizing':
-        return 'Analyzing';
-      case 'complete':
-        return 'Complete';
-      case 'error':
-        return 'Failed';
-    }
-  };
+        <span className="inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-3">
+          <FileAudio className="w-4 h-4" />
+          {truncatedName}
+        </span>
 
-  const stages: ProcessingStage[] = ['uploading', 'processing', 'summarizing', 'complete'];
-  const stageOrder = { uploading: 0, processing: 1, summarizing: 2, complete: 3, error: -1 };
-
-  return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      {/* File Info */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 mb-4 max-w-full">
-          <FileAudio className="w-4 h-4 flex-shrink-0 text-gray-600 dark:text-gray-400" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
-            {file.name}
-          </span>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="space-y-3">
-        <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        {/* Slim progress bar */}
+        <div className="w-48 mx-auto h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-4">
           <div
-            className={`h-full transition-all duration-500 ease-out ${
-              stage === 'error'
-                ? 'bg-red-500'
-                : 'bg-[#8D6AFA]'
-            }`}
+            className="h-full bg-[#8D6AFA] transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <div className="text-center">
-          <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {Math.round(progress)}%
-          </span>
-        </div>
+
+        <RotatingSubtext />
       </div>
+    );
+  }
 
-      {/* Stage Indicators */}
-      {stage !== 'error' && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-          {stages.map((stageName) => {
-            const Icon = getStageIcon(stageName);
-            const currentStageOrder = stageOrder[stage];
-            const thisStageOrder = stageOrder[stageName];
-            const isActive = stageName === stage;
-            const isPast = thisStageOrder < currentStageOrder;
-            const isComplete = stage === 'complete' && stageName === 'complete';
-
-            return (
-              <div
-                key={stageName}
-                className={`flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-4 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 scale-105'
-                    : isPast
-                    ? 'bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20'
-                    : 'bg-gray-50 dark:bg-gray-800'
-                }`}
-              >
-                <div
-                  className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isComplete
-                      ? 'bg-[#14D0DC] text-white'
-                      : isActive
-                      ? 'bg-[#8D6AFA] text-white'
-                      : isPast
-                      ? 'bg-[#14D0DC] text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
-                  }`}
-                >
-                  {isActive && stage !== 'complete' ? (
-                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
-                  ) : Icon ? (
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  ) : (
-                    <AiIcon size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
-                  )}
-                </div>
-                <span
-                  className={`text-xs font-medium text-center ${
-                    isActive || isPast
-                      ? 'text-gray-900 dark:text-gray-100'
-                      : 'text-gray-600 dark:text-gray-400'
-                  }`}
-                >
-                  {getStageLabel(stageName)}
-                </span>
-              </div>
-            );
-          })}
+  // Error state
+  if (stage === 'error') {
+    return (
+      <div className="py-10 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-5">
+          <AlertCircle className="w-8 h-8 text-red-500" />
         </div>
-      )}
-
-      {/* Status Message */}
-      <div className="text-center">
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-          {statusMessage}
+        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          {t('error.title')}
+        </h3>
+        <p className="text-sm text-red-600 dark:text-red-400 mb-5">
+          {errorMessage || t('error.unexpected')}
         </p>
-      </div>
 
-      {/* Error State */}
-      {stage === 'error' && (
-        <div className="space-y-4">
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium text-red-800 dark:text-red-200">
-                  {t('error.title')}
-                </h4>
-                <p className="text-sm text-red-600 dark:text-red-300">
-                  {errorMessage || t('error.unexpected')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {/* Retry button - always shown unless quota error */}
-            {!isQuotaError && (
-              <Button
-                variant="primary"
-                onClick={handleRetry}
-                disabled={isRetrying}
-                icon={<RotateCcw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />}
-              >
-                {isRetrying ? t('error.retrying') : t('error.retry')}
-              </Button>
-            )}
-
-            {/* Save recording locally - always shown */}
-            <Button
-              variant="secondary"
-              onClick={handleSaveLocally}
-              icon={<Download className="w-4 h-4" />}
-            >
-              {t('error.saveLocally')}
-            </Button>
-
-            {/* Upgrade button - shown for quota errors */}
-            {isQuotaError && (
-              <Button
-                variant="brand"
-                onClick={handleUpgrade}
-                icon={<ArrowUpCircle className="w-4 h-4" />}
-              >
-                {t('error.upgradeToPro')}
-              </Button>
-            )}
-          </div>
-
-          {/* Hint text for quota errors */}
-          {isQuotaError && (
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              {t('error.quotaHint')}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Complete State */}
-      {stage === 'complete' && (
-        <div className="space-y-4">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Redirecting to your conversation in{' '}
-              <span className="font-bold text-[#8D6AFA]">{countdown}</span>{' '}
-              second{countdown !== 1 ? 's' : ''}...
-            </p>
-          </div>
-
-          <div className="flex justify-center">
+        <div className="flex flex-wrap justify-center gap-3">
+          {!isQuotaError && (
             <Button
               variant="brand"
-              onClick={() => {
-                setCountdown(null);
-                if (transcriptionId) {
-                  onComplete(transcriptionId);
-                }
-              }}
+              size="sm"
+              onClick={handleRetry}
+              disabled={isRetrying}
+              icon={<RotateCcw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />}
             >
-              View Conversation Now
+              {isRetrying ? t('error.retrying') : t('error.retry')}
             </Button>
-          </div>
+          )}
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleSaveLocally}
+            icon={<Download className="w-4 h-4" />}
+          >
+            {t('error.saveLocally')}
+          </Button>
+
+          {isQuotaError && (
+            <Button
+              variant="brand"
+              size="sm"
+              onClick={handleUpgrade}
+              icon={<ArrowUpCircle className="w-4 h-4" />}
+            >
+              {t('error.upgradeToPro')}
+            </Button>
+          )}
         </div>
-      )}
+
+        {isQuotaError && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+            {t('error.quotaHint')}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Complete state
+  return (
+    <div className="py-10 text-center">
+      <div className="w-16 h-16 rounded-full bg-[#14D0DC] flex items-center justify-center mx-auto mb-5">
+        <Check className="w-8 h-8 text-white" />
+      </div>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        {tCreate('steps.processing.complete')}
+      </h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        {tCreate('steps.processing.redirecting', { countdown: countdown ?? 0 })}
+      </p>
+      <Button
+        variant="brand"
+        onClick={() => {
+          setCountdown(null);
+          if (transcriptionId) {
+            onComplete(transcriptionId);
+          }
+        }}
+      >
+        {tCreate('steps.processing.viewNow')}
+      </Button>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {
   Loader2,
   AlertCircle,
+  ArrowLeft,
   Mail,
   CheckSquare,
   Edit3,
@@ -13,34 +14,51 @@ import {
   FileText,
   MessageSquareQuote,
   Copy,
+  Check,
   Trash2,
-  StickyNote,
   ImagePlus,
   Replace,
   MoreVertical,
+  Globe,
 } from 'lucide-react';
 import { transcriptionApi } from '@/lib/api';
-import type { GeneratedAnalysis, BlogPostOutput, LinkedInOutput } from '@transcribe/shared';
+import type { GeneratedAnalysis, BlogPostOutput, Transcription } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
-import { DetailMetadataPanel } from '@/components/detail-pages/DetailMetadataPanel';
-import { RightPanelSection } from '@/components/detail-pages/RightPanelSection';
+import { AssetSidebar } from '@/components/AssetSidebar';
 import { Button } from '@/components/Button';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
+import { TranslationDialog } from '@/components/TranslationDialog';
+import { TranslatingBanner } from '@/components/TranslatingBanner';
+import { ShareModal } from '@/components/ShareModal';
 import { useConversation } from '@/hooks/useConversation';
-import { formatRelativeTime } from '@/lib/formatters';
+import { useConversationTranslations, estimateTranslationSeconds } from '@/hooks/useConversationTranslations';
 import { structuredOutputToMarkdown, structuredOutputToHtml } from '@/lib/outputToMarkdown';
+import { mergeTranslatedContent } from '@/lib/translationMerge';
 import type { StructuredOutput } from '@transcribe/shared';
 import { useTranslations } from 'next-intl';
 import { useUsage } from '@/contexts/UsageContext';
+import { toast } from 'sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 interface OutputDetailClientProps {
   conversationId: string;
   outputId: string;
 }
+
+/** Templates that render a sidebar (TOC, agenda, etc.) and need the wider max-w-5xl container. */
+const sidebarTemplates = new Set(['meetingMinutes']);
 
 export function OutputDetailClient({ conversationId, outputId }: OutputDetailClientProps) {
   const params = useParams();
@@ -51,6 +69,8 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const { conversation } = useConversation(conversationId);
   const { usageStats, isAdmin } = useUsage();
   const [output, setOutput] = useState<GeneratedAnalysis | null>(null);
+  const [siblingOutputs, setSiblingOutputs] = useState<GeneratedAnalysis[]>([]);
+  const [isLoadingSiblings, setIsLoadingSiblings] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [copied, setCopied] = useState(false);
@@ -58,6 +78,40 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const [imageError, setImageError] = useState<string | null>(null);
   const [showFindReplace, setShowFindReplace] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [translationDialogOpen, setTranslationDialogOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
+
+  const userTier = usageStats?.tier || 'free';
+
+  // Translation support
+  const {
+    status: translationStatus,
+    translatingScope,
+    currentLocale,
+    translateItem,
+    setLocale,
+    getTranslatedContent,
+  } = useConversationTranslations(conversationId);
+
+  const isTranslatingAsset = translatingScope?.type === 'asset' && translatingScope.assetId === outputId;
+  const [translationEstimate, setTranslationEstimate] = useState(0);
+
+  const handleTranslateAsset = async (localeCode: string, options?: { forceRetranslate?: boolean }) => {
+    setTranslationDialogOpen(false);
+    const contentLength = typeof output?.content === 'string'
+      ? output.content.length
+      : JSON.stringify(output?.content || '').length;
+    const estimate = estimateTranslationSeconds(contentLength);
+    setTranslationEstimate(estimate);
+    toast.info(t('translatingEstimate', { seconds: estimate }));
+    try {
+      await translateItem(localeCode, { type: 'asset', assetId: outputId }, options);
+      toast.success(t('translateSuccess'));
+    } catch {
+      toast.error(t('translateError'));
+    }
+  };
 
   // Icon mapping for output types
   const getOutputIcon = (type: string) => {
@@ -99,6 +153,24 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
     fetchOutput();
   }, [conversationId, outputId]);
 
+  // Fetch all sibling outputs for the sidebar
+  useEffect(() => {
+    async function fetchSiblings() {
+      setIsLoadingSiblings(true);
+      try {
+        const response = await transcriptionApi.getUserAnalyses(conversationId);
+        if (response.success && response.data) {
+          setSiblingOutputs(response.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch sibling outputs:', err);
+      } finally {
+        setIsLoadingSiblings(false);
+      }
+    }
+    fetchSiblings();
+  }, [conversationId]);
+
   // Copy content to clipboard as rich text (HTML) with plain text fallback
   const handleCopy = async () => {
     if (!output) return;
@@ -133,6 +205,19 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
       router.push(`/${locale}/conversation/${conversationId}`);
     } catch (err) {
       console.error('Failed to delete output:', err);
+    }
+  };
+
+  // Open share modal (shares the parent conversation)
+  const handleOpenShareModal = async () => {
+    try {
+      const response = await transcriptionApi.get(conversationId);
+      if (response.success && response.data) {
+        setTranscriptionForShare(response.data as Transcription);
+        setIsShareModalOpen(true);
+      }
+    } catch (err) {
+      console.error('Failed to load conversation for sharing:', err);
     }
   };
 
@@ -202,19 +287,37 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   // Error state
   if (error || !output) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {t('notFound')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error?.message || t('notFoundDescription')}
-          </p>
-          <Link href={`/${locale}/conversation/${conversationId}`}>
-            <Button variant="primary">Back to Conversation</Button>
-          </Link>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50/50 dark:bg-gray-900">
+        <Card className="w-full max-w-md mx-4 border-gray-200 dark:border-gray-700 pb-0 overflow-hidden">
+          <CardHeader className="justify-items-center text-center pb-0">
+            <div className="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center mb-1">
+              <AlertCircle className="w-6 h-6 text-amber-500" />
+            </div>
+            <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
+              {t('notFound')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-gray-700 dark:text-gray-300">
+                {error?.message || t('notFoundDescription')}
+              </AlertDescription>
+            </Alert>
+            <Separator />
+            <div className="flex flex-col gap-2 [&_a]:block [&_button]:w-full">
+              <Link href={`/${locale}/conversation/${conversationId}`}>
+                <Button variant="brand" icon={<ArrowLeft className="w-4 h-4" />}>
+                  {t('backToConversation')}
+                </Button>
+              </Link>
+              <Link href={`/${locale}/dashboard`}>
+                <Button variant="ghost">{t('backToDashboard')}</Button>
+              </Link>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-center border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 py-5" />
+        </Card>
       </div>
     );
   }
@@ -222,136 +325,183 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const OutputIcon = getOutputIcon(output.templateId);
   const conversationTitle = conversation?.title || 'Conversation';
 
-  // Extract metadata from structured content for the right panel
-  const getOutputMetadata = (): { label: string; value: string }[] => {
-    if (typeof output.content !== 'object' || !output.content) return [];
+  // Get translated content for this asset (if viewing a translation)
+  const translation = currentLocale !== 'original' ? getTranslatedContent('analysis', outputId) : undefined;
+  const translatedAssetRaw = translation?.content as { type: 'analysis'; content: string | StructuredOutput; contentType: 'markdown' | 'structured' } | undefined;
 
-    const content = output.content as { type?: string };
+  // Merge translated content with original: fills dropped fields, preserves type discriminator,
+  // and restores enum values (priority, status, severity, etc.) that GPT may have translated
+  const translatedAsset = translatedAssetRaw
+    ? {
+        ...translatedAssetRaw,
+        content:
+          typeof translatedAssetRaw.content === 'object' && typeof output.content === 'object'
+            ? mergeTranslatedContent(
+                output.content as unknown as Record<string, unknown>,
+                translatedAssetRaw.content as unknown as Record<string, unknown>,
+              )
+            : translatedAssetRaw.content,
+      }
+    : undefined;
 
-    if (content.type === 'blogPost') {
-      const blogData = output.content as BlogPostOutput;
-      const metadata: { label: string; value: string }[] = [];
-      if (blogData.metadata?.wordCount) {
-        metadata.push({ label: 'Word count', value: `${blogData.metadata.wordCount} words` });
-      }
-      if (blogData.metadata?.tone) {
-        metadata.push({ label: 'Tone', value: blogData.metadata.tone });
-      }
-      if (blogData.metadata?.targetAudience) {
-        metadata.push({ label: 'Audience', value: blogData.metadata.targetAudience });
-      }
-      return metadata;
-    }
-
-    if (content.type === 'linkedin') {
-      const linkedinData = output.content as LinkedInOutput;
-      if (linkedinData.characterCount) {
-        return [{ label: 'Characters', value: `${linkedinData.characterCount}` }];
-      }
-    }
-
-    return [];
+  // Sidebar metadata for the conversation
+  const sidebarMetadata = {
+    duration: conversation?.source?.audioDuration || 0,
+    createdAt: conversation?.createdAt ? new Date(conversation.createdAt) : new Date(),
+    status: (conversation?.status || 'ready') as 'pending' | 'processing' | 'ready' | 'failed',
+    speakers: conversation?.source?.transcript?.speakers,
+    context: conversation?.context,
   };
-
-  // Details for right panel
-  const detailsData = [
-    { label: 'Generated', value: formatRelativeTime(new Date(output.generatedAt)) },
-    { label: 'Template', value: output.templateName },
-    ...getOutputMetadata(),
-  ];
-
-  // Custom sections for the right panel
-  const customSections = output.customInstructions ? (
-    <RightPanelSection icon={StickyNote} title="Custom Instructions" showBorder>
-      <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
-        {output.customInstructions}
-      </p>
-    </RightPanelSection>
-  ) : null;
 
   return (
     <DetailPageLayout
       rightPanel={
-        <DetailMetadataPanel
-          conversation={{
-            id: conversationId,
-            title: conversationTitle,
-            audioDuration: conversation?.source.audioDuration || 0
+        <AssetSidebar
+          assets={siblingOutputs}
+          isLoading={isLoadingSiblings}
+          onGenerateNew={() => router.push(`/${locale}/conversation/${conversationId}`)}
+          onAssetClick={(asset) => {
+            router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
           }}
-          details={detailsData}
-          sectionTitle="Conversation"
-          customSections={customSections}
+          selectedAssetId={outputId}
+          metadata={sidebarMetadata}
         />
       }
     >
       <DetailPageHeader
         conversationId={conversationId}
         conversationTitle={conversationTitle}
-        icon={OutputIcon}
-        title={output.templateName}
-        subtitle={`Generated ${formatRelativeTime(new Date(output.generatedAt))}`}
+        templateName={output.templateName}
+        templateIcon={OutputIcon}
+        generatedAt={new Date(output.generatedAt)}
+        maxWidth={sidebarTemplates.has(output.templateId) ? 'max-w-5xl' : 'max-w-4xl'}
         actions={
-          <div className="flex items-center gap-1 sm:gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<Copy className="w-4 h-4" />}
-              onClick={handleCopy}
-            >
-              <span className="hidden sm:inline">{copied ? 'Copied!' : 'Copy'}</span>
-            </Button>
+          <TooltipProvider>
+            <div className="flex items-center gap-3">
+              <Tooltip open={copied || undefined}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleCopy}
+                    className={`hidden sm:block p-1.5 rounded-lg transition-colors ${
+                      copied
+                        ? 'text-green-500'
+                        : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {copied ? t('copied') : t('copy')}
+                </TooltipContent>
+              </Tooltip>
 
-            <DropdownMenu
-              trigger={
-                <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              }
-              items={[
-                // Generate Image - for blog posts with premium
-                ...(isBlogPost && isPremiumUser
-                  ? [
-                      {
-                        icon: isGeneratingImage ? Loader2 : ImagePlus,
-                        label: isGeneratingImage
-                          ? 'Generating...'
-                          : hasHeroImage
-                            ? 'Regenerate Image'
-                            : 'Generate Image',
-                        onClick: handleGenerateImage,
-                        disabled: isGeneratingImage,
-                      },
-                    ]
-                  : []),
-                // Generate Image upgrade hint - for blog posts without premium
-                ...(isBlogPost && !hasHeroImage && !isPremiumUser
-                  ? [
-                      {
-                        icon: ImagePlus,
-                        label: 'Generate Image (Pro)',
-                        onClick: () => router.push(`/${locale}/pricing`),
-                      },
-                    ]
-                  : []),
-                {
-                  icon: Replace,
-                  label: t('findReplace'),
-                  onClick: () => setShowFindReplace(true),
-                },
-                { type: 'divider' as const },
-                {
-                  icon: Trash2,
-                  label: t('delete'),
-                  onClick: () => setShowDeleteConfirm(true),
-                  variant: 'danger' as const,
-                },
-              ]}
-            />
-          </div>
+              <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setTranslationDialogOpen(true)}
+                    className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <Globe className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {t('translate')}
+                </TooltipContent>
+              </Tooltip>
+
+              <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={6}>
+                  {t('delete')}
+                </TooltipContent>
+              </Tooltip>
+
+              <DropdownMenu
+                trigger={
+                  <button className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <MoreVertical className="w-4 h-4" />
+                  </button>
+                }
+                items={[
+                  {
+                    icon: Copy,
+                    label: copied ? t('copied') : t('copy'),
+                    onClick: handleCopy,
+                  },
+                  // Generate Image - for blog posts with premium
+                  ...(isBlogPost && isPremiumUser
+                    ? [
+                        {
+                          icon: isGeneratingImage ? Loader2 : ImagePlus,
+                          label: isGeneratingImage
+                            ? 'Generating...'
+                            : hasHeroImage
+                              ? 'Regenerate Image'
+                              : 'Generate Image',
+                          onClick: handleGenerateImage,
+                          disabled: isGeneratingImage,
+                        },
+                      ]
+                    : []),
+                  // Generate Image upgrade hint - for blog posts without premium
+                  ...(isBlogPost && !hasHeroImage && !isPremiumUser
+                    ? [
+                        {
+                          icon: ImagePlus,
+                          label: 'Generate Image (Pro)',
+                          onClick: () => router.push(`/${locale}/pricing`),
+                        },
+                      ]
+                    : []),
+                  {
+                    icon: Globe,
+                    label: t('translate'),
+                    onClick: () => setTranslationDialogOpen(true),
+                  },
+                  {
+                    icon: Replace,
+                    label: t('findReplace'),
+                    onClick: () => setShowFindReplace(true),
+                  },
+                  { type: 'divider' as const },
+                  {
+                    icon: Share2,
+                    label: t('share'),
+                    onClick: handleOpenShareModal,
+                  },
+                  {
+                    icon: Trash2,
+                    label: t('delete'),
+                    onClick: () => setShowDeleteConfirm(true),
+                    variant: 'danger' as const,
+                  },
+                ]}
+              />
+            </div>
+          </TooltipProvider>
         }
       />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
+      <div className={`${sidebarTemplates.has(output.templateId) ? 'max-w-5xl' : 'max-w-4xl'} mx-auto px-4 sm:px-6 pb-8`}>
+        {/* Translation in progress banner */}
+        <TranslatingBanner
+          isActive={isTranslatingAsset}
+          estimatedSeconds={translationEstimate}
+          label={t('translatingBanner')}
+        />
+
         {/* Image generation error */}
         {imageError && (
           <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -381,8 +531,8 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           }
         >
           <OutputRenderer
-            content={output.content}
-            contentType={output.contentType}
+            content={(translatedAsset?.content ?? output.content) as string | StructuredOutput}
+            contentType={translatedAsset?.contentType ?? output.contentType}
             templateId={output.templateId}
             analysisId={output.id}
           />
@@ -410,6 +560,28 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         cancelLabel={t('deleteConfirmNo')}
         variant="danger"
       />
+
+      {/* Translation Dialog */}
+      <TranslationDialog
+        open={translationDialogOpen}
+        onOpenChange={setTranslationDialogOpen}
+        status={translationStatus}
+        currentLocale={currentLocale}
+        userTier={userTier}
+        isAdmin={isAdmin}
+        onSelectLocale={setLocale}
+        onTranslate={handleTranslateAsset}
+      />
+
+      {/* Share Modal */}
+      {transcriptionForShare && (
+        <ShareModal
+          transcription={transcriptionForShare}
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          onShareUpdate={setTranscriptionForShare}
+        />
+      )}
     </DetailPageLayout>
   );
 }

@@ -25,6 +25,7 @@ Allow: /landing
 Allow: /pricing
 Allow: /examples
 Allow: /contact
+Allow: /about
 
 # Specific crawler instructions
 User-agent: Googlebot

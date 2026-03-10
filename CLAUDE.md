@@ -67,7 +67,7 @@ The brand feels like a highly capable professional assistant.
 - Clear/confident headings, readable paragraphs with generous line height
 
 ### Tagline
-**"YOU SPEAK. IT CREATES."**
+**"CREATE WITH YOUR VOICE."**
 
 ### Logo & Brand Mark
 - **Full logo**: `/apps/web/public/assets/logos/neural-summary-logo-wTagLine.svg`
@@ -146,16 +146,16 @@ Neural Summary's landing page follows a strategic narrative arc using the **Five
 
 ## Brand Byline
 
-**Official Header Byline**: "You speak. It creates."
+**Official Header Byline**: "Create with your voice."
 
 This tagline appears in the header beneath the Neural Summary logo and embodies the core brand promise of Speech-to-Structure.
 
 **Translations:**
-- **English**: "You speak. It creates."
-- **German**: "Du sprichst. Es kreiert."
-- **Spanish**: "Tú hablas. Crea."
-- **French**: "Vous parlez. Ça crée."
-- **Dutch**: "Jij spreekt. Het creëert."
+- **English**: "Create with your voice."
+- **German**: "Erschaffe mit deiner Stimme."
+- **Spanish**: "Crea con tu voz."
+- **French**: "Créez avec votre voix."
+- **Dutch**: "Creëer met je stem."
 
 **Implementation:**
 - **Location**: Header component (`apps/web/components/PublicHeader.tsx:35`)

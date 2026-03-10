@@ -222,10 +222,10 @@ export class UserController {
     @Body()
     body: {
       responses?: OnboardingResponses;
-      questionnaireCompletedAt?: string;
-      tourCompletedAt?: string;
-      completedAt?: string;
-      skippedAt?: string;
+      questionnaireCompletedAt?: string | null;
+      tourCompletedAt?: string | null;
+      completedAt?: string | null;
+      skippedAt?: string | null;
     },
   ): Promise<ApiResponse<OnboardingData>> {
     const userId = (req as any).user.uid;

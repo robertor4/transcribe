@@ -3,9 +3,15 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  SetMetadata,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { FirebaseService } from '../firebase/firebase.service';
 import { UserRepository } from '../firebase/repositories/user.repository';
+
+export const ALLOW_UNVERIFIED_EMAIL = 'allowUnverifiedEmail';
+export const AllowUnverifiedEmail = () =>
+  SetMetadata(ALLOW_UNVERIFIED_EMAIL, true);
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
@@ -13,6 +19,7 @@ export class FirebaseAuthGuard implements CanActivate {
   private readonly LOGIN_UPDATE_THRESHOLD_MS = 60 * 60 * 1000; // 1 hour
 
   constructor(
+    private reflector: Reflector,
     private firebaseService: FirebaseService,
     private userRepository: UserRepository,
   ) {}
@@ -31,8 +38,12 @@ export class FirebaseAuthGuard implements CanActivate {
       const decodedToken = await this.firebaseService.verifyIdToken(token);
       request.user = decodedToken;
 
-      // Check if email is verified
-      if (decodedToken.email_verified === false) {
+      // Check if email is verified (skip for endpoints that unverified users need)
+      const allowUnverified = this.reflector.getAllAndOverride<boolean>(
+        ALLOW_UNVERIFIED_EMAIL,
+        [context.getHandler(), context.getClass()],
+      );
+      if (!allowUnverified && decodedToken.email_verified === false) {
         throw new UnauthorizedException(
           'Email not verified. Please verify your email to access this resource.',
         );
@@ -47,6 +58,10 @@ export class FirebaseAuthGuard implements CanActivate {
           displayName: decodedToken.name || undefined,
           photoURL: decodedToken.picture || undefined,
         });
+      } else if (user.isDeleted) {
+        throw new UnauthorizedException(
+          'Account has been suspended. Please contact support.',
+        );
       } else {
         // Update lastLogin timestamp (throttled to once per hour)
         const shouldUpdateLogin = this.shouldUpdateLastLogin(user.lastLogin);

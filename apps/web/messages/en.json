@@ -32,7 +32,10 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "generatingInBackground": "Still generating. We'll notify you when it's ready.",
+    "generationComplete": "{name} is ready",
+    "generationFailed": "Generation failed. Please try again."
   },
   "search": {
     "placeholder": "Search conversations...",
@@ -64,22 +67,40 @@
         "description": "Choose how to add your audio",
         "descriptionMic": "Record audio from your microphone. Best for in-person meetings, voice memos, and brainstorming sessions.",
         "descriptionTab": "Capture audio from a browser tab. Best for online meetings, webinars, and video calls in your browser.",
-        "descriptionUpload": "Upload an existing audio or video file. Best for pre-recorded interviews, podcasts, and meeting recordings."
+        "descriptionUpload": "Upload an existing audio or video file. Best for pre-recorded interviews, podcasts, and meeting recordings.",
+        "sidebarLabel": "Capture"
       },
       "context": {
         "title": "Add context",
-        "description": "Provide context to improve transcription accuracy (optional)"
+        "description": "Provide context to improve transcription accuracy (optional)",
+        "sidebarLabel": "Context"
       },
       "processing": {
-        "title": "Processing...",
-        "description": "This may take a moment"
+        "title": "Processing",
+        "description": "Your conversation is being processed",
+        "sidebarLabel": "Processing",
+        "complete": "Processing complete",
+        "redirecting": "Redirecting in {countdown}s...",
+        "viewNow": "View conversation now"
       }
     },
     "contextLabel": "Context (optional)",
     "contextPlaceholder": "e.g., product meeting, sales call, interview...",
     "back": "Back",
     "skip": "Skip",
-    "continue": "Continue"
+    "continue": "Continue",
+    "changeMethod": "Change method",
+    "clearAll": "Clear all",
+    "uploadAndProcess": "Upload & process ({count})",
+    "dropFilesHere": "Drop your files here",
+    "dropFilesHereActive": "Release to upload",
+    "orClickToBrowse": "or click to browse (up to 3 files)",
+    "supportedFormatsLabel": "Audio & video files",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB per file",
+    "selectedFiles": "Selected files ({count})",
+    "dragToReorder": "Drag to reorder",
+    "removeFile": "Remove file",
+    "filesCount": "{current} of {max}"
   },
   "auth": {
     "signIn": "Sign In",
@@ -121,6 +142,9 @@
     "passwordNumber": "One number",
     "passwordRequirementsNotMet": "Please meet all password requirements",
     "acceptTermsRequired": "Please accept the terms and conditions",
+    "captchaRequired": "Please complete the security check",
+    "captchaFailed": "Security check failed. Please try again.",
+    "accountSuspended": "Your account has been suspended. Please contact support if you believe this is an error.",
     "iAgreeToThe": "I agree to the",
     "termsOfService": "Terms of Service",
     "and": "and",
@@ -128,11 +152,13 @@
     "orContinueWith": "Or continue with",
     "signupFailed": "Failed to create account. Please try again.",
     "verifyYourEmail": "Verify your email",
-    "verificationEmailSent": "We've sent a verification email to",
-    "checkYourInbox": "Please check your inbox and click the verification link to continue.",
+    "verificationEmailSent": "We sent a code to",
+    "checkYourInbox": "Please check your inbox and enter the verification code to continue.",
     "checkYourEmail": "Check your email",
-    "clickVerificationLink": "Click the verification link we sent to complete your signup.",
-    "enterVerificationCode": "Enter the 6-digit code from your email",
+    "clickVerificationLink": "Enter the 6-digit verification code we sent to complete your signup.",
+    "enterVerificationCode": "Enter your verification code",
+    "codeSent": "A new code has been sent to your email.",
+    "verifyingCode": "Verifying...",
     "verifyEmail": "Verify Email",
     "emailVerified": "Email Verified!",
     "redirectingToDashboard": "Redirecting to your dashboard...",
@@ -148,7 +174,7 @@
     "sendResetLink": "Send Reset Link",
     "resetLinkSent": "Reset Link Sent!",
     "checkEmailForReset": "Check your email for a link to reset your password.",
-    "checkSpamFolder": "If you don't see the email, check your spam folder.",
+    "checkSpamFolder": "Also check your spam folder.",
     "tryDifferentEmail": "Try a different email",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
@@ -171,7 +197,7 @@
     "emailExistsPasswordMismatch": "This email is already registered but the password doesn't match.",
     "or": "or",
     "resetYourPassword": "reset your password",
-    "welcomeBackVerification": "Welcome back! We've sent you a new verification link. Check your inbox."
+    "welcomeBackVerification": "Welcome back! We've sent you a new verification code. Check your inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -447,6 +473,7 @@
     },
     "confirm": {
       "cancelRecording": "Are you sure you want to cancel? Your recording will be lost.",
+      "reRecord": "Are you sure you want to re-record? Your current recording will be lost.",
       "goBack": "Go back"
     },
     "warnings": {
@@ -559,6 +586,8 @@
     "loading": "Loading AI asset...",
     "notFound": "AI asset not found",
     "notFoundDescription": "The AI asset you are looking for does not exist or you do not have access to it.",
+    "backToConversation": "Back to conversation",
+    "backToDashboard": "Back to dashboard",
     "modal": {
       "title": "Create AI Asset",
       "steps": {
@@ -579,11 +608,11 @@
       "categorySales": "Sales",
       "categoryHR": "HR & People",
       "categoryLeadership": "Leadership",
-      "customInstructionsTitle": "Add custom instructions (optional)",
-      "customInstructionsDescription": "Provide specific guidance for the AI to tailor the output to your needs",
-      "customInstructionsLabel": "Custom Instructions",
-      "customInstructionsPlaceholder": "Example: Focus on the technical aspects, keep it under 500 words, and include specific metrics discussed.",
-      "leaveBlankDefault": "Leave blank to use default settings for {name}",
+      "customInstructionsTitle": "Anything specific?",
+      "customInstructionsDescription": "Tell us what to focus on, or just hit generate to use the defaults.",
+      "customInstructionsLabel": "Your guidance",
+      "customInstructionsPlaceholder": "e.g. Keep it under 500 words, focus on the technical details, include the metrics we discussed...",
+      "leaveBlankDefault": "Totally optional — we'll use smart defaults for {name}",
       "reviewTitle": "Review and confirm",
       "reviewDescription": "Check your selections before generating the output",
       "outputType": "Output Type",
@@ -799,12 +828,20 @@
       "confirmDelete": "Delete this asset?",
       "viewFull": "View Full Page"
     },
+    "copy": "Copy",
+    "copied": "Copied!",
+    "translate": "Translate",
+    "share": "Share",
     "findReplace": "Find & Replace",
     "delete": "Delete",
     "deleteConfirmTitle": "Delete AI Asset?",
     "deleteConfirmMessage": "This action cannot be undone. This AI asset will be permanently deleted.",
     "deleteConfirmYes": "Yes, delete",
-    "deleteConfirmNo": "Cancel"
+    "deleteConfirmNo": "Cancel",
+    "translatingBanner": "Translating...",
+    "translatingEstimate": "Translating (~{seconds}s)...",
+    "translateSuccess": "Translation complete",
+    "translateError": "Translation failed. Please try again."
   },
   "conversation": {
     "tabs": {
@@ -855,7 +892,7 @@
       "translateTo": "Translate to",
       "translating": "Translating...",
       "translationComplete": "Translation complete",
-      "translationFailed": "Translation failed",
+      "translationFailed": "Translation failed. The request may have timed out — please try again.",
       "noTranslationsAvailable": "No translations available",
       "assetsTranslated": "assets translated",
       "changeLanguage": "Change language",
@@ -868,7 +905,11 @@
       "translate": "Translate",
       "showAllLanguages": "Show all languages",
       "hideLanguages": "Show less",
-      "slowHint": "Translation may take a moment for longer conversations. You can close this dialog — it will continue in the background."
+      "retranslate": "Retranslate",
+      "translatingBanner": "Translating...",
+      "translatingEstimate": "Translating (~{seconds}s)...",
+      "translateSuccess": "Translation complete",
+      "translateError": "Translation failed. Please try again."
     },
     "failed": {
       "title": "Processing failed",
@@ -1243,9 +1284,9 @@
   "landing": {
     "hero": {
       "eyebrow": "The meeting intelligence platform",
-      "headline1": "Every conversation,",
-      "headline2": "a ",
-      "headlineEm": "strategic asset.",
+      "headline1": "Neural Summary turns conversations",
+      "headline2": "into ",
+      "headlineEm": "strategic assets.",
       "body": "Neural Summary turns every meeting into searchable transcripts, summaries, and ",
       "bodyStrong": "ready-to-use documents",
       "bodyEnd": ". Nothing gets lost. Nothing needs to be rewritten.",
@@ -1336,7 +1377,7 @@
       }
     },
     "ask": {
-      "tag": "Institutional memory, on demand",
+      "tag": "Agentic Chat",
       "headline1": "Ask anything about",
       "headline2": "any ",
       "headlineEm": "meeting.",
@@ -1405,7 +1446,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Trusted by people who run things",
+      "tag": "Trusted by leaders",
       "headline1": "Leaders talk.",
       "headline2": "Neural Summary ",
       "headlineEm": "handles the rest.",
@@ -1541,7 +1582,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "You speak. It creates.",
+      "tagline": "Create with your voice.",
       "copyright": "© 2026 Neural Summary. All rights reserved."
     }
   },
@@ -1716,6 +1757,12 @@
       "pricing": {
         "title": "Pricing and Payment Terms",
         "content": "We reserve the right to modify our pricing at any time to reflect changes in operational costs, market conditions, service improvements, or other business factors.",
+        "freeTier": {
+          "title": "Free Tier - Introductory Offer",
+          "content": "The free tier is provided as an introductory offer and does not constitute a guarantee of perpetual free access. The features, usage limits, and availability of the free tier may be modified, reduced, or discontinued at any time at our sole discretion.",
+          "notice": "We will provide at least 30 days advance notice via email and in-app notification before implementing material changes to the free tier. Material changes include, but are not limited to: significant reductions in usage limits, removal of core features, or discontinuation of the free tier entirely.",
+          "continued": "Continued use of the Service after such notification constitutes acceptance of the changes. If you do not agree with the changes, you may discontinue your use of the Service and export your data at no cost before the changes take effect."
+        },
         "changes": {
           "title": "Price Changes",
           "content": "We will provide at least 30 days advance notice before any price changes take effect for existing subscriptions. New pricing will apply to renewals after the notice period.",
@@ -1820,7 +1867,7 @@
       },
       "amendments": {
         "title": "Amendments to Terms",
-        "content": "We reserve the right to modify these Terms at any time. We will notify users of any material changes by posting the new Terms on this page and updating the 'Effective Date'."
+        "content": "We reserve the right to modify these Terms at any time. We will notify users of any material changes by email and by posting the new Terms on this page with an updated 'Effective Date'. For material changes that affect your rights or obligations, we will provide at least 30 days advance notice. Continued use of the Service after the effective date of revised Terms constitutes acceptance of the changes."
       }
     }
   },
@@ -2967,6 +3014,8 @@
       "step4Description": "We created an example conversation for you. Open it to see what Neural Summary can do.",
       "step5Title": "Explore and create",
       "step5Description": "Explore the summary, transcript, and AI assets. Try asking questions or generating new outputs.",
+      "completionTitle": "You're all set",
+      "completionDescription": "You now know the basics. Upload a conversation or explore the example to see Neural Summary in action.",
       "next": "Next",
       "skipTour": "Skip tour",
       "startExploring": "Start exploring",
@@ -2976,5 +3025,86 @@
     "exampleBanner": "This is an example conversation. Upload your own audio to get started.",
     "exampleBannerCta": "Upload audio",
     "tutorial": "Tutorial"
+  },
+  "about": {
+    "meta": {
+      "title": "About Neural Summary | Voice-to-Document AI Platform",
+      "description": "Neural Summary is a voice-to-document AI platform that turns spoken thinking into structured, professional output. Learn about our mission, technology, and team."
+    },
+    "title": "About Neural Summary",
+    "subtitle": "The platform that turns spoken thinking into structured output.",
+    "mission": {
+      "tag": "Our mission",
+      "title": "Remove the friction between thinking and creating",
+      "body": "Neural Summary exists because ideas deserve better than getting lost between a conversation and a document. We built a platform that transforms spoken thinking, meetings, and rough notes into structured, professional output. No writing. No formatting. Just think out loud."
+    },
+    "product": {
+      "tag": "The product",
+      "title": "What Neural Summary does",
+      "body": "Neural Summary is a voice-to-document AI platform. Upload a recording or let our AI interview you. Neural Summary transcribes, analyzes, and generates work-ready documents: product specs, blog posts, strategy docs, follow-up emails, and more.",
+      "features": {
+        "transcription": {
+          "title": "Transcription",
+          "desc": "Enterprise-grade speech-to-text with speaker identification in 99+ languages."
+        },
+        "analysis": {
+          "title": "AI analysis",
+          "desc": "Neural Summary extracts key points, action items, and insights from every conversation."
+        },
+        "templates": {
+          "title": "Document templates",
+          "desc": "Generate structured output using 20+ professional templates. From meeting notes to product specs."
+        },
+        "chat": {
+          "title": "Ask anything",
+          "desc": "Chat with your transcripts. Neural Summary answers questions about any meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Built for",
+      "title": "Who uses Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Product managers",
+          "desc": "Turn brainstorms into product specs in minutes."
+        },
+        "founders": {
+          "title": "Founders",
+          "desc": "Transform vision talks into strategy docs for your team."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Convert client calls into follow-up emails and reports."
+        },
+        "creators": {
+          "title": "Content creators",
+          "desc": "Turn interviews into publish-ready articles."
+        }
+      }
+    },
+    "values": {
+      "tag": "Our values",
+      "title": "What we believe",
+      "items": {
+        "privacy": {
+          "title": "Privacy first",
+          "desc": "GDPR compliant. Your data is encrypted and never used for training. You own everything you create."
+        },
+        "quality": {
+          "title": "Quality over speed",
+          "desc": "We use the best AI models available. Neural Summary prioritizes accuracy and usefulness over shortcuts."
+        },
+        "simplicity": {
+          "title": "Simplicity",
+          "desc": "No clutter, no learning curve. Upload, process, done. Neural Summary stays out of your way."
+        }
+      }
+    },
+    "cta": {
+      "title": "Try Neural Summary for free",
+      "body": "Start turning your conversations into work-ready documents today.",
+      "button": "Get started"
+    }
   }
 }

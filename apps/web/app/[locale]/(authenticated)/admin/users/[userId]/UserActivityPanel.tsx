@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { getApiUrl } from '@/lib/config';
 
 // Status badge config matching conversations table pattern
 const transcriptionStatusConfig: Record<string, { dot: string; badge: string }> = {
@@ -88,7 +89,7 @@ export function UserActivityPanel() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/activity`,
+        `${getApiUrl()}/admin/users/${userId}/activity`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -130,7 +131,7 @@ export function UserActivityPanel() {
       if (!token) throw new Error('Not authenticated');
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/reset-usage`,
+        `${getApiUrl()}/admin/users/${userId}/reset-usage`,
         { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
       );
 

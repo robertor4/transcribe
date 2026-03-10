@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Target,
   DollarSign,
   User,
   ClipboardList,
@@ -15,7 +14,16 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import type { DealQualificationOutput, MEDDICCriterion } from '@transcribe/shared';
-import { SectionCard, BulletList, InfoBox, StatusBadge } from './shared';
+import {
+  BulletList,
+  StatusBadge,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EDITORIAL,
+} from './shared';
 
 interface DealQualificationTemplateProps {
   data: DealQualificationOutput;
@@ -30,7 +38,7 @@ function QualificationGauge({ score, qualification }: { score: number; qualifica
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 mb-10">
       <div className="flex flex-col items-center">
         <div className="relative w-32 h-16 overflow-hidden">
           <div className="absolute w-32 h-32 rounded-full border-8 border-gray-200 dark:border-gray-700" />
@@ -84,44 +92,41 @@ function MEDDICCard({
           <StatusBadge status={criterion.status} variant="qualification" />
         </div>
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{criterion.evidence}</p>
+      <p className={`${EDITORIAL.body} text-sm`}>{criterion.evidence}</p>
       {details}
     </div>
   );
 }
 
 export function DealQualificationTemplate({ data }: DealQualificationTemplateProps) {
+  const metadata = (data.prospect || data.dealValue) ? (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      {data.prospect && (
+        <span className="flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" />
+          <span className="text-gray-400">Prospect:</span> {data.prospect}
+        </span>
+      )}
+      {data.dealValue && (
+        <span className="flex items-center gap-1.5">
+          <DollarSign className="w-3.5 h-3.5" />
+          <span className="text-gray-400">Deal Value:</span> {data.dealValue}
+        </span>
+      )}
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Target className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Deal Qualification - MEDDIC
-            </h2>
-            <div className="flex flex-wrap gap-4 mt-2 text-sm">
-              <span className="text-gray-700 dark:text-gray-300">
-                <span className="text-gray-500 dark:text-gray-400">Prospect:</span> {data.prospect}
-              </span>
-              {data.dealValue && (
-                <span className="text-gray-700 dark:text-gray-300">
-                  <span className="text-gray-500 dark:text-gray-400">Deal Value:</span> {data.dealValue}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title="Deal Qualification - MEDDIC" metadata={metadata} />
 
       {/* Overall Qualification Score */}
       <QualificationGauge score={data.overallScore} qualification={data.qualification} />
 
       {/* MEDDIC Criteria */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">MEDDIC Assessment</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section className="mb-10">
+        <EditorialHeading>MEDDIC Assessment</EditorialHeading>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {/* Metrics */}
           <MEDDICCard
             title="Metrics"
@@ -177,10 +182,10 @@ export function DealQualificationTemplate({ data }: DealQualificationTemplatePro
               <>
                 {data.meddic.decisionCriteria.mustHaves && data.meddic.decisionCriteria.mustHaves.length > 0 && (
                   <div className="mt-2">
-                    <span className="text-xs font-medium text-gray-500 uppercase">Must-haves:</span>
+                    <span className={EDITORIAL.sectionLabel}>Must-haves:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {data.meddic.decisionCriteria.mustHaves.map((item, i) => (
-                        <span key={i} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+                        <span key={i} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
                           {item}
                         </span>
                       ))}
@@ -205,7 +210,7 @@ export function DealQualificationTemplate({ data }: DealQualificationTemplatePro
               <>
                 {data.meddic.decisionProcess.steps && data.meddic.decisionProcess.steps.length > 0 && (
                   <div className="mt-2">
-                    <span className="text-xs font-medium text-gray-500 uppercase">Steps:</span>
+                    <span className={EDITORIAL.sectionLabel}>Steps:</span>
                     <ol className="mt-1 text-xs text-gray-600 dark:text-gray-400 list-decimal list-inside">
                       {data.meddic.decisionProcess.steps.map((step, i) => (
                         <li key={i}>{step}</li>
@@ -232,7 +237,7 @@ export function DealQualificationTemplate({ data }: DealQualificationTemplatePro
                 <div className="mt-2 space-y-1 text-xs">
                   {data.meddic.identifiedPain.organizationalPain && (
                     <p>
-                      <span className="font-medium text-gray-500">Org Pain:</span>{' '}
+                      <span className="font-medium text-gray-500 dark:text-gray-400">Org Pain:</span>{' '}
                       <span className="text-gray-600 dark:text-gray-400">
                         {data.meddic.identifiedPain.organizationalPain}
                       </span>
@@ -240,7 +245,7 @@ export function DealQualificationTemplate({ data }: DealQualificationTemplatePro
                   )}
                   {data.meddic.identifiedPain.personalPain && (
                     <p>
-                      <span className="font-medium text-gray-500">Personal Pain:</span>{' '}
+                      <span className="font-medium text-gray-500 dark:text-gray-400">Personal Pain:</span>{' '}
                       <span className="text-gray-600 dark:text-gray-400">
                         {data.meddic.identifiedPain.personalPain}
                       </span>
@@ -280,28 +285,38 @@ export function DealQualificationTemplate({ data }: DealQualificationTemplatePro
             }
           />
         </div>
-      </div>
+      </section>
 
       {/* Risk Factors */}
       {data.riskFactors && data.riskFactors.length > 0 && (
-        <InfoBox title="Risk Factors" icon={AlertTriangle} variant="red">
-          <BulletList items={data.riskFactors} bulletColor="bg-red-500" />
-        </InfoBox>
+        <EditorialSection label="Risk Factors" icon={AlertTriangle} borderTop>
+          <EditorialNumberedList
+            items={data.riskFactors.map(risk => ({
+              primary: (
+                <span className="text-red-700 dark:text-red-400">{risk}</span>
+              ),
+            }))}
+          />
+        </EditorialSection>
       )}
 
       {/* Competitive Threats */}
       {data.competitiveThreats && data.competitiveThreats.length > 0 && (
-        <SectionCard title="Competitive Threats" icon={Shield} iconColor="text-amber-500">
+        <EditorialSection label="Competitive Threats" icon={Shield} borderTop>
           <BulletList items={data.competitiveThreats} bulletColor="bg-amber-500" />
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Next Steps */}
       {data.nextSteps && data.nextSteps.length > 0 && (
-        <SectionCard title="Recommended Next Steps" icon={ArrowRight} iconColor="text-[#14D0DC]">
-          <BulletList items={data.nextSteps} bulletColor="bg-[#14D0DC]" />
-        </SectionCard>
+        <EditorialSection label="Recommended Next Steps" icon={ArrowRight} borderTop>
+          <EditorialNumberedList
+            items={data.nextSteps.map(step => ({
+              primary: step,
+            }))}
+          />
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

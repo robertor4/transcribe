@@ -67,7 +67,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
         setIsLoading(false);
       }
     },
-    [user]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   // Fetch recently opened conversations
@@ -84,7 +85,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
       // Silently ignore errors - recently opened is non-critical
       // Fall back to using conversations list in the component
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Initial fetch - only once when user is available and email is verified
   useEffect(() => {
@@ -99,7 +101,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
       // User exists but email not verified - don't fetch, just stop loading
       setIsLoading(false);
     }
-  }, [user, fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user, fetchConversations]);
 
   // Initial fetch of recently opened - only once when user is available and verified
   useEffect(() => {
@@ -110,7 +113,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
       hasFetchedRecentlyOpenedRef.current = false;
       setRecentlyOpened([]);
     }
-  }, [user, fetchRecentlyOpened]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user, fetchRecentlyOpened]);
 
   // WebSocket listeners for real-time progress
   useEffect(() => {
@@ -159,7 +163,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
       unsubCompleted();
       unsubFailed();
     };
-  }, [user, fetchConversations, fetchRecentlyOpened]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!user, fetchConversations, fetchRecentlyOpened]);
 
   // Subscribe to in-progress conversations
   useEffect(() => {
@@ -183,7 +188,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch conversations'));
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const refreshRecentlyOpened = useCallback(async () => {
     await fetchRecentlyOpened();
@@ -199,7 +205,8 @@ export function ConversationsProvider({ children }: ConversationsProviderProps) 
     } catch {
       // Silently ignore errors - user can retry
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => ({

@@ -1,0 +1,43 @@
+---
+title: Environment Variables
+description: Required environment variables for local development.
+---
+
+## Backend (`.env` at project root)
+
+| Variable | Description |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API key for GPT-5 and Whisper |
+| `ASSEMBLYAI_API_KEY` | AssemblyAI API key for transcription |
+| `FIREBASE_PROJECT_ID` | Firebase project identifier |
+| `FIREBASE_PRIVATE_KEY` | Firebase service account private key |
+| `FIREBASE_CLIENT_EMAIL` | Firebase service account email |
+| `FIREBASE_STORAGE_BUCKET` | Must use `.firebasestorage.app` format |
+| `REDIS_HOST` | Redis hostname (default: `localhost`) |
+| `REDIS_PORT` | Redis port (default: `6379`) |
+| `JWT_SECRET` | Secret for JWT signing |
+| `PORT` | API server port (default: `3001`) |
+| `GMAIL_AUTH_USER` | Gmail account for SMTP auth |
+| `GMAIL_FROM_EMAIL` | FROM address for emails (domain alias) |
+| `GMAIL_APP_PASSWORD` | Google App Password |
+| `TRANSCRIPTION_CONCURRENCY` | Parallel job count (default: `2`) |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret |
+| `GPT_MODEL_PREFERENCE` | `gpt-5`, `gpt-5-mini`, or `gpt-5-nano` |
+| `QUALITY_MODE` | `premium` or `balanced` |
+
+## Frontend (`apps/web/.env.local`)
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Firebase web API key |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Firebase auth domain |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `NEXT_PUBLIC_API_URL` | Backend API URL (default: `http://localhost:3001`) |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key |
+
+## Important Notes
+
+- **Firebase Storage Bucket**: Must use the new `.firebasestorage.app` format, not the legacy `.appspot.com` format
+- **Firebase Private Key**: Must include the full PEM block with `\n` newlines
+- **Gmail App Password**: Requires 2FA enabled on the Google account. Generate at [Google App Passwords](https://myaccount.google.com/apppasswords)

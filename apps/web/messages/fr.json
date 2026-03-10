@@ -32,7 +32,10 @@
     "theme": "Thème",
     "themeLight": "Clair",
     "themeDark": "Sombre",
-    "themeSystem": "Système"
+    "themeSystem": "Système",
+    "generatingInBackground": "Encore en cours de génération. Nous vous notifierons quand ce sera prêt.",
+    "generationComplete": "{name} est prêt",
+    "generationFailed": "La génération a échoué. Veuillez réessayer."
   },
   "search": {
     "placeholder": "Rechercher des conversations...",
@@ -64,22 +67,40 @@
         "description": "Choisissez comment ajouter votre audio",
         "descriptionMic": "Enregistrez l'audio depuis votre microphone. Idéal pour les réunions en personne, les mémos vocaux et les sessions de brainstorming.",
         "descriptionTab": "Capturez l'audio d'un onglet de navigateur. Idéal pour les réunions en ligne, les webinaires et les appels vidéo dans votre navigateur.",
-        "descriptionUpload": "Importez un fichier audio ou vidéo existant. Idéal pour les interviews enregistrées, les podcasts et les enregistrements de réunions."
+        "descriptionUpload": "Importez un fichier audio ou vidéo existant. Idéal pour les interviews enregistrées, les podcasts et les enregistrements de réunions.",
+        "sidebarLabel": "Capture"
       },
       "context": {
         "title": "Ajouter du contexte",
-        "description": "Fournissez du contexte pour améliorer la précision de la transcription (optionnel)"
+        "description": "Fournissez du contexte pour améliorer la précision de la transcription (optionnel)",
+        "sidebarLabel": "Contexte"
       },
       "processing": {
-        "title": "Traitement...",
-        "description": "Cela peut prendre un moment"
+        "title": "Traitement",
+        "description": "Votre conversation est en cours de traitement",
+        "sidebarLabel": "Traitement",
+        "complete": "Traitement terminé",
+        "redirecting": "Redirection dans {countdown}s...",
+        "viewNow": "Voir la conversation"
       }
     },
     "contextLabel": "Contexte (optionnel)",
     "contextPlaceholder": "ex. réunion produit, appel commercial, entretien...",
     "back": "Retour",
     "skip": "Passer",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "changeMethod": "Changer de méthode",
+    "clearAll": "Tout effacer",
+    "uploadAndProcess": "Importer et traiter ({count})",
+    "dropFilesHere": "Déposez vos fichiers ici",
+    "dropFilesHereActive": "Relâchez pour importer",
+    "orClickToBrowse": "ou cliquez pour parcourir (jusqu'à 3 fichiers)",
+    "supportedFormatsLabel": "Fichiers audio et vidéo",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5Go par fichier",
+    "selectedFiles": "Fichiers sélectionnés ({count})",
+    "dragToReorder": "Glisser pour réorganiser",
+    "removeFile": "Supprimer le fichier",
+    "filesCount": "{current} sur {max}"
   },
   "auth": {
     "signIn": "Se connecter",
@@ -114,6 +135,7 @@
     "weakPassword": "Le mot de passe doit contenir au moins 6 caractères",
     "userNotFound": "Utilisateur non trouvé",
     "tooManyRequests": "Trop de demandes. Veuillez réessayer plus tard.",
+    "accountSuspended": "Votre compte a été suspendu. Veuillez contacter le support si vous pensez qu'il s'agit d'une erreur.",
     "displayNameRequired": "Veuillez entrer votre nom complet",
     "passwordMinLength": "Au moins 8 caractères",
     "passwordUppercase": "Une lettre majuscule",
@@ -121,6 +143,8 @@
     "passwordNumber": "Un chiffre",
     "passwordRequirementsNotMet": "Veuillez remplir toutes les exigences du mot de passe",
     "acceptTermsRequired": "Veuillez accepter les conditions générales",
+    "captchaRequired": "Veuillez compléter la vérification de sécurité",
+    "captchaFailed": "Vérification de sécurité échouée. Veuillez réessayer.",
     "iAgreeToThe": "J'accepte les",
     "termsOfService": "Conditions de service",
     "and": "et",
@@ -128,11 +152,13 @@
     "orContinueWith": "Ou continuer avec",
     "signupFailed": "Échec de la création du compte. Veuillez réessayer.",
     "verifyYourEmail": "Vérifiez votre e-mail",
-    "verificationEmailSent": "Nous avons envoyé un e-mail de vérification à",
-    "checkYourInbox": "Veuillez vérifier votre boîte de réception et cliquer sur le lien de vérification pour continuer.",
+    "verificationEmailSent": "Nous avons envoyé un code à",
+    "checkYourInbox": "Veuillez vérifier votre boîte de réception et entrer le code de vérification pour continuer.",
     "checkYourEmail": "Vérifiez votre e-mail",
-    "clickVerificationLink": "Cliquez sur le lien de vérification que nous avons envoyé pour terminer votre inscription.",
-    "enterVerificationCode": "Entrez le code à 6 chiffres de votre e-mail",
+    "clickVerificationLink": "Entrez le code de vérification à 6 chiffres que nous avons envoyé pour terminer votre inscription.",
+    "enterVerificationCode": "Entrez votre code de vérification",
+    "codeSent": "Un nouveau code a été envoyé à votre e-mail.",
+    "verifyingCode": "Vérification en cours...",
     "verifyEmail": "Vérifier l'e-mail",
     "emailVerified": "E-mail vérifié !",
     "redirectingToDashboard": "Redirection vers votre tableau de bord...",
@@ -148,7 +174,7 @@
     "sendResetLink": "Envoyer le lien de réinitialisation",
     "resetLinkSent": "Lien envoyé !",
     "checkEmailForReset": "Vérifiez votre e-mail pour obtenir un lien de réinitialisation de votre mot de passe.",
-    "checkSpamFolder": "Si vous ne voyez pas l'e-mail, vérifiez votre dossier spam.",
+    "checkSpamFolder": "Vérifiez aussi votre dossier spam.",
     "tryDifferentEmail": "Essayer un autre e-mail",
     "newPassword": "Nouveau mot de passe",
     "confirmNewPassword": "Confirmer le nouveau mot de passe",
@@ -171,7 +197,7 @@
     "emailExistsPasswordMismatch": "Cet e-mail est déjà enregistré mais le mot de passe ne correspond pas.",
     "or": "ou",
     "resetYourPassword": "réinitialisez votre mot de passe",
-    "welcomeBackVerification": "Bienvenue ! Nous vous avons envoyé un nouveau lien de vérification. Vérifiez votre boîte de réception."
+    "welcomeBackVerification": "Bienvenue ! Nous vous avons envoyé un nouveau code de vérification. Vérifiez votre boîte de réception."
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -446,6 +472,7 @@
     },
     "confirm": {
       "cancelRecording": "Êtes-vous sûr de vouloir annuler ? Votre enregistrement sera perdu.",
+      "reRecord": "Êtes-vous sûr de vouloir réenregistrer ? Votre enregistrement actuel sera perdu.",
       "goBack": "Retour"
     },
     "warnings": {
@@ -558,6 +585,8 @@
     "loading": "Chargement de l'asset IA...",
     "notFound": "Asset IA introuvable",
     "notFoundDescription": "L'asset IA que vous recherchez n'existe pas ou vous n'y avez pas accès.",
+    "backToConversation": "Retour à la conversation",
+    "backToDashboard": "Retour au tableau de bord",
     "modal": {
       "title": "Créer un asset IA",
       "steps": {
@@ -578,11 +607,11 @@
       "categorySales": "Ventes",
       "categoryHR": "RH & personnel",
       "categoryLeadership": "Direction",
-      "customInstructionsTitle": "Ajouter des instructions personnalisées (optionnel)",
-      "customInstructionsDescription": "Fournissez des conseils spécifiques pour adapter la sortie à vos besoins",
-      "customInstructionsLabel": "Instructions personnalisées",
-      "customInstructionsPlaceholder": "Exemple : Concentrez-vous sur les aspects techniques, restez en dessous de 500 mots et incluez les métriques discutées.",
-      "leaveBlankDefault": "Laissez vide pour utiliser les paramètres par défaut de {name}",
+      "customInstructionsTitle": "Quelque chose de particulier ?",
+      "customInstructionsDescription": "Dites-nous sur quoi se concentrer, ou cliquez simplement sur générer pour utiliser les paramètres par défaut.",
+      "customInstructionsLabel": "Vos consignes",
+      "customInstructionsPlaceholder": "ex. Restez sous 500 mots, concentrez-vous sur les détails techniques, incluez les métriques dont on a parlé...",
+      "leaveBlankDefault": "Totalement optionnel — on utilisera des paramètres intelligents pour {name}",
       "reviewTitle": "Vérifier et confirmer",
       "reviewDescription": "Vérifiez vos sélections avant de générer",
       "outputType": "Type de sortie",
@@ -798,12 +827,20 @@
       "confirmDelete": "Supprimer cet asset ?",
       "viewFull": "Voir page complète"
     },
+    "copy": "Copier",
+    "copied": "Copié !",
+    "translate": "Traduire",
+    "share": "Partager",
     "findReplace": "Rechercher et remplacer",
     "delete": "Supprimer",
     "deleteConfirmTitle": "Supprimer l'AI Asset ?",
     "deleteConfirmMessage": "Cette action ne peut pas être annulée. Cet AI Asset sera définitivement supprimé.",
     "deleteConfirmYes": "Oui, supprimer",
-    "deleteConfirmNo": "Annuler"
+    "deleteConfirmNo": "Annuler",
+    "translatingBanner": "Traduction en cours...",
+    "translatingEstimate": "Traduction (~{seconds}s)...",
+    "translateSuccess": "Traduction terminée",
+    "translateError": "La traduction a échoué. Veuillez réessayer."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +891,7 @@
       "translateTo": "Traduire en",
       "translating": "Traduction en cours...",
       "translationComplete": "Traduction terminée",
-      "translationFailed": "Échec de la traduction",
+      "translationFailed": "Échec de la traduction. La requête a peut-être expiré — veuillez réessayer.",
       "noTranslationsAvailable": "Aucune traduction disponible",
       "assetsTranslated": "éléments traduits",
       "changeLanguage": "Changer de langue",
@@ -867,7 +904,11 @@
       "translate": "Traduire",
       "showAllLanguages": "Afficher toutes les langues",
       "hideLanguages": "Afficher moins",
-      "slowHint": "La traduction peut prendre un moment pour les conversations plus longues. Tu peux fermer cette fenêtre — elle continuera en arrière-plan."
+      "retranslate": "Retraduire",
+      "translatingBanner": "Traduction en cours...",
+      "translatingEstimate": "Traduction (~{seconds}s)...",
+      "translateSuccess": "Traduction terminée",
+      "translateError": "La traduction a échoué. Veuillez réessayer."
     },
     "failed": {
       "title": "Traitement échoué",
@@ -1220,9 +1261,9 @@
   "landing": {
     "hero": {
       "eyebrow": "La plateforme d'intelligence pour vos réunions",
-      "headline1": "Chaque conversation,",
-      "headline2": "un ",
-      "headlineEm": "atout stratégique.",
+      "headline1": "Neural Summary transforme vos conversations",
+      "headline2": "en ",
+      "headlineEm": "documents stratégiques.",
       "body": "Neural Summary transforme chaque réunion en transcriptions consultables, résumés et ",
       "bodyStrong": "documents prêts à l'emploi",
       "bodyEnd": ". Rien ne se perd. Rien n'a besoin d'être réécrit.",
@@ -1313,7 +1354,7 @@
       }
     },
     "ask": {
-      "tag": "Mémoire institutionnelle, à la demande",
+      "tag": "Agentic Chat",
       "headline1": "Posez n'importe quelle question sur",
       "headline2": "n'importe quelle ",
       "headlineEm": "réunion.",
@@ -1382,7 +1423,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Adopté par ceux qui dirigent",
+      "tag": "Adopté par les leaders",
       "headline1": "Les leaders parlent.",
       "headline2": "Neural Summary ",
       "headlineEm": "s'occupe du reste.",
@@ -1518,7 +1559,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "Vous parlez. Ça crée.",
+      "tagline": "Créez avec votre voix.",
       "copyright": "© 2026 Neural Summary. Tous droits réservés."
     }
   },
@@ -1553,6 +1594,12 @@
       "pricing": {
         "title": "Tarification et conditions de paiement",
         "content": "Nous nous réservons le droit de modifier nos tarifs à tout moment pour refléter les changements de coûts opérationnels, les conditions du marché, les améliorations du service ou d'autres facteurs commerciaux.",
+        "freeTier": {
+          "title": "Forfait gratuit - Offre de lancement",
+          "content": "Le forfait gratuit est proposé en tant qu'offre de lancement et ne constitue pas une garantie d'accès gratuit permanent. Les fonctionnalités, les limites d'utilisation et la disponibilité du forfait gratuit peuvent être modifiées, réduites ou supprimées à tout moment à notre seule discrétion.",
+          "notice": "Nous vous informerons au moins 30 jours à l'avance par e-mail et notification dans l'application avant de mettre en oeuvre des changements importants au forfait gratuit. Les changements importants comprennent, sans s'y limiter : des réductions significatives des limites d'utilisation, la suppression de fonctionnalités principales ou l'arrêt total du forfait gratuit.",
+          "continued": "L'utilisation continue du Service après une telle notification constitue l'acceptation des modifications. Si vous n'êtes pas d'accord avec les modifications, vous pouvez cesser d'utiliser le Service et exporter vos données sans frais avant que les modifications ne prennent effet."
+        },
         "changes": {
           "title": "Changements de prix",
           "content": "Nous vous informerons au moins 30 jours à l'avance avant que les changements de prix ne prennent effet pour les abonnements existants. Les nouveaux prix s'appliqueront aux renouvellements après la période de préavis.",
@@ -1657,7 +1704,7 @@
       },
       "amendments": {
         "title": "Modifications des conditions",
-        "content": "Nous nous réservons le droit de modifier ces Conditions à tout moment. Nous informerons les utilisateurs de tout changement important en publiant les nouvelles Conditions sur cette page et en mettant à jour la 'Date d'entrée en vigueur'."
+        "content": "Nous nous réservons le droit de modifier ces Conditions à tout moment. Nous informerons les utilisateurs de tout changement important par e-mail et en publiant les nouvelles Conditions sur cette page avec une 'Date d'entrée en vigueur' mise à jour. Pour les changements importants affectant vos droits ou obligations, nous fournirons un préavis d'au moins 30 jours. L'utilisation continue du Service après la date d'entrée en vigueur des Conditions révisées constitue l'acceptation des modifications."
       }
     }
   },
@@ -2955,6 +3002,8 @@
       "step4Description": "Nous avons créé une conversation exemple pour vous. Ouvrez-la pour découvrir ce que Neural Summary peut faire.",
       "step5Title": "Explorez et créez",
       "step5Description": "Explorez le résumé, la transcription et les assets IA. Posez des questions ou générez de nouveaux documents.",
+      "completionTitle": "Vous êtes prêt",
+      "completionDescription": "Vous connaissez maintenant les bases. Importez une conversation ou explorez l'exemple pour voir Neural Summary en action.",
       "next": "Suivant",
       "skipTour": "Passer la visite",
       "startExploring": "Commencer l'exploration",
@@ -2964,5 +3013,86 @@
     "exampleBanner": "Ceci est une conversation exemple. Téléchargez votre propre audio pour commencer.",
     "exampleBannerCta": "Télécharger de l'audio",
     "tutorial": "Tutoriel"
+  },
+  "about": {
+    "meta": {
+      "title": "A propos de Neural Summary | Plateforme IA voix-vers-document",
+      "description": "Neural Summary est une plateforme IA qui transforme la parole en documents structurés et professionnels. Découvrez notre mission, notre technologie et notre équipe."
+    },
+    "title": "A propos de Neural Summary",
+    "subtitle": "La plateforme qui transforme la pensée parlée en résultats structurés.",
+    "mission": {
+      "tag": "Notre mission",
+      "title": "Supprimer la friction entre penser et créer",
+      "body": "Neural Summary existe parce que les idées méritent mieux que d'être perdues entre une conversation et un document. Nous avons construit une plateforme qui transforme les pensées parlées, les réunions et les notes brutes en résultats structurés et professionnels. Pas d'écriture. Pas de mise en forme. Pensez tout simplement à voix haute."
+    },
+    "product": {
+      "tag": "Le produit",
+      "title": "Ce que fait Neural Summary",
+      "body": "Neural Summary est une plateforme IA de voix-vers-document. Téléchargez un enregistrement ou laissez notre IA vous interviewer. Neural Summary transcrit, analyse et génère des documents prêts à l'emploi : spécifications produit, articles de blog, documents stratégiques, emails de suivi et plus encore.",
+      "features": {
+        "transcription": {
+          "title": "Transcription",
+          "desc": "Conversion parole-texte professionnelle avec identification des intervenants dans plus de 99 langues."
+        },
+        "analysis": {
+          "title": "Analyse IA",
+          "desc": "Neural Summary extrait les points clés, les actions et les insights de chaque conversation."
+        },
+        "templates": {
+          "title": "Modèles de documents",
+          "desc": "Générez des résultats structurés avec plus de 20 modèles professionnels. Des notes de réunion aux spécifications produit."
+        },
+        "chat": {
+          "title": "Posez n'importe quelle question",
+          "desc": "Discutez avec vos transcriptions. Neural Summary répond aux questions sur n'importe quelle réunion."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Conçu pour",
+      "title": "Qui utilise Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Chefs de produit",
+          "desc": "Transformez les brainstormings en spécifications produit en quelques minutes."
+        },
+        "founders": {
+          "title": "Fondateurs",
+          "desc": "Convertissez les discussions de vision en documents stratégiques pour votre équipe."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Transformez les appels clients en emails de suivi et rapports."
+        },
+        "creators": {
+          "title": "Créateurs de contenu",
+          "desc": "Transformez les interviews en articles prêts à publier."
+        }
+      }
+    },
+    "values": {
+      "tag": "Nos valeurs",
+      "title": "Ce en quoi nous croyons",
+      "items": {
+        "privacy": {
+          "title": "Confidentialité d'abord",
+          "desc": "Conforme au RGPD. Vos données sont chiffrées et jamais utilisées pour l'entrainement. Tout ce que vous créez vous appartient."
+        },
+        "quality": {
+          "title": "Qualité avant vitesse",
+          "desc": "Nous utilisons les meilleurs modèles IA disponibles. Neural Summary privilégie la précision et l'utilité."
+        },
+        "simplicity": {
+          "title": "Simplicité",
+          "desc": "Pas de désordre, pas de courbe d'apprentissage. Télécharger, traiter, terminé. Neural Summary reste discret."
+        }
+      }
+    },
+    "cta": {
+      "title": "Essayez Neural Summary gratuitement",
+      "body": "Commencez dès aujourd'hui à transformer vos conversations en documents prêts à l'emploi.",
+      "button": "Commencer"
+    }
   }
 }

@@ -254,7 +254,7 @@ export function UserProfileMenu({ collapsed = false }: UserProfileMenuProps) {
         </DropdownMenuItem>
 
         {/* Tutorial */}
-        <DropdownMenuItem onSelect={restartOnboarding} className="gap-3 px-4 py-2 cursor-pointer">
+        <DropdownMenuItem onSelect={() => { restartOnboarding().catch(console.error); }} className="gap-3 px-4 py-2 cursor-pointer">
           <GraduationCap className="h-5 w-5 text-gray-600 dark:text-gray-400" />
           <span>{tOnboarding('tutorial')}</span>
         </DropdownMenuItem>

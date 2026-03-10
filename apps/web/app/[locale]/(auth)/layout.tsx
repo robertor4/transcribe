@@ -2,6 +2,7 @@
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
+import { CookieConsent } from '@/components/CookieConsent';
 
 /**
  * Layout for auth-related pages (login, signup, verify-email, etc.)
@@ -21,6 +22,7 @@ export default function AuthLayout({
     <AuthProvider>
       <AnalyticsProvider>
         {children}
+        <CookieConsent />
       </AnalyticsProvider>
     </AuthProvider>
   );

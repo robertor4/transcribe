@@ -53,7 +53,7 @@ export function ChatMock({ translations: t }: ChatMockProps) {
           ✦
         </div>
         <span className="text-[11px] font-medium text-white">{t.header}</span>
-        <span className="text-[9px] text-white/30 font-[family-name:var(--font-dm-mono)] ml-auto">{t.headerSub}</span>
+        <span className="text-[9px] text-white/50 font-[family-name:var(--font-dm-mono)] ml-auto">{t.headerSub}</span>
       </motion.div>
 
       {/* User message 1 */}

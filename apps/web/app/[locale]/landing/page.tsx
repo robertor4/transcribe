@@ -1,10 +1,10 @@
 import React from 'react';
-import dynamic from 'next/dynamic';
 import { getTranslations } from 'next-intl/server';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
 import { WaveDivider } from '@/components/landing/shared/WaveDivider';
+import { HeroSection } from '@/components/landing/sections/HeroSection';
 import { SocialProofBar } from '@/components/landing/sections/SocialProofBar';
 import { CompatibilitySection } from '@/components/landing/sections/CompatibilitySection';
 import { OutputsSection } from '@/components/landing/sections/OutputsSection';
@@ -16,12 +16,7 @@ import { SecuritySection } from '@/components/landing/sections/SecuritySection';
 import { PricingSection } from '@/components/landing/sections/PricingSection';
 import { FinalCtaSection } from '@/components/landing/sections/FinalCtaSection';
 import { getPricingForLocale, formatPriceLocale } from '@transcribe/shared';
-
-// Dynamic import for the hero (client component with framer-motion animations)
-const HeroSection = dynamic(
-  () => import('@/components/landing/sections/HeroSection').then(mod => ({ default: mod.HeroSection })),
-  { ssr: true }
-);
+import { CookieConsent } from '@/components/CookieConsent';
 
 export default async function LandingPage({
   params
@@ -35,7 +30,7 @@ export default async function LandingPage({
     <>
       <PublicHeader locale={locale} />
 
-      <div className="min-h-screen bg-[#22184C] text-white overflow-x-hidden relative landing-page">
+      <main className="min-h-screen bg-[#22184C] text-white overflow-x-hidden relative landing-page">
         <AmbientGradient />
 
         {/* 1. Hero */}
@@ -329,15 +324,35 @@ export default async function LandingPage({
               '@context': 'https://schema.org',
               '@graph': [
                 {
+                  '@type': 'WebSite',
+                  '@id': 'https://neuralsummary.com/#website',
+                  name: 'Neural Summary',
+                  alternateName: 'NeuralSummary',
+                  url: 'https://neuralsummary.com',
+                  description: 'Neural Summary is a voice-to-document AI platform that turns spoken thinking into structured, professional output.',
+                  publisher: { '@id': 'https://neuralsummary.com/#organization' },
+                  inLanguage: ['en', 'nl', 'de', 'fr', 'es'],
+                },
+                {
                   '@type': 'Organization',
                   '@id': 'https://neuralsummary.com/#organization',
                   name: 'Neural Summary',
+                  alternateName: 'NeuralSummary',
                   url: 'https://neuralsummary.com',
                   logo: {
                     '@type': 'ImageObject',
                     url: 'https://neuralsummary.com/assets/logos/neural-summary-logo.svg',
+                    width: 512,
+                    height: 512,
                   },
-                  description: 'The meeting intelligence platform. Turn every conversation into searchable transcripts, summaries, and ready-to-use documents.',
+                  image: 'https://neuralsummary.com/assets/socials/neural-summary-og.png',
+                  description: 'Neural Summary is the meeting intelligence platform that turns every conversation into searchable transcripts, summaries, and ready-to-use documents.',
+                  foundingDate: '2025',
+                  sameAs: [
+                    'https://www.youtube.com/@NeuralSummary',
+                    'https://www.linkedin.com/company/neural-summary/',
+                    'https://x.com/NeuralSummary',
+                  ],
                 },
                 {
                   '@type': 'SoftwareApplication',
@@ -367,7 +382,8 @@ export default async function LandingPage({
             }),
           }}
         />
-      </div>
+      </main>
+      <CookieConsent />
     </>
   );
 }

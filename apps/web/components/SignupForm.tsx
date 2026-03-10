@@ -1,20 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
-import { AlertCircle, Loader2, Check, X, Eye, EyeOff } from 'lucide-react';
+import { AlertCircle, Loader2, Check, X, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
 import { importedConversationApi } from '@/lib/api';
+import { getApiUrl } from '@/lib/config';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 export default function SignupForm() {
   const [email, setEmail] = useState('');
@@ -26,6 +27,8 @@ export default function SignupForm() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const { signUpWithEmail, signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
@@ -67,9 +70,29 @@ export default function SignupForm() {
       return;
     }
 
+    if (!turnstileToken) {
+      setError(tAuth('captchaRequired'));
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Verify Turnstile token server-side before creating Firebase account
+      const verifyResponse = await fetch(`${getApiUrl()}/auth/verify-turnstile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      if (!verifyResponse.ok) {
+        setError(tAuth('captchaFailed'));
+        turnstileRef.current?.reset();
+        setTurnstileToken('');
+        setLoading(false);
+        return;
+      }
+
       // Track signup started
       trackEvent('signup_started', {
         method: 'email'
@@ -84,15 +107,19 @@ export default function SignupForm() {
         email: email
       });
 
-      // Send verification email
+      // Send verification code via backend
       if (auth.currentUser) {
         try {
-          await sendEmailVerification(auth.currentUser, {
-            url: `${window.location.origin}/dashboard`, // Redirect URL after verification
+          const token = await auth.currentUser.getIdToken();
+          await fetch(`${getApiUrl()}/auth/send-verification-code`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           });
-          console.log('Verification email sent successfully');
         } catch (emailError) {
-          console.error('Error sending verification email:', emailError);
+          console.error('Error sending verification code:', emailError);
           // Still redirect to verification page even if email fails
           // User can resend from there
         }
@@ -125,13 +152,18 @@ export default function SignupForm() {
               await auth.currentUser.reload();
 
               if (!auth.currentUser.emailVerified) {
-                // Unverified: resend verification email and redirect
+                // Unverified: resend verification code and redirect
                 try {
-                  await sendEmailVerification(auth.currentUser, {
-                    url: `${window.location.origin}/dashboard`,
+                  const token = await auth.currentUser.getIdToken();
+                  await fetch(`${getApiUrl()}/auth/send-verification-code`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
                   });
                 } catch (emailError) {
-                  console.error('Error resending verification email:', emailError);
+                  console.error('Error resending verification code:', emailError);
                 }
                 router.push('/verify-email?resent=true');
               } else {
@@ -372,19 +404,33 @@ export default function SignupForm() {
         />
         <label htmlFor="acceptTerms" className="text-sm text-gray-400 leading-snug">
           {tAuth('iAgreeToThe')}{' '}
-          <Link href="/terms" className="text-[#8D6AFA] hover:text-[#7A5AE0]">
-            {tAuth('termsOfService')}
-          </Link>{' '}
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-[#8D6AFA] hover:text-[#7A5AE0] inline-flex items-center gap-0.5">
+            {tAuth('termsOfService')}<ExternalLink className="w-3 h-3" />
+          </a>{' '}
           {tAuth('and')}{' '}
-          <Link href="/privacy" className="text-[#8D6AFA] hover:text-[#7A5AE0]">
-            {tAuth('privacyPolicy')}
-          </Link>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-[#8D6AFA] hover:text-[#7A5AE0] inline-flex items-center gap-0.5">
+            {tAuth('privacyPolicy')}<ExternalLink className="w-3 h-3" />
+          </a>
         </label>
       </div>
 
+      {/* Turnstile CAPTCHA */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+            onSuccess={setTurnstileToken}
+            onError={() => setTurnstileToken('')}
+            onExpire={() => setTurnstileToken('')}
+            options={{ theme: 'dark' }}
+          />
+        </div>
+      )}
+
       <Button
         type="submit"
-        disabled={loading || !acceptTerms}
+        disabled={loading || !acceptTerms || !turnstileToken}
         className="w-full h-11 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-lg"
       >
         {loading ? (
@@ -395,15 +441,12 @@ export default function SignupForm() {
       </Button>
 
       {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/[0.1]" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-3 text-gray-500 bg-white/[0.06] rounded-full text-xs">
-            {tAuth('orContinueWith')}
-          </span>
-        </div>
+      <div className="flex items-center gap-3">
+        <div className="flex-1 border-t border-white/[0.1]" />
+        <span className="text-gray-400 text-xs">
+          {tAuth('orContinueWith')}
+        </span>
+        <div className="flex-1 border-t border-white/[0.1]" />
       </div>
 
       {/* Google Sign Up */}
@@ -412,7 +455,7 @@ export default function SignupForm() {
         variant="outline"
         onClick={handleGoogleSignup}
         disabled={loading}
-        className="w-full h-11 bg-white/[0.06] border-white/[0.12] text-gray-300 hover:bg-white/[0.1] hover:text-white"
+        className="w-full h-11 bg-white/10 dark:bg-white/10 border-white/20 dark:border-white/20 text-gray-200 hover:bg-white/[0.16] dark:hover:bg-white/[0.16] hover:text-white"
       >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
           <path
@@ -435,7 +478,7 @@ export default function SignupForm() {
         {tAuth('signUpWithGoogle')}
       </Button>
 
-      <p className="text-center text-sm text-gray-500">
+      <p className="text-center text-sm text-gray-400">
         {tAuth('alreadyHaveAccount')}{' '}
         <Link href="/login" className="font-medium text-[#8D6AFA] hover:text-[#7A5AE0]">
           {tAuth('signIn')}

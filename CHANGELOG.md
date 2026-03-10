@@ -52,7 +52,169 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New files: `apps/mobile/app/`, `apps/mobile/stores/auth.ts`, `apps/mobile/lib/api.ts`, `apps/mobile/lib/config.ts`
   - Root: Added `mobile:start` script, filtered mobile from `dev`/`dev:all` scripts
 
+- **User avatars in admin panel** — Added avatar column before user name showing profile photos or initial-letter fallback circles. Admin API now enriches Firestore user data with Firebase Auth `photoURL` for users missing it ([AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx), [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts))
+- **Admin panel delete confirmation dialogs** — Replaced inline Yes/No confirmation with proper `ConfirmModal` (shadcn AlertDialog) for both soft and hard delete actions. Added tooltips on action buttons and sonner toast notifications on success/error ([AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx))
+- **Restore soft-deleted users** — Added `POST /admin/users/:userId/restore` endpoint and restore button (RotateCcw icon) on inactive user rows in the admin panel. Soft-deleted users now show "Inactive" status (orange badge) instead of "Deleted" ([admin.controller.ts](apps/api/src/admin/admin.controller.ts), [user.repository.ts](apps/api/src/firebase/repositories/user.repository.ts), [AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx))
+- **Block suspended users from API access** — `FirebaseAuthGuard` now checks `isDeleted` flag and returns 401 "Account has been suspended" for soft-deleted users, preventing all API access ([firebase-auth.guard.ts](apps/api/src/auth/firebase-auth.guard.ts))
+- **Friendly suspended account message on login** — When a suspended user's API call returns 401, `UsageContext` detects the "suspended" message, logs out, and redirects to `/login?suspended=true`. Login page shows an orange alert banner with a translated message across all 5 languages ([UsageContext.tsx](apps/web/contexts/UsageContext.tsx), [LoginForm.tsx](apps/web/components/LoginForm.tsx), all locale JSON files)
+- **Code-based email verification** — Replaced Firebase's default email verification (dull template, ugly Firebase URL) with a custom 6-digit code flow. Backend generates bcrypt-hashed codes with 15-minute expiry, sends branded HTML emails via Gmail SMTP, and verifies codes server-side. Frontend shows an OTP-style 6-digit input with auto-advance, paste support, and auto-submit ([email-verification.service.ts](apps/api/src/auth/email-verification.service.ts), [verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx), [SignupForm.tsx](apps/web/components/SignupForm.tsx))
+- **Branded verification email template** — Custom HTML email matching Neural Summary brand: Montserrat font, logo, purple code display, dark mode support, plain-text fallback ([email-verification.service.ts](apps/api/src/auth/email-verification.service.ts))
+- **Branded verification success screen** — Animated success state with spring animation, "Welcome to Neural Summary" message, and visual progress bar countdown before dashboard redirect ([verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx))
+- **Tutorial completion step** — Added a 5th "You're all set" modal step to the onboarding tour with celebration icon and encouraging message, so the tutorial no longer ends abruptly ([OnboardingTour.tsx](apps/web/components/onboarding/OnboardingTour.tsx))
+- **`sendRawEmail` method on EmailService** — Public method for other services to send custom-templated emails via the shared Gmail SMTP transporter ([email.service.ts](apps/api/src/email/email.service.ts))
+- **Free tier introductory offer clause in Terms of Use** — Added explicit legal language classifying the free tier as an introductory offer that may be modified, reduced, or discontinued at any time with 30 days advance notice via email and in-app notification. Users retain data export rights before changes take effect. Updated amendments section to require email notification and 30-day notice for material changes. Effective date updated to 9 March 2026. All 5 languages updated ([terms/page.tsx](apps/web/app/[locale]/terms/page.tsx), [en.json](apps/web/messages/en.json), [nl.json](apps/web/messages/nl.json), [de.json](apps/web/messages/de.json), [es.json](apps/web/messages/es.json), [fr.json](apps/web/messages/fr.json))
 
+### Fixed
+- **Email verification endpoints blocked unverified users** — `FirebaseAuthGuard` rejected requests from users with `emailVerified: false`, making `verify-email`, `resend-verification`, and `send-verification-code` inaccessible. Added `@AllowUnverifiedEmail()` decorator to bypass the check on these endpoints ([firebase-auth.guard.ts](apps/api/src/auth/firebase-auth.guard.ts), [auth.controller.ts](apps/api/src/auth/auth.controller.ts))
+- **6-digit code paste truncated to 3 digits** — `maxLength={6}` on each input truncated pasted text (e.g. "6 5 1 9 1 5" with spaces = 11 chars) before `onChange` fired. Added dedicated `onPaste` handler and set `maxLength={1}` per input ([verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx))
+
+### Changed
+- **Verification email template redesigned** — Rewrote to match the established email template pattern (CSS classes, light background, proper dark mode). Code now renders without spaces for clean copy-paste ([email-verification.service.ts](apps/api/src/auth/email-verification.service.ts))
+
+### Changed
+- **Skipping questionnaire now shows UI tour** — Previously, skipping the onboarding questionnaire closed everything. Now it transitions to the spotlight tour so new users always see the UI walkthrough ([OnboardingProvider.tsx](apps/web/components/onboarding/OnboardingProvider.tsx))
+- **Restart tutorial resets from step 1** — `restartOnboarding()` now clears all backend timestamps (via `FieldValue.delete`) so the questionnaire and tour restart cleanly, surviving page refreshes ([OnboardingProvider.tsx](apps/web/components/onboarding/OnboardingProvider.tsx), [user.service.ts](apps/api/src/user/user.service.ts))
+- **Updated verification-related translations** — Changed "click the link" messaging to "enter the code" across all 5 locales (en, nl, de, fr, es). Added new keys: `codeSent`, `verifyingCode`, `completionTitle`, `completionDescription`
+- **Streamlined verify-email page** — Removed redundant blue info box and consolidated text. Page now shows: title "Enter your verification code", one-line "We sent a code to **email**", code inputs, and a subtle spam folder hint near the resend link. Updated all 5 locales ([verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx))
+
+- **Cloudflare Turnstile on signup and login pages** — Added CAPTCHA verification to prevent bot/spam account creation. Turnstile widget renders on both [SignupForm.tsx](apps/web/components/SignupForm.tsx) and [LoginForm.tsx](apps/web/components/LoginForm.tsx). Token is verified server-side via new `POST /auth/verify-turnstile` endpoint before Firebase Auth account creation ([auth.controller.ts](apps/api/src/auth/auth.controller.ts))
+- **Shared TurnstileService** — Extracted Turnstile verification into reusable [turnstile.service.ts](apps/api/src/auth/turnstile.service.ts), used by both auth and contact controllers
+- **Spam account cleanup script** — [cleanup-spam-accounts.js](scripts/cleanup-spam-accounts.js) identifies and deletes Firebase Auth accounts with no Firestore document, unverified email, and email/password provider. Supports dry-run mode (default) and `--delete` flag
+- **Turnstile error translations** — Added `captchaRequired` and `captchaFailed` translation keys across all 5 languages
+
+### Changed
+- **Auth page UI polish** — Improved text contrast and element visibility on signup and login pages: bumped "Or continue with" and "Already have an account?" text to `text-gray-400`, increased Google sign-in button contrast with `dark:` prefix overrides, replaced divider overlay hack with clean flexbox layout, and made Terms of Service / Privacy Policy links open in new tabs with external link icons ([SignupForm.tsx](apps/web/components/SignupForm.tsx), [LoginForm.tsx](apps/web/components/LoginForm.tsx))
+- **ContactController uses shared TurnstileService** — Replaced inline Turnstile verification with shared [TurnstileService](apps/api/src/auth/turnstile.service.ts) ([contact.controller.ts](apps/api/src/contact/contact.controller.ts))
+
+### Changed
+- **Hero section LCP optimization** — Removed framer-motion `opacity: 0` animation from `<h1>` and body paragraph so they render visible immediately in server HTML instead of waiting for JS hydration. Converted [HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx) from client component to server component, eliminating the dynamic import and reducing JS needed for first paint. Animations preserved on non-LCP elements (eyebrow, CTAs, social proof)
+- **Lazy-load Firebase Analytics** — Deferred analytics bundle (~60KB) so it only loads when `AnalyticsProvider` mounts (authenticated/checkout pages), not on the landing page. Converted eager `getAnalytics()` init in [firebase.ts](apps/web/lib/firebase.ts) to on-demand `initAnalytics()` with dynamic `import('firebase/analytics')` in [AnalyticsContext.tsx](apps/web/contexts/AnalyticsContext.tsx)
+- **Collapse redirect chain** — Root URL now redirects directly to `/{locale}/landing` in a single hop instead of `/ → /en → /en/landing` (saves ~840ms on mobile). Implemented in [middleware.ts](apps/web/middleware.ts) for both marketing domain and dev
+- **Signup links use `<a>` tags** — Changed signup CTAs on landing page from Next.js `<Link>` to plain `<a>` tags pointing to the app domain, preventing RSC prefetch CORS errors when navigating cross-domain ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx), [FinalCtaSection.tsx](apps/web/components/landing/sections/FinalCtaSection.tsx))
+- **Improved text contrast on landing page** — Changed `text-white/30` (30% opacity, ~3.2:1 ratio) to `text-white/50` (50% opacity, ~5.5:1 ratio) across all landing sections for WCAG AA compliance. Affected: HeroSection, FinalCtaSection, PricingSection, TestimonialsSection, CompatibilitySection, ChatMock, SecuritySection, OutputsSection, InfrastructureSection, SocialProofBar
+
+### Fixed
+- **Image aspect ratio mismatch** — Updated `lionel-hero.webp` width/height attributes from 320x450 to actual dimensions 860x997, fixing the distorted display ratio reported by Lighthouse ([HeroSection.tsx](apps/web/components/landing/sections/HeroSection.tsx))
+- **Missing `<main>` landmark** — Changed landing page wrapper from `<div>` to `<main>` for screen reader navigation ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **Cookie consent on all pages** — Decoupled `CookieConsent` from `AnalyticsContext` (now standalone, localStorage-only) so it renders on the landing page, auth pages, and pricing page without loading the analytics bundle. `AnalyticsProvider` listens for consent changes via a custom DOM event ([CookieConsent.tsx](apps/web/components/CookieConsent.tsx), [landing/page.tsx](apps/web/app/[locale]/landing/page.tsx), [(auth)/layout.tsx](apps/web/app/[locale]/(auth)/layout.tsx), [pricing/providers.tsx](apps/web/app/[locale]/pricing/providers.tsx))
+
+### Added
+- **About page** — New `/about` page with Organization and AboutPage JSON-LD schemas, 4 sections (mission, product, audience, values), CTA, and full i18n support across all 5 languages. Added to middleware marketing segments, sitemap, and robots.txt ([about/page.tsx](apps/web/app/[locale]/about/page.tsx))
+- **WebSite JSON-LD schema on landing page** — Added `WebSite` structured data with `alternateName`, `inLanguage`, and publisher reference alongside existing Organization + SoftwareApplication schemas ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+
+### Changed
+- **Brand name in `<h1>` tag** — Landing page headline now includes "Neural Summary" in the `<h1>` for branded search ranking. Updated across all 5 locales: "Neural Summary turns conversations into strategic assets." ([en.json](apps/web/messages/en.json), [nl.json](apps/web/messages/nl.json), [de.json](apps/web/messages/de.json), [fr.json](apps/web/messages/fr.json), [es.json](apps/web/messages/es.json))
+- **Title tag optimization** — Updated to `"Neural Summary | Voice-to-Document AI Platform"` with brand name leading. Added `Neural Summary`, `NeuralSummary`, `neural summary app`, `neural summary AI` to keywords. Description now leads with "Neural Summary" ([layout.tsx](apps/web/app/[locale]/layout.tsx))
+- **Enhanced Organization JSON-LD** — Added `alternateName`, `foundingDate`, `image`, and `width`/`height` to logo ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **Footer about link** — Points to `/about` instead of `/landing` ([PublicFooter.tsx](apps/web/components/PublicFooter.tsx))
+
+### Fixed
+- **Webmanifest empty fields** — Added `name`, `short_name`, `description`, `start_url`, and brand `theme_color` to [site.webmanifest](apps/web/public/assets/favicons/site.webmanifest)
+- **Canonical URL duplication bug** — Removed global `canonical: 'https://neuralsummary.com'` from [layout.tsx](apps/web/app/[locale]/layout.tsx) that was causing Google to treat all pages as duplicates of the root ("Duplicate without user-selected canonical"). Each page now declares its own canonical URL and hreflang alternates via [metadata.ts](apps/web/utils/metadata.ts) `buildPageMetadata()`, plus manual canonicals on [about](apps/web/app/[locale]/about/page.tsx), [contact](apps/web/app/[locale]/contact/page.tsx), and [examples](apps/web/app/[locale]/examples/page.tsx) pages
+
+### Fixed
+- **Stripe checkout localhost redirect bug** — Replaced all inline `process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'` fallbacks with centralized `getApiUrl()` helper across 8 client-side files. The helper uses hostname detection as a safety net, ensuring API calls always route to `/api` in production even if the env var is missing at build time. Affected files: [pricing/page.tsx](apps/web/app/[locale]/pricing/page.tsx), [checkout/page.tsx](apps/web/app/[locale]/(auth)/checkout/[tier]/page.tsx), [checkout/success/page.tsx](apps/web/app/[locale]/(auth)/checkout/success/page.tsx), [subscription/page.tsx](apps/web/app/[locale]/(authenticated)/settings/subscription/page.tsx), [UsageContext.tsx](apps/web/contexts/UsageContext.tsx), [AdminPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/AdminPanel.tsx), [UserActivityPanel.tsx](apps/web/app/[locale]/(authenticated)/admin/users/[userId]/UserActivityPanel.tsx), [ContactForm.tsx](apps/web/components/ContactForm.tsx)
+
+### Added
+- **Social media icons in footer** — YouTube, LinkedIn, and X (Twitter) icon links added to [PublicFooter.tsx](apps/web/components/PublicFooter.tsx) with `sameAs` structured data in Organization schema ([landing/page.tsx](apps/web/app/[locale]/landing/page.tsx))
+- **FAQ structured data on pricing page** — FAQPage JSON-LD schema with 4 FAQ items injected via [pricing/layout.tsx](apps/web/app/[locale]/pricing/layout.tsx) for Google rich results
+- **Contact page SEO keywords** — Added keywords meta tag to [contact/page.tsx](apps/web/app/[locale]/contact/page.tsx)
+
+### Changed
+- **Create conversation modal full redesign** — Rebuilt the upload wizard to match the OutputGeneratorModal design system: custom header with uppercase title, desktop step sidebar with numbered circles (active=purple, completed=cyan), mobile horizontal step dots, fixed footer owned by the modal shell, and ScrollArea content. Lifted state (selectedFiles, selectedMethod, processingMode) from UploadInterface to ConversationCreateModal for controlled component pattern ([ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx), [UploadInterface.tsx](apps/web/components/UploadInterface.tsx))
+- **Processing step redesign** — Replaced the dense 4-column stage grid and large progress bar with a centered layout matching OutputGeneratorModal: GeneratingLoader waveform animation, file name purple badge, slim progress bar, RotatingSubtext with shimmer effect, centered error/success states with icon circles ([RealProcessingView.tsx](apps/web/components/RealProcessingView.tsx))
+- **Recording preview footer consolidation** — Moved Cancel/Proceed/Re-record buttons from inline RecordingPreview into the modal's unified footer, matching the consistent footer pattern across all steps. Preview state is now communicated via `onPreviewStateChange` callback chain ([RecordingPreview.tsx](apps/web/components/RecordingPreview.tsx), [SimpleAudioRecorder.tsx](apps/web/components/SimpleAudioRecorder.tsx), [ConversationCreateModal.tsx](apps/web/components/ConversationCreateModal.tsx))
+- **Pre-selected upload method skip** — When opening the modal from dashboard quick actions (Upload file, Record mic, Record tab), the method selection step is now skipped and the user goes directly to the relevant interface
+- **Internationalized hardcoded strings** — Replaced all hardcoded English strings in the upload flow ("Drop your files here", "Change method", "Clear all", etc.) with translation keys across all 5 languages, including sidebar labels and processing step strings
+
+### Added
+- **New tagline**: Changed brand tagline from "You speak. It creates." to "Create with your voice." across all 5 languages, auth pages, SEO metadata, PWA manifest, SVG logo, and documentation
+- **Rotating humorous subtexts during AI Asset generation** — The "This may take a few moments" text now cycles through witty messages with a fade animation while generating ([OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx))
+- **Mermaid diagram support for Technical Design Document** — AI now generates 1-3 architecture, data flow, or sequence diagrams using Mermaid syntax when the conversation contains sufficient technical detail
+  - New reusable `Mermaid` component ([Mermaid.tsx](apps/web/components/Mermaid.tsx)) with error handling for invalid syntax
+  - Added `diagrams` field to `TechnicalDesignDocOutput` type ([types.ts](packages/shared/src/types.ts))
+  - Updated backend prompt and JSON schema to request diagram generation ([analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts))
+  - Updated frontend template to render diagrams with titled containers ([TechnicalDesignDocTemplate.tsx](apps/web/components/outputTemplates/TechnicalDesignDocTemplate.tsx))
+
+### Changed
+- **Technical Design Document template overhaul** — Redesigned alternative cards with clean check/x icons and shadcn Badge for rejected status; testing strategy renders as checkbox list; rollout plan shows bold phase labels; open questions use standard black editorial bullets ([TechnicalDesignDocTemplate.tsx](apps/web/components/outputTemplates/TechnicalDesignDocTemplate.tsx))
+- **Mermaid diagram lightbox** — Diagrams now have an expand button and full-screen lightbox with caption support ([Mermaid.tsx](apps/web/components/Mermaid.tsx))
+- **Background AI Asset generation** — Closing the generation modal continues processing in the background with toast notifications on completion ([OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx))
+- **Blog archive page** — editorial layout with featured latest post (large card) and 2-column grid for remaining posts; tag pills, improved spacing, and optional cover image support ([PostCard.tsx](apps/web/components/blog/PostCard.tsx), [blog/page.tsx](apps/web/app/[locale]/blog/page.tsx))
+
+### Added
+- **Technical documentation site** (`apps/docs`) — Fumadocs-powered docs app with Mermaid diagram support, auto-generated table of contents, and full-text search
+  - Architecture overview with system diagrams
+  - Processing pipeline documentation with sequence diagrams
+  - Authentication & security guide
+  - WebSocket protocol reference with state diagrams
+  - Cron jobs / scheduled tasks documentation
+  - Development setup guide including Cloudflare Tunnel networking
+  - Environment variables reference
+  - Deployment & troubleshooting guides
+  - API reference with endpoint tables and Firestore schema
+  - Run with `npm run docs:dev` (port 3003)
+  - Excluded from `npm run dev` to avoid interference with main app
+
+### Changed
+- **Redesigned Project Status Report template** — blog-style `>` bullets for accomplishments, shadcn Table + Badge for milestones and risks, `!` alert circles for blockers, `>` bullets for next period goals
+  - Modified: [ProjectStatusTemplate.tsx](apps/web/components/outputTemplates/ProjectStatusTemplate.tsx)
+  - Updated AI prompt to generate concise 1-2 sentence summaries, and explicitly require short milestone/risk names with separate notes/mitigation fields
+  - Modified: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts)
+  - Template gracefully handles legacy data where milestone/risk names are empty (falls back to notes/mitigation)
+- **Replaced AI Asset detail page sidebar** with AssetSidebar — users can now switch between sibling outputs directly from the right panel, matching the Conversation summary page pattern
+  - Modified: [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+- **Removed BETA label** from Meeting Minutes, Retrospective Summary, Decision Document, and Recommendations Memo templates
+  - Modified: [meetingMinutes.ts](apps/web/lib/outputTemplates/meetingMinutes.ts), [retrospective.ts](apps/web/lib/outputTemplates/retrospective.ts), [decisionDocument.ts](apps/web/lib/outputTemplates/decisionDocument.ts), [recommendationsMemo.ts](apps/web/lib/outputTemplates/recommendationsMemo.ts)
+- **Redesigned AI Asset page header** to match Conversation page style
+  - Replaced bulky icon-box + uppercase title layout with compact metadata row
+  - Asset type badge (purple pill), date, and inline action icons (Copy with tooltip, Translate, More menu)
+  - Modified: [DetailPageHeader.tsx](apps/web/components/detail-pages/DetailPageHeader.tsx), [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx)
+- **Per-item async translation** — Translation is now scoped per item (summary or single AI asset) instead of translating everything at once. Dialog closes immediately after language selection, with toast notifications showing estimated time and inline loading banner on the page. Prevents Cloudflare 524 timeouts for conversations with multiple assets.
+  - Rewritten: [useConversationTranslations.ts](apps/web/hooks/useConversationTranslations.ts) — new `translateItem` method with scoped API params, `translatingScope` state, `estimateTranslationSeconds` utility
+  - Simplified: [TranslationDialog.tsx](apps/web/components/TranslationDialog.tsx) — fire-and-forget language picker, removed loading UI
+  - Updated: [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx) — per-summary translation with toast + inline banner
+  - Updated: [OutputDetailClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/outputs/[outputId]/OutputDetailClient.tsx) — per-asset translation with toast + inline banner
+
+### Added
+- **Translate action on AI Asset pages** — Globe icon in toolbar opens TranslationDialog, reusing existing backend translation support for analyses
+- **Share action on AI Asset pages** — Share option in More menu opens conversation-level ShareModal
+- **Translated content display** — AI Asset pages show translated content when a non-original locale is selected, with merge logic to preserve template `type` discriminator and fill incomplete fields
+- **Retranslate option** — Refresh icon next to translated locales in TranslationDialog allows re-rendering faulty translations via `forceRetranslate` flag
+- **Translation time estimation** — `estimateTranslationSeconds()` utility estimates translation duration based on content length and gpt-5-mini benchmarks (~4 chars/token, ~100 tokens/sec)
+
+### Fixed
+- **Translation rendering bug** — Translated AI assets no longer display raw JSON; template `type` field is preserved through the translation pipeline
+- **Incomplete translation content** — Increased backend `max_completion_tokens` from 8000 to 16000 and added field merge (backend + frontend) to ensure all structured content fields are present
+- **Translated enum values breaking templates** — Created shared `mergeTranslatedContent()` utility ([translationMerge.ts](apps/web/lib/translationMerge.ts)) that recursively restores enum fields (`priority`, `status`, `severity`, `sentiment`, `recommendation`, `qualification`, etc.) from original content after translation merge. Also updated backend GPT prompt to instruct model not to translate enum values
+
+### Removed
+- **Unused `slowHint` translation key** — Removed from all 5 locale files (no longer shown in simplified TranslationDialog)
+
+- **Editorial design system for all AI Asset templates** — Unified 32 templates from card-heavy dashboard aesthetic to clean editorial typography
+  - Created 9 shared editorial components in [`outputTemplates/shared/`](apps/web/components/outputTemplates/shared/): `EditorialArticle`, `EditorialTitle`, `EditorialSection`, `EditorialHeading`, `EditorialNumberedList`, `EditorialPullQuote`, `EditorialParagraphs`, `EditorialCollapsible`, plus `editorial.ts` constants
+  - Design principles: Merriweather serif headings, constrained `max-w-[680px]` reading column, whitespace + typography hierarchy instead of card borders, uppercase section labels, monospace zero-padded numbering
+  - Converted all templates except LinkedIn and Twitter (which intentionally mimic platform UIs)
+  - Updated [`BulletList.tsx`](apps/web/components/outputTemplates/shared/BulletList.tsx) text sizing to `text-[15px] leading-[1.7]`
+  - Email template: kept email-specific UI (colored border-left sections, send-to-self, signature) while wrapping in `EditorialArticle` for consistent width
+- **Improved Recommendations Memo AI prompt** for richer, more substantive content generation
+  - Enforced short titles (max 10 words), concise recommendation headings (under 15 words)
+  - Executive summary and key findings marked as MANDATORY — never omitted
+  - Background uses short paragraphs (2-3 sentences each, separated by double newlines)
+  - Removed effort field from schema to reduce noise
+  - Added context-awareness support via `useContext` instruction
+  - Modified: [analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts)
+- **Redesigned Create AI Asset wizard dialog** with side-nav layout and improved UX
+  - Two-column layout: vertical step navigation on the left, content on the right (desktop)
+  - Reduced from 4 steps to 3: removed review step (Select Type -> Instructions -> Generate)
+  - Collapsible category sections (collapsed by default) with template counts
+  - Compact template list: icon + name with info tooltips (hover on desktop, click on touch)
+  - Search bar to filter templates by name or description
+  - Mobile-optimized: single column with compact dot step indicator, full-width content
+  - Installed `ScrollArea` and `Tooltip` shadcn components
+  - Modified: [OutputGeneratorModal.tsx](apps/web/components/OutputGeneratorModal.tsx)
+
+### Added
 - **Onboarding experience for new users**: Full onboarding flow with questionnaire, spotlight tour, and preloaded example conversation
   - 4-step blocking questionnaire modal: welcome, use case + role, team + output types, discovery source
   - Spotlight guided tour (5 steps) built with Radix Popover + Framer Motion highlighting dashboard, folders, search, and example conversation

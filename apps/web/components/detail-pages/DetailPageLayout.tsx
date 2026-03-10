@@ -20,6 +20,7 @@ export function DetailPageLayout({ rightPanel, children }: DetailPageLayoutProps
         leftSidebar={<LeftNavigation />}
         rightPanel={rightPanel}
         mainContent={children}
+        initialLeftCollapsed={true}
         initialRightCollapsed={true}
       />
     </div>

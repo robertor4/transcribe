@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useCallback, useEffect, useState } from 'react';
-import { logEvent, setUserId, setUserProperties, Analytics } from 'firebase/analytics';
-import { analytics } from '@/lib/firebase';
+import React, { createContext, useContext, useCallback, useEffect, useState, useRef } from 'react';
+import type { Analytics } from 'firebase/analytics';
+import { initAnalytics } from '@/lib/firebase';
 import { User } from 'firebase/auth';
 
 export type AnalyticsEventName =
@@ -90,37 +90,51 @@ interface AnalyticsProviderProps {
 export function AnalyticsProvider({ children, user }: AnalyticsProviderProps) {
   const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useState(false);
   const [analyticsInstance, setAnalyticsInstance] = useState<Analytics | null>(null);
-  const [mounted, setMounted] = useState(false);
+  // Cache the dynamically imported analytics functions
+  const analyticsModRef = useRef<typeof import('firebase/analytics') | null>(null);
+
+  const getAnalyticsMod = useCallback(async () => {
+    if (analyticsModRef.current) return analyticsModRef.current;
+    const mod = await import('firebase/analytics');
+    analyticsModRef.current = mod;
+    return mod;
+  }, []);
 
   useEffect(() => {
-    setMounted(true);
     // Check for user consent from localStorage only after mounting
     const consent = localStorage.getItem('analytics_consent');
     setIsAnalyticsEnabled(consent === 'true');
 
-    // Wait for analytics to be initialized
-    const checkAnalytics = setInterval(() => {
-      if (analytics) {
-        setAnalyticsInstance(analytics);
-        clearInterval(checkAnalytics);
-      }
-    }, 100);
+    // Lazy-load analytics — only fetches the bundle when this provider mounts
+    initAnalytics().then((instance) => {
+      if (instance) setAnalyticsInstance(instance);
+    });
 
-    return () => clearInterval(checkAnalytics);
+    // Listen for consent changes from the standalone CookieConsent component
+    const handleConsentChange = (e: Event) => {
+      const detail = (e as CustomEvent<{ consent: boolean }>).detail;
+      setIsAnalyticsEnabled(detail.consent);
+    };
+    window.addEventListener('analytics-consent-change', handleConsentChange);
+    return () => window.removeEventListener('analytics-consent-change', handleConsentChange);
   }, []);
 
   useEffect(() => {
+    if (!analyticsInstance || !isAnalyticsEnabled) return;
+
     // Set user ID when user changes
-    if (analyticsInstance && isAnalyticsEnabled && user) {
-      setUserId(analyticsInstance, user.uid);
-      setUserProperties(analyticsInstance, {
-        email_verified: user.emailVerified,
-        provider: user.providerData[0]?.providerId || 'email',
-      });
-    } else if (analyticsInstance && !user) {
-      setUserId(analyticsInstance, null);
-    }
-  }, [user, analyticsInstance, isAnalyticsEnabled]);
+    getAnalyticsMod().then(({ setUserId, setUserProperties }) => {
+      if (user) {
+        setUserId(analyticsInstance, user.uid);
+        setUserProperties(analyticsInstance, {
+          email_verified: user.emailVerified,
+          provider: user.providerData[0]?.providerId || 'email',
+        });
+      } else {
+        setUserId(analyticsInstance, null);
+      }
+    });
+  }, [user, analyticsInstance, isAnalyticsEnabled, getAnalyticsMod]);
 
   const trackEvent = useCallback((
     eventName: AnalyticsEventName,
@@ -130,51 +144,58 @@ export function AnalyticsProvider({ children, user }: AnalyticsProviderProps) {
       return;
     }
 
-    try {
-      // Add timestamp and session info to all events
-      const enrichedParams = {
-        ...parameters,
-        timestamp: new Date().toISOString(),
-        user_id: user?.uid || 'anonymous',
-      };
+    // Add timestamp and session info to all events
+    const enrichedParams = {
+      ...parameters,
+      timestamp: new Date().toISOString(),
+      user_id: user?.uid || 'anonymous',
+    };
 
-      logEvent(analyticsInstance, eventName as string, enrichedParams);
-    } catch (error) {
-      console.error('[Analytics] Error tracking event:', error);
-    }
-  }, [analyticsInstance, isAnalyticsEnabled, user]);
+    getAnalyticsMod().then(({ logEvent }) => {
+      try {
+        logEvent(analyticsInstance, eventName as string, enrichedParams);
+      } catch (error) {
+        console.error('[Analytics] Error tracking event:', error);
+      }
+    });
+  }, [analyticsInstance, isAnalyticsEnabled, user, getAnalyticsMod]);
 
   const setUserAnalyticsId = useCallback((userId: string | null) => {
     if (!analyticsInstance || !isAnalyticsEnabled) return;
-    
-    try {
-      setUserId(analyticsInstance, userId);
-    } catch (error) {
-      console.error('[Analytics] Error setting user ID:', error);
-    }
-  }, [analyticsInstance, isAnalyticsEnabled]);
+
+    getAnalyticsMod().then(({ setUserId }) => {
+      try {
+        setUserId(analyticsInstance, userId);
+      } catch (error) {
+        console.error('[Analytics] Error setting user ID:', error);
+      }
+    });
+  }, [analyticsInstance, isAnalyticsEnabled, getAnalyticsMod]);
 
   const setUserAnalyticsProperties = useCallback((properties: Record<string, any>) => {
     if (!analyticsInstance || !isAnalyticsEnabled) return;
-    
-    try {
-      setUserProperties(analyticsInstance, properties);
-    } catch (error) {
-      console.error('[Analytics] Error setting user properties:', error);
-    }
-  }, [analyticsInstance, isAnalyticsEnabled]);
+
+    getAnalyticsMod().then(({ setUserProperties }) => {
+      try {
+        setUserProperties(analyticsInstance, properties);
+      } catch (error) {
+        console.error('[Analytics] Error setting user properties:', error);
+      }
+    });
+  }, [analyticsInstance, isAnalyticsEnabled, getAnalyticsMod]);
 
   const setAnalyticsConsent = useCallback((consent: boolean) => {
     localStorage.setItem('analytics_consent', consent.toString());
     setIsAnalyticsEnabled(consent);
-    
+
     if (consent && analyticsInstance) {
-      // Track consent given
-      logEvent(analyticsInstance, 'analytics_consent_given', {
-        timestamp: new Date().toISOString(),
+      getAnalyticsMod().then(({ logEvent }) => {
+        logEvent(analyticsInstance, 'analytics_consent_given', {
+          timestamp: new Date().toISOString(),
+        });
       });
     }
-  }, [analyticsInstance]);
+  }, [analyticsInstance, getAnalyticsMod]);
 
   const value: AnalyticsContextType = {
     trackEvent,

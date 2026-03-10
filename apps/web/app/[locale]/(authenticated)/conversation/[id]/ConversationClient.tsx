@@ -27,7 +27,6 @@ import { ThreePaneLayout } from '@/components/ThreePaneLayout';
 import { LeftNavigation } from '@/components/LeftNavigation';
 import { AssetSidebar } from '@/components/AssetSidebar';
 import { AssetMobileSheet } from '@/components/AssetMobileSheet';
-import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { Button } from '@/components/Button';
 import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { TranslatedSummaryRenderer } from '@/components/TranslatedSummaryRenderer';
@@ -41,10 +40,10 @@ import { FindReplaceSlidePanel } from '@/components/FindReplaceSlidePanel';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { TranslationDialog } from '@/components/TranslationDialog';
+import { TranslatingBanner } from '@/components/TranslatingBanner';
 import { ExportPDFMenuItem } from '@/components/ExportPDFMenuItem';
 import { useConversation } from '@/hooks/useConversation';
-import { useSlidePanel } from '@/hooks/useSlidePanel';
-import { useConversationTranslations } from '@/hooks/useConversationTranslations';
+import { useConversationTranslations, estimateTranslationSeconds } from '@/hooks/useConversationTranslations';
 import { updateConversationTitle, deleteConversation } from '@/lib/services/conversationService';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
@@ -164,30 +163,32 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   // Translation state
   const {
     status: translationStatus,
-    isTranslating,
+    translatingScope,
     currentLocale,
-    translate,
+    translateItem,
     setLocale,
     getTranslatedContent,
   } = useConversationTranslations(conversationId);
 
-  // Show toast when translation completes
-  const wasTranslating = useRef(false);
-  useEffect(() => {
-    if (wasTranslating.current && !isTranslating) {
-      toast.success(tConversation('translation.translationComplete'));
-    }
-    wasTranslating.current = isTranslating;
-  }, [isTranslating, tConversation]);
+  const isTranslatingSummary = translatingScope?.type === 'summary';
+  const [translationEstimate, setTranslationEstimate] = useState(0);
 
-  // Slide panel for AI Assets
-  const {
-    selectedItem: selectedAsset,
-    isOpen: isPanelOpen,
-    isClosing: isPanelClosing,
-    open: openAssetPanel,
-    close: closeAssetPanel,
-  } = useSlidePanel<GeneratedAnalysis>();
+  // Per-item translation handler for summary
+  const handleTranslateSummary = async (localeCode: string, options?: { forceRetranslate?: boolean }) => {
+    setTranslationDialogOpen(false);
+    const summaryText = conversation?.source?.summary?.summaryV2
+      ? JSON.stringify(conversation.source.summary.summaryV2)
+      : conversation?.source?.summary?.text || '';
+    const estimate = estimateTranslationSeconds(summaryText.length);
+    setTranslationEstimate(estimate);
+    toast.info(tConversation('translation.translatingEstimate', { seconds: estimate }));
+    try {
+      await translateItem(localeCode, { type: 'summary' }, options);
+      toast.success(tConversation('translation.translateSuccess'));
+    } catch {
+      toast.error(tConversation('translation.translateError'));
+    }
+  };
 
   const [outputs, setOutputs] = useState<GeneratedAnalysis[]>([]);
   const [isLoadingOutputs, setIsLoadingOutputs] = useState(false);
@@ -286,12 +287,6 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
   const handleRecommendationSelect = (templateId: string) => {
     setPreselectedTemplate(templateId);
     setIsGeneratorOpen(true);
-  };
-
-  // Delete asset handler for slide panel
-  const handleDeleteAsset = async (assetId: string) => {
-    await transcriptionApi.deleteAnalysis(conversationId, assetId);
-    fetchOutputs();
   };
 
   // Share modal handlers
@@ -560,8 +555,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
             assets={outputs}
             isLoading={isLoadingOutputs}
             onGenerateNew={handleGenerateOutput}
-            onAssetClick={openAssetPanel}
-            selectedAssetId={selectedAsset?.id}
+            onAssetClick={(asset) => {
+              router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
+            }}
             metadata={sidebarMetadata}
             recommendations={recommendations}
             onRecommendationSelect={handleRecommendationSelect}
@@ -623,13 +619,13 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
 
                 {/* Action icons */}
                 <TooltipProvider>
-                  <div className="flex items-center gap-3 ml-2">
+                  <div className="hidden sm:flex items-center gap-3 ml-2">
                     <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => setIsQAPanelOpen(true)}
-                          className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#8D6AFA] hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                         >
                           <AnimatedAiIcon size={16} />
                         </button>
@@ -638,7 +634,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         {tConversation('actions.askQuestions')}
                       </TooltipContent>
                     </Tooltip>
-                    <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip open={copiedSummary || undefined}>
                       <TooltipTrigger asChild>
                         <button
@@ -676,12 +672,12 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                           : tConversation('tabs.summary')}
                       </TooltipContent>
                     </Tooltip>
-                    <span className="hidden sm:inline text-gray-300 dark:text-gray-600">|</span>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => setTranslationDialogOpen(true)}
-                          className="hidden sm:block p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         >
                           <Globe className="w-4 h-4" />
                         </button>
@@ -690,9 +686,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                         {tConversation('translation.dialogTitle')}
                       </TooltipContent>
                     </Tooltip>
+                    <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                   </div>
                 </TooltipProvider>
-                <span className="hidden lg:inline text-gray-300 dark:text-gray-600">|</span>
                 <DropdownMenu
                     trigger={
                       <button className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -808,6 +804,11 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                     <span className="text-sm text-purple-700 dark:text-purple-300">{tConversation('summary.regenerating')}</span>
                   </div>
                 )}
+                <TranslatingBanner
+                  isActive={isTranslatingSummary}
+                  estimatedSeconds={translationEstimate}
+                  label={tConversation('translation.translatingBanner')}
+                />
                 {conversation.source.summary.summaryV2 || conversation.source.summary.text ? (
                   <TranslatedSummaryRenderer
                     summaryV2={conversation.source.summary.summaryV2}
@@ -962,18 +963,7 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         </button>
       </div>
 
-      {/* AI Asset Slide Panel */}
-      <AIAssetSlidePanel
-        asset={selectedAsset}
-        isOpen={isPanelOpen}
-        isClosing={isPanelClosing}
-        onClose={closeAssetPanel}
-        onDelete={handleDeleteAsset}
-        conversationId={conversationId}
-        locale={locale}
-        currentTranslationLocale={currentLocale}
-        getTranslatedContent={getTranslatedContent}
-      />
+
 
       {/* Mobile Asset Sheet */}
       <AssetMobileSheet
@@ -1000,9 +990,9 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         preselectedTemplate={preselectedTemplate}
         onOutputGenerated={(asset) => {
           // Add the new asset to the list
-          setOutputs((prev) => [asset, ...prev]);
-          // Open the slide panel with the new asset
-          openAssetPanel(asset);
+          setOutputs((prev) => [asset, ...prev.filter((a) => a.id !== asset.id)]);
+          // Navigate to the full page view
+          router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
         }}
       />
 
@@ -1090,11 +1080,10 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         onOpenChange={setTranslationDialogOpen}
         status={translationStatus}
         currentLocale={currentLocale}
-        isTranslating={isTranslating}
         userTier={userTier}
         isAdmin={isAdmin}
         onSelectLocale={setLocale}
-        onTranslate={translate}
+        onTranslate={handleTranslateSummary}
       />
 
       {/* Regenerate Summary Dialog */}

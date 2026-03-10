@@ -24,7 +24,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-altBlue.svg"
-              alt="Neural Summary - You speak. It creates."
+              alt="Neural Summary - Create with your voice."
               className="h-9 sm:h-10 w-auto -mb-1"
               width={180}
               height={48}

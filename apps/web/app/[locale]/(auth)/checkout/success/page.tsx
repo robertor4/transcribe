@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
 import Link from 'next/link';
+import { getApiUrl } from '@/lib/config';
 
 export default function CheckoutSuccessPage({
   params
@@ -35,7 +36,7 @@ export default function CheckoutSuccessPage({
       try {
         // Get user data to determine subscription tier and amount
         const token = await user.getIdToken();
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const apiUrl = getApiUrl();
 
         const response = await fetch(`${apiUrl}/stripe/subscription`, {
           headers: {

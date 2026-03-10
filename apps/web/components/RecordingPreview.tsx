@@ -3,15 +3,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from './Button';
 import { useAudioWaveform } from '@/hooks/useAudioWaveform';
 
 interface RecordingPreviewProps {
   audioBlob: Blob;
   duration: number; // Recording duration in seconds
-  onConfirm: () => void;
-  onReRecord: () => void;
-  onCancel: () => void;
 }
 
 /**
@@ -22,9 +18,6 @@ interface RecordingPreviewProps {
 export function RecordingPreview({
   audioBlob,
   duration: durationProp,
-  onConfirm,
-  onReRecord,
-  onCancel,
 }: RecordingPreviewProps) {
   const t = useTranslations('recording');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -283,23 +276,6 @@ export function RecordingPreview({
     }, 500);
   };
 
-  // Confirmation handlers to prevent accidental data loss
-  const handleCancelWithConfirmation = () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to cancel? Your recording will be lost.'
-    );
-    if (!confirmed) return;
-    onCancel();
-  };
-
-  const handleReRecordWithConfirmation = () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to re-record? Your current recording will be lost.'
-    );
-    if (!confirmed) return;
-    onReRecord();
-  };
-
   // Generate real waveform from audio data
   // Using 50 bars to ensure visibility on mobile (100 bars + 2px gaps = 198px gaps alone)
   const { waveformBars, isAnalyzing } = useAudioWaveform(audioBlob, 50);
@@ -420,20 +396,7 @@ export function RecordingPreview({
         />
       </div>
 
-      {/* Actions - mobile-friendly stacked layout */}
-      <div className="flex flex-col gap-3 pt-2">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button variant="secondary" onClick={handleCancelWithConfirmation} fullWidth>
-            {t('controls.cancel')}
-          </Button>
-          <Button variant="brand" onClick={onConfirm} fullWidth>
-            {t('preview.proceed')} →
-          </Button>
-        </div>
-        <Button variant="ghost" onClick={handleReRecordWithConfirmation} fullWidth>
-          ← {t('preview.reRecord')}
-        </Button>
-      </div>
+      {/* Actions rendered in modal footer via parent */}
     </div>
   );
 }

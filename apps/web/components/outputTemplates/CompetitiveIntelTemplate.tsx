@@ -5,13 +5,20 @@ import {
   Users,
   ThumbsUp,
   ThumbsDown,
-  Target,
   Shield,
   ArrowRight,
-  AlertTriangle,
 } from 'lucide-react';
 import type { CompetitiveIntelOutput, CompetitorInsight } from '@transcribe/shared';
-import { SectionCard, BulletList, InfoBox } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  BulletList,
+  EDITORIAL,
+} from './shared';
 
 interface CompetitiveIntelTemplateProps {
   data: CompetitiveIntelOutput;
@@ -19,56 +26,58 @@ interface CompetitiveIntelTemplateProps {
 
 function CompetitorCard({ competitor }: { competitor: CompetitorInsight }) {
   return (
-    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl p-4">
+    <div className="py-6 first:pt-0 border-b border-gray-100 dark:border-gray-800 last:border-b-0">
       <div className="flex items-center gap-2 mb-3">
-        <Users className="w-5 h-5 text-[#8D6AFA]" />
-        <h4 className="font-bold text-gray-900 dark:text-gray-100">{competitor.competitor}</h4>
+        <Users className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+        <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+          {competitor.competitor}
+        </h4>
       </div>
 
       {/* Positioning */}
-      <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-        <p className="text-sm text-gray-700 dark:text-gray-300">{competitor.positioning}</p>
-      </div>
+      <p className={`${EDITORIAL.body} mb-4`}>{competitor.positioning}</p>
 
       {/* Mentions */}
       {competitor.mentions && competitor.mentions.length > 0 && (
-        <div className="mb-3">
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <div className="mb-4">
+          <span className={`${EDITORIAL.sectionLabel} text-[10px]`}>
             Key Mentions
           </span>
           <BulletList
             items={competitor.mentions}
             bulletColor="bg-blue-500"
-            className="mt-1 text-sm"
+            className="mt-2"
           />
         </div>
       )}
 
       {/* Strengths & Weaknesses */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {competitor.strengths && competitor.strengths.length > 0 && (
           <div>
-            <div className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 mb-1">
-              <ThumbsUp className="w-3 h-3" />
-              Their Strengths
+            <div className="flex items-center gap-1.5 mb-2">
+              <ThumbsUp className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+              <span className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                Their Strengths
+              </span>
             </div>
             <BulletList
               items={competitor.strengths}
               bulletColor="bg-green-500"
-              className="text-xs text-gray-600 dark:text-gray-400"
             />
           </div>
         )}
         {competitor.weaknesses && competitor.weaknesses.length > 0 && (
           <div>
-            <div className="flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400 mb-1">
-              <ThumbsDown className="w-3 h-3" />
-              Their Weaknesses
+            <div className="flex items-center gap-1.5 mb-2">
+              <ThumbsDown className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+              <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
+                Their Weaknesses
+              </span>
             </div>
             <BulletList
               items={competitor.weaknesses}
               bulletColor="bg-red-500"
-              className="text-xs text-gray-600 dark:text-gray-400"
             />
           </div>
         )}
@@ -78,76 +87,51 @@ function CompetitorCard({ competitor }: { competitor: CompetitorInsight }) {
 }
 
 export function CompetitiveIntelTemplate({ data }: CompetitiveIntelTemplateProps) {
+  const metadata = data.source ? (
+    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <Eye className="w-3.5 h-3.5" />
+      <span className="text-gray-400">Source:</span> {data.source}
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Eye className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Competitive Intelligence
-            </h2>
-            {data.source && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Source: {data.source}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title="Competitive Intelligence" metadata={metadata} />
 
       {/* Threat Assessment */}
       {data.threatAssessment && (
-        <InfoBox title="Threat Assessment" icon={AlertTriangle} variant="amber">
-          {data.threatAssessment}
-        </InfoBox>
+        <EditorialPullQuote color="#f59e0b">
+          <p>{data.threatAssessment}</p>
+        </EditorialPullQuote>
       )}
 
       {/* Competitors */}
       {data.competitors && data.competitors.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-            Competitor Analysis
-          </h3>
-          <div className="grid grid-cols-1 gap-4">
-            {data.competitors.map((comp, idx) => (
-              <CompetitorCard key={idx} competitor={comp} />
-            ))}
-          </div>
-        </div>
+        <section className="mb-10">
+          <EditorialHeading>Competitor Analysis</EditorialHeading>
+          {data.competitors.map((comp, idx) => (
+            <CompetitorCard key={idx} competitor={comp} />
+          ))}
+        </section>
       )}
 
       {/* Our Advantages */}
       {data.ourAdvantages && data.ourAdvantages.length > 0 && (
-        <SectionCard
-          title="Our Competitive Advantages"
-          icon={Shield}
-          iconColor="text-green-500"
-          className="bg-green-50/50 dark:bg-green-900/10"
-        >
+        <EditorialSection label="Our Competitive Advantages" icon={Shield} borderTop>
           <BulletList items={data.ourAdvantages} bulletColor="bg-green-500" />
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Recommended Actions */}
       {data.recommendedActions && data.recommendedActions.length > 0 && (
-        <SectionCard title="Recommended Actions" icon={ArrowRight} iconColor="text-[#14D0DC]">
-          <div className="space-y-2">
-            {data.recommendedActions.map((action, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#14D0DC]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-[#14D0DC]">{idx + 1}</span>
-                </div>
-                <p className="text-gray-700 dark:text-gray-300 break-words">{action}</p>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
+        <EditorialSection label="Recommended Actions" icon={ArrowRight} borderTop>
+          <EditorialNumberedList
+            items={data.recommendedActions.map(action => ({
+              primary: action,
+            }))}
+          />
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

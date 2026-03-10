@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import { getAppUrl } from '@/lib/config';
 
 interface FinalCtaSectionTranslations {
   tag: string;
@@ -24,6 +24,7 @@ interface FinalCtaSectionProps {
 
 export function FinalCtaSection({ translations: t, locale }: FinalCtaSectionProps) {
   const metaItems = [t.meta.trial, t.meta.noCard, t.meta.noBot, t.meta.cancel];
+  const appUrl = getAppUrl();
 
   return (
     <section className="landing-section !py-[120px] text-center border-t border-white/[0.08]" aria-label="Get started">
@@ -39,18 +40,18 @@ export function FinalCtaSection({ translations: t, locale }: FinalCtaSectionProp
         </p>
 
         <div className="flex gap-3 justify-center items-center mb-8 flex-wrap">
-          <Link
-            href={`/${locale}/signup`}
+          <a
+            href={`${appUrl}/${locale}/signup`}
             className="inline-flex items-center bg-[#8D6AFA] text-white border-none px-9 py-4 rounded-[10px] text-base font-semibold transition-all hover:bg-[#7A5AE0] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(141,106,250,0.35)]"
           >
             {t.ctaPrimary}
-          </Link>
+          </a>
           <button className="inline-flex items-center bg-transparent text-white/60 border border-white/20 px-6 py-4 rounded-[10px] text-[15px] transition-all hover:border-white/40 hover:text-white cursor-pointer">
             {t.ctaSecondary}
           </button>
         </div>
 
-        <div className="flex gap-6 justify-center text-[13px] text-white/30 flex-wrap">
+        <div className="flex gap-6 justify-center text-[13px] text-white/50 flex-wrap">
           {metaItems.map((item) => (
             <span key={item} className="before:content-['✓_'] before:text-[#14D0DC]">
               {item}

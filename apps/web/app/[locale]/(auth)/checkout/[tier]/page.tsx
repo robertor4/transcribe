@@ -8,6 +8,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { getPricingForLocale, getCurrencyForLocale } from '@transcribe/shared';
 import { formatBeginCheckoutParams, parsePricingTier, parseBillingCycle } from '@/utils/analytics-helpers';
+import { getApiUrl } from '@/lib/config';
 
 export default function CheckoutPage() {
   const params = useParams();
@@ -34,7 +35,7 @@ export default function CheckoutPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const cycle = urlParams.get('cycle') || 'monthly';
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const apiUrl = getApiUrl();
       const successUrl = `${window.location.origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${window.location.origin}/${locale}/pricing`;
 

@@ -1,0 +1,18 @@
+namespace: neural-summary
+output:
+  file_path: /working-dir/security/results/fluid-attacks-results.csv
+  format: CSV
+language: EN
+working_dir: /working-dir
+tracing_opt_out: True
+sast:
+  include:
+    - glob(apps/api/src/**)
+    - glob(apps/web/**)
+    - glob(packages/shared/**)
+  exclude:
+    - glob(**node_modules**)
+    - glob(**dist**)
+    - glob(**.next**)
+    - glob(**.spec.ts)
+    - glob(**.test.ts)

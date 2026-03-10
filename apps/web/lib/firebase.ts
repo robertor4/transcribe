@@ -2,7 +2,7 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
+import type { Analytics } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -43,21 +43,32 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Initialize Analytics only in browser environment
+// Lazy-load Firebase Analytics to avoid loading the GTM script on pages
+// that don't use analytics (e.g. landing page). The ~60KB analytics bundle
+// is only fetched when initAnalytics() is first called.
 let analytics: Analytics | null = null;
+let analyticsInitPromise: Promise<Analytics | null> | null = null;
 
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
+export function initAnalytics(): Promise<Analytics | null> {
+  if (typeof window === 'undefined') return Promise.resolve(null);
+  if (analytics) return Promise.resolve(analytics);
+  if (analyticsInitPromise) return analyticsInitPromise;
 
-      // Enable debug mode in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Firebase Analytics] Debug mode enabled for development');
-        // Debug events will be sent to DebugView in Firebase Console
-      }
-    }
-  });
+  analyticsInitPromise = import('firebase/analytics').then(
+    ({ getAnalytics, isSupported }) =>
+      isSupported().then((supported) => {
+        if (supported) {
+          analytics = getAnalytics(app);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Firebase Analytics] Debug mode enabled for development');
+          }
+          return analytics;
+        }
+        return null;
+      }),
+  );
+
+  return analyticsInitPromise;
 }
 
 export { analytics };

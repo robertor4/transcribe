@@ -7,7 +7,7 @@
 
 ## Overview
 
-A companion mobile app for iOS and Android that enables users to record audio on-the-go and have it transformed into structured documents via Neural Summary's AI pipeline. The app embodies the core brand promise: **"You speak. It creates."**
+A companion mobile app for iOS and Android that enables users to record audio on-the-go and have it transformed into structured documents via Neural Summary's AI pipeline. The app embodies the core brand promise: **"Create with your voice."**
 
 ## Why React Native with Expo?
 

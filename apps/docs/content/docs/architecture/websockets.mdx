@@ -1,0 +1,86 @@
+---
+title: WebSocket Protocol
+description: Real-time progress updates and resilience mechanisms.
+---
+
+## Overview
+
+Neural Summary uses **Socket.io** to push real-time processing progress to connected clients. A polling fallback ensures reliability when WebSocket connections fail.
+
+<Mermaid chart={`
+stateDiagram-v2
+    [*] --> Connected: Socket.io connect
+    Connected --> Subscribed: subscribe_transcription
+    Subscribed --> Progress: transcription_progress
+    Progress --> Progress: updates every 3s
+    Progress --> Completed: transcription_completed
+    Progress --> Failed: transcription_failed
+    Completed --> [*]
+    Failed --> [*]
+
+    Connected --> Disconnected: connection lost
+    Disconnected --> Reconnecting: auto-reconnect
+    Reconnecting --> Connected: success (attempt 1-3)
+    Reconnecting --> PollingFallback: all attempts failed
+    PollingFallback --> Completed: poll finds result
+`} />
+
+## Event Protocol
+
+### Client to Server
+
+```typescript
+// Subscribe to a specific job's updates
+socket.emit('subscribe_transcription', {
+  jobId: string,
+  token: string  // Firebase JWT for auth
+});
+```
+
+### Server to Client
+
+```typescript
+// Progress update (every 3 seconds during processing)
+socket.emit('transcription_progress', {
+  jobId: string,
+  progress: number,        // 0-100
+  stage: 'uploading' | 'processing' | 'summarizing'
+});
+
+// Processing complete
+socket.emit('transcription_completed', {
+  jobId: string,
+  transcriptionId: string
+});
+
+// Processing failed
+socket.emit('transcription_failed', {
+  jobId: string,
+  error: string
+});
+```
+
+## Resilience
+
+### Reconnection Strategy
+
+The client attempts automatic reconnection with exponential backoff:
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | 2 seconds |
+| 2 | 4 seconds |
+| 3 | 8 seconds |
+| All failed | Switch to polling |
+
+### Transport Fallback
+
+Socket.io is configured with dual transport: WebSocket first, then HTTP long-polling.
+
+### API Polling Fallback
+
+When WebSocket is completely unavailable, the client falls back to polling the REST API every 10 seconds for stale transcriptions. This ensures progress is never lost.
+
+### Extended Timeout
+
+The WebSocket connection timeout is set to **10 minutes** (up from 5) to accommodate long transcriptions of large audio files.

@@ -1384,4 +1384,36 @@ ${data.error}
       return false;
     }
   }
+
+  /**
+   * Send a raw email with custom subject, HTML, and plain text.
+   * Used by other services (e.g., email verification) that build their own templates.
+   */
+  async sendRawEmail(options: {
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+  }): Promise<boolean> {
+    if (!this.transporter) {
+      this.logger.warn('Email service not configured, skipping email send');
+      return false;
+    }
+
+    try {
+      const info = await this.transporter.sendMail({
+        from: `"Neural Summary" <${this.fromEmail}>`,
+        to: options.to,
+        subject: options.subject,
+        html: options.html,
+        text: options.text,
+      });
+
+      this.logger.log(`Raw email sent to ${options.to}: ${info.messageId}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Failed to send raw email to ${options.to}:`, error);
+      return false;
+    }
+  }
 }

@@ -1,0 +1,115 @@
+---
+title: Processing Pipeline
+description: How audio files are processed from upload to finished document.
+---
+
+## End-to-End Flow
+
+The processing pipeline handles everything from file upload to AI-generated output. Large files are automatically split for parallel processing.
+
+<Mermaid chart={`
+sequenceDiagram
+    participant C as Client
+    participant API as NestJS API
+    participant Q as Bull Queue
+    participant P as Processor
+    participant S as Firebase Storage
+    participant AI as AI Services
+    participant DB as Firestore
+    participant WS as WebSocket
+
+    C->>S: Upload audio file
+    C->>API: POST /transcription (metadata)
+    API->>DB: Create transcription record (PENDING)
+    API->>Q: Enqueue processing job
+    API-->>C: 200 OK (jobId)
+
+    Q->>P: Dequeue job
+    P->>S: Download audio file
+    P->>WS: Progress: "processing" 0%
+
+    alt File > 25MB
+        P->>P: FFmpeg split into 10-min chunks
+        loop Each chunk (parallel)
+            P->>AI: Transcribe chunk
+            P->>WS: Progress update
+        end
+        P->>P: Merge transcripts in order
+    else File <= 25MB
+        P->>AI: Transcribe directly
+    end
+
+    P->>WS: Progress: "summarizing" 80%
+    P->>AI: GPT-5 generate summary
+    P->>DB: Save transcript + summary
+    P->>WS: transcription_completed
+    P->>S: Cleanup temp files
+`} />
+
+## Audio Splitting
+
+Files larger than 25MB are split by FFmpeg into chunks of up to 10 minutes or 25MB (whichever is smaller).
+
+**Implementation**: `apps/api/src/utils/audio-splitter.ts`
+
+```
+Original file (180MB, 45 minutes)
+    ├── chunk_001.m4a (0:00 - 10:00)
+    ├── chunk_002.m4a (10:00 - 20:00)
+    ├── chunk_003.m4a (20:00 - 30:00)
+    ├── chunk_004.m4a (30:00 - 40:00)
+    └── chunk_005.m4a (40:00 - 45:00)
+```
+
+Chunks are processed in parallel (configurable concurrency via `TRANSCRIPTION_CONCURRENCY`), then merged in chronological order to maintain accuracy.
+
+## Transcription Service Selection
+
+<Mermaid chart={`
+flowchart TD
+    A[Audio File] --> B{AssemblyAI Available?}
+    B -->|Yes| C[AssemblyAI Transcription]
+    C --> D{Success?}
+    D -->|Yes| E[Transcript Ready]
+    D -->|No| F[OpenAI Whisper Fallback]
+    B -->|No| F
+    F --> G{Success?}
+    G -->|Yes| E
+    G -->|No| H[Mark as FAILED]
+`} />
+
+- **Primary**: AssemblyAI with speaker diarization
+- **Fallback**: OpenAI Whisper API (when AssemblyAI fails)
+
+## AI Analysis (GPT-5)
+
+After transcription, the summary is always generated using GPT-5. Additional AI Assets use quality-based model selection:
+
+| Condition | Model |
+|-----------|-------|
+| Primary summary | Always `gpt-5` |
+| `QUALITY_MODE=premium` | `gpt-5` |
+| Transcript > 10K chars | `gpt-5` |
+| `QUALITY_MODE=balanced` + short transcript | `gpt-5-mini` |
+
+**Prompt definitions**: `apps/api/src/transcription/prompts.ts`
+**Analysis templates**: `apps/api/src/transcription/analysis-templates.ts`
+
+## File Size Limits
+
+| Tier | Max File Size |
+|------|--------------|
+| Free | 1 GB |
+| Pro | 3 GB |
+| Enterprise | 5 GB |
+
+Supported formats: M4A, MP3, WAV, MP4, MOV, MPEG, MPGA, WebM, FLAC, OGG.
+
+## Error Recovery
+
+The processor includes multiple recovery mechanisms:
+
+1. **Job retries**: Bull automatically retries failed jobs with exponential backoff
+2. **Zombie cleanup**: Hourly cron job marks stuck jobs (>24h) as FAILED
+3. **Temp file cleanup**: Failed jobs trigger cleanup of intermediate chunk files
+4. **Orphan detection**: Identifies and removes files in Storage without matching Firestore records

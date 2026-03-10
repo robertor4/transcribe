@@ -38,7 +38,7 @@ interface OnboardingContextType {
   /** Seed the example conversation */
   seedExample: () => Promise<string | null>;
   /** Manually restart the onboarding flow (for "Tutorial" menu item) */
-  restartOnboarding: () => void;
+  restartOnboarding: () => Promise<void>;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(
@@ -54,10 +54,10 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 
 interface OnboardingApiPayload {
   responses?: OnboardingResponses;
-  questionnaireCompletedAt?: string;
-  tourCompletedAt?: string;
-  completedAt?: string;
-  skippedAt?: string;
+  questionnaireCompletedAt?: string | null;
+  tourCompletedAt?: string | null;
+  completedAt?: string | null;
+  skippedAt?: string | null;
 }
 
 async function updateOnboardingApi(
@@ -191,9 +191,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   const skipQuestionnaire = useCallback(async () => {
     const now = new Date().toISOString();
-    await updateOnboardingApi({ skippedAt: now });
+    await updateOnboardingApi({ questionnaireCompletedAt: now });
     setShowQuestionnaire(false);
-    setNeedsOnboarding(false);
+    setShowTour(true);
   }, []);
 
   const completeTour = useCallback(async () => {
@@ -216,7 +216,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setNeedsOnboarding(false);
   }, []);
 
-  const restartOnboarding = useCallback(() => {
+  const restartOnboarding = useCallback(async () => {
+    // Clear backend onboarding state so a page refresh also restarts
+    await updateOnboardingApi({
+      questionnaireCompletedAt: null,
+      tourCompletedAt: null,
+      skippedAt: null,
+      completedAt: null,
+    });
     setNeedsOnboarding(true);
     setShowQuestionnaire(true);
     setShowTour(false);

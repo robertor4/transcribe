@@ -31,7 +31,7 @@ export default async function ForgotPasswordPage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/logos/neural-summary-logo-white-wTagLine.svg"
-              alt="Neural Summary - You speak. It creates."
+              alt="Neural Summary - Create with your voice."
               className="h-16 w-auto"
             />
           </Link>

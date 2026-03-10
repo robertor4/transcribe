@@ -1,18 +1,24 @@
 'use client';
 
 import {
-  FileText,
   Building2,
   Briefcase,
   AlertTriangle,
   Lightbulb,
   Wrench,
   TrendingUp,
-  Quote,
   CheckCircle2,
 } from 'lucide-react';
 import type { CaseStudyOutput, CaseStudyMetric } from '@transcribe/shared';
-import { SectionCard, BulletList, InfoBox } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialPullQuote,
+  EditorialParagraphs,
+  BulletList,
+  EDITORIAL,
+} from './shared';
 
 interface CaseStudyTemplateProps {
   data: CaseStudyOutput;
@@ -26,7 +32,7 @@ function MetricCard({ metric }: { metric: CaseStudyMetric }) {
         {metric.before && (
           <>
             <span className="text-lg text-gray-500 dark:text-gray-400">{metric.before}</span>
-            <span className="text-gray-400">→</span>
+            <span className="text-gray-400 dark:text-gray-500">→</span>
           </>
         )}
         <span className="text-2xl font-bold text-green-600 dark:text-green-400">{metric.after}</span>
@@ -41,88 +47,72 @@ function MetricCard({ metric }: { metric: CaseStudyMetric }) {
 }
 
 export function CaseStudyTemplate({ data }: CaseStudyTemplateProps) {
+  const metadata = (data.customer || data.industry) ? (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      <span className="flex items-center gap-1.5">
+        <Building2 className="w-3.5 h-3.5" />
+        {data.customer}
+      </span>
+      {data.industry && (
+        <span className="flex items-center gap-1.5">
+          <Briefcase className="w-3.5 h-3.5" />
+          {data.industry}
+        </span>
+      )}
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <FileText className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-              {data.title}
-            </h2>
-            <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <Building2 className="w-4 h-4" />
-                {data.customer}
-              </span>
-              {data.industry && (
-                <span className="flex items-center gap-1">
-                  <Briefcase className="w-4 h-4" />
-                  {data.industry}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title={data.title} metadata={metadata} />
 
-      {/* Challenge */}
-      <InfoBox title="The Challenge" icon={AlertTriangle} variant="red">
-        {data.challenge}
-      </InfoBox>
+      {/* Challenge — pull-quote style with red accent */}
+      <EditorialSection label="The Challenge" icon={AlertTriangle}>
+        <EditorialPullQuote color="#ef4444">
+          <EditorialParagraphs text={data.challenge} />
+        </EditorialPullQuote>
+      </EditorialSection>
 
-      {/* Solution */}
-      <InfoBox title="The Solution" icon={Lightbulb} variant="purple">
-        {data.solution}
-      </InfoBox>
+      {/* Solution — pull-quote style with purple accent */}
+      <EditorialSection label="The Solution" icon={Lightbulb}>
+        <EditorialPullQuote color="#8D6AFA">
+          <EditorialParagraphs text={data.solution} />
+        </EditorialPullQuote>
+      </EditorialSection>
 
       {/* Implementation */}
       {data.implementation && (
-        <SectionCard title="Implementation" icon={Wrench} iconColor="text-blue-500">
-          <p className="text-gray-700 dark:text-gray-300">{data.implementation}</p>
-        </SectionCard>
+        <EditorialSection label="Implementation" icon={Wrench} borderTop>
+          <p className={EDITORIAL.body}>{data.implementation}</p>
+        </EditorialSection>
       )}
 
       {/* Results */}
       {data.results && data.results.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-500" />
-            Results
-          </h3>
+        <EditorialSection label="Results" icon={TrendingUp} borderTop>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {data.results.map((metric, idx) => (
               <MetricCard key={idx} metric={metric} />
             ))}
           </div>
-        </div>
+        </EditorialSection>
       )}
 
       {/* Testimonial */}
       {data.testimonial && (
-        <div className="bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 rounded-xl p-6">
-          <Quote className="w-8 h-8 text-[#8D6AFA]/50 mb-3" />
-          <blockquote className="text-lg text-gray-700 dark:text-gray-300 italic mb-4">
-            &ldquo;{data.testimonial.quote}&rdquo;
-          </blockquote>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            — {data.testimonial.attribution}
-          </p>
-        </div>
+        <EditorialSection label="Testimonial" borderTop>
+          <EditorialPullQuote cite={data.testimonial.attribution}>
+            <p>{data.testimonial.quote}</p>
+          </EditorialPullQuote>
+        </EditorialSection>
       )}
 
       {/* Key Takeaways */}
       {data.keyTakeaways && data.keyTakeaways.length > 0 && (
-        <SectionCard
-          title="Key Takeaways"
-          icon={CheckCircle2}
-          iconColor="text-green-500"
-          className="bg-green-50/50 dark:bg-green-900/10"
-        >
+        <EditorialSection label="Key Takeaways" icon={CheckCircle2} borderTop>
           <BulletList items={data.keyTakeaways} bulletColor="bg-green-500" />
-        </SectionCard>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

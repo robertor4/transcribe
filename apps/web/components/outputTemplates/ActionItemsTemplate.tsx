@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { CheckCircle2, Square, CheckSquare, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle2, Square, CheckSquare, ChevronDown, ChevronRight, Zap, CalendarClock, Milestone } from 'lucide-react';
 import type { ActionItemsOutput, ActionItem } from '@transcribe/shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  StatusBadge,
+  EDITORIAL,
+} from './shared';
 
 interface ActionItemsTemplateProps {
   data: ActionItemsOutput;
@@ -58,25 +65,6 @@ const PRIORITY_ORDER: Record<string, number> = {
   low: 2,
 };
 
-// Priority badge styles
-const PRIORITY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  high: {
-    bg: 'bg-red-100 dark:bg-red-900/30',
-    text: 'text-red-700 dark:text-red-400',
-    label: 'High',
-  },
-  medium: {
-    bg: 'bg-amber-100 dark:bg-amber-900/30',
-    text: 'text-amber-700 dark:text-amber-400',
-    label: 'Medium',
-  },
-  low: {
-    bg: 'bg-gray-100 dark:bg-gray-700/50',
-    text: 'text-gray-600 dark:text-gray-400',
-    label: 'Low',
-  },
-};
-
 function sortByPriority(items: ActionItem[]): ActionItem[] {
   return [...items].sort((a, b) => {
     const priorityA = PRIORITY_ORDER[a.priority] ?? 2;
@@ -126,7 +114,6 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
   if (item.deadline) metadataParts.push(formatDeadline(item.deadline));
 
   const metadata = metadataParts.join(' · ');
-  const priorityStyle = PRIORITY_STYLES[item.priority] || PRIORITY_STYLES.medium;
 
   const handleToggleComplete = () => {
     onToggleComplete(itemKey);
@@ -139,7 +126,7 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
 
   return (
     <div
-      className="py-4 border-b border-gray-100 dark:border-gray-800 last:border-b-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-4 px-4 transition-colors"
+      className={`py-4 ${EDITORIAL.sectionBorder} last:border-b-0 first:border-t-0 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/30 -mx-2 px-2 rounded transition-colors`}
       onClick={handleToggleComplete}
       role="button"
       tabIndex={0}
@@ -157,17 +144,17 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
           {isCompleted ? (
             <CheckSquare className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           ) : (
-            <Square className="w-5 h-5 text-gray-400" />
+            <Square className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           )}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p
-            className={`leading-relaxed transition-all ${
+            className={`${EDITORIAL.listItem} transition-all ${
               isCompleted
                 ? 'text-gray-400 dark:text-gray-500 line-through'
-                : 'text-gray-900 dark:text-gray-100'
+                : ''
             }`}
           >
             {item.task}
@@ -182,15 +169,13 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
             }`}
           >
             {/* Priority badge */}
-            <span
-              className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                isCompleted
-                  ? 'bg-gray-100 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500'
-                  : `${priorityStyle.bg} ${priorityStyle.text}`
-              }`}
-            >
-              {priorityStyle.label}
-            </span>
+            {isCompleted ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 capitalize">
+                {item.priority}
+              </span>
+            ) : (
+              <StatusBadge status={item.priority} variant="priority" />
+            )}
 
             {/* Expand reason button */}
             {item.priorityReason && (
@@ -211,7 +196,7 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
             {/* Owner and deadline */}
             {metadata && (
               <>
-                <span className="text-gray-300 dark:text-gray-600">•</span>
+                <span className="text-gray-300 dark:text-gray-600">·</span>
                 <span className={isCompleted ? 'line-through' : ''}>{metadata}</span>
               </>
             )}
@@ -219,7 +204,7 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
 
           {/* Expanded priority reason */}
           {showReason && item.priorityReason && (
-            <p className="text-sm mt-2 text-gray-600 dark:text-gray-400 pl-3 border-l-2 border-gray-200 dark:border-gray-700">
+            <p className={`text-sm mt-2 ${EDITORIAL.body} pl-3 border-l-2 border-purple-300 dark:border-purple-700`}>
               {item.priorityReason}
             </p>
           )}
@@ -232,38 +217,43 @@ function ActionItemRow({ item, itemKey, isCompleted, onToggleComplete }: ActionI
 interface ActionSectionProps {
   title: string;
   items: ActionItem[];
-  accentColor: string;
+  icon: typeof Zap;
   /** Prefix for item keys (e.g., "immediate", "short", "long") */
   sectionPrefix: string;
   /** Set of completed item keys */
   completedItems: Set<string>;
   /** Callback when an item is toggled */
   onToggleComplete: (itemKey: string) => void;
+  /** Show border top */
+  borderTop?: boolean;
 }
 
 function ActionSection({
   title,
   items,
-  accentColor,
+  icon,
   sectionPrefix,
   completedItems,
   onToggleComplete,
+  borderTop = false,
 }: ActionSectionProps) {
   if (items.length === 0) return null;
 
   // Sort items by priority (high → medium → low)
   const sortedItems = sortByPriority(items);
 
+  // Count completed in this section
+  const completedInSection = sortedItems.filter((_, index) =>
+    completedItems.has(`${sectionPrefix}_${index}`)
+  ).length;
+
+  const sectionLabel = completedInSection > 0
+    ? `${title} — ${completedInSection}/${items.length} done`
+    : `${title} — ${items.length}`;
+
   return (
-    <div className="mb-8 last:mb-0">
-      <div className="flex items-center gap-2 mb-4">
-        <span className={`w-2 h-2 rounded-full ${accentColor}`} />
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-          {title}
-        </h3>
-        <span className="text-sm text-gray-400 dark:text-gray-500">({items.length})</span>
-      </div>
-      <div className="bg-white dark:bg-gray-800/50 rounded-lg px-4">
+    <EditorialSection label={sectionLabel} icon={icon} borderTop={borderTop}>
+      <div>
         {sortedItems.map((item, index) => {
           const itemKey = `${sectionPrefix}_${index}`;
           return (
@@ -277,7 +267,7 @@ function ActionSection({
           );
         })}
       </div>
-    </div>
+    </EditorialSection>
   );
 }
 
@@ -325,38 +315,46 @@ export function ActionItemsTemplate({ data, analysisId }: ActionItemsTemplatePro
 
   if (totalItems === 0) {
     return (
-      <div className="text-center py-16">
-        <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-          No action items found
-        </h3>
-        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          This conversation didn&apos;t contain any explicit action items or commitments.
-        </p>
-      </div>
+      <EditorialArticle>
+        <div className="text-center py-16">
+          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            No action items found
+          </h3>
+          <p className={EDITORIAL.body + ' max-w-sm mx-auto'}>
+            This conversation didn&apos;t contain any explicit action items or commitments.
+          </p>
+        </div>
+      </EditorialArticle>
     );
   }
 
+  const progressMetadata = (
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      {completedCount > 0 ? (
+        <>
+          {completedCount} of {totalItems} completed
+        </>
+      ) : (
+        <>
+          {totalItems} action item{totalItems !== 1 ? 's' : ''} extracted
+        </>
+      )}
+    </p>
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Minimal summary with progress */}
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {completedCount > 0 ? (
-          <>
-            {completedCount} of {totalItems} completed
-          </>
-        ) : (
-          <>
-            {totalItems} action item{totalItems !== 1 ? 's' : ''} extracted
-          </>
-        )}
-      </p>
+    <EditorialArticle>
+      <EditorialTitle
+        title="Action Items"
+        metadata={progressMetadata}
+      />
 
       {/* Action sections */}
       <ActionSection
         title="This week"
         items={immediateActions}
-        accentColor="bg-red-500"
+        icon={Zap}
         sectionPrefix="immediate"
         completedItems={completedItems}
         onToggleComplete={handleToggleComplete}
@@ -364,19 +362,21 @@ export function ActionItemsTemplate({ data, analysisId }: ActionItemsTemplatePro
       <ActionSection
         title="This month"
         items={shortTermActions}
-        accentColor="bg-amber-500"
+        icon={CalendarClock}
         sectionPrefix="short"
         completedItems={completedItems}
         onToggleComplete={handleToggleComplete}
+        borderTop={immediateActions.length > 0}
       />
       <ActionSection
         title="Long term"
         items={longTermActions}
-        accentColor="bg-emerald-500"
+        icon={Milestone}
         sectionPrefix="long"
         completedItems={completedItems}
         onToggleComplete={handleToggleComplete}
+        borderTop={immediateActions.length > 0 || shortTermActions.length > 0}
       />
-    </div>
+    </EditorialArticle>
   );
 }

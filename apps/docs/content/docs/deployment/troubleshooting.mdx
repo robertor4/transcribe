@@ -1,0 +1,95 @@
+---
+title: Troubleshooting
+description: Common production issues and their solutions.
+---
+
+## Disk Space
+
+**Error**: `ENOSPC: no space left on device`
+
+```bash
+# Emergency cleanup
+docker system prune -af && npm cache clean --force
+
+# Or use the cleanup script
+cd /opt/transcribe
+bash scripts/cleanup-docker.sh
+
+# Check disk usage
+ssh root@<server> 'bash -s' < scripts/check-disk-space.sh
+```
+
+## Redis
+
+```bash
+# Verify connectivity
+npm run redis:check
+
+# Restart
+npm run redis:stop && npm run redis:start
+
+# Production diagnostics
+ssh root@<server> 'bash -s' < scripts/diagnose-redis.sh
+```
+
+## FFmpeg Not Found
+
+AudioSplitter checks: `/usr/bin`, `/usr/local/bin`, `/opt/homebrew/bin`
+
+```bash
+# macOS
+brew install ffmpeg
+
+# Ubuntu
+apt-get install ffmpeg
+```
+
+## Port Conflicts
+
+| Port | Service | Fix |
+|------|---------|-----|
+| 3000 | Next.js | Falls back to 3002 automatically |
+| 3001 | NestJS | Change via `PORT` env var |
+| 6379 | Redis | Check for existing Redis processes |
+
+## Traefik SSL Certificate
+
+**Symptom**: Browser shows "TRAEFIK DEFAULT CERT" instead of Let's Encrypt.
+
+```bash
+# Run diagnostic
+./scripts/check-traefik-certs.sh
+
+# Quick fix
+ssh root@<server>
+cd /opt/transcribe
+echo "ACME_EMAIL=admin@neuralsummary.com" >> .env.production
+docker-compose -f docker-compose.prod.yml restart traefik
+```
+
+If still failing, reset the certificate volume:
+
+```bash
+docker-compose -f docker-compose.prod.yml stop traefik
+docker volume rm transcribe_traefik-certificates
+docker-compose -f docker-compose.prod.yml up -d traefik
+```
+
+Verify:
+```bash
+curl -vI https://neuralsummary.com 2>&1 | grep "issuer:"
+```
+
+## Firebase
+
+- **Storage bucket**: Must use `.firebasestorage.app` (not `.appspot.com`)
+- **Composite indexes**: Follow the error link in logs to auto-create
+- **CORS**: Deploy `firebase/cors.json` for cross-origin uploads
+
+## Shared Package Type Errors
+
+After modifying `packages/shared`:
+
+```bash
+npm run build:shared
+```

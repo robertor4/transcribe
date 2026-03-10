@@ -7,8 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel --filter=!mobile",
-    "dev:all": "npm run redis:start && npm run build:shared && turbo run dev --parallel --filter=!mobile",
+    "dev": "turbo run dev --parallel --filter=!mobile --filter=!docs",
+    "dev:all": "npm run redis:start && npm run build:shared && turbo run dev --parallel --filter=!mobile --filter=!docs",
+    "docs:dev": "cd apps/docs && npm run dev",
     "dev:docker": "docker-compose -f docker-compose.dev.yml up",
     "dev:docker:build": "docker-compose -f docker-compose.dev.yml build",
     "docker:up": "docker-compose up -d",

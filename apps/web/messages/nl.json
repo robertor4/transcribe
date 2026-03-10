@@ -32,7 +32,10 @@
     "theme": "Thema",
     "themeLight": "Licht",
     "themeDark": "Donker",
-    "themeSystem": "Systeem"
+    "themeSystem": "Systeem",
+    "generatingInBackground": "Nog bezig met genereren. We laten je weten wanneer het klaar is.",
+    "generationComplete": "{name} is klaar",
+    "generationFailed": "Genereren mislukt. Probeer het opnieuw."
   },
   "search": {
     "placeholder": "Zoek gesprekken...",
@@ -64,22 +67,40 @@
         "description": "Kies hoe je je audio wilt toevoegen",
         "descriptionMic": "Neem audio op via je microfoon. Ideaal voor vergaderingen, spraakmemo's en brainstormsessies.",
         "descriptionTab": "Leg audio vast van een browsertabblad. Ideaal voor online vergaderingen, webinars en videogesprekken in je browser.",
-        "descriptionUpload": "Upload een bestaand audio- of videobestand. Ideaal voor opgenomen interviews, podcasts en vergaderopnames."
+        "descriptionUpload": "Upload een bestaand audio- of videobestand. Ideaal voor opgenomen interviews, podcasts en vergaderopnames.",
+        "sidebarLabel": "Opname"
       },
       "context": {
         "title": "Context toevoegen",
-        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)"
+        "description": "Voeg context toe om de transcriptienauwkeurigheid te verbeteren (optioneel)",
+        "sidebarLabel": "Context"
       },
       "processing": {
-        "title": "Verwerken...",
-        "description": "Dit kan even duren"
+        "title": "Verwerking",
+        "description": "Je gesprek wordt verwerkt",
+        "sidebarLabel": "Verwerking",
+        "complete": "Verwerking voltooid",
+        "redirecting": "Doorverwijzen over {countdown}s...",
+        "viewNow": "Gesprek nu bekijken"
       }
     },
     "contextLabel": "Context (optioneel)",
     "contextPlaceholder": "bijv. productmeeting, verkoopgesprek, interview...",
     "back": "Terug",
     "skip": "Overslaan",
-    "continue": "Doorgaan"
+    "continue": "Doorgaan",
+    "changeMethod": "Methode wijzigen",
+    "clearAll": "Alles wissen",
+    "uploadAndProcess": "Uploaden & verwerken ({count})",
+    "dropFilesHere": "Sleep je bestanden hierheen",
+    "dropFilesHereActive": "Loslaten om te uploaden",
+    "orClickToBrowse": "of klik om te bladeren (maximaal 3 bestanden)",
+    "supportedFormatsLabel": "Audio- & videobestanden",
+    "supportedFormatsTooltip": "MP3, M4A, WAV, MP4, MOV, WebM, FLAC, OGG — Max 5GB per bestand",
+    "selectedFiles": "Geselecteerde bestanden ({count})",
+    "dragToReorder": "Sleep om te herschikken",
+    "removeFile": "Bestand verwijderen",
+    "filesCount": "{current} van {max}"
   },
   "auth": {
     "signIn": "Inloggen",
@@ -121,6 +142,9 @@
     "passwordNumber": "Één cijfer",
     "passwordRequirementsNotMet": "Voldoe aan alle wachtwoordvereisten",
     "acceptTermsRequired": "Accepteer de algemene voorwaarden",
+    "captchaRequired": "Voltooi de beveiligingscontrole",
+    "captchaFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
+    "accountSuspended": "Je account is opgeschort. Neem contact op met support als je denkt dat dit een vergissing is.",
     "iAgreeToThe": "Ik ga akkoord met de",
     "termsOfService": "Servicevoorwaarden",
     "and": "en",
@@ -128,11 +152,13 @@
     "orContinueWith": "Of ga verder met",
     "signupFailed": "Account aanmaken mislukt. Probeer het opnieuw.",
     "verifyYourEmail": "Verifieer je e-mail",
-    "verificationEmailSent": "We hebben een verificatie-e-mail gestuurd naar",
-    "checkYourInbox": "Controleer je inbox en klik op de verificatielink om door te gaan.",
+    "verificationEmailSent": "We hebben een code gestuurd naar",
+    "checkYourInbox": "Controleer je inbox en voer de verificatiecode in om door te gaan.",
     "checkYourEmail": "Controleer je e-mail",
-    "clickVerificationLink": "Klik op de verificatielink die we hebben gestuurd om je registratie te voltooien.",
-    "enterVerificationCode": "Voer de 6-cijferige code uit je e-mail in",
+    "clickVerificationLink": "Voer de 6-cijferige verificatiecode in die we hebben gestuurd om je registratie te voltooien.",
+    "enterVerificationCode": "Voer je verificatiecode in",
+    "codeSent": "Een nieuwe code is naar je e-mail gestuurd.",
+    "verifyingCode": "Verifiëren...",
     "verifyEmail": "E-mail verifiëren",
     "emailVerified": "E-mail geverifieerd!",
     "redirectingToDashboard": "Doorverwijzen naar je dashboard...",
@@ -148,7 +174,7 @@
     "sendResetLink": "Resetlink verzenden",
     "resetLinkSent": "Link verzonden!",
     "checkEmailForReset": "Controleer je e-mail voor een link om je wachtwoord te resetten.",
-    "checkSpamFolder": "Als je de e-mail niet ziet, controleer dan je spammap.",
+    "checkSpamFolder": "Controleer ook je spammap.",
     "tryDifferentEmail": "Probeer een ander e-mailadres",
     "newPassword": "Nieuw wachtwoord",
     "confirmNewPassword": "Nieuw wachtwoord bevestigen",
@@ -171,7 +197,7 @@
     "emailExistsPasswordMismatch": "Dit e-mailadres is al geregistreerd, maar het wachtwoord komt niet overeen.",
     "or": "of",
     "resetYourPassword": "stel je wachtwoord opnieuw in",
-    "welcomeBackVerification": "Welkom terug! We hebben je een nieuwe verificatielink gestuurd. Controleer je inbox."
+    "welcomeBackVerification": "Welkom terug! We hebben je een nieuwe verificatiecode gestuurd. Controleer je inbox."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -446,6 +472,7 @@
     },
     "confirm": {
       "cancelRecording": "Weet je zeker dat je wilt annuleren? Je opname gaat verloren.",
+      "reRecord": "Weet je zeker dat je opnieuw wilt opnemen? Je huidige opname gaat verloren.",
       "goBack": "Ga terug"
     },
     "warnings": {
@@ -558,6 +585,8 @@
     "loading": "AI asset laden...",
     "notFound": "AI asset niet gevonden",
     "notFoundDescription": "De AI asset die je zoekt bestaat niet of je hebt geen toegang.",
+    "backToConversation": "Terug naar gesprek",
+    "backToDashboard": "Terug naar dashboard",
     "modal": {
       "title": "AI Asset maken",
       "steps": {
@@ -578,11 +607,11 @@
       "categorySales": "Sales",
       "categoryHR": "HR & personeel",
       "categoryLeadership": "Leiderschap",
-      "customInstructionsTitle": "Aangepaste instructies toevoegen (optioneel)",
-      "customInstructionsDescription": "Geef specifieke instructies om de uitvoer aan te passen aan je behoeften",
-      "customInstructionsLabel": "Aangepaste instructies",
-      "customInstructionsPlaceholder": "Voorbeeld: Focus op de technische aspecten, houd het onder 500 woorden en vermeld de besproken cijfers.",
-      "leaveBlankDefault": "Laat leeg voor standaardinstellingen van {name}",
+      "customInstructionsTitle": "Nog iets specifieks?",
+      "customInstructionsDescription": "Vertel ons waar we op moeten focussen, of klik gewoon op genereren voor de standaardinstellingen.",
+      "customInstructionsLabel": "Jouw input",
+      "customInstructionsPlaceholder": "bijv. Houd het onder 500 woorden, focus op de technische details, neem de besproken cijfers mee...",
+      "leaveBlankDefault": "Helemaal optioneel — we gebruiken slimme standaardinstellingen voor {name}",
       "reviewTitle": "Controleren en bevestigen",
       "reviewDescription": "Controleer je selecties voor het genereren",
       "outputType": "Uitvoertype",
@@ -798,12 +827,20 @@
       "confirmDelete": "Deze asset verwijderen?",
       "viewFull": "Bekijk volledige pagina"
     },
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "translate": "Vertalen",
+    "share": "Delen",
     "findReplace": "Zoeken en vervangen",
     "delete": "Verwijderen",
     "deleteConfirmTitle": "AI Asset verwijderen?",
     "deleteConfirmMessage": "Deze actie kan niet ongedaan worden gemaakt. Dit AI Asset wordt permanent verwijderd.",
     "deleteConfirmYes": "Ja, verwijderen",
-    "deleteConfirmNo": "Annuleren"
+    "deleteConfirmNo": "Annuleren",
+    "translatingBanner": "Vertaling bezig...",
+    "translatingEstimate": "Vertaling (~{seconds}s)...",
+    "translateSuccess": "Vertaling voltooid",
+    "translateError": "Vertaling mislukt. Probeer het opnieuw."
   },
   "conversation": {
     "tabs": {
@@ -854,7 +891,7 @@
       "translateTo": "Vertalen naar",
       "translating": "Bezig met vertalen...",
       "translationComplete": "Vertaling voltooid",
-      "translationFailed": "Vertaling mislukt",
+      "translationFailed": "Vertaling mislukt. Het verzoek is mogelijk verlopen — probeer het opnieuw.",
       "noTranslationsAvailable": "Geen vertalingen beschikbaar",
       "assetsTranslated": "items vertaald",
       "changeLanguage": "Taal wijzigen",
@@ -867,7 +904,11 @@
       "translate": "Vertalen",
       "showAllLanguages": "Alle talen tonen",
       "hideLanguages": "Minder tonen",
-      "slowHint": "Vertaling kan even duren bij langere gesprekken. Je kunt dit venster sluiten — het gaat op de achtergrond verder."
+      "retranslate": "Opnieuw vertalen",
+      "translatingBanner": "Vertaling bezig...",
+      "translatingEstimate": "Vertaling (~{seconds}s)...",
+      "translateSuccess": "Vertaling voltooid",
+      "translateError": "Vertaling mislukt. Probeer het opnieuw."
     },
     "failed": {
       "title": "Verwerking mislukt",
@@ -1242,9 +1283,9 @@
   "landing": {
     "hero": {
       "eyebrow": "Het meeting intelligence platform",
-      "headline1": "Elk gesprek,",
-      "headline2": "een ",
-      "headlineEm": "strategisch voordeel.",
+      "headline1": "Neural Summary maakt van gesprekken",
+      "headline2": "",
+      "headlineEm": "strategische documenten.",
       "body": "Neural Summary maakt van elke meeting doorzoekbare transcripten, samenvattingen en ",
       "bodyStrong": "kant-en-klare documenten",
       "bodyEnd": ". Niets gaat verloren. Niets hoeft herschreven te worden.",
@@ -1335,7 +1376,7 @@
       }
     },
     "ask": {
-      "tag": "Institutioneel geheugen, on demand",
+      "tag": "Agentic Chat",
       "headline1": "Vraag alles over",
       "headline2": "elke ",
       "headlineEm": "meeting.",
@@ -1404,7 +1445,7 @@
       "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
     },
     "testimonials": {
-      "tag": "Vertrouwd door mensen die de leiding hebben",
+      "tag": "Vertrouwd door leiders",
       "headline1": "Leiders praten.",
       "headline2": "Neural Summary ",
       "headlineEm": "doet de rest.",
@@ -1540,7 +1581,7 @@
         "contact": "Contact",
         "blog": "Blog"
       },
-      "tagline": "Jij spreekt. Het creëert.",
+      "tagline": "Creëer met je stem.",
       "copyright": "© 2026 Neural Summary. Alle rechten voorbehouden."
     }
   },
@@ -1715,6 +1756,12 @@
       "pricing": {
         "title": "Prijzen en Betalingsvoorwaarden",
         "content": "We behouden ons het recht voor om onze prijzen op elk moment te wijzigen om veranderingen in operationele kosten, marktomstandigheden, serviceverbeteringen of andere zakelijke factoren te weerspiegelen.",
+        "freeTier": {
+          "title": "Gratis abonnement - Introductieaanbod",
+          "content": "Het gratis abonnement wordt aangeboden als een introductieaanbod en vormt geen garantie voor eeuwigdurende gratis toegang. De functies, gebruikslimieten en beschikbaarheid van het gratis abonnement kunnen op elk moment naar eigen goeddunken worden gewijzigd, verminderd of stopgezet.",
+          "notice": "Wij zullen minimaal 30 dagen van tevoren per e-mail en in-app melding informeren voordat materiële wijzigingen aan het gratis abonnement worden doorgevoerd. Materiële wijzigingen omvatten, maar zijn niet beperkt tot: aanzienlijke verlagingen van gebruikslimieten, verwijdering van kernfuncties of volledige stopzetting van het gratis abonnement.",
+          "continued": "Voortgezet gebruik van de Service na een dergelijke kennisgeving betekent aanvaarding van de wijzigingen. Als u niet akkoord gaat met de wijzigingen, kunt u uw gebruik van de Service stopzetten en uw gegevens kosteloos exporteren voordat de wijzigingen van kracht worden."
+        },
         "changes": {
           "title": "Prijswijzigingen",
           "content": "We zullen minimaal 30 dagen van tevoren op de hoogte stellen voordat prijswijzigingen van kracht worden voor bestaande abonnementen. Nieuwe prijzen zijn van toepassing op verlengingen na de kennisgevingsperiode.",
@@ -1819,7 +1866,7 @@
       },
       "amendments": {
         "title": "Wijzigingen in de Voorwaarden",
-        "content": "Wij behouden ons het recht voor om deze Voorwaarden op elk moment te wijzigen. Wij zullen gebruikers op de hoogte stellen van materiële wijzigingen door de nieuwe Voorwaarden op deze pagina te plaatsen en de 'Ingangsdatum' bij te werken."
+        "content": "Wij behouden ons het recht voor om deze Voorwaarden op elk moment te wijzigen. Wij zullen gebruikers op de hoogte stellen van materiële wijzigingen per e-mail en door de nieuwe Voorwaarden op deze pagina te plaatsen met een bijgewerkte 'Ingangsdatum'. Voor materiële wijzigingen die uw rechten of verplichtingen beïnvloeden, zullen wij minimaal 30 dagen van tevoren informeren. Voortgezet gebruik van de Service na de ingangsdatum van herziene Voorwaarden betekent aanvaarding van de wijzigingen."
       }
     }
   },
@@ -2960,6 +3007,8 @@
       "step4Description": "We hebben een voorbeeldgesprek voor je aangemaakt. Open het om te zien wat Neural Summary kan.",
       "step5Title": "Verken en creeer",
       "step5Description": "Verken de samenvatting, het transcript en de AI-assets. Probeer vragen te stellen of nieuwe outputs te genereren.",
+      "completionTitle": "Je bent helemaal klaar",
+      "completionDescription": "Je kent nu de basis. Upload een gesprek of verken het voorbeeld om Neural Summary in actie te zien.",
       "next": "Volgende",
       "skipTour": "Tour overslaan",
       "startExploring": "Begin met verkennen",
@@ -2969,5 +3018,86 @@
     "exampleBanner": "Dit is een voorbeeldgesprek. Upload je eigen audio om te beginnen.",
     "exampleBannerCta": "Audio uploaden",
     "tutorial": "Rondleiding"
+  },
+  "about": {
+    "meta": {
+      "title": "Over Neural Summary | Spraak-naar-document AI-platform",
+      "description": "Neural Summary is een AI-platform dat gesproken ideeën omzet in gestructureerde, professionele documenten. Lees over onze missie, technologie en team."
+    },
+    "title": "Over Neural Summary",
+    "subtitle": "Het platform dat gesproken denken omzet in gestructureerde output.",
+    "mission": {
+      "tag": "Onze missie",
+      "title": "De wrijving tussen denken en creëren wegnemen",
+      "body": "Neural Summary bestaat omdat ideeën beter verdienen dan verloren te gaan tussen een gesprek en een document. We hebben een platform gebouwd dat gesproken gedachten, meetings en ruwe notities transformeert naar gestructureerde, professionele output. Niet schrijven. Niet opmaken. Gewoon hardop denken."
+    },
+    "product": {
+      "tag": "Het product",
+      "title": "Wat Neural Summary doet",
+      "body": "Neural Summary is een AI-platform voor spraak-naar-document. Upload een opname of laat onze AI je interviewen. Neural Summary transcribeert, analyseert en genereert werkklare documenten: productspecificaties, blogposts, strategiedocumenten, opvolgmails en meer.",
+      "features": {
+        "transcription": {
+          "title": "Transcriptie",
+          "desc": "Zakelijke spraak-naar-tekst met sprekerherkenning in 99+ talen."
+        },
+        "analysis": {
+          "title": "AI-analyse",
+          "desc": "Neural Summary haalt kernpunten, actiepunten en inzichten uit elk gesprek."
+        },
+        "templates": {
+          "title": "Documentsjablonen",
+          "desc": "Genereer gestructureerde output met 20+ professionele sjablonen. Van vergadernotities tot productspecificaties."
+        },
+        "chat": {
+          "title": "Stel elke vraag",
+          "desc": "Chat met je transcripten. Neural Summary beantwoordt vragen over elke meeting."
+        }
+      }
+    },
+    "audience": {
+      "tag": "Gebouwd voor",
+      "title": "Wie gebruikt Neural Summary",
+      "roles": {
+        "pm": {
+          "title": "Productmanagers",
+          "desc": "Zet brainstorms om in productspecificaties in minuten."
+        },
+        "founders": {
+          "title": "Oprichters",
+          "desc": "Transformeer visiegesprekken naar strategiedocumenten voor je team."
+        },
+        "consultants": {
+          "title": "Consultants",
+          "desc": "Zet klantgesprekken om in opvolgmails en rapporten."
+        },
+        "creators": {
+          "title": "Contentmakers",
+          "desc": "Zet interviews om in publiceerklare artikelen."
+        }
+      }
+    },
+    "values": {
+      "tag": "Onze waarden",
+      "title": "Waar we in geloven",
+      "items": {
+        "privacy": {
+          "title": "Privacy eerst",
+          "desc": "AVG-conform. Je data is versleuteld en wordt nooit gebruikt voor training. Alles wat je maakt is van jou."
+        },
+        "quality": {
+          "title": "Kwaliteit boven snelheid",
+          "desc": "We gebruiken de beste beschikbare AI-modellen. Neural Summary geeft prioriteit aan nauwkeurigheid en bruikbaarheid."
+        },
+        "simplicity": {
+          "title": "Eenvoud",
+          "desc": "Geen rommel, geen leercurve. Uploaden, verwerken, klaar. Neural Summary blijft uit je weg."
+        }
+      }
+    },
+    "cta": {
+      "title": "Probeer Neural Summary gratis",
+      "body": "Begin vandaag nog met het omzetten van gesprekken in werkklare documenten.",
+      "button": "Aan de slag"
+    }
   }
 }

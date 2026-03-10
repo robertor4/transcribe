@@ -1,10 +1,8 @@
 'use client';
 
 import {
-  Target,
   Calendar,
   User,
-  Eye,
   CheckSquare,
   Ruler,
   Award,
@@ -16,7 +14,17 @@ import {
   CalendarDays,
 } from 'lucide-react';
 import type { GoalSettingOutput, SmartGoal } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox } from './shared';
+import {
+  BulletList,
+  MetadataRow,
+  EDITORIAL,
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialPullQuote,
+  EditorialNumberedList,
+} from './shared';
 
 interface GoalSettingTemplateProps {
   data: GoalSettingOutput;
@@ -24,17 +32,19 @@ interface GoalSettingTemplateProps {
 
 function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
   return (
-    <div className="bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden">
+    <div className="border-t border-gray-200 dark:border-gray-700 pt-6 pb-2">
       {/* Goal Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-[#8D6AFA]/5 dark:bg-[#8D6AFA]/10 border-b border-gray-200 dark:border-gray-700/50">
-        <div className="w-8 h-8 rounded-full bg-[#8D6AFA]/20 flex items-center justify-center flex-shrink-0">
-          <span className="text-sm font-bold text-[#8D6AFA]">{index + 1}</span>
-        </div>
-        <h4 className="font-semibold text-gray-900 dark:text-gray-100">{goal.goal}</h4>
+      <div className="flex items-start gap-3 mb-4">
+        <span className={EDITORIAL.numbering}>
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <h4 className="text-[17px] font-semibold text-gray-900 dark:text-gray-100 leading-snug">
+          {goal.goal}
+        </h4>
       </div>
 
       {/* SMART Breakdown */}
-      <div className="p-4 space-y-3">
+      <div className="pl-9 space-y-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Specific */}
           <div className="flex items-start gap-2">
@@ -42,7 +52,7 @@ function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
               <CheckSquare className="w-3 h-3" />
               S
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{goal.specific}</p>
+            <p className={EDITORIAL.listItem}>{goal.specific}</p>
           </div>
 
           {/* Measurable */}
@@ -51,7 +61,7 @@ function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
               <Ruler className="w-3 h-3" />
               M
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{goal.measurable}</p>
+            <p className={EDITORIAL.listItem}>{goal.measurable}</p>
           </div>
 
           {/* Achievable */}
@@ -60,7 +70,7 @@ function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
               <Award className="w-3 h-3" />
               A
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{goal.achievable}</p>
+            <p className={EDITORIAL.listItem}>{goal.achievable}</p>
           </div>
 
           {/* Relevant */}
@@ -69,36 +79,31 @@ function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
               <Link className="w-3 h-3" />
               R
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{goal.relevant}</p>
+            <p className={EDITORIAL.listItem}>{goal.relevant}</p>
           </div>
         </div>
 
         {/* Time-Bound */}
-        <div className="flex items-start gap-2 pt-2 border-t border-gray-200 dark:border-gray-700/50">
+        <div className="flex items-start gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-1 px-2 py-0.5 bg-[#14D0DC]/10 rounded text-xs font-medium text-[#14D0DC] flex-shrink-0">
             <Clock className="w-3 h-3" />
             T
           </div>
-          <p className="text-sm text-gray-700 dark:text-gray-300">{goal.timeBound}</p>
+          <p className={EDITORIAL.listItem}>{goal.timeBound}</p>
         </div>
 
         {/* Milestones */}
         {goal.milestones && goal.milestones.length > 0 && (
-          <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700/50">
+          <div className="pt-3 mt-1 border-t border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-2 mb-2">
-              <Flag className="w-4 h-4 text-[#8D6AFA]" />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Milestones</span>
+              <Flag className="w-3.5 h-3.5 text-[#8D6AFA]" />
+              <span className={EDITORIAL.sectionLabel}>Milestones</span>
             </div>
-            <div className="space-y-1.5">
-              {goal.milestones.map((milestone, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-sm">
-                  <div className="w-5 h-5 rounded-full border-2 border-[#8D6AFA]/30 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-[#8D6AFA]">{idx + 1}</span>
-                  </div>
-                  <span className="text-gray-600 dark:text-gray-400">{milestone}</span>
-                </div>
-              ))}
-            </div>
+            <EditorialNumberedList
+              items={goal.milestones.map((milestone) => ({
+                primary: milestone,
+              }))}
+            />
           </div>
         )}
       </div>
@@ -107,78 +112,59 @@ function SmartGoalCard({ goal, index }: { goal: SmartGoal; index: number }) {
 }
 
 export function GoalSettingTemplate({ data }: GoalSettingTemplateProps) {
+  const metadata = (data.participant || data.period || data.date) ? (
+    <MetadataRow
+      items={[
+        ...(data.participant ? [{ label: 'Participant', value: data.participant, icon: User }] : []),
+        ...(data.period ? [{ label: 'Period', value: data.period, icon: CalendarDays }] : []),
+        ...(data.date ? [{ label: 'Date', value: data.date, icon: Calendar }] : []),
+      ]}
+    />
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <Target className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Goal Setting Document
-            </h2>
-            <MetadataRow
-              items={[
-                { label: 'Participant', value: data.participant, icon: User },
-                { label: 'Period', value: data.period, icon: CalendarDays },
-                { label: 'Date', value: data.date, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      <EditorialTitle title="Goal Setting Document" metadata={metadata} />
 
       {/* Vision */}
       {data.vision && (
-        <InfoBox title="Vision" icon={Eye} variant="purple">
-          {data.vision}
-        </InfoBox>
+        <EditorialPullQuote cite="Vision">
+          <p>{data.vision}</p>
+        </EditorialPullQuote>
       )}
 
       {/* SMART Goals */}
       {data.goals && data.goals.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Target className="w-5 h-5 text-[#8D6AFA]" />
-            SMART Goals
-          </h3>
-          {data.goals.map((goal, idx) => (
-            <SmartGoalCard key={idx} goal={goal} index={idx} />
-          ))}
-        </div>
+        <section className="mb-10">
+          <EditorialHeading>SMART Goals</EditorialHeading>
+          <div className="mt-2">
+            {data.goals.map((goal, idx) => (
+              <SmartGoalCard key={idx} goal={goal} index={idx} />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Obstacles and Support */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {data.potentialObstacles && data.potentialObstacles.length > 0 && (
-          <SectionCard
-            title="Potential Obstacles"
-            icon={AlertTriangle}
-            iconColor="text-amber-500"
-            className="bg-amber-50/50 dark:bg-amber-900/10"
-          >
+          <EditorialSection label="Potential Obstacles" icon={AlertTriangle} borderTop>
             <BulletList items={data.potentialObstacles} bulletColor="bg-amber-500" />
-          </SectionCard>
+          </EditorialSection>
         )}
         {data.supportNeeded && data.supportNeeded.length > 0 && (
-          <SectionCard
-            title="Support Needed"
-            icon={HelpCircle}
-            iconColor="text-blue-500"
-            className="bg-blue-50/50 dark:bg-blue-900/10"
-          >
+          <EditorialSection label="Support Needed" icon={HelpCircle} borderTop>
             <BulletList items={data.supportNeeded} bulletColor="bg-blue-500" />
-          </SectionCard>
+          </EditorialSection>
         )}
       </div>
 
       {/* Check-in Schedule */}
       {data.checkInSchedule && (
-        <SectionCard title="Check-in Schedule" icon={CalendarDays} iconColor="text-[#14D0DC]">
-          <p className="text-gray-700 dark:text-gray-300">{data.checkInSchedule}</p>
-        </SectionCard>
+        <EditorialSection label="Check-in Schedule" icon={CalendarDays} borderTop>
+          <p className={EDITORIAL.body}>{data.checkInSchedule}</p>
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

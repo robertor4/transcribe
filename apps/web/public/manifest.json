@@ -1,7 +1,7 @@
 {
   "name": "Neural Summary",
   "short_name": "Neural Summary",
-  "description": "You speak. It creates. Transform spoken thinking into structured, professional output.",
+  "description": "Create with your voice. Transform spoken thinking into structured, professional output.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

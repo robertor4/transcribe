@@ -1,197 +1,176 @@
 'use client';
 
 import {
-  ClipboardList,
-  User,
   Target,
   Ban,
   Users,
   CheckSquare,
   BarChart3,
   HelpCircle,
+  User,
   Calendar,
 } from 'lucide-react';
 import type { PRDOutput, PRDRequirement } from '@transcribe/shared';
-import { SectionCard, BulletList, MetadataRow, InfoBox, StatusBadge, safeString } from './shared';
+import {
+  EditorialArticle,
+  EditorialTitle,
+  EditorialSection,
+  EditorialHeading,
+  EditorialNumberedList,
+  EditorialPullQuote,
+  EditorialParagraphs,
+  EditorialCollapsible,
+  BulletList,
+  StatusBadge,
+  EDITORIAL,
+  safeString,
+} from './shared';
 
 interface PRDTemplateProps {
   data: PRDOutput;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  draft: { bg: 'bg-gray-100 dark:bg-gray-700', text: 'text-gray-600 dark:text-gray-400' },
-  review: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-400' },
-  approved: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400' },
-};
-
-function RequirementCard({ requirement, index }: { requirement: PRDRequirement; index: number }) {
-  return (
-    <div className="flex items-start gap-3 p-3 bg-white dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/50 rounded-lg">
-      <div className="flex-shrink-0">
-        <span className="text-xs font-mono text-gray-500 dark:text-gray-400">{requirement.id || `REQ-${String(index + 1).padStart(3, '0')}`}</span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-gray-700 dark:text-gray-300 break-words">{safeString(requirement.requirement)}</p>
-          <StatusBadge status={requirement.priority} variant="priority" className="flex-shrink-0" />
-        </div>
-        {requirement.rationale && (
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 italic">
-            {safeString(requirement.rationale)}
-          </p>
-        )}
-      </div>
-    </div>
-  );
+function requirementItems(requirements: PRDRequirement[], startIndex: number) {
+  return requirements.map((req, idx) => ({
+    primary: (
+      <span className="break-words">
+        <span className="font-mono text-xs text-gray-400 dark:text-gray-500 mr-2">
+          {req.id || `REQ-${String(startIndex + idx + 1).padStart(3, '0')}`}
+        </span>
+        {safeString(req.requirement)}
+      </span>
+    ),
+    secondary: req.rationale ? safeString(req.rationale) : undefined,
+    badge: <StatusBadge status={req.priority} variant="priority" />,
+  }));
 }
 
 export function PRDTemplate({ data }: PRDTemplateProps) {
-  const statusStyle = STATUS_STYLES[data.status] || STATUS_STYLES.draft;
-
   // Group requirements by priority
   const mustHave = data.requirements?.filter(r => r.priority === 'must-have') || [];
   const shouldHave = data.requirements?.filter(r => r.priority === 'should-have') || [];
   const couldHave = data.requirements?.filter(r => r.priority === 'could-have') || [];
   const wontHave = data.requirements?.filter(r => r.priority === 'wont-have') || [];
 
+  const metadata = (data.owner || data.timeline || data.status) ? (
+    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+      {data.owner && (
+        <span className="inline-flex items-center gap-1.5">
+          <User className="w-3.5 h-3.5" /> {safeString(data.owner)}
+        </span>
+      )}
+      {data.timeline && (
+        <span className="inline-flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" /> {safeString(data.timeline)}
+        </span>
+      )}
+      {data.status && (
+        <StatusBadge status={data.status} variant="custom" className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400" />
+      )}
+    </div>
+  ) : undefined;
+
   return (
-    <div className="space-y-6 overflow-x-hidden">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-start gap-3">
-          <ClipboardList className="w-6 h-6 text-[#8D6AFA] flex-shrink-0 mt-1" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 break-words">
-                {data.title}
-              </h2>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}>
-                {data.status}
-              </span>
-            </div>
-            <MetadataRow
-              items={[
-                { label: 'Owner', value: data.owner, icon: User },
-                { label: 'Timeline', value: data.timeline, icon: Calendar },
-              ]}
-              className="mt-2"
-            />
-          </div>
-        </div>
-      </div>
+    <EditorialArticle>
+      {/* Title */}
+      <EditorialTitle title={data.title} metadata={metadata} />
 
       {/* Problem Statement */}
-      <InfoBox title="Problem Statement" icon={Target} variant="red">
-        {data.problemStatement}
-      </InfoBox>
+      <EditorialSection label="Problem Statement" icon={Target} borderTop={false}>
+        <EditorialPullQuote color="#ef4444">
+          <EditorialParagraphs text={data.problemStatement} />
+        </EditorialPullQuote>
+      </EditorialSection>
 
-      {/* Goals & Non-Goals */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {data.goals && data.goals.length > 0 && (
-          <SectionCard
-            title="Goals"
-            icon={Target}
-            iconColor="text-green-500"
-            className="bg-green-50/50 dark:bg-green-900/10"
-          >
-            <BulletList items={data.goals} bulletColor="bg-green-500" />
-          </SectionCard>
-        )}
-        {data.nonGoals && data.nonGoals.length > 0 && (
-          <SectionCard
-            title="Non-Goals"
-            icon={Ban}
-            iconColor="text-gray-500"
-            className="bg-gray-50 dark:bg-gray-800/50"
-          >
-            <BulletList items={data.nonGoals} bulletColor="bg-gray-400" />
-          </SectionCard>
-        )}
-      </div>
+      {/* Goals */}
+      {data.goals && data.goals.length > 0 && (
+        <EditorialSection label="Goals" icon={Target} borderTop>
+          <BulletList items={data.goals} bulletColor="bg-green-500" />
+        </EditorialSection>
+      )}
+
+      {/* Non-Goals */}
+      {data.nonGoals && data.nonGoals.length > 0 && (
+        <EditorialSection label="Non-Goals" icon={Ban} borderTop>
+          <BulletList items={data.nonGoals} bulletColor="bg-gray-400" />
+        </EditorialSection>
+      )}
 
       {/* User Stories */}
       {data.userStories && data.userStories.length > 0 && (
-        <SectionCard title="User Stories" icon={Users} iconColor="text-blue-500">
-          <div className="space-y-2">
+        <EditorialSection label="User Stories" icon={Users} borderTop>
+          <div className="space-y-4">
             {data.userStories.map((story, idx) => (
-              <div
-                key={idx}
-                className="p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg"
-              >
-                <p className="text-gray-700 dark:text-gray-300 italic">&ldquo;{safeString(story)}&rdquo;</p>
-              </div>
+              <EditorialPullQuote key={idx} color="#3b82f6">
+                <p>{safeString(story)}</p>
+              </EditorialPullQuote>
             ))}
           </div>
-        </SectionCard>
+        </EditorialSection>
       )}
 
-      {/* Requirements by Priority */}
+      {/* Requirements (MoSCoW) */}
       {data.requirements && data.requirements.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-[#8D6AFA]" />
-            Requirements (MoSCoW)
-          </h3>
-
+        <EditorialSection label="Requirements (MoSCoW)" icon={CheckSquare} borderTop>
           {mustHave.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
-                Must Have ({mustHave.length})
-              </h4>
-              {mustHave.map((req, idx) => (
-                <RequirementCard key={idx} requirement={req} index={idx} />
-              ))}
+            <div className="mb-8">
+              <EditorialHeading>Must Have ({mustHave.length})</EditorialHeading>
+              <EditorialNumberedList items={requirementItems(mustHave, 0)} />
             </div>
           )}
 
           {shouldHave.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-                Should Have ({shouldHave.length})
-              </h4>
-              {shouldHave.map((req, idx) => (
-                <RequirementCard key={idx} requirement={req} index={mustHave.length + idx} />
-              ))}
+            <div className="mb-8">
+              <EditorialHeading>Should Have ({shouldHave.length})</EditorialHeading>
+              <EditorialNumberedList
+                items={requirementItems(shouldHave, mustHave.length)}
+              />
             </div>
           )}
 
           {couldHave.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-                Could Have ({couldHave.length})
-              </h4>
-              {couldHave.map((req, idx) => (
-                <RequirementCard key={idx} requirement={req} index={mustHave.length + shouldHave.length + idx} />
-              ))}
+            <div className="mb-8">
+              <EditorialHeading>Could Have ({couldHave.length})</EditorialHeading>
+              <EditorialNumberedList
+                items={requirementItems(couldHave, mustHave.length + shouldHave.length)}
+              />
             </div>
           )}
 
           {wontHave.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                Won&apos;t Have ({wontHave.length})
-              </h4>
-              {wontHave.map((req, idx) => (
-                <RequirementCard key={idx} requirement={req} index={mustHave.length + shouldHave.length + couldHave.length + idx} />
-              ))}
-            </div>
+            <EditorialCollapsible
+              label={`Won't Have`}
+              count={wontHave.length}
+              defaultOpen={false}
+            >
+              <EditorialNumberedList
+                items={requirementItems(
+                  wontHave,
+                  mustHave.length + shouldHave.length + couldHave.length,
+                )}
+              />
+            </EditorialCollapsible>
           )}
-        </div>
+        </EditorialSection>
       )}
 
       {/* Success Metrics */}
       {data.successMetrics && data.successMetrics.length > 0 && (
-        <SectionCard title="Success Metrics" icon={BarChart3} iconColor="text-[#14D0DC]">
+        <EditorialSection label="Success Metrics" icon={BarChart3} borderTop>
           <BulletList items={data.successMetrics} bulletColor="bg-[#14D0DC]" />
-        </SectionCard>
+        </EditorialSection>
       )}
 
       {/* Open Questions */}
       {data.openQuestions && data.openQuestions.length > 0 && (
-        <InfoBox title="Open Questions" icon={HelpCircle} variant="amber">
-          <BulletList items={data.openQuestions} bulletColor="bg-amber-500" />
-        </InfoBox>
+        <EditorialSection label="Open Questions" icon={HelpCircle} borderTop>
+          <EditorialNumberedList
+            items={data.openQuestions.map(q => ({
+              primary: <span className={EDITORIAL.listItem}>{safeString(q)}</span>,
+            }))}
+          />
+        </EditorialSection>
       )}
-    </div>
+    </EditorialArticle>
   );
 }

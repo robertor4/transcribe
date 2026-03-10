@@ -41,7 +41,14 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 # Copy node_modules from root (monorepo structure)
 COPY --from=builder /app/node_modules ./node_modules
 
+# Run as non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
 WORKDIR /app/apps/web
+
+USER nextjs
 
 # Expose port
 EXPOSE 3000

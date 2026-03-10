@@ -13,9 +13,13 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://neuralsummary.com'),
-  title: 'Neural Summary – You Speak. It Creates.',
-  description: 'Turn spoken thinking into structured, professional documents. Upload conversations or let AI interview you to generate product specs, articles, strategies, and emails. No writing. No formatting. Just think out loud.',
+  title: 'Neural Summary | Voice-to-Document AI Platform – You Speak. It Creates.',
+  description: 'Neural Summary turns spoken thinking into structured, professional documents. Upload conversations or let AI interview you to generate product specs, articles, strategies, and emails. No writing. No formatting. Just think out loud.',
   keywords: [
+    'Neural Summary',
+    'NeuralSummary',
+    'neural summary app',
+    'neural summary AI',
     'voice to document',
     'speech to structure',
     'AI document creation',
@@ -68,21 +72,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://neuralsummary.com',
     siteName: 'Neural Summary',
-    title: 'Neural Summary – You Speak. It Creates.',
-    description: 'Turn spoken thinking into structured, professional documents with AI that interviews you and generates work-ready deliverables.',
+    title: 'Neural Summary | Voice-to-Document AI Platform',
+    description: 'Neural Summary turns spoken thinking into structured, professional documents with AI that interviews you and generates work-ready deliverables.',
     images: [
       {
         url: 'https://neuralsummary.com/assets/socials/neural-summary-og.png',
         width: 1200,
         height: 630,
-        alt: 'Neural Summary - You speak. It creates.',
+        alt: 'Neural Summary - Create with your voice.',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Neural Summary – You Speak. It Creates.',
-    description: 'Turn spoken thinking into structured documents. Upload conversations or let AI interview you. No writing. No formatting. Just think out loud.',
+    title: 'Neural Summary | Voice-to-Document AI Platform',
+    description: 'Neural Summary turns spoken thinking into structured documents. Upload conversations or let AI interview you. No writing. No formatting. Just think out loud.',
     site: '@neuralsummary',
     creator: '@neuralsummary',
     images: ['https://neuralsummary.com/assets/socials/neural-summary-og.png'],
@@ -100,21 +104,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: 'https://neuralsummary.com',
-    languages: {
-      'en-US': 'https://neuralsummary.com/en',
-      'es-ES': 'https://neuralsummary.com/es',
-      'fr-FR': 'https://neuralsummary.com/fr',
-      'de-DE': 'https://neuralsummary.com/de',
-      'nl-NL': 'https://neuralsummary.com/nl',
-    },
-  },
-  verification: {
-    google: 'google-site-verification-code',
-    yandex: 'yandex-verification-code',
-    yahoo: 'yahoo-verification-code',
-  },
+  // NOTE: Do NOT set a global canonical here — it makes Google treat all
+  // child pages as duplicates of the root. Each page sets its own canonical
+  // via buildPageMetadata() or generateMetadata().
+  // Verified via DNS in Google Search Console — no meta tag needed
   category: 'technology',
 };
 
