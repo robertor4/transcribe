@@ -128,6 +128,7 @@
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Melden Sie sich an, um zu Neural Summary fortzufahren",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "signInFailed": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
     "accountCreated": "Konto erfolgreich erstellt",
     "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
@@ -293,6 +294,7 @@
       "cancel": "Abbrechen",
       "rowsPerPage": "Zeilen pro Seite",
       "shared": "Geteilt",
+      "imported": "Importiert",
       "public": "Öffentlich",
       "private": "Privat",
       "sharedWith": "{count, plural, one {# Person} other {# Personen}}",
@@ -753,6 +755,10 @@
       "allHandsTalkingPoints": {
         "name": "All-Hands Gesprächspunkte",
         "description": "Unternehmensweite Meeting-Vorbereitung mit Ankündigungen und Q&A"
+      },
+      "visionDocument": {
+        "name": "Visionsdokument",
+        "description": "Strategische Vision mit Säulen, Zielen und Meilensteinen"
       },
       "technicalDesignDoc": {
         "name": "Technisches Designdokument",
@@ -1420,7 +1426,8 @@
       "headline2": "wo dein Team bereits ",
       "headlineEm": "arbeitet.",
       "body": "Keine neuen Tools nötig. Neural Summary überträgt deine Transkripte, Zusammenfassungen und KI-generierte Assets direkt in die Plattformen, in denen dein Team arbeitet.",
-      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
+      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier",
+      "comingSoon": "Integrationen — Bald verfügbar Q2 2026"
     },
     "testimonials": {
       "tag": "Von Führungskräften vertraut",
@@ -2021,9 +2028,12 @@
       "logIn": "Anmelden",
       "signUpTitle": "In Ihrer Bibliothek speichern",
       "signUpDescription": "Registrieren Sie sich, um diese Konversation zu importieren und jederzeit darauf zugreifen zu können.",
-      "importButton": "Importieren",
-      "importing": "Wird importiert...",
-      "imported": "Importiert"
+      "importButton": "In Bibliothek speichern",
+      "importing": "Wird gespeichert...",
+      "imported": "In Bibliothek gespeichert",
+      "importSuccess": "Konversation in Ihrer Bibliothek gespeichert.",
+      "importFailed": "Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "viewImports": "Öffnen"
     },
     "userMenu": {
       "dashboard": "Zum Dashboard",

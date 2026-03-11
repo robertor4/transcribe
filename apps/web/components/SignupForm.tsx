@@ -9,7 +9,7 @@ import { AlertCircle, Loader2, Check, X, Eye, EyeOff, ExternalLink } from 'lucid
 import { useTranslations } from 'next-intl';
 import { auth } from '@/lib/firebase';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
-import { importedConversationApi } from '@/lib/api';
+import { transcriptionApi } from '@/lib/api';
 import { getApiUrl } from '@/lib/config';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -172,9 +172,10 @@ export default function SignupForm() {
                 const pendingImport = getPendingImport();
                 if (pendingImport) {
                   try {
-                    await importedConversationApi.import(pendingImport.shareToken);
+                    const result = await transcriptionApi.copyFromShare(pendingImport.shareToken);
                     clearPendingImport();
-                    router.push('/shared-with-me');
+                    const newId = result.data?.transcriptionId;
+                    router.push(newId ? `/conversation/${newId}` : '/dashboard');
                     return;
                   } catch (importError) {
                     console.error('Failed to auto-import:', importError);
@@ -243,10 +244,10 @@ export default function SignupForm() {
       const pendingImport = getPendingImport();
       if (pendingImport) {
         try {
-          await importedConversationApi.import(pendingImport.shareToken);
+          const result = await transcriptionApi.copyFromShare(pendingImport.shareToken);
           clearPendingImport();
-          // Redirect to shared-with-me to show the imported conversation
-          router.push('/shared-with-me');
+          const newId = result.data?.transcriptionId;
+          router.push(newId ? `/conversation/${newId}` : '/dashboard');
           return;
         } catch (importError) {
           console.error('Failed to auto-import:', importError);

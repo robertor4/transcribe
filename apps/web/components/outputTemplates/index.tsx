@@ -50,6 +50,8 @@ import type {
   PerformanceReviewOutput,
   ExitInterviewOutput,
   GoalSettingOutput,
+  // Strategy
+  VisionDocumentOutput,
 } from '@transcribe/shared';
 
 // Legacy templates
@@ -104,6 +106,9 @@ import { CoachingNotesTemplate } from './CoachingNotesTemplate';
 import { PerformanceReviewTemplate } from './PerformanceReviewTemplate';
 import { ExitInterviewTemplate } from './ExitInterviewTemplate';
 import { GoalSettingTemplate } from './GoalSettingTemplate';
+
+// Strategy
+import { VisionDocumentTemplate } from './VisionDocumentTemplate';
 
 import { FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -167,6 +172,9 @@ export { CoachingNotesTemplate } from './CoachingNotesTemplate';
 export { PerformanceReviewTemplate } from './PerformanceReviewTemplate';
 export { ExitInterviewTemplate } from './ExitInterviewTemplate';
 export { GoalSettingTemplate } from './GoalSettingTemplate';
+
+// Re-export - Strategy
+export { VisionDocumentTemplate } from './VisionDocumentTemplate';
 
 /**
  * Template component registry - add new templates here
@@ -234,6 +242,9 @@ const TEMPLATE_COMPONENTS: Record<
   performanceReview: PerformanceReviewTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
   exitInterview: ExitInterviewTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
   goalSetting: GoalSettingTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+
+  // Strategy
+  visionDocument: VisionDocumentTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
 };
 
 interface OutputRendererProps {
@@ -278,6 +289,34 @@ export function OutputRenderer({ content, contentType, analysisId }: OutputRende
   // Handle structured content
   if (typeof content === 'object' && content !== null) {
     const structuredContent = content as StructuredOutput;
+
+    // Check if structured output has meaningful content beyond just the `type` field
+    const meaningfulKeys = Object.keys(structuredContent).filter(
+      (key) => {
+        if (key === 'type') return false;
+        const val = (structuredContent as unknown as Record<string, unknown>)[key];
+        if (val === null || val === undefined || val === '') return false;
+        if (Array.isArray(val) && val.length === 0) return false;
+        return true;
+      },
+    );
+
+    if (meaningfulKeys.length === 0) {
+      return (
+        <Empty className="py-12">
+          <EmptyHeader>
+            <EmptyMedia>
+              <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+            </EmptyMedia>
+            <EmptyTitle>Content unavailable</EmptyTitle>
+            <EmptyDescription>
+              This output couldn&apos;t be generated properly. Please try regenerating it.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      );
+    }
+
     const Component = TEMPLATE_COMPONENTS[structuredContent.type];
 
     if (Component) {
@@ -532,6 +571,12 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
       const data = content as GoalSettingOutput;
       const goalCount = data.goals?.length || 0;
       return `${goalCount} SMART goal${goalCount !== 1 ? 's' : ''}`;
+    }
+
+    // Strategy
+    case 'visionDocument': {
+      const data = content as VisionDocumentOutput;
+      return data.title || data.visionStatement?.slice(0, 80) || 'Vision document';
     }
 
     default:

@@ -11,11 +11,7 @@ import {
   FileText,
   Clock,
   Calendar,
-  Activity,
-  User as UserIcon,
   Shield,
-  TrendingUp,
-  AlertCircle,
   RotateCcw,
 } from 'lucide-react';
 import { AiIcon } from '@/components/icons/AiIcon';
@@ -57,14 +53,14 @@ const tierConfig: Record<string, { dot: string; badge: string }> = {
   enterprise: { dot: 'bg-blue-500', badge: 'border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400' },
 };
 
-const eventConfig: Record<string, { icon: typeof UserIcon; dot: string; badge: string; label: string }> = {
-  created: { icon: UserIcon, dot: 'bg-blue-500', badge: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400', label: 'Account Created' },
-  login: { icon: Activity, dot: 'bg-green-500', badge: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400', label: 'Last Login' },
-  tier_change: { icon: TrendingUp, dot: 'bg-purple-500', badge: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400', label: 'Subscription Change' },
-  deletion: { icon: AlertCircle, dot: 'bg-red-500', badge: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400', label: 'Account Deleted' },
+const eventConfig: Record<string, { dot: string; label: string }> = {
+  created: { dot: 'bg-blue-500', label: 'Account Created' },
+  login: { dot: 'bg-green-500', label: 'Last Login' },
+  tier_change: { dot: 'bg-purple-500', label: 'Subscription Change' },
+  deletion: { dot: 'bg-red-500', label: 'Account Deleted' },
 };
 
-const defaultEventConfig = { icon: Calendar, dot: 'bg-gray-400', badge: 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400', label: 'Event' };
+const defaultEventConfig = { dot: 'bg-gray-400', label: 'Event' };
 
 export function UserActivityPanel() {
   const { user, loading: authLoading } = useAuth();
@@ -146,7 +142,16 @@ export function UserActivityPanel() {
     }
   };
 
-  const formatDate = (date: Date | string) => new Date(date).toLocaleString();
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
 
   const formatDuration = (seconds?: number) => {
     if (!seconds) return 'N/A';
@@ -338,15 +343,19 @@ export function UserActivityPanel() {
           <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider mb-3">
             Account Events
           </h3>
-          <div className="space-y-3">
+          <div className="relative">
             {activity.accountEvents.map((event, index) => {
               const config = eventConfig[event.type] || defaultEventConfig;
-              const Icon = config.icon;
+              const isLast = index === activity.accountEvents.length - 1;
               return (
-                <div key={index} className="flex items-start gap-3">
-                  <div className={`p-1.5 rounded-md ${config.badge} flex-shrink-0`}>
-                    <Icon className="w-3.5 h-3.5" />
-                  </div>
+                <div key={index} className="relative flex gap-3 pb-4 last:pb-0">
+                  {/* Vertical line */}
+                  {!isLast && (
+                    <div className="absolute left-[5px] top-[14px] bottom-0 w-px bg-gray-200 dark:bg-gray-700" />
+                  )}
+                  {/* Dot */}
+                  <div className={`relative z-10 mt-[5px] w-[11px] h-[11px] rounded-full border-2 border-white dark:border-gray-800 flex-shrink-0 ${config.dot}`} />
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {config.label}

@@ -5,6 +5,7 @@ import {
   Inject,
   BadRequestException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
@@ -32,6 +33,7 @@ import {
   SUPPORTED_LANGUAGES,
   GeneratedAnalysis,
   SummaryV2,
+  CopyFromShareResponse,
 } from '@transcribe/shared';
 import * as prompts from './prompts';
 import {
@@ -2982,5 +2984,215 @@ CRITICAL INSTRUCTIONS:
       'audio/flac': 'flac',
     };
     return mimeToExt[mimeType] || 'webm';
+  }
+
+  /**
+   * Copy a shared conversation into the user's library as a real transcription.
+   * Replaces the old "imported conversations" linked-reference approach.
+   */
+  async copyFromShare(
+    userId: string,
+    shareToken: string,
+    password?: string,
+  ): Promise<CopyFromShareResponse> {
+    // 1. Validate the share exists and is accessible
+    const original =
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
+
+    if (!original || !original.shareSettings?.enabled) {
+      throw new NotFoundException('Share not found or has been revoked');
+    }
+
+    const settings = original.shareSettings;
+
+    // Check expiration
+    if (settings.expiresAt && new Date(settings.expiresAt) < new Date()) {
+      throw new BadRequestException('This share link has expired');
+    }
+
+    // Check view limit
+    const currentViewCount = settings.viewCount || 0;
+    if (settings.maxViews && currentViewCount >= settings.maxViews) {
+      throw new BadRequestException(
+        'View limit has been reached for this share',
+      );
+    }
+
+    // Check password if required
+    if (settings.password) {
+      const isValid = await bcrypt.compare(password || '', settings.password);
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid password');
+      }
+    }
+
+    // 2. Duplicate check — has user already copied this conversation?
+    const existingCopy =
+      await this.transcriptionRepository.findCopiedTranscription(
+        userId,
+        original.id,
+      );
+
+    if (existingCopy) {
+      return {
+        transcriptionId: existingCopy.id,
+        alreadyImported: true,
+      };
+    }
+
+    // 3. Get sharer info
+    const sharer = await this.userRepository.getUserById(original.userId);
+    const sharedByName = sharer?.displayName || sharer?.email || 'Someone';
+
+    // 4. Build the content respecting share contentOptions
+    const opts = settings.contentOptions || {
+      includeTranscript: true,
+      includeSummary: true,
+      includeCommunicationStyles: true,
+      includeActionItems: true,
+      includeSpeakerInfo: true,
+      includeOnDemandAnalyses: false,
+      selectedAnalysisIds: [],
+    };
+
+    // Build analyses object
+    const analysesSource = {
+      summary:
+        original.coreAnalyses?.summary || original.analyses?.summary || '',
+      actionItems:
+        original.coreAnalyses?.actionItems ||
+        original.analyses?.actionItems ||
+        '',
+      communicationStyles:
+        original.coreAnalyses?.communicationStyles ||
+        original.analyses?.communicationStyles ||
+        '',
+    };
+
+    const filteredAnalyses: Record<string, string> = {};
+    if (opts.includeSummary && analysesSource.summary) {
+      filteredAnalyses.summary = analysesSource.summary;
+    }
+    if (opts.includeCommunicationStyles && analysesSource.communicationStyles) {
+      filteredAnalyses.communicationStyles = analysesSource.communicationStyles;
+    }
+    if (opts.includeActionItems && analysesSource.actionItems) {
+      filteredAnalyses.actionItems = analysesSource.actionItems;
+    }
+
+    const now = new Date();
+
+    // Build the transcription document
+    const transcriptionData: Omit<Transcription, 'id'> = {
+      userId,
+      fileName: original.fileName,
+      title: original.title || original.fileName,
+      fileSize: 0,
+      mimeType: original.mimeType || 'audio/webm',
+      status: TranscriptionStatus.COMPLETED,
+      transcriptText: opts.includeTranscript
+        ? original.transcriptText
+        : undefined,
+      summaryV2: opts.includeSummary
+        ? original.summaryV2 || original.coreAnalyses?.summaryV2
+        : undefined,
+      analyses:
+        Object.keys(filteredAnalyses).length > 0 ? filteredAnalyses : undefined,
+      speakerSegments: opts.includeSpeakerInfo
+        ? original.speakerSegments
+        : undefined,
+      speakers: opts.includeSpeakerInfo ? original.speakers : undefined,
+      speakerCount: opts.includeSpeakerInfo ? original.speakerCount : undefined,
+      duration: original.duration,
+      conversationCategory: original.conversationCategory,
+      detectedLanguage: original.detectedLanguage,
+      translations: original.translations,
+      createdAt: now,
+      updatedAt: now,
+      completedAt: now,
+      // Provenance
+      copiedFromTranscriptionId: original.id,
+      copiedFromShareToken: shareToken,
+      copiedFromSharedBy: sharedByName,
+      copiedAt: now,
+    };
+
+    // 5. Create the transcription
+    const newTranscriptionId =
+      await this.transcriptionRepository.createTranscription(transcriptionData);
+
+    // 6. Copy AI Assets if shared
+    if (opts.includeOnDemandAnalyses) {
+      try {
+        const allAnalyses = await this.analysisRepository.getGeneratedAnalyses(
+          original.id,
+          original.userId,
+        );
+
+        // Filter by selected IDs if specified
+        const analysesToCopy =
+          opts.selectedAnalysisIds && opts.selectedAnalysisIds.length > 0
+            ? allAnalyses.filter((a: GeneratedAnalysis) =>
+                opts.selectedAnalysisIds!.includes(a.id),
+              )
+            : allAnalyses;
+
+        for (const analysis of analysesToCopy) {
+          await this.analysisRepository.createGeneratedAnalysis({
+            transcriptionId: newTranscriptionId,
+            userId,
+            templateId: analysis.templateId,
+            templateName: analysis.templateName,
+            content: analysis.content,
+            generatedAt: analysis.generatedAt || now,
+            model: analysis.model,
+          });
+        }
+      } catch (err) {
+        this.logger.warn(
+          `Failed to copy AI assets for transcription ${original.id}: ${err}`,
+        );
+      }
+    }
+
+    this.logger.log(
+      `User ${userId} copied shared conversation ${original.id} as ${newTranscriptionId}`,
+    );
+
+    return {
+      transcriptionId: newTranscriptionId,
+      alreadyImported: false,
+    };
+  }
+
+  /**
+   * Check if a user has already copied a conversation from a share token.
+   */
+  async checkCopyStatus(
+    userId: string,
+    shareToken: string,
+  ): Promise<{ copied: boolean; transcriptionId?: string }> {
+    // Look up the original transcription by share token
+    const original =
+      await this.transcriptionRepository.getTranscriptionByShareToken(
+        shareToken,
+      );
+
+    if (!original) {
+      return { copied: false };
+    }
+
+    const existing = await this.transcriptionRepository.findCopiedTranscription(
+      userId,
+      original.id,
+    );
+
+    if (existing) {
+      return { copied: true, transcriptionId: existing.id };
+    }
+
+    return { copied: false };
   }
 }

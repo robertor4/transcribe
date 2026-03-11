@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Don't await - let WebSocket connect in background to avoid blocking UI
             websocketService.connect();
           }
-        } catch (error) {
+        } catch {
           setUser(firebaseUser);
         }
       } else {

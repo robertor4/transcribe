@@ -78,7 +78,7 @@ const CATEGORIES = [
     id: 'leadership',
     icon: Briefcase,
     color: 'text-indigo-500',
-    ids: ['boardUpdate', 'investorUpdate', 'allHandsTalkingPoints'],
+    ids: ['boardUpdate', 'investorUpdate', 'allHandsTalkingPoints', 'visionDocument'],
   },
 ] as const;
 

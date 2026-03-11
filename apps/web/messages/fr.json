@@ -128,6 +128,7 @@
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Connectez-vous pour continuer vers Neural Summary",
     "invalidCredentials": "E-mail ou mot de passe invalide",
+    "signInFailed": "Échec de la connexion. Veuillez réessayer.",
     "invalidEmail": "Veuillez entrer une adresse e-mail valide",
     "accountCreated": "Compte créé avec succès",
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
@@ -293,6 +294,7 @@
       "cancel": "Annuler",
       "rowsPerPage": "Lignes par page",
       "shared": "Partagé",
+      "imported": "Importé",
       "public": "Public",
       "private": "Privé",
       "sharedWith": "{count, plural, one {# personne} other {# personnes}}",
@@ -753,6 +755,10 @@
       "allHandsTalkingPoints": {
         "name": "Points de discussion all-hands",
         "description": "Préparation réunion d'entreprise avec annonces et Q&R"
+      },
+      "visionDocument": {
+        "name": "Document de vision",
+        "description": "Vision stratégique avec piliers, objectifs et jalons"
       },
       "technicalDesignDoc": {
         "name": "Document de conception technique",
@@ -1420,7 +1426,8 @@
       "headline2": "là où votre équipe ",
       "headlineEm": "travaille déjà.",
       "body": "Aucun nouvel outil à adopter. Neural Summary envoie vos transcriptions, résumés et documents générés par l'IA directement dans les plateformes que votre équipe utilise au quotidien.",
-      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
+      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier",
+      "comingSoon": "Intégrations — Bientôt disponible Q2 2026"
     },
     "testimonials": {
       "tag": "Adopté par les leaders",
@@ -2021,9 +2028,12 @@
       "logIn": "Se connecter",
       "signUpTitle": "Enregistrer dans votre bibliothèque",
       "signUpDescription": "Inscrivez-vous pour importer cette conversation et y accéder à tout moment.",
-      "importButton": "Importer",
-      "importing": "Importation...",
-      "imported": "Importé"
+      "importButton": "Enregistrer dans la bibliothèque",
+      "importing": "Enregistrement...",
+      "imported": "Enregistré dans la bibliothèque",
+      "importSuccess": "Conversation enregistrée dans votre bibliothèque.",
+      "importFailed": "Échec de l'enregistrement. Veuillez réessayer.",
+      "viewImports": "Ouvrir"
     },
     "userMenu": {
       "dashboard": "Aller au tableau de bord",

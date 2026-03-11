@@ -58,10 +58,32 @@ export class TranscriptionRepository {
   async createTranscription(
     transcription: Omit<Transcription, 'id'>,
   ): Promise<string> {
-    const docRef = await this.db
-      .collection('transcriptions')
-      .add(transcription);
+    // Strip undefined values — Firestore rejects them
+    const cleanData = Object.fromEntries(
+      Object.entries(transcription).filter(([, v]) => v !== undefined),
+    );
+    const docRef = await this.db.collection('transcriptions').add(cleanData);
     return docRef.id;
+  }
+
+  /**
+   * Find a transcription that was copied from a specific original transcription
+   */
+  async findCopiedTranscription(
+    userId: string,
+    copiedFromTranscriptionId: string,
+  ): Promise<Transcription | null> {
+    const snapshot = await this.db
+      .collection('transcriptions')
+      .where('userId', '==', userId)
+      .where('copiedFromTranscriptionId', '==', copiedFromTranscriptionId)
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) return null;
+
+    const doc = snapshot.docs[0];
+    return this.mapTranscriptionData(doc.id, doc.data());
   }
 
   /**
@@ -188,6 +210,7 @@ export class TranscriptionRepository {
       'generatedAnalysisIds',
       'shareToken',
       'isExample',
+      'copiedFromSharedBy',
       'deletedAt', // Needed for filtering
     ];
 
@@ -502,6 +525,7 @@ export class TranscriptionRepository {
       generatedAnalysisIds: data.generatedAnalysisIds,
       shareToken: data.shareToken,
       isExample: data.isExample || undefined,
+      copiedFromSharedBy: data.copiedFromSharedBy || undefined,
     } as TranscriptionSummary;
   }
 }

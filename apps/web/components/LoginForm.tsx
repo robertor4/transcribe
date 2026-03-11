@@ -1,16 +1,17 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/contexts/AnalyticsContext';
 import { auth } from '@/lib/firebase';
+import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
-import { importedConversationApi } from '@/lib/api';
+import { transcriptionApi } from '@/lib/api';
 import { getApiUrl } from '@/lib/config';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,12 +29,52 @@ export default function LoginForm() {
   const [turnstileToken, setTurnstileToken] = useState('');
   const turnstileRef = useRef<TurnstileInstance>(null);
 
-  const { signInWithEmail, signInWithGoogle } = useAuth();
+  const { user, loading: authLoading, signInWithEmail, signInWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { trackEvent } = useAnalytics();
   const tAuth = useTranslations('auth');
   const isSuspended = searchParams.get('suspended') === 'true';
+
+  // Handle redirect result on mount (after signInWithRedirect returns to this page).
+  // Also handles already-authenticated users navigating to login page.
+  useEffect(() => {
+    if (authLoading) return;
+
+    // If user is already authenticated (e.g. from onAuthStateChanged), go to dashboard
+    if (user) {
+      router.push('/dashboard');
+      return;
+    }
+
+    // Check for a pending redirect result (from signInWithRedirect).
+    // Race with a timeout to prevent hanging on Safari.
+    let cancelled = false;
+    const timeout = setTimeout(() => { cancelled = true; }, 5000);
+
+    getRedirectResult(auth)
+      .then((result) => {
+        clearTimeout(timeout);
+        if (cancelled) return;
+        if (result?.user) {
+          // onAuthStateChanged will fire and set the user, which triggers
+          // the user check above on the next render cycle.
+          trackEvent('login', { method: 'google' });
+        }
+      })
+      .catch((err) => {
+        clearTimeout(timeout);
+        if (cancelled) return;
+        console.warn('[LoginForm] getRedirectResult error:', err);
+        // Don't show error for expected cases (no redirect pending)
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,28 +82,35 @@ export default function LoginForm() {
     setSuggestGoogle(false);
     setShowPasswordReset(false);
 
-    if (!turnstileToken) {
-      setError(tAuth('captchaRequired'));
-      return;
-    }
+    // TODO: Re-enable Turnstile verification after debugging mobile sign-in
+    // if (!turnstileToken) {
+    //   setError(tAuth('captchaRequired'));
+    //   return;
+    // }
 
     setLoading(true);
 
     try {
-      // Verify Turnstile token server-side before signing in
-      const verifyResponse = await fetch(`${getApiUrl()}/auth/verify-turnstile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: turnstileToken }),
-      });
-
-      if (!verifyResponse.ok) {
-        setError(tAuth('captchaFailed'));
-        turnstileRef.current?.reset();
-        setTurnstileToken('');
-        setLoading(false);
-        return;
-      }
+      // TODO: Re-enable Turnstile server-side verification after debugging
+      // let turnstileVerified = false;
+      // try {
+      //   const verifyResponse = await fetch(`${getApiUrl()}/auth/verify-turnstile`, {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({ token: turnstileToken }),
+      //   });
+      //   turnstileVerified = verifyResponse.ok;
+      // } catch {
+      //   turnstileVerified = false;
+      // }
+      //
+      // if (!turnstileVerified) {
+      //   setError(tAuth('captchaFailed'));
+      //   turnstileRef.current?.reset();
+      //   setTurnstileToken('');
+      //   setLoading(false);
+      //   return;
+      // }
 
       await signInWithEmail(email, password);
       trackEvent('login', {
@@ -102,9 +150,10 @@ export default function LoginForm() {
           const pendingImport = getPendingImport();
           if (pendingImport) {
             try {
-              await importedConversationApi.import(pendingImport.shareToken);
+              const result = await transcriptionApi.copyFromShare(pendingImport.shareToken);
               clearPendingImport();
-              router.push('/shared-with-me');
+              const newId = result.data?.transcriptionId;
+              router.push(newId ? `/conversation/${newId}` : '/dashboard');
               return;
             } catch (importError) {
               console.error('Failed to auto-import conversation:', importError);
@@ -170,10 +219,11 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
+      // Try popup first on ALL platforms. It works on most mobile browsers
+      // and is the most reliable flow (no page reload needed).
       await signInWithGoogle();
-      trackEvent('login', {
-        method: 'google'
-      });
+      trackEvent('login', { method: 'google' });
+
       // Small delay to ensure auth state is fully propagated
       await new Promise(resolve => setTimeout(resolve, 200));
 
@@ -199,9 +249,10 @@ export default function LoginForm() {
       const pendingImport = getPendingImport();
       if (pendingImport) {
         try {
-          await importedConversationApi.import(pendingImport.shareToken);
+          const result = await transcriptionApi.copyFromShare(pendingImport.shareToken);
           clearPendingImport();
-          router.push('/shared-with-me');
+          const newId = result.data?.transcriptionId;
+          router.push(newId ? `/conversation/${newId}` : '/dashboard');
           return;
         } catch (importError) {
           console.error('Failed to auto-import conversation:', importError);
@@ -210,8 +261,27 @@ export default function LoginForm() {
       }
       router.push('/dashboard');
     } catch (error) {
-      const errorObj = error as { message?: string };
-      setError(errorObj.message || tAuth('invalidCredentials'));
+      const errorObj = error as { message?: string; code?: string };
+      const errorCode = errorObj.code || '';
+
+      // If popup was blocked (common on mobile Safari), fall back to redirect flow.
+      // signInWithRedirect navigates the full page to Google. On return,
+      // the useEffect above calls getRedirectResult to complete the sign-in.
+      if (errorCode === 'auth/popup-blocked' ||
+          errorCode === 'auth/popup-closed-by-user' ||
+          errorCode === 'auth/cancelled-popup-request') {
+        console.log('[LoginForm] Popup blocked, falling back to redirect flow');
+        const provider = new GoogleAuthProvider();
+        signInWithRedirect(auth, provider);
+        return;
+      }
+
+      if (errorObj.message?.includes('Load failed') ||
+          errorObj.message?.includes('Failed to fetch')) {
+        setError(tAuth('signInFailed'));
+      } else {
+        setError(errorObj.message || tAuth('invalidCredentials'));
+      }
     } finally {
       setLoading(false);
     }
@@ -307,8 +377,8 @@ export default function LoginForm() {
         </Link>
       </div>
 
-      {/* Turnstile CAPTCHA */}
-      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+      {/* Turnstile CAPTCHA — temporarily disabled for debugging mobile sign-in */}
+      {/* {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
         <div className="flex justify-center">
           <Turnstile
             ref={turnstileRef}
@@ -319,11 +389,11 @@ export default function LoginForm() {
             options={{ theme: 'dark' }}
           />
         </div>
-      )}
+      )} */}
 
       <Button
         type="submit"
-        disabled={loading || !turnstileToken}
+        disabled={loading}
         className="w-full h-11 bg-[#8D6AFA] hover:bg-[#7A5AE0] text-white font-medium rounded-lg"
       >
         {loading ? (

@@ -58,6 +58,7 @@ export { competitiveIntelTemplate } from './competitiveIntel';
 export { boardUpdateTemplate } from './boardUpdate';
 export { investorUpdateTemplate } from './investorUpdate';
 export { allHandsTalkingPointsTemplate } from './allHandsTalkingPoints';
+export { visionDocumentTemplate } from './visionDocument';
 
 // Import templates for registry
 import { transcribeOnlyTemplate } from './transcribeOnly';
@@ -101,6 +102,7 @@ import { competitiveIntelTemplate } from './competitiveIntel';
 import { boardUpdateTemplate } from './boardUpdate';
 import { investorUpdateTemplate } from './investorUpdate';
 import { allHandsTalkingPointsTemplate } from './allHandsTalkingPoints';
+import { visionDocumentTemplate } from './visionDocument';
 import { OutputTemplate } from './types';
 
 /**
@@ -157,6 +159,7 @@ export const allTemplates: readonly OutputTemplate[] = [
   boardUpdateTemplate,
   investorUpdateTemplate,
   allHandsTalkingPointsTemplate,
+  visionDocumentTemplate,
 ] as const;
 
 /**

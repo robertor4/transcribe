@@ -1,7 +1,6 @@
 import { UsageProvider } from '@/contexts/UsageContext';
 import { ConversationsProvider } from '@/contexts/ConversationsContext';
 import { FoldersProvider } from '@/contexts/FoldersContext';
-import { ImportedConversationsProvider } from '@/contexts/ImportedConversationsContext';
 import { ReactNode } from 'react';
 import { Metadata } from 'next';
 import { getDashboardMetadata } from '@/utils/metadata';
@@ -25,9 +24,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <UsageProvider>
       <FoldersProvider>
-        <ImportedConversationsProvider>
-          <ConversationsProvider>{children}</ConversationsProvider>
-        </ImportedConversationsProvider>
+        <ConversationsProvider>{children}</ConversationsProvider>
       </FoldersProvider>
     </UsageProvider>
   );

@@ -57,3 +57,4 @@ security/results/
 .env.backup.*
 .turbo
 *.tsbuildinfo
+.eslintcache

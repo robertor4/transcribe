@@ -8,7 +8,6 @@ import { FolderRepository } from './repositories/folder.repository';
 import { CommentRepository } from './repositories/comment.repository';
 import { TranslationRepository } from './repositories/translation.repository';
 import { TranscriptionRepository } from './repositories/transcription.repository';
-import { ImportedConversationRepository } from './repositories/imported-conversation.repository';
 
 @Global()
 @Module({
@@ -22,7 +21,6 @@ import { ImportedConversationRepository } from './repositories/imported-conversa
     CommentRepository,
     TranslationRepository,
     TranscriptionRepository,
-    ImportedConversationRepository,
   ],
   exports: [
     FirebaseService,
@@ -33,7 +31,6 @@ import { ImportedConversationRepository } from './repositories/imported-conversa
     CommentRepository,
     TranslationRepository,
     TranscriptionRepository,
-    ImportedConversationRepository,
   ],
 })
 export class FirebaseModule {}

@@ -8,6 +8,8 @@ import { Mail, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { auth } from '@/lib/firebase';
 import { getApiUrl } from '@/lib/config';
+import { transcriptionApi } from '@/lib/api';
+import { getPendingImport, clearPendingImport } from '@/lib/pendingImport';
 import { AmbientGradient } from '@/components/landing/shared/AmbientGradient';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -142,6 +144,24 @@ export default function VerifyEmailPage() {
         // Force refresh the Firebase Auth token to sync emailVerified status
         await refreshUser();
         setSuccess(true);
+
+        // Check for pending import (user signed up from a share page)
+        const pendingImport = getPendingImport();
+        if (pendingImport) {
+          try {
+            const result = await transcriptionApi.copyFromShare(pendingImport.shareToken);
+            clearPendingImport();
+            const newId = result.data?.transcriptionId;
+            setTimeout(() => {
+              router.push(newId ? `/conversation/${newId}` : '/dashboard');
+            }, 2000);
+            return;
+          } catch (importError) {
+            console.error('Failed to auto-import after verification:', importError);
+            clearPendingImport();
+          }
+        }
+
         setTimeout(() => {
           router.push('/dashboard');
         }, 2000);

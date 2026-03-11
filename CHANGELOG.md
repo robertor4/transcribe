@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Vision Document AI Asset template** — New strategy-grade template that transforms spoken strategic thinking into structured vision documents. Features: vision/mission statements, "Why Now" strategic context, prioritized strategic pillars (foundational/accelerator/aspirational) with initiatives and target outcomes, top-level success metrics, likelihood x impact risk matrix, pillar-linked milestones, and open questions with scannable bold labels. Uses GPT-5. ([analysis-templates.ts](apps/api/src/transcription/analysis-templates.ts), [VisionDocumentTemplate.tsx](apps/web/components/outputTemplates/VisionDocumentTemplate.tsx), [types.ts](packages/shared/src/types.ts))
+- **ESLint caching for faster linting** — Added `--cache` flag and `lint:changed` script to API package for near-instant linting of modified files only (~2s vs ~4.5min full lint) ([package.json](apps/api/package.json))
+
+### Changed
+- **Copy-to-library import system** — Replaced the old "imported conversations" system (linked references in separate `importedConversations` Firestore collection with separate pages, context providers, and rendering) with a copy-to-library approach. Importing a shared conversation now creates a real `Transcription` document in the user's library, copying transcript, summary, analyses, speaker info, and AI assets. Imported conversations appear alongside regular conversations in the dashboard with a "Shared by [name]" indicator. New backend endpoints: `POST /transcriptions/copy-from-share/:shareToken` and `GET /transcriptions/check-copy/:shareToken`. Translations updated across all 5 locales to use "Save to library" terminology. ([transcription.service.ts](apps/api/src/transcription/transcription.service.ts), [transcription.controller.ts](apps/api/src/transcription/transcription.controller.ts), [conversation.ts](apps/web/lib/types/conversation.ts), [ConversationClient.tsx](apps/web/app/[locale]/(authenticated)/conversation/[id]/ConversationClient.tsx))
+
+### Removed
+- **Old imported conversation system** — Deleted `ImportedConversationModule`, `ImportedConversationRepository`, `ImportedConversationsContext`, `ImportButton`, `ImportedConversationCard`, `SharedContentView`, `ExpirationBadge`, shared-with-me page, imported conversation detail page, and all related types (`ImportedConversation`, `ImportedConversationStatus`, `ImportedConversationWithContent`, `ImportConversationResponse`). Removed `ImportedConversationsProvider` from all layouts and "Shared with you" folder from sidebar navigation.
+- **Migration script** — Added `scripts/migrate-imported-conversations.js` to convert existing imported conversations to library copies. Supports `--dry-run` mode.
+
+### Fixed
+- **Shared conversation import flow** — Fixed three issues with the import button on shared conversation pages: (1) Pending imports were lost after email verification, since the verify-email page always redirected to `/dashboard` without consuming the pending import from localStorage. Now auto-imports after verification and redirects to the conversation. (2) Added toast notifications (success with "Open" action link, error with retry message) so users get clear feedback when importing. (3) Added `<Toaster>` to the share page since it's outside the authenticated layout. Translations added for all 5 locales ([page.tsx](apps/web/app/[locale]/shared/[shareToken]/page.tsx), [verify-email/page.tsx](apps/web/app/[locale]/(auth)/verify-email/page.tsx), all locale JSON files)
+
 ## [2.4.0] - 2026-03-10
 
 ### Editorial Redesign, Onboarding, SEO & Security

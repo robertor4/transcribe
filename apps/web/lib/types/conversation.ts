@@ -35,6 +35,8 @@ export interface Conversation {
   conversationCategory?: ConversationCategory; // AI-detected category
   error?: string; // Error message when status is 'failed'
   isExample?: boolean; // Onboarding example conversation
+  copiedFromSharedBy?: string; // Name of user who shared this conversation
+  copiedAt?: Date; // When this conversation was copied from a share
 }
 
 export type ConversationStatus = 'pending' | 'processing' | 'ready' | 'failed';
@@ -226,6 +228,8 @@ export function transcriptionToConversation(transcription: Transcription): Conve
     conversationCategory: transcription.conversationCategory,
     error: transcription.error,
     isExample: transcription.isExample,
+    copiedFromSharedBy: transcription.copiedFromSharedBy,
+    copiedAt: transcription.copiedAt ? new Date(transcription.copiedAt) : undefined,
   };
 }
 
@@ -278,6 +282,7 @@ export function transcriptionSummaryToConversation(
     assetsCount: summary.generatedAnalysisIds?.length || 0,
     context: undefined, // Not available in summary
     isExample: summary.isExample,
+    copiedFromSharedBy: summary.copiedFromSharedBy,
   };
 }
 

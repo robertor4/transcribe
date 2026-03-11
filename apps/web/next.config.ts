@@ -83,17 +83,17 @@ const nextConfig: NextConfig = {
       ] : []),
     ];
   },
-  // WebSocket proxy configuration for production
+  // WebSocket proxy configuration for production only
+  // In dev, Socket.io connects directly to localhost:3001 (no proxy needed)
+  // Proxying in dev causes Socket.io ping frames to leak into Next.js HMR websocket
   async rewrites() {
-    const apiUrl = process.env.NODE_ENV === 'production' 
-      ? 'http://api:3001' 
-      : 'http://localhost:3001';
-    
+    if (process.env.NODE_ENV !== 'production') return [];
+
     return [
-      // Proxy socket.io WebSocket connections to the API
+      // Proxy socket.io WebSocket connections to the API (Docker networking)
       {
         source: '/api/socket.io/:path*',
-        destination: `${apiUrl}/socket.io/:path*`,
+        destination: 'http://api:3001/socket.io/:path*',
       },
     ];
   },

@@ -128,6 +128,7 @@
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Log in om door te gaan naar Neural Summary",
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
+    "signInFailed": "Inloggen mislukt. Probeer het opnieuw.",
     "invalidEmail": "Voer een geldig e-mailadres in",
     "accountCreated": "Account succesvol aangemaakt",
     "passwordsDoNotMatch": "Wachtwoorden komen niet overeen",
@@ -293,6 +294,7 @@
       "cancel": "Annuleren",
       "rowsPerPage": "Rijen per pagina",
       "shared": "Gedeeld",
+      "imported": "Geïmporteerd",
       "public": "Openbaar",
       "private": "Privé",
       "sharedWith": "{count, plural, one {# persoon} other {# personen}}",
@@ -753,6 +755,10 @@
       "allHandsTalkingPoints": {
         "name": "All-Hands gesprekspunten",
         "description": "Bedrijfsbrede vergadering prep met aankondigingen en Q&A"
+      },
+      "visionDocument": {
+        "name": "Visiedocument",
+        "description": "Strategische visie met pijlers, doelen en mijlpalen"
       },
       "technicalDesignDoc": {
         "name": "Technisch ontwerpdocument",
@@ -1442,7 +1448,8 @@
       "headline2": "waar je team al ",
       "headlineEm": "werkt.",
       "body": "Geen nieuwe tools om te leren. Neural Summary stuurt je transcripten, samenvattingen en AI-gegenereerde documenten direct naar de platforms waar je team dagelijks in werkt.",
-      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
+      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier",
+      "comingSoon": "Integraties — Binnenkort beschikbaar Q2 2026"
     },
     "testimonials": {
       "tag": "Vertrouwd door leiders",
@@ -1684,9 +1691,12 @@
       "logIn": "Inloggen",
       "signUpTitle": "Opslaan in je bibliotheek",
       "signUpDescription": "Meld je aan om dit gesprek te importeren en altijd toegang te hebben.",
-      "importButton": "Importeren",
-      "importing": "Importeren...",
-      "imported": "Geïmporteerd"
+      "importButton": "Opslaan in bibliotheek",
+      "importing": "Opslaan...",
+      "imported": "Opgeslagen in bibliotheek",
+      "importSuccess": "Gesprek opgeslagen in je bibliotheek.",
+      "importFailed": "Opslaan mislukt. Probeer het opnieuw.",
+      "viewImports": "Openen"
     },
     "userMenu": {
       "dashboard": "Naar dashboard",

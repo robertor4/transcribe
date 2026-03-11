@@ -182,10 +182,13 @@ export class OnDemandAnalysisService {
         try {
           const parsed = JSON.parse(rawContent);
 
-          // Validate structured output based on template type
-          this.validateStructuredOutput(templateId, parsed);
+          // Normalize snake_case keys to camelCase (GPT sometimes ignores schema casing)
+          const normalized = this.normalizeKeysToCamelCase(parsed) as Record<string, unknown>;
 
-          content = parsed;
+          // Validate structured output based on template type
+          this.validateStructuredOutput(templateId, normalized);
+
+          content = normalized as unknown as typeof content;
           this.logger.log(
             'Successfully parsed and validated structured JSON output',
           );
@@ -195,7 +198,7 @@ export class OnDemandAnalysisService {
             templateId === 'blogPost' &&
             this.replicateService.isAvailable()
           ) {
-            const blogContent = content as BlogPostOutput;
+            const blogContent = content as unknown as BlogPostOutput;
             await this.generateBlogHeroImage(blogContent, userId);
           }
         } catch (parseError) {
@@ -299,6 +302,25 @@ export class OnDemandAnalysisService {
 
   /**
    * Validate structured output based on template type.
+   * Recursively converts snake_case keys to camelCase.
+   * GPT sometimes generates snake_case keys despite camelCase JSON schema.
+   */
+  private normalizeKeysToCamelCase(obj: unknown): unknown {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.normalizeKeysToCamelCase(item));
+    }
+    if (obj !== null && typeof obj === 'object') {
+      const result: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(obj)) {
+        const camelKey = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+        result[camelKey] = this.normalizeKeysToCamelCase(value);
+      }
+      return result;
+    }
+    return obj;
+  }
+
+  /**
    * Ensures required fields exist and have correct types.
    * Throws an error if validation fails.
    */
@@ -399,6 +421,25 @@ export class OnDemandAnalysisService {
         this.logger.log(
           `No specific validation for template ${templateId}, allowing output`,
         );
+    }
+
+    // General validation: ensure structured output has meaningful content beyond just `type`
+    const meaningfulKeys = Object.keys(parsed).filter(
+      (key) =>
+        key !== 'type' &&
+        parsed[key] !== null &&
+        parsed[key] !== undefined &&
+        parsed[key] !== '' &&
+        !(
+          Array.isArray(parsed[key]) && (parsed[key] as unknown[]).length === 0
+        ),
+    );
+
+    if (meaningfulKeys.length === 0) {
+      throw new Error(
+        `Structured output for ${templateId} contains no meaningful content (only "type" field). ` +
+          'The AI may have failed to generate a proper response.',
+      );
     }
   }
 

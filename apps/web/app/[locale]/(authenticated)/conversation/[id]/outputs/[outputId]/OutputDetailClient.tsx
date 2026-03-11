@@ -24,6 +24,7 @@ import {
 import { transcriptionApi } from '@/lib/api';
 import type { GeneratedAnalysis, BlogPostOutput, Transcription } from '@transcribe/shared';
 import { OutputRenderer } from '@/components/outputTemplates';
+import { OutputGeneratorModal } from '@/components/OutputGeneratorModal';
 import { DetailPageLayout } from '@/components/detail-pages/DetailPageLayout';
 import { DetailPageHeader } from '@/components/detail-pages/DetailPageHeader';
 import { AssetSidebar } from '@/components/AssetSidebar';
@@ -81,6 +82,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
   const [translationDialogOpen, setTranslationDialogOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [transcriptionForShare, setTranscriptionForShare] = useState<Transcription | null>(null);
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
 
   const userTier = usageStats?.tier || 'free';
 
@@ -359,7 +361,7 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
         <AssetSidebar
           assets={siblingOutputs}
           isLoading={isLoadingSiblings}
-          onGenerateNew={() => router.push(`/${locale}/conversation/${conversationId}`)}
+          onGenerateNew={() => setIsGeneratorOpen(true)}
           onAssetClick={(asset) => {
             router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
           }}
@@ -582,6 +584,19 @@ export function OutputDetailClient({ conversationId, outputId }: OutputDetailCli
           onShareUpdate={setTranscriptionForShare}
         />
       )}
+
+      {/* Output Generator Modal */}
+      <OutputGeneratorModal
+        isOpen={isGeneratorOpen}
+        onClose={() => setIsGeneratorOpen(false)}
+        conversationTitle={conversationTitle}
+        conversationId={conversationId}
+        onOutputGenerated={(asset) => {
+          setSiblingOutputs((prev) => [asset, ...prev.filter((a) => a.id !== asset.id)]);
+          setIsGeneratorOpen(false);
+          router.push(`/${locale}/conversation/${conversationId}/outputs/${asset.id}`);
+        }}
+      />
     </DetailPageLayout>
   );
 }

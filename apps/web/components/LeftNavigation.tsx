@@ -4,12 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2, Users } from 'lucide-react';
+import { Search, Clock, Folder, PanelLeft, Home, MessageSquarePlus, Loader2, X, ChevronRight, Trash2 } from 'lucide-react';
 import { NavigationListSkeleton } from '@/components/skeletons/NavigationSkeleton';
 import { useTranslations } from 'next-intl';
 import { useFoldersContext } from '@/contexts/FoldersContext';
 import { useConversationsContext } from '@/contexts/ConversationsContext';
-import { useImportedConversations } from '@/contexts/ImportedConversationsContext';
 import { UserProfileMenu } from '@/components/UserProfileMenu';
 import { useSearch } from '@/hooks/useSearch';
 
@@ -34,7 +33,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
   const tSearch = useTranslations('search');
 
   const { folders, isLoading: foldersLoading } = useFoldersContext();
-  const { count: importedCount } = useImportedConversations();
   // Simplified toggle state - works on both touch and pointer devices
   const [isFoldersExpanded, setIsFoldersExpanded] = useState(true);
   const { conversations, recentlyOpened, recentlyOpenedCleared, isLoading: conversationsLoading, clearRecentlyOpened } = useConversationsContext();
@@ -254,7 +252,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                 {t('folders')}
               </h3>
               <span className="text-[10px] text-white/40">
-                ({folders.length + (importedCount > 0 ? 1 : 0)})
+                ({folders.length})
               </span>
             </button>
           </div>
@@ -269,7 +267,7 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
             <div className="overflow-hidden">
             {foldersLoading ? (
               <NavigationListSkeleton type="folders" count={3} />
-            ) : folders.length === 0 && importedCount === 0 ? (
+            ) : folders.length === 0 ? (
               <p className="text-xs text-white/50 px-3 py-2">{t('noFoldersYet')}</p>
             ) : (
               <div className="space-y-1">
@@ -293,23 +291,6 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
                     </span>
                   </Link>
                 ))}
-                {/* Shared with you - System folder, rendered like a regular folder */}
-                {importedCount > 0 && (
-                  <Link
-                    href={`/${locale}/shared-with-me`}
-                    className="group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/10"
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <Users className="w-4 h-4 text-white/50 flex-shrink-0 group-hover:text-white/70 transition-colors" />
-                      <span className="text-sm font-normal text-white/70 group-hover:text-white/90 truncate">
-                        {t('sharedWithYou')}
-                      </span>
-                    </div>
-                    <span className="text-xs text-white/50 flex-shrink-0">
-                      {importedCount}
-                    </span>
-                  </Link>
-                )}
               </div>
             )}
             </div>

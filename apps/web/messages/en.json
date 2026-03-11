@@ -128,6 +128,7 @@
     "welcomeBack": "Neural Summary",
     "signInToContinue": "Sign in to continue to Neural Summary",
     "invalidCredentials": "Invalid email or password",
+    "signInFailed": "Sign-in failed. Please try again.",
     "invalidEmail": "Please enter a valid email address",
     "accountCreated": "Account created successfully",
     "passwordsDoNotMatch": "Passwords do not match",
@@ -293,6 +294,7 @@
       "cancel": "Cancel",
       "rowsPerPage": "Rows per page",
       "shared": "Shared",
+      "imported": "Imported",
       "public": "Public",
       "private": "Private",
       "sharedWith": "{count, plural, one {# person} other {# people}}",
@@ -754,6 +756,10 @@
       "allHandsTalkingPoints": {
         "name": "All-Hands Talking Points",
         "description": "Company-wide meeting prep with announcements and Q&A"
+      },
+      "visionDocument": {
+        "name": "Vision Document",
+        "description": "Strategic vision with pillars, objectives, and milestones"
       },
       "technicalDesignDoc": {
         "name": "Technical Design Document",
@@ -1313,9 +1319,9 @@
     },
     "proofBar": {
       "stars": "★★★★★",
-      "quote1": "We used to spend 30 minutes after every client call writing up notes. Now Neural Summary does it ",
+      "quote1": "I used to spend 30 minutes after every client call writing up notes. Now Neural Summary does it ",
       "quoteStrong": "before I've closed my laptop.",
-      "quote2": " It's changed how our whole team operates.",
+      "quote2": " It completely changed my workflow.",
       "name": "Wouter Chompff",
       "title": "Founder · One Man Agency"
     },
@@ -1443,7 +1449,8 @@
       "headline2": "where your team ",
       "headlineEm": "already works.",
       "body": "No new tools to adopt. Neural Summary pushes your transcripts, summaries, and AI-generated assets directly into the platforms your team lives in.",
-      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier"
+      "logos": "Notion,Slack,Google Drive,HubSpot,Gmail,Google Docs,Salesforce,Zapier",
+      "comingSoon": "Integrations — Coming soon Q2 2026"
     },
     "testimonials": {
       "tag": "Trusted by leaders",
@@ -1685,9 +1692,12 @@
       "logIn": "Log in",
       "signUpTitle": "Save to your library",
       "signUpDescription": "Sign up to import this conversation and access it anytime.",
-      "importButton": "Import",
-      "importing": "Importing...",
-      "imported": "Imported"
+      "importButton": "Save to library",
+      "importing": "Saving...",
+      "imported": "Saved to library",
+      "importSuccess": "Conversation saved to your library.",
+      "importFailed": "Failed to save. Please try again.",
+      "viewImports": "Open"
     },
     "userMenu": {
       "dashboard": "Go to Dashboard",

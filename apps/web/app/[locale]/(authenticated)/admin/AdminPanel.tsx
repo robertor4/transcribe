@@ -116,11 +116,11 @@ export function AdminPanel() {
     } else if (diffDays < 7) {
       relativeTime = `${diffDays}d ago`;
     } else {
-      relativeTime = date.toLocaleDateString();
+      relativeTime = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     return (
-      <span className="text-gray-500 dark:text-gray-400 text-sm" title={date.toLocaleString()}>
+      <span className="text-gray-500 dark:text-gray-400 text-sm" title={date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}>
         {relativeTime}
       </span>
     );
@@ -396,7 +396,7 @@ export function AdminPanel() {
                     )}
                   </TableCell>
                   <TableCell className="py-2.5 text-gray-500 dark:text-gray-400 text-sm hidden lg:table-cell">
-                    {new Date(u.createdAt).toLocaleDateString()}
+                    {new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </TableCell>
                   <TableCell className="py-2.5">
                     {formatLastLogin(u.lastLogin)}

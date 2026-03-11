@@ -19,6 +19,7 @@ import {
   Globe,
   ScrollText,
   Mail,
+  UserCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { transcriptionApi, contactApi } from '@/lib/api';
@@ -566,14 +567,15 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
         mainContent={
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
             {/* Header */}
-            <div className="max-w-[680px] mb-6 lg:mb-8">
-              <Link
-                href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {folder ? folder.name : 'Dashboard'}
-              </Link>
+            <div className="mb-6 lg:mb-8">
+              <div className="max-w-[680px]">
+                <Link
+                  href={folder ? `/${locale}/folder/${folder.id}` : `/${locale}/dashboard`}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-[#8D6AFA] dark:hover:text-[#8D6AFA] transition-colors mb-4 lg:mb-6"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {folder ? folder.name : 'Dashboard'}
+                </Link>
               {isEditingTitle ? (
                 <input
                   ref={titleInputRef}
@@ -596,30 +598,43 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   <TextHighlighter text={conversation.title} highlight={highlightOptions} />
                 </h1>
               )}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-gray-500 dark:text-gray-400">
-                {activeWordCount > 0 && (
+              </div>
+              <div className="flex items-center gap-x-3 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-x-3 flex-shrink-0">
+                  {activeWordCount > 0 && (
+                    <>
+                      <ReadingTimeIndicator wordCount={activeWordCount} />
+                      <span className="text-gray-300 dark:text-gray-600">|</span>
+                    </>
+                  )}
+                  {conversation.conversationCategory && (
+                    <>
+                      <ConversationCategoryBadge category={conversation.conversationCategory} />
+                      <span className="text-gray-300 dark:text-gray-600">|</span>
+                    </>
+                  )}
+                  <span className="whitespace-nowrap">
+                    {conversation.createdAt.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+
+                {conversation.copiedFromSharedBy && (
                   <>
-                    <ReadingTimeIndicator wordCount={activeWordCount} />
                     <span className="text-gray-300 dark:text-gray-600">|</span>
+                    <span className="inline-flex items-center gap-1 truncate min-w-0">
+                      <UserCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                      <span className="truncate">{conversation.copiedFromSharedBy}</span>
+                    </span>
                   </>
                 )}
-                {conversation.conversationCategory && (
-                  <>
-                    <ConversationCategoryBadge category={conversation.conversationCategory} />
-                    <span className="text-gray-300 dark:text-gray-600">|</span>
-                  </>
-                )}
-                <span>
-                  {conversation.createdAt.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
 
                 {/* Action icons */}
                 <TooltipProvider>
-                  <div className="hidden sm:flex items-center gap-3 ml-2">
+                  <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
                     <span className="text-gray-300 dark:text-gray-600">|</span>
                     <Tooltip>
                       <TooltipTrigger asChild>

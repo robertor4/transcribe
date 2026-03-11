@@ -10,6 +10,7 @@ import {
   Link2,
   FileText,
   AlignLeft,
+  Download,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -177,10 +178,12 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
                 {t('table.statusFailed')}
               </span>
             )}
-            {/* Shared indicator (mobile only — desktop has its own column) */}
-            {conversation.sharing.isPublic && (
+            {/* Shared/Imported indicator (mobile only — desktop has its own column) */}
+            {conversation.copiedFromSharedBy ? (
+              <Download className="w-3.5 h-3.5 flex-shrink-0 text-purple-400 lg:hidden" />
+            ) : conversation.sharing.isPublic ? (
               <Link2 className="w-3.5 h-3.5 flex-shrink-0 text-gray-400 lg:hidden" />
-            )}
+            ) : null}
           </div>
         </TableCell>
 
@@ -201,7 +204,12 @@ export const ConversationsTableRow = memo(function ConversationsTableRow({
 
         {/* Shared - hidden on smaller screens */}
         <TableCell className="hidden lg:table-cell w-[90px]">
-          {conversation.sharing.isPublic ? (
+          {conversation.copiedFromSharedBy ? (
+            <Badge variant="outline" className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-400">
+              <Download className="w-3 h-3" />
+              {t('table.imported')}
+            </Badge>
+          ) : conversation.sharing.isPublic ? (
             <Badge variant="outline" className="border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400">
               <Link2 className="w-3 h-3" />
               {t('table.shared')}

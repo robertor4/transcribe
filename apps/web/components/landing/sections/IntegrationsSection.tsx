@@ -8,6 +8,7 @@ interface IntegrationsSectionTranslations {
   headlineEm: string;
   body: string;
   logos: string;
+  comingSoon: string;
 }
 
 interface IntegrationsSectionProps {
@@ -51,6 +52,10 @@ export function IntegrationsSection({ translations: t }: IntegrationsSectionProp
 
         <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto">
           {t.body}
+        </p>
+
+        <p className="mt-4 text-[13px] font-medium tracking-wide uppercase text-white/40">
+          {t.comingSoon}
         </p>
       </div>
 

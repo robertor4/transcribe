@@ -1120,6 +1120,48 @@ export interface GoalSettingOutput {
   checkInSchedule?: string;
 }
 
+/** Strategic pillar with prioritized initiatives and target outcomes */
+export interface StrategicPillar {
+  name: string;
+  description: string;
+  priority: 'foundational' | 'accelerator' | 'aspirational';
+  initiatives: string[];
+  outcomes?: string[];
+}
+
+/** Risk with likelihood x impact assessment and mitigation */
+export interface VisionRisk {
+  risk: string;
+  likelihood: 'high' | 'medium' | 'low';
+  impact: 'high' | 'medium' | 'low';
+  mitigation: string;
+}
+
+/** Vision milestone linked to a strategic pillar */
+export interface VisionMilestone {
+  milestone: string;
+  timeframe: string;
+  pillar?: string;
+  status?: 'planned' | 'in-progress' | 'completed';
+}
+
+/** Structured vision document output */
+export interface VisionDocumentOutput {
+  type: 'visionDocument';
+  title: string;
+  author?: string;
+  timeHorizon?: string;
+  visionStatement: string;
+  missionStatement?: string;
+  strategicContext?: string;
+  currentState?: string;
+  strategicPillars: StrategicPillar[];
+  successMetrics?: string[];
+  risksAndMitigations?: VisionRisk[];
+  milestones?: VisionMilestone[];
+  openQuestions?: string[];
+}
+
 /** Union type for all structured outputs */
 export type StructuredOutput =
   | ActionItemsOutput
@@ -1168,7 +1210,9 @@ export type StructuredOutput =
   | CoachingNotesOutput
   | PerformanceReviewOutput
   | ExitInterviewOutput
-  | GoalSettingOutput;
+  | GoalSettingOutput
+  // Strategy
+  | VisionDocumentOutput;
 
 /** Type guard to check if content is structured */
 export function isStructuredOutput(content: unknown): content is StructuredOutput {
@@ -1238,6 +1282,8 @@ export interface TranscriptionSummary {
   shareToken?: string;
   // Onboarding: marks this as a preloaded example conversation
   isExample?: boolean;
+  // Import provenance
+  copiedFromSharedBy?: string;
 }
 
 export interface Transcription {
@@ -1306,6 +1352,17 @@ export interface Transcription {
   conversationCategory?: ConversationCategory;
   // Onboarding: marks this as a preloaded example conversation
   isExample?: boolean;
+  // Copy-from-share provenance (set when a shared conversation is copied to user's library)
+  copiedFromTranscriptionId?: string;
+  copiedFromShareToken?: string;
+  copiedFromSharedBy?: string;
+  copiedAt?: Date;
+}
+
+/** Response from the copy-from-share endpoint */
+export interface CopyFromShareResponse {
+  transcriptionId: string;
+  alreadyImported: boolean;
 }
 
 export interface TranscriptionJob {
@@ -1497,65 +1554,7 @@ export interface SharedTranscriptionView {
 // Imported Conversations (V2 - Shared with you folder)
 // ============================================================================
 
-/**
- * Represents a linked reference to a shared conversation.
- * The import points to the original share; if the share is revoked or expires,
- * the imported reference becomes inaccessible.
- */
-export interface ImportedConversation {
-  id: string;
-  userId: string; // Who imported it
-  shareToken: string; // Reference to original share
-  originalTranscriptionId: string; // For tracking/analytics
 
-  // Cached metadata (snapshot at import time for display)
-  title: string;
-  sharedByName?: string;
-  sharedByEmail?: string;
-  expiresAt?: Date; // Copied from share settings
-
-  // Timestamps
-  importedAt: Date;
-  lastAccessedAt?: Date;
-  deletedAt?: Date; // Soft delete
-}
-
-/**
- * Status of an imported conversation based on the underlying share's state.
- */
-export type ImportedConversationStatus =
-  | 'active' // Share is valid and accessible
-  | 'expired' // Share has passed its expiration date
-  | 'revoked' // Owner has revoked the share
-  | 'unavailable'; // Share not found or other error
-
-/**
- * Response when fetching an imported conversation with its live content.
- */
-export interface ImportedConversationWithContent {
-  importedConversation: ImportedConversation;
-  sharedContent: SharedTranscriptionView | null; // null if unavailable
-  status: ImportedConversationStatus;
-}
-
-/**
- * Response when importing a shared conversation.
- */
-export interface ImportConversationResponse {
-  importedConversation: ImportedConversation;
-  alreadyImported: boolean; // True if user had already imported this
-}
-
-/**
- * Extended shared transcription view with import status.
- * Used when an authenticated user views a shared link.
- */
-export interface SharedTranscriptionViewWithImportStatus
-  extends SharedTranscriptionView {
-  canImport: boolean; // Always true for valid shares
-  alreadyImported: boolean; // Whether current user has imported this
-  importedAt?: Date; // When user imported (if they did)
-}
 
 export interface TranslateRequest {
   targetLanguage: string; // Language code (e.g., 'es', 'fr', 'de')

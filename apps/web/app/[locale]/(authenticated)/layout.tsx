@@ -5,7 +5,6 @@ import { AnalyticsProvider } from '@/contexts/AnalyticsContext';
 import { ApiHealthProvider } from '@/contexts/ApiHealthContext';
 import { ConversationsProvider } from '@/contexts/ConversationsContext';
 import { FoldersProvider } from '@/contexts/FoldersContext';
-import { ImportedConversationsProvider } from '@/contexts/ImportedConversationsContext';
 import { UsageProvider } from '@/contexts/UsageContext';
 import { OnboardingProvider } from '@/components/onboarding/OnboardingProvider';
 import { PageTracker } from '@/components/PageTracker';
@@ -35,15 +34,13 @@ export default function AuthenticatedLayout({
             <UsageProvider>
               <ConversationsProvider>
                 <FoldersProvider>
-                  <ImportedConversationsProvider>
-                    <OnboardingProvider>
-                      <PageTracker />
-                      <ApiUnavailableBanner />
-                      {children}
-                      <CookieConsent />
-                      <Toaster position="top-center" />
-                    </OnboardingProvider>
-                  </ImportedConversationsProvider>
+                  <OnboardingProvider>
+                    <PageTracker />
+                    <ApiUnavailableBanner />
+                    {children}
+                    <CookieConsent />
+                    <Toaster position="top-center" />
+                  </OnboardingProvider>
                 </FoldersProvider>
               </ConversationsProvider>
             </UsageProvider>

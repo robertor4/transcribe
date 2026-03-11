@@ -2430,7 +2430,7 @@ Each diagram MUST include a caption (1 sentence explaining what the diagram show
 
 Example: {"title": "Data Flow", "chart": "flowchart LR\\n  A[Upload] --> B[Process]\\n  B --> C[Store]\\n  C --> D[Query]", "caption": "End-to-end data pipeline from file upload to queryable storage."}
 
-Keep diagrams simple (under 12 nodes). Use short labels. Omit the entire array only if the conversation lacks technical detail.
+Keep diagrams simple (under 12 nodes). Use short labels. Omit the entire array only if the conversation lacks technical detail. NEVER use // comments inside Mermaid syntax — use %% for comments if needed.
 
 QUALITY GUIDELINES:
 - Write like a principal engineer — specific, not generic. Reference actual topics, names, and technologies from the conversation.
@@ -3445,6 +3445,129 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         checkInSchedule: { type: 'string' },
       },
       required: ['type', 'goals', 'potentialObstacles', 'supportNeeded'],
+    },
+  }),
+  // ── Strategy ──────────────────────────────────────────────────
+  createStructuredTemplate({
+    id: 'visionDocument',
+    name: 'Vision Document',
+    description: 'Strategic vision with pillars, objectives, and milestones',
+    category: 'professional',
+    icon: 'Compass',
+    color: 'purple',
+    systemPrompt: `You are a senior strategy consultant (McKinsey/BCG caliber) who transforms conversations into clear, actionable vision documents. Extract the speaker's strategic thinking and organize it into a structured vision with prioritized pillars, measurable outcomes, and a realistic roadmap. Infer structure even when the speaker is thinking out loud — synthesize scattered ideas into a coherent strategic narrative. Think in terms of sequencing, dependencies, and trade-offs. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a vision document from this conversation.
+
+Extract and structure:
+1. A concise vision statement (1-2 sentences describing the aspirational future state)
+2. A mission statement if discussed (the organization's purpose and how it achieves the vision)
+3. Strategic context — WHY NOW? What market pressures, triggers, or opportunities make this vision necessary? (2-3 sentences)
+4. Current state assessment if described (where we are today, the gap to where we need to be)
+5. 3-5 strategic pillars — key themes or focus areas. For each pillar:
+   - Assign a priority: "foundational" (must do first, others depend on it), "accelerator" (multiplies impact once foundations are in place), or "aspirational" (future-state, do when ready)
+   - MAX 3 initiatives per pillar (pick the most impactful)
+   - 1-2 target outcomes per pillar — what success looks like when this pillar is delivered
+   - Order pillars by execution sequence (foundational first, aspirational last)
+6. Success metrics — MAX 5 top-level health metrics that track overall progress across pillars. Format: "Metric name: how it's measured"
+7. Risks — assess each with BOTH likelihood (high/medium/low) AND impact (high/medium/low), plus a mitigation strategy
+8. Milestones — each milestone MUST reference which pillar it belongs to (use the pillar name). Include timeframe and status (planned/in-progress/completed)
+9. Open questions — each MUST start with a short label followed by a colon, then the detail. Example: "Starting page: should Orders be the default for Super Admin?"
+
+IMPORTANT RULES:
+- If the speaker doesn't explicitly state a vision or mission, synthesize one from their aspirations and goals.
+- Convert vague goals into measurable outcomes.
+- Flag risks that are mentioned or implied.
+- Pillars must be ordered by priority (foundational → accelerator → aspirational).
+- Every milestone must link to a pillar name.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+${PROMPT_INSTRUCTIONS.languageConsistency}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 42,
+    tags: ['vision', 'strategy', 'planning', 'leadership'],
+    targetRoles: ['founder', 'ceo', 'product-manager', 'strategist'],
+    templateGroup: 'strategy',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'visionDocument' },
+        title: { type: 'string' },
+        author: { type: 'string' },
+        timeHorizon: { type: 'string' },
+        visionStatement: { type: 'string' },
+        missionStatement: { type: 'string' },
+        strategicContext: { type: 'string' },
+        currentState: { type: 'string' },
+        strategicPillars: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+              description: { type: 'string' },
+              priority: {
+                type: 'string',
+                enum: ['foundational', 'accelerator', 'aspirational'],
+              },
+              initiatives: {
+                type: 'array',
+                items: { type: 'string' },
+                maxItems: 3,
+              },
+              outcomes: {
+                type: 'array',
+                items: { type: 'string' },
+                maxItems: 2,
+              },
+            },
+            required: ['name', 'description', 'priority', 'initiatives'],
+          },
+        },
+        successMetrics: {
+          type: 'array',
+          items: { type: 'string' },
+          maxItems: 5,
+        },
+        risksAndMitigations: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              risk: { type: 'string' },
+              likelihood: {
+                type: 'string',
+                enum: ['high', 'medium', 'low'],
+              },
+              impact: {
+                type: 'string',
+                enum: ['high', 'medium', 'low'],
+              },
+              mitigation: { type: 'string' },
+            },
+            required: ['risk', 'likelihood', 'impact', 'mitigation'],
+          },
+        },
+        milestones: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              milestone: { type: 'string' },
+              timeframe: { type: 'string' },
+              pillar: { type: 'string' },
+              status: {
+                type: 'string',
+                enum: ['planned', 'in-progress', 'completed'],
+              },
+            },
+            required: ['milestone', 'timeframe', 'pillar'],
+          },
+        },
+        openQuestions: { type: 'array', items: { type: 'string' } },
+      },
+      required: ['type', 'title', 'visionStatement', 'strategicPillars'],
     },
   }),
 ];

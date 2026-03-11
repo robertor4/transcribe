@@ -11,8 +11,8 @@ import { AIAssetSlidePanel } from '@/components/AIAssetSlidePanel';
 import { ReadingTimeIndicator, countWords } from '@/components/ReadingTimeIndicator';
 import { ConversationCategoryBadge } from '@/components/ConversationCategoryBadge';
 import { AiIcon } from '@/components/icons/AiIcon';
-import { useAuth } from '@/contexts/AuthContext';
-import { importedConversationApi } from '@/lib/api';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { transcriptionApi } from '@/lib/api';
 import { setPendingImport } from '@/lib/pendingImport';
 import { useSlidePanel } from '@/hooks/useSlidePanel';
 import { useCopySummaryToClipboard } from '@/hooks/useCopySummaryToClipboard';
@@ -39,6 +39,8 @@ import {
 } from 'lucide-react';
 import { UserAvatarDropdown } from '@/components/UserAvatarDropdown';
 import { useConversationTranslations } from '@/hooks/useConversationTranslations';
+import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { DropdownMenu } from '@/components/DropdownMenu';
@@ -49,6 +51,14 @@ import { Button } from '@/components/ui/button';
 type SharedTab = 'summary' | 'transcript' | 'ai-assets';
 
 export default function SharedTranscriptionPage() {
+  return (
+    <AuthProvider>
+      <SharedTranscriptionContent />
+    </AuthProvider>
+  );
+}
+
+function SharedTranscriptionContent() {
   const params = useParams();
   const router = useRouter();
   const locale = useLocale();
@@ -111,12 +121,12 @@ export default function SharedTranscriptionPage() {
   // Check import status when user is authenticated
   useEffect(() => {
     if (user && shareToken) {
-      importedConversationApi.checkStatus(shareToken).then((response) => {
-        if (response.success && response.data?.imported) {
+      transcriptionApi.checkCopy(shareToken).then((response) => {
+        if (response.success && response.data?.copied) {
           setIsImported(true);
         }
       }).catch(() => {
-        // Ignore errors - user just hasn't imported yet
+        // Ignore errors - user just hasn't copied yet
       });
     }
   }, [user, shareToken]);
@@ -131,12 +141,20 @@ export default function SharedTranscriptionPage() {
 
     setIsImporting(true);
     try {
-      const response = await importedConversationApi.import(shareToken, password || undefined);
+      const response = await transcriptionApi.copyFromShare(shareToken, password || undefined);
       if (response.success && response.data) {
         setIsImported(true);
+        const newId = response.data.transcriptionId;
+        toast.success(t('importCta.importSuccess'), {
+          action: {
+            label: t('importCta.viewImports'),
+            onClick: () => router.push(`/${locale}/conversation/${newId}`),
+          },
+        });
       }
     } catch (err) {
       console.error('Failed to import:', err);
+      toast.error(t('importCta.importFailed'));
     } finally {
       setIsImporting(false);
     }
@@ -391,6 +409,7 @@ export default function SharedTranscriptionPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Toaster position="top-center" />
       {/* Header */}
       <div className="bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3 sm:py-6">

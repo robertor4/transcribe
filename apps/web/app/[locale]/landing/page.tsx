@@ -184,6 +184,7 @@ export default async function LandingPage({
             headlineEm: t('integrations.headlineEm'),
             body: t('integrations.body'),
             logos: t('integrations.logos'),
+            comingSoon: t('integrations.comingSoon'),
           }}
         />
 

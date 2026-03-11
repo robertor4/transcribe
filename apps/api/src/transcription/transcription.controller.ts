@@ -22,7 +22,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { TranscriptionService } from './transcription.service';
 import { AnalysisTemplateService } from './analysis-template.service';
 import { OnDemandAnalysisService } from './on-demand-analysis.service';
@@ -94,6 +94,55 @@ export class TranscriptionController {
     return {
       success: true,
       data: transcription,
+    };
+  }
+
+  /**
+   * Copy a shared conversation into the user's library.
+   */
+  @Post('copy-from-share/:shareToken')
+  @UseGuards(FirebaseAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async copyFromShare(
+    @Req() req: Request,
+    @Param('shareToken') shareToken: string,
+    @Body() body: { password?: string },
+  ): Promise<
+    ApiResponse<{ transcriptionId: string; alreadyImported: boolean }>
+  > {
+    const userId = (req as any).user.uid;
+
+    const result = await this.transcriptionService.copyFromShare(
+      userId,
+      shareToken,
+      body.password,
+    );
+
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
+  /**
+   * Check if the current user has already copied a conversation from a share.
+   */
+  @Get('check-copy/:shareToken')
+  @UseGuards(FirebaseAuthGuard)
+  async checkCopyStatus(
+    @Req() req: Request,
+    @Param('shareToken') shareToken: string,
+  ): Promise<ApiResponse<{ copied: boolean; transcriptionId?: string }>> {
+    const userId = (req as any).user.uid;
+
+    const result = await this.transcriptionService.checkCopyStatus(
+      userId,
+      shareToken,
+    );
+
+    return {
+      success: true,
+      data: result,
     };
   }
 
