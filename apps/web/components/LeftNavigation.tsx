@@ -135,6 +135,10 @@ export function LeftNavigation({ onToggleSidebar, onNewConversation, focusSearch
               if (e.key === 'Escape') clearSearch();
             }}
             placeholder={tSearch('placeholder')}
+            data-1p-ignore
+            data-bwignore
+            data-lpignore="true"
+            autoComplete="off"
             className="w-full pl-10 pr-8 py-2.5 text-sm border border-white/20 rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40
                      bg-white/10 text-white

@@ -25,7 +25,7 @@ export const CloseCTA: React.FC = () => {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const headlineWords = ['Start', 'turning', 'conversations', 'into'];
+  const headlineWords = ['Turn', 'your', 'conversations', 'into'];
   const emphasisWord = 'assets.';
   const allWords = [...headlineWords, emphasisWord];
   const visibleCount = Math.floor(headlineProgress * allWords.length);
@@ -49,7 +49,6 @@ export const CloseCTA: React.FC = () => {
   const trustSignals = [
     'Free 14-day trial',
     'No credit card needed',
-    'No meeting bot',
     'Cancel anytime',
   ];
 

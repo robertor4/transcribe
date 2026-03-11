@@ -584,6 +584,10 @@ export function ConversationClient({ conversationId }: ConversationClientProps) 
                   onChange={(e) => setEditedTitle(e.target.value)}
                   onBlur={handleSaveTitle}
                   onKeyDown={handleTitleKeyDown}
+                  data-1p-ignore
+                  data-bwignore
+                  data-lpignore="true"
+                  autoComplete="off"
                   className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full mb-4"
                   style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}
                 />

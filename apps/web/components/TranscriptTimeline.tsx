@@ -222,6 +222,10 @@ export default function TranscriptTimeline({ segments, className = '', highlight
           placeholder="Search transcript..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          data-1p-ignore
+          data-bwignore
+          data-lpignore="true"
+          autoComplete="off"
           className="w-full pl-10 pr-24 py-2.5 rounded-lg text-[15px] text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/60 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/20 focus:bg-white dark:focus:bg-gray-800 border border-transparent focus:border-[#8D6AFA]/30 transition-colors"
         />
         {searchQuery && (

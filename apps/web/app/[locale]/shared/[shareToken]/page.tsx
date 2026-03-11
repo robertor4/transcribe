@@ -336,6 +336,10 @@ function SharedTranscriptionContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('enterPassword')}
+                data-1p-ignore
+                data-bwignore
+                data-lpignore="true"
+                autoComplete="off"
                 className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8D6AFA] focus:border-[#8D6AFA] hover:border-gray-400 transition-colors text-gray-800 placeholder:text-gray-500"
                 autoFocus
                 required

@@ -184,6 +184,10 @@ export function ContactForm({ locale }: ContactFormProps) {
           value={formData.name}
           onChange={handleChange}
           placeholder={t('form.namePlaceholder')}
+          data-1p-ignore
+          data-bwignore
+          data-lpignore="true"
+          autoComplete="off"
           className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
             errors.name ? 'border-red-500' : 'border-white/10'
           } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors text-white placeholder:text-white/30`}
@@ -205,6 +209,10 @@ export function ContactForm({ locale }: ContactFormProps) {
           value={formData.email}
           onChange={handleChange}
           placeholder={t('form.emailPlaceholder')}
+          data-1p-ignore
+          data-bwignore
+          data-lpignore="true"
+          autoComplete="off"
           className={`w-full px-4 py-3 rounded-lg border bg-white/[0.06] ${
             errors.email ? 'border-red-500' : 'border-white/10'
           } focus:ring-2 focus:ring-[#8D6AFA]/30 focus:border-[#8D6AFA] outline-none transition-colors text-white placeholder:text-white/30`}

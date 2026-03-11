@@ -34,8 +34,8 @@ export const ThePromise: React.FC = () => {
     extrapolateRight: 'clamp',
   });
 
-  const words = ['Every', 'conversation,', 'a'];
-  const emphasisWords = ['strategic', 'asset.'];
+  const words = ['Turn', 'conversations', 'into'];
+  const emphasisWords = ['work-ready', 'documents.'];
   const allWords = [...words, ...emphasisWords];
   const visibleCount = Math.floor(headlineProgress * allWords.length);
 

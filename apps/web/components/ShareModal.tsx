@@ -610,6 +610,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder={t('enterPassword')}
+                        data-1p-ignore
+                        data-bwignore
+                        data-lpignore="true"
+                        autoComplete="off"
                         className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20"
                       />
                       <button
@@ -659,6 +663,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       type="text"
                       value={shareUrl}
                       readOnly
+                      data-1p-ignore
+                      data-bwignore
+                      data-lpignore="true"
+                      autoComplete="off"
                       className="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded-lg text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200 min-w-0"
                     />
                     <button
@@ -812,6 +820,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                           }, 150);
                         }}
                         placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
+                        data-1p-ignore
+                        data-bwignore
+                        data-lpignore="true"
+                        autoComplete="off"
                         className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-sm sm:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20"
                       />
                       <button

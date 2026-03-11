@@ -324,6 +324,10 @@ export function QASlidePanel({
                 placeholder={t('placeholder')}
                 maxLength={500}
                 disabled={isSubmitting}
+                data-1p-ignore
+                data-bwignore
+                data-lpignore="true"
+                autoComplete="off"
                 className="
                   flex-1 px-4 py-2.5 text-base sm:text-sm
                   bg-white dark:bg-gray-900

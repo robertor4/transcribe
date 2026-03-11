@@ -4,48 +4,50 @@ import { TypeWriter, CitationChip, FadeIn } from '@/components';
 import { colors, fonts, sz, sp, cs } from '@/lib/design-tokens';
 
 /**
- * Scene 6: In Action — Ask (0:30–0:39)
+ * Scene 7: The Memory (0:33–0:40)
  *
- * Centered Q&A chat — hero element at ~1200px wide.
- * No split layout. Question types, answer fades in with citations.
- * Second Q&A pair. Citation click highlights.
+ * AI Agent Q&A — centered chat hero element at ~1200px wide.
+ * Question about what the client said, answer with citation.
+ * "And with our AI agent, if three weeks later someone asks what
+ *  the client said in the meeting — you ask Neural Summary, and
+ *  get the exact moment cited."
  */
 export const Ask: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   // Panel fades in
-  const panelOpacity = interpolate(frame, [0, fps * 0.4], [0, 1], {
+  const panelOpacity = interpolate(frame, [0, fps * 0.3], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
-  // Q1 types out (0.5–2s)
-  const q1Start = fps * 0.5;
-  // A1 appears (2.5–3.5s)
-  const a1Opacity = interpolate(frame, [fps * 2.5, fps * 3.0], [0, 1], {
+  // Q1 types out (0.3–1.5s)
+  const q1Start = fps * 0.3;
+  // A1 appears (1.8–2.3s)
+  const a1Opacity = interpolate(frame, [fps * 1.8, fps * 2.3], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
   // Citations appear staggered
-  const chip1Opacity = interpolate(frame, [fps * 3.5, fps * 3.8], [0, 1], {
+  const chip1Opacity = interpolate(frame, [fps * 2.8, fps * 3.1], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const chip2Opacity = interpolate(frame, [fps * 4.0, fps * 4.3], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-
-  // Q2 (5–6s)
-  const q2Start = fps * 5;
-  const q2Opacity = interpolate(frame, [fps * 5, fps * 5.3], [0, 1], {
+  const chip2Opacity = interpolate(frame, [fps * 3.3, fps * 3.6], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
-  // A2 (6.5–7.5s)
-  const a2Opacity = interpolate(frame, [fps * 6.5, fps * 7.0], [0, 1], {
+  // Q2 (4–4.3s)
+  const q2Start = fps * 4;
+  const q2Opacity = interpolate(frame, [fps * 4, fps * 4.3], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  // A2 (5.2–5.7s) — leaves ~1.5s hold before scene ends at 7.3s
+  const a2Opacity = interpolate(frame, [fps * 5.2, fps * 5.7], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -82,7 +84,7 @@ export const Ask: React.FC = () => {
               color: colors.textPrimary,
             }}
           >
-            Ask about this meeting
+            AI Agent
           </div>
           <span
             style={{
@@ -91,7 +93,7 @@ export const Ask: React.FC = () => {
               color: colors.textMuted,
             }}
           >
-            Q2 Board Review · 52 min
+            Client Call — Acme Corp · 47 min
           </span>
         </div>
 
@@ -108,7 +110,7 @@ export const Ask: React.FC = () => {
             }}
           >
             <TypeWriter
-              text="What did the investors raise as objections?"
+              text="What did the client say about the pricing model?"
               startFrame={q1Start}
               speed={1.5}
               showCursor={false}
@@ -129,13 +131,14 @@ export const Ask: React.FC = () => {
               lineHeight: 1.7,
             }}
           >
-            Two main objections: concerns about CAC in the enterprise segment{' '}
+            The client said the current pricing feels high for mid-market.
+            They suggested a usage-based tier for smaller teams.{' '}
             <span style={{ opacity: chip1Opacity }}>
-              <CitationChip timestamp="33:47" speaker="Investor A" />
+              <CitationChip timestamp="23:15" speaker="Client — Sarah" />
             </span>{' '}
-            and a question about the competitive moat against Otter and Fireflies.{' '}
+            They also asked about volume discounts for enterprise.{' '}
             <span style={{ opacity: chip2Opacity }}>
-              <CitationChip timestamp="38:12" speaker="Investor B" />
+              <CitationChip timestamp="31:42" speaker="Client — Mark" />
             </span>
           </div>
         </div>
@@ -153,7 +156,7 @@ export const Ask: React.FC = () => {
             }}
           >
             <TypeWriter
-              text="Who owns the launch timeline?"
+              text="Did they mention a timeline for the decision?"
               startFrame={q2Start}
               speed={1.5}
               showCursor={false}
@@ -174,8 +177,8 @@ export const Ask: React.FC = () => {
               lineHeight: 1.7,
             }}
           >
-            Sarah owns the launch timeline. She committed to having the go-to-market plan finalized by end of Q2.{' '}
-            <CitationChip timestamp="41:55" speaker="Sarah" />
+            Yes — Mark said they need to finalize by end of Q2. He wants a revised proposal by next Friday.{' '}
+            <CitationChip timestamp="38:50" speaker="Client — Mark" />
           </div>
         </div>
       </div>

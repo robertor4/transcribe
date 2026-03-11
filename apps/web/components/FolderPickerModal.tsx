@@ -122,6 +122,10 @@ export function FolderPickerModal({
                     if (e.key === 'Enter') handleCreateFolder();
                   }}
                   placeholder={t('createPlaceholder')}
+                  data-1p-ignore
+                  data-bwignore
+                  data-lpignore="true"
+                  autoComplete="off"
                   className="w-full pl-10 pr-3 py-2.5 text-base sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg
                            focus:outline-none focus:ring-2 focus:ring-[#8D6AFA]/50 focus:border-[#8D6AFA]
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100

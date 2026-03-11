@@ -442,6 +442,8 @@ export default function ProfileSettingsPage() {
                   <Input
                     type={showCurrentPassword ? 'text' : 'password'}
                     id="current-password"
+                    name="current-password"
+                    autoComplete="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
@@ -472,6 +474,8 @@ export default function ProfileSettingsPage() {
                   <Input
                     type={showNewPassword ? 'text' : 'password'}
                     id="new-password"
+                    name="new-password"
+                    autoComplete="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
@@ -502,6 +506,8 @@ export default function ProfileSettingsPage() {
                   <Input
                     type={showConfirmPassword ? 'text' : 'password'}
                     id="confirm-password"
+                    name="confirm-password"
+                    autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10"
@@ -582,6 +588,8 @@ export default function ProfileSettingsPage() {
                     <Input
                       type={showDeletePassword ? 'text' : 'password'}
                       id="delete-password"
+                      name="delete-password"
+                      autoComplete="current-password"
                       value={deletePassword}
                       onChange={(e) => setDeletePassword(e.target.value)}
                       className="rounded-lg border-red-300 dark:border-red-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 pr-10 focus-visible:ring-red-500/50 focus-visible:border-red-500"

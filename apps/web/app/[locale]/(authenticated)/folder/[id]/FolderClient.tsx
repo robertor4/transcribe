@@ -348,6 +348,10 @@ export function FolderClient({ folderId }: FolderClientProps) {
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
+                      data-1p-ignore
+                      data-bwignore
+                      data-lpignore="true"
+                      autoComplete="off"
                       className="text-2xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-[#8D6AFA] outline-none w-full font-[Montserrat]"
                     />
                   ) : (

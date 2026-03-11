@@ -1,10 +1,12 @@
 export { Promo60s, Promo60sComposition } from './Promo60s';
-export { ColdOpen } from './ColdOpen';
-export { TheCost } from './TheCost';
+export { BackToBack } from './BackToBack';
+export { NoTime } from './NoTime';
+export { ThePain } from './ThePain';
+export { TheShift } from './TheShift';
 export { ThePromise } from './ThePromise';
-export { Capture } from './Capture';
 export { Transform } from './Transform';
+export { Templates } from './Templates';
 export { Ask } from './Ask';
-export { Proof } from './Proof';
+export { TheOutcome } from './TheOutcome';
 export { Trust } from './Trust';
 export { CloseCTA } from './CloseCTA';
