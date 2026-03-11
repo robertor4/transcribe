@@ -124,5 +124,5 @@ export const config = {
   matcher: [
     '/',
     '/(de|en|es|fr|nl)/:path*',
-    '/((?!api|_next|_vercel|s|.*\\..*).*)'],
+    '/((?!api|_next|_vercel|__|s|.*\\..*).*)'],
 };

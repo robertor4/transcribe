@@ -87,9 +87,16 @@ const nextConfig: NextConfig = {
   // In dev, Socket.io connects directly to localhost:3001 (no proxy needed)
   // Proxying in dev causes Socket.io ping frames to leak into Next.js HMR websocket
   async rewrites() {
-    if (process.env.NODE_ENV !== 'production') return [];
+    // Firebase Auth proxy works in all environments so custom authDomain shows on Google OAuth
+    const firebaseAuthRewrite = {
+      source: '/__/auth/:path*',
+      destination: 'https://transcribe-52b6f.firebaseapp.com/__/auth/:path*',
+    };
+
+    if (process.env.NODE_ENV !== 'production') return [firebaseAuthRewrite];
 
     return [
+      firebaseAuthRewrite,
       // Proxy socket.io WebSocket connections to the API (Docker networking)
       {
         source: '/api/socket.io/:path*',
