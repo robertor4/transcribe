@@ -17,7 +17,23 @@ export function VideoLightbox({ label }: VideoLightboxProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleOpenChange = useCallback((open: boolean) => {
-    if (!open && videoRef.current) {
+    if (open) {
+      // On mobile, request fullscreen on the video element
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        // Small delay to ensure video element is mounted
+        setTimeout(() => {
+          const video = videoRef.current;
+          if (!video) return;
+          // iOS Safari uses webkitEnterFullscreen on <video>
+          if ('webkitEnterFullscreen' in video) {
+            (video as HTMLVideoElement & { webkitEnterFullscreen: () => void }).webkitEnterFullscreen();
+          } else if (video.requestFullscreen) {
+            video.requestFullscreen();
+          }
+        }, 100);
+      }
+    } else if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
     }
