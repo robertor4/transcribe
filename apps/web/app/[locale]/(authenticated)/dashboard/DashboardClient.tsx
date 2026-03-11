@@ -31,6 +31,8 @@ interface QuickCreateButton {
   action: 'record-microphone' | 'record-tab-audio' | 'upload';
   color: string;
   hoverColor: string;
+  borderColor: string;
+  bgColor: string;
 }
 
 const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
@@ -41,6 +43,8 @@ const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
     action: 'record-microphone',
     color: 'bg-[#8D6AFA]',
     hoverColor: 'group-hover:bg-[#7A5AE0]',
+    borderColor: 'border-[#8D6AFA]',
+    bgColor: 'bg-[#8D6AFA]/10',
   },
   {
     Icon: Monitor,
@@ -49,6 +53,8 @@ const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
     action: 'record-tab-audio',
     color: 'bg-[#14D0DC]',
     hoverColor: 'group-hover:bg-[#10B8C4]',
+    borderColor: 'border-[#14D0DC]',
+    bgColor: 'bg-[#14D0DC]/10',
   },
   {
     Icon: Upload,
@@ -57,6 +63,8 @@ const QUICK_CREATE_BUTTONS: QuickCreateButton[] = [
     action: 'upload',
     color: 'bg-[#3F38A0]',
     hoverColor: 'group-hover:bg-[#352F88]',
+    borderColor: 'border-[#3F38A0]',
+    bgColor: 'bg-[#3F38A0]/10',
   },
 ];
 
@@ -229,7 +237,7 @@ export function DashboardClient() {
                   <button
                     key={type.action}
                     onClick={getButtonHandler(type.action)}
-                    className="group flex items-center overflow-hidden h-10 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-600/50 rounded-lg hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+                    className={`group flex items-center overflow-hidden h-10 ${type.bgColor} dark:bg-gray-800/60 border ${type.borderColor} dark:border-gray-600/50 rounded-lg hover:shadow-md hover:scale-[1.02] transition-all duration-200`}
                   >
                     <div className={`w-10 h-10 flex-shrink-0 ${type.color} ${type.hoverColor} flex items-center justify-center transition-colors duration-200`}>
                       <type.Icon className="w-5 h-5 text-white" />

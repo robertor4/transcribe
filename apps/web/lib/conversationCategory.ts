@@ -36,9 +36,9 @@ export const CATEGORY_CONFIG: Record<ConversationCategory, CategoryConfig> = {
   'business-meeting': {
     label: 'Business Meeting',
     icon: Users,
-    color: '#8D6AFA',
-    bgColor: 'bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20',
-    textColor: 'text-[#8D6AFA] dark:text-[#a98afb]',
+    color: '#14D0DC',
+    bgColor: 'bg-[#14D0DC]/10 dark:bg-[#14D0DC]/20',
+    textColor: 'text-[#0ea5b0] dark:text-[#14D0DC]',
   },
   'one-on-one': {
     label: '1:1',

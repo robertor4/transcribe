@@ -308,7 +308,6 @@ export default async function LandingPage({
             meta: {
               trial: t('finalCta.meta.trial'),
               noCard: t('finalCta.meta.noCard'),
-              noBot: t('finalCta.meta.noBot'),
               cancel: t('finalCta.meta.cancel'),
             },
           }}

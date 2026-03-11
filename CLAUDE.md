@@ -344,7 +344,7 @@ npm run setup         # Install all dependencies and build shared package
    - Small files (<25MB): Direct to Whisper API
    - Large files (>25MB): FFmpeg splits → Parallel chunk processing → Ordered merge
 3. **Real-time Updates**: Socket.io broadcasts progress per chunk → Client receives updates
-4. **Polling Fallback**: Automatic API polling when WebSocket fails (see [WebSocket Resilience](docs/2025-10-21_WEBSOCKET_RESILIENCE.md))
+4. **Polling Fallback**: Automatic API polling when WebSocket fails
 5. **Data Storage**: Transcription metadata in Firestore, audio files in Firebase Storage with 5-hour signed URLs
 
 ### Key Architectural Patterns
@@ -571,7 +571,14 @@ socket.emit('transcription_failed', { jobId, error });
 - **Extended timeout** from 5 to 10 minutes for long transcriptions
 - **Connection health tracking** with automatic recovery
 
-**See full documentation:** [WebSocket Resilience Guide](docs/2025-10-21_WEBSOCKET_RESILIENCE.md)
+### Firebase Analytics
+- **Setup**: Firebase Analytics (Google Analytics for Firebase), initialized in `apps/web/lib/firebase.ts` (browser-only)
+- **Context**: `apps/web/contexts/AnalyticsContext.tsx` — centralized event tracking with user consent management
+- **Page tracking**: `apps/web/hooks/usePageTracking.ts` — automatic page view tracking
+- **Cookie consent**: `apps/web/components/CookieConsent.tsx` — GDPR-compliant, opt-in by default
+- **Provider hierarchy**: `AuthProvider > AnalyticsProvider > PageTracker > {children} > CookieConsent`
+- **Adding events**: Use `const { trackEvent } = useAnalytics()` and add event type to `AnalyticsEventName` in `AnalyticsContext.tsx`
+- **Event naming**: snake_case, descriptive names (e.g., `audio_uploaded`, `transcription_completed`)
 
 ### Email Service (Gmail SMTP with Domain Alias)
 - **Service**: Gmail SMTP with App Password for transactional emails
@@ -637,6 +644,7 @@ GMAIL_FROM_EMAIL=noreply@neuralsummary.com  # Email address shown in FROM field 
 GMAIL_APP_PASSWORD=...  # Google App Password from primary account
 TRANSCRIPTION_CONCURRENCY=2  # Number of jobs processed simultaneously (default: 2)
 TURNSTILE_SECRET_KEY=...  # Cloudflare Turnstile secret key for contact form spam protection
+FRONTEND_URL=https://neuralsummary.com  # Production only: used for CORS and email links
 ```
 
 Frontend `.env.local`:
@@ -645,8 +653,9 @@ NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3001  # Do NOT set in production — frontend auto-detects via hostname
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=...  # Cloudflare Turnstile site key for contact form
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX  # Firebase Analytics / Google Analytics
 ```
 
 ### Scheduled Tasks (Cron Jobs)
@@ -715,8 +724,6 @@ The application runs **5 automated cron jobs** for maintenance, billing, and cle
 
 ## V2 Prototype Components
 
-See [V2 Prototype Guide](docs/V2_PROTOTYPE_GUIDE.md) for detailed component specs.
-
 **Quick Reference:**
 - `MilestoneToast` - Celebration toasts for 1st, 10th, 50th, etc. (`/apps/web/components/MilestoneToast.tsx`)
 - `EmptyState` - Friendly empty states across app (`/apps/web/components/EmptyState.tsx`)
@@ -766,8 +773,6 @@ bash scripts/cleanup-docker.sh
 ssh root@<server> 'bash -s' < scripts/check-disk-space.sh
 ```
 
-**Full documentation:** [Disk Space Management Guide](docs/2025-10-23_DISK_SPACE_MANAGEMENT.md)
-
 ### FFmpeg Not Found
 AudioSplitter checks multiple paths: /usr/bin, /usr/local/bin, /opt/homebrew/bin
 Install: `brew install ffmpeg` (macOS) or `apt-get install ffmpeg` (Ubuntu)
@@ -782,8 +787,6 @@ npm run redis:stop && npm run redis:start  # Restart
 ```bash
 ssh root@<server> 'bash -s' < scripts/diagnose-redis.sh
 ```
-
-**Full documentation:** [Redis Troubleshooting Guide](docs/2025-10-23_REDIS_TROUBLESHOOTING.md)
 
 ### Port Conflicts
 - Backend: 3001 (configurable via PORT env)
@@ -868,13 +871,27 @@ Test with staging, then remove this line for production certs.
 
 ## UI Design Guidelines
 
-See [UI Design System](docs/UI_DESIGN_SYSTEM.md) for comprehensive styling rules.
+### Typography (Dual-Font System)
+- **Headings**: Montserrat (geometric sans-serif) — auto-applied via `globals.css`
+- **Body**: Geist (readable sans-serif) — for paragraphs, UI elements
+- Both loaded via Google Fonts CDN, weights 300-800
 
-**Quick Reference:**
-- **Primary brand**: `#cc3399` (hover: `#b82d89`)
-- **Text**: Always specify explicit colors (never just `text-sm` without color)
-- **Headers**: `text-gray-900`, **Body**: `text-gray-700`, **Hints**: `text-gray-600`
-- **Buttons**: Use `<Button>` component (`/apps/web/components/Button.tsx`)
-  - Variants: `primary`, `secondary`, `brand`, `ghost`, `danger`
-  - Sizes: `sm`, `md`, `lg`
-  - Always use `rounded-full` for main CTAs
+### Text Colors
+**CRITICAL: Always specify explicit text colors — never just `text-sm` without color.**
+- **Headers/Titles**: `text-gray-900`
+- **Primary text**: `text-gray-800` (buttons, important labels)
+- **Body text**: `text-gray-700` (descriptions, form labels)
+- **Hints**: `text-gray-600` (use sparingly)
+- **Never use**: `text-gray-500` or lighter for body text
+
+### Input Fields
+- Text: `text-gray-800`, Placeholder: `placeholder:text-gray-500`
+- Border: `border-gray-400` minimum (not gray-300)
+- Focus: `focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20`
+
+### Buttons
+Use `<Button>` component (`/apps/web/components/Button.tsx`) for all buttons.
+- Variants: `primary` (`#23194B`), `secondary` (outlined), `brand` (`#8D6AFA`), `ghost` (transparent), `danger` (red)
+- Sizes: `sm`, `md`, `lg`
+- Always use `rounded-full` for main CTAs, `rounded-lg` only for utility/form buttons
+- Props: `fullWidth`, `icon`, `href` (renders as Link), `disabled`

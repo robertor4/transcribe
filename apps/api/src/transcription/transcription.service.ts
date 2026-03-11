@@ -2111,9 +2111,47 @@ ${fullCustomPrompt}`;
       await this.transcriptionRepository.updateTranscription(transcriptionId, {
         sharedWith,
       });
+
+      // Save to user's recent share emails for autocomplete
+      this.saveRecentShareEmail(userId, emailRequest.recipientEmail).catch(
+        (err) =>
+          this.logger.warn(
+            `Failed to save recent share email for user ${userId}:`,
+            err,
+          ),
+      );
     }
 
     return success;
+  }
+
+  /**
+   * Save an email to the user's recent share emails list for autocomplete.
+   * Deduplicates by email, keeps max 20 entries, sorted by most recent.
+   */
+  private async saveRecentShareEmail(
+    userId: string,
+    email: string,
+  ): Promise<void> {
+    const MAX_RECENT_EMAILS = 20;
+    const user = await this.userRepository.getUser(userId);
+    const existing: Array<{ email: string; lastUsed: Date }> =
+      user?.recentShareEmails || [];
+
+    // Remove existing entry for this email (if any) to move it to front
+    const filtered = existing.filter(
+      (e) => e.email.toLowerCase() !== email.toLowerCase(),
+    );
+
+    // Add at the beginning (most recent first)
+    filtered.unshift({ email, lastUsed: new Date() });
+
+    // Trim to max
+    const trimmed = filtered.slice(0, MAX_RECENT_EMAILS);
+
+    await this.userRepository.updateUser(userId, {
+      recentShareEmails: trimmed,
+    });
   }
 
   async generateSummaryWithFeedback(

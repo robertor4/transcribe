@@ -95,6 +95,14 @@ export interface User {
 
   // Onboarding state
   onboarding?: OnboardingData;
+
+  // Recently used email addresses for sharing (max 20, sorted by most recent)
+  recentShareEmails?: RecentShareEmail[];
+}
+
+export interface RecentShareEmail {
+  email: string;
+  lastUsed: Date;
 }
 
 export interface OnboardingResponses {

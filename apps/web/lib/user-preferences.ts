@@ -147,6 +147,32 @@ export async function uploadProfilePhoto(file: File): Promise<string> {
 }
 
 /**
+ * Get recently used email addresses for sharing (for autocomplete)
+ */
+export async function getRecentShareEmails(): Promise<string[]> {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      return [];
+    }
+
+    const token = await user.getIdToken();
+
+    const response = await axios.get(`${API_URL}/user/recent-share-emails`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: 5000,
+    });
+
+    return response.data.data?.emails || [];
+  } catch (error) {
+    console.error('Error fetching recent share emails:', error);
+    return [];
+  }
+}
+
+/**
  * Delete the current profile photo
  */
 export async function deleteProfilePhoto(): Promise<void> {

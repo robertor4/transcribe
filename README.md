@@ -2,7 +2,7 @@
 
 **Voice-to-Output Creation Platform**
 
-**Speak. We'll remember.**
+**Create with your voice.**
 
 Neural Summary transforms conversations into work-ready documents — effortlessly. Turn brainstorms into product specs, interviews into articles, client calls into follow-up emails, and vision talks into strategy documents. An AI-powered platform that goes beyond transcription to create deliverables.
 
@@ -74,22 +74,23 @@ Trusted by legal, medical, research, and executive teams where every word matter
 
 ## Core Features
 
-### Quick Recording & Upload (V2)
-- **1-Click Recording**: Floating Action Button (FAB) for instant recording from anywhere in the app
+### Recording & Upload
+- **1-Click Recording**: Record from mic, browser tab, or upload files — all from a redesigned step-by-step creation modal
 - **Recording Preview**: Listen to your recording before processing with waveform visualization
 - **Recording Recovery**: Auto-save to IndexedDB protects against browser crashes
 - **Template Selection**: Choose output format before processing (summary, blog post, email, etc.)
 - **Batch Processing**: Upload multiple files with merge or individual processing and drag-to-reorder
+- **iOS/Safari Support**: Automatic WebM-to-MP4 conversion for reliable recording on all Apple devices
 
-### Folder Organization (V2)
+### Folder Organization
 - **Folder System**: Organize conversations into folders with full CRUD operations
 - **Drag & Drop**: Move conversations between folders with intuitive drag-and-drop
 - **Folder Sharing**: Invite collaborators to folders (unlimited invitations)
 - **Nested Organization**: Structure your work by project, client, or topic
 
-### Personalized Experience (V2)
+### Personalized Experience
+- **Onboarding Tour**: Step-by-step guided walkthrough for new users with questionnaire and UI spotlight tour
 - **Time-Aware Greetings**: "Good morning, Roberto" based on time of day
-- **Milestone Celebrations**: Subtle toasts for 1st, 10th, 50th, 100th conversations
 - **Smart Defaults**: Remembers your preferences (language, templates, folder locations)
 - **Usage Insights**: Conversation counts and activity summaries
 
@@ -99,30 +100,38 @@ Trusted by legal, medical, research, and executive teams where every word matter
 - **Parallel Job Processing**: Configurable concurrency (default: 2 jobs simultaneously) for faster batch transcription
 - **Real-Time Updates**: Live progress tracking with WebSocket resilience and automatic polling fallback
 - **99 Languages**: Automatic language detection with support for 99 languages
+- **Regenerate Summary**: Re-run AI summary with custom context and instructions for better results
 
-### AI-Powered Analysis (V2 Output System)
-- **Auto-Generated Summary**: New V2 summary format with structured insights
+### AI-Powered Analysis (Output System)
+- **Auto-Generated Summary**: Editorial-style summary with sticky key points sidebar and collapsible deep dives
 - **On-Demand Output Templates (15+)**: Generate specialized outputs only when needed
-  - Professional: Emotional Intelligence, Communication Analysis, Personal Development, Executive Brief
+  - Professional: Emotional Intelligence, Communication Analysis, Personal Development, Executive Brief, Vision Document
   - Content Creation: Blog Post, Email, LinkedIn, Meeting Minutes, FAQ, Training Materials
-  - Specialized: Sales Analysis, Customer Feedback, Risk Assessment, Technical Documentation, Action Items
+  - Specialized: Sales Analysis, Customer Feedback, Risk Assessment, Technical Documentation, Action Items, Project Status Report, Recommendations Memo
+- **Full-Page AI Assets**: Each generated asset opens in a dedicated full-page editorial layout with sidebar navigation
+- **Per-Item Translation**: Translate individual AI assets independently with async processing
 - **Context-Aware Processing**: Provide background information during upload to enhance AI understanding
-- **Translation Support**: Translate outputs to 15 languages with automatic preference persistence
+- **Mermaid Diagram Rendering**: AI-generated flowcharts and diagrams render inline in asset views
 
 ### Translation & Collaboration
 - **Multi-Language Translation**: Translate transcriptions to 15 languages instantly using GPT-5-mini
+  - Per-item async translation for individual AI assets
   - Automatic preference persistence (remembers your language choice per transcription)
   - Translations included in shared transcripts automatically
 - **Secure Sharing**: Password-protected links with expiration and view limits
   - Share core analyses and on-demand analyses with customizable access
+  - Save shared conversations to your own library with one click
 - **Email Distribution**: Send summaries directly to stakeholders with recipient tracking
-- **Timeline Visualization**: Interactive speaker timeline with timestamps and context-aware copy
+- **Timeline Visualization**: Interactive speaker timeline with speaker stats sidebar and toolbar toggle
 
 ### Security & Compliance
-- **Audio Never Stored**: Recordings processed by secure enterprise transcription services and deleted within seconds - never saved to our servers
-- **Zero-Knowledge Architecture**: Your data is encrypted and inaccessible to us - only text transcripts retained
+- **Audio Never Stored**: Recordings processed by secure enterprise transcription services and deleted within seconds — never saved to our servers
+- **Zero-Knowledge Architecture**: Your data is encrypted and inaccessible to us — only text transcripts retained
 - **GDPR Compliant**: Enterprise-grade security and data protection with account deletion options
 - **HIPAA-Ready Workflow**: Secure processing suitable for sensitive medical, legal, and confidential discussions
+- **Cloudflare Turnstile CAPTCHA**: Bot and spam prevention on signup and login forms
+- **Custom Email Verification**: Branded 6-digit code verification flow (replaces Firebase default)
+- **Account Suspension**: Admin can suspend accounts with friendly user-facing messaging
 - **Security Hardening**: Rate limiting, input validation, XSS protection, command injection protection
 - **Secure Headers**: Helmet middleware with CSP, HSTS, and security best practices
 
@@ -131,17 +140,17 @@ Trusted by legal, medical, research, and executive teams where every word matter
 - **Stripe Integration**: Secure payment processing with multi-currency support (15+ currencies)
 - **Usage Tracking**: Real-time usage statistics with quota enforcement and overage billing
 - **Subscription Management**: Easy upgrades, cancellations, and billing history access
-- **Admin Panel**: Comprehensive user management and analytics for administrators
+- **Admin Panel**: User management with avatars, soft/hard delete, restore, and analytics
 
 ## How It Works
 
 Get started in under 60 seconds:
 
-1. **Upload Your Meeting Recording**
-   - **Direct upload** from Zoom, Microsoft Teams, Google Meet, or WebEx recordings
-   - Use your phone, any recording app, or in-person meeting recordings
+1. **Record or Upload**
+   - Record from your mic, capture a browser tab, or upload existing recordings
    - Supports all major formats: M4A, MP3, WAV, MP4, WebM, FLAC, OGG
    - Drag & drop files up to 5GB or batch upload multiple files
+   - Step-by-step creation modal guides you through the process
    - **Privacy guarantee**: Audio sent to secure transcription service, never stored on our servers
 
 2. **Secure AI Processing**
@@ -150,14 +159,15 @@ Get started in under 60 seconds:
    - Speaker identification and diarization
    - Context-aware AI analysis for summaries and insights
    - Real-time progress updates via WebSocket
-   - **Audio deleted within seconds** after processing - only text transcript retained
+   - **Audio deleted within seconds** after processing — only text transcript retained
 
 3. **Get Actionable Insights**
-   - Core analyses auto-generated (Summary, Action Items, Communication)
-   - 15+ on-demand analysis templates for specialized insights
+   - Editorial-style summary with key points sidebar auto-generated
+   - 15+ on-demand AI asset templates for specialized outputs
+   - Full-page asset views with editorial layouts and Mermaid diagram support
    - One-click sharing with your team (includes translations automatically)
-   - Instant translation to 15 languages with preference persistence
-   - Interactive timeline view with context-aware copying
+   - Instant translation to 15 languages with per-item async processing
+   - Interactive timeline view with speaker stats and context-aware copying
 
 **Result**: What used to take hours now takes seconds. Focus on decisions, not documentation. Your sensitive conversations remain private with immediate audio deletion.
 
@@ -166,12 +176,13 @@ Get started in under 60 seconds:
 ### Frontend
 - **Framework**: Next.js 15 (App Router) with optimized rendering
 - **Language**: TypeScript
+- **UI Library**: shadcn/ui + Radix UI primitives
 - **Styling**: Tailwind CSS v4
 - **Internationalization**: next-intl (5 languages: en, nl, de, fr, es)
 - **File Upload**: React Dropzone with multi-file batch upload and drag-to-reorder
-- **Authentication**: Firebase Auth (Email/Password + Google OAuth)
+- **Authentication**: Firebase Auth (Email/Password + Google OAuth with custom domain)
 - **Real-time**: Socket.io client for progress updates
-- **UI/UX**: Streamlined user profile menu with consolidated settings and notifications
+- **Domain Split**: `neuralsummary.com` (marketing) + `app.neuralsummary.com` (app)
 
 ### Backend
 - **Framework**: NestJS with modular architecture
@@ -181,9 +192,10 @@ Get started in under 60 seconds:
 - **Database**: Firebase Firestore (NoSQL document store)
 - **Storage**: Firebase Storage (.firebasestorage.app format)
 - **Email**: Gmail SMTP with App Password and domain alias support
-- **Authentication**: Firebase Admin SDK
+- **Authentication**: Firebase Admin SDK with custom 6-digit email verification
 - **Payment Processing**: Stripe integration for subscriptions and PAYG
 - **Scheduling**: Cron jobs for usage resets, overage checks, and cleanup
+- **Spam Prevention**: Cloudflare Turnstile integration
 
 ### AI Services
 - **Primary Transcription**: AssemblyAI with speaker diarization and automatic language detection (99 languages)
@@ -198,6 +210,7 @@ Get started in under 60 seconds:
 - **Queue**: Redis (512MB) with Bull for parallel job processing
 - **Deployment**: Automated CI/CD via GitHub Actions with rollback support
 - **Server**: Hetzner VPS with zero-downtime deployments
+- **Video**: Remotion for promo video compositions and animations
 
 ## Quick Start
 
@@ -249,15 +262,19 @@ PORT=3001
 
 # Processing Configuration
 TRANSCRIPTION_CONCURRENCY=2  # Number of jobs processed simultaneously
+
+# Spam Prevention (Cloudflare Turnstile)
+TURNSTILE_SECRET_KEY=your_turnstile_secret_key
 ```
 
 Create `apps/web/.env.local`:
 ```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=app.yourdomain.com  # Custom domain for Google OAuth
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key  # Cloudflare Turnstile
 ```
 
 3. Install dependencies and start development:
@@ -312,33 +329,39 @@ neural-summary/
 │   ├── api/                      # NestJS backend
 │   │   ├── src/
 │   │   │   ├── transcription/    # Core transcription logic & prompts
-│   │   │   ├── folder/           # Folder management (V2)
-│   │   │   ├── auth/             # Authentication
+│   │   │   ├── folder/           # Folder management
+│   │   │   ├── auth/             # Authentication, email verification, Turnstile
+│   │   │   ├── admin/            # Admin panel API (user management)
 │   │   │   ├── websocket/        # Real-time updates
-│   │   │   ├── firebase/         # Firebase services
+│   │   │   ├── firebase/         # Firebase services & repositories
 │   │   │   ├── usage/            # Usage tracking & cron jobs
+│   │   │   ├── email/            # Gmail SMTP email service
+│   │   │   ├── stripe/           # Subscription & billing
 │   │   │   └── utils/            # Audio splitting, etc.
 │   │   └── Dockerfile
-│   └── web/                      # Next.js frontend
-│       ├── app/
-│       │   └── [locale]/         # Internationalized routes
-│       ├── components/
-│       │   ├── dashboard/        # Dashboard components (V2 drag-drop)
-│       │   ├── detail-pages/     # Conversation detail layouts
-│       │   ├── outputTemplates/  # V2 output renderers (blog, email, etc.)
-│       │   ├── landing/          # Landing page components
-│       │   ├── paywall/          # Subscription UI
-│       │   └── pricing/          # Pricing page components
-│       ├── hooks/                # React hooks (useFolders, useTranscriptions)
-│       ├── lib/
-│       │   └── services/         # API service layer (folderService, etc.)
-│       ├── messages/             # Translation files (en, nl, de, fr, es)
-│       └── Dockerfile
+│   ├── web/                      # Next.js frontend
+│   │   ├── app/
+│   │   │   └── [locale]/         # Internationalized routes
+│   │   ├── components/
+│   │   │   ├── ui/               # shadcn/ui components
+│   │   │   ├── dashboard/        # Dashboard components
+│   │   │   ├── detail-pages/     # Conversation detail layouts
+│   │   │   ├── outputTemplates/  # AI Asset renderers (blog, email, etc.)
+│   │   │   ├── onboarding/       # User onboarding tour & questionnaire
+│   │   │   ├── landing/          # Landing page sections (dark theme)
+│   │   │   ├── paywall/          # Subscription UI
+│   │   │   └── pricing/          # Pricing page components
+│   │   ├── hooks/                # React hooks (useFolders, useTranscriptions)
+│   │   ├── lib/
+│   │   │   └── services/         # API service layer (folderService, etc.)
+│   │   ├── messages/             # Translation files (en, nl, de, fr, es)
+│   │   └── Dockerfile
+│   └── video/                    # Remotion video compositions
 ├── packages/
 │   └── shared/                   # Shared TypeScript types
 ├── scripts/                      # Deployment & maintenance scripts
 ├── docs/                         # Documentation
-│   ├── V2_PROTOTYPE_GUIDE.md     # V2 component patterns
+│   ├── V2_PROTOTYPE_GUIDE.md     # Component patterns
 │   ├── UI_DESIGN_SYSTEM.md       # Design system guidelines
 │   └── ...
 ├── docker-compose.prod.yml       # Production setup with Traefik
@@ -351,8 +374,11 @@ neural-summary/
 ### Authentication
 - `POST /auth/register` - User registration
 - `POST /auth/login` - User login
-- `POST /auth/verify-email` - Email verification
+- `POST /auth/send-verification-code` - Send 6-digit verification code via email
+- `POST /auth/verify-email` - Verify email with 6-digit code
+- `POST /auth/resend-verification` - Resend verification code
 - `POST /auth/reset-password` - Password reset
+- `POST /auth/verify-turnstile` - Verify Cloudflare Turnstile CAPTCHA token
 
 ### Transcription
 - `POST /transcriptions/upload` - Upload single audio file (with quota enforcement)
@@ -360,6 +386,9 @@ neural-summary/
 - `GET /transcriptions` - List user transcriptions (paginated)
 - `GET /transcriptions/:id` - Get specific transcription
 - `PUT /transcriptions/:id/title` - Update transcription title
+- `POST /transcriptions/:id/regenerate-summary` - Regenerate summary with custom context/instructions
+- `POST /transcriptions/copy-from-share/:shareToken` - Copy shared conversation to own library
+- `GET /transcriptions/check-copy/:shareToken` - Check if shared conversation already copied
 - `DELETE /transcriptions/:id` - Delete transcription
 
 ### Analysis
@@ -405,10 +434,11 @@ neural-summary/
 - `GET /user/usage-stats` - Get usage statistics for current billing period
 
 ### Admin
-- `GET /admin/users` - List all users (admin only)
+- `GET /admin/users` - List all users with avatars (admin only)
 - `GET /admin/users/tier/:tier` - Filter users by subscription tier (admin only)
 - `GET /admin/users/:userId` - Get detailed user information (admin only)
-- `DELETE /admin/users/:userId?hardDelete=true` - Delete user account (admin only)
+- `DELETE /admin/users/:userId?hardDelete=true` - Soft or hard delete user account (admin only)
+- `POST /admin/users/:userId/restore` - Restore soft-deleted user (admin only)
 
 ### WebSocket Events
 - `subscribe_transcription` - Subscribe to job updates

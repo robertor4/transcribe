@@ -439,6 +439,20 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Constellation idle float — separate X/Y/scale for organic, non-repeating feel */
+@keyframes constellation-float-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(var(--float-amp-x, 5px)); }
+}
+@keyframes constellation-float-y {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(var(--float-amp-y, 6px)); }
+}
+@keyframes constellation-scale {
+  0% { scale: 1; }
+  100% { scale: 1.06; }
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;

@@ -214,6 +214,25 @@ export class UserController {
   }
 
   /**
+   * Get recent email addresses used for sharing (for autocomplete)
+   */
+  @Get('recent-share-emails')
+  async getRecentShareEmails(
+    @Req() req: Request,
+  ): Promise<ApiResponse<{ emails: string[] }>> {
+    const userId = (req as any).user.uid;
+    const user = await this.userService.getUserProfile(userId);
+    const recentEmails = (user?.recentShareEmails || []).map(
+      (entry: { email: string }) => entry.email,
+    );
+
+    return {
+      success: true,
+      data: { emails: recentEmails },
+    };
+  }
+
+  /**
    * Save onboarding questionnaire responses and state
    */
   @Put('onboarding')

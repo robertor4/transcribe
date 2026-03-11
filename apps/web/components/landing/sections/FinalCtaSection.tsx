@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import { FloatingAssetIcons } from '@/components/landing/shared/FloatingAssetIcons';
 import { getAppUrl } from '@/lib/config';
 
 interface FinalCtaSectionTranslations {
@@ -13,7 +14,6 @@ interface FinalCtaSectionTranslations {
   meta: {
     trial: string;
     noCard: string;
-    noBot: string;
     cancel: string;
   };
 }
@@ -23,55 +23,8 @@ interface FinalCtaSectionProps {
   locale: string;
 }
 
-function FloatingIcon({ className, children, ...props }: { className: string; children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`absolute z-20 w-14 h-14 rounded-2xl bg-white/[0.07] border border-white/10 backdrop-blur-sm flex items-center justify-center ${className}`} {...props}>
-      {children}
-    </div>
-  );
-}
-
-function DocumentIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(141,106,250,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-    </svg>
-  );
-}
-
-function ChartIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(20,208,220,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  );
-}
-
-function EmailIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(141,106,250,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  );
-}
-
-function ChecklistIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(20,208,220,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 11l3 3L22 4" />
-      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-    </svg>
-  );
-}
-
 export function FinalCtaSection({ translations: t, locale }: FinalCtaSectionProps) {
-  const metaItems = [t.meta.trial, t.meta.noCard, t.meta.noBot, t.meta.cancel];
+  const metaItems = [t.meta.trial, t.meta.noCard, t.meta.cancel];
   const appUrl = getAppUrl();
 
   return (
@@ -84,19 +37,8 @@ export function FinalCtaSection({ translations: t, locale }: FinalCtaSectionProp
         </h2>
 
         <div className="relative mx-auto max-w-[380px] mb-10">
-          {/* Floating document icons */}
-          <FloatingIcon className="-top-6 -left-16 animate-[float-drift_6s_ease-in-out_infinite]" aria-hidden="true">
-            <DocumentIcon />
-          </FloatingIcon>
-          <FloatingIcon className="top-6 -right-18 animate-[float-drift_7s_ease-in-out_1s_infinite]" aria-hidden="true">
-            <ChartIcon />
-          </FloatingIcon>
-          <FloatingIcon className="-bottom-4 -left-14 animate-[float-drift_8s_ease-in-out_2s_infinite]" aria-hidden="true">
-            <EmailIcon />
-          </FloatingIcon>
-          <FloatingIcon className="bottom-12 -right-16 animate-[float-drift_6.5s_ease-in-out_0.5s_infinite]" aria-hidden="true">
-            <ChecklistIcon />
-          </FloatingIcon>
+          {/* Constellation of floating asset icons */}
+          <FloatingAssetIcons />
 
           <Image
             src="/assets/images/lionel-videocall.webp"

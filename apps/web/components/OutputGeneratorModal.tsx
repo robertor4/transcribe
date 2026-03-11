@@ -595,7 +595,7 @@ export function OutputGeneratorModal({
             <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
               {t('title')}
             </DialogTitle>
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
               {t('chooseOutputType')}
             </p>
           </div>

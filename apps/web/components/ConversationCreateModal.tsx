@@ -453,7 +453,7 @@ export function ConversationCreateModal({
               <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">
                 {stepTitle}
               </DialogTitle>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5">
                 {stepDescription}
               </p>
             </div>

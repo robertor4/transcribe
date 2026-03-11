@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   Dialog,
@@ -9,6 +9,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { transcriptionApi } from '@/lib/api';
+import { getRecentShareEmails } from '@/lib/user-preferences';
 import { Transcription, ShareContentOptions } from '@transcribe/shared';
 import {
   X,
@@ -78,6 +79,59 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [emailError, setEmailError] = useState<string>('');
   const [emailSent, setEmailSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
+  const [recentEmails, setRecentEmails] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch recent share emails when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      getRecentShareEmails().then(setRecentEmails).catch(() => {});
+    }
+  }, [isOpen]);
+
+  // Filter suggestions based on current input, excluding already-added chips
+  const filteredSuggestions = recentEmails.filter((email) => {
+    const alreadyAdded = emailChips.some(
+      (chip) => chip.email.toLowerCase() === email.toLowerCase(),
+    );
+    if (alreadyAdded) return false;
+    if (!emailInput.trim()) return true; // Show all when input is empty
+    return email.toLowerCase().includes(emailInput.toLowerCase());
+  });
+
+  const handleSelectSuggestion = useCallback(
+    (email: string) => {
+      if (emailChips.some((chip) => chip.email.toLowerCase() === email.toLowerCase())) {
+        return;
+      }
+      setEmailChips((prev) => [...prev, { email, id: Date.now().toString() }]);
+      setEmailInput('');
+      setEmailError('');
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+      emailInputRef.current?.focus();
+    },
+    [emailChips],
+  );
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        emailInputRef.current &&
+        !emailInputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const formatDate = (date: Date | string | { toDate: () => Date } | { seconds: number; nanoseconds: number }) => {
     try {
@@ -271,6 +325,34 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   const handleEmailInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Handle suggestion navigation
+    if (showSuggestions && filteredSuggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedSuggestionIndex((prev) =>
+          prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
+        );
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedSuggestionIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
+        );
+        return;
+      }
+      if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+        e.preventDefault();
+        handleSelectSuggestion(filteredSuggestions[selectedSuggestionIndex]);
+        return;
+      }
+      if (e.key === 'Escape') {
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
+        return;
+      }
+    }
+
     if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
       e.preventDefault();
       addEmailChip();
@@ -702,17 +784,33 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       </div>
                     )}
 
-                    {/* Email Input */}
+                    {/* Email Input with Autocomplete */}
                     <div className="relative mb-3">
                       <input
+                        ref={emailInputRef}
                         type="email"
                         value={emailInput}
                         onChange={(e) => {
                           setEmailInput(e.target.value);
                           setEmailError('');
+                          setShowSuggestions(true);
+                          setSelectedSuggestionIndex(-1);
                         }}
                         onKeyDown={handleEmailInputKeyDown}
-                        onBlur={addEmailChip}
+                        onFocus={() => {
+                          if (filteredSuggestions.length > 0) {
+                            setShowSuggestions(true);
+                          }
+                        }}
+                        onBlur={() => {
+                          // Delay to allow suggestion click to register
+                          setTimeout(() => {
+                            if (!suggestionsRef.current?.contains(document.activeElement)) {
+                              addEmailChip();
+                              setShowSuggestions(false);
+                            }
+                          }, 150);
+                        }}
                         placeholder={emailChips.length > 0 ? t('addAnotherEmail') : t('enterEmailAddresses')}
                         className="w-full px-3 py-2 pr-10 border border-gray-400 dark:border-gray-600 rounded-lg text-sm sm:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:border-[#8D6AFA] focus:ring-2 focus:ring-[#8D6AFA]/20"
                       />
@@ -722,6 +820,36 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                       >
                         <Plus className="w-5 h-5" />
                       </button>
+
+                      {/* Recent emails suggestions dropdown */}
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <div
+                          ref={suggestionsRef}
+                          className="absolute z-20 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-40 overflow-y-auto"
+                        >
+                          <div className="px-3 py-1.5 text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
+                            Recent
+                          </div>
+                          {filteredSuggestions.map((email, index) => (
+                            <button
+                              key={email}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.preventDefault(); // Prevent input blur
+                                handleSelectSuggestion(email);
+                              }}
+                              className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${
+                                index === selectedSuggestionIndex
+                                  ? 'bg-purple-50 dark:bg-purple-900/30 text-[#8D6AFA]'
+                                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                              }`}
+                            >
+                              <Mail className="w-3.5 h-3.5 flex-shrink-0 opacity-50" />
+                              <span className="truncate">{email}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Error Message */}
