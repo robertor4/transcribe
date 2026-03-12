@@ -281,16 +281,16 @@ export const TemplateSelector: React.FC = () => {
 
             {/* Modal body with sidebar + templates */}
             <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-              {/* Step sidebar */}
+              {/* Step sidebar — matches real OutputGeneratorModal: w-48 */}
               <div
                 style={{
-                  width: 170,
+                  width: cs(192),
                   backgroundColor: lt.bgSecondary,
                   borderRight: `1px solid ${lt.border}`,
-                  padding: `${sp(16)}px ${sp(12)}px`,
+                  padding: `${sp(12)}px ${sp(12)}px`,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: sp(6),
+                  gap: sp(4),
                   flexShrink: 0,
                 }}
               >
@@ -300,7 +300,7 @@ export const TemplateSelector: React.FC = () => {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: sp(8),
+                      gap: sp(10),
                       padding: `${sp(8)}px ${sp(10)}px`,
                       borderRadius: 8,
                       backgroundColor: i === 0 ? lt.bgSelected : 'transparent',
@@ -308,17 +308,18 @@ export const TemplateSelector: React.FC = () => {
                   >
                     <div
                       style={{
-                        width: 22,
-                        height: 22,
+                        width: cs(28),
+                        height: cs(28),
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: sz(9),
-                        fontWeight: 600,
+                        fontSize: sz(10),
+                        fontWeight: 700,
                         fontFamily: fonts.body,
                         backgroundColor: i === 0 ? lt.stepActive : lt.stepInactive,
                         color: i === 0 ? '#fff' : lt.textMuted,
+                        flexShrink: 0,
                       }}
                     >
                       {i + 1}
@@ -326,8 +327,8 @@ export const TemplateSelector: React.FC = () => {
                     <span
                       style={{
                         fontFamily: fonts.body,
-                        fontSize: sz(10),
-                        fontWeight: i === 0 ? 600 : 400,
+                        fontSize: sz(11),
+                        fontWeight: i === 0 ? 600 : 500,
                         color: i === 0 ? colors.primary : lt.textMuted,
                       }}
                     >

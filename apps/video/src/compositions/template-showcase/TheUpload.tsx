@@ -66,11 +66,11 @@ export const TheUpload: React.FC = () => {
     extrapolateRight: 'clamp',
   });
 
-  // Quick create buttons data
+  // Quick create buttons matching the real app (icon bg + label)
   const quickButtons = [
-    { label: 'Record Room', icon: '🎙', borderColor: colors.primary },
-    { label: 'Record Tab', icon: '🔊', borderColor: colors.cyan },
-    { label: 'Upload File', icon: '📁', borderColor: colors.deepPurple },
+    { label: 'Record Room', bgColor: '#8D6AFA' },
+    { label: 'Record Tab', bgColor: '#14D0DC' },
+    { label: 'Upload File', bgColor: '#3F38A0' },
   ];
 
   // Conversations in table
@@ -80,6 +80,9 @@ export const TheUpload: React.FC = () => {
     { title: 'Client Discovery — Acme', date: 'Mar 6', duration: '45:07' },
     { title: 'Weekly Standup', date: 'Mar 4', duration: '15:33' },
   ];
+
+  // Sidebar width
+  const sidebarW = 300;
 
   return (
     <div
@@ -102,69 +105,69 @@ export const TheUpload: React.FC = () => {
           transformOrigin: '65% 30%',
         }}
       >
-        {/* Left navigation sidebar */}
+        {/* Left navigation sidebar — deep purple like the real app */}
         <div
           style={{
             position: 'absolute',
             left: 0,
             top: 0,
             bottom: 0,
-            width: 280,
-            backgroundColor: lt.bg,
-            borderRight: `1px solid ${lt.border}`,
+            width: sidebarW,
+            backgroundColor: '#3F38A0',
             padding: `${sp(20)}px ${sp(16)}px`,
             display: 'flex',
             flexDirection: 'column',
-            gap: sp(16),
+            gap: sp(12),
           }}
         >
-          {/* Logo area */}
-          <div style={{ padding: `${sp(8)}px ${sp(8)}px ${sp(16)}px`, display: 'flex', alignItems: 'center', gap: sp(10) }}>
+          {/* Logo — altBlue SVG matching the real sidebar */}
+          <div style={{ padding: `${sp(8)}px ${sp(8)}px ${sp(16)}px` }}>
             <Img
-              src={staticFile('logos/neural-summary-logo-white.svg')}
-              style={{ width: 36, height: 36, filter: 'invert(1) hue-rotate(180deg)' }}
+              src={staticFile('logos/neural-summary-logo-altBlue.svg')}
+              style={{ width: cs(140), height: 'auto' }}
             />
-            <span style={{ fontFamily: fonts.body, fontSize: sz(14), fontWeight: 700, color: lt.textPrimary }}>
-              Neural Summary
-            </span>
           </div>
 
           {/* Search bar */}
           <div
             style={{
-              border: `1px solid ${lt.border}`,
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: 8,
               padding: `${sp(8)}px ${sp(12)}px`,
               display: 'flex',
               alignItems: 'center',
               gap: sp(8),
+              backgroundColor: 'rgba(255,255,255,0.1)',
             }}
           >
-            <span style={{ color: lt.textHint, fontSize: sz(12) }}>🔍</span>
-            <span style={{ fontFamily: fonts.body, fontSize: sz(12), color: lt.textHint }}>Search conversations...</span>
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: sz(12) }}>🔍</span>
+            <span style={{ fontFamily: fonts.body, fontSize: sz(12), color: 'rgba(255,255,255,0.5)' }}>Search conversations...</span>
           </div>
 
           {/* Nav items */}
-          {['Dashboard', 'All Conversations', 'Shared With Me'].map((item, i) => (
+          {['Dashboard', 'New Conversation'].map((item, i) => (
             <div
               key={i}
               style={{
                 padding: `${sp(8)}px ${sp(12)}px`,
                 borderRadius: 8,
-                backgroundColor: i === 0 ? lt.bgSelected : 'transparent',
+                backgroundColor: i === 0 ? 'rgba(255,255,255,0.1)' : 'transparent',
                 fontFamily: fonts.body,
                 fontSize: sz(12),
-                fontWeight: i === 0 ? 600 : 400,
-                color: i === 0 ? colors.primary : lt.textSecondary,
+                fontWeight: 400,
+                color: 'rgba(255,255,255,0.8)',
               }}
             >
               {item}
             </div>
           ))}
 
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid rgba(0,0,0,0.2)', margin: `${sp(4)}px 0` }} />
+
           {/* Folders section */}
-          <div style={{ marginTop: sp(8) }}>
-            <div style={{ fontFamily: fonts.body, fontSize: sz(10), fontWeight: 600, color: lt.textMuted, textTransform: 'uppercase', letterSpacing: 1.5, padding: `${sp(4)}px ${sp(12)}px` }}>
+          <div>
+            <div style={{ fontFamily: fonts.body, fontSize: sz(10), fontWeight: 500, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1.5, padding: `${sp(4)}px ${sp(12)}px`, marginBottom: sp(4) }}>
               Folders
             </div>
             {['Client Meetings', 'Product Strategy', 'Sales Calls'].map((folder, i) => (
@@ -174,10 +177,35 @@ export const TheUpload: React.FC = () => {
                   padding: `${sp(6)}px ${sp(12)}px`,
                   fontFamily: fonts.body,
                   fontSize: sz(12),
-                  color: lt.textSecondary,
+                  color: 'rgba(255,255,255,0.8)',
+                  borderRadius: 8,
                 }}
               >
                 📁 {folder}
+              </div>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid rgba(0,0,0,0.2)', margin: `${sp(4)}px 0` }} />
+
+          {/* Recently opened */}
+          <div>
+            <div style={{ fontFamily: fonts.body, fontSize: sz(10), fontWeight: 500, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1.5, padding: `${sp(4)}px ${sp(12)}px`, marginBottom: sp(4) }}>
+              Recently Opened
+            </div>
+            {['Q3 Board Review', 'Product Strategy Call'].map((name, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: `${sp(6)}px ${sp(12)}px`,
+                  fontFamily: fonts.body,
+                  fontSize: sz(12),
+                  color: 'rgba(255,255,255,0.8)',
+                  borderRadius: 8,
+                }}
+              >
+                🕐 {name}
               </div>
             ))}
           </div>
@@ -187,7 +215,7 @@ export const TheUpload: React.FC = () => {
         <div
           style={{
             position: 'absolute',
-            left: 280,
+            left: sidebarW,
             top: 0,
             right: 0,
             bottom: 0,
@@ -202,25 +230,38 @@ export const TheUpload: React.FC = () => {
             You have 12 conversations this month
           </div>
 
-          {/* Quick create buttons */}
-          <div style={{ display: 'flex', gap: sp(16), marginBottom: sp(32) }}>
+          {/* Quick create buttons — matching the real app: colored icon box + label */}
+          <div style={{ display: 'flex', gap: sp(12), marginBottom: sp(32) }}>
             {quickButtons.map((btn, i) => (
               <div
                 key={i}
                 style={{
-                  flex: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: sp(12),
-                  padding: `${sp(14)}px ${sp(18)}px`,
+                  overflow: 'hidden',
+                  height: cs(40),
                   backgroundColor: lt.bgSecondary,
                   border: `1px solid ${lt.border}`,
-                  borderLeft: `4px solid ${btn.borderColor}`,
-                  borderRadius: 10,
+                  borderRadius: 8,
                 }}
               >
-                <span style={{ fontSize: sz(16) }}>{btn.icon}</span>
-                <span style={{ fontFamily: fonts.body, fontSize: sz(13), fontWeight: 600, color: lt.textPrimary }}>
+                {/* Colored icon square */}
+                <div
+                  style={{
+                    width: cs(40),
+                    height: cs(40),
+                    flexShrink: 0,
+                    backgroundColor: btn.bgColor,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <span style={{ fontSize: sz(14), color: '#fff' }}>
+                    {i === 0 ? '🎙' : i === 1 ? '🖥' : '📤'}
+                  </span>
+                </div>
+                <span style={{ padding: `0 ${sp(14)}px`, fontFamily: fonts.body, fontSize: sz(12), fontWeight: 500, color: lt.textPrimary }}>
                   {btn.label}
                 </span>
               </div>
@@ -295,15 +336,15 @@ export const TheUpload: React.FC = () => {
             }}
           />
 
-          {/* Modal */}
+          {/* Modal — matches real ConversationCreateModal: sm:max-w-2xl */}
           <div
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: `translate(-50%, -50%) scale(${modalScale})`,
-              width: '55%',
-              maxWidth: 900,
+              width: '50%',
+              maxWidth: 850,
               backgroundColor: lt.bg,
               borderRadius: 16,
               boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
@@ -313,7 +354,7 @@ export const TheUpload: React.FC = () => {
             {/* Modal header */}
             <div
               style={{
-                padding: `${sp(16)}px ${sp(24)}px`,
+                padding: `${sp(14)}px ${sp(24)}px`,
                 borderBottom: `1px solid ${lt.border}`,
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -335,16 +376,17 @@ export const TheUpload: React.FC = () => {
 
             {/* Modal body */}
             <div style={{ display: 'flex', minHeight: 380 }}>
-              {/* Step sidebar */}
+              {/* Step sidebar — matches real app: w-40, gap-3, items with gap-3 */}
               <div
                 style={{
-                  width: 180,
+                  width: cs(160),
                   backgroundColor: lt.bgSecondary,
                   borderRight: `1px solid ${lt.border}`,
-                  padding: `${sp(20)}px ${sp(16)}px`,
+                  padding: `${sp(12)}px ${sp(12)}px`,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: sp(8),
+                  gap: sp(4),
+                  flexShrink: 0,
                 }}
               >
                 {['Capture', 'Context', 'Processing'].map((step, i) => {
@@ -364,17 +406,18 @@ export const TheUpload: React.FC = () => {
                     >
                       <div
                         style={{
-                          width: 24,
-                          height: 24,
+                          width: cs(28),
+                          height: cs(28),
                           borderRadius: '50%',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: sz(10),
-                          fontWeight: 600,
+                          fontWeight: 700,
                           fontFamily: fonts.body,
                           backgroundColor: isComplete ? lt.stepComplete : isActive ? lt.stepActive : lt.stepInactive,
                           color: isComplete || isActive ? '#fff' : lt.textMuted,
+                          flexShrink: 0,
                         }}
                       >
                         {isComplete ? '✓' : i + 1}
@@ -383,7 +426,7 @@ export const TheUpload: React.FC = () => {
                         style={{
                           fontFamily: fonts.body,
                           fontSize: sz(11),
-                          fontWeight: isActive ? 600 : 400,
+                          fontWeight: isActive ? 600 : 500,
                           color: isActive ? colors.primary : isComplete ? lt.textPrimary : lt.textMuted,
                         }}
                       >

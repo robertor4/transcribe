@@ -135,7 +135,7 @@ export const TheCounter: React.FC = () => {
         }}
       />
 
-      {/* Grid of template cards */}
+      {/* Grid of template cards — centered on canvas */}
       <div
         style={{
           position: 'relative',
@@ -143,10 +143,11 @@ export const TheCounter: React.FC = () => {
           display: 'grid',
           gridTemplateColumns: `repeat(${COLS}, 1fr)`,
           gap: sp(8),
-          width: '88%',
-          maxWidth: 1600,
+          width: '90%',
+          maxWidth: 1700,
           opacity: gridOpacity,
           transform: `scale(${gridScale}) translateY(${gridY}px)`,
+          margin: '0 auto',
         }}
       >
         {templates.slice(0, COLS * ROWS).map((tpl, i) => {
