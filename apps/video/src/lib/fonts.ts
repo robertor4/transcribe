@@ -14,6 +14,7 @@ const GOOGLE_FONTS_URL =
   'https://fonts.googleapis.com/css2?' +
   'family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,700' +
   '&family=DM+Mono:wght@400;500' +
+  '&family=Geist:wght@400;500;600;700' +
   '&display=swap';
 
 let fontsLoaded = false;

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Template Showcase video composition** — New Remotion composition (`TemplateShowcase`) showcasing all 40 AI Asset templates in a ~68-second video. 6 scenes: branded hook, light-mode dashboard upload flow, template selector modal, 4-beat output montage with faithful UI recreation, animated counter grid, and closing CTA. Uses dual visual modes (dark branded `#22184C` for narrative, light `#FFFFFF` for product shots). ([apps/video/src/compositions/template-showcase/](apps/video/src/compositions/template-showcase/))
+- **Light-mode design tokens for video** — Added `colors.light` token set (backgrounds, borders, text hierarchy, category colors) matching the web app's light theme for faithful UI recreation in video compositions ([design-tokens.ts](apps/video/src/lib/design-tokens.ts))
+- **Geist font loading in video** — Added Geist (400–700) to Google Fonts import for accurate app UI text rendering ([fonts.ts](apps/video/src/lib/fonts.ts))
+
 ## [2.4.0] - 2026-03-10
 
 ### Editorial Redesign, Onboarding, SEO & Security
