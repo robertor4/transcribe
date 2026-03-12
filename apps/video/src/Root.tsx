@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Promo60sComposition } from './compositions/promo-60s';
+import { TemplateShowcaseComposition } from './compositions/template-showcase';
 import { SpeedGapComposition } from './compositions/blog-speed-gap';
 import { DeliverableCascadeComposition } from './compositions/blog-deliverable-cascade';
 import { ROICounterComposition } from './compositions/blog-roi-counter';
@@ -22,6 +23,9 @@ export const Root: React.FC = () => {
     <>
       {/* 60-second promotional video */}
       <Promo60sComposition />
+
+      {/* Template Showcase — "50+ Templates. One Conversation." */}
+      <TemplateShowcaseComposition />
 
       {/* Blog post #1: "The Consultant's Secret" animations */}
       <SpeedGapComposition />

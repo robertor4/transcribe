@@ -183,7 +183,10 @@ export class OnDemandAnalysisService {
           const parsed = JSON.parse(rawContent);
 
           // Normalize snake_case keys to camelCase (GPT sometimes ignores schema casing)
-          const normalized = this.normalizeKeysToCamelCase(parsed) as Record<string, unknown>;
+          const normalized = this.normalizeKeysToCamelCase(parsed) as Record<
+            string,
+            unknown
+          >;
 
           // Validate structured output based on template type
           this.validateStructuredOutput(templateId, normalized);

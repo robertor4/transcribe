@@ -1197,7 +1197,12 @@
       "days": "{count} jours",
       "comingSoon": "Prochainement",
       "saving": "Enregistrement...",
-      "saveChanges": "Enregistrer les modifications"
+      "saveChanges": "Enregistrer les modifications",
+      "emailNotifications": "Notifications par e-mail",
+      "emailNotificationsDescription": "Contrôlez les e-mails que vous recevez de Neural Summary",
+      "notificationsEnabled": "Recevoir les notifications par e-mail",
+      "notificationsEnabledDescription": "Soyez notifié lorsque vos conversations sont traitées",
+      "notificationsSaved": "Préférences de notification enregistrées"
     },
     "accountPage": {
       "title": "Paramètres du compte",

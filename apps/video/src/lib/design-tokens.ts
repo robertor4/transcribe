@@ -34,6 +34,31 @@ export const colors = {
   // Level bars
   barPurple: '#8D6AFA',
   barCyan: '#14D0DC',
+
+  // Light-mode tokens (for app UI recreation in video)
+  light: {
+    bg: '#FFFFFF',
+    bgSecondary: '#F9FAFB',      // gray-50
+    bgHover: '#F3F4F6',          // gray-100
+    bgSelected: '#F5F0FF',       // purple-50
+    border: '#E5E7EB',           // gray-200
+    borderFocus: '#8D6AFA',
+    textPrimary: '#111827',      // gray-900
+    textSecondary: '#374151',    // gray-700
+    textMuted: '#6B7280',        // gray-500
+    textHint: '#9CA3AF',         // gray-400
+    ringSelected: 'rgba(141, 106, 250, 0.3)',
+    stepActive: '#8D6AFA',
+    stepComplete: '#14D0DC',
+    stepInactive: '#E5E7EB',
+    categoryAnalysis: '#22C55E', // green-500
+    categoryContent: '#8D6AFA', // purple-500
+    categoryEmails: '#3B82F6',  // blue-500
+    categoryProduct: '#14D0DC', // cyan-500
+    categorySales: '#10B981',   // emerald-500
+    categoryHR: '#F97316',      // orange-500
+    categoryLeadership: '#6366F1', // indigo-500
+  },
 } as const;
 
 // ─── Typography ──────────────────────────────────────────

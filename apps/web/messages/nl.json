@@ -1197,7 +1197,12 @@
       "days": "{count} dagen",
       "comingSoon": "Binnenkort beschikbaar",
       "saving": "Opslaan...",
-      "saveChanges": "Wijzigingen opslaan"
+      "saveChanges": "Wijzigingen opslaan",
+      "emailNotifications": "E-mailmeldingen",
+      "emailNotificationsDescription": "Bepaal welke e-mails u van Neural Summary ontvangt",
+      "notificationsEnabled": "E-mailmeldingen ontvangen",
+      "notificationsEnabledDescription": "Ontvang een melding wanneer uw gesprekken zijn verwerkt",
+      "notificationsSaved": "Meldingsvoorkeuren opgeslagen"
     },
     "accountPage": {
       "title": "Accountinstellingen",

@@ -102,6 +102,19 @@ export class EmailService {
     }
   }
 
+  /**
+   * Common headers to improve email deliverability.
+   * - List-Unsubscribe: Required by Gmail/Microsoft for transactional emails
+   * - Precedence: Signals this is an automated/bulk message
+   */
+  private getDeliverabilityHeaders(): Record<string, string> {
+    return {
+      'List-Unsubscribe': `<${this.frontendUrl}/en/settings/preferences>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      Precedence: 'bulk',
+    };
+  }
+
   async sendTranscriptionCompleteEmail(
     user: User,
     transcription: Transcription,
@@ -149,9 +162,11 @@ export class EmailService {
       const info = await this.transporter.sendMail({
         from: `"Neural Summary" <${this.fromEmail}>`,
         to: user.email,
+        replyTo: this.fromEmail,
         subject,
         html: htmlContent,
         text: textContent,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.debug(
@@ -213,9 +228,11 @@ export class EmailService {
       const info = await this.transporter.sendMail({
         from: `"Neural Summary" <${this.fromEmail}>`,
         to: request.recipientEmail,
+        replyTo: this.fromEmail,
         subject,
         html: htmlContent,
         text: textContent,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.debug(
@@ -791,7 +808,7 @@ export class EmailService {
               <div class="footer" style="text-align: center; margin-top: 40px; padding-top: 25px; border-top: 1px solid #e5e7eb;">
                 <p class="footer-text" style="font-size: 13px; color: #9ca3af; margin: 5px 0;">${getLocalizedContent('footer1')}</p>
                 <p class="unsubscribe" style="font-size: 12px; color: #9ca3af; margin-top: 15px;">
-                  <a href="${this.appUrl}/${locale}/settings" style="color: #8D6AFA; text-decoration: none;">${getLocalizedContent('unsubscribe')}</a>
+                  <a href="${this.appUrl}/${locale}/settings/preferences" style="color: #8D6AFA; text-decoration: none;">${getLocalizedContent('unsubscribe')}</a>
                 </p>
               </div>
             </td>
@@ -826,9 +843,11 @@ export class EmailService {
       const info = await this.transporter.sendMail({
         from: `"Neural Summary" <${this.fromEmail}>`,
         to: userEmail,
+        replyTo: this.fromEmail,
         subject: `[Draft] ${emailData.subject}`,
         html: htmlContent,
         text: textContent,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.debug(
@@ -1276,6 +1295,7 @@ ${data.message}
         subject: emailSubject,
         html: htmlContent,
         text: textContent,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.log(`Contact email sent: ${info.messageId}`);
@@ -1375,6 +1395,7 @@ ${data.error}
         subject: emailSubject,
         html: htmlContent,
         text: textContent,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.log(`Error report email sent: ${info.messageId}`);
@@ -1404,9 +1425,11 @@ ${data.error}
       const info = await this.transporter.sendMail({
         from: `"Neural Summary" <${this.fromEmail}>`,
         to: options.to,
+        replyTo: this.fromEmail,
         subject: options.subject,
         html: options.html,
         text: options.text,
+        headers: this.getDeliverabilityHeaders(),
       });
 
       this.logger.log(`Raw email sent to ${options.to}: ${info.messageId}`);

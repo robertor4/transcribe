@@ -1198,7 +1198,12 @@
       "days": "{count} days",
       "comingSoon": "Coming soon",
       "saving": "Saving...",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "emailNotifications": "Email notifications",
+      "emailNotificationsDescription": "Control which emails you receive from Neural Summary",
+      "notificationsEnabled": "Receive email notifications",
+      "notificationsEnabledDescription": "Get notified when your conversations finish processing",
+      "notificationsSaved": "Notification preferences saved"
     },
     "accountPage": {
       "title": "Account Settings",

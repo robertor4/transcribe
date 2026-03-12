@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { CheckCircle, AlertCircle, Loader2, Sun, Moon, Monitor } from 'lucide-react';
-import { getUserProfile, updateUserLanguagePreference } from '@/lib/user-preferences';
+import { getUserProfile, updateUserLanguagePreference, updateEmailNotifications } from '@/lib/user-preferences';
 import { SettingsSkeleton } from '@/components/skeletons/SettingsSkeleton';
 import { useRouter } from '@/i18n/navigation';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/components/Button';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -39,6 +40,8 @@ export default function PreferencesSettingsPage() {
   const [success, setSuccess] = useState(false);
 
   const [language, setLanguage] = useState(locale);
+  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [savingNotifications, setSavingNotifications] = useState(false);
 
   const loadUserProfile = useCallback(async () => {
     if (!authUser) return;
@@ -48,6 +51,7 @@ export default function PreferencesSettingsPage() {
       const profile = await getUserProfile();
       if (profile) {
         setLanguage(profile.preferredLanguage || locale);
+        setEmailEnabled(profile.emailNotifications?.enabled ?? false);
       }
     } catch (err) {
       console.error('Error loading profile:', err);
@@ -60,6 +64,28 @@ export default function PreferencesSettingsPage() {
   useEffect(() => {
     loadUserProfile();
   }, [authUser, loadUserProfile]);
+
+  const handleToggleNotifications = async (checked: boolean) => {
+    setError(null);
+    setSuccess(false);
+    setSavingNotifications(true);
+
+    try {
+      setEmailEnabled(checked);
+      await updateEmailNotifications({
+        enabled: checked,
+        onTranscriptionComplete: checked,
+      });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error('Error saving notification preferences:', err);
+      setEmailEnabled(!checked);
+      setError(t('saveError'));
+    } finally {
+      setSavingNotifications(false);
+    }
+  };
 
   const handleSaveLanguage = async () => {
     setError(null);
@@ -217,6 +243,40 @@ export default function PreferencesSettingsPage() {
           >
             {t('saveChanges')}
           </Button>
+        </div>
+      </div>
+
+      {/* Email Notifications Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
+            <div className="sm:w-1/3">
+              <Label className="text-base text-gray-900 dark:text-gray-100">
+                {t('emailNotifications')}
+              </Label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('emailNotificationsDescription')}
+              </p>
+            </div>
+            <div className="sm:w-2/3">
+              <div className="flex items-center gap-3">
+                <Switch
+                  size="lg"
+                  checked={emailEnabled}
+                  onCheckedChange={handleToggleNotifications}
+                  disabled={savingNotifications}
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {t('notificationsEnabled')}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('notificationsEnabledDescription')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
