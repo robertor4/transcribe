@@ -40,7 +40,7 @@ export default function PreferencesSettingsPage() {
   const [success, setSuccess] = useState(false);
 
   const [language, setLanguage] = useState(locale);
-  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(true);
   const [savingNotifications, setSavingNotifications] = useState(false);
 
   const loadUserProfile = useCallback(async () => {
@@ -51,7 +51,7 @@ export default function PreferencesSettingsPage() {
       const profile = await getUserProfile();
       if (profile) {
         setLanguage(profile.preferredLanguage || locale);
-        setEmailEnabled(profile.emailNotifications?.enabled ?? false);
+        setEmailEnabled(profile.emailNotifications?.enabled ?? true);
       }
     } catch (err) {
       console.error('Error loading profile:', err);

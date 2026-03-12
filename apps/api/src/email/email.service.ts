@@ -125,8 +125,9 @@ export class EmailService {
     }
 
     // Check if user has email notifications enabled
+    // When emailNotifications is undefined (legacy users), treat as enabled (opt-out model)
     if (
-      !user.emailNotifications?.enabled ||
+      user.emailNotifications?.enabled === false ||
       user.emailNotifications?.onTranscriptionComplete === false
     ) {
       this.logger.debug(`Email notifications disabled for user ${user.uid}`);

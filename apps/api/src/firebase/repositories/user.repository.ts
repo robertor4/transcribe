@@ -109,6 +109,11 @@ export class UserRepository {
           onDemandAnalyses: 0,
           lastResetAt: new Date(),
         },
+        emailNotifications: {
+          enabled: true,
+          onTranscriptionComplete: true,
+          digest: 'immediate',
+        },
         createdAt: new Date(),
         updatedAt: new Date(),
       };
