@@ -67,13 +67,16 @@ function SharedTranscriptionContent() {
   const shareToken = params.shareToken as string;
 
   // Force light mode on shared pages (they don't have theme controls)
+  // The inline script in layout.tsx handles the initial paint;
+  // this useEffect restores the user's theme when navigating away.
   useEffect(() => {
     const html = document.documentElement;
     const wasDark = html.classList.contains('dark');
     html.classList.remove('dark');
+    html.classList.add('light');
 
-    // Restore dark mode if it was active when leaving the page
     return () => {
+      html.classList.remove('light');
       if (wasDark) {
         html.classList.add('dark');
       }

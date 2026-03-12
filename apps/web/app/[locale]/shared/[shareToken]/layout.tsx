@@ -85,6 +85,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
 }
 
+// Inline script to force light mode before paint (prevents flash of dark-styled content)
+const forceLightScript = `
+(function() {
+  try {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+  } catch (e) {}
+})();
+`;
+
 export default function SharedLayout({ children }: Props) {
-  return <>{children}</>;
+  return (
+    <>
+      <script dangerouslySetInnerHTML={{ __html: forceLightScript }} />
+      {children}
+    </>
+  );
 }
