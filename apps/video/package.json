@@ -10,6 +10,7 @@
     "render:blog-speed-gap": "remotion render src/index.ts BlogSpeedGap --output=out/blog-speed-gap.mp4",
     "render:blog-cascade": "remotion render src/index.ts BlogDeliverableCascade --output=out/blog-deliverable-cascade.mp4",
     "render:blog-roi": "remotion render src/index.ts BlogROICounter --output=out/blog-roi-counter.mp4",
+    "render:template-showcase": "remotion render src/index.ts TemplateShowcase --output=out/template-showcase.mp4 --codec=h264 --crf=18",
     "render:blog-all": "npm run render:blog-speed-gap && npm run render:blog-cascade && npm run render:blog-roi",
     "upgrade": "remotion upgrade",
     "lint": "echo 'no lint configured'"

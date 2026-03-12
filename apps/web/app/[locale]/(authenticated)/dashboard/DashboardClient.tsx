@@ -185,7 +185,7 @@ export function DashboardClient() {
           mainContent={
           <div className="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-4 lg:pt-[38px] pb-12">
             {/* Personalized Greeting - hidden on mobile (shown in top bar) */}
-            <div className="mb-4 hidden sm:block">
+            <div className="mb-8 hidden sm:block">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: 'var(--font-merriweather), Georgia, serif' }}>
                 {getCreativeGreeting(user?.displayName || user?.email || 'there')}
               </h1>

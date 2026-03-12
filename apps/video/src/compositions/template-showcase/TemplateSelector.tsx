@@ -149,7 +149,7 @@ export const TemplateSelector: React.FC = () => {
     extrapolateRight: 'clamp',
   });
 
-  // "Choose from 40 templates." overlay
+  // "Choose from 50+ templates." overlay
   const overlayOpacity = interpolate(frame, [fps * 4.8, fps * 5.2], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -365,7 +365,7 @@ export const TemplateSelector: React.FC = () => {
                     }}
                   >
                     <span style={{ color: lt.textHint, fontSize: sz(12) }}>🔍</span>
-                    <span style={{ fontFamily: fonts.body, fontSize: sz(11), color: lt.textHint }}>Search {totalTemplates} templates...</span>
+                    <span style={{ fontFamily: fonts.body, fontSize: sz(11), color: lt.textHint }}>Search 50+ templates...</span>
                   </div>
                 </div>
 
@@ -482,7 +482,7 @@ export const TemplateSelector: React.FC = () => {
         </>
       )}
 
-      {/* ─── "Choose from 40 templates." overlay ─────────── */}
+      {/* ─── "Choose from 50+ templates." overlay ─────────── */}
       <div
         style={{
           position: 'absolute',
@@ -498,7 +498,7 @@ export const TemplateSelector: React.FC = () => {
           textShadow: '0 2px 20px rgba(255,255,255,0.9)',
         }}
       >
-        Choose from {totalTemplates} templates.
+        Choose from 50+ templates.
       </div>
     </div>
   );

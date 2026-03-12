@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="396" viewBox="0 0 1584 396">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1040"/>
+      <stop offset="50%" stop-color="#23194B"/>
+      <stop offset="100%" stop-color="#1d1245"/>
+    </linearGradient>
+
+    <!-- Glow for decorative arcs -->
+    <linearGradient id="arc1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8D6AFA" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#8D6AFA" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#14D0DC" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="arc2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#14D0DC" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#14D0DC" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#8D6AFA" stop-opacity="0.06"/>
+    </linearGradient>
+    <linearGradient id="arc3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8D6AFA" stop-opacity="0.08"/>
+      <stop offset="60%" stop-color="#3F38A0" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#14D0DC" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Subtle radial glow behind logo -->
+    <radialGradient id="logoGlow" cx="0.15" cy="0.5" r="0.35">
+      <stop offset="0%" stop-color="#8D6AFA" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#8D6AFA" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Tagline accent line gradient -->
+    <linearGradient id="accentLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8D6AFA"/>
+      <stop offset="100%" stop-color="#14D0DC"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1584" height="396" fill="url(#bg)"/>
+
+  <!-- Radial glow behind logo area -->
+  <rect width="1584" height="396" fill="url(#logoGlow)"/>
+
+  <!-- Decorative arcs — abstract, geometric, evoking the neural/sound-wave motif -->
+  <!-- Large sweeping arc top-right -->
+  <ellipse cx="1300" cy="-60" rx="600" ry="320" fill="none" stroke="url(#arc1)" stroke-width="1.5" opacity="0.6"/>
+  <ellipse cx="1320" cy="-80" rx="650" ry="350" fill="none" stroke="url(#arc2)" stroke-width="1" opacity="0.4"/>
+
+  <!-- Mid arcs flowing through center -->
+  <ellipse cx="800" cy="500" rx="700" ry="300" fill="none" stroke="url(#arc3)" stroke-width="1.5" opacity="0.5"/>
+  <ellipse cx="820" cy="520" rx="750" ry="320" fill="none" stroke="url(#arc1)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Small decorative arc bottom-left -->
+  <ellipse cx="200" cy="450" rx="350" ry="200" fill="none" stroke="url(#arc2)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Subtle dot grid pattern in right area -->
+  <g opacity="0.04" fill="#fff">
+    <circle cx="1050" cy="80" r="1.5"/>
+    <circle cx="1100" cy="80" r="1.5"/>
+    <circle cx="1150" cy="80" r="1.5"/>
+    <circle cx="1200" cy="80" r="1.5"/>
+    <circle cx="1250" cy="80" r="1.5"/>
+    <circle cx="1300" cy="80" r="1.5"/>
+    <circle cx="1050" cy="120" r="1.5"/>
+    <circle cx="1100" cy="120" r="1.5"/>
+    <circle cx="1150" cy="120" r="1.5"/>
+    <circle cx="1200" cy="120" r="1.5"/>
+    <circle cx="1250" cy="120" r="1.5"/>
+    <circle cx="1300" cy="120" r="1.5"/>
+    <circle cx="1050" cy="160" r="1.5"/>
+    <circle cx="1100" cy="160" r="1.5"/>
+    <circle cx="1150" cy="160" r="1.5"/>
+    <circle cx="1200" cy="160" r="1.5"/>
+    <circle cx="1250" cy="160" r="1.5"/>
+    <circle cx="1300" cy="160" r="1.5"/>
+  </g>
+
+  <!-- ============ LOGO MARK (left) ============ -->
+  <!-- Scaled and positioned Neural Summary icon -->
+  <g transform="translate(100, 108) scale(0.4)">
+    <!-- Inner wave patterns -->
+    <path fill="#fff" d="M149.95,133.78v9.68c0,.52,0,1.04-.02,1.57l-.51-.54-9.67-10.54-35.13-38.3c-7.72-8.4-18.24-13.03-29.65-13.03s-21.92,4.63-29.63,13.03l-35.14,38.31-9.67,10.54-.51.55c-.01-.54-.02-1.07-.02-1.59v-9.68l.53-.57,9.67-10.55,29.49-32.16c9.05-9.86,21.91-15.5,35.27-15.5s26.23,5.64,35.27,15.5l29.5,32.16,9.67,10.55.53.57h.02Z"/>
+    <path fill="#fff" d="M147.61,152.04c-1,2.4-2.12,4.76-3.36,7.03l-42.01-31.64c-16.05-12.1-38.46-12.1-54.51,0l-42.01,31.63c-1.23-2.28-2.35-4.62-3.36-7.02l40.78-30.72c18.75-14.12,44.95-14.12,63.7,0l40.78,30.72h-.01Z"/>
+    <path fill="#fff" d="M140.87,164.71c-1.41,2.15.26,6.05-1.36,8.04l-43.18-24.93c-13.16-7.59-29.52-7.59-42.68,0l-43.18,24.93c-1.62-1.98.05-5.89-1.36-8.04l40.73-23.5c15.52-8.95,34.8-8.95,50.32,0l40.73,23.5h-.02Z"/>
+    <path fill="#fff" d="M99.28,163.04l35.93,16.3c-1.97,1.96-2.39,4.57-4.56,6.32l-34.52-15.68c-13.43-6.09-28.85-6.1-42.28,0l-33.98,14.65c-2.17-1.76-3.25-3.27-5.22-5.23l36.05-16.36c15.44-7.01,33.15-7.01,48.59,0l-.01,0Z"/>
+    <path fill="#fff" d="M87.14,182.29l37.85,8.02c-3.4,2.11-2.57,4.86-6.3,6.44l-33.13-6.99c-7.02-1.48-14.14-1.48-21.16,0l-31.97,6.75c-3.73-1.58-4.74-3.98-8.13-6.09l38.54-8.12c8.06-1.7,16.23-1.7,24.31,0l-.01-.01Z"/>
+    <!-- Star/sparkle -->
+    <path fill="#fff" d="M94.68,42c-5.43,0-10.37,2.2-13.93,5.76-3.56,3.57-5.77,8.5-5.77,13.94,0-5.44-2.2-10.37-5.76-13.94-3.57-3.56-8.48-5.76-13.93-5.76,5.44,0,10.35-2.2,13.93-5.76,3.56-3.56,5.76-8.5,5.76-13.93,0,10.88,8.83,19.69,19.7,19.69h0Z"/>
+    <!-- Outer rounded-square border -->
+    <path fill="#fff" d="M77.21,0h-4.44C32.65,0,.01,32.63,.01,72.75v69.62c0,.53.01,1.05.02,1.59.01.51.03,1.02.05,1.54.11,2.68.36,5.33.76,7.93.54,3.43,1.3,6.79,2.3,10.04.72,2.43,1.59,4.8,2.57,7.12,1.34,3.17,2.9,6.23,4.66,9.15.3.48.59.96.89,1.44,12.9,20.38,35.64,33.94,61.51,33.94h4.44c25.86,0,48.6-13.56,61.5-33.94.3-.48.59-.96.89-1.44,1.76-2.92,3.32-5.97,4.66-9.15.98-2.32,1.84-4.69,2.57-7.12,1-3.25,1.76-6.61,2.29-10.04.4-2.6.65-5.25.76-7.93.02-.52.04-1.03.05-1.55h0c.02-.54.02-1.07.02-1.58v-69.62C149.95,32.64,117.32,0,77.2,0h.01ZM77.21,204.9h-4.44c-11.24,0-21.8-2.98-30.92-8.19-3.06-1.75-5.96-3.74-8.66-5.97-2.19-1.78-4.25-3.71-6.17-5.78-.26-.29-.54-.57-.78-.87-1.65-1.8-3.16-3.71-4.56-5.69-.01-.01-.02-.03-.03-.04-1.65-2.33-3.13-4.77-4.45-7.31-.53-1.01-1.02-2.04-1.49-3.09-.58-1.3-1.12-2.61-1.61-3.94-.4-1.03-.76-2.08-1.09-3.13-.43-1.39-.81-2.81-1.14-4.25h0c-.51-2.13-.89-4.28-1.16-6.48-.09-.68-.15-1.36-.22-2.04-.18-1.9-.26-3.82-.26-5.75v-69.62c0-34.48,28.07-62.55,62.56-62.55h4.44c34.49,0,62.55,28.07,62.55,62.55v69.62c0,1.93-.09,3.85-.26,5.75-.07.68-.13,1.36-.22,2.04-.27,2.2-.67,4.36-1.16,6.48-.33,1.44-.71,2.84-1.14,4.24-.33,1.07-.69,2.12-1.08,3.15-.49,1.33-1.04,2.65-1.63,3.93-.47,1.04-.97,2.08-1.49,3.09-1.32,2.55-2.8,4.99-4.45,7.31-.01.01,2.93.48,2.92.5-1.52,2.15-6.12,3.75-7.91,5.69-.12.14-.24.29-.37.42-1.93,2.08-4,4.01-6.19,5.8-2.7,2.22-5.59,4.22-8.64,5.95-9.12,5.22-19.68,8.19-30.92,8.19l-.03-.01Z"/>
+  </g>
+
+  <!-- ============ LOGOTYPE TEXT ============ -->
+  <!-- "NEURAL" -->
+  <g transform="translate(182, 108) scale(0.4)">
+    <path fill="#fff" d="M247.67,25.87v65.8h-7.71l-39.48-49.07v49.07h-9.4V25.87h7.71l39.48,49.07V25.87h9.4Z"/>
+    <path fill="#fff" d="M315.16,83.49v8.18h-47.75V25.87h46.43v8.18h-37.03v20.21h32.99v7.99h-32.99v21.24h38.35Z"/>
+    <path fill="#fff" d="M329.82,63.28V25.87h9.4v37.03c0,14.57,6.67,21.15,18.52,21.15s18.61-6.58,18.61-21.15V25.87h9.12v37.41c0,19.08-10.43,29.14-27.82,29.14s-27.82-10.06-27.82-29.14l-.01,0Z"/>
+    <path fill="#fff" d="M448.73,91.67l-14.19-20.21c-1.32.09-2.73.19-4.14.19h-16.26v20.02h-9.4V25.87h25.66c17.11,0,27.45,8.65,27.45,22.93,0,10.15-5.26,17.48-14.48,20.77l15.6,22.09h-10.25l.01.01ZM448.45,48.81c0-9.4-6.3-14.76-18.33-14.76h-15.98v29.61h15.98c12.03,0,18.33-5.45,18.33-14.85v0Z"/>
+    <path fill="#fff" d="M515,75.22h-34.97l-7.24,16.45h-9.68l29.8-65.8h9.31l29.89,65.8h-9.87l-7.24-16.45v0ZM511.71,67.7l-14.19-32.24-14.19,32.24h28.39-.01Z"/>
+    <path fill="#fff" d="M541.88,25.87h9.4v57.62h35.62v8.18h-45.02V25.87Z"/>
+  </g>
+  <!-- "SUMMARY" -->
+  <g transform="translate(182, 108) scale(0.4)">
+    <path fill="#fff" d="M183.84,167.17l5.17-11.47c5.55,4.04,13.82,6.86,21.71,6.86,9.02,0,12.69-3.01,12.69-7.05,0-12.31-38.26-3.85-38.26-28.29,0-11.19,9.02-20.49,27.73-20.49,8.27,0,16.73,1.97,22.84,5.83l-4.7,11.56c-6.11-3.48-12.41-5.17-18.24-5.17-9.02,0-12.5,3.38-12.5,7.52,0,12.12,38.26,3.76,38.26,27.92,0,11-9.12,20.4-27.92,20.4-10.43,0-20.96-3.1-26.79-7.61l.01-.01Z"/>
+    <path fill="#fff" d="M248.42,144.7v-36.85h15.23v36.28c0,12.5,5.45,17.67,14.66,17.67s14.66-5.17,14.66-17.67v-36.28h15.04v36.85c0,19.36-11.09,30.08-29.8,30.08s-29.8-10.72-29.8-30.08l.01,0Z"/>
+    <path fill="#fff" d="M382.93,173.65l-.09-39.48-19.36,32.52h-6.86l-19.27-31.68v38.63h-14.29v-65.8h12.6l24.63,40.89,24.25-40.89h12.5l.19,65.8h-14.29l-.01.01Z"/>
+    <path fill="#fff" d="M472.7,173.65l-.09-39.48-19.36,32.52h-6.86l-19.27-31.68v38.63h-14.29v-65.8h12.6l24.63,40.89,24.25-40.89h12.5l.19,65.8h-14.29l-.01.01Z"/>
+    <path fill="#fff" d="M545.92,159.55h-30.55l-5.83,14.1h-15.6l29.33-65.8h15.04l29.42,65.8h-15.98l-5.83-14.1ZM541.13,147.99l-10.43-25.19-10.43,25.19h20.87-.01Z"/>
+    <path fill="#fff" d="M616.51,173.65l-12.69-18.33h-14.01v18.33h-15.23v-65.8h28.48c17.58,0,28.57,9.12,28.57,23.87,0,9.87-4.98,17.11-13.54,20.77l14.76,21.15h-16.36l.02.01ZM602.22,120.26h-12.41v22.93h12.41c9.31,0,14.01-4.32,14.01-11.47s-4.7-11.47-14.01-11.47v.01Z"/>
+    <path fill="#fff" d="M674.32,150.34v23.31h-15.23v-23.5l-25.47-42.3h16.17l17.58,29.23,17.58-29.23h14.95l-25.57,42.49h-.01Z"/>
+  </g>
+
+  <!-- ============ DIVIDER LINE ============ -->
+  <!-- Vertical accent line between logo area and tagline -->
+  <rect x="520" y="138" width="2" height="120" rx="1" fill="url(#accentLine)" opacity="0.3"/>
+
+  <!-- ============ TAGLINE ============ -->
+  <!-- "Create with your voice." — large, confident -->
+  <text x="560" y="190" font-family="'Montserrat', 'Helvetica Neue', Arial, sans-serif" font-weight="300" font-size="42" fill="#ffffff" letter-spacing="1">
+    Create with your voice.
+  </text>
+
+  <!-- Subtitle — what the product does -->
+  <text x="560" y="232" font-family="'Montserrat', 'Helvetica Neue', Arial, sans-serif" font-weight="400" font-size="18" fill="#8D6AFA" letter-spacing="0.5" opacity="0.7">
+    Turn conversations into work-ready documents
+  </text>
+
+  <!-- ============ URL ============ -->
+  <text x="1484" y="370" font-family="'Montserrat', 'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="16" fill="#ffffff" opacity="0.25" text-anchor="end" letter-spacing="1.5">
+    neuralsummary.com
+  </text>
+</svg>

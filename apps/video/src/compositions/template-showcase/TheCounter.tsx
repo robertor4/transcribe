@@ -2,52 +2,80 @@ import React from 'react';
 import { useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
 import { colors, fonts, sz, sp } from '@/lib/design-tokens';
 
-// All 40 template names with their category colors
-const templates = [
-  { name: 'Action Items', color: colors.light.categoryAnalysis },
-  { name: 'Meeting Minutes', color: colors.light.categoryAnalysis },
-  { name: 'Communication Analysis', color: colors.light.categoryAnalysis },
-  { name: 'Agile Backlog', color: colors.light.categoryAnalysis },
-  { name: 'Retrospective Summary', color: colors.light.categoryAnalysis },
-  { name: 'Decision Document', color: colors.light.categoryAnalysis },
-  { name: 'Workshop Synthesis', color: colors.light.categoryAnalysis },
-  { name: 'Project Status Report', color: colors.light.categoryAnalysis },
-  { name: 'Recommendations Memo', color: colors.light.categoryAnalysis },
-  { name: 'Blog Post', color: colors.light.categoryContent },
-  { name: 'LinkedIn Post', color: colors.light.categoryContent },
-  { name: 'Newsletter', color: colors.light.categoryContent },
-  { name: 'Case Study', color: colors.light.categoryContent },
-  { name: 'Podcast Show Notes', color: colors.light.categoryContent },
-  { name: 'Video Script', color: colors.light.categoryContent },
-  { name: 'Press Release', color: colors.light.categoryContent },
-  { name: 'Twitter/X Thread', color: colors.light.categoryContent },
-  { name: 'Follow-Up Email', color: colors.light.categoryEmails },
-  { name: 'Sales Outreach Email', color: colors.light.categoryEmails },
-  { name: 'Internal Update', color: colors.light.categoryEmails },
-  { name: 'Client Proposal', color: colors.light.categoryEmails },
-  { name: 'PRD', color: colors.light.categoryProduct },
-  { name: 'Technical Design Doc', color: colors.light.categoryProduct },
-  { name: 'Architecture Decision Record', color: colors.light.categoryProduct },
-  { name: 'Bug Report', color: colors.light.categoryProduct },
-  { name: 'Incident Postmortem', color: colors.light.categoryProduct },
-  { name: 'Statement of Work', color: colors.light.categoryProduct },
-  { name: 'Deal Qualification', color: colors.light.categorySales },
-  { name: 'CRM Notes', color: colors.light.categorySales },
-  { name: 'Objection Handler', color: colors.light.categorySales },
-  { name: 'Competitive Intel', color: colors.light.categorySales },
-  { name: '1:1 Meeting Notes', color: colors.light.categoryHR },
-  { name: 'Interview Assessment', color: colors.light.categoryHR },
-  { name: 'Coaching Notes', color: colors.light.categoryHR },
-  { name: 'Performance Review', color: colors.light.categoryHR },
-  { name: 'Exit Interview', color: colors.light.categoryHR },
-  { name: 'Goal Setting', color: colors.light.categoryHR },
-  { name: 'Board Update', color: colors.light.categoryLeadership },
-  { name: 'Investor Update', color: colors.light.categoryLeadership },
-  { name: 'All-Hands Talking Points', color: colors.light.categoryLeadership },
+// All 50+ template names organized into 5 carousel rows
+const rows = [
+  // Row 0 — Analysis (→ right)
+  [
+    { name: 'Action Items', color: colors.light.categoryAnalysis },
+    { name: 'Meeting Minutes', color: colors.light.categoryAnalysis },
+    { name: 'Communication Analysis', color: colors.light.categoryAnalysis },
+    { name: 'Agile Backlog', color: colors.light.categoryAnalysis },
+    { name: 'Retrospective Summary', color: colors.light.categoryAnalysis },
+    { name: 'Decision Document', color: colors.light.categoryAnalysis },
+    { name: 'Workshop Synthesis', color: colors.light.categoryAnalysis },
+    { name: 'Project Status Report', color: colors.light.categoryAnalysis },
+    { name: 'Recommendations Memo', color: colors.light.categoryAnalysis },
+    { name: 'Stakeholder Brief', color: colors.light.categoryAnalysis },
+  ],
+  // Row 1 — Content (← left)
+  [
+    { name: 'Blog Post', color: colors.light.categoryContent },
+    { name: 'LinkedIn Post', color: colors.light.categoryContent },
+    { name: 'Newsletter', color: colors.light.categoryContent },
+    { name: 'Case Study', color: colors.light.categoryContent },
+    { name: 'Podcast Show Notes', color: colors.light.categoryContent },
+    { name: 'Video Script', color: colors.light.categoryContent },
+    { name: 'Press Release', color: colors.light.categoryContent },
+    { name: 'Twitter/X Thread', color: colors.light.categoryContent },
+    { name: 'Content Calendar', color: colors.light.categoryContent },
+    { name: 'Social Media Brief', color: colors.light.categoryContent },
+  ],
+  // Row 2 — Emails + Product (→ right)
+  [
+    { name: 'Follow-Up Email', color: colors.light.categoryEmails },
+    { name: 'Sales Outreach Email', color: colors.light.categoryEmails },
+    { name: 'Internal Update', color: colors.light.categoryEmails },
+    { name: 'Client Proposal', color: colors.light.categoryEmails },
+    { name: 'PRD', color: colors.light.categoryProduct },
+    { name: 'Technical Design Doc', color: colors.light.categoryProduct },
+    { name: 'Architecture Decision Record', color: colors.light.categoryProduct },
+    { name: 'Bug Report', color: colors.light.categoryProduct },
+    { name: 'Incident Postmortem', color: colors.light.categoryProduct },
+    { name: 'Statement of Work', color: colors.light.categoryProduct },
+  ],
+  // Row 3 — Sales + HR (← left)
+  [
+    { name: 'Deal Qualification', color: colors.light.categorySales },
+    { name: 'CRM Notes', color: colors.light.categorySales },
+    { name: 'Objection Handler', color: colors.light.categorySales },
+    { name: 'Competitive Intel', color: colors.light.categorySales },
+    { name: '1:1 Meeting Notes', color: colors.light.categoryHR },
+    { name: 'Interview Assessment', color: colors.light.categoryHR },
+    { name: 'Coaching Notes', color: colors.light.categoryHR },
+    { name: 'Performance Review', color: colors.light.categoryHR },
+    { name: 'Exit Interview', color: colors.light.categoryHR },
+    { name: 'Goal Setting', color: colors.light.categoryHR },
+  ],
+  // Row 4 — Leadership (→ right)
+  [
+    { name: 'Board Update', color: colors.light.categoryLeadership },
+    { name: 'Investor Update', color: colors.light.categoryLeadership },
+    { name: 'All-Hands Talking Points', color: colors.light.categoryLeadership },
+    { name: 'Quarterly Review', color: colors.light.categoryLeadership },
+    { name: 'Strategy Memo', color: colors.light.categoryLeadership },
+    { name: 'Team Charter', color: colors.light.categoryLeadership },
+    { name: 'Roadmap Summary', color: colors.light.categoryProduct },
+    { name: 'Sprint Retrospective', color: colors.light.categoryAnalysis },
+    { name: 'Kickoff Notes', color: colors.light.categoryAnalysis },
+    { name: 'Onboarding Guide', color: colors.light.categoryHR },
+  ],
 ];
 
-const COLS = 8;
-const ROWS = 5;
+// Card dimensions for carousel layout
+const CARD_W = 210;
+const CARD_GAP = 24;
+const CARD_STRIDE = CARD_W + CARD_GAP; // px per card
+const SCROLL_SPEED = 1.2; // px per frame
 
 /**
  * Scene 4: The Counter (0:55–1:03, 8s / 240 frames)
@@ -76,16 +104,8 @@ export const TheCounter: React.FC = () => {
   const easedCounter = 1 - Math.pow(1 - counterProgress, 3);
   const counterValue = Math.round(easedCounter * 50);
 
-  // Grid shrinks as counter appears
-  const gridScale = interpolate(frame, [fps * 3.0, fps * 4.0], [1, 0.6], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const gridOpacity = interpolate(frame, [fps * 3.5, fps * 4.5], [1, 0.2], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const gridY = interpolate(frame, [fps * 3.0, fps * 4.0], [0, -80], {
+  // Grid fades behind counter (no scale/move — stays full size)
+  const gridOpacity = interpolate(frame, [fps * 2.5, fps * 4.0], [1, 0.15], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -138,60 +158,76 @@ export const TheCounter: React.FC = () => {
         }}
       />
 
-      {/* Grid of template cards — centered on canvas */}
+      {/* Carousel rows — alternating scroll directions */}
       <div
         style={{
           position: 'relative',
           zIndex: 1,
-          display: 'grid',
-          gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-          gap: sp(8),
-          width: '90%',
-          maxWidth: 1700,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: sp(14),
           opacity: gridOpacity,
-          transform: `scale(${gridScale}) translateY(${gridY}px)`,
-          margin: '0 auto',
+          overflow: 'hidden',
         }}
       >
-        {templates.slice(0, COLS * ROWS).map((tpl, i) => {
-          const row = Math.floor(i / COLS);
-          const col = i % COLS;
-          // Cascade from top-left
-          const delay = (row * 2 + col) * 1.5;
-          const cardOpacity = interpolate(frame, [delay, delay + 8], [0, 1], {
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
-          });
-          const cardY = interpolate(frame, [delay, delay + 8], [20, 0], {
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
-          });
+        {rows.map((rowTemplates, rowIdx) => {
+          // Alternate direction: even rows scroll right, odd rows scroll left
+          const direction = rowIdx % 2 === 0 ? 1 : -1;
+
+          // Triple cards so the strip always covers the viewport
+          const cards = [...rowTemplates, ...rowTemplates, ...rowTemplates];
+          const setWidth = rowTemplates.length * CARD_STRIDE;
+
+          // Continuous scroll: keep offset within one set-width, start
+          // shifted left by one full set so there's always content on both sides
+          const rawOffset = (frame * SCROLL_SPEED * direction) % setWidth;
+          const scrollOffset = rawOffset - setWidth;
 
           return (
             <div
-              key={i}
+              key={rowIdx}
               style={{
-                opacity: cardOpacity,
-                transform: `translateY(${cardY}px)`,
-                background: colors.bgCard,
-                border: `1px solid ${colors.bgCardBorder}`,
-                borderTop: `3px solid ${tpl.color}`,
-                borderRadius: 10,
-                padding: `${sp(10)}px ${sp(12)}px`,
+                overflow: 'hidden',
+                width: '100%',
               }}
             >
               <div
                 style={{
-                  fontFamily: fonts.body,
-                  fontSize: sz(9),
-                  fontWeight: 500,
-                  color: colors.textSecondary,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  display: 'flex',
+                  gap: CARD_GAP,
+                  transform: `translateX(${scrollOffset}px)`,
+                  willChange: 'transform',
                 }}
               >
-                {tpl.name}
+                {cards.map((tpl, cardIdx) => (
+                  <div
+                    key={cardIdx}
+                    style={{
+                      flexShrink: 0,
+                      width: CARD_W,
+                      background: colors.bgCard,
+                      border: `1px solid ${colors.bgCardBorder}`,
+                      borderTop: `3px solid ${tpl.color}`,
+                      borderRadius: 10,
+                      padding: `${sp(10)}px ${sp(12)}px`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: fonts.body,
+                        fontSize: sz(9),
+                        fontWeight: 500,
+                        color: colors.textSecondary,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {tpl.name}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           );

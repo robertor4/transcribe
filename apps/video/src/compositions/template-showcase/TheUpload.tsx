@@ -141,7 +141,7 @@ export const TheUpload: React.FC = () => {
             }}
           >
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: sz(12) }}>🔍</span>
-            <span style={{ fontFamily: fonts.body, fontSize: sz(12), color: 'rgba(255,255,255,0.5)' }}>Search conversations...</span>
+            <span style={{ fontFamily: fonts.body, fontSize: sz(12), color: 'rgba(255,255,255,0.5)' }}>Search</span>
           </div>
 
           {/* Nav items */}
@@ -257,9 +257,30 @@ export const TheUpload: React.FC = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <span style={{ fontSize: sz(14), color: '#fff' }}>
-                    {i === 0 ? '🎙' : i === 1 ? '🖥' : '📤'}
-                  </span>
+                  <svg width={sz(16)} height={sz(16)} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    {i === 0 ? (
+                      /* Mic icon */
+                      <>
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="22" />
+                      </>
+                    ) : i === 1 ? (
+                      /* Monitor icon */
+                      <>
+                        <rect width="20" height="14" x="2" y="3" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                      </>
+                    ) : (
+                      /* Upload icon */
+                      <>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </>
+                    )}
+                  </svg>
                 </div>
                 <span style={{ padding: `0 ${sp(14)}px`, fontFamily: fonts.body, fontSize: sz(12), fontWeight: 500, color: lt.textPrimary }}>
                   {btn.label}

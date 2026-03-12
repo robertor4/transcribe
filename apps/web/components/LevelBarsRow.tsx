@@ -13,6 +13,10 @@ interface LevelBarsRowProps {
   isRecording: boolean;
   /** Whether recording is paused */
   isPaused?: boolean;
+  /** Hide the MM:SS duration on the right (e.g. when showing a separate giant timer) */
+  hideDuration?: boolean;
+  /** Use taller bars — h-12 instead of h-5 */
+  tall?: boolean;
 }
 
 const BAR_COUNT = 12;
@@ -30,6 +34,8 @@ export function LevelBarsRow({
   frequencyBands,
   duration,
   isPaused = false,
+  hideDuration = false,
+  tall = false,
 }: LevelBarsRowProps) {
   const barsRef = useRef<(HTMLDivElement | null)[]>([]);
   const animationRef = useRef<number | null>(null);
@@ -95,10 +101,12 @@ export function LevelBarsRow({
 
   return (
     <div className="flex items-center gap-3 bg-gray-50 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.07] rounded-lg px-4 py-3">
-      <span className="text-[11px] font-medium text-gray-500 dark:text-white/35 font-mono whitespace-nowrap uppercase tracking-wider">
-        Level
-      </span>
-      <div className="flex items-end gap-[3px] flex-1 h-5">
+      {!hideDuration && (
+        <span className="text-[11px] font-medium text-gray-500 dark:text-white/35 font-mono whitespace-nowrap uppercase tracking-wider">
+          Level
+        </span>
+      )}
+      <div className={`flex items-end gap-[3px] flex-1 ${tall ? 'h-12' : 'h-5'}`}>
         {Array.from({ length: BAR_COUNT }).map((_, i) => {
           // Alternate accent color on some bars for visual interest
           const isAccent = i === 3 || i === 6 || i === 9;
@@ -116,9 +124,11 @@ export function LevelBarsRow({
           );
         })}
       </div>
-      <span className="font-mono text-lg tracking-wider text-gray-400 dark:text-white/25 tabular-nums">
-        {formatTime(duration)}
-      </span>
+      {!hideDuration && (
+        <span className="font-mono text-lg tracking-wider text-gray-400 dark:text-white/25 tabular-nums">
+          {formatTime(duration)}
+        </span>
+      )}
     </div>
   );
 }

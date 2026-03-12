@@ -1,5 +1,5 @@
 import React from 'react';
-import { Composition, Sequence } from 'remotion';
+import { Audio, Composition, Sequence, staticFile } from 'remotion';
 import { video } from '@/lib/design-tokens';
 import { TheUpload } from './TheUpload';
 import { TemplateSelector } from './TemplateSelector';
@@ -47,6 +47,12 @@ export const TemplateShowcase: React.FC = () => {
         position: 'relative',
       }}
     >
+      {/* Voiceover audio track */}
+      <Audio src={staticFile('audio/working with templates 1.15x.mp3')} />
+
+      {/* Background music — lower volume so VO stays clear */}
+      <Audio src={staticFile('audio/template-showcase-bg-music.mp3')} volume={0.30} />
+
       {scenes.map(({ id, component: Component, startFrame, durationFrames }) => (
         <Sequence
           key={id}

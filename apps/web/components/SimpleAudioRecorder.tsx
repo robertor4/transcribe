@@ -11,7 +11,7 @@ import { RecordingPreview } from './RecordingPreview';
 import { LevelBarsRow } from './LevelBarsRow';
 import { Button } from './Button';
 import { ensureAudioContextReady } from '@/hooks/useAudioWaveform';
-import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, Square, ChevronDown, Volume2, X, Play } from 'lucide-react';
+import { Mic, Monitor, AlertCircle, AlertTriangle, Pause, ChevronDown, Volume2, X, Play } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { estimateFileSize, formatFileSize } from '@/utils/audio';
 import { checkStorageQuota, getStorageWarningLevel, getStorageWarningMessage } from '@/utils/storageQuota';
@@ -748,6 +748,142 @@ export function SimpleAudioRecorder({
     );
   }
 
+  // Active recording / paused — focused recording view
+  if (state === 'recording' || state === 'paused') {
+    const isPaused = state === 'paused';
+    return (
+      <div className="relative flex flex-col items-center gap-5 py-1">
+        {/* Cancel — X button top-right */}
+        <button
+          type="button"
+          onClick={handleCancelRecording}
+          className="absolute top-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label={t('controls.cancel')}
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Error */}
+        {error && (
+          <div className="w-full flex items-center gap-3 px-3 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-xs text-red-700 dark:text-red-400 flex-1">{error}</p>
+            <Button variant="ghost" size="sm" onClick={() => { reset(); onCancel(); }}>
+              {t('controls.cancel')}
+            </Button>
+          </div>
+        )}
+
+        {/* Warning */}
+        {(warning || storageWarning) && (
+          <div className="w-full flex items-start gap-2.5 px-3 py-2.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-xs text-amber-700 dark:text-amber-300">{warning || storageWarning}</p>
+              {canResumeAfterInterruption && (
+                <div className="mt-2">
+                  <Button variant="primary" size="sm" onClick={resumeAfterInterruption} icon={<Play className="w-3.5 h-3.5" />}>
+                    {t('controls.resumeRecording')}
+                  </Button>
+                </div>
+              )}
+            </div>
+            {warning && !canResumeAfterInterruption && (
+              <button type="button" onClick={clearWarning} className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-200 p-0.5" aria-label={t('controls.dismissWarning')}>
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Device switch notification */}
+        {deviceSwitchNotification && (
+          <div className="w-full flex items-center gap-2 px-3 py-2 bg-[#8D6AFA]/10 dark:bg-[#8D6AFA]/20 border border-[#8D6AFA]/30 rounded-lg animate-in fade-in slide-in-from-top-2 duration-200">
+            <Mic className="w-3.5 h-3.5 text-[#8D6AFA] flex-shrink-0" />
+            <span className="text-xs text-[#8D6AFA] dark:text-[#a78bfa]">
+              {t('source.switchedToDevice', { device: deviceSwitchNotification })}
+            </span>
+          </div>
+        )}
+
+        {/* Pulsing recording indicator + label */}
+        <div className="flex flex-col items-center gap-2.5 pt-5">
+          <div className="relative w-9 h-9 flex items-center justify-center">
+            <div className={`absolute inset-0 rounded-full opacity-20 ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-ping'}`} />
+            <div className={`w-4 h-4 rounded-full ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-pulse'}`} />
+          </div>
+          <span className={`text-[10px] font-mono uppercase tracking-[0.3em] font-semibold ${
+            isPaused ? 'text-yellow-500 dark:text-yellow-400' : 'text-red-500'
+          }`}>
+            {isPaused ? t('status.paused') : t('status.recording')}
+          </span>
+        </div>
+
+        {/* Giant timer */}
+        <div
+          className={`font-mono tabular-nums leading-none select-none ${
+            isPaused ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-white'
+          }`}
+          style={{ fontSize: '4.5rem', fontWeight: 300 }}
+        >
+          {formatTime(duration)}
+        </div>
+
+        {/* Audio level bars — RAF-animated via LevelBarsRow */}
+        <LevelBarsRow
+          audioLevel={recordingAudioLevel}
+          frequencyBands={recordingBands}
+          duration={duration}
+          isRecording={state === 'recording'}
+          isPaused={isPaused}
+          hideDuration
+          tall
+        />
+
+        {/* File size / remaining time */}
+        <div className="-mt-1 text-xs font-mono text-gray-400 dark:text-gray-500">
+          {isFreeUser && maxDuration ? (
+            <Link
+              href="/pricing"
+              target="_blank"
+              className={`hover:text-[#8D6AFA] transition-colors ${
+                maxDuration - duration < 5 * 60 ? 'text-amber-500 dark:text-amber-400' : ''
+              }`}
+            >
+              {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
+            </Link>
+          ) : duration > 0 ? (
+            formatFileSize(estimateFileSize(duration))
+          ) : null}
+        </div>
+
+        {/* Stacked full-width action buttons */}
+        <div className="w-full flex flex-col gap-2.5 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <Button
+            variant="brand"
+            fullWidth
+            onClick={handleStopRecording}
+            disabled={isStopping}
+            icon={isStopping
+              ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              : undefined
+            }
+          >
+            {isStopping ? t('controls.finishing') : t('controls.stop')}
+          </Button>
+          {isPaused ? (
+            <Button variant="ghost" fullWidth onClick={resumeRecording} icon={<Play className="w-4 h-4" />}>
+              {t('controls.resume')}
+            </Button>
+          ) : (
+            <Button variant="ghost" fullWidth onClick={pauseRecording} icon={<Pause className="w-4 h-4" />}>
+              {t('controls.pause')}
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // Source selection screen — compact for narrower modal
   if (showSourceSelector && state === 'idle') {
     return (
@@ -1011,57 +1147,29 @@ export function SimpleAudioRecorder({
         </div>
       )}
 
-      {/* Microphone selector — shown in idle when coming from direct action, or during recording/paused */}
-      {(state === 'idle' || state === 'recording' || state === 'paused') && micSelector}
+      {/* Microphone selector — shown in idle when coming from direct action */}
+      {state === 'idle' && micSelector}
 
-      {/* Level bars row — replaces waveform with compact Variant B visualization */}
-      {(state === 'idle' || state === 'recording' || state === 'paused') && (
+      {/* Level bars row — compact visualization for idle/mic-test state */}
+      {state === 'idle' && (
         <LevelBarsRow
           audioLevel={displayLevel}
           frequencyBands={displayBands}
           duration={duration}
-          isRecording={state === 'recording'}
-          isPaused={state === 'paused'}
+          isRecording={false}
+          isPaused={false}
         />
       )}
 
-      {/* Status badge + free tier countdown — below level bars/timer */}
+      {/* Status badge */}
       <div className="flex items-center justify-between">
         <div className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/[0.06] border border-gray-200 dark:border-white/10">
-          <div className={`w-1.5 h-1.5 rounded-full ${
-            state === 'recording' ? 'bg-red-500 animate-pulse' :
-            state === 'paused' ? 'bg-yellow-500' :
-            'bg-emerald-500 animate-pulse'
-          }`} />
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-gray-600 dark:text-gray-300">
-            {state === 'recording' && t('status.recording')}
-            {state === 'paused' && t('status.paused')}
             {state === 'requesting-permission' && t('status.requesting')}
             {state === 'idle' && t('status.ready')}
           </span>
         </div>
-
-        {/* Free tier remaining time */}
-        {isFreeUser && (state === 'recording' || state === 'paused') && (
-          <Link
-            href="/pricing"
-            target="_blank"
-            className={`text-xs font-mono ${
-              maxDuration - duration < 5 * 60
-                ? 'text-amber-600 dark:text-amber-400'
-                : 'text-gray-500 dark:text-gray-400'
-            } hover:text-[#8D6AFA] transition-colors`}
-          >
-            {t('limits.remaining', { time: formatTime(Math.max(0, maxDuration - duration)) })}
-          </Link>
-        )}
-
-        {/* File size estimate during recording */}
-        {!isFreeUser && duration > 0 && (state === 'recording' || state === 'paused') && (
-          <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
-            {formatFileSize(estimateFileSize(duration))}
-          </span>
-        )}
       </div>
 
       {/* Controls — footer area with darker background */}
@@ -1075,46 +1183,6 @@ export function SimpleAudioRecorder({
             <div className="flex-1" />
             <Button variant="brand" size="sm" onClick={handleStart} icon={<Mic className="w-4 h-4" />}>
               {t('controls.start')}
-            </Button>
-          </>
-        )}
-
-        {/* Recording state */}
-        {state === 'recording' && (
-          <>
-            <Button variant="ghost" size="sm" onClick={handleCancelRecording}>
-              {t('controls.cancel')}
-            </Button>
-            <div className="flex-1" />
-            <Button variant="secondary" size="sm" onClick={pauseRecording} icon={<Pause className="w-4 h-4" />}>
-              {t('controls.pause')}
-            </Button>
-            <Button variant="brand" size="sm" onClick={handleStopRecording} disabled={isStopping} icon={
-              isStopping
-                ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                : <Square className="w-4 h-4" />
-            }>
-              {isStopping ? t('controls.finishing') : t('controls.stop')}
-            </Button>
-          </>
-        )}
-
-        {/* Paused state */}
-        {state === 'paused' && (
-          <>
-            <Button variant="ghost" size="sm" onClick={handleCancelRecording}>
-              {t('controls.cancel')}
-            </Button>
-            <div className="flex-1" />
-            <Button variant="secondary" size="sm" onClick={handleStopRecording} disabled={isStopping} icon={
-              isStopping
-                ? <div className="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
-                : <Square className="w-4 h-4" />
-            }>
-              {isStopping ? t('controls.finishing') : t('controls.stop')}
-            </Button>
-            <Button variant="brand" size="sm" onClick={resumeRecording} icon={<Mic className="w-4 h-4" />}>
-              {t('controls.resume')}
             </Button>
           </>
         )}
