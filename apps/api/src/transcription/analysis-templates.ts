@@ -1178,50 +1178,32 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     category: 'professional',
     icon: 'ClipboardList',
     color: 'purple',
-    systemPrompt: `You are a senior product manager who creates clear, actionable PRDs. You prioritize problem clarity over solution specifics, and ensure requirements are testable. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
-    userPrompt: `Create a Product Requirements Document (PRD) from this conversation.
+    systemPrompt: `You write sharp, scannable PRDs in the style of a top-tier management consultant. Diagnose problems in punchy bullets, not paragraphs. Every word earns its place. Strip anything that doesn't inform a decision or prioritize work. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Create a Product Requirements Document from this conversation.
 
 ${PROMPT_INSTRUCTIONS.useContext}
 
-PROBLEM STATEMENT QUALITY:
-The problem statement is the most important part. A good problem statement:
-- Describes WHO is affected
-- Explains WHAT pain or friction they experience
-- Quantifies the IMPACT (time wasted, revenue lost, errors caused)
-- Does NOT prescribe a solution
+PROBLEM STATEMENT — array of 3–5 bullets. Each bullet = one pain + its quantified impact. No prose. No solutions.
+Format: "[Pain]: [Quantified impact]"
+Example: "Opticians re-enter prior order data on every repeat visit → 15–30 min/day of avoidable work"
 
-BAD problem statement: "We need to add a dashboard."
-GOOD problem statement: "Sales managers spend 2+ hours weekly manually compiling rep performance data from 3 different systems. This delays coaching conversations and causes 15% of underperformance to go unaddressed until it's too late."
+GOALS — max 4 items. Measurable outcomes only. Not activities or features.
+Format: "[Outcome] by [metric]"
+Example: "Cut average order creation time by 30% for repeat customers"
 
-GOALS vs NON-GOALS:
-- Goals: Outcomes we're trying to achieve (measurable when possible)
-- Non-goals: What we're explicitly NOT doing to prevent scope creep
-- If something is "out of scope for v1" that's a non-goal
+NON-GOALS — explicitly what is out of scope. Be specific, not vague.
 
-USER STORIES:
-Format: "As a [role], I want [capability], so that [benefit]"
-- Only include stories explicitly discussed
-- Each story should represent a distinct user need
+REQUIREMENTS (MoSCoW):
+- id: REQ-001, REQ-002, etc.
+- requirement: One clear, testable statement
+- priority: must-have | should-have | could-have | wont-have
+No rationale. If the requirement isn't self-explanatory, rewrite it until it is.
 
-REQUIREMENTS WITH MoSCoW:
-- must-have: Required for launch, core value proposition
-- should-have: Important but launch possible without
-- could-have: Desirable if time permits
-- wont-have: Explicitly out of scope (move to non-goals or future consideration)
+SUCCESS METRICS — 2–3 KPIs maximum. One leading indicator, one lagging.
+Format: "[Metric]: [Target]"
+Example: "Order creation time (p50): < 3 min" / "Duplicate client rate: < 5%"
 
-For each requirement:
-- id: Unique identifier (REQ-001, REQ-002, etc.)
-- requirement: Clear, testable statement
-- priority: MoSCoW category
-- rationale: Why this priority? (especially for must-haves)
-
-SUCCESS METRICS:
-Quantifiable measures that indicate the feature is working:
-- Leading indicators: Early signals (adoption rate, usage frequency)
-- Lagging indicators: Business outcomes (revenue impact, churn reduction)
-
-OPEN QUESTIONS:
-Decisions that still need to be made. Flag these clearly - they're blockers.
+OPEN QUESTIONS — unresolved decisions that are blockers only. Skip rhetorical questions.
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     modelPreference: 'gpt-5',
@@ -1238,10 +1220,9 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         title: { type: 'string' },
         owner: { type: 'string' },
         status: { type: 'string', enum: ['draft', 'review', 'approved'] },
-        problemStatement: { type: 'string' },
+        problemStatement: { type: 'array', items: { type: 'string' } },
         goals: { type: 'array', items: { type: 'string' } },
         nonGoals: { type: 'array', items: { type: 'string' } },
-        userStories: { type: 'array', items: { type: 'string' } },
         requirements: {
           type: 'array',
           items: {
@@ -1253,7 +1234,6 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
                 type: 'string',
                 enum: ['must-have', 'should-have', 'could-have', 'wont-have'],
               },
-              rationale: { type: 'string' },
             },
             required: ['id', 'requirement', 'priority'],
           },
@@ -1268,7 +1248,6 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         'status',
         'problemStatement',
         'goals',
-        'userStories',
         'requirements',
         'successMetrics',
       ],

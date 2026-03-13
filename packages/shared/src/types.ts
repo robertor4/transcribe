@@ -484,7 +484,6 @@ export interface PRDRequirement {
   id: string;
   requirement: string;
   priority: 'must-have' | 'should-have' | 'could-have' | 'wont-have';
-  rationale?: string;
 }
 
 /** Structured PRD output */
@@ -493,10 +492,9 @@ export interface PRDOutput {
   title: string;
   owner?: string;
   status: 'draft' | 'review' | 'approved';
-  problemStatement: string;
+  problemStatement: string[];
   goals: string[];
   nonGoals?: string[];
-  userStories: string[];
   requirements: PRDRequirement[];
   successMetrics: string[];
   openQuestions?: string[];
