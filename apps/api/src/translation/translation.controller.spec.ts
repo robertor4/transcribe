@@ -25,7 +25,11 @@ describe('TranslationController', () => {
     };
 
     mockUserRepository = {
-      getUser: jest.fn().mockResolvedValue({ uid: 'user-123', email: 'test@example.com', subscriptionTier: 'professional' }),
+      getUser: jest.fn().mockResolvedValue({
+        uid: 'user-123',
+        email: 'test@example.com',
+        subscriptionTier: 'professional',
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -70,7 +74,12 @@ describe('TranslationController', () => {
         'trans-123',
         'user-123',
         'de-DE',
-        { translateSummary: true, translateAssets: true, assetIds: undefined, forceRetranslate: false },
+        {
+          translateSummary: true,
+          translateAssets: true,
+          assetIds: undefined,
+          forceRetranslate: false,
+        },
       );
     });
 
