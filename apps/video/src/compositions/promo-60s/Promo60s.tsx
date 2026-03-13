@@ -18,20 +18,25 @@ import { CloseCTA } from './CloseCTA';
  * Scene durations (frames at 30fps).
  * Editable via the Studio Props > JSON tab.
  *
- * Defaults derived from silence detection on voiceover-promo-60s-fast.mp3.
+ * Defaults derived from Whisper word-level timestamps on
+ * voiceover-promo-60s-fast.mp3. Scene transitions placed at the
+ * midpoint of each silence gap so visuals change during pauses.
  *
- * Scene              Duration  Audio boundary
- * ─────────────────────────────────────────────
- * BackToBack         5.2s      gap @ 4.84–5.48s
- * NoTime             3.8s      gap @ 8.66–9.19s
- * ThePain            10.2s     gap @ 18.90–19.38s
- * TheShift           4.1s      gap @ 22.90–23.56s
- * ThePromise         5.6s      gap @ 28.52–29.09s
- * Transform (Power)  7.7s      gap @ 36.13–36.80s
- * Ask (Memory)       7.3s      gap @ 43.47–44.07s
- * TheOutcome         4.2s      gap @ 47.56–48.29s
- * Trust              5.7s      gap @ 53.33–53.85s
- * CloseCTA           6.4s
+ * Scene              Frames  Duration  Audio (start–end)         Gap before next
+ * ─────────────────────────────────────────────────────────────────────────────────
+ * BackToBack          152    5.07s     0.00–4.78s                4.78–5.36 (0.58s)
+ * NoTime              114    3.80s     5.36–8.60s                8.60–9.14 (0.54s)
+ * ThePain             144    4.80s     9.14–13.20s               13.20–14.12 (0.92s)
+ * TheShift            163    5.43s     14.12–18.62s              18.62–19.56 (0.94s)
+ * ThePromise          121    4.03s     19.56–22.84s              22.84–23.40 (0.56s)
+ * Transform (Power)   169    5.63s     23.40–28.32s              28.32–29.18 (0.86s)
+ * Templates           230    7.67s     29.18–36.08s              36.08–36.76 (0.68s)
+ * Ask (Memory)        217    7.23s     36.76–43.26s              43.26–44.04 (0.78s)
+ * TheOutcome          125    4.17s     44.04–47.44s              47.44–48.22 (0.78s)
+ * Trust               174    5.80s     48.22–53.14s              53.14–54.10 (0.96s)
+ * CloseCTA            191    6.37s     54.10–58.76s              (end)
+ *                   ─────
+ *                    1800 = 60.00s
  */
 
 interface Promo60sProps {
@@ -49,17 +54,17 @@ interface Promo60sProps {
 }
 
 const defaultTimings: Promo60sProps = {
-  backToBack: 100,
-  noTime:     100,
-  thePain:    240,
-  theShift:   150,
-  thePromise: 160,
-  thePower:     180,
-  theTemplates: 180,
-  theMemory:    219,
+  backToBack: 152,
+  noTime:     114,
+  thePain:    144,
+  theShift:   163,
+  thePromise: 121,
+  thePower:     169,
+  theTemplates: 230,
+  theMemory:    217,
   theOutcome: 125,
-  trust:      170,
-  closeCTA:   200,
+  trust:      174,
+  closeCTA:   191,
 };
 
 /** Scene component registry — order matches the video sequence. */

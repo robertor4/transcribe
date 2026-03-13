@@ -3,53 +3,52 @@ import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
 import { colors, fonts, sz, sp, cs } from '@/lib/design-tokens';
 
 /**
- * Scene 3: The Pain (0:07–0:15)
+ * Scene 3: The Pain (4.8s)
  *
  * Two phases:
- * Phase 1 (0–4s): "30 min call → 1 hr writeup" — clock/time comparison
- * Phase 2 (4–8s): Action items dropping off, "you're behind" feeling
+ * Phase 1 (0–1.5s): Quick flash of "30 min call → 1 hr writeup"
+ * Phase 2 (1.5–4.8s): Action items dropping off, "you're behind" feeling
  *
- * "That thirty-minute client call? It takes an hour to write up.
- *  Action items fall through the cracks. And you constantly have
- *  the feeling that you're behind."
+ * Audio: "Action items fall through the cracks, and you constantly
+ *  have the feeling that you're behind." (9.14–13.20s)
  */
 export const ThePain: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Phase 1: Time comparison (0–4s)
-  const showPhase2 = frame > fps * 4;
+  // Phase 1: Quick time comparison (0–1.5s)
+  const showPhase2 = frame > fps * 1.5;
 
-  // Call duration counter
+  // Call duration counter (fast count 0–0.6s)
   const callMinutes = Math.min(
-    Math.floor(interpolate(frame, [fps * 0.3, fps * 1.2], [0, 30], {
+    Math.floor(interpolate(frame, [fps * 0.1, fps * 0.6], [0, 30], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
     })),
     30
   );
 
-  // Writeup duration counter (appears after call)
+  // Writeup duration counter (appears after call, 0.5–1.2s)
   const writeupMinutes = Math.min(
-    Math.floor(interpolate(frame, [fps * 1.8, fps * 3.0], [0, 63], {
+    Math.floor(interpolate(frame, [fps * 0.7, fps * 1.2], [0, 63], {
       extrapolateLeft: 'clamp',
       extrapolateRight: 'clamp',
     })),
     63
   );
-  const writeupOpacity = interpolate(frame, [fps * 1.5, fps * 1.8], [0, 1], {
+  const writeupOpacity = interpolate(frame, [fps * 0.5, fps * 0.7], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
   // Arrow between them
-  const arrowOpacity = interpolate(frame, [fps * 1.3, fps * 1.6], [0, 1], {
+  const arrowOpacity = interpolate(frame, [fps * 0.4, fps * 0.6], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
 
   // Phase 1 fade out
-  const phase1Fade = interpolate(frame, [fps * 3.5, fps * 4.0], [1, 0], {
+  const phase1Fade = interpolate(frame, [fps * 1.2, fps * 1.5], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -63,8 +62,8 @@ export const ThePain: React.FC = () => {
     'Draft proposal changes',
   ];
 
-  // "Behind" text
-  const behindOpacity = interpolate(frame, [fps * 6.5, fps * 7.0], [0, 1], {
+  // "Behind" text (appears at ~3.5s to match "you're behind" in audio)
+  const behindOpacity = interpolate(frame, [fps * 3.5, fps * 4.0], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -173,15 +172,15 @@ export const ThePain: React.FC = () => {
           {/* Action items with strikethrough / red X */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: sp(10), width: 800 }}>
             {actionItems.map((item, i) => {
-              const itemStart = fps * 4 + i * 8;
-              const itemOpacity = interpolate(frame, [itemStart, itemStart + 6], [0, 1], {
+              const itemStart = fps * 1.5 + i * 5;
+              const itemOpacity = interpolate(frame, [itemStart, itemStart + 4], [0, 1], {
                 extrapolateLeft: 'clamp',
                 extrapolateRight: 'clamp',
               });
               // Items fade to red and get crossed out
               const fadeRed = interpolate(
                 frame,
-                [itemStart + 10, itemStart + 16],
+                [itemStart + 6, itemStart + 10],
                 [0, 1],
                 { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
               );

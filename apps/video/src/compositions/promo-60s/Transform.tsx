@@ -35,6 +35,8 @@ export const Transform: React.FC = () => {
 
   const docTypes = ['Email', 'PRD', 'Brief', 'Blog', 'Pitch'];
 
+  const circleSize = cs(120);
+
   return (
     <div
       style={{
@@ -48,38 +50,36 @@ export const Transform: React.FC = () => {
         position: 'relative',
       }}
     >
+      {/* Main row — aligns circle, arrow, and doc cards at their centers */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: sp(40),
+          gap: sp(48),
         }}
       >
-        {/* Recording icon */}
+        {/* Recording icon — label positioned absolutely so it doesn't affect row alignment */}
         <div
           style={{
             opacity: recordingOpacity,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: sp(10),
+            position: 'relative',
           }}
         >
           <div
             style={{
-              width: cs(80),
-              height: cs(80),
+              width: circleSize,
+              height: circleSize,
               borderRadius: '50%',
               background: `${colors.primary}20`,
-              border: `2px solid ${colors.primary}60`,
+              border: `3px solid ${colors.primary}60`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
             <svg
-              width={sz(32)}
-              height={sz(32)}
+              width={sz(44)}
+              height={sz(44)}
               viewBox="0 0 24 24"
               fill="none"
               stroke={colors.primary}
@@ -94,26 +94,32 @@ export const Transform: React.FC = () => {
           </div>
           <div
             style={{
+              position: 'absolute',
+              top: circleSize + sp(10),
+              left: '50%',
+              transform: 'translateX(-50%)',
               fontFamily: fonts.mono,
-              fontSize: sz(11),
+              fontSize: sz(13),
               color: colors.textMuted,
               textTransform: 'uppercase',
-              letterSpacing: 2,
+              letterSpacing: 3,
+              whiteSpace: 'nowrap',
             }}
           >
             1 Recording
           </div>
         </div>
 
-        {/* Arrow */}
+        {/* Arrow — centered to the circle */}
         <div
           style={{
-            width: cs(100),
-            height: 3,
+            width: cs(160),
+            height: 4,
             background: `linear-gradient(90deg, ${colors.primary}, ${colors.cyan})`,
             opacity: arrowWidth,
             transform: `scaleX(${arrowWidth})`,
             transformOrigin: 'left',
+            borderRadius: 2,
           }}
         />
 
@@ -122,7 +128,7 @@ export const Transform: React.FC = () => {
           style={{
             opacity: docsOpacity,
             display: 'flex',
-            gap: sp(12),
+            gap: sp(16),
           }}
         >
           {docTypes.map((doc, i) => {
@@ -141,16 +147,16 @@ export const Transform: React.FC = () => {
                   transform: `translateY(${(1 - docStagger) * 20}px)`,
                   background: colors.bgCard,
                   border: `1px solid ${colors.bgCardBorder}`,
-                  borderRadius: 10,
-                  padding: `${sp(14)}px ${sp(16)}px`,
+                  borderRadius: 12,
+                  padding: `${sp(20)}px ${sp(22)}px`,
                   textAlign: 'center',
                 }}
               >
-                <div style={{ fontSize: sz(18), marginBottom: sp(4) }}>📄</div>
+                <div style={{ fontSize: sz(24), marginBottom: sp(6) }}>📄</div>
                 <div
                   style={{
                     fontFamily: fonts.mono,
-                    fontSize: sz(9),
+                    fontSize: sz(12),
                     color: colors.textSecondary,
                   }}
                 >
