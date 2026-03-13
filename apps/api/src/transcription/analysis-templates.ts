@@ -1703,8 +1703,12 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 For each objection identified:
 1. The exact objection raised
 2. Category (price, timing, competition, authority, need, trust, other)
-3. Recommended response strategy
-4. Proof points or evidence to support the response
+3. **response**: A 3-step array using the Acknowledge → Reframe → Bridge framework:
+   - Step 1 (Acknowledge): Validate the concern without agreeing. Example: "That's a fair concern — budget pressure is real right now."
+   - Step 2 (Reframe): Shift the lens. Example: "The question is whether the cost of inaction is higher than the investment."
+   - Step 3 (Bridge): Move to next step. Example: "Let's look at the ROI numbers together — can we schedule 30 minutes?"
+   Keep each step to 1-2 sentences. This will be displayed as a numbered 3-step response.
+4. Proof points or evidence to support the response (optional, 2-4 bullets)
 
 Also provide:
 - Overall strategy for handling this prospect's concerns
@@ -1740,7 +1744,12 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
                   'other',
                 ],
               },
-              response: { type: 'string' },
+              response: {
+                oneOf: [
+                  { type: 'string' },
+                  { type: 'array', items: { type: 'string' }, minItems: 3, maxItems: 3 },
+                ],
+              },
               proofPoints: { type: 'array', items: { type: 'string' } },
             },
             required: ['objection', 'category', 'response'],
@@ -1765,14 +1774,16 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 
 For each competitor mentioned:
 1. Competitor name
-2. What was said about them (direct quotes if possible)
+2. What was said about them (key mentions, max 3 bullet points)
 3. Perceived strengths
 4. Perceived weaknesses
-5. How they're positioned against us
+5. **positioning**: ONE sentence (max 15 words) summarizing how they're positioned in the market. Keep it punchy and descriptive.
+6. **threatLevel**: Rate as "high", "medium", or "low" based on competitive impact
+7. **differentiator**: Our single strongest edge vs this competitor — max 10 words. Start with an action word. Example: "Superior real-time processing with 10x lower latency"
 
 Also provide:
 - Our key advantages based on this conversation
-- Threat assessment
+- Threat assessment (overall market threat summary)
 - Recommended actions to improve competitive position
 
 ${PROMPT_INSTRUCTIONS.languageConsistency}`,
@@ -1797,6 +1808,8 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
               strengths: { type: 'array', items: { type: 'string' } },
               weaknesses: { type: 'array', items: { type: 'string' } },
               positioning: { type: 'string' },
+              threatLevel: { type: 'string', enum: ['high', 'medium', 'low'] },
+              differentiator: { type: 'string' },
             },
             required: ['competitor', 'mentions', 'positioning'],
           },
@@ -2089,9 +2102,10 @@ ${PROMPT_INSTRUCTIONS.useContext}
 
 CRITICAL REQUIREMENTS:
 1. **Title**: Short and specific — maximum 10 words. Example: "Deal Flow Architecture Recommendations" (NOT a full sentence or subtitle)
-2. **Executive Summary**: MANDATORY. 2-3 concise sentences maximum. State the core recommendation and expected outcome. Keep it tight — this is a pull-quote, not a paragraph. NEVER omit this field.
-3. **Background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph should be 2-3 sentences max. Cover: what prompted this analysis, key stakeholders, and constraints. Keep it scannable.
-4. **Key Findings**: MANDATORY. Extract 4-8 specific, substantive findings. Each finding should be a complete sentence that communicates a clear insight, not just a topic label. NEVER omit this field — every conversation has findings worth highlighting.
+2. **topLine**: ONE sentence (max 20 words) — the single most important verdict or conclusion from the entire memo. This appears before everything else as a purple pull-quote. Write it as a bold recommendation, not a description. Example: "Restructure the data pipeline before adding new features — technical debt is blocking growth."
+3. **Executive Summary**: MANDATORY. 2-3 concise sentences maximum. State the core recommendation and expected outcome. Keep it tight — this is a pull-quote, not a paragraph. NEVER omit this field.
+4. **Background**: 2-3 SHORT paragraphs separated by double newlines (\\n\\n). Each paragraph should be 2-3 sentences max. Cover: what prompted this analysis, key stakeholders, and constraints. Keep it scannable.
+5. **Key Findings**: MANDATORY. Extract 4-8 specific, substantive findings. Each finding should be a complete sentence that communicates a clear insight, not just a topic label. NEVER omit this field — every conversation has findings worth highlighting.
 5. **Recommendations**: Provide 3-7 concrete, actionable recommendations. Each MUST include ALL of these fields:
    - "recommendation": A concise action phrase (under 15 words). Example: "Adopt a split storage architecture for documents and attributes"
    - "priority": high, medium, or low
@@ -2122,6 +2136,7 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         to: { type: 'string' },
         from: { type: 'string' },
         date: { type: 'string' },
+        topLine: { type: 'string' },
         executiveSummary: { type: 'string' },
         background: { type: 'string' },
         findings: { type: 'array', items: { type: 'string' } },
@@ -2240,15 +2255,17 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 
 Include:
 1. Period covered
-2. Headline (most important update)
-3. Highlights and wins
-4. Key metrics with trends
-5. Product updates
-6. Team updates
-7. Financials (revenue, burn, etc.)
-8. Runway
-9. Asks (introductions, advice, etc.)
-10. Next milestones
+2. **oneLiner**: ONE punchy sentence (max 20 words) capturing the most important thing investors need to know. This appears at the very top before everything else.
+3. Headline (most important thematic update, 1-2 sentences)
+4. Highlights and wins
+5. Key metrics with trends
+6. Product updates
+7. Team updates
+8. Financials (revenue, burn, etc.)
+9. Runway
+10. Asks (introductions, advice, etc.)
+11. Next milestones
+12. **topAsk**: Single most important ask — the ONE thing you need most from investors right now (max 20 words).
 
 Be honest about challenges while maintaining investor confidence.
 
@@ -2265,6 +2282,7 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         type: { type: 'string', const: 'investorUpdate' },
         company: { type: 'string' },
         period: { type: 'string' },
+        oneLiner: { type: 'string' },
         headline: { type: 'string' },
         highlights: { type: 'array', items: { type: 'string' } },
         metrics: {
@@ -2296,6 +2314,7 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         runway: { type: 'string' },
         asks: { type: 'array', items: { type: 'string' } },
         nextMilestones: { type: 'array', items: { type: 'string' } },
+        topAsk: { type: 'string' },
       },
       required: [
         'type',
@@ -2320,13 +2339,14 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
     userPrompt: `Create all-hands talking points from this conversation.
 
 Include:
-1. Opening remarks
-2. Company updates
-3. Team wins and recognition
-4. Announcements
-5. Upcoming priorities
-6. Q&A topics to address proactively
-7. Closing remarks
+1. Opening remarks (can be a single string or an array of short talking points)
+2. **keyAnnouncements**: 2-4 top-priority announcements that need maximum attention — the "stop everything and listen" moments. Use "Label: detail" format for each. Example: "New funding: We've closed our Series B at $20M — 18 months runway secured."
+3. Company updates (broader progress, strategic context)
+4. Team wins and recognition
+5. Announcements (other news, partnerships, launches)
+6. Upcoming priorities
+7. Q&A topics to address proactively
+8. Closing remarks
 
 Keep the tone motivating while being honest about challenges.
 
@@ -2343,13 +2363,18 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
         type: { type: 'string', const: 'allHandsTalkingPoints' },
         title: { type: 'string' },
         date: { type: 'string' },
-        openingRemarks: { type: 'string' },
+        openingRemarks: {
+          oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+        },
+        keyAnnouncements: { type: 'array', items: { type: 'string' } },
         companyUpdates: { type: 'array', items: { type: 'string' } },
         teamWins: { type: 'array', items: { type: 'string' } },
         announcements: { type: 'array', items: { type: 'string' } },
         upcomingPriorities: { type: 'array', items: { type: 'string' } },
         qaTopics: { type: 'array', items: { type: 'string' } },
-        closingRemarks: { type: 'string' },
+        closingRemarks: {
+          oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
+        },
       },
       required: [
         'type',
@@ -3129,9 +3154,11 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
 Include:
 1. Client and coach names
 2. Session focus
-3. Insights discussed (topic, insight, related action)
+3. Insights discussed. For each insight, classify it:
+   - category: "strength" (something they do well), "growth" (area to develop), or "pattern" (recurring behaviour or mindset to examine)
 4. Progress on previous actions
-5. New action items with due dates
+5. New action items with due dates and urgency:
+   - priority: "immediate" (do today/this week), "this-week", or "ongoing"
 6. Focus for next session
 
 Capture the developmental journey and commitments made.
@@ -3160,6 +3187,7 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
               topic: { type: 'string' },
               insight: { type: 'string' },
               actionItem: { type: 'string' },
+              category: { type: 'string', enum: ['strength', 'growth', 'pattern'] },
             },
             required: ['topic', 'insight'],
           },
@@ -3172,6 +3200,7 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
             properties: {
               action: { type: 'string' },
               dueDate: { type: 'string' },
+              priority: { type: 'string', enum: ['immediate', 'this-week', 'ongoing'] },
             },
             required: ['action'],
           },

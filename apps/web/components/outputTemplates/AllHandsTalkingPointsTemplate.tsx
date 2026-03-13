@@ -6,6 +6,7 @@ import {
   Trophy,
   Bell,
   HelpCircle,
+  Megaphone,
 } from 'lucide-react';
 import type { AllHandsTalkingPointsOutput } from '@transcribe/shared';
 import {
@@ -43,8 +44,19 @@ export function AllHandsTalkingPointsTemplate({ data }: AllHandsTalkingPointsTem
       {/* Opening Remarks */}
       {data.openingRemarks && (
         <EditorialPullQuote>
-          <p>{data.openingRemarks}</p>
+          {Array.isArray(data.openingRemarks) ? (
+            data.openingRemarks.map((line, i) => <p key={i}>{line}</p>)
+          ) : (
+            <p>{data.openingRemarks}</p>
+          )}
         </EditorialPullQuote>
+      )}
+
+      {/* Key Announcements — high-signal items before detail */}
+      {data.keyAnnouncements && data.keyAnnouncements.length > 0 && (
+        <EditorialSection label="Key Announcements" icon={Megaphone} borderTop={false}>
+          <BulletList items={data.keyAnnouncements} bulletColor="bg-[#8D6AFA]" variant="chevron" boldBeforeColon />
+        </EditorialSection>
       )}
 
       {/* Company Updates */}
@@ -90,7 +102,15 @@ export function AllHandsTalkingPointsTemplate({ data }: AllHandsTalkingPointsTem
       {/* Closing Remarks */}
       {data.closingRemarks && (
         <EditorialSection label="Closing Remarks" borderTop>
-          <p className={EDITORIAL.body}>{data.closingRemarks}</p>
+          {Array.isArray(data.closingRemarks) ? (
+            <div className="space-y-2">
+              {data.closingRemarks.map((line, i) => (
+                <p key={i} className={EDITORIAL.body}>{line}</p>
+              ))}
+            </div>
+          ) : (
+            <p className={EDITORIAL.body}>{data.closingRemarks}</p>
+          )}
         </EditorialSection>
       )}
     </EditorialArticle>

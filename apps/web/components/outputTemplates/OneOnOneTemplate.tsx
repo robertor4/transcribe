@@ -88,6 +88,8 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
               <BulletList
                 items={data.feedback!.given!}
                 bulletColor="bg-green-500"
+                variant="chevron"
+                boldBeforeColon
                 className={EDITORIAL.listItem}
               />
             </EditorialSection>
@@ -97,6 +99,8 @@ export function OneOnOneTemplate({ data }: OneOnOneTemplateProps) {
               <BulletList
                 items={data.feedback!.received!}
                 bulletColor="bg-blue-500"
+                variant="chevron"
+                boldBeforeColon
                 className={EDITORIAL.listItem}
               />
             </EditorialSection>

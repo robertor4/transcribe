@@ -76,7 +76,7 @@ export function BoardUpdateTemplate({ data }: BoardUpdateTemplateProps) {
 
       {/* Executive Summary */}
       {data.executiveSummary && (
-        <EditorialPullQuote>
+        <EditorialPullQuote color="#23194B">
           <p>{data.executiveSummary}</p>
         </EditorialPullQuote>
       )}

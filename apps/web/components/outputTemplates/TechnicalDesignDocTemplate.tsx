@@ -243,7 +243,7 @@ export function TechnicalDesignDocTemplate({ data }: TechnicalDesignDocTemplateP
           label="Alternatives Considered"
           icon={GitBranch}
           count={data.alternatives.length}
-          defaultOpen
+          defaultOpen={false}
         >
           <div className="space-y-4">
             {data.alternatives.map((alt, idx) => (

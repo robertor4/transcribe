@@ -232,14 +232,41 @@ export function VisionDocumentTemplate({ data }: VisionDocumentTemplateProps) {
         </EditorialSection>
       )}
 
-      {/* Risks & Mitigations */}
+      {/* Risks & Mitigations — grouped by risk level */}
       {data.risksAndMitigations && data.risksAndMitigations.length > 0 && (
         <EditorialSection label="Risks and mitigations" icon={AlertTriangle} borderTop>
-          <div>
-            {data.risksAndMitigations.map((item, idx) => (
-              <RiskRow key={idx} item={item} />
-            ))}
-          </div>
+          {(['high', 'medium', 'low'] as const).map(level => {
+            const groupRisks = data.risksAndMitigations!.filter(item => {
+              const likelihood = item.likelihood || (item as VisionRisk & { severity?: string }).severity;
+              const impact = item.impact || (item as VisionRisk & { severity?: string }).severity;
+              const riskLevel = (likelihood === 'high' && impact === 'high') ? 'high'
+                : (likelihood === 'low' && impact === 'low') ? 'low'
+                : 'medium';
+              return riskLevel === level;
+            });
+            if (groupRisks.length === 0) return null;
+            const groupColors = {
+              high: 'border-red-300 dark:border-red-700/50 bg-red-50 dark:bg-red-900/10',
+              medium: 'border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/10',
+              low: 'border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-800/20',
+            };
+            const groupLabel = { high: 'High risk', medium: 'Medium risk', low: 'Low risk' };
+            const groupLabelColor = {
+              high: 'text-red-700 dark:text-red-400',
+              medium: 'text-amber-700 dark:text-amber-400',
+              low: 'text-gray-500 dark:text-gray-400',
+            };
+            return (
+              <div key={level} className={`rounded-lg border p-4 mb-3 ${groupColors[level]}`}>
+                <p className={`text-[11px] font-bold uppercase tracking-widest mb-3 ${groupLabelColor[level]}`}>
+                  {groupLabel[level]}
+                </p>
+                {groupRisks.map((item, idx) => (
+                  <RiskRow key={idx} item={item} />
+                ))}
+              </div>
+            );
+          })}
         </EditorialSection>
       )}
 

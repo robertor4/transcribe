@@ -18,7 +18,6 @@ import {
   EditorialPullQuote,
   EditorialCollapsible,
   EditorialSidebar,
-  EDITORIAL,
   safeString,
 } from './shared';
 
@@ -106,13 +105,23 @@ export function MeetingMinutesTemplate({ data }: MeetingMinutesTemplateProps) {
                   {idx + 1}. {safeString(item.topic)}
                 </EditorialHeading>
                 {item.discussion && item.discussion.length > 0 && (
-                  <div className="space-y-3 mt-4">
-                    {item.discussion.map((point, pointIdx) => (
-                      <p key={pointIdx} className={`${EDITORIAL.body} break-words`}>
-                        {safeString(point)}
-                      </p>
-                    ))}
-                  </div>
+                  <ul className="space-y-2 mt-4">
+                    {item.discussion.map((point, pointIdx) => {
+                      const text = safeString(point);
+                      const colonIdx = text.indexOf(':');
+                      const hasBoldLabel = colonIdx > 0 && colonIdx < 50;
+                      return (
+                        <li key={pointIdx} className="flex items-start gap-3 text-[15px] text-gray-700 dark:text-gray-300 leading-[1.7] break-words">
+                          <span className="flex-shrink-0 mt-[6px] text-gray-400 dark:text-gray-500">›</span>
+                          <span>
+                            {hasBoldLabel ? (
+                              <><strong className="font-semibold text-gray-900 dark:text-gray-100">{text.slice(0, colonIdx)}</strong>{text.slice(colonIdx)}</>
+                            ) : text}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 )}
                 {item.decisions && item.decisions.length > 0 && (
                   <div className="mt-6 rounded-lg bg-cyan-50 dark:bg-cyan-900/15 border border-cyan-200 dark:border-cyan-800/40 px-5 py-4">

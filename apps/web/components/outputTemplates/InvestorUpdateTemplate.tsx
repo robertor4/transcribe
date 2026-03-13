@@ -77,6 +77,13 @@ export function InvestorUpdateTemplate({ data }: InvestorUpdateTemplateProps) {
     <EditorialArticle>
       <EditorialTitle title="Investor Update" metadata={metadata} />
 
+      {/* One-liner — punchy single sentence before everything */}
+      {data.oneLiner && (
+        <EditorialPullQuote color="#8D6AFA">
+          <p>{data.oneLiner}</p>
+        </EditorialPullQuote>
+      )}
+
       {/* Headline */}
       {data.headline && (
         <EditorialPullQuote>
@@ -152,6 +159,14 @@ export function InvestorUpdateTemplate({ data }: InvestorUpdateTemplateProps) {
         <EditorialSection label="Coming Up" icon={ArrowRight} borderTop>
           <BulletList items={data.nextMilestones} bulletColor="bg-[#14D0DC]" />
         </EditorialSection>
+      )}
+
+      {/* Top Ask — single most important ask, highlighted */}
+      {data.topAsk && (
+        <div className="mt-8 rounded-lg border border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/15 px-5 py-4">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-1">Top Ask</p>
+          <p className="text-[15px] text-gray-900 dark:text-gray-100 font-medium leading-[1.65]">{data.topAsk}</p>
+        </div>
       )}
     </EditorialArticle>
   );

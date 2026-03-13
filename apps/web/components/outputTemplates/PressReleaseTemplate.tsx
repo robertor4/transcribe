@@ -38,9 +38,11 @@ export function PressReleaseTemplate({ data }: PressReleaseTemplateProps) {
       )}
 
       {/* Lead Paragraph */}
-      <p className={`${EDITORIAL.body} font-medium text-lg mb-8`}>
-        {data.lead}
-      </p>
+      {data.lead && (
+        <EditorialPullQuote color="#23194B">
+          <p>{data.lead}</p>
+        </EditorialPullQuote>
+      )}
 
       {/* Body */}
       {data.body && data.body.length > 0 && (
@@ -55,18 +57,13 @@ export function PressReleaseTemplate({ data }: PressReleaseTemplateProps) {
 
       {/* Quotes */}
       {data.quotes && data.quotes.length > 0 && (
-        <div className="space-y-6 mb-10">
+        <div className="space-y-4 mb-10">
           {data.quotes.map((quote, idx) => (
-            <EditorialPullQuote
-              key={idx}
-              cite={
-                quote.title
-                  ? `${quote.attribution}, ${quote.title}`
-                  : quote.attribution
-              }
-            >
-              <p>&ldquo;{quote.quote}&rdquo;</p>
-            </EditorialPullQuote>
+            <div key={idx} className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-1">
+              <p className={`${EDITORIAL.body} italic`}>&ldquo;{quote.quote}&rdquo;</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-1">{quote.attribution}</p>
+              {quote.title && <p className="text-sm text-gray-500 dark:text-gray-400">{quote.title}</p>}
+            </div>
           ))}
         </div>
       )}

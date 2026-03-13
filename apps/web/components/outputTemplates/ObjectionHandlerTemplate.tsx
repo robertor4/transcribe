@@ -66,7 +66,23 @@ function ObjectionCard({ objection }: { objection: Objection }) {
           <MessageSquare className="w-3.5 h-3.5 text-[#8D6AFA]" />
           <span className={EDITORIAL.sectionLabel}>Recommended Response</span>
         </div>
-        <p className={`${EDITORIAL.body} mb-0`}>{objection.response}</p>
+        {Array.isArray(objection.response) ? (
+          <div className="space-y-2">
+            {(objection.response as string[]).map((step, stepIdx) => {
+              const labels = ['Acknowledge', 'Reframe', 'Bridge'];
+              return (
+                <div key={stepIdx} className="flex items-start gap-3">
+                  <span className="flex-shrink-0 text-[10px] font-bold uppercase tracking-wide text-[#8D6AFA] w-20 mt-1">
+                    {labels[stepIdx] || `Step ${stepIdx + 1}`}
+                  </span>
+                  <p className={`${EDITORIAL.body} mb-0 flex-1`}>{step}</p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className={`${EDITORIAL.body} mb-0`}>{objection.response as string}</p>
+        )}
 
         {/* Proof Points */}
         {objection.proofPoints && objection.proofPoints.length > 0 && (

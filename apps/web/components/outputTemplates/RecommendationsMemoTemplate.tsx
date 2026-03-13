@@ -83,6 +83,13 @@ export function RecommendationsMemoTemplate({ data }: RecommendationsMemoTemplat
     <EditorialArticle>
       <EditorialTitle title={data.title} metadata={metadata} />
 
+      {/* Top Line — single-sentence verdict before everything */}
+      {safeString(data.topLine) && (
+        <EditorialPullQuote color="#8D6AFA">
+          <p>{data.topLine}</p>
+        </EditorialPullQuote>
+      )}
+
       {/* Executive Summary — pull-quote style */}
       {safeString(data.executiveSummary) && (
         <EditorialPullQuote>
@@ -110,27 +117,47 @@ export function RecommendationsMemoTemplate({ data }: RecommendationsMemoTemplat
       {allGrouped.length > 0 && (
         <section className="mb-10">
           <EditorialHeading>Key Recommendations</EditorialHeading>
-          <EditorialNumberedList
-            items={allGrouped.map(rec => {
+          <div className="space-y-3">
+            {allGrouped.map((rec, idx) => {
               const recText = safeString(rec.recommendation);
               const rationale = safeString(rec.rationale);
               const impact = safeString(rec.impact);
               const hasRationale = rationale && rationale !== recText;
-
-              return {
-                primary: (
-                  <>
-                    <span className="font-semibold text-gray-900 dark:text-gray-100">{recText}</span>
-                    {hasRationale && <>{' '}{rationale}</>}
-                    <span className={`ml-2 text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide align-middle`}>
-                      {priorityLabel[rec.priority] || 'Medium'}
-                    </span>
-                  </>
-                ),
-                secondary: impact || undefined,
+              const borderColors: Record<string, string> = {
+                high: 'border-l-4 border-red-500',
+                medium: 'border-l-4 border-amber-400',
+                low: 'border-l-4 border-gray-300 dark:border-gray-600',
               };
+              const priorityBadge: Record<string, string> = {
+                high: 'text-red-600 dark:text-red-400',
+                medium: 'text-amber-600 dark:text-amber-400',
+                low: 'text-gray-400 dark:text-gray-500',
+              };
+              return (
+                <div key={idx} className={`pl-4 py-3 ${borderColors[rec.priority] || borderColors.medium}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="font-mono text-xs text-gray-400 dark:text-gray-500 flex-shrink-0 mt-[3px]">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[15px] text-gray-900 dark:text-gray-100 font-semibold leading-[1.65]">
+                        {recText}
+                        <span className={`ml-2 text-[10px] font-bold uppercase tracking-wide align-middle ${priorityBadge[rec.priority] || priorityBadge.medium}`}>
+                          {priorityLabel[rec.priority] || 'Medium'}
+                        </span>
+                      </p>
+                      {hasRationale && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{rationale}</p>
+                      )}
+                      {impact && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 italic">{impact}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
             })}
-          />
+          </div>
         </section>
       )}
 

@@ -629,7 +629,8 @@ export interface CRMNotesOutput {
 export interface Objection {
   objection: string;
   category: 'price' | 'timing' | 'competition' | 'authority' | 'need' | 'trust' | 'other';
-  response: string;
+  /** String (legacy) or array of 3 steps: Acknowledge / Reframe / Bridge */
+  response: string | string[];
   proofPoints?: string[];
 }
 
@@ -648,7 +649,12 @@ export interface CompetitorInsight {
   mentions: string[];
   strengths?: string[];
   weaknesses?: string[];
+  /** 1 sentence max — their positioning claim */
   positioning: string;
+  /** How threatening: high / medium / low */
+  threatLevel?: 'high' | 'medium' | 'low';
+  /** Our key differentiator vs this competitor, max 10 words */
+  differentiator?: string;
 }
 
 /** Structured competitive intel output */
@@ -750,6 +756,8 @@ export interface RecommendationsMemoOutput {
   to?: string;
   from?: string;
   date?: string;
+  /** Single most important recommendation — TL;DR of the memo, one sentence */
+  topLine?: string;
   executiveSummary: string;
   background: string;
   findings: string[];
@@ -790,6 +798,8 @@ export interface InvestorUpdateOutput {
   type: 'investorUpdate';
   company?: string;
   period: string;
+  /** One sentence. What happened this month in plain language. Max 20 words. */
+  oneLiner?: string;
   headline: string;
   highlights: string[];
   metrics: BoardMetric[];
@@ -797,6 +807,8 @@ export interface InvestorUpdateOutput {
   teamUpdates?: string[];
   financials?: { metric: string; value: string }[];
   runway?: string;
+  /** The single most important thing needed from investors right now. One sentence. */
+  topAsk?: string;
   asks?: string[];
   nextMilestones: string[];
 }
@@ -806,13 +818,17 @@ export interface AllHandsTalkingPointsOutput {
   type: 'allHandsTalkingPoints';
   title?: string;
   date?: string;
-  openingRemarks: string;
+  /** 2–3 headline items. Format: "[What]: [Impact/Why it matters]" */
+  keyAnnouncements?: string[];
+  /** Array of bullet talking points (new) or single prose block (legacy) */
+  openingRemarks: string | string[];
   companyUpdates: string[];
   teamWins: string[];
   announcements: string[];
   upcomingPriorities: string[];
   qaTopics?: string[];
-  closingRemarks: string;
+  /** Array of bullet talking points (new) or single prose block (legacy) */
+  closingRemarks: string | string[];
 }
 
 // ============================================================
@@ -1042,6 +1058,8 @@ export interface CoachingInsight {
   topic: string;
   insight: string;
   actionItem?: string;
+  /** strength = working well, growth = area to develop, pattern = recurring theme */
+  category?: 'strength' | 'growth' | 'pattern';
 }
 
 /** Structured coaching session notes output */
@@ -1054,7 +1072,7 @@ export interface CoachingNotesOutput {
   focus: string;
   insights: CoachingInsight[];
   progressOnPreviousActions: string[];
-  newActionItems: { action: string; dueDate?: string }[];
+  newActionItems: { action: string; dueDate?: string; priority?: 'immediate' | 'this-week' | 'ongoing' }[];
   nextSessionFocus?: string;
 }
 
